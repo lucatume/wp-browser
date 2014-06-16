@@ -43,18 +43,41 @@ and configure the required <code>adminUsername</code>, <code>adminPassword</code
 ## Methods
 The module adds methods that can be used in <code>.cest</code> and <code>.cept</code> methods using the same <code>$I->doSomething</code> syntax used in PhpBrowser.  
 Included methods are:
-
+    
+    // login as administrator using username and password
     public function loginAsAdmin();
+
+    // login as user
     public function loginAs($username, $password);
+
+    // go the plugins page
     public function amOnPluginsPage();
+
+    // activate a plugin from the plugin page
     public function activatePlugin($pluginSlug);
+
+    // deactivate a plugin from the plugin page
     public function deactivatePlugin($pluginSlug);
+
+    // check that a plugin is installed and deactivated from the plugin page
     public function seePluginDeactivated($pluginSlug);
+
+    // check that a plugin is installed and activated from the plugin page
     public function seePluginActivated($pluginSlug);
+
+    // check that a plugin is installed from the plugin page
     public function seePluginInstalled($pluginSlug);
+
+    // check that a plugin is not installed from the plugin page
     public function doNotSeePluginInstalled($pluginSlug);
+
+    // check for an error admin notice
     public function seeErrorMessage($classes = '');
+
+    // check for an updated admin notice
     public function seeMessage($classes = '');
+
+    // check that the current page is a wp_die generated one
     public function seeWpDiePage();
 
 all pretty explanatory. Methods like <code>seePlugin...</code> require the use of the <code>amOnPluginsPage</code> method before their invocation to navigate PhpBrowser to the right folder.
