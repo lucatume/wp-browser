@@ -30,12 +30,12 @@ class WPBrowser extends PhpBrowser
 
     public function activatePlugin($pluginSlug)
     {
-        $I->click('Activate', '#' . $pluginSlug);
+        $this->click('Activate', '#' . $pluginSlug);
     }
 
     public function deactivatePlugin($pluginSlug)
     {
-        $I->click('Deactivate', '#' . $pluginSlug);
+        $this->click('Deactivate', '#' . $pluginSlug);
     }
 
 
@@ -46,24 +46,24 @@ class WPBrowser extends PhpBrowser
 
     public function seePluginDeactivated($pluginSlug)
     {
-        $I->seePluginInstalled($pluginSlug);
-        $I->seeElement("#" . $pluginSlug . '.inactive');
+        $this->seePluginInstalled($pluginSlug);
+        $this->seeElement("#" . $pluginSlug . '.inactive');
     }
 
     public function seePluginActivated($pluginSlug)
     {
-        $I->seePluginInstalled($pluginSlug);
-        $I->seeElement("#" . $pluginSlug . '.active');
+        $this->seePluginInstalled($pluginSlug);
+        $this->seeElement("#" . $pluginSlug . '.active');
     }
 
     public function seePluginInstalled($pluginSlug)
     {
-        $I->seeElement('#' . $pluginSlug);
+        $this->seeElement('#' . $pluginSlug);
     }
 
     public function doNotSeePluginInstalled($pluginSlug)
     {
-        $I->doNotSeeElement('#' . $pluginSlug);
+        $this->doNotSeeElement('#' . $pluginSlug);
     }
 
     public function seeErrorMessage($classes = '')
@@ -72,12 +72,12 @@ class WPBrowser extends PhpBrowser
             $classes = implode('.', $classes);
         }
         $classes = '.' . $classes;
-        $I->seeElement('#message.error' . $classes);
+        $this->seeElement('#message.error' . $classes);
     }
 
     public function seeWpDiePage()
     {
-        $I->seeElement('body#error-page');
+        $this->seeElement('body#error-page');
     }
 
     public function seeMessage($classes = '')
@@ -86,6 +86,6 @@ class WPBrowser extends PhpBrowser
             $classes = implode('.', $classes);
         }
         $classes = '.' . $classes;
-        $I->seeElement('#message.updated' . $classes);
+        $this->seeElement('#message.updated' . $classes);
     }
 }
