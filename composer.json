@@ -1,0 +1,23 @@
+{
+    "name": "lucatume/wp-browser",
+    "type": "library",
+    "description": "WordPress extension of the PhpBrowser class.",
+    "keywords": ["wordpress", "codeception"],
+    "homepage": "http://github.com/lucatume/wp-browser",
+    "license": "MIT",
+    "authors": [{
+        "name": "theAverageDev (Luca Tumedei)",
+        "email": "luca@theaveragedev.com",
+        "homepage": "http://theaveragedev.com",
+        "role": "Developer"
+    }],
+    "require": {
+        "php": ">=5.3.0",
+        "codeception/codeception": "1.8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codeception\\Module\\": "src/"
+        }
+    }
+}
