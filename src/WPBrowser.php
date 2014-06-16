@@ -22,7 +22,7 @@ class WPBrowser extends PhpBrowser
 
     public function loginAs($username, $password)
     {
-        $this->amOnPage(self::$this->loginUrl);
+        $this->amOnPage($this->loginUrl);
         $this->fillField('Username', $username);
         $this->fillField('Password', $password);
         $this->click('Log In');
