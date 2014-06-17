@@ -23,9 +23,9 @@ class WPBrowser extends PhpBrowser
     public function loginAs($username, $password)
     {
         $this->amOnPage($this->loginUrl);
-        $this->fillField('//*[@id="user_login"]', $username);
-        $this->fillField('//*[@id="user_pass"]', $password);
-        $this->click('//*[@id="wp-submit"]');
+        $this->fillField('#user_login', $username);
+        $this->fillField('#user_pass', $password);
+        $this->click('#wp-submit');
     }
 
     public function activatePlugin($pluginSlug)
