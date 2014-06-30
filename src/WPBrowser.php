@@ -8,12 +8,14 @@ class WPBrowser extends PhpBrowser
     protected $requiredFields = array('adminUsername', 'adminPassword', 'adminUrl');
     protected $loginUrl;
     protected $pluginsUrl;
+    protected $db;
 
     public function _initialize()
     {
         parent::_initialize();
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $this->config['adminUrl']);
         $this->pluginsUrl = rtrim($this->config['adminUrl'], '/') . '/plugins.php';
+        $this->db = $this->getModule('Db');
     }
 
     public function loginAsAdmin() {
@@ -87,5 +89,9 @@ class WPBrowser extends PhpBrowser
         }
         $classes = '.' . $classes;
         $this->seeElement('#message.updated' . $classes);
+    }
+
+    public function haveOptionInDatabase($option_name, $option_value){
+
     }
 }
