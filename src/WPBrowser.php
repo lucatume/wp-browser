@@ -6,21 +6,18 @@ use Codeception\Module\PhpBrowser;
 class WPBrowser extends PhpBrowser
 {
     protected $requiredFields = array('adminUsername', 'adminPassword', 'adminUrl');
-    protected $config = array('tablePrefix' => 'wp');
     protected $loginUrl;
     protected $pluginsUrl;
-    protected $db;
 
     public function _initialize()
     {
         parent::_initialize();
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $this->config['adminUrl']);
         $this->pluginsUrl = rtrim($this->config['adminUrl'], '/') . '/plugins.php';
-        $this->tablePrefix = $this->config['tablePrefix'];
-        $this->db = $this->getModule('Db');
     }
 
-    public function loginAsAdmin() {
+    public function loginAsAdmin()
+    {
         $this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
     }
 
@@ -91,14 +88,5 @@ class WPBrowser extends PhpBrowser
         }
         $classes = '.' . $classes;
         $this->seeElement('#message.updated' . $classes);
-    }
-
-    public function haveOptionInDatabase($option_name, $option_value){
-        $tableName = $this->config['tablePrefix'] . '_options';
-        $this->db->haveInDatabase($tableName, array($ption_name => $option_value));
-    }
-
-    public function haveSerializedOptionInDatabase($option_name, $option_value){
-        $this->haveOptionInDatabase($option_name, @serialize($option_value));
     }
 }
