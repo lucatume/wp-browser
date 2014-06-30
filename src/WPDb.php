@@ -17,25 +17,25 @@ class WPDb extends Db
     public function haveOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
-        $this->haveInDatabase($tableName, array($option_name => $option_value));
+        return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
 
     public function haveSerializedOptionInDatabase($option_name, $option_value)
     {
         $serializedOptionValue = @serialize($option_value);
-        $this->haveOptionInDatabase($option_name, $serializedOptionValue);
+        return $this->haveOptionInDatabase($option_name, $serializedOptionValue);
     }
 
     public function seeOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
-        $this->seeInDatabase($tableName, array($option_name => $option_value));
+        $this->seeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
     }
 
     public function dontSeeOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
-        $this->dontSeeInDatabase($tableName, array($option_name => $option_value));
+        $this->dontSeeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
     }
 
     public function seeSerializedOptionInDatabase($option_name, $option_value)
