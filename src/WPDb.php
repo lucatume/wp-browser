@@ -16,12 +16,41 @@ class WPDb extends Db
 
     public function haveOptionInDatabase($option_name, $option_value)
     {
-        $tableName = $this->config['tablePrefix'] . '_options';
-        $this->db->haveInDatabase($tableName, array($ption_name => $option_value));
+        $tableName = $this->getPrefixedTableNameFor('options');
+        $this->haveInDatabase($tableName, array($option_name => $option_value));
     }
 
     public function haveSerializedOptionInDatabase($option_name, $option_value)
     {
-        $this->haveOptionInDatabase($option_name, @serialize($option_value));
+        $serializedOptionValue = @serialize($option_value);
+        $this->haveOptionInDatabase($option_name, $serializedOptionValue);
+    }
+
+    public function seeOptionInDatabase($option_name, $option_value)
+    {
+        $tableName = $this->getPrefixedTableNameFor('options');
+        $this->seeInDatabase($tableName, array($option_name => $option_value));
+    }
+
+    public function dontSeeOptionInDatabase($option_name, $option_value)
+    {
+        $tableName = $this->getPrefixedTableNameFor('options');
+        $this->dontSeeInDatabase($tableName, array($option_name => $option_value));
+    }
+
+    public function seeSerializedOptionInDatabase($option_name, $option_value)
+    {
+        $this->seeOptionInDatabase($option_name, @serialize($option_value));
+    }
+
+    public function dontSeeSerializedOptionInDatabase($option_name, $option_value)
+    {
+        $this->dontSeeOptionInDatabase($option_name, @serialize($option_value));
+    }
+
+    protected function getPrefixedTableNameFor($tableName)
+    {
+        $tableName = $this->config['tablePrefix'] . '_' . ltrim($tableName, '_');
+        return $tableName;
     }
 }
