@@ -101,4 +101,7 @@ The module is meant to be a WordPress specific extension of the <code>Db</code> 
     
     public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
     
-I will add them as the need arise.
+    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = [])
+    
+    public function seeUserInDatabase(Array $criteria);
+    
