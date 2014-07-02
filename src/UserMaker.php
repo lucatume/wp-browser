@@ -2,6 +2,7 @@
 
 namespace tad\test\wordpress\generator;
 
+use tad\test\wordpress\generator\DateMaker;
 
 class UserMaker {
     protected static $userRolesToLevels = ['subscriber' => '0', 'contributor' => '1', 'author' => '2', 'editor' => '7', 'administrator' => '10'];
@@ -13,7 +14,7 @@ public static function generateUserDefaultsFrom($user_login, $user_id, $role = '
         'user_nicename' => $user_login,
         'user_email' => $user_login . "@example.com",
         'user_url' => 'http://www.example.com',
-        'user_registered' => date('Y-m-d G:i:s'),
+        'user_registered' => DateMaker::now(),
         'user_status' => '0',
         'display_name' => $user_login);
     return $usersTableDefaults;
