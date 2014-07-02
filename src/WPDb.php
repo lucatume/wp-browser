@@ -74,6 +74,9 @@ class WPDb extends Db
             'menu_order' => 0,
             'post_type' => 'post'
         );
+        $mergedData = array_merge($defaults, $data);
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->haveInDatabase($tableName, $mergedData);
     }
 
     public function seePostInDatabase(Array $criteria)
