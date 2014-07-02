@@ -104,4 +104,3 @@ The module is meant to be a WordPress specific extension of the <code>Db</code> 
     public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = [])
     
     public function seeUserInDatabase(Array $criteria);
-    
