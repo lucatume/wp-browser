@@ -2,13 +2,14 @@
 
 namespace Codeception\Module;
 
-use Codeception\Module\Db;
+use Badcow\LoremIpsum\Generator;
 use tad\test\wordpress\generator\DateMaker;
 use tad\test\wordpress\generator\UserMaker;
+use tad\utils\Str;
 
 class WPDb extends Db
 {
-    protected $
+    protected $requiredFields = array('url');
     protected $config = array('tablePrefix' => 'wp');
     protected $tablePrefix = 'wp';
 
@@ -44,33 +45,36 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
-   public function havePostInDatabase($ID, Array $data = array()){
-       // create a default value array
-       $title = 'Post title';
-       $guid = $url . '/?p=' . $ID;
-       $defaults = array(
-           'post_author' => '1',
-           'post_date' => DateMaker::now(),
-           'post_date_gmt'  => DateMaker::gmnow(),
-           'post_content' => 'Post content here.',
-           'post_title' =>  $title,
-           'post_excerpt' => '',
-           'post_status' => 'publish',
-           'comment_status' => 'open',
-           'ping_status' => 'open',
-           'post_password' => '',
-           'post_name' => Str::hyphen($title),
-           'to_ping' => '',
-           'pinged' => '',
-           'post_modified' => DateMaker::now(),
-           'post_modified_gmt' => DateMaker::gmnow(),
-           'post_content_filtered' => '',
-            'post_parent'  => 0,
-           'guid' => $guid,
-           'menu_order' => 0,
-           'post_type' => 'post'
-       );
-   }
+    public function havePostInDatabase($ID, Array $data = array())
+    {
+        $loremMaker = new Generator();
+        // create a default value array
+        $title = $loremMaker->getSentences(1);
+        $content = $loremMaker->getParagraphs(3);
+        $guid = rtrim($this->config['url'], '/') . '/?p=' . $ID;
+        $defaults = array(
+            'post_author' => '1',
+            'post_date' => DateMaker::now(),
+            'post_date_gmt' => DateMaker::gmnow(),
+            'post_content' => $content,
+            'post_title' => $title,
+            'post_excerpt' => '',
+            'post_status' => 'publish',
+            'comment_status' => 'open',
+            'ping_status' => 'open',
+            'post_password' => '',
+            'post_name' => Str::hyphen($title),
+            'to_ping' => '',
+            'pinged' => '',
+            'post_modified' => DateMaker::now(),
+            'post_modified_gmt' => DateMaker::gmnow(),
+            'post_content_filtered' => '',
+            'post_parent' => 0,
+            'guid' => $guid,
+            'menu_order' => 0,
+            'post_type' => 'post'
+        );
+    }
 
     public function seePostInDatabase(Array $criteria)
     {
