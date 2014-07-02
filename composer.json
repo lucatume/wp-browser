@@ -18,7 +18,7 @@
     "autoload": {
         "psr-4": {
             "Codeception\\Module\\": "src/",
-            "tad\\test\\wordpress\\generator\\": "src/"
+            "tad\\wordpress\\maker\\": "src/"
         }
     }
 }

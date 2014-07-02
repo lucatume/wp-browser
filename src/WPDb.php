@@ -3,13 +3,14 @@
 namespace Codeception\Module;
 
 use Codeception\Module\Db;
+use tad\test\wordpress\generator\DateMaker;
 use tad\test\wordpress\generator\UserMaker;
 
 class WPDb extends Db
 {
     protected $config = array('tablePrefix' => 'wp');
     protected $tablePrefix = 'wp';
-    
+
     public function _initialize()
     {
         parent::_initialize();
@@ -41,6 +42,16 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('users');
         $this->seeInDatabase($tableName, $criteria);
     }
+
+   public function havePostInDatabase($ID){
+       // create a default value array
+       $defaults = array(
+           'post_author' => '1',
+           'post_date' => DateMaker::now(),
+           'post_date_gmt'  => DateMaker::gmnow(),
+
+       );
+   }
 
     public function seePostInDatabase(Array $criteria)
     {

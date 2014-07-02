@@ -1,8 +1,8 @@
 <?php
 
-namespace tad\test\wordpress\generator;
+namespace tad\wordpress\maker;
 
-use tad\test\wordpress\generator\DateMaker;
+use tad\wordpress\maker\DateMaker;
 
 class UserMaker {
     protected static $userRolesToLevels = ['subscriber' => '0', 'contributor' => '1', 'author' => '2', 'editor' => '7', 'administrator' => '10'];

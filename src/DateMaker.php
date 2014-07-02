@@ -1,13 +1,20 @@
 <?php
 
-namespace tad\test\wordpress\generator;
+namespace tad\wordpress\maker;
 
 
 class DateMaker
 {
+    const DATE_FORMAT = 'Y-m-d G:i:s';
+
     public static function now()
     {
-        return date('Y-m-d G:i:s');
+        return date(self::DATE_FORMAT);
+    }
+
+    public static function gmnow()
+    {
+        return gmdate(self::DATE_FORMAT);
     }
 
     public static function zero()
