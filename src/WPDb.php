@@ -8,6 +8,7 @@ use tad\test\wordpress\generator\UserMaker;
 
 class WPDb extends Db
 {
+    protected $
     protected $config = array('tablePrefix' => 'wp');
     protected $tablePrefix = 'wp';
 
@@ -43,13 +44,31 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
-   public function havePostInDatabase($ID){
+   public function havePostInDatabase($ID, Array $data = array()){
        // create a default value array
+       $title = 'Post title';
+       $guid = $url . '/?p=' . $ID;
        $defaults = array(
            'post_author' => '1',
            'post_date' => DateMaker::now(),
            'post_date_gmt'  => DateMaker::gmnow(),
-
+           'post_content' => 'Post content here.',
+           'post_title' =>  $title,
+           'post_excerpt' => '',
+           'post_status' => 'publish',
+           'comment_status' => 'open',
+           'ping_status' => 'open',
+           'post_password' => '',
+           'post_name' => Str::hyphen($title),
+           'to_ping' => '',
+           'pinged' => '',
+           'post_modified' => DateMaker::now(),
+           'post_modified_gmt' => DateMaker::gmnow(),
+           'post_content_filtered' => '',
+            'post_parent'  => 0,
+           'guid' => $guid,
+           'menu_order' => 0,
+           'post_type' => 'post'
        );
    }
 
