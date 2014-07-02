@@ -43,6 +43,11 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    public function seePostInDatabase(Array $criteria = []){
+        $tableName = $this->getPrefixedTableNameFor('users');
+        $this->seeInDatabase($tableName, $criteria);
+    }
+
     public function haveOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
