@@ -2,22 +2,21 @@
 
 namespace Codeception\Module;
 
-require dirname(__FILE__) . '/UserMaker.php';
-
 use Codeception\Module\Db;
 use tad\test\wordpress\generator\UserMaker;
 
 class WPDb extends Db
 {
     protected $config = array('tablePrefix' => 'wp');
-
+    protected $tablePrefix = 'wp';
+    
     public function _initialize()
     {
         parent::_initialize();
         $this->tablePrefix = $this->config['tablePrefix'];
     }
 
-    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = [])
+    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = array())
     {
         if (!is_string($user_login)) {
             throw new \BadMethodCallException('User login name must be a string', 1);
