@@ -53,7 +53,7 @@ class WPDb extends Db
         $content = implode("\n", $loremMaker->getParagraphs(3));
         $guid = rtrim($this->config['url'], '/') . '/?p=' . $ID;
         $defaults = array(
-            'post_author' => '1',
+            'post_author' => 1,
             'post_date' => DateMaker::now(),
             'post_date_gmt' => DateMaker::gmnow(),
             'post_content' => $content,
