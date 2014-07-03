@@ -5,14 +5,9 @@ namespace tad\wordpress\maker;
 
 class DateMaker
 {
-    const DATE_FORMAT = 'Y-m-d G:i:s';
+    const DATE_FORMAT = 'Y-m-d H:i:s';
 
     public static function now()
-    {
-        return date(self::DATE_FORMAT);
-    }
-
-    public static function gmnow()
     {
         return gmdate(self::DATE_FORMAT);
     }
