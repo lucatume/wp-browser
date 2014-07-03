@@ -49,8 +49,8 @@ class WPDb extends Db
     {
         $loremMaker = new Generator();
         // create a default value array
-        $title = $loremMaker->getSentences(1);
-        $content = $loremMaker->getParagraphs(3);
+        $title = implode('', $loremMaker->getSentences(1));
+        $content = implode("\n", $loremMaker->getParagraphs(3));
         $guid = rtrim($this->config['url'], '/') . '/?p=' . $ID;
         $defaults = array(
             'post_author' => '1',
