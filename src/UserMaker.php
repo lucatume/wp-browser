@@ -6,8 +6,17 @@ class UserMaker
 {
     protected static $userRolesToLevels = ['subscriber' => '0', 'contributor' => '1', 'author' => '2', 'editor' => '7', 'administrator' => '10'];
 
-    public function makeUser($user_login, $user_id, $role, $userData)
+    public function makeUser($user_login, $user_id, $role, array $userData = array())
     {
+        if (!is_string($user_login)) {
+            throw new \BadMethodCallException('User login must be a string', 1);
+        }
+        if (!is_int($user_id)) {
+            throw new \BadMethodCallException('User id must be an int', 2);
+        }
+        if (!is_string($role)) {
+            throw new \BadMethodCallException('User role must be a string', 3);
+        }
         $userTableDefaults = self::generateUserDefaultsFrom($user_login, $user_id, $role);
         $userCapabilitiesDefaults = self::generateCapabilitiesDefaultsFrom($user_id, $role);
         $userLevelDefaults = self::generateUserLevelDefaultsFrom($user_id, $role);

@@ -17,11 +17,8 @@ class WPDb extends Db
         $this->tablePrefix = $this->config['tablePrefix'];
     }
 
-    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = array())
+    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', array $userData = array())
     {
-        if (!is_string($user_login)) {
-            throw new \BadMethodCallException('User login name must be a string', 1);
-        }
         // get the user
         list($userLevelDefaults, $userTableData, $userCapabilitiesData) = UserMaker::makeUser($user_login, $user_id, $role, $userData);
         // add the data to the database
@@ -38,20 +35,20 @@ class WPDb extends Db
         return $tableName;
     }
 
-    public function seeUserInDatabase(Array $criteria)
+    public function seeUserInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('users');
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public function havePostInDatabase($ID, Array $data = array())
+    public function havePostInDatabase($ID, array $data = array())
     {
         $post = PostMaker::makePost($ID, $this->config['url'], $data);
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->haveInDatabase($tableName, $post);
     }
 
-    public function seePostInDatabase(Array $criteria)
+    public function seePostInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->seeInDatabase($tableName, $criteria);

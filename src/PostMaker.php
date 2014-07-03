@@ -7,7 +7,7 @@ use tad\utils\Str;
 
 class PostMaker
 {
-    public static function makePost($ID, $url = 'http://www.example.com', Array $data = array())
+    public static function makePost($ID, $url = 'http://www.example.com', array $data = array())
     {
         $loremMaker = new Generator();
         // create a default value array
