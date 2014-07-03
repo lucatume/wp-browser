@@ -48,8 +48,22 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, $post);
     }
 
+    public function havePageInDatabase($ID, array $data = array())
+    {
+        $post = PostMaker::makePage($ID, $this->config['url'], $data);
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->haveInDatabase($tableName, $post);
+    }
+
     public function seePostInDatabase(array $criteria)
     {
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->seeInDatabase($tableName, $criteria);
+    }
+
+    public function seePageInDatabase(array $criteria)
+    {
+        $criteria = array_merge($criteria, array('post_type' => 'page'));
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->seeInDatabase($tableName, $criteria);
     }
