@@ -3,9 +3,9 @@
 namespace Codeception\Module;
 
 use Badcow\LoremIpsum\Generator;
-use tad\test\wordpress\generator\DateMaker;
-use tad\test\wordpress\generator\UserMaker;
 use tad\utils\Str;
+use tad\wordpress\maker\DateMaker;
+use tad\wordpress\maker\UserMaker;
 
 class WPDb extends Db
 {
