@@ -2,6 +2,7 @@
 
 namespace Codeception\Module;
 
+use tad\utils\Str;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
 
@@ -86,6 +87,50 @@ class WPDb extends Db
             'meta_key' => $meta_key,
             'meta_value' => $meta_value
         ));
+    }
+
+    public function haveTermInDatabase($term, $term_id, array $args = array())
+    {
+        // term table entry
+        $taxonomy = isset($args['taxonomy']) ? $args['taxonomy'] : 'category';
+        $termsTableEntry = array(
+            'term_id' => $term_id,
+            'name' => $term,
+            'slug' => isset($args['slug']) ? $args['slug'] : lcfirst(Str::hyphen($term)),
+            'term_group' => isset($args['term_group']) ? $args['term_group'] : 0,
+        );
+        $tableName = $this->getPrefixedTableNameFor('terms');
+        $this->haveInDatabase($tableName, $termsTableEntry);
+        // term_taxonomy table entry
+        $termTaxonomyTableEntry = array(
+            'term_taxonomy_id' => isset($args['term_taxonomy_id']) ? $args['term_taxonomy_id'] : null,
+            'term_id' => $term_id,
+            'taxonomy' => $taxonomy,
+            'description' => isset($args['description']) ? $args['description'] : '',
+            'parent' => isset($args['parent']) ? $args['parent'] : 0,
+            'count' => isset($args['count']) ? $args['count'] : 0
+        );
+        $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+        $this->haveInDatabase($tableName, $termTaxonomyTableEntry);
+    }
+
+    public function seeTermInDatabase($criteria)
+    {
+        if (isset($criteria['description']) or isset($criteria['taxonomy'])) {
+            // the matching will be attempted against the term_taxonomy table
+            $termTaxonomyCriteria = array(
+                'taxonomy' => isset($criteria['taxonomy']) ? $criteria['taxonomy'] : false,
+                'description' => isset($criteria['description']) ? $criteria['description'] : false,
+                'term_id' => isset($criteria['term_id']) ? $criteria['term_id'] : false
+            );
+            $termTaxonomyCriteria = array_filter($termTaxonomyCriteria);
+            $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+            $this->seeInDatabase($tableName, $termTaxonomyCriteria);
+        } else {
+            // the matching will be attempted against the terms table
+            $tableName = $this->getPrefixedTableNameFor('terms');
+            $this->seeInDatabase($tableName, $criteria);
+        }
     }
 
     public function seeUserMetaInDatabase(array $criteria)
