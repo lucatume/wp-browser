@@ -68,35 +68,67 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public function haveSerializedOptionInDatabase($option_name, $option_value)
+    public function haveUserMetaInDatabase($user_id, $meta_key, $meta_value, $umeta_id = null)
+    {
+        if (!is_int($user_id)) {
+            throw new \BadMethodCallException('User id must be an int', 1);
+        }
+        if (!is_string($meta_key) or !is_string($meta_value)) {
+            throw new \BadMethodCallException('Meta key and value must be strings', 2);
+        }
+        if (!is_null($umeta_id) and !is_int($umeta_id)) {
+            throw new \BadMethodCallException('User meta id must either be an int or null', 3);
+        }
+        $tableName = $this->getPrefixedTableNameFor('usermeta');
+        $this->haveInDatabase($tableName, array(
+            'umeta_id' => $umeta_id,
+            'user_id' => $user_id,
+            'meta_key' => $meta_key,
+            'meta_value' => $meta_value
+        ));
+    }
+
+    public function seeUserMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('usermeta');
+        $this->seeInDatabase($tableName, $criteria);
+    }
+
+    public
+    function haveSerializedOptionInDatabase($option_name, $option_value)
     {
         $serializedOptionValue = @serialize($option_value);
         return $this->haveOptionInDatabase($option_name, $serializedOptionValue);
     }
 
-    public function haveOptionInDatabase($option_name, $option_value)
+    public
+    function haveOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
 
-    public function seeSerializedOptionInDatabase($option_name, $option_value)
+    public
+    function seeSerializedOptionInDatabase($option_name, $option_value)
     {
         $this->seeOptionInDatabase($option_name, @serialize($option_value));
     }
 
-    public function seeOptionInDatabase($option_name, $option_value)
+    public
+    function seeOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->seeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
     }
 
-    public function dontSeeSerializedOptionInDatabase($option_name, $option_value)
+    public
+    function dontSeeSerializedOptionInDatabase($option_name, $option_value)
     {
         $this->dontSeeOptionInDatabase($option_name, @serialize($option_value));
     }
 
-    public function dontSeeOptionInDatabase($option_name, $option_value)
+    public
+    function dontSeeOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->dontSeeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
