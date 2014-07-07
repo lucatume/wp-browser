@@ -42,6 +42,12 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    public function dontSeeUserInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('users');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
     public function havePostInDatabase($ID, array $data = array())
     {
         $post = PostMaker::makePost($ID, $this->config['url'], $data);
@@ -62,11 +68,24 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    public function dontSeePostInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
     public function seePageInDatabase(array $criteria)
     {
         $criteria = array_merge($criteria, array('post_type' => 'page'));
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->seeInDatabase($tableName, $criteria);
+    }
+
+    public function dontSeePageInDatabase(array $criteria)
+    {
+        $criteria = array_merge($criteria, array('post_type' => 'page'));
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->dontSeeInDatabase($tableName, $criteria);
     }
 
     public function haveUserMetaInDatabase($user_id, $meta_key, $meta_value, $umeta_id = null)
