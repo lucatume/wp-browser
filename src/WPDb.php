@@ -226,6 +226,24 @@ class WPDb extends Db
         }
     }
 
+    public function dontSeeTermInDatabase($criteria)
+    {
+        if (isset($criteria['description']) or isset($criteria['taxonomy'])) {
+            // the matching will be attempted against the term_taxonomy table
+            $termTaxonomyCriteria = array(
+                'taxonomy' => isset($criteria['taxonomy']) ? $criteria['taxonomy'] : false,
+                'description' => isset($criteria['description']) ? $criteria['description'] : false,
+                'term_id' => isset($criteria['term_id']) ? $criteria['term_id'] : false
+            );
+            $termTaxonomyCriteria = array_filter($termTaxonomyCriteria);
+            $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+            $this->dontSeeInDatabase($tableName, $termTaxonomyCriteria);
+        }
+        // the matching will be attempted against the terms table
+        $tableName = $this->getPrefixedTableNameFor('terms');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
     public function seeUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('usermeta');
