@@ -159,6 +159,8 @@ class WPDb extends Db
             throw new \BadMethodCallException('Meta value must be an string', 4);
         }
         $this->maybeCheckPostExistsInDatabase($post_id);
+        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $this->haveInDatabase($tableName, array('meta_id' => $meta_id, 'post_id' => $post_id, 'meta_key' => $meta_key, 'meta_value' => $meta_value));
     }
 
     public function haveTermInDatabase($term, $term_id, array $args = array())
