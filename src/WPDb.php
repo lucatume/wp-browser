@@ -250,8 +250,13 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function haveSerializedOptionInDatabase($option_name, $option_value)
+    public function dontSeeUserMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('usermeta');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
+    public function haveSerializedOptionInDatabase($option_name, $option_value)
     {
         $serializedOptionValue = @serialize($option_value);
         return $this->haveOptionInDatabase($option_name, $serializedOptionValue);
