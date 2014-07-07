@@ -306,4 +306,10 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('postmeta');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
+
+    public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    {
+        $tableName = $this->getPrefixedTableNameFor('term_relationships');
+        $this->dontSeeInDatabase($tableName, array('object_id' => $post_id, 'term_id' => $term_id, 'term_order' => $term_order));
+    }
 }
