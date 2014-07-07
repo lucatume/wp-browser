@@ -9,7 +9,7 @@ use tad\wordpress\maker\UserMaker;
 class WPDb extends Db
 {
     protected $requiredFields = array('url');
-    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => true);
+    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false);
     protected $tablePrefix = 'wp';
 
     public function _initialize()
