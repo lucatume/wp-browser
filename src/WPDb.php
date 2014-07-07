@@ -89,6 +89,26 @@ class WPDb extends Db
         ));
     }
 
+    public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    {
+        if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
+            throw new \BadMethodCallException("Post ID, term ID and term order must be strings", 1);
+        }
+        // check that a post with the given ID exists
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
+            throw new \RuntimeException("A post with an id of $post_id does not exist", 2);
+        }
+        // check that a term with the give ID exists
+        $tableName = $this->getPrefixedTableNameFor('terms');
+        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $post_id))) {
+            throw new \RuntimeException("A term with an id of $term_id does not exist", 3);
+        }
+        // add the relationship in the database
+        $tableName = $this->getPrefixedTableNameFor('term_relationships');
+        $this->haveInDatabase($tableName, array('object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
+    }
+
     public function haveTermInDatabase($term, $term_id, array $args = array())
     {
         // term table entry
