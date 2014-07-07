@@ -9,7 +9,7 @@ use tad\wordpress\maker\UserMaker;
 class WPDb extends Db
 {
     protected $requiredFields = array('url');
-    protected $config = array('tablePrefix' => 'wp');
+    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => true);
     protected $tablePrefix = 'wp';
 
     public function _initialize()
@@ -80,6 +80,7 @@ class WPDb extends Db
         if (!is_null($umeta_id) and !is_int($umeta_id)) {
             throw new \BadMethodCallException('User meta id must either be an int or null', 3);
         }
+        $this->maybeCheckUserExistsInDatabase($user_id);
         $tableName = $this->getPrefixedTableNameFor('usermeta');
         $this->haveInDatabase($tableName, array(
             'umeta_id' => $umeta_id,
@@ -89,24 +90,75 @@ class WPDb extends Db
         ));
     }
 
+    protected function maybeCheckUserExistsInDatabase($user_id)
+    {
+        if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+            return;
+        }
+        $tableName = $this->getPrefixedTableNameFor('users');
+        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $user_id))) {
+            throw new \RuntimeException("A user with an id of $user_id does not exist", 1);
+        }
+    }
+
     public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
         if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
             throw new \BadMethodCallException("Post ID, term ID and term order must be strings", 1);
         }
-        // check that a post with the given ID exists
-        $tableName = $this->getPrefixedTableNameFor('posts');
-        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
-            throw new \RuntimeException("A post with an id of $post_id does not exist", 2);
-        }
-        // check that a term with the give ID exists
-        $tableName = $this->getPrefixedTableNameFor('terms');
-        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $post_id))) {
-            throw new \RuntimeException("A term with an id of $term_id does not exist", 3);
-        }
+        $this->maybeCheckPostExistsInDatabase($post_id);
+        $this->maybeCheckTermExistsInDatabase($term_id);
         // add the relationship in the database
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
         $this->haveInDatabase($tableName, array('object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
+    }
+
+    /**
+     * @param $post_id
+     * @return string
+     */
+    protected function maybeCheckPostExistsInDatabase($post_id)
+    {
+        if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+            return;
+        }
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
+            throw new \RuntimeException("A post with an id of $post_id does not exist", 1);
+        }
+    }
+
+    /**
+     * @param $post_id
+     * @param $term_id
+     * @return string
+     */
+    protected function maybeCheckTermExistsInDatabase($post_id, $term_id)
+    {
+        if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+            return;
+        }
+        $tableName = $this->getPrefixedTableNameFor('terms');
+        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $post_id))) {
+            throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
+        }
+    }
+
+    public function havePostMetaInDatabase($post_id, $meta_key, $meta_value, $meta_id = null)
+    {
+        if (!is_int($post_id)) {
+            throw new \BadMethodCallException('Post id must be an int', 1);
+        }
+        if (!is_null($meta_id) and !is_int($meta_key)) {
+            throw new \BadMethodCallException('Meta id must be either null or an int', 2);
+        }
+        if (!is_string($meta_key)) {
+            throw new \BadMethodCallException('Meta key must be an string', 3);
+        }
+        if (!is_string($meta_value)) {
+            throw new \BadMethodCallException('Meta value must be an string', 4);
+        }
+        $this->maybeCheckPostExistsInDatabase($post_id);
     }
 
     public function haveTermInDatabase($term, $term_id, array $args = array())
