@@ -253,4 +253,15 @@ class WPDb extends Db
         $this->dontSeeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
     }
 
+    public function seePostMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $this->seeInDatabase($tableName, $criteria);
+    }
+
+    public function dontSeePostMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
 }
