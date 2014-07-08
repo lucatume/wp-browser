@@ -204,6 +204,36 @@ class WPDb extends Db
         }
     }
 
+    public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value, $meta_id = null)
+    {
+        if (!is_int($comment_id)) {
+            throw new \BadMethodCallException('Comment id must be an int', 1);
+        }
+        if (!is_null($meta_id) and !is_int($meta_key)) {
+            throw new \BadMethodCallException('Meta id must be either null or an int', 2);
+        }
+        if (!is_string($meta_key)) {
+            throw new \BadMethodCallException('Meta key must be an string', 3);
+        }
+        if (!is_string($meta_value)) {
+            throw new \BadMethodCallException('Meta value must be an string', 4);
+        }
+        $this->maybeCheckCommentExistsInDatabase($comment_id);
+        $tableName = $this->getPrefixedTableNameFor('commmentmeta');
+        $this->haveInDatabase($tableName, array('meta_id' => $meta_id, 'comment_id' => $comment_id, 'meta_key' => $meta_key, 'meta_value' => $meta_value));
+    }
+
+    protected function maybeCheckCommentExistsInDatabase($comment_id)
+    {
+        if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+            return;
+        }
+        $tableName = $this->getPrefixedTableNameFor('comments');
+        if (!$this->grabFromDatabase($tableName, 'comment_ID', array('commment_ID' => $comment_id))) {
+            throw new \RuntimeException("A comment with an id of $comment_id does not exist", 1);
+        }
+    }
+
     public function havePostMetaInDatabase($post_id, $meta_key, $meta_value, $meta_id = null)
     {
         if (!is_int($post_id)) {
