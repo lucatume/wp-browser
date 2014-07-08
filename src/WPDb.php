@@ -159,6 +159,16 @@ class WPDb extends Db
         }
     }
 
+    public function haveCommentInDatabase($comment_ID, $comment_post_ID, array $data = array())
+    {
+        if (!is_int($comment_ID) or !is_int($comment_post_ID)) {
+            throw new \BadMethodCallException('Comment id and post id must be int', 1);
+        }
+        $comment = CommentMaker::makeComment($comment_ID, $comment_post_ID, $data);
+        $tableName = $this->getPrefixedTableNameFor('comments');
+        $this->haveInDatabase($tableName, $comment);
+    }
+
     public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
         if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
