@@ -301,6 +301,28 @@ class WPDb extends Db
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    public function haveLinkInDatabase($link_id, array $data = array())
+    {
+        if (!is_int($link_id)) {
+            throw new \BadMethodCallException('Link id must be an int');
+        }
+        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $data = array_merge($data, array('link_id' => $link_id));
+        $this->haveInDatabase($tableName, $data);
+    }
+
+    public function seeLinkInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('links');
+        $this->seeInDatabase($tableName, $criteria);
+    }
+
+    public function dontSeeLinkInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('links');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
     public function dontSeePostMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('postmeta');
