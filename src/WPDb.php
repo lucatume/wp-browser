@@ -120,30 +120,26 @@ class WPDb extends Db
         }
     }
 
-    public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    public function haveLinkWithTermInDatabase($link_id, $term_id, $term_order = 0)
     {
-        if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
-            throw new \BadMethodCallException("Post ID, term ID and term order must be strings", 1);
+        if (!is_int($link_id) or !is_int($term_id) or !is_int($term_order)) {
+            throw new \BadMethodCallException("Link ID, term ID and term order must be strings", 1);
         }
-        $this->maybeCheckPostExistsInDatabase($post_id);
+        $this->maybeCheckLinkExistsInDatabase($post_id);
         $this->maybeCheckTermExistsInDatabase($term_id);
         // add the relationship in the database
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
-        $this->haveInDatabase($tableName, array('object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
+        $this->haveInDatabase($tableName, array('object_id' => $link_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
     }
 
-    /**
-     * @param $post_id
-     * @return string
-     */
-    protected function maybeCheckPostExistsInDatabase($post_id)
+    protected function maybeCheckLinkExistsInDatabase($link_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
         }
-        $tableName = $this->getPrefixedTableNameFor('posts');
-        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
-            throw new \RuntimeException("A post with an id of $post_id does not exist", 1);
+        $tableName = $this->getPrefixedTableNameFor('links');
+        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $link_id))) {
+            throw new \RuntimeException("A link with an id of $link_id does not exist", 1);
         }
     }
 
@@ -160,6 +156,29 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('terms');
         if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $post_id))) {
             throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
+        }
+    }
+
+    public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    {
+        if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
+            throw new \BadMethodCallException("Post ID, term ID and term order must be strings", 1);
+        }
+        $this->maybeCheckPostExistsInDatabase($post_id);
+        $this->maybeCheckTermExistsInDatabase($term_id);
+        // add the relationship in the database
+        $tableName = $this->getPrefixedTableNameFor('term_relationships');
+        $this->haveInDatabase($tableName, array('object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
+    }
+
+    protected function maybeCheckPostExistsInDatabase($post_id)
+    {
+        if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+            return;
+        }
+        $tableName = $this->getPrefixedTableNameFor('posts');
+        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
+            throw new \RuntimeException("A post with an id of $post_id does not exist", 1);
         }
     }
 
