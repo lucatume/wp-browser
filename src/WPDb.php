@@ -352,30 +352,32 @@ class WPDb extends Db
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
 
-    public
-    function seeSerializedOptionInDatabase($option_name, $option_value)
+    public function seeSerializedOptionInDatabase($criteria)
     {
-        $this->seeOptionInDatabase($option_name, @serialize($option_value));
+        if (isset($criteria['option_value'])) {
+            $criteria['option_value'] = @serialize($criteria['option_value']);
+        }
+        $this->seeOptionInDatabase($criteria);
     }
 
-    public
-    function seeOptionInDatabase($option_name, $option_value)
+    public function seeOptionInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
-        $this->seeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
+        $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeeSerializedOptionInDatabase($option_name, $option_value)
+    public function dontSeeSerializedOptionInDatabase($criteria)
     {
-        $this->dontSeeOptionInDatabase($option_name, @serialize($option_value));
+        if (isset($criteria['option_value'])) {
+            $criteria['option_value'] = @serialize($criteria['option_value']);
+        }
+        $this->dontSeeOptionInDatabase($criteria);
     }
 
-    public
-    function dontSeeOptionInDatabase($option_name, $option_value)
+    public function dontSeeOptionInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
-        $this->dontSeeInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value));
+        $this->dontSeeInDatabase($tableName, $criteria);
     }
 
     public function seePostMetaInDatabase(array $criteria)
