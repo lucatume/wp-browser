@@ -181,6 +181,18 @@ class WPDb extends Db
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
+    public function seeCommentMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('commentmeta');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
+    public function dontSeeCommentMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('commentmeta');
+        $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
     public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
         if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
