@@ -2,7 +2,6 @@
 
 namespace tad\wordpress\maker;
 
-
 use Badcow\LoremIpsum\Generator;
 
 class CommentMaker
