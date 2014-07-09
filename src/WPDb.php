@@ -138,25 +138,20 @@ class WPDb extends Db
             return;
         }
         $tableName = $this->getPrefixedTableNameFor('links');
-        if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $link_id))) {
+        if (!$this->grabFromDatabase($tableName, 'link_id', array('link_id' => $link_id))) {
             throw new \RuntimeException("A link with an id of $link_id does not exist", 1);
         }
     }
 
-    /**
-     * @param $post_id
-     * @param $term_id
-     * @return string
-     */
-    protected function maybeCheckTermExistsInDatabase($post_id, $term_id)
+    protected function maybeCheckTermExistsInDatabase($term_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
         }
         $tableName = $this->getPrefixedTableNameFor('terms');
-        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $post_id))) {
+        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $term_id))){
             throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
-        }
+    }
     }
 
     public function haveCommentInDatabase($comment_ID, $comment_post_ID, array $data = array())
