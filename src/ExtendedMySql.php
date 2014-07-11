@@ -15,11 +15,11 @@ class ExtendedMySql extends MySql
 
         $updateAssignments = array();
         foreach ($data as $key => $value) {
-            $updateAssignments[] = sprintf('%s=%s', $key, $value);
+            $updateAssignments[] = sprintf('%s="%s"', $key, $value);
         }
         $updateAssignments = implode(', ', $updateAssignments);
 
-        $query = sprintf(
+        return sprintf(
             "INSERT INTO %s (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s",
             $this->getQuotedName($tableName),
             implode(', ', $columns),
