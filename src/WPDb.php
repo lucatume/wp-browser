@@ -2,6 +2,10 @@
 
 namespace Codeception\Module;
 
+use Codeception\Configuration as Configuration;
+use Codeception\Exception\Module as ModuleException;
+use Codeception\Exception\ModuleConfig as ModuleConfigException;
+use Codeception\Lib\Driver\Db as Driver;
 use tad\utils\Str;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
@@ -14,7 +18,34 @@ class WPDb extends Db
 
     public function _initialize()
     {
-        parent::_initialize();
+        if ($this->config['dump'] && ($this->config['cleanup'] or ($this->config['populate']))) {
+
+            if (!file_exists(Configuration::projectDir() . $this->config['dump'])) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "\nFile with dump doesn't exist.
+                    Please, check path for sql file: " . $this->config['dump']
+                );
+            }
+            $sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
+            $sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
+            $this->sql = explode("\n", $sql);
+        }
+
+        try {
+            $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
+        } catch (\PDOException $e) {
+            throw new ModuleException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
+        }
+
+        $this->dbh = $this->driver->getDbh();
+
+        // starting with loading dump
+        if ($this->config['populate']) {
+            $this->cleanup();
+            $this->loadDump();
+            $this->populated = true;
+        }
         $this->tablePrefix = $this->config['tablePrefix'];
     }
 
@@ -149,9 +180,9 @@ class WPDb extends Db
             return;
         }
         $tableName = $this->getPrefixedTableNameFor('terms');
-        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $term_id))){
+        if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $term_id))) {
             throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
-    }
+        }
     }
 
     public function haveCommentInDatabase($comment_ID, $comment_post_ID, array $data = array())
