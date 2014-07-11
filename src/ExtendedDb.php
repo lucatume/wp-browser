@@ -2,7 +2,7 @@
 
 namespace Codeception\Lib\Driver;
 
-
+include_once dirname(__FILE__) . '/ExtendedMySql.php';
 class ExtendedDb extends Db
 {
 
@@ -23,7 +23,7 @@ class ExtendedDb extends Db
             case 'sqlite':
                 return new Sqlite($dsn, $user, $password);
             case 'mysql':
-                return new MySql($dsn, $user, $password);
+                return new ExtendedMySql($dsn, $user, $password);
             case 'pgsql':
                 return new PostgreSql($dsn, $user, $password);
             case 'mssql':
