@@ -15,7 +15,7 @@ use tad\wordpress\maker\UserMaker;
 class WPDb extends Db
 {
     protected $requiredFields = array('url');
-    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false);
+    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false, 'update' => true);
     protected $tablePrefix = 'wp';
 
     public function _initialize()
@@ -67,6 +67,36 @@ class WPDb extends Db
     {
         $tableName = $this->config['tablePrefix'] . '_' . ltrim($tableName, '_');
         return $tableName;
+    }
+
+    public function haveInDatabase($table, array $data)
+    {
+        // this does not seem to properly switch
+        $this->debugSection('Configuration', sprintf('Update setting set to %s', $this->config['update']));
+        if (isset($this->config['update']) and $this->config['update']) {
+            return $this->haveOrUpdateInDatabase($table, $data);
+        }
+        return parent::haveInDatabase($table, $data);
+    }
+
+    public function haveOrUpdateInDatabase($table, array $data)
+    {
+        $query = $this->driver->insertOrUpdate($table, $data);
+        $this->debugSection('Query', $query);
+
+        $sth = $this->driver->getDbh()->prepare($query);
+        if (!$sth) {
+            $this->fail("Query '$query' can't be executed.");
+        }
+        $i = 1;
+        foreach ($data as $val) {
+            $sth->bindValue($i, $val);
+            $i++;
+        }
+        $res = $sth->execute();
+        if (!$res) {
+            $this->fail(sprintf("Record with %s couldn't be inserted into %s", json_encode($data), $table));
+        }
     }
 
     public function seeSerializedOptionInDatabase($criteria)
@@ -472,41 +502,4 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('options');
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
-
-//    public function haveOrUpdateInDatabase($table, array $data)
-//    {
-//        // generate the update query
-//        $columns = array_map(
-//            array($this, 'getQuotedName'),
-//            array_keys($data)
-//        );
-//        $updateAssignments = array();
-//        foreach($data as $key => $value) {
-//           $updateAssignments[] = sprintf('%s=%s', $key, $value);
-//        }
-//        $updateAssignments = implode(', ', $updateAssignments);
-//        $query = sprintf(
-//            "INSERT INTO %s (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s",
-//            $this->getQuotedName($tableName),
-//            implode(', ', $columns),
-//            implode(', ', array_fill(0, count($data), '?')),
-//            $updateAssignments
-//        );
-//        //  $query = $this->driver->insert($table, $data);
-//        $this->debugSection('Query', $query);
-//
-//        $sth = $this->driver->getDbh()->prepare($query);
-//        if (!$sth) {
-//            $this->fail("Query '$query' can't be executed.");
-//        }
-//        $i = 1;
-//        foreach ($data as $val) {
-//            $sth->bindValue($i, $val);
-//            $i++;
-//        }
-//        $res = $sth->execute();
-//        if (!$res) {
-//            $this->fail(sprintf("Record with %s couldn't be inserted into %s", json_encode($data), $table));
-//        }
-//    }
 }
