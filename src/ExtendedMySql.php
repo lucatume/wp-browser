@@ -36,4 +36,18 @@ class ExtendedMySql extends MySql
             $updateAssignments
         );
     }
+
+    /**
+     * Deletes rows from a table.
+     * 
+     * Will delete all entries in a table if no criteria is passed.
+     *
+     * @param  string $tableName
+     * @param  array  $criteria
+     *
+     * @return string The DELETE statement.
+     */
+    public function delete($tableName, array $criteria = array()){
+
+    }
 }
