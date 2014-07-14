@@ -15,15 +15,13 @@ class ExtendedMySql extends MySql
      *
      * @return string            The query string ready to be prepared.
      */
-    public function insertOrUpdate($tableName, array &$data)
+    public function insertOrUpdate($tableName, array $data)
     {
         $columns = array_map(
             array($this, 'getQuotedName'),
             array_keys($data)
         );
-
         $updateAssignments = $this->getAssignmentsFor($data);
-
         return sprintf(
             "INSERT INTO %s (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s",
             $this->getQuotedName($tableName),
@@ -40,7 +38,7 @@ class ExtendedMySql extends MySql
             $assigments[] = sprintf('%s="%s"', $key, $value);
         }
         $assigments = implode($glue, $assigments);
-        return $$assigments;
+        return $assigments;
     }
 
     /**
