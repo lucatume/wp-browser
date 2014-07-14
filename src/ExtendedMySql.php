@@ -11,7 +11,7 @@ class ExtendedMySql extends MySql
      * Returns the statement to insert or update an entry in the database.
      *
      * @param  string $tableName The table name to use
-     * @param  array  $data      Key/value pairs of the data to insert/update.
+     * @param  array $data Key/value pairs of the data to insert/update.
      *
      * @return string            The query string ready to be prepared.
      */
@@ -22,11 +22,7 @@ class ExtendedMySql extends MySql
             array_keys($data)
         );
 
-        $updateAssignments = array();
-        foreach ($data as $key => $value) {
-            $updateAssignments[] = sprintf('%s="%s"', $key, $value);
-        }
-        $updateAssignments = implode(', ', $updateAssignments);
+        $updateAssignments = $this->getAssignmentsFor($data);
 
         return sprintf(
             "INSERT INTO %s (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s",
@@ -37,17 +33,29 @@ class ExtendedMySql extends MySql
         );
     }
 
+    protected function getAssignmentsFor(array $data, $glue = ', ')
+    {
+        $assigments = array();
+        foreach ($data as $key => $value) {
+            $assigments[] = sprintf('%s="%s"', $key, $value);
+        }
+        $assigments = implode($glue, $assigments);
+        return $$assigments;
+    }
+
     /**
      * Returns the statement to delete a row from the database.
-     * 
+     *
      * Will delete all entries in a table if no criteria is passed.
      *
      * @param  string $tableName
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return string The DELETE statement.
      */
-    public function delete($tableName, array $criteria = array()){
-        return     
+    public function delete($tableName, array $criteria = array())
+    {
+        $whereClause = $this->getAssignmentsFor($criteria, " AND ");
+        return sprintf('DELETE FROM %s WHERE %s', $tableName, $whereClause);
     }
 }
