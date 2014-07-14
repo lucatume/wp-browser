@@ -2,10 +2,20 @@
 
 namespace Codeception\Lib\Driver;
 
-
+/**
+ * An extension of Codeception MySql driver.
+ */
 class ExtendedMySql extends MySql
 {
 
+    /**
+     * Inserts or updates an entry in the database.
+     *
+     * @param  string $tableName The table name to use
+     * @param  array  $data      Key/value pairs of the data to insert/update.
+     *
+     * @return string            The query string ready to be prepared.
+     */
     public function insertOrUpdate($tableName, array &$data)
     {
         $columns = array_map(
