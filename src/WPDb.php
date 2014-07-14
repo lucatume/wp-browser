@@ -906,4 +906,9 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('options');
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
+
+    public function dontHaveInDatabase()
+    {
+
+    }
 }
