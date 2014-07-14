@@ -2,6 +2,7 @@
 namespace Codeception\Module;
 
 // Load the modified driver
+// remove
 include_once dirname(__FILE__) . '/ExtendedDb.php';
 
 use Codeception\Configuration as Configuration;
@@ -11,13 +12,43 @@ use Codeception\Lib\Driver\ExtendedDb as Driver;
 use tad\utils\Str;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
-
+    
+/**
+ * An extension of Codeception Db class to add WordPress database specific 
+ * methods.
+ */
 class WPDb extends Db
 {
+    /**
+     * The module required configuration parameters.
+     * 
+     * url - the site url
+     *
+     * @var array
+     */
     protected $requiredFields = array('url');
+    /**
+     * The module optional configuration parameters.
+     * 
+     * tablePrefix - the WordPress installation table prefix, defaults to "wp".
+     * checkExistence - if true will attempt to insert coherent data in the database; e.g. an post with term insertion will trigger post and term insertions before the relation between them is inserted; defaults to false.
+     * update - if true have... methods will attempt an update on duplicate keys; defaults to true.
+     *
+     * @var array
+     */
     protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false, 'update' => true);
+    /**
+     * The table prefix to use.
+     *
+     * @var string
+     */
     protected $tablePrefix = 'wp';
 
+    /**
+     * Initializes the module.
+     * 
+     * @return void
+     */
     public function _initialize()
     {
         if ($this->config['dump'] && ($this->config['cleanup'] or ($this->config['populate']))) {
@@ -51,6 +82,16 @@ class WPDb extends Db
         $this->tablePrefix = $this->config['tablePrefix'];
     }
 
+    /**
+     * Inserts a user and appropriate meta in the database.
+     *
+     * @param  string $user_login The user login slug
+     * @param  int $user_id    The user ID.
+     * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
+     * @param  array  $userData   An associative array of column names and values overridind defaults in the "users" and "usermeta" table.
+     *
+     * @return void
+     */
     public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', array $userData = array())
     {
         // get the user
@@ -63,12 +104,29 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, $userLevelDefaults);
     }
 
+    /**
+     * Returns a prefixed table name.
+     *
+     * @param  string $tableName The table name, e.g. "users".
+     *
+     * @return string            The prefixed table name, e.g. "wp_users".
+     */
     protected function getPrefixedTableNameFor($tableName)
     {
         $tableName = $this->config['tablePrefix'] . '_' . ltrim($tableName, '_');
         return $tableName;
     }
 
+    /**
+     * Inserts or updates a database entry.
+     *
+     * An override of the parent method to allow back compatibililty and configuration based use. 
+     * 
+     * @param  string $table The table name.
+     * @param  array  $data  An associative array of the column names and values to insert.
+     *
+     * @return void
+     */
     public function haveInDatabase($table, array $data)
     {
         $this->debugSection('Configuration', sprintf('Update setting set to %s', $this->config['update']));
@@ -78,6 +136,14 @@ class WPDb extends Db
         return parent::haveInDatabase($table, $data);
     }
 
+    /**
+     * Inserts or updates a database entry on duplicate key.
+     *
+     * @param  string $table The table name.
+     * @param  array  $data  An associative array of the column names and values to insert.
+     *
+     * @return void
+     */
     public function haveOrUpdateInDatabase($table, array $data)
     {
         $query = $this->driver->insertOrUpdate($table, $data);
@@ -98,6 +164,15 @@ class WPDb extends Db
         }
     }
 
+    /**
+     * Checks if an option is in the database and is serialized.
+     *
+     * Will look in the "options" table.
+     * 
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function seeSerializedOptionInDatabase($criteria)
     {
         if (isset($criteria['option_value'])) {
@@ -106,12 +181,30 @@ class WPDb extends Db
         $this->seeOptionInDatabase($criteria);
     }
 
+    /**
+     * Checks if an option is in the database.
+     *
+     * Will look in the "options" table.
+     * 
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function seeOptionInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Checks that a serialized option is not in the database.
+     *
+     * Will look in the "options" table.
+     * 
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function dontSeeSerializedOptionInDatabase($criteria)
     {
         if (isset($criteria['option_value'])) {
@@ -120,114 +213,251 @@ class WPDb extends Db
         $this->dontSeeOptionInDatabase($criteria);
     }
 
+    /**
+     * Checks that an option is not in the database.
+     *
+     * Will look in the "options" table.
+     * 
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function dontSeeOptionInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Checks for a post meta value in the database.
+     *
+     * Will look up the "postmeta"  table.
+     * 
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function seePostMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('postmeta');
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Inserts a link in the database.
+     * 
+     * Will insert in the "links" table.
+     *
+     * @param  int $link_id The link id to insert.
+     * @param  array  $data    The data to insert.
+     *
+     * @return void
+     */
     public function haveLinkInDatabase($link_id, array $data = array())
     {
         if (!is_int($link_id)) {
             throw new \BadMethodCallException('Link id must be an int');
         }
-        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $tableName = $this->getPrefixedTableNameFor('links');
         $data = array_merge($data, array('link_id' => $link_id));
         $this->haveInDatabase($tableName, $data);
     }
 
+    /**
+     * Checks for a link in the database.
+     * 
+     * Will look up the "links" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function seeLinkInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('links');
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Checks for a link is not in the database.
+     * 
+     * Will look up the "links" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontSeeLinkInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('links');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Checks that a post meta value is not there.
+     *
+     * Will look up the "postmeta" table.
+     * 
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontSeePostMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('postmeta');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Checks that a post to term relation exists in the database.
+     *
+     * Will look up the "term_relationships" table.
+     * 
+     * @param  int  $post_id    The post ID.
+     * @param  int  $term_id    The term ID.
+     * @param  integer $term_order The order the term applies to the post, defaults to 0.
+     *
+     * @return void
+     */
     public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
         $this->dontSeeInDatabase($tableName, array('object_id' => $post_id, 'term_id' => $term_id, 'term_order' => $term_order));
     }
 
-    public
-    function seeUserInDatabase(array $criteria)
+    /**
+     * Checks that a user is in the database.
+     *
+     * Will look up the "users" table.
+     * 
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function seeUserInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('users');
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeeUserInDatabase(array $criteria)
+    /**
+     * Checks that a user is not in the database.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function dontSeeUserInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('users');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function havePostInDatabase($ID, array $data = array())
+    /**
+     * Inserts a post in the database.
+     *
+     * @param  int $ID   The post ID.
+     * @param  array  $data An associative array of post data to override default and random generated values.
+     *
+     * @return void
+     */
+    public function havePostInDatabase($ID, array $data = array())
     {
         $post = PostMaker::makePost($ID, $this->config['url'], $data);
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->haveInDatabase($tableName, $post);
     }
 
-    public
-    function havePageInDatabase($ID, array $data = array())
+    /**
+     * Inserts a post in the database.
+     *
+     * @param  int $ID   The post ID.
+     * @param  array  $data An associative array of post data to override default and random generated values.
+     *
+     * @return void
+     */
+    public function havePageInDatabase($ID, array $data = array())
     {
         $post = PostMaker::makePage($ID, $this->config['url'], $data);
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->haveInDatabase($tableName, $post);
     }
 
-    public
-    function seePostInDatabase(array $criteria)
+    /**
+     * Checks for a post in the database.
+     * 
+     * Will look up the "posts" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function seePostInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeePostInDatabase(array $criteria)
+    /**
+     * Checks that a post is not in the database.
+     * 
+     * Will look up the "posts" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function dontSeePostInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function seePageInDatabase(array $criteria)
+    /**
+     * Checks for a page in the database.
+     * 
+     * Will look up the "posts" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function seePageInDatabase(array $criteria)
     {
         $criteria = array_merge($criteria, array('post_type' => 'page'));
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeePageInDatabase(array $criteria)
+    /**
+     * Checks that a page is not in the database.
+     * 
+     * Will look up the "posts" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function dontSeePageInDatabase(array $criteria)
     {
         $criteria = array_merge($criteria, array('post_type' => 'page'));
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function haveUserMetaInDatabase($user_id, $meta_key, $meta_value, $umeta_id = null)
+    /**
+     * Checks that some user meta value is in the database.
+     * 
+     * Will look up the "usermeta" table.
+     *
+     * @param  int $user_id    The user ID.
+     * @param  string $meta_key
+     * @param  string/int $meta_value
+     * @param  int $umeta_id The optional user meta id.
+     *
+     * @return void 
+     */
+    public function haveUserMetaInDatabase($user_id, $meta_key, $meta_value, $umeta_id = null)
     {
         if (!is_int($user_id)) {
             throw new \BadMethodCallException('User id must be an int', 1);
@@ -248,8 +478,16 @@ class WPDb extends Db
         ));
     }
 
-    protected
-    function maybeCheckUserExistsInDatabase($user_id)
+    /**
+     * Conditionally checks for a user in the database.
+     * 
+     * Will look up the "users" table, will throw if not found.
+     *
+     * @param  int $user_id The user ID.
+     *
+     * @return void 
+     */
+    protected function maybeCheckUserExistsInDatabase($user_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
@@ -260,8 +498,18 @@ class WPDb extends Db
         }
     }
 
-    public
-    function haveLinkWithTermInDatabase($link_id, $term_id, $term_order = 0)
+    /**
+     * Inserts a link to term relationship in the database.
+     * 
+     * If "checkExistence" then will make some checks for missing term and/or link.
+     *
+     * @param  int  $link_id    The link ID.
+     * @param  int  $term_id    The term ID.
+     * @param  integer $term_order An optional term order value, will default to 0.
+     *
+     * @return void 
+     */
+    public function haveLinkWithTermInDatabase($link_id, $term_id, $term_order = 0)
     {
         if (!is_int($link_id) or !is_int($term_id) or !is_int($term_order)) {
             throw new \BadMethodCallException("Link ID, term ID and term order must be strings", 1);
@@ -273,8 +521,16 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, array('object_id' => $link_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
     }
 
-    protected
-    function maybeCheckLinkExistsInDatabase($link_id)
+    /**
+     * Conditionally check for a link in the database.
+     * 
+     * Will look up the "links" table, will throw if not found.
+     *
+     * @param  int $link_id The link ID.
+     *
+     * @return bool True if the link exists, false otherwise.
+     */
+    protected function maybeCheckLinkExistsInDatabase($link_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
@@ -285,8 +541,16 @@ class WPDb extends Db
         }
     }
 
-    protected
-    function maybeCheckTermExistsInDatabase($term_id)
+    /**
+     * Conditionally checks that a term exists in the database.
+     * 
+     * Will look up the "terms" table, will throw if not found.
+     *
+     * @param  int $term_id The term ID.
+     *
+     * @return void
+     */
+    protected function maybeCheckTermExistsInDatabase($term_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
@@ -297,8 +561,16 @@ class WPDb extends Db
         }
     }
 
-    public
-    function haveCommentInDatabase($comment_ID, $comment_post_ID, array $data = array())
+    /**
+     * Inserts a comment in the database.
+     *
+     * @param  int $comment_ID      The comment ID.
+     * @param  int $comment_post_ID The id of the post the comment refers to.
+     * @param  array  $data         The comment data overriding default and random generated values.
+     *
+     * @return void
+     */
+    public function haveCommentInDatabase($comment_ID, $comment_post_ID, array $data = array())
     {
         if (!is_int($comment_ID) or !is_int($comment_post_ID)) {
             throw new \BadMethodCallException('Comment id and post id must be int', 1);
@@ -308,36 +580,79 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, $comment);
     }
 
-    public
-    function seeCommentInDatabase(array $criteria)
+    /**
+     * Checks for a comment in the database.
+     * 
+     * Will look up the "comments" table.
+     *
+     * @param  array  $criteria 
+     *
+     * @return void
+     */
+    public function seeCommentInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('comments');
         $this->seeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeeCommentInDatabase(array $criteria)
+
+    /**
+     * Checks that a comment is not in the database.
+     * 
+     * Will look up the "comments" table.
+     *
+     * @param  array  $criteria 
+     *
+     * @return void
+     */
+    public function dontSeeCommentInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('comments');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function seeCommentMetaInDatabase(array $criteria)
+    /**
+     * Checks that a comment meta value is in the database.
+     * 
+     * Will look up the "commentmeta" table.
+     *
+     * @param  array  $criteria 
+     *
+     * @return void
+     */
+    public function seeCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('commentmeta');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function dontSeeCommentMetaInDatabase(array $criteria)
+    /**
+     * Checks that a comment meta value is not in the database.
+     * 
+     * Will look up the "commentmeta" table.
+     *
+     * @param  array  $criteria 
+     *
+     * @return void
+     */
+    public function dontSeeCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('commentmeta');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    /**
+     * Inserts a post to term relationship in the database.
+     *
+     * Will conditionally check for post and term existence if "checkExistence" is set to true.
+     * 
+     * @param  int  $post_id    The post ID.
+     * @param  int  $term_id    The term ID.
+     * @param  integer $term_order The optional term order.
+     *
+     * @return void
+     */
+    public function havePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
         if (!is_int($post_id) or !is_int($term_id) or !is_int($term_order)) {
             throw new \BadMethodCallException("Post ID, term ID and term order must be strings", 1);
@@ -349,8 +664,14 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, array('object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order));
     }
 
-    protected
-    function maybeCheckPostExistsInDatabase($post_id)
+    /**
+     * Conditionally checks that a post exists in database, will throw if not existent.
+     *
+     * @param  int $post_id The post ID.
+     *
+     * @return void
+     */
+    protected function maybeCheckPostExistsInDatabase($post_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
@@ -361,8 +682,17 @@ class WPDb extends Db
         }
     }
 
-    public
-    function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value, $meta_id = null)
+    /**
+     * Inserts a commment meta value in the database.
+     *
+     * @param  int $comment_id The comment ID.
+     * @param  string $meta_key
+     * @param  string/int $meta_value
+     * @param  int $meta_id    The optinal meta ID.
+     *
+     * @return void
+     */
+    public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value, $meta_id = null)
     {
         if (!is_int($comment_id)) {
             throw new \BadMethodCallException('Comment id must be an int', 1);
@@ -381,8 +711,14 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, array('meta_id' => $meta_id, 'comment_id' => $comment_id, 'meta_key' => $meta_key, 'meta_value' => $meta_value));
     }
 
-    protected
-    function maybeCheckCommentExistsInDatabase($comment_id)
+    /**
+     * Conditionally checks that a comment exists in database, will throw if not existent.
+     *
+     * @param  int $commment_id The comment ID.
+     *
+     * @return void
+     */
+    protected function maybeCheckCommentExistsInDatabase($comment_id)
     {
         if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
             return;
@@ -393,8 +729,19 @@ class WPDb extends Db
         }
     }
 
-    public
-    function havePostMetaInDatabase($post_id, $meta_key, $meta_value, $meta_id = null)
+    /**
+     * Inserts a post meta value in the database.
+     * 
+     * Will check for post existence if "checkExistence" set to true.
+     *
+     * @param  int $post_id
+     * @param  string $meta_key
+     * @param  string/int $meta_value
+     * @param  int $meta_id    The optional meta ID.
+     *
+     * @return void
+     */
+    public function havePostMetaInDatabase($post_id, $meta_key, $meta_value, $meta_id = null)
     {
         if (!is_int($post_id)) {
             throw new \BadMethodCallException('Post id must be an int', 1);
@@ -413,8 +760,16 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, array('meta_id' => $meta_id, 'post_id' => $post_id, 'meta_key' => $meta_key, 'meta_value' => $meta_value));
     }
 
-    public
-    function haveTermInDatabase($term, $term_id, array $args = array())
+    /**
+     * Inserts a term in the database.
+     *
+     * @param  string $term    The term scree name, e.g. "Fuzzy".
+     * @param  int $term_id
+     * @param  array  $args    Term arguments overriding default and generated ones.
+     *
+     * @return void
+     */
+    public function haveTermInDatabase($term, $term_id, array $args = array())
     {
         // term table entry
         $taxonomy = isset($args['taxonomy']) ? $args['taxonomy'] : 'category';
@@ -439,6 +794,15 @@ class WPDb extends Db
         $this->haveInDatabase($tableName, $termTaxonomyTableEntry);
     }
 
+    /**
+     * Checks for a term in the database.
+     * 
+     * Will look up the "terms" table.
+     *
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function seeTermInDatabase($criteria)
     {
         if (isset($criteria['description']) or isset($criteria['taxonomy'])) {
@@ -458,6 +822,15 @@ class WPDb extends Db
         }
     }
 
+    /**
+     * Checks that a term is not in the database.
+     *
+     *  Will look up the "terms" table.
+     * 
+     * @param  array $criteria
+     *
+     * @return void
+     */
     public function dontSeeTermInDatabase($criteria)
     {
         if (isset($criteria['description']) or isset($criteria['taxonomy'])) {
@@ -476,27 +849,59 @@ class WPDb extends Db
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
-    public
-    function seeUserMetaInDatabase(array $criteria)
+    /**
+     * Checks for a user meta value in the database.
+     * 
+     * Will look up the "usermeta" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
+    public function seeUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('usermeta');
         $this->seeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Check that a user meta value is not in the database.
+     * 
+     * Will look up the "usermeta" table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontSeeUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('usermeta');
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Inserts a serialized option in the database.
+     *
+     * @param  string $option_name
+     * @param  string/int $option_value
+     *
+     * @return void
+     */
     public function haveSerializedOptionInDatabase($option_name, $option_value)
     {
         $serializedOptionValue = @serialize($option_value);
         return $this->haveOptionInDatabase($option_name, $serializedOptionValue);
     }
 
-    public
-    function haveOptionInDatabase($option_name, $option_value)
+    /**
+     * Inserts an option in the database.
+     *
+     * @param  string $option_name
+     * @param  string/int $option_value
+     *
+     * @return void
+     */
+    public function haveOptionInDatabase($option_name, $option_value)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
