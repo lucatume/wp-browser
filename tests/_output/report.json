@@ -1,0 +1,65 @@
+{
+    "event": "suiteStart",
+    "suite": "unit",
+    "tests": 4
+}{
+    "event": "testStart",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_delete_statements"
+}{
+    "event": "test",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_delete_statements",
+    "status": "pass",
+    "time": 0.0239260196686,
+    "trace": [
+
+    ],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_delete_statement_for_single_criteria"
+}{
+    "event": "test",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_delete_statement_for_single_criteria",
+    "status": "pass",
+    "time": 0.00498485565186,
+    "trace": [
+
+    ],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_insert_statement_for_single_criteria"
+}{
+    "event": "test",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_insert_statement_for_single_criteria",
+    "status": "pass",
+    "time": 0.00440096855164,
+    "trace": [
+
+    ],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_insert_statement_for_multiple_criteria"
+}{
+    "event": "test",
+    "suite": "unit",
+    "test": "ExtendedMySqlTest::it_should_generate_proper_insert_statement_for_multiple_criteria",
+    "status": "pass",
+    "time": 0.00416898727417,
+    "trace": [
+
+    ],
+    "message": "",
+    "output": ""
+}
