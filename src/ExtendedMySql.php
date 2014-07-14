@@ -8,7 +8,7 @@ namespace Codeception\Lib\Driver;
 class ExtendedMySql extends MySql
 {
     /**
-     * Inserts or updates an entry in the database.
+     * Returns the statement to insert or update an entry in the database.
      *
      * @param  string $tableName The table name to use
      * @param  array  $data      Key/value pairs of the data to insert/update.
@@ -38,7 +38,7 @@ class ExtendedMySql extends MySql
     }
 
     /**
-     * Deletes rows from a table.
+     * Returns the statement to delete a row from the database.
      * 
      * Will delete all entries in a table if no criteria is passed.
      *
@@ -48,6 +48,6 @@ class ExtendedMySql extends MySql
      * @return string The DELETE statement.
      */
     public function delete($tableName, array $criteria = array()){
-
+        return     
     }
 }
