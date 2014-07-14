@@ -12,16 +12,16 @@ use Codeception\Lib\Driver\ExtendedDb as Driver;
 use tad\utils\Str;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
-    
+
 /**
- * An extension of Codeception Db class to add WordPress database specific 
+ * An extension of Codeception Db class to add WordPress database specific
  * methods.
  */
 class WPDb extends Db
 {
     /**
      * The module required configuration parameters.
-     * 
+     *
      * url - the site url
      *
      * @var array
@@ -29,7 +29,7 @@ class WPDb extends Db
     protected $requiredFields = array('url');
     /**
      * The module optional configuration parameters.
-     * 
+     *
      * tablePrefix - the WordPress installation table prefix, defaults to "wp".
      * checkExistence - if true will attempt to insert coherent data in the database; e.g. an post with term insertion will trigger post and term insertions before the relation between them is inserted; defaults to false.
      * update - if true have... methods will attempt an update on duplicate keys; defaults to true.
@@ -46,7 +46,7 @@ class WPDb extends Db
 
     /**
      * Initializes the module.
-     * 
+     *
      * @return void
      */
     public function _initialize()
@@ -86,9 +86,9 @@ class WPDb extends Db
      * Inserts a user and appropriate meta in the database.
      *
      * @param  string $user_login The user login slug
-     * @param  int $user_id    The user ID.
-     * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
-     * @param  array  $userData   An associative array of column names and values overridind defaults in the "users" and "usermeta" table.
+     * @param  int $user_id The user ID.
+     * @param  string $role The user role slug, e.g. "administrator"; defaults to "subscriber".
+     * @param  array $userData An associative array of column names and values overridind defaults in the "users" and "usermeta" table.
      *
      * @return void
      */
@@ -120,10 +120,10 @@ class WPDb extends Db
     /**
      * Inserts or updates a database entry.
      *
-     * An override of the parent method to allow back compatibililty and configuration based use. 
-     * 
+     * An override of the parent method to allow back compatibililty and configuration based use.
+     *
      * @param  string $table The table name.
-     * @param  array  $data  An associative array of the column names and values to insert.
+     * @param  array $data An associative array of the column names and values to insert.
      *
      * @return void
      */
@@ -140,7 +140,7 @@ class WPDb extends Db
      * Inserts or updates a database entry on duplicate key.
      *
      * @param  string $table The table name.
-     * @param  array  $data  An associative array of the column names and values to insert.
+     * @param  array $data An associative array of the column names and values to insert.
      *
      * @return void
      */
@@ -168,7 +168,7 @@ class WPDb extends Db
      * Checks if an option is in the database and is serialized.
      *
      * Will look in the "options" table.
-     * 
+     *
      * @param  array $criteria
      *
      * @return void
@@ -185,7 +185,7 @@ class WPDb extends Db
      * Checks if an option is in the database.
      *
      * Will look in the "options" table.
-     * 
+     *
      * @param  array $criteria
      *
      * @return void
@@ -200,7 +200,7 @@ class WPDb extends Db
      * Checks that a serialized option is not in the database.
      *
      * Will look in the "options" table.
-     * 
+     *
      * @param  array $criteria
      *
      * @return void
@@ -217,7 +217,7 @@ class WPDb extends Db
      * Checks that an option is not in the database.
      *
      * Will look in the "options" table.
-     * 
+     *
      * @param  array $criteria
      *
      * @return void
@@ -232,8 +232,8 @@ class WPDb extends Db
      * Checks for a post meta value in the database.
      *
      * Will look up the "postmeta"  table.
-     * 
-     * @param  array  $criteria
+     *
+     * @param  array $criteria
      *
      * @return void
      */
@@ -245,11 +245,11 @@ class WPDb extends Db
 
     /**
      * Inserts a link in the database.
-     * 
+     *
      * Will insert in the "links" table.
      *
      * @param  int $link_id The link id to insert.
-     * @param  array  $data    The data to insert.
+     * @param  array $data The data to insert.
      *
      * @return void
      */
@@ -265,10 +265,10 @@ class WPDb extends Db
 
     /**
      * Checks for a link in the database.
-     * 
+     *
      * Will look up the "links" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -280,10 +280,10 @@ class WPDb extends Db
 
     /**
      * Checks for a link is not in the database.
-     * 
+     *
      * Will look up the "links" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -297,8 +297,8 @@ class WPDb extends Db
      * Checks that a post meta value is not there.
      *
      * Will look up the "postmeta" table.
-     * 
-     * @param  array  $criteria
+     *
+     * @param  array $criteria
      *
      * @return void
      */
@@ -312,9 +312,9 @@ class WPDb extends Db
      * Checks that a post to term relation exists in the database.
      *
      * Will look up the "term_relationships" table.
-     * 
-     * @param  int  $post_id    The post ID.
-     * @param  int  $term_id    The term ID.
+     *
+     * @param  int $post_id The post ID.
+     * @param  int $term_id The term ID.
      * @param  integer $term_order The order the term applies to the post, defaults to 0.
      *
      * @return void
@@ -329,8 +329,8 @@ class WPDb extends Db
      * Checks that a user is in the database.
      *
      * Will look up the "users" table.
-     * 
-     * @param  array  $criteria
+     *
+     * @param  array $criteria
      *
      * @return void
      */
@@ -343,7 +343,7 @@ class WPDb extends Db
     /**
      * Checks that a user is not in the database.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -356,8 +356,8 @@ class WPDb extends Db
     /**
      * Inserts a post in the database.
      *
-     * @param  int $ID   The post ID.
-     * @param  array  $data An associative array of post data to override default and random generated values.
+     * @param  int $ID The post ID.
+     * @param  array $data An associative array of post data to override default and random generated values.
      *
      * @return void
      */
@@ -371,8 +371,8 @@ class WPDb extends Db
     /**
      * Inserts a post in the database.
      *
-     * @param  int $ID   The post ID.
-     * @param  array  $data An associative array of post data to override default and random generated values.
+     * @param  int $ID The post ID.
+     * @param  array $data An associative array of post data to override default and random generated values.
      *
      * @return void
      */
@@ -385,10 +385,10 @@ class WPDb extends Db
 
     /**
      * Checks for a post in the database.
-     * 
+     *
      * Will look up the "posts" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -400,10 +400,10 @@ class WPDb extends Db
 
     /**
      * Checks that a post is not in the database.
-     * 
+     *
      * Will look up the "posts" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -415,10 +415,10 @@ class WPDb extends Db
 
     /**
      * Checks for a page in the database.
-     * 
+     *
      * Will look up the "posts" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -431,10 +431,10 @@ class WPDb extends Db
 
     /**
      * Checks that a page is not in the database.
-     * 
+     *
      * Will look up the "posts" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -447,15 +447,15 @@ class WPDb extends Db
 
     /**
      * Checks that some user meta value is in the database.
-     * 
+     *
      * Will look up the "usermeta" table.
      *
-     * @param  int $user_id    The user ID.
+     * @param  int $user_id The user ID.
      * @param  string $meta_key
-     * @param  string/int $meta_value
+     * @param  string /int $meta_value
      * @param  int $umeta_id The optional user meta id.
      *
-     * @return void 
+     * @return void
      */
     public function haveUserMetaInDatabase($user_id, $meta_key, $meta_value, $umeta_id = null)
     {
@@ -480,12 +480,12 @@ class WPDb extends Db
 
     /**
      * Conditionally checks for a user in the database.
-     * 
+     *
      * Will look up the "users" table, will throw if not found.
      *
      * @param  int $user_id The user ID.
      *
-     * @return void 
+     * @return void
      */
     protected function maybeCheckUserExistsInDatabase($user_id)
     {
@@ -500,14 +500,14 @@ class WPDb extends Db
 
     /**
      * Inserts a link to term relationship in the database.
-     * 
+     *
      * If "checkExistence" then will make some checks for missing term and/or link.
      *
-     * @param  int  $link_id    The link ID.
-     * @param  int  $term_id    The term ID.
+     * @param  int $link_id The link ID.
+     * @param  int $term_id The term ID.
      * @param  integer $term_order An optional term order value, will default to 0.
      *
-     * @return void 
+     * @return void
      */
     public function haveLinkWithTermInDatabase($link_id, $term_id, $term_order = 0)
     {
@@ -523,7 +523,7 @@ class WPDb extends Db
 
     /**
      * Conditionally check for a link in the database.
-     * 
+     *
      * Will look up the "links" table, will throw if not found.
      *
      * @param  int $link_id The link ID.
@@ -543,7 +543,7 @@ class WPDb extends Db
 
     /**
      * Conditionally checks that a term exists in the database.
-     * 
+     *
      * Will look up the "terms" table, will throw if not found.
      *
      * @param  int $term_id The term ID.
@@ -564,9 +564,9 @@ class WPDb extends Db
     /**
      * Inserts a comment in the database.
      *
-     * @param  int $comment_ID      The comment ID.
+     * @param  int $comment_ID The comment ID.
      * @param  int $comment_post_ID The id of the post the comment refers to.
-     * @param  array  $data         The comment data overriding default and random generated values.
+     * @param  array $data The comment data overriding default and random generated values.
      *
      * @return void
      */
@@ -582,10 +582,10 @@ class WPDb extends Db
 
     /**
      * Checks for a comment in the database.
-     * 
+     *
      * Will look up the "comments" table.
      *
-     * @param  array  $criteria 
+     * @param  array $criteria
      *
      * @return void
      */
@@ -598,10 +598,10 @@ class WPDb extends Db
 
     /**
      * Checks that a comment is not in the database.
-     * 
+     *
      * Will look up the "comments" table.
      *
-     * @param  array  $criteria 
+     * @param  array $criteria
      *
      * @return void
      */
@@ -613,10 +613,10 @@ class WPDb extends Db
 
     /**
      * Checks that a comment meta value is in the database.
-     * 
+     *
      * Will look up the "commentmeta" table.
      *
-     * @param  array  $criteria 
+     * @param  array $criteria
      *
      * @return void
      */
@@ -628,10 +628,10 @@ class WPDb extends Db
 
     /**
      * Checks that a comment meta value is not in the database.
-     * 
+     *
      * Will look up the "commentmeta" table.
      *
-     * @param  array  $criteria 
+     * @param  array $criteria
      *
      * @return void
      */
@@ -645,9 +645,9 @@ class WPDb extends Db
      * Inserts a post to term relationship in the database.
      *
      * Will conditionally check for post and term existence if "checkExistence" is set to true.
-     * 
-     * @param  int  $post_id    The post ID.
-     * @param  int  $term_id    The term ID.
+     *
+     * @param  int $post_id The post ID.
+     * @param  int $term_id The term ID.
      * @param  integer $term_order The optional term order.
      *
      * @return void
@@ -687,8 +687,8 @@ class WPDb extends Db
      *
      * @param  int $comment_id The comment ID.
      * @param  string $meta_key
-     * @param  string/int $meta_value
-     * @param  int $meta_id    The optinal meta ID.
+     * @param  string /int $meta_value
+     * @param  int $meta_id The optinal meta ID.
      *
      * @return void
      */
@@ -731,13 +731,13 @@ class WPDb extends Db
 
     /**
      * Inserts a post meta value in the database.
-     * 
+     *
      * Will check for post existence if "checkExistence" set to true.
      *
      * @param  int $post_id
      * @param  string $meta_key
-     * @param  string/int $meta_value
-     * @param  int $meta_id    The optional meta ID.
+     * @param  string /int $meta_value
+     * @param  int $meta_id The optional meta ID.
      *
      * @return void
      */
@@ -763,9 +763,9 @@ class WPDb extends Db
     /**
      * Inserts a term in the database.
      *
-     * @param  string $term    The term scree name, e.g. "Fuzzy".
+     * @param  string $term The term scree name, e.g. "Fuzzy".
      * @param  int $term_id
-     * @param  array  $args    Term arguments overriding default and generated ones.
+     * @param  array $args Term arguments overriding default and generated ones.
      *
      * @return void
      */
@@ -796,7 +796,7 @@ class WPDb extends Db
 
     /**
      * Checks for a term in the database.
-     * 
+     *
      * Will look up the "terms" table.
      *
      * @param  array $criteria
@@ -826,7 +826,7 @@ class WPDb extends Db
      * Checks that a term is not in the database.
      *
      *  Will look up the "terms" table.
-     * 
+     *
      * @param  array $criteria
      *
      * @return void
@@ -851,10 +851,10 @@ class WPDb extends Db
 
     /**
      * Checks for a user meta value in the database.
-     * 
+     *
      * Will look up the "usermeta" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -866,10 +866,10 @@ class WPDb extends Db
 
     /**
      * Check that a user meta value is not in the database.
-     * 
+     *
      * Will look up the "usermeta" table.
      *
-     * @param  array  $criteria
+     * @param  array $criteria
      *
      * @return void
      */
@@ -883,7 +883,7 @@ class WPDb extends Db
      * Inserts a serialized option in the database.
      *
      * @param  string $option_name
-     * @param  string/int $option_value
+     * @param  string /int $option_value
      *
      * @return void
      */
@@ -897,7 +897,7 @@ class WPDb extends Db
      * Inserts an option in the database.
      *
      * @param  string $option_name
-     * @param  string/int $option_value
+     * @param  string /int $option_value
      *
      * @return void
      */
