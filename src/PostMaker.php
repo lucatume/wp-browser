@@ -4,18 +4,38 @@ namespace tad\wordpress\maker;
 
 use Badcow\LoremIpsum\Generator;
 use tad\utils\Str;
-
+    
+/**
+ * Generates WordPress posts to be inserted in the database.
+ */
 class PostMaker
 {
+    /**
+     * Generates a WordPress page entry.
+     *
+     * @param  int $ID  The post ID to use.
+     * @param  string $url The site url.
+     *
+     * @return array      Key/value pairs to be used to insert the page in the database.
+     */
     public static function makePage($ID, $url = 'http://www.example.com', array $data = array())
     {
         $defaults = self::generateDefaultsForType($ID, 'page', $url);
         return array_merge($defaults, $data);
     }
 
+    /**
+     * Generates a default post entry.
+     *
+     * @param  int $ID   The post ID to use.
+     * @param  string $type The type (e.g. 'event') of the post that will be inserted.
+     * @param  string $url  The site url
+     *
+     * @return array       Key\value pairs of post entry with default values.
+     */
     protected static function generateDefaultsForType($ID, $type, $url)
     {
-        list($title, $content) = self::generateTitleAndContent($ID, $url);
+        list($title, $content) = self::generateTitleAndContent();
         $guid = '';
         $type == 'page' ? $guid = self::generatePageGuid($ID, $url) : $guid = self::generatePostGuid($ID, $url);
         $defaults = array(
@@ -44,14 +64,13 @@ class PostMaker
         return $defaults;
     }
 
-    protected static function generateTitleAndContent($ID, $url)
+    /**
+     * Generates random title and content for a post.
+     *
+     * @return array      Random generated title and content of the post.
+     */
+    protected static function generateTitleAndContent()
     {
-        if (!is_int($ID)) {
-            throw new \BadMethodCallException('Id must be an int', 1);
-        }
-        if (!is_string($url)) {
-            throw new \BadMethodCallException('Url must be a string', 2);
-        }
         $loremMaker = new Generator();
         // create a default value array
         $title = implode('', $loremMaker->getSentences(1));
@@ -59,12 +78,28 @@ class PostMaker
         return array($title, $content);
     }
 
+    /**
+     * Generates a page guid.
+     *
+     * @param  int $ID  The page id.
+     * @param  string $url The site url.
+     *
+     * @return string      The database guid entry.
+     */
     protected static function generatePageGuid($ID, $url)
     {
         $guid = rtrim($url, '/') . '/?page_id=' . $ID;
         return $guid;
     }
 
+    /**
+     * Generates a post guid.
+     *
+     * @param  int $ID  The post id.
+     * @param  string $url The site url.
+     *
+     * @return string      The database guid entry.
+     */
     protected static function generatePostGuid($ID, $url)
     {
         $guid = rtrim($url, '/') . '/?p=' . $ID;
