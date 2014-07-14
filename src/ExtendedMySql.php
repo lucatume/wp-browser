@@ -7,7 +7,6 @@ namespace Codeception\Lib\Driver;
  */
 class ExtendedMySql extends MySql
 {
-
     /**
      * Inserts or updates an entry in the database.
      *
