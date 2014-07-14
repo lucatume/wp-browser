@@ -71,7 +71,6 @@ class WPDb extends Db
 
     public function haveInDatabase($table, array $data)
     {
-        // this does not seem to properly switch
         $this->debugSection('Configuration', sprintf('Update setting set to %s', $this->config['update']));
         if (isset($this->config['update']) and $this->config['update']) {
             return $this->haveOrUpdateInDatabase($table, $data);
