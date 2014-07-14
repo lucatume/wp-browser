@@ -1,9 +1,9 @@
 wp-browser
 ==========
 
-WordPress extension of PhpBrowser for Codeception.
+A WordPress specific extension of PhpBrowser for Codeception.
 
-The package includes a class extending Codeception PhpBrowser module that adds WordPress related assertions for <code>cest</code> and <code>cept</code> tests and an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing.
+The package includes a class extending Codeception PhpBrowser module to adds WordPress related assertions for <code>cest</code> and <code>cept</code> tests and an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing.
 
 
 ## Installing
@@ -16,9 +16,7 @@ To install simply require the package in the <code>composer.json</code> file lik
     
 and then use <code>composer update</code>
 
-## Configuration
-
-### WPBrowser
+## WPBrowser
 In the <code>acceptance.suite.yml</code> add the module among the loaded ones
 
     # Codeception Test Suite Configuration
@@ -35,8 +33,8 @@ In the <code>acceptance.suite.yml</code> add the module among the loaded ones
         config:
             WPBrowser:
                 url: 'http://example.local'
-                adminUsername: 'theAdmin'
-                adminPassword: 'iguana'
+                adminUsername: 'root'
+                adminPassword: 'root'
                 adminUrl: '/wp-core/wp-admin'
 
 and configure the required <code>adminUsername</code>, <code>adminPassword</code> and <code>adminUrl</code> fields. The <code>adminUrl</code> is relative to the url specified in PhpBrowser configuration.
@@ -81,13 +79,21 @@ Included methods are:
     // check that the current page is a wp_die generated one
     public function seeWpDiePage();
 
-all pretty explanatory. Methods like <code>seePlugin...</code> require the use of the <code>amOnPluginsPage</code> method before their invocation to navigate PhpBrowser to the right folder.
+Methods like <code>seePlugin...</code> require the use of the <code>amOnPluginsPage</code> method before their invocation to navigate PhpBrowser to the right folder.
 
 ## WPDb
 The module extends <code>Codeception\Module\Db</code> and will hence act as a drop-in replacement for it. It adds an optional <code>tablePrefix</code> configuration parameter, defaulting to <code>wp</code>, and will require the same parameters as the original module.
 
-## Methods
-The module is meant to be a WordPress specific extension of the <code>Db</code> module and will hence decline the <code>have</code> and <code>see</code> methods for each WordPress table. As an example the methods for the <code>options</code> table are:
+### Configuration
+The module inherits <code>Db</code> module required parameters and adds a <code>url</code> parameter used to specify the site root URL.  
+Optional parameters are allowed:
+
+* <code>tablePrefix</code> allows specifying the table prefix used in the installation, defaults to "wp"
+* <code>checkExistence</code> enables some low level AI on the module side to insert needed elements in the database, e.g. will add a term and post before adding a relation between them; defaults to <code>false</code>
+* <code>update</code> will try updating the database on duplicate entries; defaults to <code>true</code>
+
+### Methods
+The module is meant to be a WordPress specific extension of the <code>Db</code> module and will hence decline the <code>have</code> and <code>see</code> methods for each WordPress table. As an example the methods for the <code>options</code> table are
 
     public function haveOptionInDatabase($option_name, $option_value);
     
@@ -100,7 +106,8 @@ The module is meant to be a WordPress specific extension of the <code>Db</code> 
     public function seeSerializedOptionInDatabase($option_name, $option_value);
     
     public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
-    
-    public function haveUserInDatabase($user_login, $user_id, $role = 'subscriber', Array $userData = [])
-    
-    public function seeUserInDatabase(Array $criteria);
+
+see source for all methods.
+
+## Changelog
+<code>1.1.0</code> - first public release ans semantic versioning jumpstart
