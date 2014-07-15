@@ -1,10 +1,6 @@
 <?php
 namespace Codeception\Module;
 
-// Load the modified driver
-// remove
-include_once dirname(__FILE__) . '/ExtendedDbDriver.php';
-
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
