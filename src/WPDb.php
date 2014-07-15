@@ -17,7 +17,7 @@ use tad\wordpress\maker\UserMaker;
  * An extension of Codeception Db class to add WordPress database specific
  * methods.
  */
-class WPDb extends Db
+class WPDb extends ExtendedDb
 {
     /**
      * The module required configuration parameters.
@@ -131,37 +131,9 @@ class WPDb extends Db
     {
         $this->debugSection('Configuration', sprintf('Update setting set to %s', $this->config['update']));
         if (isset($this->config['update']) and $this->config['update']) {
-            return $this->haveOrUpdateInDatabase($table, $data);
+            return parent::haveOrUpdateInDatabase($table, $data);
         }
         return parent::haveInDatabase($table, $data);
-    }
-
-    /**
-     * Inserts or updates a database entry on duplicate key.
-     *
-     * @param  string $table The table name.
-     * @param  array $data An associative array of the column names and values to insert.
-     *
-     * @return void
-     */
-    public function haveOrUpdateInDatabase($table, array $data)
-    {
-        $query = $this->driver->insertOrUpdate($table, $data);
-        $this->debugSection('Query', $query);
-
-        $sth = $this->driver->getDbh()->prepare($query);
-        if (!$sth) {
-            $this->fail("Query '$query' can't be executed.");
-        }
-        $i = 1;
-        foreach ($data as $val) {
-            $sth->bindValue($i, $val);
-            $i++;
-        }
-        $res = $sth->execute();
-        if (!$res) {
-            $this->fail(sprintf("Record with %s couldn't be inserted into %s", json_encode($data), $table));
-        }
     }
 
     /**
