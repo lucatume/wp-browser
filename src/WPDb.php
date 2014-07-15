@@ -906,19 +906,4 @@ class WPDb extends Db
         $tableName = $this->getPrefixedTableNameFor('options');
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
-
-    public function dontHaveInDatabase($table, array $criteria)
-    {
-        $query = $this->driver->delete($table, $criteria);
-        $this->debugSection('Query', $query);
-
-        $sth = $this->driver->getDbh()->prepare($query);
-        if (!$sth) {
-            $this->fail("Query '$query' can't be executed.");
-        }
-        $res = $sth->execute();
-        if (!$res) {
-            $this->fail(sprintf("Record with %s couldn't be deleted from %s", json_encode($data), $table));
-        }
-    }
 }
