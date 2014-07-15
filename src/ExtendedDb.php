@@ -5,6 +5,15 @@ namespace Codeception\Module;
 
 class ExtendedDb extends Db
 {
+
+    /**
+     * Deletes a database entry.
+     *
+     * @param  string $table The table name.
+     * @param  array $data An associative array of the column names and values to use as deletion criteria.
+     *
+     * @return void
+     */
     public function dontHaveInDatabase($table, array $criteria)
     {
         $query = $this->driver->delete($table, $criteria);
