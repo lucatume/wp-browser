@@ -3,12 +3,12 @@ namespace Codeception\Module;
 
 // Load the modified driver
 // remove
-include_once dirname(__FILE__) . '/ExtendedDb.php';
+include_once dirname(__FILE__) . '/ExtendedDbDriver.php';
 
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
-use Codeception\Lib\Driver\ExtendedDb as Driver;
+use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use tad\utils\Str;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;

@@ -7,7 +7,7 @@ include_once dirname(__FILE__) . '/ExtendedMySql.php';
 /**
  * Extends Codeception default Db driver to return an extended version of MySql driver.
  */
-class ExtendedDb extends Db
+class ExtendedDbDriver extends Db
 {
 
     /**
