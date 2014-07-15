@@ -4,7 +4,7 @@ wp-browser
 A WordPress specific extension of PhpBrowser for Codeception.
 
 The package includes a class extending Codeception PhpBrowser module to adds WordPress related assertions for <code>cest</code> and <code>cept</code> tests and an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing.
-
+While working on the module I've added some methods to the <code>Codeception\Module\Db</code> class to implement CRUDness into it; see below the <code>ExtendedDb</code> class.
 
 ## Installing
 To install simply require the package in the <code>composer.json</code> file like
@@ -109,5 +109,17 @@ The module is meant to be a WordPress specific extension of the <code>Db</code> 
 
 see source for all methods.
 
+## ExtendedDb
+The module is an extension of the <code>Codeception\Module\Db</code> class implementing some methods to allow for more CRUD complete operations on the database with the methods
+
+    public function dontHaveInDatabase($table, array $criteria);
+
+    public function haveOrUpdateInDatabase($table, array $data)
+
+### Configuration
+The module has the same configuration as the one its; extending and hence will not require any additional parameter.
+
 ## Changelog
+<code>1.2.0</code> - added the <code>haveOrUpdateInDatabase</code> and <code>dontHaveInDatabase</code> methods alongside the <code>Codeception\Module\ExtendedDb</code> module.
+
 <code>1.1.0</code> - first public release ans semantic versioning jumpstart
