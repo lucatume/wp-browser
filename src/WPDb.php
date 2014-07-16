@@ -929,4 +929,10 @@ class WPDb extends ExtendedDb
         $tableName = $this->getPrefixedTableNameFor('terms');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
+
+    public function dontHaveUserMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('usermeta');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
 }

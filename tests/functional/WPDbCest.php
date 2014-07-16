@@ -188,4 +188,31 @@ class WPDbCest
             'name' => 'someTerm'
         ]);
     }
+
+    public function it_should_delete_usermeta(FunctionalTester $I)
+    {
+        $I->wantTo('delete a user meta');
+        $table = 'wp_usermeta';
+        $I->haveInDatabase($table,[
+            'umeta_id' => null,
+            'user_id' => 21,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => 21,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+        $I->dontHaveUserMetaInDatabase([
+            'user_id' => 21,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'user_id' => 21,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+    }
 }
