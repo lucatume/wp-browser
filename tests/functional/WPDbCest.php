@@ -50,4 +50,20 @@ class WPDbCest
             'comment_ID' => 2
         ]);
     }
+
+    public function it_should_delete_links(FunctionalTester $I)
+    {
+        $I->wantTo('delete a link');
+        $table = 'wp_links';
+        $I->haveLinkInDatabase(13);
+        $I->seeInDatabase($table, [
+            'link_id' => 13
+        ]);
+        $I->dontHaveLinkInDatabase([
+            'link_id' => 13
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'link_id' => 13
+        ]);
+    }
 }

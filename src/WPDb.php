@@ -888,4 +888,9 @@ class WPDb extends ExtendedDb
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    public function dontHaveLinkInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('links');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
 }
