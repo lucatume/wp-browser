@@ -107,7 +107,16 @@ The module is meant to be a WordPress specific extension of the <code>Db</code> 
     
     public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
 
-see source for all methods.
+see source for all methods.  
+I've added additional methods to have full control on the database setup and be able to remove entries from each table like
+
+    public function dontHaveOptionInDatabase(array $criteria);
+
+    public function dontHaveUserInDatabase(array $criteria);
+
+    public function dontHavePostInDatabase(array $criteria);
+
+wrapping the <code>ExtendedDb::dontHaveInDatabase</code> method for quicker and clearer access; a <code>dontHaveSomethinInDatabase</code> method exists for each table, take a look at the source to see them all.
 
 ## ExtendedDb
 The module is an extension of the <code>Codeception\Module\Db</code> class implementing some methods to allow for more CRUD complete operations on the database with the methods
@@ -120,6 +129,15 @@ The module is an extension of the <code>Codeception\Module\Db</code> class imple
 The module has the same configuration as the one its; extending and hence will not require any additional parameter.
 
 ## Changelog
-<code>1.2.0</code> - added the <code>haveOrUpdateInDatabase</code> and <code>dontHaveInDatabase</code> methods alongside the <code>Codeception\Module\ExtendedDb</code> module.
+<code>1.3.0</code>
 
-<code>1.1.0</code> - first public release ans semantic versioning jumpstart
+* added <code>dontHaveSomethingInDatabase</code> methods to the <code>WPDb</code> class
+* fixed a bug that generated wrong SQL statements in the <code>WPDb::haveUserInDatabase</code> method
+
+<code>1.2.0</code>
+
+* added the <code>haveOrUpdateInDatabase</code> and <code>dontHaveInDatabase</code> methods alongside the <code>Codeception\Module\ExtendedDb</code> module.
+
+<code>1.1.0</code>
+
+* first public release ans semantic versioning jumpstart
