@@ -107,4 +107,20 @@ class WPDbCest
             'meta_value' => 'someValue'
         ]);
     }
+
+    public function it_should_delete_posts(FunctionalTester $I)
+    {
+        $I->wantTo('delete a post');
+        $table = 'wp_posts';
+        $I->havePostInDatabase(13);
+        $I->seeInDatabase($table, [
+            'ID' => 13
+        ]);
+        $I->dontHavePostInDatabase([
+            'ID' => 13
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'ID' => 13
+        ]);
+    }
 }
