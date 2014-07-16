@@ -237,7 +237,7 @@ class WPDbCest
             'user_login' => 'someUser'
         ]);
         $I->dontHaveUserInDatabase([
-            'ID' => 23,
+           'ID' => 23,
             'user_login' => 'someUser'
         ]);
         $I->dontSeeUserInDatabase([

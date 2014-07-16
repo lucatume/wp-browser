@@ -877,66 +877,143 @@ class WPDb extends ExtendedDb
         return $this->haveInDatabase($tableName, array('option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes'));
     }
 
+    /**
+     * Removes an entry from the commentmeta table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('commentmeta');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the comment table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveCommentInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('comments');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the links table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveLinkInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('links');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the options table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveOptionInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the postmeta table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHavePostMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('postmeta');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the posts table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHavePostInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('posts');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the term_relationships table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveTermRelationshipInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the term_taxonomy table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveTermTaxonomyInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the terms table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveTermInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('terms');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the usermeta table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('usermeta');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
+    /**
+     * Removes an entry from the users table.
+     *
+     * @param  array  $criteria
+     *
+     * @return void
+     */
     public function dontHaveUserInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('users');
