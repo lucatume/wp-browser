@@ -899,4 +899,10 @@ class WPDb extends ExtendedDb
         $tableName = $this->getPrefixedTableNameFor('options');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
+
+    public function dontHavePostMetaInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('postmeta');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
 }

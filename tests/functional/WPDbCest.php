@@ -85,4 +85,26 @@ class WPDbCest
             'option_value' => 'theValue'
         ]);
     }
+
+    public function it_should_delete_post_meta(FunctionalTester $I)
+    {
+        $I->wantTo('delete a post meta');
+        $table = 'wp_postmeta';
+        $I->havePostMetaInDatabase(1, 'someKey', 'someValue');
+        $I->seeInDatabase($table, [
+            'post_id' => 1,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+        $I->dontHavePostMetaInDatabase([
+            'post_id' => 1,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'post_id' => 1,
+            'meta_key' => 'someKey',
+            'meta_value' => 'someValue'
+        ]);
+    }
 }
