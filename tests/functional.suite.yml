@@ -6,4 +6,17 @@
 
 class_name: FunctionalTester
 modules:
-    enabled: [Filesystem, FunctionalHelper]
+    enabled:
+      - FunctionalHelper
+      - WPDb
+    config:
+      WPDb:
+        url: 'http://example.local'
+        dsn: 'mysql:host=192.168.33.21;dbname=testingGrounds'
+        user: 'root'
+        password: 'root'
+        dump: 'tests/_data/dump.sql'
+        populate: true
+        cleanup: false
+        checkExistence: true
+        update: true
