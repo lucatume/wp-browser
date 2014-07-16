@@ -3,16 +3,16 @@
 namespace tad\wordpress\maker;
 
 use Badcow\LoremIpsum\Generator;
-    
+
 
 class CommentMaker
 {
     /**
      * Generates a comment to be used in a WordPress database.
-     *
-     * @param  int $comment_ID          The comment ID to use.
-     * @param  int $comment_post_ID     The ID of the post the comment relates to.
-     * @param  array  $data             The optional data to be used to generate the comment.
+     generateDefaultsFor*
+     * @param  int $comment_ID The comment ID to use.
+     * @param  int $comment_post_ID The ID of the post the comment relates to.
+     * @param  array $data The optional data to be used to generate the comment.
      *
      * @return array                    A column as key array of comment content.
      */
@@ -23,28 +23,17 @@ class CommentMaker
     }
 
     /**
-     * Generates a random comment content in a lorem ipsum fashion.
-     *
-     * @return string  The comment content. 
-     */
-    protected static function generateCommentContent()
-    {
-        $lorem = new Generator();
-        return implode('', $lorem->getSentences(1));
-    }
-
-    /**
      * Generate the complete comment entry default structure.
      *
-     * @param  int $comment_ID      The comment id.
+     * @param  int $comment_ID The comment id.
      * @param  int $comment_post_ID The if of the post the comment refers to.
      *
      * @return array                An associative array of column/default values.
      */
-    protected static function generateDefaultsForType($comment_ID, $comment_post_ID)
+    protected static function generateDefaultsFor($comment_ID, $comment_post_ID)
     {
         $randIP = "" . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255);
-        $content = self::generateCommmentContent();
+        $content = self::generateCommentContent();
         $defaults = array(
             'comment_ID' => $comment_ID,
             'comment_post_ID' => $comment_post_ID,
@@ -63,5 +52,16 @@ class CommentMaker
             'user_id' => 0
         );
         return $defaults;
+    }
+
+    /**
+     * Generates a random comment content in a lorem ipsum fashion.
+     *
+     * @return string  The comment content.
+     */
+    protected static function generateCommentContent()
+    {
+        $lorem = new Generator();
+        return implode('', $lorem->getSentences(1));
     }
 }
