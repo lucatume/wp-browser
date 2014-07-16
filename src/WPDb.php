@@ -6,6 +6,7 @@ use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use tad\utils\Str;
+use tad\wordpress\maker\CommentMaker;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
 
@@ -878,6 +879,12 @@ class WPDb extends ExtendedDb
     public function dontHaveCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('commentmeta');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
+
+    public function dontHaveCommentInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('comments');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 
