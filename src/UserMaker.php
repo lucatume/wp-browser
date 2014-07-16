@@ -1,7 +1,7 @@
 <?php
 
 namespace tad\wordpress\maker;
-    
+
 /**
  * Generates user entries to be inserted in a WordPress database.
  */
@@ -47,8 +47,8 @@ class UserMaker
      * Generated the entry for the users table.
      *
      * @param  string $user_login The user login slug
-     * @param  int $user_id    The user id
-     * @param  string $role       The user role
+     * @param  int $user_id The user id
+     * @param  string $role The user role
      *
      * @return array             An associtive array of column/values for the "users" table.
      */
@@ -57,7 +57,7 @@ class UserMaker
         $usersTableDefaults = array(
             'ID' => $user_id,
             'user_login' => $user_login,
-            'user_pass' => md5($user_login),
+            'user_pass' => '' . md5($user_login),
             'user_nicename' => $user_login,
             'user_email' => $user_login . "@example.com",
             'user_url' => 'http://www.example.com',
@@ -69,9 +69,9 @@ class UserMaker
 
     /**
      * Generates the default values entry for the "wp_capabilities" "usermeta" table entry.
-        *
+     *
      * @param  int $user_id The user id.
-     * @param  string $role    The user role.
+     * @param  string $role The user role.
      *
      * @return array          An associtive array of column/values for the "usermeta" table.
      */
@@ -81,16 +81,16 @@ class UserMaker
             'umeta_id' => null,
             'user_id' => $user_id,
             'meta_key' => 'wp_capabilities',
-            'meta_value' => serialize(array($role, '1'))
+            'meta_value' => str_replace('"', '\"', serialize(array($role => true)))
         );
         return $capabilitiesDefaults;
     }
 
     /**
      * Generates the default values entry for the "wp_user_level" "usermeta" table entry.
-        *
+     *
      * @param  int $user_id The user id.
-     * @param  string $role    The user role.
+     * @param  string $role The user role.
      *
      * @return array          An associtive array of column/values for the "usermeta" table.
      */
