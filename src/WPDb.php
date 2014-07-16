@@ -917,9 +917,16 @@ class WPDb extends ExtendedDb
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
+
     public function dontHaveTermTaxonomyInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
+
+    public function dontHaveTermInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('terms');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 }

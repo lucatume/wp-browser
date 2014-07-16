@@ -169,4 +169,23 @@ class WPDbCest
             'taxonomy' => 'category'
         ]);
     }
+
+    public function it_should_delete_term(FunctionalTester $I)
+    {
+        $I->wantTo('delete a term');
+        $table = 'wp_terms';
+        $I->haveTermInDatabase('someTerm', 24);
+        $I->seeInDatabase($table, [
+            'term_id' => 24,
+            'name' => 'someTerm'
+        ]);
+        $I->dontHaveTermInDatabase([
+            'term_id' => 24,
+            'name' => 'someTerm'
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'term_id' => 24,
+            'name' => 'someTerm'
+        ]);
+    }
 }
