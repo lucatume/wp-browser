@@ -66,4 +66,23 @@ class WPDbCest
             'link_id' => 13
         ]);
     }
+
+    public function it_should_delete_options(FunctionalTester $I)
+    {
+        $I->wantTo('delete an option');
+        $table = 'wp_options';
+        $I->haveOptionInDatabase('someOption', 'theValue');
+        $I->seeInDatabase($table, [
+            'option_name' => 'someOption',
+            'option_value' => 'theValue'
+        ]);
+        $I->dontHaveOptionInDatabase([
+            'option_name' => 'someOption',
+            'option_value' => 'theValue'
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'option_name' => 'someOption',
+            'option_value' => 'theValue'
+        ]);
+    }
 }

@@ -893,4 +893,10 @@ class WPDb extends ExtendedDb
         $tableName = $this->getPrefixedTableNameFor('links');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
+
+    public function dontHaveOptionInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('options');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
 }
