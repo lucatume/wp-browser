@@ -905,9 +905,16 @@ class WPDb extends ExtendedDb
         $tableName = $this->getPrefixedTableNameFor('postmeta');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
+
     public function dontHavePostInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('posts');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
+
+    public function dontHaveTermRelationshipInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('term_relationships');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 }

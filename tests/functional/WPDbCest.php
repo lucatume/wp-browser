@@ -123,4 +123,26 @@ class WPDbCest
             'ID' => 13
         ]);
     }
+    public function it_should_delete_term_relationships(FunctionalTester $I)
+    {
+        $I->wantTo('delete a term relationship');
+        $table = 'wp_term_relationships';
+        $I->haveInDatabase($table, [
+            'object_id' => 34,
+            'term_taxonomy_id' => 12,
+            'term_order' => 0
+        ]);
+        $I->seeInDatabase($table, [
+            'term_taxonomy_id' => 12,
+            'term_order' => 0
+        ]);
+        $I->dontHaveTermRelationshipInDatabase([
+            'term_taxonomy_id' => 12,
+            'term_order' => 0
+        ]);
+        $I->dontSeeInDatabase($table, [
+            'term_taxonomy_id' => 12,
+            'term_order' => 0
+        ]);
+    }
 }
