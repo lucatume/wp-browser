@@ -93,6 +93,7 @@ class WPDb extends ExtendedDb
     {
         // get the user
         list($userLevelDefaults, $userTableData, $userCapabilitiesData) = UserMaker::makeUser($user_login, $user_id, $role, $userData);
+        $this->debugSection('Makers output', print_r($userTableData));
         // add the data to the database
         $tableName = $this->getPrefixedTableNameFor('users');
         $this->haveInDatabase($tableName, $userTableData);
@@ -933,6 +934,12 @@ class WPDb extends ExtendedDb
     public function dontHaveUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->getPrefixedTableNameFor('usermeta');
+        $this->dontHaveInDatabase($tableName, $criteria);
+    }
+
+    public function dontHaveUserInDatabase(array $criteria)
+    {
+        $tableName = $this->getPrefixedTableNameFor('users');
         $this->dontHaveInDatabase($tableName, $criteria);
     }
 }

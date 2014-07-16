@@ -193,7 +193,7 @@ class WPDbCest
     {
         $I->wantTo('delete a user meta');
         $table = 'wp_usermeta';
-        $I->haveInDatabase($table,[
+        $I->haveInDatabase($table, [
             'umeta_id' => null,
             'user_id' => 21,
             'meta_key' => 'someKey',
@@ -213,6 +213,36 @@ class WPDbCest
             'user_id' => 21,
             'meta_key' => 'someKey',
             'meta_value' => 'someValue'
+        ]);
+    }
+
+    public function it_can_have_users(FunctionalTester $I)
+    {
+
+        $I->wantTo('have a user');
+        $I->haveUserInDatabase('someUser', 23);
+        $I->seeInDatabase('wp_users', [
+            'ID' => 23,
+            'user_login' => 'someUser'
+        ]);
+    }
+
+    public function it_should_delete_users(FunctionalTester $I)
+    {
+        $I->wantTo('delete a user');
+        $table = 'wp_users';
+        $I->haveUserInDatabase('someUser', 23);
+        $I->seeUserInDatabase([
+            'ID' => 23,
+            'user_login' => 'someUser'
+        ]);
+        $I->dontHaveUserInDatabase([
+            'ID' => 23,
+            'user_login' => 'someUser'
+        ]);
+        $I->dontSeeUserInDatabase([
+            'ID' => 23,
+            'user_login' => 'someUser'
         ]);
     }
 }
