@@ -52,12 +52,14 @@ In the suite <code>.yml</code> configuration file add the module among the loade
                 dump: 'tests/_data/dump.sql'
                 populate: true
                 cleanup: false
+                url: 'http://example.local'
                 tablePrefix: 'wp'
                 checkExistence: true
                 update: true
 
 and configure <code>Db</code> parameters and the additional ones available to the <code>WPDb</code> module:  
-
+    
+* <code>url</code> - the site home url (required)
 * <code>tablePrefix</code> - allows specifying the table prefix used in the installation, defaults to "wp" (optional)
 * <code>checkExistence</code> - enables some low level AI on the module side to insert needed elements in the database, e.g. will add a term and post before adding a relation between them; defaults to <code>false</code> (optional)
 * <code>update</code> - will try updating the database on duplicate entries; defaults to <code>true</code> (optional)
