@@ -39,7 +39,7 @@ class WPDb extends ExtendedDb
      *
      * @var string
      */
-    protected $tablePrefix = 'wp';
+    protected $tablePrefix = 'wp_';
 
     /**
      * Initializes the module.
