@@ -111,7 +111,7 @@ class WPDb extends ExtendedDb
      */
     protected function getPrefixedTableNameFor($tableName)
     {
-        $tableName = $this->config['tablePrefix'] . '_' . ltrim($tableName, '_');
+        $tableName = $this->config['tablePrefix'] . $tableName;
         return $tableName;
     }
 
