@@ -3,7 +3,6 @@
 namespace tad\wordpress\maker;
 
 use Badcow\LoremIpsum\Generator;
-use tad\utils\Str;
     
 /**
  * Generates WordPress posts to be inserted in the database.
@@ -50,7 +49,7 @@ class PostMaker
             'comment_status' => 'open',
             'ping_status' => 'open',
             'post_password' => '',
-            'post_name' => lcfirst(Str::hyphen($title)),
+            'post_name' => lcfirst(\tad_Str::hyphen($title)),
             'to_ping' => '',
             'pinged' => '',
             'post_modified' => DateMaker::now(),

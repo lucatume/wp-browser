@@ -5,7 +5,6 @@ use Codeception\Configuration as Configuration;
 use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
-use tad\utils\Str;
 use tad\wordpress\maker\CommentMaker;
 use tad\wordpress\maker\PostMaker;
 use tad\wordpress\maker\UserMaker;
@@ -746,7 +745,7 @@ class WPDb extends ExtendedDb
         $termsTableEntry = array(
             'term_id' => $term_id,
             'name' => $term,
-            'slug' => isset($args['slug']) ? $args['slug'] : lcfirst(Str::hyphen($term)),
+            'slug' => isset($args['slug']) ? $args['slug'] : lcfirst(\tad_Str::hyphen($term)),
             'term_group' => isset($args['term_group']) ? $args['term_group'] : 0,
         );
         $tableName = $this->getPrefixedTableNameFor('terms');
