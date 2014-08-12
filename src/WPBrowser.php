@@ -155,9 +155,9 @@ class WPBrowser extends PhpBrowser
      *
      * @return void
      */
-    public function doNotSeePluginInstalled($pluginSlug)
+    public function dontSeePluginInstalled($pluginSlug)
     {
-        $this->doNotSeeElement('#' . $pluginSlug);
+        $this->dontSeeElement('#' . $pluginSlug);
     }
 
     /**
