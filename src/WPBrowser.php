@@ -22,6 +22,12 @@ class WPBrowser extends PhpBrowser
      */
     protected $loginUrl;
     /**
+     * The admin absolute URL.
+     *
+     * @var [type]
+     */
+    protected $adminUrl;
+    /**
      * The plugin screen absolute URL
      *
      * @var string
@@ -36,7 +42,8 @@ class WPBrowser extends PhpBrowser
     {
         parent::_initialize();
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $this->config['adminUrl']);
-        $this->pluginsUrl = rtrim($this->config['adminUrl'], '/') . '/plugins.php';
+        $this->adminUrl = rtrim($this->config['adminUrl'], '/');
+        $this->pluginsUrl = $this->adminUrl . '/plugins.php';
     }
 
     /**
@@ -101,6 +108,17 @@ class WPBrowser extends PhpBrowser
     public function amOnPluginsPage()
     {
         $this->amOnPage($this->pluginsUrl);
+    }
+
+    /**
+     * Navigates the browser to the Pages administration screen.
+     * 
+     * Makes no check about the user being logged in and authorized to do so.
+     * 
+     * @return void
+     */
+    public function amOnPagesPage(){
+        $this->amOnPage($this->adminUrl . '/edit.php?post_type=page');
     }
 
     /**
