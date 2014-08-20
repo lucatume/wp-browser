@@ -33,12 +33,12 @@ class ExtendedMySql extends MySql
 
     protected function getAssignmentsFor(array $data, $glue = ', ')
     {
-        $assigments = array();
+        $assignments = array();
         foreach ($data as $key => $value) {
-            $assigments[] = sprintf('%s="%s"', $key, $value);
+            $assignments[] = sprintf('%s="%s"', $key, $value);
         }
-        $assigments = implode($glue, $assigments);
-        return $assigments;
+        $assignments = implode($glue, $assignments);
+        return $assignments;
     }
 
     /**
