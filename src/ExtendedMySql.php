@@ -35,7 +35,7 @@ class ExtendedMySql extends MySql
     {
         $assignments = array();
         foreach ($data as $key => $value) {
-            $assignments[] = sprintf('%s="%s"', $key, $value);
+            $assignments[] = sprintf('%s=\'%s\'', $key, $value);
         }
         $assignments = implode($glue, $assignments);
         return $assignments;
