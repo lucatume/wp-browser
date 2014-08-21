@@ -20,7 +20,8 @@
         "psr-4": {
             "Codeception\\Module\\": "src/",
             "Codeception\\Lib\\Driver\\": "src/",
-            "tad\\wordpress\\maker\\": "src/"
+            "tad\\wordpress\\maker\\": "src/",
+            "tad\\wordpress\\loader\\": "src/"
         }
     },
     "require-dev": {
