@@ -118,7 +118,24 @@ The package will create a link to the `bin/wpcept` script file; that's an extens
 
 any other `codecept` option remains intact and available. The command will generate a skeleton test case like
 
+    <?php
 
+    class SomeMoreTest extends \WP_UnitTestCase
+    {
+        protected function setUp()
+        {
+        }
+
+        protected function tearDown()
+        {
+        }
+
+        // tests
+        public function testMe()
+        {
+        }
+
+    }
 
 ### ExtendedDb configuration
 The module has the same configuration as the <code>Db</code> one and hence will not require any additional parameter beside those required/available to the <code>Db</code> module.
