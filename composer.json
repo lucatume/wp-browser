@@ -26,5 +26,6 @@
     },
     "require-dev": {
         "codeception/codeception": "*"
-    }
+    },
+    "bin" : ["bin/wpcept"]
 }
