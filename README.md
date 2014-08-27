@@ -112,6 +112,14 @@ and configure it using the required parameters:
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
+The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI command that adds the possibility to generate `WP_UnitTestCase` classes using the
+
+    wpcept generate:wpunit suite File
+
+any other `codecept` option remains intact and available. The command will generate a skeleton test case like
+
+
+
 ### ExtendedDb configuration
 The module has the same configuration as the <code>Db</code> one and hence will not require any additional parameter beside those required/available to the <code>Db</code> module.
 In the suite <code>.yml</code> configuration file add the module among the loaded ones
