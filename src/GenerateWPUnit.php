@@ -2,7 +2,7 @@
 
 namespace Codeception\Command;
 
-use Codeception\Lib\Generator\PhpUnit as PhpUnitGenerator;
+use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,7 +52,7 @@ class GenerateWPUnit extends Command
         $filename = $this->completeSuffix($this->getClassName($class), 'Test');
         $filename = $path.$filename;
 
-        $gen = new PhpUnitGenerator($config, $class);
+        $gen = new WPUnitGenerator($config, $class);
 
         $res = $this->save($filename, $gen->produce());
         if (!$res) {
