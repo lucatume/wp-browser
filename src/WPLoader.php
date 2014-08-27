@@ -2,6 +2,7 @@
 
 namespace Codeception\Module;
 
+
 use Codeception\Exception\ModuleConfig;
 use Codeception\Module;
 
@@ -88,7 +89,7 @@ class WPLoader extends Module
      * @var string
      */
     protected $wpBootstrapFile;
-
+    
     public static $includeInheritedActions = true;
     public static $onlyActions = array();
     public static $excludeActions = array();
@@ -104,23 +105,25 @@ class WPLoader extends Module
      */
     protected function defineGlobals()
     {
+        extract($this->config);
+        
         // allow me not to bother with traling slashes
-        $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+        $wpRootFolder = rtrim($wpRootFolder, '/') . '/';
         define('ABSPATH', $wpRootFolder);
-        define('DB_NAME', $this->config['dbName']);
-        define('DB_USER', $this->config['dbUser']);
-        define('DB_PASSWORD', $this->config['dbPassword']);
-        define('DB_HOST', $this->config['dbHost']);
-        define('DB_CHARSET', $this->config['dbCharset']);
-        define('DB_COLLATE', $this->config['dbCollate']);
-        define('WP_TESTS_TABLE_PREFIX', $this->config['tablePrefix']);
-        define('WP_TESTS_DOMAIN', $this->config['domain']);
-        define('WP_TESTS_EMAIL', $this->config['adminEmail']);
-        define('WP_TESTS_TITLE', $this->config['title']);
-        define('WP_PHP_BINARY', $this->config['phpBinary']);
-        define('WPLANG', $this->config['language']);
-        define('WP_DEBUG', $this->config['wpDebug']);
-        define('WP_TESTS_MULTISITE', $this->config['multisite']);
+        define('DB_NAME', $dbName);
+        define('DB_USER', $dbUser);
+        define('DB_PASSWORD', $dbPassword);
+        define('DB_HOST', $dbHost);
+        define('DB_CHARSET', $dbCharset);
+        define('DB_COLLATE', $dbCollate);
+        define('WP_TESTS_TABLE_PREFIX', $tablePrefix);
+        define('WP_TESTS_DOMAIN', $domain);
+        define('WP_TESTS_EMAIL', $adminEmail);
+        define('WP_TESTS_TITLE', $title);
+        define('WP_PHP_BINARY', $phpBinary);
+        define('WPLANG', $language);
+        define('WP_DEBUG', $wpDebug);
+        define('WP_TESTS_MULTISITE', $multisite);
     }
     
     /**
