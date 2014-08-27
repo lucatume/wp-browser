@@ -21,6 +21,8 @@
         "psr-4": {
             "Codeception\\Module\\": "src/",
             "Codeception\\Lib\\Driver\\": "src/",
+            "Codeception\\Command\\": "src/",
+            "Codeception\\Lib\\Generator\\": "src/",
             "tad\\wordpress\\maker\\": "src/",
             "tad\\wordpress\\loader\\": "src/"
         }
@@ -28,5 +30,5 @@
     "require-dev": {
         "codeception/codeception": "*"
     },
-    "bin" : ["bin/wpcept"]
+    "bin" : ["wpcept"]
 }
