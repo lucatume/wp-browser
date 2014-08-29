@@ -51,7 +51,7 @@ In the suite <code>.yml</code> configuration file add the module among the loade
                 password: ''
                 dump: 'tests/_data/dump.sql'
                 populate: true
-                cleanup: false
+                cleanup: true
                 url: 'http://example.local'
                 tablePrefix: 'wp_'
                 checkExistence: true
@@ -151,7 +151,7 @@ In the suite <code>.yml</code> configuration file add the module among the loade
                 password: ''
                 dump: 'tests/_data/dump.sql'
                 populate: true
-                cleanup: false
+                cleanup: true
 
 and configure <code>Db</code> parameters as usual.
 
