@@ -112,11 +112,26 @@ and configure it using the required parameters:
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
-The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI command that adds the possibility to generate `WP_UnitTestCase` classes using the
+### wpcept command
+The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for WordPress specific set ups.
+
+#### wpbootstrap
+The CLI application also adds the `wpbootstrap` command argument to allow for a quick WordPress testing environment setup.
+
+    wpcept wpbootstrap
+
+The command will generate the "UI", "Service" and "Unit" suites following the [Testing Pyramid test organization paradigm](http://martinfowler.com/bliki/TestPyramid.html) and will take care of setting up default modules and their settings for each like:
+
+* Unit - `Asserts` and `Helper` modules, Codeception standard
+* Service - `Filesystem`, `WPDb`, `WPLoader` and `Helper` modules
+* UI - `WPBrowser`, `WPDb` and `Helper` modules
+
+#### generate:wpunit
+Generates `WP_UnitTestCase` classes using the
 
     wpcept generate:wpunit suite File
 
-any other `codecept` option remains intact and available. The command will generate a skeleton test case like
+The command will generate a skeleton test case like
 
     <?php
 
@@ -136,6 +151,8 @@ any other `codecept` option remains intact and available. The command will gener
         }
 
     }
+
+Any other `codecept` option remains intact and available. 
 
 ### ExtendedDb configuration
 The module has the same configuration as the <code>Db</code> one and hence will not require any additional parameter beside those required/available to the <code>Db</code> module.

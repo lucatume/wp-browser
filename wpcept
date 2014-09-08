@@ -15,6 +15,7 @@ $app->add(new Codeception\Command\Build('build'));
 $app->add(new Codeception\Command\Run('run'));
 $app->add(new Codeception\Command\Console('console'));
 $app->add(new Codeception\Command\Bootstrap('bootstrap'));
+$app->add(new Codeception\Command\WPBootstrap('wpbootstrap'));
 $app->add(new Codeception\Command\GenerateCept('generate:cept'));
 $app->add(new Codeception\Command\GenerateCest('generate:cest'));
 $app->add(new Codeception\Command\GenerateTest('generate:test'));
