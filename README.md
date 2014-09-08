@@ -113,7 +113,7 @@ and configure it using the required parameters:
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
 ### wpcept command
-The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for WordPress specific set ups.
+The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific set up.
 
 #### wpbootstrap
 The CLI application also adds the `wpbootstrap` command argument to allow for a quick WordPress testing environment setup.
