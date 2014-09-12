@@ -9,7 +9,7 @@ use Symfony\Component\Yaml\Yaml;
  * Creates default config, tests directory and sample suites for current project. Use this command to start building a test suite.
  * The suites created reflect the UI, Service and Unit test pyramid paradigm.
  *
- * By default it will create 3 suites: **acceptance**, **functional**, and **unit**. To customize run this command with `--customize` option.
+ * By default it will create 3 suites: **ui**, **service**, and **unit**. To customize run this command with `--customize` option.
  *
  * For Codeception 1.x compatible setup run bootstrap in `--compat` option.
  *
@@ -21,11 +21,11 @@ use Symfony\Component\Yaml\Yaml;
  * * `codecept wpbootstrap path/to/the/project` - provide different path to a project, where tests should be placed
  *
  */
-class WPBootstrap extends Bootstrap
+class WPBootstrapPyramid extends Bootstrap
 {
     public function getDescription()
     {
-        return "Sets up a WordPress testing environment.";
+        return "Sets up a WordPress testing environment using the test pyramid suite organization.";
     }
 
     /**
@@ -47,11 +47,11 @@ class WPBootstrap extends Bootstrap
         $output->writeln("tests/unit created                 <- unit tests");
         $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
         $this->createServiceSuite('Service');
-        $output->writeln("tests/functional created           <- functional tests");
-        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
-        $this->createAcceptanceSuite('UI');
-        $output->writeln("tests/acceptance created           <- acceptance tests");
-        $output->writeln("tests/acceptance.sacceptancete.yml written <- acceptance tests suite configuration");
+        $output->writeln("tests/service created           <- service tests");
+        $output->writeln("tests/service.suite.yml written <- service tests suite configuration");
+        $this->createUiSuite('UI');
+        $output->writeln("tests/ui created           <- ui tests");
+        $output->writeln("tests/ui.suite.yml written <- ui tests suite configuration");
 
         if (file_exists('.gitignore')) {
             file_put_contents('tests/_log/.gitignore', '');
@@ -75,7 +75,7 @@ class WPBootstrap extends Bootstrap
         $this->createSuite('unit', $actor, $str);
     }
 
-    protected function createFunctionalSuite($actor = 'Functional')
+    protected function createServiceSuite($actor = 'Service')
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
@@ -120,13 +120,13 @@ class WPBootstrap extends Bootstrap
         );
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for functional tests.\n";
+        $str .= "# suite for service (integration) tests.\n";
         $str .= "# Emulate web requests and make application process them.\n";
         $str .= Yaml::dump($suiteConfig, 2);
-        $this->createSuite('functional', $actor, $str);
+        $this->createSuite('service', $actor, $str);
     }
 
-    protected function createAcceptanceSuite($actor = 'Acceptance')
+    protected function createUiSuite($actor = 'UI')
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
@@ -160,7 +160,7 @@ class WPBootstrap extends Bootstrap
         $str .= "# perform tests in browser using WPBrowser.\n";
 
         $str .= Yaml::dump($suiteConfig, 5);
-        $this->createSuite('acceptance', $actor, $str);
+        $this->createSuite('ui', $actor, $str);
     }
 
     /**
@@ -175,12 +175,12 @@ class WPBootstrap extends Bootstrap
         $this->createUnitSuite();
         $output->writeln("tests/unit created                 <- unit tests");
         $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-        $this->createFunctionalSuite();
-        $output->writeln("tests/functional created           <- functional tests");
-        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
-        $this->createAcceptanceSuite();
-        $output->writeln("tests/acceptance created           <- acceptance tests");
-        $output->writeln("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+        $this->createServiceSuite();
+        $output->writeln("tests/service created           <- service tests");
+        $output->writeln("tests/service.suite.yml written <- service tests suite configuration");
+        $this->createUiSuite();
+        $output->writeln("tests/ui created           <- ui tests");
+        $output->writeln("tests/ui.suite.yml written <- ui tests suite configuration");
 
         if (file_exists('.gitignore')) {
             file_put_contents('tests/_output/.gitignore', '');
