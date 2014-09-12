@@ -79,37 +79,44 @@ class WPBootstrap extends Bootstrap
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
-            'modules' => array('enabled' => array('Filesystem', 'WPDb', 'WPLoader', $actor . 'Helper')),
-            'config' => array(
-                'WPDb' => array(
-                    'dsn' => 'mysql:host=localhost;dbname=testdb',
-                    'user' => 'root',
-                    'password' => '',
-                    'dump' => 'tests/_data/dump.sql',
-                    'populate' => true,
-                    'cleanup' => true,
-                    'url' => 'http://example.local',
-                    'tablePrefix' => 'wp_',
-                    'checkExistence' => true,
-                    'update' => true
+            'modules' => array(
+                'enabled' => array(
+                    'Filesystem',
+                    'WPDb',
+                    'WPLoader',
+                    $actor . 'Helper'
                 ),
-                'WPLoader' => array(
-                    'wpRootFolder' => '/www/wordpress',
-                    'dbNAme' => 'wpress-tests',
-                    'dbHost' => 'localhost',
-                    'dbUser' => 'root',
-                    'dbPassword' => 'root',
-                    'wpDebug' => true,
-                    'dbCharset' => 'utf8',
-                    'dbCollate' => '',
-                    'tablePrefix' => 'wptests_',
-                    'domain' => 'example.org',
-                    'adminEmail' => 'admin@example.com',
-                    'title' => 'Test Blog',
-                    'phpBinary' => 'php',
-                    'language' => ''
+                'config' => array(
+                    'WPDb' => array(
+                        'dsn' => 'mysql:host=localhost;dbname=testdb',
+                        'user' => 'root',
+                        'password' => '',
+                        'dump' => 'tests/_data/dump.sql',
+                        'populate' => true,
+                        'cleanup' => true,
+                        'url' => 'http://example.local',
+                        'tablePrefix' => 'wp_',
+                        'checkExistence' => true,
+                        'update' => true
+                    ),
+                    'WPLoader' => array(
+                        'wpRootFolder' => '/www/wordpress',
+                        'dbName' => 'wpress-tests',
+                        'dbHost' => 'localhost',
+                        'dbUser' => 'root',
+                        'dbPassword' => 'root',
+                        'wpDebug' => true,
+                        'dbCharset' => 'utf8',
+                        'dbCollate' => '',
+                        'tablePrefix' => 'wptests_',
+                        'domain' => 'example.org',
+                        'adminEmail' => 'admin@example.com',
+                        'title' => 'Test Blog',
+                        'phpBinary' => 'php',
+                        'language' => ''
+                    )
                 )
-            )
+            ),
         );
 
         $str = "# Codeception Test Suite Configuration\n\n";
