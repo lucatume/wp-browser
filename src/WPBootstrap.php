@@ -27,6 +27,7 @@ class WPBootstrap extends Bootstrap
     {
         return "Sets up a WordPress testing environment.";
     }
+
     /**
      * Performs Codeception 1.x compatible setup using with Guy classes
      */
@@ -60,26 +61,26 @@ class WPBootstrap extends Bootstrap
 
     }
 
-protected function createUnitSuite($actor = 'Unit')
-{
-    $suiteConfig = array(
-        'class_name' => $actor.$this->actorSuffix,
-        'modules'    => array('enabled' => array('Asserts', $actor . 'Helper')),
+    protected function createUnitSuite($actor = 'Unit')
+    {
+        $suiteConfig = array(
+            'class_name' => $actor . $this->actorSuffix,
+            'modules' => array('enabled' => array('Asserts', $actor . 'Helper')),
         );
 
-    $str = "# Codeception Test Suite Configuration\n\n";
-    $str .= "# suite for unit (internal) tests.\n";
-    $str .= Yaml::dump($suiteConfig, 2);
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for unit (internal) tests.\n";
+        $str .= Yaml::dump($suiteConfig, 2);
 
-    $this->createSuite('unit', $actor, $str);
-}
+        $this->createSuite('unit', $actor, $str);
+    }
 
     protected function createServiceSuite($actor = 'Service')
     {
         $suiteConfig = array(
-            'class_name' => $actor.$this->actorSuffix,
-            'modules'    => array('enabled' => array('Filesystem', 'WPDb', 'WPLoader', $actor.'Helper')),
-            'config'  => array(
+            'class_name' => $actor . $this->actorSuffix,
+            'modules' => array('enabled' => array('Filesystem', 'WPDb', 'WPLoader', $actor . 'Helper')),
+            'config' => array(
                 'WPDb' => array(
                     'dsn' => 'mysql:host=localhost;dbname=testdb',
                     'user' => 'root',
@@ -91,69 +92,69 @@ protected function createUnitSuite($actor = 'Unit')
                     'tablePrefix' => 'wp_',
                     'checkExistence' => true,
                     'update' => true
-                    ),
+                ),
                 'WPLoader' => array(
-                    'wpRootFolder' => "/www/wordpress",
-                    'dbNAme' => "wpress-tests",
-                    'dbHost' => "localhost",
-                    'dbUser' => "root",
-                    'dbPassword' => "root",
+                    'wpRootFolder' => '/www/wordpress',
+                    'dbNAme' => 'wpress-tests',
+                    'dbHost' => 'localhost',
+                    'dbUser' => 'root',
+                    'dbPassword' => 'root',
                     'wpDebug' => true,
-                    'dbCharset' => "utf8",
-                    'dbCollate' => "",
-                    'tablePrefix' => "wptests_",
-                    'domain' => "example.org",
-                    'adminEmail' => "admin@example.com",
-                    'title' => "Test Blog",
-                    'phpBinary' => "php",
-                    'language' => ""
-                    )
+                    'dbCharset' => 'utf8',
+                    'dbCollate' => '',
+                    'tablePrefix' => 'wptests_',
+                    'domain' => 'example.org',
+                    'adminEmail' => 'admin@example.com',
+                    'title' => 'Test Blog',
+                    'phpBinary' => 'php',
+                    'language' => ''
                 )
-);
+            )
+        );
 
-$str  = "# Codeception Test Suite Configuration\n\n";
-$str .= "# suite for service (integration) tests.\n";
-$str .= "# Emulate web requests and make application process them.\n";
-$str .= Yaml::dump($suiteConfig, 2);
-$this->createSuite('service', $actor, $str);
-}
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for service (integration) tests.\n";
+        $str .= "# Emulate web requests and make application process them.\n";
+        $str .= Yaml::dump($suiteConfig, 2);
+        $this->createSuite('service', $actor, $str);
+    }
 
-protected function createUiSuite($actor = 'UI')
-{
-    $suiteConfig = array(
-        'class_name' => $actor.$this->actorSuffix,
-        'modules'    => array(
-            'enabled' => array('WPBrowser', 'WPDb', $actor . 'Helper'),
-            'config'  => array(
-                'WPBrowser' => array(
-                    'url' => 'http://example.local',
-                    'adminUsername' => 'root',
-                    'adminPassword' => 'root',
-                    'adminUrl' => '/wp-core/wp-admin'
+    protected function createUiSuite($actor = 'UI')
+    {
+        $suiteConfig = array(
+            'class_name' => $actor . $this->actorSuffix,
+            'modules' => array(
+                'enabled' => array('WPBrowser', 'WPDb', $actor . 'Helper'),
+                'config' => array(
+                    'WPBrowser' => array(
+                        'url' => 'http://example.local',
+                        'adminUsername' => 'root',
+                        'adminPassword' => 'root',
+                        'adminUrl' => '/wp-core/wp-admin'
                     ),
-                'WPDb' => array(
-                    'dsn' => 'mysql:host=localhost;dbname=testdb',
-                    'user' => 'root',
-                    'password' => '',
-                    'dump' => 'tests/_data/dump.sql',
-                    'populate' => true,
-                    'cleanup' => true,
-                    'url' => 'http://example.local',
-                    'tablePrefix' => 'wp_',
-                    'checkExistence' => true,
-                    'update' => true
+                    'WPDb' => array(
+                        'dsn' => 'mysql:host=localhost;dbname=testdb',
+                        'user' => 'root',
+                        'password' => '',
+                        'dump' => 'tests/_data/dump.sql',
+                        'populate' => true,
+                        'cleanup' => true,
+                        'url' => 'http://example.local',
+                        'tablePrefix' => 'wp_',
+                        'checkExistence' => true,
+                        'update' => true
                     ),
                 )
             ),
         );
 
-$str = "# Codeception Test Suite Configuration\n\n";
-$str .= "# suite for acceptance tests.\n";
-$str .= "# perform tests in browser using WPBrowser.\n";
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for acceptance tests.\n";
+        $str .= "# perform tests in browser using WPBrowser.\n";
 
-$str .= Yaml::dump($suiteConfig, 5);
-$this->createSuite('ui', $actor, $str);
-}
+        $str .= Yaml::dump($suiteConfig, 5);
+        $this->createSuite('ui', $actor, $str);
+    }
 
     /**
      * @param OutputInterface $output
