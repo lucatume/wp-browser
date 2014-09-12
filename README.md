@@ -115,16 +115,30 @@ and configure it using the required parameters:
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
 
-#### wpbootstrap
-The CLI application also adds the `wpbootstrap` command argument to allow for a quick WordPress testing environment setup.
+#### bootstrap
+The CLI application adds the `bootstrap` command argument to allow for a quick WordPress testing environment setup replacing the default bootstrap configuration created by Codeception.
 
-    wpcept wpbootstrap
+    wpcept bootstrap
 
-The command will generate the "UI", "Service" and "Unit" suites following the [Testing Pyramid test organization paradigm](http://martinfowler.com/bliki/TestPyramid.html) and will take care of setting up default modules and their settings for each like:
+The command will generate the "Unit", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
 
-* Unit - `Asserts` and `Helper` modules, Codeception standard
-* Service - `Filesystem`, `WPDb`, `WPLoader` and `Helper` modules
-* UI - `WPBrowser`, `WPDb` and `Helper` modules
+* Unit with `Asserts` and `UnitHelper` modules
+* Functional with `Filesystem`, `WPDb`, `WPLoader` and `FunctionalHelper` modules
+* Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
+
+Please note that defautl Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+
+#### bootstrap:pyramid
+The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
+The command
+
+    wpcept bootstrap:pyramid
+
+will generate the "UI", "Service" and "Unit" suites and will take care of setting up default modules and their settings for each like:
+
+* Unit with `Asserts` and `UnitHelper` modules
+* Functional with `Filesystem`, `WPDb`, `WPLoader` and `FunctionalHelper` modules
+* Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
 
 #### generate:wpunit
 Generates `WP_UnitTestCase` classes using the
