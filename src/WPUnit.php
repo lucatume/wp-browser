@@ -12,11 +12,11 @@ class WPUnit {
 {{namespace}}
 class {{name}}Test extends \WP_UnitTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
     }
 
