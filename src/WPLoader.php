@@ -105,25 +105,30 @@ class WPLoader extends Module
      */
     protected function defineGlobals()
     {
-        extract($this->config);
-        
         // allow me not to bother with traling slashes
-        $wpRootFolder = rtrim($wpRootFolder, '/') . '/';
-        define('ABSPATH', $wpRootFolder);
-        define('DB_NAME', $dbName);
-        define('DB_USER', $dbUser);
-        define('DB_PASSWORD', $dbPassword);
-        define('DB_HOST', $dbHost);
-        define('DB_CHARSET', $dbCharset);
-        define('DB_COLLATE', $dbCollate);
-        define('WP_TESTS_TABLE_PREFIX', $tablePrefix);
-        define('WP_TESTS_DOMAIN', $domain);
-        define('WP_TESTS_EMAIL', $adminEmail);
-        define('WP_TESTS_TITLE', $title);
-        define('WP_PHP_BINARY', $phpBinary);
-        define('WPLANG', $language);
-        define('WP_DEBUG', $wpDebug);
-        define('WP_TESTS_MULTISITE', $multisite);
+        $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+        $constants = array(
+            'ABSPATH' => $wpRootFolder,
+            'DB_NAME' => $this->config['dbName'],
+            'DB_USER' => $this->config['dbUser'],
+            'DB_PASSWORD' => $this->config['dbPassword'],
+            'DB_HOST' => $this->config['dbHost'],
+            'DB_CHARSET' => $this->config['dbCharset'],
+            'DB_COLLATE' => $this->config['dbCollate'],
+            'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'],
+            'WP_TESTS_DOMAIN' => $this->config['domain'],
+            'WP_TESTS_EMAIL' => $this->config['adminEmail'],
+            'WP_TESTS_TITLE' => $this->config['title'],
+            'WP_PHP_BINARY' => $this->config['phpBinary'],
+            'WPLANG' => $this->config['language'],
+            'WP_DEBUG' => $this->config['wpDebug'],
+            'WP_TESTS_MULTISITE' => $this->config['multisite'],
+        );
+        foreach ( $constants as $key => $value ) {
+            if ( !defined( $key ) ) {
+                define( $key, $value );
+            }
+        }
     }
     
     /**
