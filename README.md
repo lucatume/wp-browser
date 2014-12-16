@@ -3,91 +3,99 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception.
 
-The package includes a class extending Codeception PhpBrowser module that adds WordPress related assertions for <code>cest</code> and <code>cept</code> tests, an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing and a class taking care of installing and loading a WordPress installation relying on [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/).
-While working on the module I've added some methods to the <code>Codeception\Module\Db</code> class to implement CRUDness into it; see below the <code>ExtendedDb</code> class.
+The package includes a class extending Codeception PhpBrowser module that adds WordPress related assertions for `cest` and `cept` tests, an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing and a class taking care of installing and loading a WordPress installation relying on [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/).
+While working on the module I've added some methods to the `Codeception\Module\Db` class to implement CRUDness into it; see below the `ExtendedDb` class.
 
 ## Installation
-To install simply require the package in the <code>composer.json</code> file like
+To install simply require the package in the `composer.json` file like
 
+```json
   "require-dev":
     {
       "lucatume/wp-browser": "master@dev"
     }
+```
     
-and then use <code>composer update</code> to fetch the package.  
+and then use `composer update` to fetch the package.  
 After that  follow the configuration instructions below.
 
 ### WPBrowser configuration
-WPBrowser extends <code>PHPBrowser</code> module hence any parameter required and available to that module is required and available in <code>WPBrowser</code> as well.  
-In the suite <code>.yml</code> configuration file add the module among the loaded ones
+WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
+In the suite `.yml` configuration file add the module among the loaded ones
 
-    modules:
-        enabled:
-            - WPBrowser
-        config:
-            WPBrowser:
-                url: 'http://example.local'
-                adminUsername: 'root'
-                adminPassword: 'root'
-                adminUrl: '/wp-core/wp-admin'
+```yml
+  modules:
+      enabled:
+          - WPBrowser
+      config:
+          WPBrowser:
+              url: 'http://example.local'
+              adminUsername: 'root'
+              adminPassword: 'root'
+              adminUrl: '/wp-core/wp-admin'
+```
 
-and configure <code>PHPBrowser</code> parameters and the additional ones available to the <code>WPBrowser</code> module:  
+and configure `PHPBrowser` parameters and the additional ones available to the `WPBrowser` module:  
 
-* <code>adminUsername</code> - the site administrator username (required)
-* <code>adminPassword</code> - the site administrator login name (required)
-* <code>adminUrl</code> - the relative to the <code>url</code> parameter path to the administration area of the site  (required)
+* `adminUsername` - the site administrator username (required)
+* `adminPassword` - the site administrator login name (required)
+* `adminUrl` - the relative to the `url` parameter path to the administration area of the site  (required)
 
 ### WPDb configuration
-The module extends the <code>Db</code> module hence any parameter required and available by the <code>Db module</code> is required and available in the <code>WPDb</code> module as well.  
-In the suite <code>.yml</code> configuration file add the module among the loaded ones
+The module extends the `Db` module hence any parameter required and available by the `Db module` is required and available in the `WPDb` module as well.  
+In the suite `.yml` configuration file add the module among the loaded ones
 
-    modules:
-        enabled:
-            - WPDb
-        config:
-            WPDb:
-                dsn: 'mysql:host=localhost;dbname=testdb'
-                user: 'root'
-                password: ''
-                dump: 'tests/_data/dump.sql'
-                populate: true
-                cleanup: true
-                url: 'http://example.local'
-                tablePrefix: 'wp_'
-                checkExistence: true
-                update: true
+```yml
+  modules:
+      enabled:
+          - WPDb
+      config:
+          WPDb:
+              dsn: 'mysql:host=localhost;dbname=testdb'
+              user: 'root'
+              password: ''
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              url: 'http://example.local'
+              tablePrefix: 'wp_'
+              checkExistence: true
+              update: true
+```
 
-and configure <code>Db</code> parameters and the additional ones available to the <code>WPDb</code> module:  
+and configure `Db` parameters and the additional ones available to the `WPDb` module:  
     
-* <code>url</code> - the site home url (required)
-* <code>tablePrefix</code> - allows specifying the table prefix used in the installation, defaults to "wp_" (optional)
-* <code>checkExistence</code> - enables some low level AI on the module side to insert needed elements in the database, e.g. will add a term and post before adding a relation between them; defaults to <code>false</code> (optional)
-* <code>update</code> - will try updating the database on duplicate entries; defaults to <code>true</code> (optional)
+* `url` - the site home url (required)
+* `tablePrefix` - allows specifying the table prefix used in the installation, defaults to "wp_" (optional)
+* `checkExistence` - enables some low level AI on the module side to insert needed elements in the database, e.g. will add a term and post before adding a relation between them; defaults to `false` (optional)
+* `update` - will try updating the database on duplicate entries; defaults to `true` (optional)
 
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
 An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.
-In the suite <code>.yml</code> configuration file add the module among the loaded ones
+In the suite `.yml` configuration file add the module among the loaded ones
 
-    modules:
-        enabled:
-            - WPLoader
-        config:
-            WPLoader:
-                wpRootFolder: "/Users/User/www/wordpress"
-                dbNAme: "wpress-tests"
-                dbHost: "localhost"
-                dbUser: "root"
-                dbPassword: "root"
-                wpDebug: true
-                dbCharset: "utf8"
-                dbCollate: ""
-                tablePrefix: "wptests_"
-                domain: "example.org"
-                adminEmail: "admin@example.com"
-                title: "Test Blog"
-                phpBinary: "php"
-                language: ""
+```yml
+  modules:
+      enabled:
+          - WPLoader
+      config:
+          WPLoader:
+              wpRootFolder: "/Users/User/www/wordpress"
+              dbNAme: "wpress-tests"
+              dbHost: "localhost"
+              dbUser: "root"
+              dbPassword: "root"
+              wpDebug: true
+              dbCharset: "utf8"
+              dbCollate: ""
+              tablePrefix: "wptests_"
+              domain: "example.org"
+              adminEmail: "admin@example.com"
+              title: "Test Blog"
+              phpBinary: "php"
+              language: ""
+```
 
 and configure it using the required parameters:
 
@@ -118,7 +126,9 @@ The package will create a link to the `bin/wpcept` script file; that's an extens
 #### bootstrap
 The CLI application adds the `bootstrap` command argument to allow for a quick WordPress testing environment setup replacing the default bootstrap configuration created by Codeception.
 
-    wpcept bootstrap
+```sh
+  wpcept bootstrap
+```
 
 The command will generate the "Unit", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
 
@@ -132,7 +142,9 @@ Please note that defautl Codeception suite bootstrapping is available using the 
 The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
 The command
 
-    wpcept bootstrap:pyramid
+```sh
+  wpcept bootstrap:pyramid
+```
 
 will generate the "UI", "Service" and "Unit" suites and will take care of setting up default modules and their settings for each like:
 
@@ -143,123 +155,137 @@ will generate the "UI", "Service" and "Unit" suites and will take care of settin
 #### generate:wpunit
 Generates `WP_UnitTestCase` classes using the
 
-    wpcept generate:wpunit suite File
+```sh
+  wpcept generate:wpunit suite File
+```
 
 The command will generate a skeleton test case like
 
-    <?php
+```php
+<?php
 
-    class SomeMoreTest extends \WP_UnitTestCase
+class SomeMoreTest extends \WP_UnitTestCase
+{
+    protected function setUp()
     {
-        protected function setUp()
-        {
-        }
-
-        protected function tearDown()
-        {
-        }
-
-        // tests
-        public function testMe()
-        {
-        }
-
     }
+
+    protected function tearDown()
+    {
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
 
 Any other `codecept` option remains intact and available. 
 
 ### ExtendedDb configuration
-The module has the same configuration as the <code>Db</code> one and hence will not require any additional parameter beside those required/available to the <code>Db</code> module.
-In the suite <code>.yml</code> configuration file add the module among the loaded ones
+The module has the same configuration as the `Db` one and hence will not require any additional parameter beside those required/available to the `Db` module.
+In the suite `.yml` configuration file add the module among the loaded ones
 
-    modules:
-        enabled:
-            - ExtendedDb
-        config:
-            ExtendedDb:
-                dsn: 'mysql:host=localhost;dbname=testdb'
-                user: 'root'
-                password: ''
-                dump: 'tests/_data/dump.sql'
-                populate: true
-                cleanup: true
+```yml
+  modules:
+      enabled:
+          - ExtendedDb
+      config:
+          ExtendedDb:
+              dsn: 'mysql:host=localhost;dbname=testdb'
+              user: 'root'
+              password: ''
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+```
 
-and configure <code>Db</code> parameters as usual.
+and configure `Db` parameters as usual.
 
 ## Methods
 
 ### WPBrowser module
-The module adds methods that can be used in <code>.cest</code> and <code>.cept</code> methods using the same <code>$I->doSomething</code> syntax used in PhpBrowser.  
+The module adds methods that can be used in `.cest` and `.cept` methods using the same `$I->doSomething` syntax used in PhpBrowser.  
 Included methods are:
-    
-    // login as administrator using username and password
-    public function loginAsAdmin();
 
-    // login as user
-    public function loginAs($username, $password);
+```php
+  // login as administrator using username and password
+  public function loginAsAdmin();
 
-    // go the plugins page
-    public function amOnPluginsPage();
+  // login as user
+  public function loginAs($username, $password);
 
-    // activate a plugin from the plugin page
-    public function activatePlugin($pluginSlug);
+  // go the plugins page
+  public function amOnPluginsPage();
 
-    // deactivate a plugin from the plugin page
-    public function deactivatePlugin($pluginSlug);
+  // activate a plugin from the plugin page
+  public function activatePlugin($pluginSlug);
 
-    // check that a plugin is installed and deactivated from the plugin page
-    public function seePluginDeactivated($pluginSlug);
+  // deactivate a plugin from the plugin page
+  public function deactivatePlugin($pluginSlug);
 
-    // check that a plugin is installed and activated from the plugin page
-    public function seePluginActivated($pluginSlug);
+  // check that a plugin is installed and deactivated from the plugin page
+  public function seePluginDeactivated($pluginSlug);
 
-    // check that a plugin is installed from the plugin page
-    public function seePluginInstalled($pluginSlug);
+  // check that a plugin is installed and activated from the plugin page
+  public function seePluginActivated($pluginSlug);
 
-    // check that a plugin is not installed from the plugin page
-    public function doNotSeePluginInstalled($pluginSlug);
+  // check that a plugin is installed from the plugin page
+  public function seePluginInstalled($pluginSlug);
 
-    // check for an error admin notice
-    public function seeErrorMessage($classes = '');
+  // check that a plugin is not installed from the plugin page
+  public function doNotSeePluginInstalled($pluginSlug);
 
-    // check for an updated admin notice
-    public function seeMessage($classes = '');
+  // check for an error admin notice
+  public function seeErrorMessage($classes = '');
 
-    // check that the current page is a wp_die generated one
-    public function seeWpDiePage();
+  // check for an updated admin notice
+  public function seeMessage($classes = '');
 
-Methods like <code>seePlugin...</code> require the use of the <code>amOnPluginsPage</code> method before their invocation to navigate PhpBrowser to the right folder.
+  // check that the current page is a wp_die generated one
+  public function seeWpDiePage();
+```
+
+Methods like `seePlugin...` require the use of the `amOnPluginsPage` method before their invocation to navigate PhpBrowser to the right folder.
 
 ### WPDb module
-The module extends <code>Codeception\Module\Db</code> and will hence act as a drop-in replacement for it. It adds an optional <code>tablePrefix</code> configuration parameter, defaulting to <code>wp</code>, and will require the same parameters as the original module.  
-The module is meant to be a WordPress specific extension of the <code>Db</code> module and will hence decline the <code>have</code> and <code>see</code> methods for each WordPress table. As an example the methods for the <code>options</code> table are
+The module extends `Codeception\Module\Db` and will hence act as a drop-in replacement for it. It adds an optional `tablePrefix` configuration parameter, defaulting to `wp`, and will require the same parameters as the original module.  
+The module is meant to be a WordPress specific extension of the `Db` module and will hence decline the `have` and `see` methods for each WordPress table. As an example the methods for the `options` table are
 
-    public function haveOptionInDatabase($option_name, $option_value);
-    
-    public function haveSerializedOptionInDatabase($option_name, $option_value);
-    
-    public function seeOptionInDatabase($option_name, $option_value);
-    
-    public function dontSeeOptionInDatabase($option_name, $option_value);
-    
-    public function seeSerializedOptionInDatabase($option_name, $option_value);
-    
-    public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
+```php
+  public function haveOptionInDatabase($option_name, $option_value);
+  
+  public function haveSerializedOptionInDatabase($option_name, $option_value);
+  
+  public function seeOptionInDatabase($option_name, $option_value);
+  
+  public function dontSeeOptionInDatabase($option_name, $option_value);
+  
+  public function seeSerializedOptionInDatabase($option_name, $option_value);
+  
+  public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
+```
 
 see source for all methods.  
-I've added additional methods to have full control on the database setup and be able to remove entries from each table like
+I've added additional methods to have full control on the database setup and be able to remove entries from each table like:
 
-    public function dontHaveOptionInDatabase(array $criteria);
+```php
+  public function dontHaveOptionInDatabase(array $criteria);
 
-    public function dontHaveUserInDatabase(array $criteria);
+  public function dontHaveUserInDatabase(array $criteria);
 
-    public function dontHavePostInDatabase(array $criteria);
+  public function dontHavePostInDatabase(array $criteria);
+```
 
-wrapping the <code>ExtendedDb::dontHaveInDatabase</code> method for quicker and clearer access; a <code>dontHaveSomethinInDatabase</code> method exists for each table, take a look at the source to see them all.
+wrapping the `ExtendedDb::dontHaveInDatabase` method for quicker and clearer access; a `dontHaveSomethinInDatabase` method exists for each table, take a look at the source to see them all.
 
 ### ExtendedDb module
-The module is an extension of the <code>Codeception\Module\Db</code> class implementing some methods to allow for more CRUD complete operations on the database with the methods
+The module is an extension of the `Codeception\Module\Db` class implementing some methods to allow for more CRUD complete operations on the database with the methods
 
-    public function dontHaveInDatabase($table, array $criteria);
+```php
+  public function dontHaveInDatabase($table, array $criteria);
 
-    public function haveOrUpdateInDatabase($table, array $data)
+  public function haveOrUpdateInDatabase($table, array $data)
+```
