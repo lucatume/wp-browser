@@ -41,6 +41,31 @@ and configure `PHPBrowser` parameters and the additional ones available to the `
 * `adminPassword` - the site administrator login name (required)
 * `adminUrl` - the relative to the `url` parameter path to the administration area of the site  (required)
 
+### WPWebDriver configuration
+WPWebDriver extends `WebDriver` module hence any parameter required and available to that module is required and available in `WPWebDriver` as well.
+In the suite `.yml` configuration file add the module among the loaded ones
+
+```yml
+  modules:
+      enabled:
+          - WPWebDriver
+      config:
+          WPBrowser:
+              url: 'http://example.local'
+              browser: phantomjs
+              port: 4444
+              window_size: '1024x768'
+              adminUsername: 'root'
+              adminPassword: 'root'
+              adminUrl: '/wp-core/wp-admin'
+```
+
+and configure `WPWebDriver` parameters and the additional ones available to the `WPWebDriver` module:
+
+* `adminUsername` - the site administrator username (required)
+* `adminPassword` - the site administrator login name (required)
+* `adminUrl` - the relative to the `url` parameter path to the administration area of the site  (required)
+
 ### WPDb configuration
 The module extends the `Db` module hence any parameter required and available by the `Db module` is required and available in the `WPDb` module as well.  
 In the suite `.yml` configuration file add the module among the loaded ones
