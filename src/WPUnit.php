@@ -12,12 +12,20 @@ class WPUnit {
 {{namespace}}
 class {{name}}Test extends \WP_UnitTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
+        // before
+        parent::setUp();
+
+        // your set up methods here
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
+        // your tear down methods here
+
+        // then
+        parent::tearDown();
     }
 
     // tests
