@@ -50,7 +50,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
       enabled:
           - WPWebDriver
       config:
-          WPBrowser:
+          WPWebDriver:
               url: 'http://example.local'
               browser: phantomjs
               port: 4444
