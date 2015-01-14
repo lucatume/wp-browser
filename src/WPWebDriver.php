@@ -2,15 +2,14 @@
 
 namespace Codeception\Module;
 
-use Codeception\Module\PhpBrowser;
+use Codeception\Module\WebDriver;
 
 /**
  * A Codeception module offering specific WordPress browsing methods.
  */
-class WPBrowser extends PhpBrowser
+class WPWebDriver extends WebDriver
 {
     use WPBrowserMethods;
-
     /**
      * The module required fields, to be set in the suite .yml configuration file.
      *
@@ -47,6 +46,4 @@ class WPBrowser extends PhpBrowser
         $this->adminUrl = rtrim($this->config['adminUrl'], '/');
         $this->pluginsUrl = $this->adminUrl . '/plugins.php';
     }
-
-
 }
