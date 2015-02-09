@@ -271,6 +271,9 @@ Included methods are:
 
   // check that the current page is a wp_die generated one
   public function seeWpDiePage();
+
+  // grab all cookies whose name matches a pattern
+  public function grabCookiesWithPattern($pattern);
 ```
 
 Methods like `seePlugin...` require the use of the `amOnPluginsPage` method before their invocation to navigate PhpBrowser to the right folder.
