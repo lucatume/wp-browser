@@ -63,8 +63,9 @@ if(isset($GLOBALS['wp_tests_options'])) {
 	}
 }
 
-// Load WordPress
-require_once ABSPATH . '/wp-settings.php';
+// Load WordPress: "untrailingslash" ABSPATH first of all to avoid double slashes in filepath,
+// while still working if ABSPATH did not include a trailing slash
+require_once rtrim( ABSPATH, '/\\' ) . '/wp-settings.php';
 
 // Delete any default posts & related data
 _delete_all_posts();
