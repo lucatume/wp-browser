@@ -3,6 +3,7 @@
 namespace Codeception\Module;
 
 use Codeception\Module\PhpBrowser;
+use Symfony\Component\BrowserKit\Cookie;
 
 /**
  * A Codeception module offering specific WordPress browsing methods.
@@ -48,5 +49,32 @@ class WPBrowser extends PhpBrowser
         $this->pluginsUrl = $this->adminUrl . '/plugins.php';
     }
 
+    /**
+     * Returns all the cookies whose name matches a regex pattern.
+     *
+     * @param string $cookiePattern
+     *
+     * @return Cookie|null
+     */
+    public function grabCookiesWithPattern( $cookiePattern ) {
+        /**
+         * @var Cookie[]
+         */
+        $cookies = $this->client->getCookieJar()->all();
 
+        if ( ! $cookies ) {
+            return null;
+        }
+        $matchingCookies = array_filter( $cookies, function ( Cookie $cookie ) use ( $cookiePattern ) {
+
+            return preg_match( $cookiePattern, $cookie->getName() );
+        } );
+        $cookieList = array_map( function ( Cookie $cookie ) {
+            return sprintf( '{"%s": "%s"}', $cookie->getName(), $cookie->getValue() );
+        }, $matchingCookies );
+
+        $this->debug( 'Cookies matching pattern ' . $cookiePattern . ' : ' . implode( ', ', $cookieList ) );
+
+        return is_array( $matchingCookies ) ? $matchingCookies : null;
+    }
 }
