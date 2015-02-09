@@ -46,4 +46,30 @@ class WPWebDriver extends WebDriver
         $this->adminUrl = rtrim($this->config['adminUrl'], '/');
         $this->pluginsUrl = $this->adminUrl . '/plugins.php';
     }
+
+    /**
+     * Returns all the cookies whose name matches a regex pattern.
+     *
+     * @param string $cookiePattern
+     *
+     * @return array|null
+     */
+    public function grabCookiesWithPattern( $cookiePattern ) {
+        $cookies = $this->webDriver->manage()->getCookies();
+
+        if ( ! $cookies ) {
+            return null;
+        }
+        $matchingCookies = array_filter( $cookies, function ( $cookie ) use ( $cookiePattern ) {
+
+            return preg_match( $cookiePattern, $cookie['name'] );
+        } );
+        $cookieList = array_map( function ( $cookie ) {
+            return sprintf( '{"%s": "%s"}', $cookie['name'], $cookie['value'] );
+        }, $matchingCookies );
+
+        $this->debug( 'Cookies matching pattern ' . $cookiePattern . ' : ' . implode( ', ', $cookieList ) );
+
+        return is_array( $matchingCookies ) ? $matchingCookies : null;
+    }
 }
