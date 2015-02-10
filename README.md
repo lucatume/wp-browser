@@ -274,6 +274,15 @@ Included methods are:
 
   // grab all cookies whose name matches a pattern
   public function grabCookiesWithPattern($pattern);
+
+  // grab WordPress test cookie
+  public function grabWordPressTestCookie($pattern = null);
+
+  // grab WordPress login cookie
+  public function grabWordPressLoginCookie($pattern = null);
+
+  // grab WordPrss auth cookie
+  public function grabWordPressAuthCookie($pattern = null);
 ```
 
 Methods like `seePlugin...` require the use of the `amOnPluginsPage` method before their invocation to navigate PhpBrowser to the right folder.
