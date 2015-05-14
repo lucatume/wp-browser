@@ -5,77 +5,125 @@ namespace Codeception\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Creates default config, tests directory and sample suites for current project. Use this command to start building a test suite.
- * The suites created reflect the UI, Service and Unit test pyramid paradigm.
- *
- * By default it will create 3 suites: **acceptance**, **functional**, and **unit**. To customize run this command with `--customize` option.
- *
- * For Codeception 1.x compatible setup run bootstrap in `--compat` option.
- *
- * * `codecept wpbootstrap` - creates `tests` dir and `codeception.yml` in current dir.
- * * `codecept wpbootstrap --customize` - set manually actors and suite names during setup
- * * `codecept wpbootstrap --compat` - prepare Codeception 1.x setup with Guy classes.
- * * `codecept wpbootstrap --namespace Frontend` - creates tests, and use `Frontend` namespace for actor classes and helpers.
- * * `codecept wpbootstrap --actor Wizard` - sets actor as Wizard, to have `TestWizard` actor in tests.
- * * `codecept wpbootstrap path/to/the/project` - provide different path to a project, where tests should be placed
- *
- */
 class WPBootstrap extends Bootstrap
 {
+
     public function getDescription()
     {
-        return "Sets up a WordPress testing environment.";
+        return "Sets up a WordPress CodeCeption testing environment.";
     }
 
-    /**
-     * Performs Codeception 1.x compatible setup using with Guy classes
-     */
-    protected function compatibilitySetup(OutputInterface $output)
+    public function createGlobalConfig()
     {
-        $this->actorSuffix = 'Guy';
+        $basicConfig = [
+            'actor' => $this->actorSuffix,
+            'paths' => [
+                'tests' => 'tests',
+                'log' => $this->logDir,
+                'data' => $this->dataDir,
+                'support' => $this->supportDir,
+                'envs' => $this->envsDir,
+            ],
+            'settings' => [
+                'bootstrap' => '_bootstrap.php',
+                'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
+                'memory_limit' => '1024M'
+            ],
+            'extensions' => [
+                'enabled' => ['Codeception\Extension\RunFailed']
+            ],
+            'modules' => [
+                'config' => [
+                    'Db' => [
+                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
+                        'user' => 'root',
+                        'password' => 'root',
+                        'dump' => 'tests/_data/dump.sql'
+                    ],
+                    'WPBrowser' => [
+                        'url' => 'http://wp.local',
+                        'adminUsername' => 'admin',
+                        'adminPassword' => 'admin',
+                        'adminUrl' => '/wp-admin'
+                    ],
+                    'WPDb' => [
+                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
+                        'user' => 'root',
+                        'password' => 'root',
+                        'dump' => 'tests/_data/dump.sql',
+                        'populate' => true,
+                        'cleanup' => true,
+                        'url' => 'http://wp.local',
+                        'tablePrefix' => 'wp_',
+                        'checkExistence' => true,
+                        'update' => true
+                    ],
+                    'WPLoader' => [
+                        'wpRootFolder' => '~/www/wordpress',
+                        'dbName' => 'wordpress-tests',
+                        'dbHost' => 'localhost',
+                        'dbUser' => 'root',
+                        'dbPassword' => 'root',
+                        'wpDebug' => true,
+                        'dbCharset' => 'utf8',
+                        'dbCollate' => '',
+                        'tablePrefix' => 'wp_',
+                        'domain' => 'wp.local',
+                        'adminEmail' => 'admin@wp.local',
+                        'title' => 'WP Tests',
+                        'phpBinary' => 'php',
+                        'language' => ''
+                    ],
+                    'WPWebDriver' => [
+                        'url' => 'http://wp.local',
+                        'browser' => 'phantomjs',
+                        'port' => 4444,
+                        'restart' => true,
+                        'wait' => 2,
+                        'adminUsername' => 'admin',
+                        'adminPassword' => 'admin',
+                        'adminUrl' => '/wp-admin'
+                    ]
+                ]
+            ]
+        ];
 
-        $this->logDir = 'tests/_log';
-        $this->helperDir = 'tests/_helpers';
-
-        $this->createGlobalConfig();
-        $output->writeln("File codeception.yml created       <- global configuration");
-
-        $this->createDirs();
-
-        $this->createUnitSuite('Code');
-        $output->writeln("tests/unit created                 <- unit tests");
-        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-        $this->createServiceSuite('Service');
-        $output->writeln("tests/functional created           <- functional tests");
-        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
-        $this->createAcceptanceSuite('UI');
-        $output->writeln("tests/acceptance created           <- acceptance tests");
-        $output->writeln("tests/acceptance.sacceptancete.yml written <- acceptance tests suite configuration");
-
-        if (file_exists('.gitignore')) {
-            file_put_contents('tests/_log/.gitignore', '');
-            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_log/*");
-            $output->writeln("tests/_log was added to .gitignore");
+        $str = Yaml::dump($basicConfig, 4);
+        if ($this->namespace) {
+            $str = "namespace: {$this->namespace}\n" . $str;
         }
-
-    }
-
-    protected function createUnitSuite($actor = 'Unit')
-    {
-        $suiteConfig = array(
-            'class_name' => $actor . $this->actorSuffix,
-            'modules' => array('enabled' => array('Asserts', $actor . 'Helper')),
-        );
-
-        $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for unit (internal) tests.\n";
-        $str .= Yaml::dump($suiteConfig, 2);
-
-        $this->createSuite('unit', $actor, $str);
+        file_put_contents('codeception.yml', $str);
     }
 
     protected function createFunctionalSuite($actor = 'Functional')
+    {
+        $suiteConfig = $this->getFunctionalSuiteConfig($actor);
+
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for WordPress functional tests.\n";
+        $str .= "# Emulate web requests and make application process them.\n";
+        $str .= Yaml::dump($suiteConfig, 2);
+        $this->createSuite('functional', $actor, $str);
+    }
+
+    protected function createAcceptanceSuite($actor = 'Acceptance')
+    {
+        $suiteConfig = $this->getAcceptanceSuiteConfig($actor);
+
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for WordPress acceptance tests.\n";
+        $str .= "# perform tests in browser using WPBrowser or WPWebDriver modules.\n";
+
+        $str .= Yaml::dump($suiteConfig, 5);
+        $this->createSuite('acceptance', $actor, $str);
+    }
+
+    /**
+     * @param $actor
+     *
+     * @return array
+     */
+    protected function getFunctionalSuiteConfig($actor)
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
@@ -84,108 +132,28 @@ class WPBootstrap extends Bootstrap
                     'Filesystem',
                     'WPDb',
                     'WPLoader',
-                    $actor . 'Helper'
-                ),
-                'config' => array(
-                    'WPDb' => array(
-                        'dsn' => 'mysql:host=localhost;dbname=testdb',
-                        'user' => 'root',
-                        'password' => '',
-                        'dump' => 'tests/_data/dump.sql',
-                        'populate' => true,
-                        'cleanup' => true,
-                        'url' => 'http://example.local',
-                        'tablePrefix' => 'wp_',
-                        'checkExistence' => true,
-                        'update' => true
-                    ),
-                    'WPLoader' => array(
-                        'wpRootFolder' => '/www/wordpress',
-                        'dbName' => 'wpress-tests',
-                        'dbHost' => 'localhost',
-                        'dbUser' => 'root',
-                        'dbPassword' => 'root',
-                        'wpDebug' => true,
-                        'dbCharset' => 'utf8',
-                        'dbCollate' => '',
-                        'tablePrefix' => 'wptests_',
-                        'domain' => 'example.org',
-                        'adminEmail' => 'admin@example.com',
-                        'title' => 'Test Blog',
-                        'phpBinary' => 'php',
-                        'language' => ''
-                    )
+                    "\\{$this->namespace}Helper\\$actor"
                 )
-            ),
+            )
         );
 
-        $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for functional tests.\n";
-        $str .= "# Emulate web requests and make application process them.\n";
-        $str .= Yaml::dump($suiteConfig, 2);
-        $this->createSuite('functional', $actor, $str);
+        return $suiteConfig;
     }
 
-    protected function createAcceptanceSuite($actor = 'Acceptance')
+    /**
+     * @param $actor
+     *
+     * @return array
+     */
+    protected function getAcceptanceSuiteConfig($actor)
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
             'modules' => array(
-                'enabled' => array('WPBrowser', 'WPDb', $actor . 'Helper'),
-                'config' => array(
-                    'WPBrowser' => array(
-                        'url' => 'http://example.local',
-                        'adminUsername' => 'root',
-                        'adminPassword' => 'root',
-                        'adminUrl' => '/wp-core/wp-admin'
-                    ),
-                    'WPDb' => array(
-                        'dsn' => 'mysql:host=localhost;dbname=testdb',
-                        'user' => 'root',
-                        'password' => '',
-                        'dump' => 'tests/_data/dump.sql',
-                        'populate' => true,
-                        'cleanup' => true,
-                        'url' => 'http://example.local',
-                        'tablePrefix' => 'wp_',
-                        'checkExistence' => true,
-                        'update' => true
-                    ),
-                )
-            ),
+                'enabled' => array('WPBrowser', 'WPDb', "\\{$this->namespace}Helper\\$actor"),
+            )
         );
 
-        $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for acceptance tests.\n";
-        $str .= "# perform tests in browser using WPBrowser.\n";
-
-        $str .= Yaml::dump($suiteConfig, 5);
-        $this->createSuite('acceptance', $actor, $str);
-    }
-
-    /**
-     * @param OutputInterface $output
-     */
-    protected function setup(OutputInterface $output)
-    {
-        $this->createGlobalConfig();
-        $output->writeln("File codeception.yml created       <- global configuration");
-
-        $this->createDirs();
-        $this->createUnitSuite();
-        $output->writeln("tests/unit created                 <- unit tests");
-        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-        $this->createFunctionalSuite();
-        $output->writeln("tests/functional created           <- functional tests");
-        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
-        $this->createAcceptanceSuite();
-        $output->writeln("tests/acceptance created           <- acceptance tests");
-        $output->writeln("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
-
-        if (file_exists('.gitignore')) {
-            file_put_contents('tests/_output/.gitignore', '');
-            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_output/*");
-            $output->writeln("tests/_output was added to .gitignore");
-        }
+        return $suiteConfig;
     }
 }
