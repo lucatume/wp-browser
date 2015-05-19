@@ -2,8 +2,8 @@
 namespace Codeception\Module;
 
 use Codeception\Configuration as Configuration;
-use Codeception\Exception\Module as ModuleException;
 use Codeception\Exception\ModuleConfig as ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use tad\wordpress\maker\CommentMaker;
 use tad\wordpress\maker\PostMaker;
