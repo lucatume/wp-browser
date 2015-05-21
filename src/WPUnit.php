@@ -12,6 +12,9 @@ class WPUnit {
 {{namespace}}
 class {{name}}Test extends \WP_UnitTestCase
 {
+
+    protected $backupGlobals = false;
+    
     public function setUp()
     {
         // before
