@@ -38,64 +38,53 @@ class WPBootstrapPyramid extends WPBootstrap
         $this->createSuite('ui', $actor, $str);
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
-    public function execute(InputInterface $input, OutputInterface $output)
-    {
-        if ($input->getOption('namespace')) {
-            $this->namespace = trim($input->getOption('namespace'), '\\') . '\\';
-        }
+    protected function compatibilitySetup( OutputInterface $output ) {
+        $this->actorSuffix = 'Guy';
 
-        if ($input->getOption('actor')) {
-            $this->actorSuffix = $input->getOption('actor');
-        }
-
-        $path = $input->getArgument('path');
-
-        if (!is_dir($path)) {
-            $output->writeln("<error>\nDirectory '$path' does not exist\n</error>");
-
-            return;
-        }
-
-        $realpath = realpath($path);
-        chdir($path);
-
-        if (file_exists('codeception.yml')) {
-            $output->writeln("<error>\nProject is already initialized in '$path'\n</error>");
-
-            return;
-        }
-
-        $output->writeln("<fg=white;bg=magenta> Initializing Codeception in " . $realpath . " </fg=white;bg=magenta>\n");
+        $this->logDir = 'tests/_log';
+        $this->helperDir = 'tests/_helpers';
 
         $this->createGlobalConfig();
         $output->writeln("File codeception.yml created       <- global configuration");
+
         $this->createDirs();
 
-        if (!$input->getOption('empty')) {
-            $this->createUnitSuite();
-            $output->writeln("tests/unit created                 <- unit tests");
-            $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createServiceSuite();
-            $output->writeln("tests/service created           <- service tests");
-            $output->writeln("tests/service.suite.yml written <- service tests suite configuration");
-            $this->createUiSuite();
-            $output->writeln("tests/ui created           <- ui tests");
-            $output->writeln("tests/ui.suite.yml written <- ui tests suite configuration");
+        $this->createUnitSuite();
+        $output->writeln("tests/unit created                 <- unit tests");
+        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
+        $this->createServiceSuite();
+        $output->writeln("tests/service created           <- service tests");
+        $output->writeln("tests/service.suite.yml written <- service tests suite configuration");
+        $this->createUiSuite();
+        $output->writeln("tests/ui created           <- ui tests");
+        $output->writeln("tests/ui.suite.yml written <- ui tests suite configuration");
+
+        if (file_exists('.gitignore')) {
+            file_put_contents('tests/_log/.gitignore', '');
+            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_log/*");
+            $output->writeln("tests/_log was added to .gitignore");
         }
+    }
 
-        $output->writeln(" --- ");
-        $this->ignoreFolderContent('tests/_output');
+    protected function setup( OutputInterface $output ) {
+        $this->createGlobalConfig();
+        $output->writeln("File codeception.yml created       <- global configuration");
 
-        file_put_contents('tests/_bootstrap.php', "<?php\n// This is global bootstrap for autoloading\n");
-        $output->writeln("tests/_bootstrap.php written <- global bootstrap file");
+        $this->createDirs();
+        $this->createUnitSuite();
+        $output->writeln("tests/unit created                 <- unit tests");
+        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
+        $this->createServiceSuite();
+        $output->writeln("tests/service created           <- service tests");
+        $output->writeln("tests/service.suite.yml written <- service tests suite configuration");
+        $this->createUiSuite();
+        $output->writeln("tests/ui created           <- ui tests");
+        $output->writeln("tests/ui.suite.yml written <- ui tests suite configuration");
 
-        $output->writeln("<info>Building initial {$this->actorSuffix} classes</info>");
-        $this->getApplication()->find('build')->run(new ArrayInput(['command' => 'build']), $output);
-
-        $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
+        if (file_exists('.gitignore')) {
+            file_put_contents('tests/_output/.gitignore', '');
+            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_output/*");
+            $output->writeln("tests/_output was added to .gitignore");
+        }
     }
 }
