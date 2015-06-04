@@ -3,7 +3,7 @@
 namespace Codeception\Module;
 
 
-use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleConfig;
 use Codeception\Module;
 
 /**
@@ -146,7 +146,7 @@ class WPLoader extends Module
         
         // check that the wordpress path exists
         if (!file_exists($this->config['wpRootFolder'])) {
-            throw new ModuleConfigException(__CLASS__, "\nWordpress root folder doesn't exists. Please, check that " . $this->config['wpRootFolder'] . " contains a valid WordPress installation.");
+            throw new ModuleConfig(__CLASS__, "\nWordpress root folder doesn't exists. Please, check that " . $this->config['wpRootFolder'] . " contains a valid WordPress installation.");
         }
         
         // WordPress  will deal with database connection errors
