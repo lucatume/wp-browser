@@ -28,9 +28,6 @@ class WPBootstrap extends Bootstrap
                 'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
                 'memory_limit' => '1024M'
             ],
-            'extensions' => [
-                'enabled' => ['Codeception\Extension\RunFailed']
-            ],
             'modules' => [
                 'config' => [
                     'Db' => [
