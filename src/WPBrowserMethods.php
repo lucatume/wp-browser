@@ -143,7 +143,9 @@
 			if ( is_array( $classes ) ) {
 				$classes = implode( '.', $classes );
 			}
-			$classes = '.' . $classes;
+			if ( $classes ) {
+				$classes = '.' . $classes;
+			}
 			$this->seeElement( '#message.error' . $classes );
 		}
 
