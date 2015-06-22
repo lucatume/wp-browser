@@ -21,7 +21,7 @@ class WPBootstrap extends Bootstrap
                 'tests'   => 'tests',
                 'log'     => $this->logDir,
                 'data'    => $this->dataDir,
-                'helpers' => $this->helperDir
+                'helpers' => $this->supportDir
             ],
             'settings' => [
                 'bootstrap' => '_bootstrap.php',
@@ -128,7 +128,7 @@ class WPBootstrap extends Bootstrap
                     'Filesystem',
                     'WPDb',
                     'WPLoader',
-                    $actor . "Helper"
+                    "\\{$this->namespace}Helper\\Functional"                
                 )
             )
         );
@@ -146,7 +146,7 @@ class WPBootstrap extends Bootstrap
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
             'modules' => array(
-                'enabled' => array('WPBrowser', 'WPDb', $actor . 'Helper'),
+                'enabled' => array('WPBrowser', 'WPDb', "\\{$this->namespace}Helper\\Acceptance"),
             )
         );
 
