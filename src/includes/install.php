@@ -7,14 +7,15 @@
 
 error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 
-$multisite = ! empty( $argv[1] );
-
 if(!class_exists('\Codeception\Module\WPLoader')){
     return;
 }
 
+Codeception\Module\WPLoader::defineGlobals();
 
-WPLoader::defineGlobals();
+// this replaces the original argument passed in with the `system` function
+$multisite = defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE;
+
 $table_prefix = WP_TESTS_TABLE_PREFIX ;
 
 define( 'WP_INSTALLING', true );
