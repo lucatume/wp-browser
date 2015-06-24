@@ -37,7 +37,8 @@ if ( "1" == getenv( 'WP_MULTISITE' ) ||
 require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
 $phpmailer = new MockPHPMailer();
 
-system( WP_PHP_BINARY . ' ' . escapeshellarg( dirname( __FILE__ ) . '/install.php' ) . ' ' . $multisite );
+// in place of executing the installation script require the (modified) installation file
+require 'install.php';
 
 if ( $multisite ) {
 	define( 'MULTISITE', true );
