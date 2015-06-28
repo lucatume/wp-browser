@@ -2,6 +2,7 @@
 
 namespace tad\wordpress\maker;
 
+use BaconStringUtils\Slugifier;
 use Badcow\LoremIpsum\Generator;
     
 /**
@@ -49,7 +50,7 @@ class PostMaker
             'comment_status' => 'open',
             'ping_status' => 'open',
             'post_password' => '',
-            'post_name' => lcfirst(\tad_Str::hyphen($title)),
+            'post_name' => (new Slugifier())->slugify($title),
             'to_ping' => '',
             'pinged' => '',
             'post_modified' => DateMaker::now(),
