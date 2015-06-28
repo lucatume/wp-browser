@@ -121,17 +121,17 @@ class WPBootstrap extends Bootstrap
      */
     protected function getFunctionalSuiteConfig($actor)
     {
-        $suiteConfig = array(
+        $suiteConfig = [
             'class_name' => $actor . $this->actorSuffix,
-            'modules' => array(
-                'enabled' => array(
+            'modules' => [
+                'enabled' => [
                     'Filesystem',
                     'WPDb',
                     'WPLoader',
-                    "\\{$this->namespace}Helper\\Functional"                
-                )
-            )
-        );
+                    $actor . 'Helper'
+                ]
+            ]
+        ];
 
         return $suiteConfig;
     }
@@ -145,9 +145,13 @@ class WPBootstrap extends Bootstrap
     {
         $suiteConfig = array(
             'class_name' => $actor . $this->actorSuffix,
-            'modules' => array(
-                'enabled' => array('WPBrowser', 'WPDb', "\\{$this->namespace}Helper\\Acceptance"),
-            )
+            'modules' => [
+                'enabled' => [
+                    'WPBrowser',
+                    'WPDb',
+                    $actor . 'Acceptance'
+                ],
+            ]
         );
 
         return $suiteConfig;
