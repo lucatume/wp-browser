@@ -18,9 +18,9 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "badcow/lorem-ipsum": "~1.*",
-    "bacon/bacon-string-utils": "~1.*",
-    "codeception/codeception": "~2.*"
+    "badcow/lorem-ipsum": "~1.0",
+    "bacon/bacon-string-utils": "~1.0",
+    "codeception/codeception": "~2.0"
   },
   "autoload": {
     "psr-4": {
