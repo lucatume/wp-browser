@@ -1,34 +1,41 @@
 {
-    "name": "lucatume/wp-browser",
-    "type": "library",
-    "description": "WordPress extension of the PhpBrowser class.",
-    "keywords": ["wordpress", "codeception"],
-    "homepage": "http://github.com/lucatume/wp-browser",
-    "license": "MIT",
-    "authors": [{
-        "name": "theAverageDev (Luca Tumedei)",
-        "email": "luca@theaveragedev.com",
-        "homepage": "http://theaveragedev.com",
-        "role": "Developer"
-    }],
-    "require": {
-        "php": ">=5.4.0",
-        "badcow/lorem-ipsum": "~1.0",
-        "bacon/bacon-string-utils": "~1.0",
-        "codeception/codeception": "~2.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Codeception\\Module\\": "src/",
-            "Codeception\\Lib\\Driver\\": "src/",
-            "Codeception\\Command\\": "src/",
-            "Codeception\\Lib\\Generator\\": "src/",
-            "tad\\wordpress\\maker\\": "src/",
-            "tad\\wordpress\\loader\\": "src/"
-        }
-    },
-    "require-dev": {
-        "codeception/codeception": "*"
-    },
-    "bin" : ["wpcept"]
+  "name": "lucatume/wp-browser",
+  "type": "library",
+  "description": "WordPress extension of the PhpBrowser class.",
+  "keywords": [
+    "wordpress",
+    "codeception"
+  ],
+  "homepage": "http://github.com/lucatume/wp-browser",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "theAverageDev (Luca Tumedei)",
+      "email": "luca@theaveragedev.com",
+      "homepage": "http://theaveragedev.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "badcow/lorem-ipsum": "~1.*",
+    "bacon/bacon-string-utils": "~1.*",
+    "codeception/codeception": "~2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Codeception\\Module\\": "src/",
+      "Codeception\\Lib\\Driver\\": "src/",
+      "Codeception\\Command\\": "src/",
+      "Codeception\\Lib\\Generator\\": "src/",
+      "tad\\wordpress\\maker\\": "src/",
+      "tad\\wordpress\\loader\\": "src/"
+    }
+  },
+  "require-dev": {
+    "codeception/codeception": "*"
+  },
+  "bin": [
+    "wpcept"
+  ]
 }
