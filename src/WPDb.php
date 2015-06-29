@@ -3,9 +3,7 @@ namespace Codeception\Module;
 
 use BaconStringUtils\Slugifier;
 use Codeception\Configuration as Configuration;
-use Codeception\Exception\ModuleConfig as ModuleConfigException;
-use Codeception\Exception\ModuleConfig;
-use Codeception\Exception\ModuleException;
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use tad\wordpress\maker\CommentMaker;
 use tad\wordpress\maker\PostMaker;
@@ -63,7 +61,7 @@ class WPDb extends ExtendedDb {
 		try {
 			$this->driver = Driver::create( $this->config['dsn'], $this->config['user'], $this->config['password'] );
 		} catch ( \PDOException $e ) {
-			throw new ModuleConfig( __CLASS__, $e->getMessage() . ' while creating PDO connection' );
+			throw new ModuleConfigException( __CLASS__, $e->getMessage() . ' while creating PDO connection' );
 		}
 
 		$this->dbh = $this->driver->getDbh();
