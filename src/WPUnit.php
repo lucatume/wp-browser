@@ -4,8 +4,8 @@ namespace Codeception\Lib\Generator;
 use Codeception\Util\Template;
 
 class WPUnit {
-    use Shared\Namespaces;
-    use Shared\Classname;
+    use Codeception\Lib\Generator\Shared\Classname;
+    use Codeception\Util\Shared\Namespaces;
 
     protected $template  = <<<EOF
 <?php
