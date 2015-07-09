@@ -21,7 +21,7 @@ class WPBootstrap extends Bootstrap
                 'tests'   => 'tests',
                 'log'     => $this->logDir,
                 'data'    => $this->dataDir,
-                'helpers' => $this->helperDir
+                'helpers' => $this->supportDir
             ],
             'settings' => [
                 'bootstrap' => '_bootstrap.php',
