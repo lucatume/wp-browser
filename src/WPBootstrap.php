@@ -149,7 +149,7 @@ class WPBootstrap extends Bootstrap
                 'enabled' => [
                     'WPBrowser',
                     'WPDb',
-                    $actor . 'Acceptance'
+                    $actor . 'Helper'
                 ],
             ]
         );
