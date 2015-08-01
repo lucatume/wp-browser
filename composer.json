@@ -20,7 +20,7 @@
     "php": ">=5.4.0",
     "badcow/lorem-ipsum": "~1.0",
     "bacon/bacon-string-utils": "~1.0",
-    "codeception/codeception": "~2.0"
+    "codeception/codeception": "2.1.1"
   },
   "autoload": {
     "psr-4": {
