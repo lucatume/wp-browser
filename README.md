@@ -120,6 +120,9 @@ In the suite `.yml` configuration file add the module among the loaded ones
               title: "Test Blog"
               phpBinary: "php"
               language: ""
+			  mu-plugins: ['my-first-mu-plugin.php','my-second-mu-plugin/my-second-mu-plugin.php']
+			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
+			  actions: ['my-first-action', 'my-second-action']
 ```
 
 and configure it using the required parameters:
@@ -142,6 +145,8 @@ and configure it using the required parameters:
 * `title` - string, def. `Test Blog`, the blog title, the `WP_TESTS_TITLE` global value.
 * `phpBinary` - string, def. `php`, the php bin command, the `WP_PHP_BINARY` global value.
 * `language` - string, def. ``, the installation language, the `WPLANG` global value.
+* `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
+* `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions that should be called after before any test case runs.
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
