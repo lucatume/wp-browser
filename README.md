@@ -121,7 +121,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               phpBinary: "php"
               language: ""
 			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
-			  actions: ['my-first-action', 'my-second-action']
+			  booststrapActions: ['my-first-action', 'my-second-action']
 ```
 
 and configure it using the required parameters:
