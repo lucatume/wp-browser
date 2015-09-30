@@ -137,28 +137,10 @@ class WPLoader extends Module {
 
 		require_once dirname( __FILE__ ) . '/includes/functions.php';
 
-		tests_add_filter( 'muplugins_loaded', [ $this, 'loadMuPlugins' ] );
 		tests_add_filter( 'muplugins_loaded', [ $this, 'loadPlugins' ] );
 		tests_add_filter( 'muplugins_loaded', [ $this, 'bootstrapActions' ] );
 
 		require_once $this->wpBootstrapFile;
-	}
-
-	/**
-	 * Loads the mu-plugins required by the tests.
-	 */
-	public function loadMuPlugins() {
-		if ( empty( $this->config['mu-plugins'] ) || !defined( 'WPMU_PLUGIN_DIR' ) ) {
-			return;
-		}
-
-		foreach ( $this->config['mu-plugins'] as $plugin ) {
-			$path = trailingslashit( WPMU_PLUGIN_DIR ) . $plugin;
-			if ( !file_exists( $path ) ) {
-				continue;
-			}
-			require_once $path;
-		}
 	}
 
 	/**

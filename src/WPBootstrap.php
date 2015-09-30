@@ -69,9 +69,8 @@ class WPBootstrap extends Bootstrap
                         'title' => 'WP Tests',
                         'phpBinary' => 'php',
                         'language' => '',
-                        'mu-plugins' => ['my-first-mu-plugin.php','my-second-mu-plugin/my-second-mu-plugin.php'],
                         'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'actions' => ['my-first-action', 'my-second-action']
+                        'bootstrapActions' => ['my-first-action', 'my-second-action']
                     ],
                     'WPWebDriver' => [
                         'url' => 'http://wp.local',
