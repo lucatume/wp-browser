@@ -68,7 +68,10 @@ class WPBootstrap extends Bootstrap
                         'adminEmail' => 'admin@wp.local',
                         'title' => 'WP Tests',
                         'phpBinary' => 'php',
-                        'language' => ''
+                        'language' => '',
+                        'mu-plugins' => ['my-first-mu-plugin.php','my-second-mu-plugin/my-second-mu-plugin.php'],
+                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'actions' => ['my-first-action', 'my-second-action']
                     ],
                     'WPWebDriver' => [
                         'url' => 'http://wp.local',
