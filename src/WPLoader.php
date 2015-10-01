@@ -59,10 +59,30 @@ class WPLoader extends Module {
 	 * global value.
 	 * language - string, def. ``, the installation language, the WPLANG global
 	 * value.
+	 * `config_file` - string, def. ``, the path to a custom config file relative to the `wpRootFolder` folder, no
+	 * leading slash needed.
+	 * `plugins` - array, def. `[]`, a list of plugins that should be loaded
+	 * before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
+	 * `bootstrapActions` - array, def. `[]`, a list of actions that should be called after before any test case runs.
+	 *
 	 *
 	 * @var array
 	 */
-	protected $config = array( 'wpDebug' => true, 'multisite' => false, 'dbCharset' => 'utf8', 'dbCollate' => '', 'tablePrefix' => 'wptests_', 'domain' => 'example.org', 'adminEmail' => 'admin@example.org', 'title' => 'Test Blog', 'phpBinary' => 'php', 'language' => '', );
+	protected $config = array(
+		'wpDebug'     => true,
+		'multisite'   => false,
+		'dbCharset'   => 'utf8',
+		'dbCollate'   => '',
+		'tablePrefix' => 'wptests_',
+		'domain'      => 'example.org',
+		'adminEmail'  => 'admin@example.org',
+		'title'       => 'Test Blog',
+		'phpBinary'   => 'php',
+		'language'    => '',
+		'config_file' => '',
+		'plugins'     => '',
+		'bootstrapActions' => ''
+	);
 
 	/**
 	 * The path to the modified tests bootstrap file.
@@ -87,9 +107,32 @@ class WPLoader extends Module {
 	protected function defineGlobals() {
 		// allow me not to bother with traling slashes
 		$wpRootFolder = rtrim( $this->config['wpRootFolder'], '/' ) . '/';
-		$constants    = array( 'ABSPATH' => $wpRootFolder, 'DB_NAME' => $this->config['dbName'], 'DB_USER' => $this->config['dbUser'], 'DB_PASSWORD' => $this->config['dbPassword'], 'DB_HOST' => $this->config['dbHost'], 'DB_CHARSET' => $this->config['dbCharset'], 'DB_COLLATE' => $this->config['dbCollate'], 'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'], 'WP_TESTS_DOMAIN' => $this->config['domain'], 'WP_TESTS_EMAIL' => $this->config['adminEmail'], 'WP_TESTS_TITLE' => $this->config['title'], 'WP_PHP_BINARY' => $this->config['phpBinary'], 'WPLANG' => $this->config['language'], 'WP_DEBUG' => $this->config['wpDebug'], 'WP_TESTS_MULTISITE' => $this->config['multisite'], );
+
+		// load an extra config file if any
+		if ( ! empty( $this->config['config_file'] ) ) {
+			require_once $wpRootFolder . $this->config['config_file'];
+		}
+
+		$constants = array(
+			'ABSPATH'               => $wpRootFolder,
+			'DB_NAME'               => $this->config['dbName'],
+			'DB_USER'               => $this->config['dbUser'],
+			'DB_PASSWORD'           => $this->config['dbPassword'],
+			'DB_HOST'               => $this->config['dbHost'],
+			'DB_CHARSET'            => $this->config['dbCharset'],
+			'DB_COLLATE'            => $this->config['dbCollate'],
+			'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'],
+			'WP_TESTS_DOMAIN'       => $this->config['domain'],
+			'WP_TESTS_EMAIL'        => $this->config['adminEmail'],
+			'WP_TESTS_TITLE'        => $this->config['title'],
+			'WP_PHP_BINARY'         => $this->config['phpBinary'],
+			'WPLANG'                => $this->config['language'],
+			'WP_DEBUG'              => $this->config['wpDebug'],
+			'WP_TESTS_MULTISITE'    => $this->config['multisite']
+		);
+
 		foreach ( $constants as $key => $value ) {
-			if ( !defined( $key ) ) {
+			if ( ! defined( $key ) ) {
 				define( $key, $value );
 			}
 		}
@@ -108,7 +151,7 @@ class WPLoader extends Module {
 	public function _initialize() {
 
 		// check that the wordpress path exists
-		if ( !file_exists( $this->config['wpRootFolder'] ) ) {
+		if ( ! file_exists( $this->config['wpRootFolder'] ) ) {
 			throw new ModuleConfigException( __CLASS__, "\nWordpress root folder doesn't exists. Please, check that " . $this->config['wpRootFolder'] . " contains a valid WordPress installation." );
 		}
 
@@ -137,6 +180,7 @@ class WPLoader extends Module {
 
 		require_once dirname( __FILE__ ) . '/includes/functions.php';
 
+		$this->setActivePlugins();
 		tests_add_filter( 'muplugins_loaded', [ $this, 'loadPlugins' ] );
 		tests_add_filter( 'muplugins_loaded', [ $this, 'bootstrapActions' ] );
 
@@ -147,12 +191,12 @@ class WPLoader extends Module {
 	 * Loads the plugins required by the test.
 	 */
 	public function loadPlugins() {
-		if ( empty( $this->config['plugins'] ) || !defined( 'WP_PLUGIN_DIR' ) ) {
+		if ( empty( $this->config['plugins'] ) || ! defined( 'WP_PLUGIN_DIR' ) ) {
 			return;
 		}
 		foreach ( $this->config['plugins'] as $plugin ) {
 			$path = trailingslashit( WP_PLUGIN_DIR ) . $plugin;
-			if ( !file_exists( $path ) ) {
+			if ( ! file_exists( $path ) ) {
 				continue;
 			}
 			require_once $path;
@@ -168,6 +212,18 @@ class WPLoader extends Module {
 		}
 		foreach ( $this->config['bootstrapActions'] as $action ) {
 			do_action( $action );
+		}
+	}
+
+	private function setActivePlugins() {
+		if ( empty( $this->config['plugins'] ) ) {
+			return;
+		}
+
+		if ( ! empty( $GLOBALS['wp_tests_options']['active_plugins'] ) ) {
+			$GLOBALS['wp_tests_options']['active_plugins'] = array_merge( $GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins'] );
+		} else {
+			$GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
 		}
 	}
 
