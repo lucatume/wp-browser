@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Added
+- added the `changelog.txt` file, thanks @olivierlacan for the http://keepachangelog.com/ site and the information.
+
 ### Changed
 - WPLoader will look for the config file defined in the `config_file` parameter in WP root folder and the one above before throwing an module configuration exception.
 - Markdown formatting issues in the README file
