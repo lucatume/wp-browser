@@ -108,6 +108,9 @@ class WPLoader extends Module {
 		// allow me not to bother with traling slashes
 		$wpRootFolder = rtrim( $this->config['wpRootFolder'], '/' ) . '/';
 
+		// let's make sure this is pointing to a WordPress installation
+		$this->ensureWPRoot( $wpRootFolder );
+
 		// load an extra config file if any
 		$this->loadConfigFile( $wpRootFolder );
 
@@ -242,6 +245,15 @@ class WPLoader extends Module {
 				throw new ModuleConfigException( __CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or the one above." );
 			}
 			require_once $config_file;
+		}
+	}
+
+	/**
+	 * @param string $wpRootFolder
+	 */
+	private function ensureWPRoot( $wpRootFolder ) {
+		if ( ! file_exists( $wpRootFolder . 'wp-settings.php' ) ) {
+			throw new ModuleConfigException( __CLASS__, "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder." );
 		}
 	}
 
