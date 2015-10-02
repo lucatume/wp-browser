@@ -12,6 +12,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - WPLoader will look for the config file defined in the `config_file` parameter in WP root folder and the one above before throwing an module configuration exception.
 - Markdown formatting issues in the README file
+- WPDb module has been removed from default modules in the `functional` and `acceptance` suites bootstrapped using the `wpcept bootstrap` command
+- WPDb module has been removed from default modules in the `service` and `ui` suites bootstrapped using the `wpcept bootstrap:pyramid` command
 
 ## [1.6.18] - 2015-10-01
 ### Added
