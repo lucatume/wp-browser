@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 ### Added
 - added the `changelog.txt` file, thanks @olivierlacan for the http://keepachangelog.com/ site and the information.
+- check and exception for WPLoader `wpRootFolder` parameter
+- check and exception for conflicting WPDb, Db and WP Loader settings to avoid database handling issues
+- it's now possible to pass an array of paths to external config files as `config_file` WP Loader parameter
 
 ### Changed
 - WPLoader will look for the config file defined in the `config_file` parameter in WP root folder and the one above before throwing an module configuration exception.
