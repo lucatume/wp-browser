@@ -69,18 +69,18 @@ class WPLoader extends Module {
 	 * @var array
 	 */
 	protected $config = array(
-		'wpDebug'     => true,
-		'multisite'   => false,
-		'dbCharset'   => 'utf8',
-		'dbCollate'   => '',
-		'tablePrefix' => 'wptests_',
-		'domain'      => 'example.org',
-		'adminEmail'  => 'admin@example.org',
-		'title'       => 'Test Blog',
-		'phpBinary'   => 'php',
-		'language'    => '',
-		'config_file' => '',
-		'plugins'     => '',
+		'wpDebug'          => true,
+		'multisite'        => false,
+		'dbCharset'        => 'utf8',
+		'dbCollate'        => '',
+		'tablePrefix'      => 'wptests_',
+		'domain'           => 'example.org',
+		'adminEmail'       => 'admin@example.org',
+		'title'            => 'Test Blog',
+		'phpBinary'        => 'php',
+		'language'         => '',
+		'config_file'      => '',
+		'plugins'          => '',
 		'bootstrapActions' => ''
 	);
 
@@ -109,9 +109,7 @@ class WPLoader extends Module {
 		$wpRootFolder = rtrim( $this->config['wpRootFolder'], '/' ) . '/';
 
 		// load an extra config file if any
-		if ( ! empty( $this->config['config_file'] ) ) {
-			require_once $wpRootFolder . $this->config['config_file'];
-		}
+		$this->loadConfigFile( $wpRootFolder );
 
 		$constants = array(
 			'ABSPATH'               => $wpRootFolder,
@@ -224,6 +222,26 @@ class WPLoader extends Module {
 			$GLOBALS['wp_tests_options']['active_plugins'] = array_merge( $GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins'] );
 		} else {
 			$GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
+		}
+	}
+
+	/**
+	 * @param string $wpRootFolder The absolute path to the WordPress root installation folder.
+	 *
+	 * @throws ModuleConfigException
+	 */
+	protected function loadConfigFile( $wpRootFolder ) {
+		$frag = $this->config['config_file'];
+		if ( ! empty( $frag ) ) {
+			$config_file = $wpRootFolder . $frag;
+			if ( ! file_exists( $config_file ) ) {
+				// look in the folder above this one, take sub-folders installations into acount
+				$config_file = dirname( $wpRootFolder ) . DIRECTORY_SEPARATOR . $frag;
+			}
+			if ( ! file_exists( $config_file ) ) {
+				throw new ModuleConfigException( __CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or the one above." );
+			}
+			require_once $config_file;
 		}
 	}
 
