@@ -2,7 +2,7 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [1.6.19] - 2015-10-02
 ### Added
 - added the `changelog.txt` file, thanks @olivierlacan for the http://keepachangelog.com/ site and the information.
 - check and exception for WPLoader `wpRootFolder` parameter
@@ -28,7 +28,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.6.18...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.6.19...HEAD
+[1.6.19]: https://github.com/lucatume/wp-browser/compare/1.6.18...1.6.19
 [1.6.18]: https://github.com/lucatume/wp-browser/compare/1.6.17...1.6.18
 [1.6.17]: https://github.com/lucatume/wp-browser/compare/1.6.16...1.6.17
 [1.6.16]: https://github.com/lucatume/wp-browser/compare/1.6.15...1.6.16
