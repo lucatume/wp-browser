@@ -97,7 +97,8 @@ and configure `Db` parameters and the additional ones available to the `WPDb` mo
 
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
-An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.
+An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.  
+Since this module takes charge of setting up and cleaning the database used for the tests point it to a database that does not contain sensible data!  
 In the suite `.yml` configuration file add the module among the loaded ones
 
 ```yml
