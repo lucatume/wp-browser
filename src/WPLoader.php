@@ -61,7 +61,7 @@ class WPLoader extends Module
      * global value.
      * language - string, def. ``, the installation language, the WPLANG global
      * value.
-     * `config_file` - string, def. ``, the path to a custom config file relative to the `wpRootFolder` folder, no
+     * `config_file` - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
      * leading slash needed; this is the place where custom `wp_tests_options` could be set.
      * `plugins` - array, def. `[]`, a list of plugins that should be loaded
      * before any test case runs and after mu-plugins have been loaded; these should be defined in the
@@ -212,17 +212,20 @@ class WPLoader extends Module
      */
     protected function loadConfigFile($wpRootFolder)
     {
-        $frag = $this->config['config_file'];
-        if (!empty($frag)) {
-            $config_file = $wpRootFolder . $frag;
-            if (!file_exists($config_file)) {
-                // look in the folder above this one, take sub-folders installations into acount
-                $config_file = dirname($wpRootFolder) . DIRECTORY_SEPARATOR . $frag;
+        $frags = $this->config['config_file'];
+        $frags = is_array($frags) ?: [$frags];
+        foreach ($frags as $frag) {
+            if (!empty($frag)) {
+                $config_file = $wpRootFolder . $frag;
+                if (!file_exists($config_file)) {
+                    // look in the folder above this one, take sub-folders installations into acount
+                    $config_file = dirname($wpRootFolder) . DIRECTORY_SEPARATOR . $frag;
+                }
+                if (!file_exists($config_file)) {
+                    throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or the one above.");
+                }
+                require_once $config_file;
             }
-            if (!file_exists($config_file)) {
-                throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or the one above.");
-            }
-            require_once $config_file;
         }
     }
 
