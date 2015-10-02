@@ -1,0 +1,26 @@
+# Change Log
+All notable changes after version 1.6.16 to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [Unreleased][unreleased]
+### Changed
+- WPLoader will look for the config file defined in the `config_file` parameter in WP root folder and the one above before throwing an module configuration exception.
+- Markdown formatting issues in the README file
+
+## [1.6.18] - 2015-10-01
+### Added
+- `config_file` WPLoader parameter
+
+## [1.6.17] - 2015-09-30
+### Added
+- `plugins` WPLoader parameter
+- `bootstrapActions` WPLoader parameter
+
+## [1.6.16] - 2015-09-30
+### Fixed
+- Reference to ModuleConfigException class in WPLoader class.
+
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.6.18...HEAD
+[1.6.18]: https://github.com/lucatume/wp-browser/compare/1.6.17...1.6.18
+[1.6.17]: https://github.com/lucatume/wp-browser/compare/1.6.16...1.6.17
+[1.6.16]: https://github.com/lucatume/wp-browser/compare/1.6.15...1.6.16
