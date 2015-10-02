@@ -128,7 +128,6 @@ class WPBootstrap extends Bootstrap
             'modules' => [
                 'enabled' => [
                     'Filesystem',
-                    'WPDb',
                     'WPLoader',
                     "\\{$this->namespace}Helper\\{$actor}"
                 ]
@@ -150,7 +149,6 @@ class WPBootstrap extends Bootstrap
             'modules' => [
                 'enabled' => [
                     'WPBrowser',
-                    'WPDb',
                     "\\{$this->namespace}Helper\\{$actor}"
                 ],
             ]
