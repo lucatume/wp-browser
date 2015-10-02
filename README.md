@@ -147,7 +147,7 @@ and configure it using the required parameters:
 * `title` - string, def. `Test Blog`, the blog title, the `WP_TESTS_TITLE` global value.
 * `phpBinary` - string, def. `php`, the php bin command, the `WP_PHP_BINARY` global value.
 * `language` - string, def. ` `, the installation language, the `WPLANG` global value.
-* `config_file` - string, def. ` `, the path to a custom config file relative to the `wpRootFolder` folder, no leading slash needed.
+* `config_file` - string, def. ` `, the path to a custom config file relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions that should be called after before any test case runs.
 
