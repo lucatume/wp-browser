@@ -108,9 +108,6 @@ class WPLoader extends Module {
 		// allow me not to bother with traling slashes
 		$wpRootFolder = rtrim( $this->config['wpRootFolder'], '/' ) . '/';
 
-		// let's make sure this is pointing to a WordPress installation
-		$this->ensureWPRoot( $wpRootFolder );
-
 		// load an extra config file if any
 		$this->loadConfigFile( $wpRootFolder );
 
@@ -152,9 +149,8 @@ class WPLoader extends Module {
 	public function _initialize() {
 
 		// check that the wordpress path exists
-		if ( ! file_exists( $this->config['wpRootFolder'] ) ) {
-			throw new ModuleConfigException( __CLASS__, "\nWordpress root folder doesn't exists. Please, check that " . $this->config['wpRootFolder'] . " contains a valid WordPress installation." );
-		}
+		$wpRootFolder = $this->config['wpRootFolder'];
+		$this->ensureWPRoot( $wpRootFolder );
 
 		// WordPress  will deal with database connection errors
 		$this->wpBootstrapFile = dirname( __FILE__ ) . '/includes/bootstrap.php';
