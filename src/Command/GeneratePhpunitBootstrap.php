@@ -87,7 +87,11 @@ class GeneratePhpunitBootstrap extends Command
             $suitesEntries[] = $this->getTestsuiteEntry($args);
         }
 
-        $xmlFileContents = $this->getXmlFileContent($suitesEntries, $testsPath);
+        // maybe the user already did this and modified the default file?
+        $xmlFile = 'phpunit.xml';
+        $previousConfig = $this->loadPreviousConfig($xmlFile);
+
+        $xmlFileContents = $this->getXmlFileContent($suitesEntries, $testsPath, $previousConfig);
 
         $vendor = $input->getArgument('vendor');
         if (!is_dir($this->getRootPath() . DIRECTORY_SEPARATOR . PathUtils::unleadslashit($vendor))) {
@@ -95,7 +99,7 @@ class GeneratePhpunitBootstrap extends Command
 
             return;
         }
-        file_put_contents('phpunit.xml', $xmlFileContents);
+        file_put_contents($xmlFile, $xmlFileContents);
 
         $bootstrapFileContents = $this->getBootstrapFileContents($vendor, $testsPath);
         file_put_contents($this->bootstrapFilePath($testsPath), $bootstrapFileContents);
@@ -113,7 +117,7 @@ XML;
         return $entry;
     }
 
-    protected function getXmlFileContent($suitesEntries, $testsPath)
+    protected function getXmlFileContent($suitesEntries, $testsPath, $previousConfig = null)
     {
         $template = <<<'XML'
 <phpunit
@@ -146,6 +150,27 @@ XML;
 </testsuites>
 </phpunit>
 XML;
+
+        if (is_a($previousConfig, 'SimpleXMLElement')) {
+            /** @var \SimpleXMLElement $previousConfig */
+            $attrs = (array)($previousConfig->attributes());
+            $attrs = reset($attrs);
+            if (!empty($attrs)) {
+                $new = simplexml_load_string($template);
+                $newAttrs = (array)$new->attributes();
+                $newAttrs = reset($newAttrs);
+                $keep = array_keys(array_intersect_key($attrs, $newAttrs));
+                $attrs = array_merge($newAttrs, $attrs);
+                array_walk($attrs, function ($value, $key) use (&$new, $keep) {
+                    if (in_array($key, $keep)) {
+                        $new->attributes()->$key = $value;
+                    } else {
+                        unset($new->attributes()->$key);
+                    }
+                });
+                $template = $new->saveXML();
+            }
+        }
 
         return $this->compileTemplate(['testSuites' => implode("\n", $suitesEntries),
             'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
@@ -203,5 +228,14 @@ PHP;
         $path = realpath('.');
 
         return $path;
+    }
+
+    protected function loadPreviousConfig($xmlFile)
+    {
+        if (file_exists($xmlFile)) {
+            $doc = simplexml_load_file($xmlFile);
+            return $doc;
+        }
+        return false;
     }
 }
