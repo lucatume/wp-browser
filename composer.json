@@ -18,7 +18,6 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "badcow/lorem-ipsum": "~1.0",
     "bacon/bacon-string-utils": "~1.0",
     "codeception/codeception": "~2.0"
   },
@@ -28,7 +27,6 @@
       "Codeception\\Lib\\Driver\\": "src/",
       "Codeception\\Command\\": "src/",
       "Codeception\\Lib\\Generator\\": "src/",
-      "tad\\wordpress\\maker\\": "src/",
       "tad\\wordpress\\loader\\": "src/",
       "tad\\WPBrowser\\": "src/"
     }
