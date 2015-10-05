@@ -156,7 +156,7 @@ class WPLoader extends Module
             $this->debug('Running as single site');
         }
 
-        require_once dirname(__FILE__) . '/includes/functions.php';
+        require_once dirname(dirname(__FILE__)) . '/includes/functions.php';
 
         $this->setActivePlugins();
         tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
