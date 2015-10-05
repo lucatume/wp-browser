@@ -9,7 +9,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Codeception dependency to "~2.0"
-- modified administrator username and password default values for easier search and replacing operation
+- administrator username and password default values for easier search and replacing operation
+- file and class organization
+- generator helper classes (`PostMaker`, `UserMaker`, `CommentMaker` and `DateMaker`) have been moved to the `tad\WPBrowser\Generators` namespace and renamed `Post`, `User`, `Comment` and `Date`)
+- bootstrap command classes moved to `src/Commands` folder
+
+### Removed
+- `badcow\lorem-ipsum` dependency
 
 ## [1.6.19] - 2015-10-02
 ### Added
