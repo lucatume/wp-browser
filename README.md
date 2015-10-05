@@ -218,7 +218,7 @@ class SomeMoreTest extends \WP_UnitTestCase
 Any other `codecept` option remains intact and available. 
 
 #### generate:phpunitBootstrap
-This command will generate the required files required to run functional tests defined in test case classes extending the `WP_UnitTestCase` class.  
+This command will generate the files required to run functional tests defined in test case classes extending the `WP_UnitTestCase` class.  
 The method will read the `codeception.yml` file to point PHPUnit `phpunit.xml` file to the tests folder and set up a `phpunit-bootstrap.php` file in the tests folder.  
 The command has the following arguments
 
