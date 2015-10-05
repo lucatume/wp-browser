@@ -38,8 +38,8 @@ class WPBootstrap extends Bootstrap
                     ],
                     'WPBrowser' => [
                         'url' => 'http://wp.local',
-                        'adminUsername' => 'admin',
-                        'adminPassword' => 'admin',
+                        'adminUsername' => 'adminUsername',
+                        'adminPassword' => 'adminPassword',
                         'adminUrl' => '/wp-admin'
                     ],
                     'WPDb' => [
@@ -78,8 +78,8 @@ class WPBootstrap extends Bootstrap
                         'port' => 4444,
                         'restart' => true,
                         'wait' => 2,
-                        'adminUsername' => 'admin',
-                        'adminPassword' => 'admin',
+                        'adminUsername' => 'adminUsername',
+                        'adminPassword' => 'adminPassword',
                         'adminUrl' => '/wp-admin'
                     ]
                 ]

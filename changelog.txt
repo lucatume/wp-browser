@@ -2,9 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [1.6.20][unreleased]
 ### Changed
 - Codeception dependency to "~2.0"
+- modified administrator username and password default values for easier search and replacing
 
 ## [1.6.19] - 2015-10-02
 ### Added
