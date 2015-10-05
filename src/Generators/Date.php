@@ -1,11 +1,11 @@
 <?php
 
-namespace tad\wordpress\maker;
+namespace tad\WPBrowser\Generators;
 
 /**
  * Generates dates in WordPress database format.
  */
-class DateMaker
+class Date
 {
     /**
      * The date format used in WordPress databases.
@@ -19,7 +19,7 @@ class DateMaker
      */
     public static function now()
     {
-        return gmdate(self::DATE_FORMAT);
+        return date(self::DATE_FORMAT);
     }
 
     /**
@@ -29,5 +29,10 @@ class DateMaker
     public static function zero()
     {
         return '0000-00-00 00:00:00';
+    }
+
+    public static function gmtNow()
+    {
+        return gmdate(self::DATE_FORMAT);
     }
 } 

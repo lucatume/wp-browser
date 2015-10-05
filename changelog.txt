@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.6.20][unreleased]
 ### Added
 - the possibility to use the `~` symbol in WP Loader configuration
+- the possibility to specify config file names and have WP Loader search in any parent folder in place of just WP root and above
 
 ### Changed
 - Codeception dependency to "~2.0"

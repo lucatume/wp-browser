@@ -1,15 +1,14 @@
 <?php
 
-namespace tad\wordpress\maker;
+namespace tad\WPBrowser\Generators;
 
-use Badcow\LoremIpsum\Generator;
-
-
-class CommentMaker
+class Comment
 {
+    protected static $count = 1;
+
     /**
      * Generates a comment to be used in a WordPress database.
-     generateDefaultsFor*
+     * generateDefaultsFor*
      * @param  int $comment_ID The comment ID to use.
      * @param  int $comment_post_ID The ID of the post the comment relates to.
      * @param  array $data The optional data to be used to generate the comment.
@@ -19,6 +18,7 @@ class CommentMaker
     public static function makeComment($comment_ID, $comment_post_ID, array $data = array())
     {
         $defaults = self::generateDefaultsFor($comment_ID, $comment_post_ID);
+        static::$count++;
         return array_merge($defaults, $data);
     }
 
@@ -41,8 +41,8 @@ class CommentMaker
             'comment_author_email' => 'john.doe@example.com',
             'comment_author_url' => 'http://www.johndoe.com',
             'comment_author_IP' => $randIP,
-            'comment_date' => DateMaker::now(),
-            'comment_date_gmt' => DateMaker::now(),
+            'comment_date' => Date::now(),
+            'comment_date_gmt' => Date::gmtNow(),
             'comment_content' => $content,
             'comment_karma' => 0,
             'comment_approved' => 1,
@@ -61,7 +61,7 @@ class CommentMaker
      */
     protected static function generateCommentContent()
     {
-        $lorem = new Generator();
-        return implode('', $lorem->getSentences(1));
+        $template = 'Comment content %d';
+        return sprintf($template, static::$count);
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace tad\wordpress\maker;
+namespace tad\WPBrowser\Generators;
 
 /**
  * Generates user entries to be inserted in a WordPress database.
  */
-class UserMaker
+class User
 {
     /**
-     * The user roles (actual WordPress) to user levels (WordPress prev. versions) relatios
+     * The user roles (actual WordPress) to user levels (WordPress prev. versions) relations
      *
      * @var array
      */
@@ -22,7 +22,7 @@ class UserMaker
      * @param array $userData The user data to use overriding defaults.
      * @return array An array containing key\value pairs for the "wp_user_level" "usermeta" table entry, the "users" table entry, the "wp_capabilities" "usermeta" table entry.
      */
-    public function makeUser($user_login, $user_id, $role, array $userData = array())
+    public static function makeUser($user_login, $user_id, $role, array $userData = array())
     {
         if (!is_string($user_login)) {
             throw new \BadMethodCallException('User login must be a string', 1);
@@ -39,7 +39,6 @@ class UserMaker
         // merge user data with defaults
         $userTableData = array_merge($userTableDefaults, $userData);
         $userCapabilitiesData = array_merge($userCapabilitiesDefaults, $userData);
-        $userLevelData = array_merge($userLevelDefaults, $userData);
         return array($userLevelDefaults, $userTableData, $userCapabilitiesData);
     }
 
@@ -61,7 +60,7 @@ class UserMaker
             'user_nicename' => $user_login,
             'user_email' => $user_login . "@example.com",
             'user_url' => 'http://www.example.com',
-            'user_registered' => DateMaker::now(),
+            'user_registered' => Date::now(),
             'user_status' => '0',
             'display_name' => $user_login);
         return $usersTableDefaults;

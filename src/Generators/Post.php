@@ -1,35 +1,38 @@
 <?php
 
-namespace tad\wordpress\maker;
+namespace tad\WPBrowser\Generators;
 
 use BaconStringUtils\Slugifier;
-use Badcow\LoremIpsum\Generator;
-    
+
 /**
  * Generates WordPress posts to be inserted in the database.
  */
-class PostMaker
+class Post
 {
+    protected static $count = 1;
+
     /**
      * Generates a WordPress page entry.
      *
-     * @param  int $ID  The post ID to use.
+     * @param  int $ID The post ID to use.
      * @param  string $url The site url.
      *
-     * @return array      Key/value pairs to be used to insert the page in the database.
+     * @param array $data
+     * @return array Key/value pairs to be used to insert the page in the database.
      */
     public static function makePage($ID, $url = 'http://www.example.com', array $data = array())
     {
         $defaults = self::generateDefaultsForType($ID, 'page', $url);
+        self::$count++;
         return array_merge($defaults, $data);
     }
 
     /**
      * Generates a default post entry.
      *
-     * @param  int $ID   The post ID to use.
+     * @param  int $ID The post ID to use.
      * @param  string $type The type (e.g. 'event') of the post that will be inserted.
-     * @param  string $url  The site url
+     * @param  string $url The site url
      *
      * @return array       Key\value pairs of post entry with default values.
      */
@@ -41,8 +44,8 @@ class PostMaker
         $defaults = array(
             'ID' => $ID,
             'post_author' => 1,
-            'post_date' => DateMaker::now(),
-            'post_date_gmt' => DateMaker::now(),
+            'post_date' => Date::now(),
+            'post_date_gmt' => Date::gmtNow(),
             'post_content' => $content,
             'post_title' => $title,
             'post_excerpt' => '',
@@ -53,8 +56,8 @@ class PostMaker
             'post_name' => (new Slugifier())->slugify($title),
             'to_ping' => '',
             'pinged' => '',
-            'post_modified' => DateMaker::now(),
-            'post_modified_gmt' => DateMaker::now(),
+            'post_modified' => Date::now(),
+            'post_modified_gmt' => Date::gmtNow(),
             'post_content_filtered' => '',
             'post_parent' => 0,
             'guid' => $guid,
@@ -71,17 +74,16 @@ class PostMaker
      */
     protected static function generateTitleAndContent()
     {
-        $loremMaker = new Generator();
         // create a default value array
-        $title = implode('', $loremMaker->getSentences(1));
-        $content = implode("\n", $loremMaker->getParagraphs(3));
+        $title = sprintf('Post title %d', self::$count);
+        $content = sprintf('Post content %d', self::$count);
         return array($title, $content);
     }
 
     /**
      * Generates a page guid.
      *
-     * @param  int $ID  The page id.
+     * @param  int $ID The page id.
      * @param  string $url The site url.
      *
      * @return string      The database guid entry.
@@ -95,7 +97,7 @@ class PostMaker
     /**
      * Generates a post guid.
      *
-     * @param  int $ID  The post id.
+     * @param  int $ID The post id.
      * @param  string $url The site url.
      *
      * @return string      The database guid entry.
