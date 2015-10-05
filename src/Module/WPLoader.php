@@ -133,7 +133,7 @@ class WPLoader extends Module
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors
-        $this->wpBootstrapFile = dirname(__FILE__) . '/includes/bootstrap.php';
+        $this->wpBootstrapFile = dirname(dirname(__FILE__)) . '/includes/bootstrap.php';
         $this->loadWordPress();
     }
 
