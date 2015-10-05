@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.6.20][unreleased]
+### Added
+- the possibility to use the `~` symbol in WP Loader configuration
+
 ### Changed
 - Codeception dependency to "~2.0"
 - modified administrator username and password default values for easier search and replacing operation

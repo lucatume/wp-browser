@@ -99,9 +99,6 @@ class WPLoader extends Module
         // allow me not to bother with traling slashes
         $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
 
-        // maybe the user is using the `~` symbol for home?
-        $wpRootFolder = PathUtils::homeify($wpRootFolder);
-
         // load an extra config file if any
         $this->loadConfigFile($wpRootFolder);
 
@@ -131,6 +128,10 @@ class WPLoader extends Module
 
         // check that the wordpress path exists
         $wpRootFolder = $this->config['wpRootFolder'];
+
+        // maybe the user is using the `~` symbol for home?
+        $wpRootFolder = PathUtils::homeify($wpRootFolder);
+
         $this->ensureWPRoot($wpRootFolder);
 
         // WordPress  will deal with database connection errors
