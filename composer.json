@@ -27,7 +27,6 @@
       "Codeception\\Lib\\Driver\\": "src/Lib/Driver",
       "Codeception\\Command\\": "src/Command",
       "Codeception\\Lib\\Generator\\": "src/Generator",
-      "tad\\wordpress\\loader\\": "src/",
       "tad\\WPBrowser\\": "src/"
     }
   },
