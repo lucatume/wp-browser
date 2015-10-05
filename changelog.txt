@@ -2,10 +2,11 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.7.0][unreleased]
+## [1.7.0] 2015-10-05
 ### Added
 - the possibility to use the `~` symbol in WP Loader configuration
 - the possibility to specify config file names and have WP Loader search in any parent folder in place of just WP root and above
+- the `wpcept generate:phpunitBootstrap` command to allow for the generation of a PHPUnit configuration and bootstrap file to run functional tests
 
 ### Changed
 - Codeception dependency to "~2.0"
