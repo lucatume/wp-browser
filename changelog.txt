@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.6.20][unreleased]
 ### Changed
 - Codeception dependency to "~2.0"
-- modified administrator username and password default values for easier search and replacing
+- modified administrator username and password default values for easier search and replacing operation
 
 ## [1.6.19] - 2015-10-02
 ### Added

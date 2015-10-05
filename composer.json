@@ -29,7 +29,8 @@
       "Codeception\\Command\\": "src/",
       "Codeception\\Lib\\Generator\\": "src/",
       "tad\\wordpress\\maker\\": "src/",
-      "tad\\wordpress\\loader\\": "src/"
+      "tad\\wordpress\\loader\\": "src/",
+      "tad\\WPBrowser\\": "src/"
     }
   },
   "require-dev": {

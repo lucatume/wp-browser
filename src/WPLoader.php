@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Module;
+use tad\WPBrowser\Utils\PathUtils;
 
 /**
  * Class WPLoader
@@ -97,6 +98,9 @@ class WPLoader extends Module
     {
         // allow me not to bother with traling slashes
         $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+
+        // maybe the user is using the `~` symbol for home?
+        $wpRootFolder = PathUtils::homeify($wpRootFolder);
 
         // load an extra config file if any
         $this->loadConfigFile($wpRootFolder);
