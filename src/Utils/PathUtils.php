@@ -24,4 +24,48 @@ class PathUtils
         }
         return $path;
     }
+
+    public static function findHereOrInParent($frag, $start, SystemLocals $locals = null)
+    {
+        if (!is_string($frag)) {
+            throw new  \InvalidArgumentException('Frag must be a string');
+        }
+        if (!is_string($start)) {
+            throw new  \InvalidArgumentException('Start must be a string');
+        }
+        if (empty($locals)) {
+            $locals = new SystemLocals();
+        }
+        $start = self::homeify($start, $locals);
+        if (!file_exists($start)) {
+            throw new \InvalidArgumentException('Start must be a valid path to a file or directory');
+        }
+        if (!is_dir($start)) {
+            $start = dirname($start);
+        }
+
+        $dir = PathUtils::untrailslashit($start);
+        $frag = PathUtils::unleadslashit($frag);
+        while (!file_exists($dir . DIRECTORY_SEPARATOR . $frag) && '/' !== $dir) {
+            $dir = dirname($dir);
+        }
+
+        return $dir == '/' ? false : realpath($dir . DIRECTORY_SEPARATOR . $frag);
+    }
+
+    public static function untrailslashit($path)
+    {
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Path must be a string');
+        }
+        return $path !== DIRECTORY_SEPARATOR ? rtrim($path, DIRECTORY_SEPARATOR) : $path;
+    }
+
+    public static function unleadslashit($path)
+    {
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Path must be a string');
+        }
+        return $path !== DIRECTORY_SEPARATOR ? ltrim($path, DIRECTORY_SEPARATOR) : $path;
+    }
 }

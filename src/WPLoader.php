@@ -219,13 +219,9 @@ class WPLoader extends Module
         $frags = is_array($frags) ?: [$frags];
         foreach ($frags as $frag) {
             if (!empty($frag)) {
-                $config_file = $wpRootFolder . $frag;
+                $config_file = PathUtils::findHereOrInParent($frag, $wpRootFolder);
                 if (!file_exists($config_file)) {
-                    // look in the folder above this one, take sub-folders installations into acount
-                    $config_file = dirname($wpRootFolder) . DIRECTORY_SEPARATOR . $frag;
-                }
-                if (!file_exists($config_file)) {
-                    throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or the one above.");
+                    throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
                 }
                 require_once $config_file;
             }
