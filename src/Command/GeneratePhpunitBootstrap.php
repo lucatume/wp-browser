@@ -16,7 +16,8 @@ class GeneratePhpunitBootstrap extends Command
     protected function configure()
     {
         $this->setDefinition([
-            new InputArgument('suites', InputArgument::OPTIONAL, 'A comma separated list of suites PHPUnit tests should run.', 'functional'), new InputArgument('suffix', InputArgument::OPTIONAL, 'The suffix of the test case file names.', 'Test'),
+            new InputArgument('suites', InputArgument::OPTIONAL, 'A comma separated list of suites PHPUnit tests should run.', 'functional'),
+            new InputArgument('suffix', InputArgument::OPTIONAL, 'The suffix of the test case file names.', 'Test'),
             new InputArgument('vendor', InputArgument::OPTIONAL, 'The relative path to the vendor folder.', 'vendor')
         ]);
     }
@@ -81,7 +82,8 @@ class GeneratePhpunitBootstrap extends Command
                 return;
             }
 
-            $args = ['name' => ucfirst($suite), 'suffix' => $suffix, 'pathToFiles' => PathUtils::unleadslashit($testsPath) . $suite];
+            $args = ['name' => ucfirst($suite), 'suffix' => $suffix,
+                'pathToFiles' => PathUtils::unleadslashit($testsPath) . $suite];
             $suitesEntries[] = $this->getTestsuiteEntry($args);
         }
 
@@ -145,7 +147,8 @@ XML;
 </phpunit>
 XML;
 
-        return $this->compileTemplate(['testSuites' => implode("\n", $suitesEntries), 'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
+        return $this->compileTemplate(['testSuites' => implode("\n", $suitesEntries),
+            'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
     }
 
     protected function compileTemplate($args, $template)
