@@ -2,6 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.1] 2015-10-05
+### Changed
+- modifications/removals made to the `phpunit` element defined in the `phpunit.xml` file will be preserved across regenerations when using `wpcept generate:phpunitBootstrap` command.
+
 ## [1.7.0] 2015-10-05
 ### Added
 - the possibility to use the `~` symbol in WP Loader configuration
@@ -42,7 +46,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.1...HEAD
+[1.7.1]: https://github.com/lucatume/wp-browser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/lucatume/wp-browser/compare/1.6.19...1.7.0
 [1.6.19]: https://github.com/lucatume/wp-browser/compare/1.6.18...1.6.19
 [1.6.18]: https://github.com/lucatume/wp-browser/compare/1.6.17...1.6.18
