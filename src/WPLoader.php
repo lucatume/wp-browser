@@ -86,6 +86,11 @@ class WPLoader extends Module
     public static $excludeActions = array();
 
     /**
+     * @var string The absolute path to WP root folder (`ABSPATH`).
+     */
+    protected $wpRootFolder;
+
+    /**
      * Defines the globals needed by WordPress to run to user set values.
      *
      * The method replaces the "wp-tests-config.php" file the original
@@ -96,8 +101,7 @@ class WPLoader extends Module
      */
     protected function defineGlobals()
     {
-        // allow me not to bother with traling slashes
-        $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+        $wpRootFolder = $this->getWpRootFolder();
 
         // load an extra config file if any
         $this->loadConfigFile($wpRootFolder);
@@ -126,13 +130,7 @@ class WPLoader extends Module
         // let's make sure *Db Module is either not running or properly configured
         $this->ensureDbModuleCompat();
 
-        // check that the wordpress path exists
-        $wpRootFolder = $this->config['wpRootFolder'];
-
-        // maybe the user is using the `~` symbol for home?
-        $wpRootFolder = PathUtils::homeify($wpRootFolder);
-
-        $this->ensureWPRoot($wpRootFolder);
+        $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors
         $this->wpBootstrapFile = dirname(__FILE__) . '/includes/bootstrap.php';
@@ -258,5 +256,20 @@ class WPLoader extends Module
                 throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'populate' and 'cleanup' parameters both set to 'false' not to interfere with the WP Loader module.");
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getWpRootFolder()
+    {
+        if (empty($this->wpRootFolder)) {
+            // allow me not to bother with traling slashes
+            $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+
+            // maybe the user is using the `~` symbol for home?
+            $this->wpRootFolder = PathUtils::homeify($wpRootFolder);
+        }
+        return $this->wpRootFolder;
     }
 }
