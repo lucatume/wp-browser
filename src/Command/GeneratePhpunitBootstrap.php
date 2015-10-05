@@ -16,8 +16,7 @@ class GeneratePhpunitBootstrap extends Command
     protected function configure()
     {
         $this->setDefinition([
-            new InputArgument('suites', InputArgument::OPTIONAL, 'A comma separated list of suites PHPUnit tests should run.', 'functional'),
-            new InputArgument('suffix', InputArgument::OPTIONAL, 'The suffix of the test case file names.', 'Test'),
+            new InputArgument('suites', InputArgument::OPTIONAL, 'A comma separated list of suites PHPUnit tests should run.', 'functional'), new InputArgument('suffix', InputArgument::OPTIONAL, 'The suffix of the test case file names.', 'Test'),
             new InputArgument('vendor', InputArgument::OPTIONAL, 'The relative path to the vendor folder.', 'vendor')
         ]);
     }
@@ -82,7 +81,7 @@ class GeneratePhpunitBootstrap extends Command
                 return;
             }
 
-            $args = ['name' => ucfirst($suite), 'suffix' => $suffix, 'pathToFiles' => $testsPath . $suite];
+            $args = ['name' => ucfirst($suite), 'suffix' => $suffix, 'pathToFiles' => PathUtils::unleadslashit($testsPath) . $suite];
             $suitesEntries[] = $this->getTestsuiteEntry($args);
         }
 
@@ -104,7 +103,7 @@ class GeneratePhpunitBootstrap extends Command
     {
         $template = <<<'XML'
 <testsuite name="{{{name}}}">
-      <directory suffix="{{{suffix}}}.php" phpVersion="5.3.0" phpVersionOperator=">=">{{{pathToFiles}}}</directory>
+      <directory suffix="{{{suffix}}}.php" phpVersion="5.4.0" phpVersionOperator=">=">{{{pathToFiles}}}</directory>
     </testsuite>
 XML;
         $entry = $this->compileTemplate($args, $template);
@@ -122,7 +121,7 @@ XML;
          backupStaticAttributes="false"
          bootstrap="{{{bootstrapPath}}}"
          cacheTokens="false"
-         colors="true"
+         colors="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -140,14 +139,13 @@ XML;
          timeoutForMediumTests="10"
          timeoutForLargeTests="60"
          verbose="false">
-     <testsuites>
-        {{{testSuites}}}
-    </testsuites>
+ <testsuites>
+    {{{testSuites}}}
+</testsuites>
 </phpunit>
 XML;
 
-        return $this->compileTemplate(['testSuites' => implode("\n", $suitesEntries),
-            'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
+        return $this->compileTemplate(['testSuites' => implode("\n", $suitesEntries), 'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
     }
 
     protected function compileTemplate($args, $template)
@@ -162,7 +160,7 @@ XML;
 
     private function bootstrapFilePath($testsPath)
     {
-        return $this->getRootPath() . $testsPath . 'phpunit-bootstrap.php';
+        return PathUtils::unleadslashit($testsPath . 'phpunit-bootstrap.php');
     }
 
     private function getBootstrapFileContents($vendor, $testsPath)
