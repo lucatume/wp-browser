@@ -23,10 +23,10 @@
   },
   "autoload": {
     "psr-4": {
-      "Codeception\\Module\\": "src/",
-      "Codeception\\Lib\\Driver\\": "src/",
-      "Codeception\\Command\\": "src/Commands",
-      "Codeception\\Lib\\Generator\\": "src/",
+      "Codeception\\Module\\": "src/Module",
+      "Codeception\\Lib\\Driver\\": "src/Lib/Driver",
+      "Codeception\\Command\\": "src/Command",
+      "Codeception\\Lib\\Generator\\": "src/Generator",
       "tad\\wordpress\\loader\\": "src/",
       "tad\\WPBrowser\\": "src/"
     }

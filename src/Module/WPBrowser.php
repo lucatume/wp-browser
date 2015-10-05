@@ -2,14 +2,15 @@
 
 namespace Codeception\Module;
 
-use Codeception\Module\WebDriver;
+use Symfony\Component\BrowserKit\Cookie;
 
 /**
  * A Codeception module offering specific WordPress browsing methods.
  */
-class WPWebDriver extends WebDriver
+class WPBrowser extends PhpBrowser
 {
     use WPBrowserMethods;
+
     /**
      * The module required fields, to be set in the suite .yml configuration file.
      *
@@ -52,20 +53,23 @@ class WPWebDriver extends WebDriver
      *
      * @param string $cookiePattern
      *
-     * @return array|null
+     * @return Cookie|null
      */
     public function grabCookiesWithPattern( $cookiePattern ) {
-        $cookies = $this->webDriver->manage()->getCookies();
+        /**
+         * @var Cookie[]
+         */
+        $cookies = $this->client->getCookieJar()->all();
 
         if ( ! $cookies ) {
             return null;
         }
-        $matchingCookies = array_filter( $cookies, function ( $cookie ) use ( $cookiePattern ) {
+        $matchingCookies = array_filter( $cookies, function ( Cookie $cookie ) use ( $cookiePattern ) {
 
-            return preg_match( $cookiePattern, $cookie['name'] );
+            return preg_match( $cookiePattern, $cookie->getName() );
         } );
-        $cookieList = array_map( function ( $cookie ) {
-            return sprintf( '{"%s": "%s"}', $cookie['name'], $cookie['value'] );
+        $cookieList = array_map( function ( Cookie $cookie ) {
+            return sprintf( '{"%s": "%s"}', $cookie->getName(), $cookie->getValue() );
         }, $matchingCookies );
 
         $this->debug( 'Cookies matching pattern ' . $cookiePattern . ' : ' . implode( ', ', $cookieList ) );

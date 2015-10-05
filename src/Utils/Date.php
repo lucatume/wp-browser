@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\WPBrowser\Generators;
+namespace tad\WPBrowser\Utils;
 
 /**
  * Generates dates in WordPress database format.

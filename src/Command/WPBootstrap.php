@@ -2,7 +2,6 @@
 
 namespace Codeception\Command;
 
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class WPBootstrap extends Bootstrap

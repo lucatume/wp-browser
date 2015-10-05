@@ -5,9 +5,9 @@ use BaconStringUtils\Slugifier;
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
-use tad\WPBrowser\Generators\Comment;
-use tad\WPBrowser\Generators\Post;
-use tad\WPBrowser\Generators\User;
+use tad\WPBrowser\Utils\Comment;
+use tad\WPBrowser\Utils\Post;
+use tad\WPBrowser\Utils\User;
 
 /**
  * An extension of Codeception Db class to add WordPress database specific
@@ -488,7 +488,6 @@ class WPDb extends ExtendedDb
         if (!is_int($link_id) or !is_int($term_id) or !is_int($term_order)) {
             throw new \BadMethodCallException("Link ID, term ID and term order must be strings", 1);
         }
-        $this->maybeCheckLinkExistsInDatabase($post_id);
         $this->maybeCheckTermExistsInDatabase($term_id);
         // add the relationship in the database
         $tableName = $this->getPrefixedTableNameFor('term_relationships');
@@ -698,9 +697,8 @@ class WPDb extends ExtendedDb
     /**
      * Conditionally checks that a comment exists in database, will throw if not existent.
      *
-     * @param  int $commment_id The comment ID.
+     * @param $comment_id
      *
-     * @return void
      */
     protected function maybeCheckCommentExistsInDatabase($comment_id)
     {
