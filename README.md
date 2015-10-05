@@ -226,7 +226,7 @@ The command has the following arguments
 `suffix` - the suffix of test classes PHPUnit should run, def. `Test`
 `vendor` - the path, relative to the project root folder, to the vendor folder, def. `vendor`
 
-Each call to the command will re-generate the `phpunit.xml` and `tests/phpunit-bootstrap.php` files.  
+Each call to the command will re-generate the `phpunit.xml` and `tests/phpunit-bootstrap.php` files, changes made to the `phpunit` element attributes in the `phpunit.xml` file will be preserved across regenerations.
 
 ### ExtendedDb configuration
 The module has the same configuration as the `Db` one and hence will not require any additional parameter beside those required/available to the `Db` module.
