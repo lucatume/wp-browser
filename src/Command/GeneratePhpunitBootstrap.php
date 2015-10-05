@@ -134,6 +134,6 @@ class GeneratePhpunitBootstrap extends Command
     {{{testSuites}}}
 </testsuites>
 </phpunit>';
-        $xlmFileContent = str_replace('{{{testSuites}}}', implode('', $suitesEntries), $template);
+        return str_replace('{{{testSuites}}}', implode('', $suitesEntries), $template);
     }
 }
