@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.7.2] 2015-10-06
 ### Added
 - an exception when a plugin file part of WPLoader `plugins` setting is not found
-- the `activatePlugins` settings in WPLoader configuration
+- the `activatePlugins` setting in WPLoader configuration
 
 ## [1.7.1] 2015-10-05
 ### Changed
