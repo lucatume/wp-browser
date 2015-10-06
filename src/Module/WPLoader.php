@@ -72,7 +72,10 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $config = array('wpDebug' => true, 'multisite' => false, 'dbCharset' => 'utf8', 'dbCollate' => '', 'tablePrefix' => 'wptests_', 'domain' => 'example.org', 'adminEmail' => 'admin@example.org', 'title' => 'Test Blog', 'phpBinary' => 'php', 'language' => '', 'config_file' => '', 'plugins' => '', 'bootstrapActions' => '');
+    protected $config = array('wpDebug' => true, 'multisite' => false, 'dbCharset' => 'utf8', 'dbCollate' => '',
+        'tablePrefix' => 'wptests_', 'domain' => 'example.org', 'adminEmail' => 'admin@example.org',
+        'title' => 'Test Blog', 'phpBinary' => 'php', 'language' => '', 'config_file' => '', 'plugins' => '',
+        'bootstrapActions' => '');
 
     /**
      * The path to the modified tests bootstrap file.
@@ -106,7 +109,14 @@ class WPLoader extends Module
         // load an extra config file if any
         $this->loadConfigFile($wpRootFolder);
 
-        $constants = array('ABSPATH' => $wpRootFolder, 'DB_NAME' => $this->config['dbName'], 'DB_USER' => $this->config['dbUser'], 'DB_PASSWORD' => $this->config['dbPassword'], 'DB_HOST' => $this->config['dbHost'], 'DB_CHARSET' => $this->config['dbCharset'], 'DB_COLLATE' => $this->config['dbCollate'], 'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'], 'WP_TESTS_DOMAIN' => $this->config['domain'], 'WP_TESTS_EMAIL' => $this->config['adminEmail'], 'WP_TESTS_TITLE' => $this->config['title'], 'WP_PHP_BINARY' => $this->config['phpBinary'], 'WPLANG' => $this->config['language'], 'WP_DEBUG' => $this->config['wpDebug'], 'WP_TESTS_MULTISITE' => $this->config['multisite']);
+        $constants = array('ABSPATH' => $wpRootFolder, 'DB_NAME' => $this->config['dbName'],
+            'DB_USER' => $this->config['dbUser'], 'DB_PASSWORD' => $this->config['dbPassword'],
+            'DB_HOST' => $this->config['dbHost'], 'DB_CHARSET' => $this->config['dbCharset'],
+            'DB_COLLATE' => $this->config['dbCollate'], 'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'],
+            'WP_TESTS_DOMAIN' => $this->config['domain'], 'WP_TESTS_EMAIL' => $this->config['adminEmail'],
+            'WP_TESTS_TITLE' => $this->config['title'], 'WP_PHP_BINARY' => $this->config['phpBinary'],
+            'WPLANG' => $this->config['language'], 'WP_DEBUG' => $this->config['wpDebug'],
+            'WP_TESTS_MULTISITE' => $this->config['multisite']);
 
         foreach ($constants as $key => $value) {
             if (!defined($key)) {
@@ -173,8 +183,9 @@ class WPLoader extends Module
         if (empty($this->config['plugins']) || !defined('WP_PLUGIN_DIR')) {
             return;
         }
+        $pluginsPath = PathUtils::untrailslashit(WP_PLUGIN_DIR) . DIRECTORY_SEPARATOR;
         foreach ($this->config['plugins'] as $plugin) {
-            $path = trailingslashit(WP_PLUGIN_DIR) . $plugin;
+            $path = $pluginsPath . $plugin;
             if (!file_exists($path)) {
                 continue;
             }
