@@ -184,9 +184,11 @@ class WPLoader extends Module
             return;
         }
         $pluginsPath = PathUtils::untrailslashit(WP_PLUGIN_DIR) . DIRECTORY_SEPARATOR;
-        foreach ($this->config['plugins'] as $plugin) {
+        $plugins = $this->config['plugins'];
+        foreach ($plugins as $plugin) {
             $path = $pluginsPath . $plugin;
             if (!file_exists($path)) {
+                throw new ModuleConfigException("The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `config_file` setting.");
                 continue;
             }
             require_once $path;
