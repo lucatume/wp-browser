@@ -2,6 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+[Unreleased][unreleased]
+### Added
+- an exception when a plugin file part of WPLoader `plugins` setting is not found
+
 ## [1.7.1] 2015-10-05
 ### Changed
 - modifications/removals made to the `phpunit` element defined in the `phpunit.xml` file will be preserved across regenerations when using `wpcept generate:phpunitBootstrap` command.
