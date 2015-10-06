@@ -2,9 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-[Unreleased][unreleased]
+[1.7.2] 2015-10-06
 ### Added
 - an exception when a plugin file part of WPLoader `plugins` setting is not found
+- the `activatePlugins` settings in WPLoader configuration
 
 ## [1.7.1] 2015-10-05
 ### Changed
@@ -50,7 +51,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.2...HEAD
+[1.7.2]: https://github.com/lucatume/wp-browser/compare/1.7.0...1.7.2
 [1.7.1]: https://github.com/lucatume/wp-browser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/lucatume/wp-browser/compare/1.6.19...1.7.0
 [1.6.19]: https://github.com/lucatume/wp-browser/compare/1.6.18...1.6.19

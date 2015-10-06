@@ -69,6 +69,7 @@ class WPBootstrap extends Bootstrap
                         'phpBinary' => 'php',
                         'language' => '',
                         'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
                         'bootstrapActions' => ['my-first-action', 'my-second-action']
                     ],
                     'WPWebDriver' => [

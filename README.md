@@ -124,6 +124,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               language: ""
               config_file: ""
 			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
+			  activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
 			  booststrapActions: ['my-first-action', 'my-second-action']
 ```
 
@@ -149,6 +150,7 @@ and configure it using the required parameters:
 * `language` - string, def. ` `, the installation language, the `WPLANG` global value.
 * `config_file` - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
+* `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugin activation action that should be called before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions that should be called after before any test case runs.
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.

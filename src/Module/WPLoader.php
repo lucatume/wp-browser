@@ -62,12 +62,15 @@ class WPLoader extends Module
      * global value.
      * language - string, def. ``, the installation language, the WPLANG global
      * value.
-     * `config_file` - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
+     * config_file - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
      * leading slash needed; this is the place where custom `wp_tests_options` could be set.
-     * `plugins` - array, def. `[]`, a list of plugins that should be loaded
+     * plugins - array, def. `[]`, a list of plugins that should be loaded
      * before any test case runs and after mu-plugins have been loaded; these should be defined in the
      * `folder/plugin-file.php` format.
-     * `bootstrapActions` - array, def. `[]`, a list of actions that should be called after before any test case runs.
+     * activatePlugins - array, def. `[]`, a list of plugins that should be activated calling the `activate_{$plugin}`
+     * before any test case runs and after mu-plugins have been loaded; these should be defined in the
+     * `folder/plugin-file.php` format.
+     * bootstrapActions - array, def. `[]`, a list of actions that should be called after before any test case runs.
      *
      *
      * @var array
@@ -75,7 +78,7 @@ class WPLoader extends Module
     protected $config = array('wpDebug' => true, 'multisite' => false, 'dbCharset' => 'utf8', 'dbCollate' => '',
         'tablePrefix' => 'wptests_', 'domain' => 'example.org', 'adminEmail' => 'admin@example.org',
         'title' => 'Test Blog', 'phpBinary' => 'php', 'language' => '', 'config_file' => '', 'plugins' => '',
-        'bootstrapActions' => '');
+        'activatePlugins' => '', 'bootstrapActions' => '');
 
     /**
      * The path to the modified tests bootstrap file.
@@ -170,9 +173,20 @@ class WPLoader extends Module
 
         $this->setActivePlugins();
         tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
+        tests_add_filter('muplugins_loaded', [$this, 'activatePlugins']);
         tests_add_filter('muplugins_loaded', [$this, 'bootstrapActions']);
 
         require_once $this->wpBootstrapFile;
+    }
+
+    public function activatePlugins()
+    {
+        if (empty($this->config['activatePlugins'])) {
+            return;
+        }
+        foreach ($this->config['activatePlugins'] as $plugin) {
+            do_action("activate_$plugin");
+        }
     }
 
     /**
