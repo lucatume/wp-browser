@@ -219,7 +219,7 @@ class WPLoader extends Module
         foreach ($plugins as $plugin) {
             $path = $pluginsPath . $plugin;
             if (!file_exists($path)) {
-                throw new ModuleConfigException("The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `config_file` setting.");
+                throw new ModuleConfigException(__CLASS__, "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `config_file` setting.");
                 continue;
             }
             require_once $path;
