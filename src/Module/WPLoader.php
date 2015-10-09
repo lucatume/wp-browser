@@ -239,7 +239,7 @@ class WPLoader extends Module
         }
     }
 
-    private function setActivePlugins()
+    protected function setActivePlugins()
     {
         if (empty($this->config['plugins'])) {
             return;
