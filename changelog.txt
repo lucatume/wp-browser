@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - issue with exception generation exception in WP Loader; did happen if a plugin was not found
 
+### Changed
+- some `WPLoader` methods visibility to allow for extension
+
 [1.7.2] 2015-10-06
 ### Added
 - an exception when a plugin file part of WPLoader `plugins` setting is not found
