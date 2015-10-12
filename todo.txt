@@ -1,0 +1,3 @@
+Features:
+- theme support
+- admin/ui elements acceptance methods
