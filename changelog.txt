@@ -2,20 +2,23 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-[Unreleased][unreleased]
+##[unreleased]
 ### Fixed
 - issue with exception generation exception in WP Loader; did happen if a plugin was not found
 
-[1.7.2] 2015-10-06
+### Changed
+- some `WPLoader` methods visibility to allow for extension
+
+##[1.7.2] 2015-10-06
 ### Added
 - an exception when a plugin file part of WPLoader `plugins` setting is not found
 - the `activatePlugins` setting in WPLoader configuration
 
-## [1.7.1] 2015-10-05
+##[1.7.1] 2015-10-05
 ### Changed
 - modifications/removals made to the `phpunit` element defined in the `phpunit.xml` file will be preserved across regenerations when using `wpcept generate:phpunitBootstrap` command.
 
-## [1.7.0] 2015-10-05
+##[1.7.0] 2015-10-05
 ### Added
 - the possibility to use the `~` symbol in WP Loader configuration
 - the possibility to specify config file names and have WP Loader search in any parent folder in place of just WP root and above
@@ -29,7 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - `badcow\lorem-ipsum` dependency
 
-## [1.6.19] - 2015-10-02
+##[1.6.19] - 2015-10-02
 ### Added
 - added the `changelog.txt` file, thanks @olivierlacan for the http://keepachangelog.com/ site and the information.
 - check and exception for WPLoader `wpRootFolder` parameter
@@ -42,16 +45,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - WPDb module has been removed from default modules in the `functional` and `acceptance` suites bootstrapped using the `wpcept bootstrap` command
 - WPDb module has been removed from default modules in the `service` and `ui` suites bootstrapped using the `wpcept bootstrap:pyramid` command
 
-## [1.6.18] - 2015-10-01
+##[1.6.18] - 2015-10-01
 ### Added
 - `config_file` WPLoader parameter
 
-## [1.6.17] - 2015-09-30
+##[1.6.17] - 2015-09-30
 ### Added
 - `plugins` WPLoader parameter
 - `bootstrapActions` WPLoader parameter
 
-## [1.6.16] - 2015-09-30
+##[1.6.16] - 2015-09-30
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
