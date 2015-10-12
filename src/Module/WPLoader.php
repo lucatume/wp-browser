@@ -108,11 +108,6 @@ class WPLoader extends Module
     protected $wpRootFolder;
 
     /**
-     * @var Symfony\Component\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * Defines the globals needed by WordPress to run to user set values.
      *
      * The method replaces the "wp-tests-config.php" file the original
@@ -165,8 +160,6 @@ class WPLoader extends Module
     {
         // let's make sure *Db Module is either not running or properly configured
         $this->ensureDbModuleCompat();
-
-        $this->filesystem = new Filesystem();
 
         $this->ensureWPRoot($this->getWpRootFolder());
 
