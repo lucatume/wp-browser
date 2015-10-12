@@ -5,7 +5,6 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Module;
-use Symfony\Component\Filesystem\Filesystem;
 use tad\WPBrowser\Utils\PathUtils;
 
 /**
