@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - some `WPLoader` methods visibility to allow for extension
+- conditionally write lines to .gitignore to avoid duplicate entries(thanks @borkweb)
 
 ##[1.7.2] 2015-10-06
 ### Added
