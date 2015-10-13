@@ -59,8 +59,7 @@ class WPBootstrapPyramid extends WPBootstrap
 
         if (file_exists('.gitignore')) {
             file_put_contents('tests/_log/.gitignore', '');
-            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_log/*");
-            $output->writeln("tests/_log was added to .gitignore");
+            $this->conditionalFileWrite( '.gitignore', 'tests/_log/*' );
         }
     }
 
@@ -81,8 +80,15 @@ class WPBootstrapPyramid extends WPBootstrap
 
         if (file_exists('.gitignore')) {
             file_put_contents('tests/_output/.gitignore', '');
-            file_put_contents('.gitignore', file_get_contents('.gitignore') . "\ntests/_output/*");
-            $output->writeln("tests/_output was added to .gitignore");
+            $this->conditionalFileWrite( '.gitignore', 'tests/_output/*' );
         }
+    }
+
+    protected function conditionalFileWrite( $file, $contents ) {
+      $fileContents = file_get_contents($file);
+      if ( ! preg_match('/^' . preg_quote($contents, '/') . '/ims', $fileContents)) {
+        file_put_contents($file, "\n{$contents}", FILE_APPEND);
+        $output->writeln("{$contents} was added to {$file}");
+      }
     }
 }
