@@ -64,6 +64,7 @@ class WPLoader extends Module
      * value.
      * config_file - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
      * leading slash needed; this is the place where custom `wp_tests_options` could be set.
+     * pluginsFolder - string, def. ``, the relative path to the plugins folder in respect to the WP root folder
      * plugins - array, def. `[]`, a list of plugins that should be loaded
      * before any test case runs and after mu-plugins have been loaded; these should be defined in the
      * `folder/plugin-file.php` format.
@@ -75,7 +76,8 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $config = array('wpDebug' => true,
+    protected $config = array(
+        'wpDebug' => true,
         'multisite' => false,
         'dbCharset' => 'utf8',
         'dbCollate' => '',
@@ -86,9 +88,11 @@ class WPLoader extends Module
         'phpBinary' => 'php',
         'language' => '',
         'config_file' => '',
+        'pluginsFolder' => '',
         'plugins' => '',
         'activatePlugins' => '',
-        'bootstrapActions' => '');
+        'bootstrapActions' => ''
+    );
 
     /**
      * The path to the modified tests bootstrap file.
@@ -107,6 +111,11 @@ class WPLoader extends Module
     protected $wpRootFolder;
 
     /**
+     * @var The absolute path to the plugins folder
+     */
+    protected $pluginsFolder;
+
+    /**
      * Defines the globals needed by WordPress to run to user set values.
      *
      * The method replaces the "wp-tests-config.php" file the original
@@ -122,7 +131,8 @@ class WPLoader extends Module
         // load an extra config file if any
         $this->loadConfigFile($wpRootFolder);
 
-        $constants = array('ABSPATH' => $wpRootFolder,
+        $constants = array(
+            'ABSPATH' => $wpRootFolder,
             'DB_NAME' => $this->config['dbName'],
             'DB_USER' => $this->config['dbUser'],
             'DB_PASSWORD' => $this->config['dbPassword'],
@@ -136,7 +146,8 @@ class WPLoader extends Module
             'WP_PHP_BINARY' => $this->config['phpBinary'],
             'WPLANG' => $this->config['language'],
             'WP_DEBUG' => $this->config['wpDebug'],
-            'WP_TESTS_MULTISITE' => $this->config['multisite']);
+            'WP_TESTS_MULTISITE' => $this->config['multisite']
+        );
 
         foreach ($constants as $key => $value) {
             if (!defined($key)) {
@@ -214,7 +225,7 @@ class WPLoader extends Module
         if (empty($this->config['plugins']) || !defined('WP_PLUGIN_DIR')) {
             return;
         }
-        $pluginsPath = PathUtils::untrailslashit(WP_PLUGIN_DIR) . DIRECTORY_SEPARATOR;
+        $pluginsPath = $this->getPluginsFolder() . DIRECTORY_SEPARATOR;
         $plugins = $this->config['plugins'];
         foreach ($plugins as $plugin) {
             $path = $pluginsPath . $plugin;
@@ -305,11 +316,22 @@ class WPLoader extends Module
     {
         if (empty($this->wpRootFolder)) {
             // allow me not to bother with traling slashes
-            $wpRootFolder = rtrim($this->config['wpRootFolder'], '/') . '/';
+            $wpRootFolder = PathUtils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
 
             // maybe the user is using the `~` symbol for home?
             $this->wpRootFolder = PathUtils::homeify($wpRootFolder);
         }
         return $this->wpRootFolder;
+    }
+
+    protected function getPluginsFolder()
+    {
+        if (empty($this->pluginsFolder)) {
+            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR : realpath($this->getWpRootFolder() . PathUtils::unleadslashit($this->config['pluginsFolder']));
+
+            $this->pluginsFolder = PathUtils::untrailslashit($path);
+        }
+
+        return $this->pluginsFolder;
     }
 }
