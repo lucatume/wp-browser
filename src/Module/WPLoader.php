@@ -23,6 +23,9 @@ use tad\WPBrowser\Utils\PathUtils;
 class WPLoader extends Module
 {
 
+    public static $includeInheritedActions = true;
+    public static $onlyActions = array();
+    public static $excludeActions = array();
     /**
      * The fields the user will have to set to legit values for the module to run.
      *
@@ -39,7 +42,6 @@ class WPLoader extends Module
      * @var array
      */
     protected $requiredFields = array('wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',);
-
     /**
      * The fields the user will be able to override while running tests.
      *
@@ -93,27 +95,113 @@ class WPLoader extends Module
         'activatePlugins' => '',
         'bootstrapActions' => ''
     );
-
     /**
      * The path to the modified tests bootstrap file.
      *
      * @var string
      */
     protected $wpBootstrapFile;
-
-    public static $includeInheritedActions = true;
-    public static $onlyActions = array();
-    public static $excludeActions = array();
-
     /**
      * @var string The absolute path to WP root folder (`ABSPATH`).
      */
     protected $wpRootFolder;
 
     /**
-     * @var The absolute path to the plugins folder
+     * @var string The absolute path to the plugins folder
      */
     protected $pluginsFolder;
+
+    /**
+     * The function that will initialize the module.
+     *
+     * The function will set up the WordPress testing configuration and will
+     * take care of installing and loading WordPress. The simple inclusion of
+     * the module in an test helper class will hence trigger WordPress loading,
+     * no explicit method calling on the user side is needed.
+     *
+     * @return void
+     */
+    public function _initialize()
+    {
+        // let's make sure *Db Module is either not running or properly configured
+        $this->ensureDbModuleCompat();
+
+        $this->ensureWPRoot($this->getWpRootFolder());
+
+        // WordPress  will deal with database connection errors
+        $this->wpBootstrapFile = dirname(dirname(__FILE__)) . '/includes/bootstrap.php';
+        $this->loadWordPress();
+    }
+
+    public function ensureDbModuleCompat()
+    {
+        $interference_candidates = ['Db', 'WPDb'];
+        $allModules = $this->moduleContainer->all();
+        foreach ($interference_candidates as $moduleName) {
+            if (!$this->moduleContainer->hasModule($moduleName)) {
+                continue;
+            }
+            /** @var \Codeception\Module $module */
+            $module = $allModules[$moduleName];
+            if (!(empty($module->_getConfig('populate')) && empty($module->_getConfig('cleanup')))) {
+                throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'populate' and 'cleanup' parameters both set to 'false' not to interfere with the WP Loader module.");
+            }
+        }
+    }
+
+    /**
+     * @param string $wpRootFolder
+     */
+    private function ensureWPRoot($wpRootFolder)
+    {
+        if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+            throw new ModuleConfigException(__CLASS__, "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder.");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getWpRootFolder()
+    {
+        if (empty($this->wpRootFolder)) {
+            // allow me not to bother with traling slashes
+            $wpRootFolder = PathUtils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
+
+            // maybe the user is using the `~` symbol for home?
+            $this->wpRootFolder = PathUtils::homeify($wpRootFolder);
+        }
+        return $this->wpRootFolder;
+    }
+
+    /**
+     * Loads WordPress calling the bootstrap file
+     *
+     * This method does little but wrapping preparing the global space for the
+     * original automated testing bootstrap file and taking charge of replacing
+     * the original "wp-tests-config.php" file in setting up the globals.
+     *
+     * @return void
+     */
+    protected function loadWordPress()
+    {
+        $this->defineGlobals();
+
+        if ($this->config['multisite']) {
+            $this->debug('Running as multisite');
+        } else {
+            $this->debug('Running as single site');
+        }
+
+        require_once dirname(dirname(__FILE__)) . '/includes/functions.php';
+
+        $this->setActivePlugins();
+        tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
+        tests_add_filter('muplugins_loaded', [$this, 'activatePlugins']);
+        tests_add_filter('muplugins_loaded', [$this, 'bootstrapActions']);
+
+        require_once $this->wpBootstrapFile;
+    }
 
     /**
      * Defines the globals needed by WordPress to run to user set values.
@@ -146,7 +234,7 @@ class WPLoader extends Module
             'WP_PHP_BINARY' => $this->config['phpBinary'],
             'WPLANG' => $this->config['language'],
             'WP_DEBUG' => $this->config['wpDebug'],
-            'WP_TESTS_MULTISITE' => $this->config['multisite']
+            'WP_TESTS_MULTISITE' => $this->config['multisite'],
         );
 
         foreach ($constants as $key => $value) {
@@ -157,54 +245,36 @@ class WPLoader extends Module
     }
 
     /**
-     * The function that will initialize the module.
+     * @param string $wpRootFolder The absolute path to the WordPress root installation folder.
      *
-     * The function will set up the WordPress testing configuration and will
-     * take care of installing and loading WordPress. The simple inclusion of
-     * the module in an test helper class will hence trigger WordPress loading,
-     * no explicit method calling on the user side is needed.
-     *
-     * @return void
+     * @throws ModuleConfigException
      */
-    public function _initialize()
+    protected function loadConfigFile($wpRootFolder)
     {
-        // let's make sure *Db Module is either not running or properly configured
-        $this->ensureDbModuleCompat();
-
-        $this->ensureWPRoot($this->getWpRootFolder());
-
-        // WordPress  will deal with database connection errors
-        $this->wpBootstrapFile = dirname(dirname(__FILE__)) . '/includes/bootstrap.php';
-        $this->loadWordPress();
+        $frags = $this->config['config_file'];
+        $frags = is_array($frags) ?: [$frags];
+        foreach ($frags as $frag) {
+            if (!empty($frag)) {
+                $config_file = PathUtils::findHereOrInParent($frag, $wpRootFolder);
+                if (!file_exists($config_file)) {
+                    throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
+                }
+                require_once $config_file;
+            }
+        }
     }
 
-    /**
-     * Loads WordPress calling the bootstrap file
-     *
-     * This method does little but wrapping preparing the global space for the
-     * original automated testing bootstrap file and taking charge of replacing
-     * the original "wp-tests-config.php" file in setting up the globals.
-     *
-     * @return void
-     */
-    protected function loadWordPress()
+    protected function setActivePlugins()
     {
-        $this->defineGlobals();
-
-        if ($this->config['multisite']) {
-            $this->debug('Running as multisite');
-        } else {
-            $this->debug('Running as single site');
+        if (empty($this->config['plugins'])) {
+            return;
         }
 
-        require_once dirname(dirname(__FILE__)) . '/includes/functions.php';
-
-        $this->setActivePlugins();
-        tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-        tests_add_filter('muplugins_loaded', [$this, 'activatePlugins']);
-        tests_add_filter('muplugins_loaded', [$this, 'bootstrapActions']);
-
-        require_once $this->wpBootstrapFile;
+        if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
+            $GLOBALS['wp_tests_options']['active_plugins'] = array_merge($GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins']);
+        } else {
+            $GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
+        }
     }
 
     public function activatePlugins()
@@ -237,6 +307,21 @@ class WPLoader extends Module
         }
     }
 
+    protected function getPluginsFolder()
+    {
+        if (empty($this->pluginsFolder)) {
+            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR : realpath($this->getWpRootFolder() . PathUtils::unleadslashit($this->config['pluginsFolder']));
+
+            if (!file_exists($path)) {
+                throw new ModuleConfigException(__CLASS__, "The path to the plugins folder ('{$path}') doesn't exist.");
+            }
+
+            $this->pluginsFolder = PathUtils::untrailslashit($path);
+        }
+
+        return $this->pluginsFolder;
+    }
+
     /**
      * Calls a list of user-defined actions needed in tests.
      */
@@ -248,90 +333,5 @@ class WPLoader extends Module
         foreach ($this->config['bootstrapActions'] as $action) {
             do_action($action);
         }
-    }
-
-    protected function setActivePlugins()
-    {
-        if (empty($this->config['plugins'])) {
-            return;
-        }
-
-        if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
-            $GLOBALS['wp_tests_options']['active_plugins'] = array_merge($GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins']);
-        } else {
-            $GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
-        }
-    }
-
-    /**
-     * @param string $wpRootFolder The absolute path to the WordPress root installation folder.
-     *
-     * @throws ModuleConfigException
-     */
-    protected function loadConfigFile($wpRootFolder)
-    {
-        $frags = $this->config['config_file'];
-        $frags = is_array($frags) ?: [$frags];
-        foreach ($frags as $frag) {
-            if (!empty($frag)) {
-                $config_file = PathUtils::findHereOrInParent($frag, $wpRootFolder);
-                if (!file_exists($config_file)) {
-                    throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
-                }
-                require_once $config_file;
-            }
-        }
-    }
-
-    /**
-     * @param string $wpRootFolder
-     */
-    private function ensureWPRoot($wpRootFolder)
-    {
-        if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
-            throw new ModuleConfigException(__CLASS__, "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder.");
-        }
-    }
-
-    public function ensureDbModuleCompat()
-    {
-        $interference_candidates = ['Db', 'WPDb'];
-        $allModules = $this->moduleContainer->all();
-        foreach ($interference_candidates as $moduleName) {
-            if (!$this->moduleContainer->hasModule($moduleName)) {
-                continue;
-            }
-            /** @var \Codeception\Module $module */
-            $module = $allModules[$moduleName];
-            if (!(empty($module->_getConfig('populate')) && empty($module->_getConfig('cleanup')))) {
-                throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'populate' and 'cleanup' parameters both set to 'false' not to interfere with the WP Loader module.");
-            }
-        }
-    }
-
-    /**
-     * @return string
-     */
-    protected function getWpRootFolder()
-    {
-        if (empty($this->wpRootFolder)) {
-            // allow me not to bother with traling slashes
-            $wpRootFolder = PathUtils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
-
-            // maybe the user is using the `~` symbol for home?
-            $this->wpRootFolder = PathUtils::homeify($wpRootFolder);
-        }
-        return $this->wpRootFolder;
-    }
-
-    protected function getPluginsFolder()
-    {
-        if (empty($this->pluginsFolder)) {
-            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR : realpath($this->getWpRootFolder() . PathUtils::unleadslashit($this->config['pluginsFolder']));
-
-            $this->pluginsFolder = PathUtils::untrailslashit($path);
-        }
-
-        return $this->pluginsFolder;
     }
 }
