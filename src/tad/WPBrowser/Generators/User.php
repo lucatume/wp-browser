@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\WPBrowser\Utils;
+namespace tad\WPBrowser\Generators;
 
 /**
  * Generates user entries to be inserted in a WordPress database.

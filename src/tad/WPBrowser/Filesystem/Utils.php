@@ -1,7 +1,7 @@
 <?php
-namespace tad\WPBrowser\Utils;
+namespace tad\WPBrowser\Filesystem;
 
-class PathUtils
+class Utils
 {
 
     /**

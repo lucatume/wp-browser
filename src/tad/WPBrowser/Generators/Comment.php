@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\WPBrowser\Utils;
+namespace tad\WPBrowser\Generators;
 
 class Comment
 {

@@ -24,11 +24,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Codeception\\Module\\": "src/Module",
-      "Codeception\\Lib\\Driver\\": "src/Lib/Driver",
-      "Codeception\\Command\\": "src/Command",
-      "Codeception\\Lib\\Generator\\": "src/Generator",
-      "tad\\WPBrowser\\": "src/"
+      "Codeception\\Module\\": "src",
+      "Codeception\\Lib\\Driver\\": "src",
+      "Codeception\\Command\\": "src",
+      "Codeception\\Lib\\Generator\\": "src",
+      "tad\\WPBrowser\\": "src"
     }
   },
   "require-dev": {
