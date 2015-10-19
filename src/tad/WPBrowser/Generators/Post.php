@@ -20,7 +20,9 @@ class Post
      * @param array $data
      * @return array Key/value pairs to be used to insert the page in the database.
      */
-    public static function makePage($ID, $url = 'http://www.example.com', array $data = array())
+    public static function makePage($ID,
+        $url = 'http://www.example.com',
+        array $data = array())
     {
         $defaults = self::generateDefaultsForType($ID, 'page', $url);
         self::$count++;
@@ -36,11 +38,12 @@ class Post
      *
      * @return array       Key\value pairs of post entry with default values.
      */
-    protected static function generateDefaultsForType($ID, $type, $url)
+    protected static function generateDefaultsForType($ID,
+        $type,
+        $url)
     {
         list($title, $content) = self::generateTitleAndContent();
-        $guid = '';
-        $type == 'page' ? $guid = self::generatePageGuid($ID, $url) : $guid = self::generatePostGuid($ID, $url);
+        $guid = $type == 'page' ? self::generatePageGuid($ID, $url) : self::generatePostGuid($ID, $url);
         $defaults = array(
             'ID' => $ID,
             'post_author' => 1,
@@ -88,7 +91,8 @@ class Post
      *
      * @return string      The database guid entry.
      */
-    protected static function generatePageGuid($ID, $url)
+    protected static function generatePageGuid($ID,
+        $url)
     {
         $guid = rtrim($url, '/') . '/?page_id=' . $ID;
         return $guid;
@@ -102,13 +106,16 @@ class Post
      *
      * @return string      The database guid entry.
      */
-    protected static function generatePostGuid($ID, $url)
+    protected static function generatePostGuid($ID,
+        $url)
     {
         $guid = rtrim($url, '/') . '/?p=' . $ID;
         return $guid;
     }
 
-    public static function makePost($ID, $url = 'http://www.example.com', array $data = array())
+    public static function makePost($ID,
+        $url = 'http://www.example.com',
+        array $data = array())
     {
         $defaults = self::generateDefaultsForType($ID, 'post', $url);
         return array_merge($defaults, $data);
