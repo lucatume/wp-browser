@@ -25,9 +25,8 @@
   "autoload": {
     "psr-4": {
       "Codeception\\Module\\": "src",
-      "Codeception\\Lib\\Driver\\": "src",
       "Codeception\\Command\\": "src",
-      "Codeception\\Lib\\Generator\\": "src",
+      "Codeception\\Lib\\": "src",
       "tad\\WPBrowser\\": "src"
     }
   },
