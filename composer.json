@@ -24,10 +24,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Codeception\\Module\\": "src",
-      "Codeception\\Command\\": "src",
-      "Codeception\\Lib\\": "src",
-      "tad\\WPBrowser\\": "src"
+      "Codeception\\": "src\\Codeception",
+      "tad": "src\\tad"
     }
   },
   "require-dev": {
