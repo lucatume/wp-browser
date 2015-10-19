@@ -5,7 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Module;
-use tad\WPBrowser\Utils\PathUtils;
+use tad\WPBrowser\Filesystem\Utils;
 
 /**
  * Class WPLoader
@@ -166,10 +166,10 @@ class WPLoader extends Module
     {
         if (empty($this->wpRootFolder)) {
             // allow me not to bother with traling slashes
-            $wpRootFolder = PathUtils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
+            $wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
 
             // maybe the user is using the `~` symbol for home?
-            $this->wpRootFolder = PathUtils::homeify($wpRootFolder);
+            $this->wpRootFolder = Utils::homeify($wpRootFolder);
         }
         return $this->wpRootFolder;
     }
@@ -255,7 +255,7 @@ class WPLoader extends Module
         $frags = is_array($frags) ?: [$frags];
         foreach ($frags as $frag) {
             if (!empty($frag)) {
-                $config_file = PathUtils::findHereOrInParent($frag, $wpRootFolder);
+                $config_file = Utils::findHereOrInParent($frag, $wpRootFolder);
                 if (!file_exists($config_file)) {
                     throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
                 }
@@ -310,13 +310,13 @@ class WPLoader extends Module
     protected function getPluginsFolder()
     {
         if (empty($this->pluginsFolder)) {
-            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR : realpath($this->getWpRootFolder() . PathUtils::unleadslashit($this->config['pluginsFolder']));
+            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR : realpath($this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']));
 
             if (!file_exists($path)) {
                 throw new ModuleConfigException(__CLASS__, "The path to the plugins folder ('{$path}') doesn't exist.");
             }
 
-            $this->pluginsFolder = PathUtils::untrailslashit($path);
+            $this->pluginsFolder = Utils::untrailslashit($path);
         }
 
         return $this->pluginsFolder;

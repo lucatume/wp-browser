@@ -1,31 +1,13 @@
 <?php
 namespace tad\WPBrowser\Filesystem;
 
+
 class Utils
 {
 
-    /**
-     * Replaces the `~` symbol with the user home path.
-     *
-     * @param string $path
-     * @return string The path with the `~` replaced with the user home path if any.
-     */
-    public static function homeify($path, SystemLocals $locals = null)
-    {
-        if (!is_string($path)) {
-            throw new \InvalidArgumentException('Paht must be a string');
-        }
-        if (empty($locals)) {
-            $locals = new SystemLocals();
-        }
-        $userHome = $locals->home();
-        if (!(empty($userHome) && false !== strpos($path, '~'))) {
-            $path = str_replace('~', $userHome, $path);
-        }
-        return $path;
-    }
-
-    public static function findHereOrInParent($frag, $start, SystemLocals $locals = null)
+    public static function findHereOrInParent($frag,
+        $start,
+        Filesystem $filesystem = null)
     {
         if (!is_string($frag)) {
             throw new  \InvalidArgumentException('Frag must be a string');
@@ -33,10 +15,10 @@ class Utils
         if (!is_string($start)) {
             throw new  \InvalidArgumentException('Start must be a string');
         }
-        if (empty($locals)) {
-            $locals = new SystemLocals();
+        if (empty($filesystem)) {
+            $filesystem = new Filesystem();
         }
-        $start = self::homeify($start, $locals);
+        $start = self::homeify($start, $filesystem);
         if (!file_exists($start)) {
             throw new \InvalidArgumentException('Start must be a valid path to a file or directory');
         }
@@ -44,13 +26,35 @@ class Utils
             $start = dirname($start);
         }
 
-        $dir = PathUtils::untrailslashit($start);
-        $frag = PathUtils::unleadslashit($frag);
+        $dir = self::untrailslashit($start);
+        $frag = self::unleadslashit($frag);
         while (!file_exists($dir . DIRECTORY_SEPARATOR . $frag) && '/' !== $dir) {
             $dir = dirname($dir);
         }
 
         return $dir == '/' ? false : realpath($dir . DIRECTORY_SEPARATOR . $frag);
+    }
+
+    /**
+     * Replaces the `~` symbol with the user home path.
+     *
+     * @param string $path
+     * @return string The path with the `~` replaced with the user home path if any.
+     */
+    public static function homeify($path,
+        Filesystem $filesystem = null)
+    {
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Paht must be a string');
+        }
+        if (empty($filesystem)) {
+            $filesystem = new Filesystem();
+        }
+        $userHome = $filesystem->getUserHome();
+        if (!(empty($userHome) && false !== strpos($path, '~'))) {
+            $path = str_replace('~', $userHome, $path);
+        }
+        return $path;
     }
 
     public static function untrailslashit($path)

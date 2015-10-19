@@ -8,10 +8,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
-use tad\WPBrowser\Utils\PathUtils;
+use tad\WPBrowser\Filesystem\Utils;
 
 class GeneratePhpunitBootstrap extends Command
 {
+
+    public function getDescription()
+    {
+        return 'Generates the files needed to run tests from the suites using PHPUnit';
+    }
 
     protected function configure()
     {
@@ -20,11 +25,6 @@ class GeneratePhpunitBootstrap extends Command
             new InputArgument('suffix', InputArgument::OPTIONAL, 'The suffix of the test case file names.', 'Test'),
             new InputArgument('vendor', InputArgument::OPTIONAL, 'The relative path to the vendor folder.', 'vendor')
         ]);
-    }
-
-    public function getDescription()
-    {
-        return 'Generates the files needed to run tests from the suites using PHPUnit';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -64,7 +64,7 @@ class GeneratePhpunitBootstrap extends Command
             return;
         }
 
-        $testsPath = DIRECTORY_SEPARATOR . PathUtils::unleadslashit(PathUtils::untrailslashit($testsPath)) . DIRECTORY_SEPARATOR;
+        $testsPath = DIRECTORY_SEPARATOR . Utils::unleadslashit(Utils::untrailslashit($testsPath)) . DIRECTORY_SEPARATOR;
 
         if (!count($suites)) {
             $output->writeln("<error>\nPlease specify at least one suite.\n</error>");
@@ -83,7 +83,8 @@ class GeneratePhpunitBootstrap extends Command
             }
 
             $args = ['name' => ucfirst($suite), 'suffix' => $suffix,
-                'pathToFiles' => PathUtils::unleadslashit($testsPath) . $suite];
+                     'pathToFiles' => Utils::unleadslashit($testsPath) . $suite
+            ];
             $suitesEntries[] = $this->getTestsuiteEntry($args);
         }
 
@@ -94,7 +95,7 @@ class GeneratePhpunitBootstrap extends Command
         $xmlFileContents = $this->getXmlFileContent($suitesEntries, $testsPath, $previousConfig);
 
         $vendor = $input->getArgument('vendor');
-        if (!is_dir($this->getRootPath() . DIRECTORY_SEPARATOR . PathUtils::unleadslashit($vendor))) {
+        if (!is_dir($this->getRootPath() . DIRECTORY_SEPARATOR . Utils::unleadslashit($vendor))) {
             $output->writeln("<error>\nThe vendor folder {$vendor} does not exist\n</error>");
 
             return;
@@ -103,6 +104,16 @@ class GeneratePhpunitBootstrap extends Command
 
         $bootstrapFileContents = $this->getBootstrapFileContents($vendor, $testsPath);
         file_put_contents($this->bootstrapFilePath($testsPath), $bootstrapFileContents);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRootPath()
+    {
+        $path = realpath('.');
+
+        return $path;
     }
 
     protected function getTestsuiteEntry($args)
@@ -115,6 +126,26 @@ XML;
         $entry = $this->compileTemplate($args, $template);
 
         return $entry;
+    }
+
+    protected function compileTemplate($args,
+        $template)
+    {
+        $entry = $template;
+        foreach ($args as $key => $value) {
+            $entry = str_replace('{{{' . $key . '}}}', $value, $entry);
+        }
+
+        return $entry;
+    }
+
+    protected function loadPreviousConfig($xmlFile)
+    {
+        if (file_exists($xmlFile)) {
+            $doc = simplexml_load_file($xmlFile);
+            return $doc;
+        }
+        return false;
     }
 
     protected function getXmlFileContent($suitesEntries, $testsPath, $previousConfig = null)
@@ -176,19 +207,9 @@ XML;
             'bootstrapPath' => $this->bootstrapFilePath($testsPath)], $template);
     }
 
-    protected function compileTemplate($args, $template)
-    {
-        $entry = $template;
-        foreach ($args as $key => $value) {
-            $entry = str_replace('{{{' . $key . '}}}', $value, $entry);
-        }
-
-        return $entry;
-    }
-
     private function bootstrapFilePath($testsPath)
     {
-        return PathUtils::unleadslashit($testsPath . 'phpunit-bootstrap.php');
+        return Utils::unleadslashit($testsPath . 'phpunit-bootstrap.php');
     }
 
     private function getBootstrapFileContents($vendor, $testsPath)
@@ -209,33 +230,14 @@ require_once dirname(__FILE__) . '/{{{wpBrowserAutoloadFile}}}';
 PHP;
 
         $args = [];
-        $backHops = substr_count(PathUtils::untrailslashit(PathUtils::unleadslashit($testsPath)), '/');
-        $relativeBackHopsPath = implode('/', array_map(function ($n) {
+        $backHops = substr_count(Utils::untrailslashit(Utils::unleadslashit($testsPath)), '/');
+        $relativeBackHopsPath = implode('/', array_map(function () {
             return '..';
         }, range(0, $backHops)));
-        $args['autoloadFile'] = sprintf("%s/%s/autoload.php", $relativeBackHopsPath, PathUtils::unleadslashit(PathUtils::untrailslashit($vendor)));
-        $args['wpBrowserAutoloadFile'] = sprintf("%s/%s/lucatume/wp-browser/autoload.php", $relativeBackHopsPath, PathUtils::unleadslashit(PathUtils::untrailslashit($vendor)));
+        $args['autoloadFile'] = sprintf("%s/%s/autoload.php", $relativeBackHopsPath, Utils::unleadslashit(Utils::untrailslashit($vendor)));
+        $args['wpBrowserAutoloadFile'] = sprintf("%s/%s/lucatume/wp-browser/autoload.php", $relativeBackHopsPath, Utils::unleadslashit(Utils::untrailslashit($vendor)));
         $args['codeceptionYml'] = sprintf("%s/codeception.yml", $relativeBackHopsPath);
 
         return $this->compileTemplate($args, $template);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRootPath()
-    {
-        $path = realpath('.');
-
-        return $path;
-    }
-
-    protected function loadPreviousConfig($xmlFile)
-    {
-        if (file_exists($xmlFile)) {
-            $doc = simplexml_load_file($xmlFile);
-            return $doc;
-        }
-        return false;
     }
 }

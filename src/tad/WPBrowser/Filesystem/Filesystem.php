@@ -9,4 +9,10 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
     {
         require_once $file;
     }
+
+    public function getUserHome()
+    {
+        $userInfo = posix_getpwuid(posix_getuid());
+        return $userInfo['dir'];
+    }
 }
