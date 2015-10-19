@@ -197,8 +197,8 @@ class WPLoader extends Module
 
         $this->setActivePlugins();
         tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-        tests_add_filter('muplugins_loaded', [$this, 'activatePlugins']);
-        tests_add_filter('muplugins_loaded', [$this, 'bootstrapActions']);
+        tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+        tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
 
         require_once $this->wpBootstrapFile;
     }
@@ -279,12 +279,18 @@ class WPLoader extends Module
 
     public function activatePlugins()
     {
+        $currentUserIdBackup = get_current_user_id();
+
+        set_current_user(1);
+
         if (empty($this->config['activatePlugins'])) {
             return;
         }
         foreach ($this->config['activatePlugins'] as $plugin) {
             do_action("activate_$plugin");
         }
+
+        set_current_user($currentUserIdBackup);
     }
 
     /**
