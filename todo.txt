@@ -1,3 +1,5 @@
 Add:
+- tests
 - theme support
 - ui/admin acceptance classes
+- look into multisite activations
