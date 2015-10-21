@@ -281,7 +281,7 @@ class WPLoader extends Module
     {
         $currentUserIdBackup = get_current_user_id();
 
-        set_current_user(1);
+        wp_set_current_user(1);
 
         if (empty($this->config['activatePlugins'])) {
             return;
@@ -290,7 +290,7 @@ class WPLoader extends Module
             do_action("activate_$plugin");
         }
 
-        set_current_user($currentUserIdBackup);
+        wp_set_current_user($currentUserIdBackup);
     }
 
     /**
