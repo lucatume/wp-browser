@@ -3,7 +3,7 @@
 require_once dirname( __FILE__ ) . '/factory.php';
 require_once dirname( __FILE__ ) . '/trac.php';
 
-class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
+class WP_UnitTestCase extends \Codeception\TestCase\Test {
 
 	protected static $forced_tickets = array();
 	protected $expected_deprecated = array();
@@ -20,6 +20,8 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 	protected $factory;
 
 	function setUp() {
+		parent::setUp();
+
 		set_time_limit(0);
 
 		if ( ! self::$ignore_files ) {
@@ -43,6 +45,8 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	function tearDown() {
+		parent::tearDown();
+
 		global $wpdb, $wp_query, $post;
 		$this->expectedDeprecated();
 		$wpdb->query( 'ROLLBACK' );
