@@ -20,6 +20,8 @@ class WP_UnitTestCase extends \Codeception\TestCase\Test {
 	protected $factory;
 
 	function setUp() {
+		parent::setUp();
+
 		set_time_limit(0);
 
 		if ( ! self::$ignore_files ) {
@@ -43,6 +45,8 @@ class WP_UnitTestCase extends \Codeception\TestCase\Test {
 	}
 
 	function tearDown() {
+		parent::tearDown();
+
 		global $wpdb, $wp_query, $post;
 		$this->expectedDeprecated();
 		$wpdb->query( 'ROLLBACK' );
