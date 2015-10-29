@@ -217,7 +217,7 @@ class WPLoader extends Module
         $wpRootFolder = $this->getWpRootFolder();
 
         // load an extra config file if any
-        $this->loadConfigFile($wpRootFolder);
+        $this->loadConfigFile();
 
         $constants = array(
             'ABSPATH' => $wpRootFolder,
@@ -245,17 +245,18 @@ class WPLoader extends Module
     }
 
     /**
-     * @param string $wpRootFolder The absolute path to the WordPress root installation folder.
+     * @param string $folder = null The absolute path to the WordPress root installation folder.
      *
      * @throws ModuleConfigException
      */
-    protected function loadConfigFile($wpRootFolder)
+    protected function loadConfigFile($folder = null)
     {
+        $folder = $folder ?: codecept_root_dir();
         $frags = $this->config['configFile'];
         $frags = is_array($frags) ?: [$frags];
         foreach ($frags as $frag) {
             if (!empty($frag)) {
-                $configFile = Utils::findHereOrInParent($frag, $wpRootFolder);
+                $configFile = Utils::findHereOrInParent($frag, $folder);
                 if (!file_exists($configFile)) {
                     throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
                 }
