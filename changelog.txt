@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.7.9] 2015-10-29
+### Fixed
+- config file search path in the WP Loader module
+
 ##[1.7.8] 2015-10-29
 ### Changed
 - the `config_file` WP Loader module setting to `configFile`
@@ -88,7 +92,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.8...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.9...HEAD
+[1.7.9]: https://github.com/lucatume/wp-browser/compare/1.7.8...1.7.9
 [1.7.8]: https://github.com/lucatume/wp-browser/compare/1.7.8...1.7.8
 [1.7.7]: https://github.com/lucatume/wp-browser/compare/1.7.6...1.7.7
 [1.7.6]: https://github.com/lucatume/wp-browser/compare/1.7.5...1.7.6
