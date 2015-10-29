@@ -64,7 +64,7 @@ class WPLoader extends Module
      * global value.
      * language - string, def. ``, the installation language, the WPLANG global
      * value.
-     * config_file - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
+     * configFile - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no
      * leading slash needed; this is the place where custom `wp_tests_options` could be set.
      * pluginsFolder - string, def. ``, the relative path to the plugins folder in respect to the WP root folder
      * plugins - array, def. `[]`, a list of plugins that should be loaded
@@ -89,7 +89,7 @@ class WPLoader extends Module
         'title' => 'Test Blog',
         'phpBinary' => 'php',
         'language' => '',
-        'config_file' => '',
+        'configFile' => '',
         'pluginsFolder' => '',
         'plugins' => '',
         'activatePlugins' => '',
@@ -251,15 +251,15 @@ class WPLoader extends Module
      */
     protected function loadConfigFile($wpRootFolder)
     {
-        $frags = $this->config['config_file'];
+        $frags = $this->config['configFile'];
         $frags = is_array($frags) ?: [$frags];
         foreach ($frags as $frag) {
             if (!empty($frag)) {
-                $config_file = Utils::findHereOrInParent($frag, $wpRootFolder);
-                if (!file_exists($config_file)) {
+                $configFile = Utils::findHereOrInParent($frag, $wpRootFolder);
+                if (!file_exists($configFile)) {
                     throw new ModuleConfigException(__CLASS__, "\nConfig file `{$frag}` could not be found in WordPress root folder or above.");
                 }
-                require_once $config_file;
+                require_once $configFile;
             }
         }
     }
@@ -306,7 +306,7 @@ class WPLoader extends Module
         foreach ($plugins as $plugin) {
             $path = $pluginsPath . $plugin;
             if (!file_exists($path)) {
-                throw new ModuleConfigException(__CLASS__, "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `config_file` setting.");
+                throw new ModuleConfigException(__CLASS__, "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `configFile` setting.");
                 continue;
             }
             require_once $path;
