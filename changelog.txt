@@ -2,7 +2,11 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-###[1.7.6] 2015-10-21
+##[unreleased] Unreleased
+### Changed
+- the `config_file` WP Loader module setting to `configFile`
+
+##[1.7.6] 2015-10-21
 ### Fixed
 - call to deprecated `set_current_user` function replaced with call to `wp_set_curren_user`
 
