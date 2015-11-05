@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.7.10] 2015-11-5
+### Changed
+- modified WPLoader module compatibility check to allow for *Db modules `populate` setting
+
 ##[1.7.9] 2015-10-29
 ### Fixed
 - config file search path in the WP Loader module
