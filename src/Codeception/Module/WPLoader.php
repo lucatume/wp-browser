@@ -143,8 +143,8 @@ class WPLoader extends Module
             }
             /** @var \Codeception\Module $module */
             $module = $allModules[$moduleName];
-            if (!(empty($module->_getConfig('populate')) && empty($module->_getConfig('cleanup')))) {
-                throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'populate' and 'cleanup' parameters both set to 'false' not to interfere with the WP Loader module.");
+            if (!empty($module->_getConfig('cleanup'))) {
+                throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere with the WP Loader module.");
             }
         }
     }
