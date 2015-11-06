@@ -3,8 +3,13 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.7.11] 2015-11-6
 ### Changed
 - updated the test case class to latest from Core tests (thanks @zbtirell)
+
+### Added
+- the `waitForJQueryAjax` and `grabFullUrl` methods to the WPWebDriver module
 
 ##[1.7.10] 2015-11-5
 ### Changed
@@ -98,7 +103,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.9...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.11...HEAD
+[1.7.11]: https://github.com/lucatume/wp-browser/compare/1.7.10...1.7.11
+[1.7.10]: https://github.com/lucatume/wp-browser/compare/1.7.9...1.7.10
 [1.7.9]: https://github.com/lucatume/wp-browser/compare/1.7.8...1.7.9
 [1.7.8]: https://github.com/lucatume/wp-browser/compare/1.7.8...1.7.8
 [1.7.7]: https://github.com/lucatume/wp-browser/compare/1.7.6...1.7.7

@@ -70,4 +70,21 @@ class WPWebDriver extends WebDriver
 
         return is_array( $matchingCookies ) ? $matchingCookies : null;
     }
+
+    /**
+     * Waits for any jQuery triggered AJAX request to be resolved.
+     *
+     * @param int $time
+     */
+    public function waitForJqueryAjax( $time = 10 ) {
+        return $this->waitForJS( 'return jQuery.active == 0', $time );
+    }
+
+    /**
+     * Grabs the current page full URL including the query vars.
+     */
+    public function grabFullUrl() {
+        return $this->executeJS( 'return location.href' );
+    }
+
 }
