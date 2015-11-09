@@ -21,8 +21,10 @@ class WPProfiler {
 	var $stack;
 	var $profile;
 
-	// constructor
-	function WPProfiler() {
+	/**
+	 * PHP5 constructor.
+	 */
+	function __construct() {
 		$this->stack = array();
 		$this->profile = array();
 	}
@@ -148,7 +150,7 @@ class WPProfiler {
 	}
 
 	function _query_count($queries) {
-		// this requires the savequeries patch at http://trac.wordpress.org/ticket/5218
+		// this requires the savequeries patch at https://core.trac.wordpress.org/ticket/5218
 		$out = array();
 		foreach ($queries as $q) {
 			if (empty($q[2]))

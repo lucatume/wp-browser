@@ -23,6 +23,10 @@ require_once dirname( __FILE__ ) . '/functions.php';
 
 $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
 $_SERVER['HTTP_HOST'] = WP_TESTS_DOMAIN;
+$_SERVER['SERVER_NAME'] = WP_TESTS_DOMAIN;
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
 $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 
 require_once ABSPATH . '/wp-settings.php';
@@ -52,7 +56,16 @@ foreach ( $wpdb->tables( 'ms_global' ) as $table => $prefixed_table ) {
 		$wpdb->$table = $prefixed_table;
 }
 
+// Prefill a permalink structure so that WP doesn't try to determine one itself.
+add_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
+
 wp_install( WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password' );
+
+// Delete dummy permalink structure, as prefilled above.
+if ( ! is_multisite() ) {
+	delete_option( 'permalink_structure' );
+}
+remove_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
 
 if ( $multisite ) {
 	echo "Installing network..." . PHP_EOL;
@@ -64,4 +77,5 @@ if ( $multisite ) {
 
 	install_network();
 	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
+	$wp_rewrite->set_permalink_structure( '' );
 }
