@@ -148,7 +148,7 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt {
 					}
 					continue 2;
 			}
-			}
+		}
 
 		$skipped_groups = array_filter( $skipped_groups );
 		foreach ( $skipped_groups as $group_name => $skipped ) {
