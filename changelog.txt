@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- modified the included Ajax and XMLRPC test case classes to extend the
+`Codeception\Testcase\Test` class
 
 ##[1.7.11] 2015-11-6
 ### Changed
