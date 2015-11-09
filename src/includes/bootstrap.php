@@ -24,6 +24,10 @@ define( 'WP_MAX_MEMORY_LIMIT', -1 );
 
 $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
 $_SERVER['HTTP_HOST'] = WP_TESTS_DOMAIN;
+$_SERVER['SERVER_NAME'] = WP_TESTS_DOMAIN;
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
 $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 
 if ( "1" == getenv( 'WP_MULTISITE' ) ||
@@ -49,6 +53,8 @@ unset( $multisite );
 
 require_once dirname( __FILE__ ) . '/functions.php';
 
+$GLOBALS['_wp_die_disabled'] = false;
+// Allow tests to override wp_die
 tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter' );
 
 // Preset WordPress options defined in bootstrap file.
@@ -72,10 +78,13 @@ require_once rtrim( ABSPATH, '/\\' ) . '/wp-settings.php';
 _delete_all_posts();
 
 require dirname( __FILE__ ) . '/testcase.php';
+require dirname( __FILE__ ) . '/testcase-rest-api.php';
 require dirname( __FILE__ ) . '/testcase-xmlrpc.php';
 require dirname( __FILE__ ) . '/testcase-ajax.php';
+require dirname( __FILE__ ) . '/testcase-canonical.php';
 require dirname( __FILE__ ) . '/exceptions.php';
 require dirname( __FILE__ ) . '/utils.php';
+require dirname( __FILE__ ) . '/spy-rest-server.php';
 
 /**
  * A child class of the PHP test runner.
@@ -111,11 +120,18 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt {
 			}
 		}
 
-		$ajax_message = true;
+		$skipped_groups = array(
+			'ajax' => true,
+			'ms-files' => true,
+			'external-http' => true,
+		);
+
 		foreach ( $options as $option ) {
 			switch ( $option[0] ) {
 				case '--exclude-group' :
-					$ajax_message = false;
+					foreach ( $skipped_groups as $group_name => $skipped ) {
+						$skipped_groups[ $group_name ] = false;
+					}
 					continue 2;
 				case '--group' :
 					$groups = explode( ',', $option[1] );
@@ -124,12 +140,26 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt {
 							WP_UnitTestCase::forceTicket( $group );
 						}
 					}
-					$ajax_message = ! in_array( 'ajax', $groups );
+
+					foreach ( $skipped_groups as $group_name => $skipped ) {
+						if ( in_array( $group_name, $groups ) ) {
+							$skipped_groups[ $group_name ] = false;
+						}
+					}
 					continue 2;
 			}
+			}
+
+		$skipped_groups = array_filter( $skipped_groups );
+		foreach ( $skipped_groups as $group_name => $skipped ) {
+			echo sprintf( 'Not running %1$s tests. To execute these, use --group %1$s.', $group_name ) . PHP_EOL;
 		}
-		if ( $ajax_message ) {
-			echo "Not running ajax tests... To execute these, use --group ajax." . PHP_EOL;
+
+		if ( ! isset( $skipped_groups['external-http'] ) ) {
+			echo PHP_EOL;
+			echo 'External HTTP skipped tests can be caused by timeouts.' . PHP_EOL;
+			echo 'If this changeset includes changes to HTTP, make sure there are no timeouts.' . PHP_EOL;
+			echo PHP_EOL;
 		}
     }
 }
