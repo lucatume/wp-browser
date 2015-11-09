@@ -94,6 +94,35 @@ class WP_UnitTest_Factory_For_Attachment extends WP_UnitTest_Factory_For_Post {
 	function create_object( $file, $parent = 0, $args = array() ) {
 		return wp_insert_attachment( $args, $file, $parent );
 	}
+
+	function create_upload_object( $file, $parent = 0 ) {
+		$contents = file_get_contents($file);
+		$upload = wp_upload_bits(basename($file), null, $contents);
+
+		$type = '';
+		if ( ! empty($upload['type']) ) {
+			$type = $upload['type'];
+		} else {
+			$mime = wp_check_filetype( $upload['file'] );
+			if ($mime)
+				$type = $mime['type'];
+}
+
+		$attachment = array(
+			'post_title' => basename( $upload['file'] ),
+			'post_content' => '',
+			'post_type' => 'attachment',
+			'post_parent' => $parent,
+			'post_mime_type' => $type,
+			'guid' => $upload[ 'url' ],
+		);
+
+		// Save the data
+		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent );
+		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
+
+		return $id;
+	}
 }
 
 class WP_UnitTest_Factory_For_User extends WP_UnitTest_Factory_For_Thing {
@@ -173,6 +202,10 @@ class WP_UnitTest_Factory_For_Blog extends WP_UnitTest_Factory_For_Thing {
 		$suppress = $wpdb->suppress_errors();
 		$blog = wpmu_create_blog( $args['domain'], $args['path'], $args['title'], $user_id, $meta, $args['site_id'] );
 		$wpdb->suppress_errors( $suppress );
+
+		// Tell WP we're done installing.
+		wp_installing( false );
+
 		return $blog;
 	}
 
@@ -250,6 +283,12 @@ class WP_UnitTest_Factory_For_Term extends WP_UnitTest_Factory_For_Thing {
 
 	function add_post_terms( $post_id, $terms, $taxonomy, $append = true ) {
 		return wp_set_post_terms( $post_id, $terms, $taxonomy, $append );
+	}
+
+	function create_and_get( $args = array(), $generation_definitions = null ) {
+		$term_id = $this->create( $args, $generation_definitions );
+		$taxonomy = isset( $args['taxonomy'] ) ? $args['taxonomy'] : $this->taxonomy;
+		return get_term( $term_id, $taxonomy );
 	}
 
 	function get_object_by_id( $term_id ) {
@@ -362,11 +401,17 @@ abstract class WP_UnitTest_Factory_For_Thing {
 }
 
 class WP_UnitTest_Generator_Sequence {
-	var $next;
-	var $template_string;
+	static $incr = -1;
+	public $next;
+	public $template_string;
 
-	function __construct( $template_string = '%s', $start = 1 ) {
+	function __construct( $template_string = '%s', $start = null ) {
+		if ( $start ) {
 		$this->next = $start;
+		} else {
+			self::$incr++;
+			$this->next = self::$incr;
+		}
 		$this->template_string = $template_string;
 	}
 
