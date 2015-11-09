@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - modified the included Ajax and XMLRPC test case classes to extend the
 `Codeception\Testcase\Test` class
 
+##[1.7.12] 2015-11-6
+### Fixed
+- namespaced test class generation for `generate:wpunit` command
+
 ##[1.7.11] 2015-11-6
 ### Changed
 - updated the test case class to latest from Core tests (thanks @zbtirell)
@@ -106,7 +110,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.11...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.12...HEAD
+[1.7.12]: https://github.com/lucatume/wp-browser/compare/1.7.11...1.7.12
 [1.7.11]: https://github.com/lucatume/wp-browser/compare/1.7.10...1.7.11
 [1.7.10]: https://github.com/lucatume/wp-browser/compare/1.7.9...1.7.10
 [1.7.9]: https://github.com/lucatume/wp-browser/compare/1.7.8...1.7.9
