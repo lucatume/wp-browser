@@ -62,8 +62,6 @@ class WPTestCase extends \Codeception\TestCase\Test {
 	}
 
 	public static function tearDownAfterClass() {
-		parent::tearDownAfterClass();
-
 		$c = self::get_called_class();
 		if ( ! method_exists( $c, 'wpTearDownAfterClass' ) ) {
 			return;
@@ -72,6 +70,8 @@ class WPTestCase extends \Codeception\TestCase\Test {
 		call_user_func( array( $c, 'wpTearDownAfterClass' ) );
 
 		self::commit_transaction();
+
+		parent::tearDownAfterClass();
 	}
 
 	function setUp() {
@@ -142,6 +142,8 @@ class WPTestCase extends \Codeception\TestCase\Test {
 		remove_filter( 'wp_die_handler', array( $this, 'get_wp_die_handler' ) );
 		$this->_restore_hooks();
 		wp_set_current_user( 0 );
+
+		parent::tearDown();
 	}
 
 	function clean_up_global_scope() {
