@@ -1,18 +1,20 @@
 <?php
-namespace Codeception\Lib\Generator;
+    namespace Codeception\Lib\Generator;
 
-use Codeception\Lib\Generator\Shared\Classname;
-use Codeception\Util\Shared\Namespaces;
-use Codeception\Util\Template;
+    use Codeception\Lib\Generator\Shared\Classname;
+    use Codeception\Util\Shared\Namespaces;
+    use Codeception\Util\Template;
 
-class WPUnit {
-    use Classname;
-    use Namespaces;
+    class WPUnit
+    {
 
-    protected $template  = <<<EOF
+        use Classname;
+        use Namespaces;
+
+        protected $template = <<<EOF
 <?php
 {{namespace}}
-class {{name}}Test extends \WP_UnitTestCase
+class {{name}}Test extends {{baseClass}}
 {
 
     protected \$backupGlobals = false;
@@ -41,24 +43,26 @@ class {{name}}Test extends \WP_UnitTestCase
 }
 EOF;
 
-    protected $settings;
-    protected $name;
+        protected $settings;
+        protected $name;
+        protected $baseClass;
 
-    public function __construct($settings, $name)
-    {
-        $this->settings = $settings;
-        $this->name = $this->removeSuffix($name, 'Test');
+        public function __construct($settings, $name, $baseClass)
+        {
+            $this->settings = $settings;
+            $this->name = $this->removeSuffix($name, 'Test');
+            $this->baseClass = $baseClass;
+        }
+
+        public function produce()
+        {
+            $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
+
+            return (new Template($this->template))->place('namespace', $ns)
+                ->place('baseClass', $this->baseClass)
+                ->place('name', $this->getShortClassName($this->name))
+                ->produce();
+        }
+
     }
-
-    public function produce()
-    {
-        $ns = $this->getNamespaceHeader($this->settings['namespace'].'\\'.$this->name);
-
-        return (new Template($this->template))
-            ->place('namespace', $ns)
-            ->place('name', $this->getShortClassName($this->name))
-            ->produce();
-    }
-
-}
 

@@ -37,7 +37,7 @@ class GenerateWPUnit extends Command
     }
 
     public function getDescription() {
-        return 'Generates empty WP_UnitTestCase test without Codeception additions';
+        return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception additions.';
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -52,7 +52,7 @@ class GenerateWPUnit extends Command
         $filename = $this->completeSuffix($this->getClassName($class), 'Test');
         $filename = $path.$filename;
 
-        $gen = new WPUnitGenerator($config, $class);
+        $gen = $this->getGenerator( $config, $class );
 
         $res = $this->save($filename, $gen->produce());
         if (!$res) {
@@ -61,6 +61,16 @@ class GenerateWPUnit extends Command
         }
 
         $output->writeln("<info>Test was created in $filename</info>");
+    }
+
+    /**
+     * @param $config
+     * @param $class
+     *
+     * @return WPUnitGenerator
+     */
+    protected function getGenerator( $config, $class ) {
+        return new WPUnitGenerator( $config, $class, '\\Codeception\\TestCase\\WPTestCase' );
     }
 
 }
