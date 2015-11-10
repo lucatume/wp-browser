@@ -189,25 +189,160 @@ will generate the "UI", "Service" and "Unit" suites and will take care of settin
 * Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
 
 #### generate:wpunit
-Generates `WP_UnitTestCase` classes using the
+Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
 
 ```sh
-  wpcept generate:wpunit suite File
+  wpcept generate:wpunit suite SomeClass
 ```
 
 The command will generate a skeleton test case like
 
+
 ```php
 <?php
 
-class SomeMoreTest extends \WP_UnitTestCase
+class SomeClassTest extends \Codeception\TestCase\WPTestCase
 {
     protected function setUp()
     {
+      parent::setUp();
     }
 
     protected function tearDown()
     {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+
+#### generate:wprest
+Generates a test case extending the `\Codeception\TestCase\WPRestApiTestCase` class using the
+
+```sh
+  wpcept generate:wprest suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
+{
+    protected function setUp()
+    {
+      parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+
+#### generate:wpajax
+Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class using the
+
+```sh
+  wpcept generate:wpajax suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
+{
+    protected function setUp()
+    {
+      parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+
+#### generate:wpxmlrpc
+Generates a test case extending the `\Codeception\TestCase\WPXMLRPCTestCase` class using the
+
+```sh
+  wpcept generate:wpxmlrpc suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
+{
+    protected function setUp()
+    {
+      parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+
+#### generate:wpcanonical
+Generates a test case extending the `\Codeception\TestCase\WPCanonicalTestCase` class using the
+
+```sh
+  wpcept generate:wpcanonical suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
+{
+    protected function setUp()
+    {
+      parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+      parent::tearDown();
     }
 
     // tests
