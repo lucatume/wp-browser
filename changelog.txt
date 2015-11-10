@@ -2,7 +2,7 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+##[1.7.13] 2015-11-10
 ### Added
 - the `\Codeception\TestCase\WPTestCase`, an extension of the base Codeception test case and a copy of the core `WP_UnitTestCase` class
 - the `\Codeception\TestCase\WPCanonicalTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Canonical_UnitTestCase` class
@@ -125,7 +125,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.12...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.13c...HEAD
+[1.7.13c]: https://github.com/lucatume/wp-browser/compare/1.7.12...1.7.13c
 [1.7.12]: https://github.com/lucatume/wp-browser/compare/1.7.11...1.7.12
 [1.7.11]: https://github.com/lucatume/wp-browser/compare/1.7.10...1.7.11
 [1.7.10]: https://github.com/lucatume/wp-browser/compare/1.7.9...1.7.10
