@@ -3,6 +3,7 @@
 namespace Codeception\Command;
 
 use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
+use Codeception\Lib\Generator\WPUnit;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -70,7 +71,7 @@ class GenerateWPUnit extends Command
      * @return WPUnitGenerator
      */
     protected function getGenerator( $config, $class ) {
-        return new WPUnitGenerator( $config, $class, '\\Codeception\\TestCase\\WPTestCase' );
+        return new WPUnit( $config, $class, '\\Codeception\\TestCase\\WPTestCase' );
     }
 
 }

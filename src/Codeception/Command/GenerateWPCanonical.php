@@ -6,7 +6,6 @@ namespace Codeception\Command;
 use Codeception\Lib\Generator\WPUnit;
 
 class GenerateWPCanonical extends GenerateWPUnit {
-
 	const SLUG = 'generate:wpcanonical';
 
 	protected function getGenerator( $config, $class ) {

@@ -6,6 +6,8 @@ namespace Codeception\Command;
 use Codeception\Lib\Generator\WPUnit;
 
 class GenerateWPRestApi extends GenerateWPUnit {
+	use Shared\FileSystem;
+	use Shared\Config;
 
 	const SLUG = 'generate:wprest';
 
