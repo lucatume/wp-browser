@@ -1,10 +1,10 @@
 <?php
 namespace Codeception\TestCase;
 
-require_once dirname( __FILE__ ) . '/factory.php';
-require_once dirname( __FILE__ ) . '/trac.php';
+require_once dirname(dirname(dirname( __FILE__ ))) . '/includes/factory.php';
+require_once dirname(dirname(dirname( __FILE__ ))) . '/includes/trac.php';
 
-class WPTestCase extends Test {
+class WPTestCase extends \Codeception\TestCase\Test {
 
 	protected static $forced_tickets = array();
 	protected $expected_deprecated = array();
@@ -28,7 +28,7 @@ class WPTestCase extends Test {
 	protected static function factory() {
 		static $factory = null;
 		if ( ! $factory ) {
-			$factory = new WP_UnitTest_Factory();
+			$factory = new \WP_UnitTest_Factory();
 		}
 		return $factory;
 	}
@@ -133,8 +133,8 @@ class WPTestCase extends Test {
 				restore_current_blog();
 			}
 		}
-		$wp_query = new WP_Query();
-		$wp = new WP();
+		$wp_query = new \WP_Query();
+		$wp = new \WP();
 		$post = null;
 		remove_theme_support( 'html5' );
 		remove_filter( 'query', array( $this, '_create_temporary_tables' ) );
@@ -274,7 +274,7 @@ class WPTestCase extends Test {
 	}
 
 	function wp_die_handler( $message ) {
-		throw new WPDieException( $message );
+		throw new \WPDieException( $message );
 	}
 
 	function expectDeprecated() {
@@ -418,13 +418,13 @@ class WPTestCase extends Test {
 
 		$this->flush_cache();
 		unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
-		$GLOBALS['wp_the_query'] = new WP_Query();
+		$GLOBALS['wp_the_query'] = new \WP_Query();
 		$GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
 
 		$public_query_vars  = $GLOBALS['wp']->public_query_vars;
 		$private_query_vars = $GLOBALS['wp']->private_query_vars;
 
-		$GLOBALS['wp'] = new WP();
+		$GLOBALS['wp'] = new \WP();
 		$GLOBALS['wp']->public_query_vars  = $public_query_vars;
 		$GLOBALS['wp']->private_query_vars = $private_query_vars;
 
@@ -443,7 +443,7 @@ class WPTestCase extends Test {
 
 		if ( WP_TESTS_FORCE_KNOWN_BUGS )
 			return;
-		$tickets = PHPUnit_Util_Test::getTickets( get_class( $this ), $this->getName( false ) );
+		$tickets = \PHPUnit_Util_Test::getTickets( get_class( $this ), $this->getName( false ) );
 		foreach ( $tickets as $ticket ) {
 			if ( is_numeric( $ticket ) ) {
 				$this->knownWPBug( $ticket );
@@ -465,7 +465,7 @@ class WPTestCase extends Test {
 	function knownWPBug( $ticket_id ) {
 		if ( WP_TESTS_FORCE_KNOWN_BUGS || in_array( $ticket_id, self::$forced_tickets ) )
 			return;
-		if ( ! TracTickets::isTracTicketClosed( 'https://core.trac.wordpress.org', $ticket_id ) )
+		if ( ! \TracTickets::isTracTicketClosed( 'https://core.trac.wordpress.org', $ticket_id ) )
 			$this->markTestSkipped( sprintf( 'WordPress Ticket #%d is not fixed', $ticket_id ) );
 	}
 
@@ -475,7 +475,7 @@ class WPTestCase extends Test {
 	function knownUTBug( $ticket_id ) {
 		if ( WP_TESTS_FORCE_KNOWN_BUGS || in_array( 'UT' . $ticket_id, self::$forced_tickets ) )
 			return;
-		if ( ! TracTickets::isTracTicketClosed( 'https://unit-tests.trac.wordpress.org', $ticket_id ) )
+		if ( ! \TracTickets::isTracTicketClosed( 'https://unit-tests.trac.wordpress.org', $ticket_id ) )
 			$this->markTestSkipped( sprintf( 'Unit Tests Ticket #%d is not fixed', $ticket_id ) );
 	}
 
@@ -485,7 +485,7 @@ class WPTestCase extends Test {
 	function knownPluginBug( $ticket_id ) {
 		if ( WP_TESTS_FORCE_KNOWN_BUGS || in_array( 'Plugin' . $ticket_id, self::$forced_tickets ) )
 			return;
-		if ( ! TracTickets::isTracTicketClosed( 'https://plugins.trac.wordpress.org', $ticket_id ) )
+		if ( ! \TracTickets::isTracTicketClosed( 'https://plugins.trac.wordpress.org', $ticket_id ) )
 			$this->markTestSkipped( sprintf( 'WordPress Plugin Ticket #%d is not fixed', $ticket_id ) );
 	}
 
@@ -496,9 +496,9 @@ class WPTestCase extends Test {
 	/**
 	 * Define constants after including files.
 	 */
-	function prepareTemplate( Text_Template $template ) {
+	function prepareTemplate( \Text_Template $template ) {
 		$template->setVar( array( 'constants' => '' ) );
-		$template->setVar( array( 'wp_constants' => PHPUnit_Util_GlobalState::getConstantsAsString() ) );
+		$template->setVar( array( 'wp_constants' => \PHPUnit_Util_GlobalState::getConstantsAsString() ) );
 		parent::prepareTemplate( $template );
 	}
 
@@ -616,8 +616,8 @@ class WPTestCase extends Test {
 	function files_in_dir( $dir ) {
 		$files = array();
 
-		$iterator = new RecursiveDirectoryIterator( $dir );
-		$objects = new RecursiveIteratorIterator( $iterator );
+		$iterator = new \RecursiveDirectoryIterator( $dir );
+		$objects = new \RecursiveIteratorIterator( $iterator );
 		foreach ( $objects as $name => $object ) {
 			if ( is_file( $name ) ) {
 				$files[] = $name;
@@ -686,7 +686,7 @@ class WPTestCase extends Test {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @global WP_Rewrite $wp_rewrite
+	 * @global \WP_Rewrite $wp_rewrite
 	 *
 	 * @param string $structure Optional. Permalink structure to set. Default empty.
 	 */
