@@ -10,7 +10,6 @@
  */
 global $wpdb, $current_site, $current_blog, $wp_rewrite, $shortcode_tags, $wp, $phpmailer;
 
-define( 'WP_TESTS_TABLE_PREFIX', $table_prefix );
 define( 'DIR_TESTDATA', dirname( __FILE__ ) . '/../data' );
 
 if ( ! defined( 'WP_TESTS_FORCE_KNOWN_BUGS' ) )
@@ -84,7 +83,10 @@ require dirname( __FILE__ ) . '/testcase-ajax.php';
 require dirname( __FILE__ ) . '/testcase-canonical.php';
 require dirname( __FILE__ ) . '/exceptions.php';
 require dirname( __FILE__ ) . '/utils.php';
-require dirname( __FILE__ ) . '/spy-rest-server.php';
+// let's make sure we are using a version of WordPress that integrates the WP_REST_Server class
+if ( class_exists( 'WP_REST_Server' ) ) {
+	require dirname( __FILE__ ) . '/spy-rest-server.php';
+}
 
 /**
  * A child class of the PHP test runner.
