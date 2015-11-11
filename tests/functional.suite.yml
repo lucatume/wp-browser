@@ -11,12 +11,12 @@ modules:
       - WPDb
     config:
       WPDb:
-        url: 'http://example.local'
-        dsn: 'mysql:host=192.168.33.52;dbname=testingGrounds'
+        url: 'http://eeeeeeeeee.local'
+        dsn: 'mysql:host=127.0.0.1;dbname=codeception-tests'
         user: 'root'
         password: 'root'
         dump: 'tests/_data/dump.sql'
         populate: true
-        cleanup: false
+        cleanup: true
         checkExistence: true
         update: true
