@@ -34,7 +34,7 @@ class WPDb extends ExtendedDb
      *
      * @var array
      */
-    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false, 'update' => true);
+    protected $config = array('tablePrefix' => 'wp', 'checkExistence' => false, 'update' => true, 'reconnect' => false);
     /**
      * The table prefix to use.
      *
