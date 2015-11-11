@@ -16,7 +16,7 @@ class ExtendedDb extends Db
      */
     public function dontHaveInDatabase($table, array $criteria)
     {
-        $query = $this->driver->delete($table, $criteria);
+        $query = $this->driver->deleteQueryByCriteria($table, $criteria);
         $this->debugSection('Query', $query);
 
         $sth = $this->driver->getDbh()->prepare($query);
@@ -25,7 +25,7 @@ class ExtendedDb extends Db
         }
         $res = $sth->execute();
         if (!$res) {
-            $this->fail(sprintf("Record with %s couldn't be deleted from %s", json_encode($data), $table));
+            $this->fail(sprintf("Record with %s couldn't be deleted from %s", json_encode($criteria), $table));
         }
     }
 
