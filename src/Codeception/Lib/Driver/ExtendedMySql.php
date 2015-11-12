@@ -40,20 +40,4 @@ class ExtendedMySql extends MySql
         $assignments = implode($glue, $assignments);
         return $assignments;
     }
-
-    /**
-     * Returns the statement to delete a row from the database.
-     *
-     * Will delete all entries in a table if no criteria is passed.
-     *
-     * @param  string $tableName
-     * @param  array $criteria
-     *
-     * @return string The DELETE statement.
-     */
-    public function delete($tableName, array $criteria = array())
-    {
-        $whereClause = $this->getAssignmentsFor($criteria, " AND ");
-        return sprintf('DELETE FROM %s WHERE %s', $tableName, $whereClause);
-    }
 }
