@@ -84,7 +84,6 @@
          * Inserts a user and appropriate meta in the database.
          *
          * @param  string $user_login The user login slug
-         * @param  int $user_id The user ID.
          * @param  string $role The user role slug, e.g. "administrator"; defaults to "subscriber".
          * @param  array $userData An associative array of column names and values overridind defaults in the "users"
          *                            and "usermeta" table.
@@ -92,19 +91,24 @@
          * @return void
          */
         public function haveUserInDatabase($user_login,
-                                           $user_id,
                                            $role = 'subscriber',
                                            array $userData = array())
         {
             // get the user
-            list($userLevelDefaults, $userTableData, $userCapabilitiesData) = User::makeUser($user_login, $user_id, $role, $userData);
-            $this->debugSection('Makers output', print_r($userTableData));
-            // add the data to the database
-            $tableName = $this->getPrefixedTableNameFor('users');
-            $this->haveInDatabase($tableName, $userTableData);
-            $tableName = $this->getPrefixedTableNameFor('usermeta');
-            $this->haveInDatabase($tableName, $userCapabilitiesData);
-            $this->haveInDatabase($tableName, $userLevelDefaults);
+            $userTableData = User::generateUserTableDataFrom($user_login, $userData);
+            $this->debugSection('Generated users table data', json_encode($userTableData));
+            $this->haveInDatabase($this->getUsersTableName(), $userTableData);
+
+            $userId = $this->grabUserIdFromDatabase($user_login);
+
+            $this->haveUserCapabilitiesInDatabase($userId, $role);
+            $this->haveUserLevelsInDatabase($userId, $role);
+//            list($userLevelDefaults, $userTableData, $userCapabilitiesData) = User::makeUser($user_login, $role, $userData);
+//            $this->debugSection('Makers output', print_r($userTableData));
+//            // add the data to the database
+//            $tableName = $this->grabPrefixedTableNameFor('usermeta');
+//            $this->haveInDatabase($tableName, $userCapabilitiesData);
+//            $this->haveInDatabase($tableName, $userLevelDefaults);
         }
 
         /**
@@ -114,7 +118,7 @@
          *
          * @return string            The prefixed table name, e.g. "wp_users".
          */
-        protected function getPrefixedTableNameFor($tableName)
+        public function grabPrefixedTableNameFor($tableName = '')
         {
             $tableName = $this->config['tablePrefix'] . $tableName;
 
@@ -170,7 +174,7 @@
          */
         public function seeOptionInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('options');
+            $tableName = $this->grabPrefixedTableNameFor('options');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -202,7 +206,7 @@
          */
         public function dontSeeOptionInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('options');
+            $tableName = $this->grabPrefixedTableNameFor('options');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -217,7 +221,7 @@
          */
         public function seePostMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('postmeta');
+            $tableName = $this->grabPrefixedTableNameFor('postmeta');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -237,7 +241,7 @@
             if (!is_int($link_id)) {
                 throw new \BadMethodCallException('Link id must be an int');
             }
-            $tableName = $this->getPrefixedTableNameFor('links');
+            $tableName = $this->grabPrefixedTableNameFor('links');
             $data = array_merge($data, array('link_id' => $link_id));
             $this->haveInDatabase($tableName, $data);
         }
@@ -253,7 +257,7 @@
          */
         public function seeLinkInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('links');
+            $tableName = $this->grabPrefixedTableNameFor('links');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -268,7 +272,7 @@
          */
         public function dontSeeLinkInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('links');
+            $tableName = $this->grabPrefixedTableNameFor('links');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -283,7 +287,7 @@
          */
         public function dontSeePostMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('postmeta');
+            $tableName = $this->grabPrefixedTableNameFor('postmeta');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -302,7 +306,7 @@
                                                   $term_id,
                                                   $term_order = 0)
         {
-            $tableName = $this->getPrefixedTableNameFor('term_relationships');
+            $tableName = $this->grabPrefixedTableNameFor('term_relationships');
             $this->dontSeeInDatabase($tableName, array(
                 'object_id'  => $post_id,
                 'term_id'    => $term_id,
@@ -321,7 +325,7 @@
          */
         public function seeUserInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('users');
+            $tableName = $this->grabPrefixedTableNameFor('users');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -334,7 +338,7 @@
          */
         public function dontSeeUserInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('users');
+            $tableName = $this->grabPrefixedTableNameFor('users');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -350,7 +354,7 @@
                                            array $data = array())
         {
             $post = Post::makePost($ID, $this->config['url'], $data);
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->haveInDatabase($tableName, $post);
         }
 
@@ -366,7 +370,7 @@
                                            array $data = array())
         {
             $post = Post::makePage($ID, $this->config['url'], $data);
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->haveInDatabase($tableName, $post);
         }
 
@@ -381,7 +385,7 @@
          */
         public function seePostInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -396,7 +400,7 @@
          */
         public function dontSeePostInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -412,7 +416,7 @@
         public function seePageInDatabase(array $criteria)
         {
             $criteria = array_merge($criteria, array('post_type' => 'page'));
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -428,7 +432,7 @@
         public function dontSeePageInDatabase(array $criteria)
         {
             $criteria = array_merge($criteria, array('post_type' => 'page'));
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -444,29 +448,6 @@
          *
          * @return void
          */
-        public function haveUserMetaInDatabase($user_id,
-                                               $meta_key,
-                                               $meta_value,
-                                               $umeta_id = null)
-        {
-            if (!is_int($user_id)) {
-                throw new \BadMethodCallException('User id must be an int', 1);
-            }
-            if (!is_string($meta_key) or !is_string($meta_value)) {
-                throw new \BadMethodCallException('Meta key and value must be strings', 2);
-            }
-            if (!is_null($umeta_id) and !is_int($umeta_id)) {
-                throw new \BadMethodCallException('User meta id must either be an int or null', 3);
-            }
-            $this->maybeCheckUserExistsInDatabase($user_id);
-            $tableName = $this->getPrefixedTableNameFor('usermeta');
-            $this->haveInDatabase($tableName, array(
-                'umeta_id'   => $umeta_id,
-                'user_id'    => $user_id,
-                'meta_key'   => $meta_key,
-                'meta_value' => $meta_value
-            ));
-        }
 
         /**
          * Conditionally checks for a user in the database.
@@ -482,7 +463,7 @@
             if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
                 return;
             }
-            $tableName = $this->getPrefixedTableNameFor('users');
+            $tableName = $this->grabPrefixedTableNameFor('users');
             if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $user_id))) {
                 throw new \RuntimeException("A user with an id of $user_id does not exist", 1);
             }
@@ -508,7 +489,7 @@
             }
             $this->maybeCheckTermExistsInDatabase($term_id);
             // add the relationship in the database
-            $tableName = $this->getPrefixedTableNameFor('term_relationships');
+            $tableName = $this->grabPrefixedTableNameFor('term_relationships');
             $this->haveInDatabase($tableName, array(
                 'object_id'        => $link_id,
                 'term_taxonomy_id' => $term_id,
@@ -530,7 +511,7 @@
             if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
                 return;
             }
-            $tableName = $this->getPrefixedTableNameFor('terms');
+            $tableName = $this->grabPrefixedTableNameFor('terms');
             if (!$this->grabFromDatabase($tableName, 'term_id', array('term_id' => $term_id))) {
                 throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
             }
@@ -539,21 +520,20 @@
         /**
          * Inserts a comment in the database.
          *
-         * @param  int $comment_ID The comment ID.
          * @param  int $comment_post_ID The id of the post the comment refers to.
          * @param  array $data The comment data overriding default and random generated values.
          *
          * @return void
          */
-        public function haveCommentInDatabase($comment_ID,
-                                              $comment_post_ID,
-                                              array $data = array())
+        public function haveCommentInDatabase(
+            $comment_post_ID,
+            array $data = array())
         {
-            if (!is_int($comment_ID) or !is_int($comment_post_ID)) {
+            if (!is_int($comment_post_ID)) {
                 throw new \BadMethodCallException('Comment id and post id must be int', 1);
             }
-            $comment = Comment::makeComment($comment_ID, $comment_post_ID, $data);
-            $tableName = $this->getPrefixedTableNameFor('comments');
+            $comment = Comment::makeComment($comment_post_ID, $data);
+            $tableName = $this->grabPrefixedTableNameFor('comments');
             $this->haveInDatabase($tableName, $comment);
         }
 
@@ -568,7 +548,7 @@
          */
         public function seeCommentInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('comments');
+            $tableName = $this->grabPrefixedTableNameFor('comments');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -583,7 +563,7 @@
          */
         public function dontSeeCommentInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('comments');
+            $tableName = $this->grabPrefixedTableNameFor('comments');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -598,7 +578,7 @@
          */
         public function seeCommentMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('commentmeta');
+            $tableName = $this->grabPrefixedTableNameFor('commentmeta');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -613,7 +593,7 @@
          */
         public function dontSeeCommentMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('commentmeta');
+            $tableName = $this->grabPrefixedTableNameFor('commentmeta');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -638,7 +618,7 @@
             $this->maybeCheckPostExistsInDatabase($post_id);
             $this->maybeCheckTermExistsInDatabase($term_id);
             // add the relationship in the database
-            $tableName = $this->getPrefixedTableNameFor('term_relationships');
+            $tableName = $this->grabPrefixedTableNameFor('term_relationships');
             $this->haveInDatabase($tableName, array(
                 'object_id'        => $post_id,
                 'term_taxonomy_id' => $term_id,
@@ -658,7 +638,7 @@
             if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
                 return;
             }
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $post_id))) {
                 throw new \RuntimeException("A post with an id of $post_id does not exist", 1);
             }
@@ -692,7 +672,7 @@
                 throw new \BadMethodCallException('Meta value must be an string', 4);
             }
             $this->maybeCheckCommentExistsInDatabase($comment_id);
-            $tableName = $this->getPrefixedTableNameFor('commmentmeta');
+            $tableName = $this->grabPrefixedTableNameFor('commmentmeta');
             $this->haveInDatabase($tableName, array(
                 'meta_id'    => $meta_id,
                 'comment_id' => $comment_id,
@@ -712,7 +692,7 @@
             if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
                 return;
             }
-            $tableName = $this->getPrefixedTableNameFor('comments');
+            $tableName = $this->grabPrefixedTableNameFor('comments');
             if (!$this->grabFromDatabase($tableName, 'comment_ID', array('commment_ID' => $comment_id))) {
                 throw new \RuntimeException("A comment with an id of $comment_id does not exist", 1);
             }
@@ -748,7 +728,7 @@
                 throw new \BadMethodCallException('Meta value must be an string', 4);
             }
             $this->maybeCheckPostExistsInDatabase($post_id);
-            $tableName = $this->getPrefixedTableNameFor('postmeta');
+            $tableName = $this->grabPrefixedTableNameFor('postmeta');
             $this->haveInDatabase($tableName, array(
                 'meta_id'    => $meta_id,
                 'post_id'    => $post_id,
@@ -778,7 +758,7 @@
                 'slug'       => isset($args['slug']) ? $args['slug'] : (new Slugifier())->slugify($term),
                 'term_group' => isset($args['term_group']) ? $args['term_group'] : 0,
             );
-            $tableName = $this->getPrefixedTableNameFor('terms');
+            $tableName = $this->grabPrefixedTableNameFor('terms');
             $this->haveInDatabase($tableName, $termsTableEntry);
             // term_taxonomy table entry
             $termTaxonomyTableEntry = array(
@@ -789,7 +769,7 @@
                 'parent'           => isset($args['parent']) ? $args['parent'] : 0,
                 'count'            => isset($args['count']) ? $args['count'] : 0
             );
-            $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+            $tableName = $this->grabPrefixedTableNameFor('term_taxonomy');
             $this->haveInDatabase($tableName, $termTaxonomyTableEntry);
         }
 
@@ -812,11 +792,11 @@
                     'term_id'     => isset($criteria['term_id']) ? $criteria['term_id'] : false
                 );
                 $termTaxonomyCriteria = array_filter($termTaxonomyCriteria);
-                $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+                $tableName = $this->grabPrefixedTableNameFor('term_taxonomy');
                 $this->seeInDatabase($tableName, $termTaxonomyCriteria);
             } else {
                 // the matching will be attempted against the terms table
-                $tableName = $this->getPrefixedTableNameFor('terms');
+                $tableName = $this->grabPrefixedTableNameFor('terms');
                 $this->seeInDatabase($tableName, $criteria);
             }
         }
@@ -840,11 +820,11 @@
                     'term_id'     => isset($criteria['term_id']) ? $criteria['term_id'] : false
                 );
                 $termTaxonomyCriteria = array_filter($termTaxonomyCriteria);
-                $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+                $tableName = $this->grabPrefixedTableNameFor('term_taxonomy');
                 $this->dontSeeInDatabase($tableName, $termTaxonomyCriteria);
             }
             // the matching will be attempted against the terms table
-            $tableName = $this->getPrefixedTableNameFor('terms');
+            $tableName = $this->grabPrefixedTableNameFor('terms');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -859,7 +839,7 @@
          */
         public function seeUserMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('usermeta');
+            $tableName = $this->grabPrefixedTableNameFor('usermeta');
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -874,7 +854,7 @@
          */
         public function dontSeeUserMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('usermeta');
+            $tableName = $this->grabPrefixedTableNameFor('usermeta');
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -905,7 +885,7 @@
         public function haveOptionInDatabase($option_name,
                                              $option_value)
         {
-            $tableName = $this->getPrefixedTableNameFor('options');
+            $tableName = $this->grabPrefixedTableNameFor('options');
 
             $this->haveInDatabase($tableName, array(
                 'option_name'  => $option_name,
@@ -923,7 +903,7 @@
          */
         public function dontHaveCommentMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('commentmeta');
+            $tableName = $this->grabPrefixedTableNameFor('commentmeta');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -936,7 +916,7 @@
          */
         public function dontHaveCommentInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('comments');
+            $tableName = $this->grabPrefixedTableNameFor('comments');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -949,7 +929,7 @@
          */
         public function dontHaveLinkInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('links');
+            $tableName = $this->grabPrefixedTableNameFor('links');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -962,7 +942,7 @@
          */
         public function dontHaveOptionInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('options');
+            $tableName = $this->grabPrefixedTableNameFor('options');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -975,7 +955,7 @@
          */
         public function dontHavePostMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('postmeta');
+            $tableName = $this->grabPrefixedTableNameFor('postmeta');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -988,7 +968,7 @@
          */
         public function dontHavePostInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('posts');
+            $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1001,7 +981,7 @@
          */
         public function dontHaveTermRelationshipInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('term_relationships');
+            $tableName = $this->grabPrefixedTableNameFor('term_relationships');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1014,7 +994,7 @@
          */
         public function dontHaveTermTaxonomyInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('term_taxonomy');
+            $tableName = $this->grabPrefixedTableNameFor('term_taxonomy');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1027,7 +1007,7 @@
          */
         public function dontHaveTermInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('terms');
+            $tableName = $this->grabPrefixedTableNameFor('terms');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1040,21 +1020,18 @@
          */
         public function dontHaveUserMetaInDatabase(array $criteria)
         {
-            $tableName = $this->getPrefixedTableNameFor('usermeta');
+            $tableName = $this->grabPrefixedTableNameFor('usermeta');
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
         /**
-         * Removes an entry from the users table.
-         *
-         * @param  array $criteria
-         *
-         * @return void
+         * @param int $userIdOrLogin
          */
-        public function dontHaveUserInDatabase(array $criteria)
+        public function dontHaveUserInDatabase($userIdOrLogin)
         {
-            $tableName = $this->getPrefixedTableNameFor('users');
-            $this->dontHaveInDatabase($tableName, $criteria);
+            $userId = is_numeric($userIdOrLogin) ? intval($userIdOrLogin) : $this->grabUserIdFromDatabase($userIdOrLogin);
+            $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('users'), ['ID' => $userId]);
+            $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('usermeta'), ['user_id' => $userId]);
         }
 
         /**
@@ -1071,9 +1048,96 @@
             if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
                 return;
             }
-            $tableName = $this->getPrefixedTableNameFor('links');
+            $tableName = $this->grabPrefixedTableNameFor('links');
             if (!$this->grabFromDatabase($tableName, 'link_id', array('link_id' => $link_id))) {
                 throw new \RuntimeException("A link with an id of $link_id does not exist", 1);
             }
+        }
+
+        /**
+         * @return string
+         */
+        protected function getUsersTableName()
+        {
+            $usersTableName = $this->grabPrefixedTableNameFor('users');
+            return $usersTableName;
+        }
+
+        /**
+         * @return string
+         */
+        protected function getUsermetaTableName()
+        {
+            $usermetaTable = $this->grabPrefixedTableNameFor('usermeta');
+            return $usermetaTable;
+        }
+
+        /**
+         * @param $userId
+         * @param $meta_key
+         * @param $meta_value
+         */
+        public function haveUserMetaInDatabase($userId, $meta_key, $meta_value)
+        {
+            $data = ['user_id'    => $userId,
+                     'meta_key'   => $meta_key,
+                     'meta_value' => $this->maybeSerialize($meta_value)];
+            $this->haveInDatabase($this->getUsermetaTableName(), $data);
+        }
+
+        /**
+         * @param $userId
+         * @param $role
+         * @return array
+         */
+        public function haveUserCapabilitiesInDatabase($userId, $role)
+        {
+            if (!is_array($role)) {
+                $meta_key = $this->grabPrefixedTableNameFor() . 'capabilities';
+                $meta_value = serialize([$role => 1]);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+                return;
+            }
+            foreach ($role as $blogId => $_role) {
+                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
+                $meta_value = serialize([$_role => 1]);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+            }
+        }
+
+        /**
+         * @param $userId
+         * @param $role
+         */
+        public function haveUserLevelsInDatabase($userId, $role)
+        {
+            if (!is_array($role)) {
+                $meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
+                $meta_value = User\Roles::getLevelForRole($role);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+                return;
+            }
+            foreach ($role as $blogId => $_role) {
+                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
+                $meta_value = User\Roles::getLevelForRole($_role);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+            }
+        }
+
+        public function grabUserIdFromDatabase($userLogin)
+        {
+            return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
+        }
+
+        /**
+         * @param $meta_value
+         * @return string
+         */
+        protected function maybeSerialize($meta_value)
+        {
+            $metaValue = (is_array($meta_value) || is_object($meta_value)) ? serialize($meta_value) : $meta_value;
+            return $metaValue;
         }
     }
