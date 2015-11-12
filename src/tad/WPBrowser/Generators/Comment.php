@@ -9,15 +9,14 @@ class Comment
     /**
      * Generates a comment to be used in a WordPress database.
      * generateDefaultsFor*
-     * @param  int $comment_ID The comment ID to use.
      * @param  int $comment_post_ID The ID of the post the comment relates to.
      * @param  array $data The optional data to be used to generate the comment.
      *
      * @return array                    A column as key array of comment content.
      */
-    public static function makeComment($comment_ID, $comment_post_ID, array $data = array())
+    public static function makeComment($comment_post_ID, array $data = array())
     {
-        $defaults = self::generateDefaultsFor($comment_ID, $comment_post_ID);
+        $defaults = self::generateDefaultsFor($comment_post_ID);
         static::$count++;
         return array_merge($defaults, $data);
     }
@@ -25,17 +24,15 @@ class Comment
     /**
      * Generate the complete comment entry default structure.
      *
-     * @param  int $comment_ID The comment id.
      * @param  int $comment_post_ID The if of the post the comment refers to.
      *
      * @return array                An associative array of column/default values.
      */
-    protected static function generateDefaultsFor($comment_ID, $comment_post_ID)
+    protected static function generateDefaultsFor($comment_post_ID)
     {
         $randIP = "" . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255);
         $content = self::generateCommentContent();
         $defaults = array(
-            'comment_ID' => $comment_ID,
             'comment_post_ID' => $comment_post_ID,
             'comment_author' => 'John Doe',
             'comment_author_email' => 'john.doe@example.com',
