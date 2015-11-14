@@ -24,6 +24,7 @@
          * @var array
          */
         protected $requiredFields = array('url');
+        
         /**
          * The module optional configuration parameters.
          *
