@@ -1,5 +1,5 @@
 <?php
-namespace Codeception\Testcase;
+namespace Codeception\TestCase;
 
 abstract class WPRestApiTestCase extends WPTestCase {
 	protected function assertErrorResponse( $code, $response, $status = null ) {
