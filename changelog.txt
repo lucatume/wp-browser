@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- namespace of the `WPRestApiTestCase` class
+
+### Changed
+- tested and modified WPDb user related methods
 
 ##[1.7.14] 2015-11-10
 ### Fixed
