@@ -286,4 +286,61 @@
 
             $I->dontHaveUserMetaInDatabase(['user_id' => $userId, 'meta_key' => 'baz']);
         }
+
+        /**
+         * @test
+         * it should allow adding multiple user meta
+         */
+        public function it_should_allow_adding_multiple_user_meta(FunctionalTester $I)
+        {
+            $I->haveUserInDatabase('Luca');
+            $userId = $I->grabUserIdFromDatabase('Luca');
+
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'one');
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'two');
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'three');
+
+            $meta = $I->grabUserMetaFromDatabase($userId, 'some_key');
+
+            $I->assertEquals(3, count($meta));
+            $I->assertEquals('one', $meta[0]);
+            $I->assertEquals('two', $meta[1]);
+            $I->assertEquals('three', $meta[2]);
+        }
+
+        /**
+         * @test
+         * it should allow grabbing a user unique meta
+         */
+        public function it_should_allow_grabbing_a_user_unique_meta(FunctionalTester $I)
+        {
+            $I->haveUserInDatabase('Luca');
+            $userId = $I->grabUserIdFromDatabase('Luca');
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'some_value');
+
+            $meta = $I->grabUserMetaFromDatabase($userId, 'some_key');
+
+            $I->assertEquals(1, count($meta));
+            $I->assertEquals('some_value', $meta[0]);
+        }
+
+        /**
+         * @test
+         * it should remove all user meta
+         */
+        public function it_should_remove_all_user_meta(FunctionalTester $I)
+        {
+            $I->haveUserInDatabase('Luca');
+            $userId = $I->grabUserIdFromDatabase('Luca');
+
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'one');
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'two');
+            $I->haveUserMetaInDatabase($userId, 'some_key', 'three');
+
+            $meta = $I->dontHaveUserMetaInDatabase(['user_id' => $userId, 'meta_key' => 'some_key']);
+
+            $table = $I->grabPrefixedTableNameFor('usermeta');
+            $I->dontSeeInDatabase($table, ['user_id' => $userId,
+                                           'meta_key'   => 'some_key']);
+        }
     }

@@ -5,6 +5,7 @@
     use Codeception\Configuration as Configuration;
     use Codeception\Exception\ModuleConfigException;
     use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
+    use PDO;
     use tad\WPBrowser\Generators\Comment;
     use tad\WPBrowser\Generators\Post;
     use tad\WPBrowser\Generators\User;
@@ -24,7 +25,7 @@
          * @var array
          */
         protected $requiredFields = array('url');
-        
+
         /**
          * The module optional configuration parameters.
          *
@@ -124,27 +125,6 @@
             $tableName = $this->config['tablePrefix'] . $tableName;
 
             return $tableName;
-        }
-
-        /**
-         * Inserts or updates a database entry.
-         *
-         * An override of the parent method to allow back compatibililty and configuration based use.
-         *
-         * @param  string $table The table name.
-         * @param  array $data An associative array of the column names and values to insert.
-         *
-         * @return void
-         */
-        public function haveInDatabase($table,
-                                       array $data)
-        {
-            $this->debugSection('Configuration', sprintf('Update setting set to %s', $this->config['update']));
-            if (isset($this->config['update']) and $this->config['update']) {
-                parent::haveOrUpdateInDatabase($table, $data);
-            }
-
-            parent::haveInDatabase($table, $data);
         }
 
         /**
@@ -886,9 +866,12 @@
         public function haveOptionInDatabase($option_name,
                                              $option_value)
         {
-            $tableName = $this->grabPrefixedTableNameFor('options');
+            $table = $this->grabPrefixedTableNameFor('options');
 
-            $this->haveInDatabase($tableName, array(
+            $this->dontHaveInDatabase($table, ['option_name' => $option_name]);
+
+            $option_value = $this->maybeSerialize($option_value);
+            $this->haveInDatabase($table, array(
                 'option_name'  => $option_name,
                 'option_value' => $option_value,
                 'autoload'     => 'yes'
@@ -941,9 +924,10 @@
          *
          * @return void
          */
-        public function dontHaveOptionInDatabase(array $criteria)
+        public function dontHaveOptionInDatabase($option)
         {
             $tableName = $this->grabPrefixedTableNameFor('options');
+            $criteria = ['option_name' => $option];
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1133,12 +1117,58 @@
         }
 
         /**
-         * @param $meta_value
+         * @param $value
          * @return string
          */
-        protected function maybeSerialize($meta_value)
+        protected function maybeSerialize($value)
         {
-            $metaValue = (is_array($meta_value) || is_object($meta_value)) ? serialize($meta_value) : $meta_value;
+            $metaValue = (is_array($value) || is_object($value)) ? serialize($value) : $value;
             return $metaValue;
+        }
+
+        public function grabOptionFromDatabase($option_name)
+        {
+            $table = $this->grabPrefixedTableNameFor('options');
+            $option_value = $this->grabFromDatabase($table, 'option_value', ['option_name' => $option_name]);
+            return empty($option_value) ? '' : $this->maybeUnserialize($option_value);
+        }
+
+        private function maybeUnserialize($value)
+        {
+            $unserialized = @unserialize($value);
+            return false === $unserialized ? $value : $unserialized;
+        }
+
+        public function grabUserMetaFromDatabase($userId, $meta_key)
+        {
+            $table = $this->grabPrefixedTableNameFor('usermeta');
+            $meta = $this->grabAllFromDatabase($table, 'meta_value', ['meta_key' => $meta_key]);
+            if (empty($meta)) {
+                return [];
+            }
+
+            return array_map(function ($val) {
+                return $val['meta_value'];
+            }, $meta);
+        }
+
+        private function grabAllFromDatabase($table, $column, $criteria)
+        {
+            $query = $this->driver->select($column, $table, $criteria);
+            $this->debugSection('Query', $query, json_encode($criteria));
+
+            $sth = $this->driver->executeQuery($query, array_values($criteria));
+
+            return $sth->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function haveTransientInDatabase($transient, $value)
+        {
+            $this->haveOptionInDatabase('_transient_' . $transient, $value);
+        }
+
+        public function dontHaveTransientInDatabase($transient)
+        {
+            $this->dontHaveOptionInDatabase('_transient_' . $transient);
         }
     }
