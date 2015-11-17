@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- the `_delete_all_posts` function in the automated tests bootstrap file now runs without any filters/actions
 
 ##[1.7.15] 2015-11-17
 ### Fixed
