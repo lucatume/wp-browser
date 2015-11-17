@@ -1,11 +1,10 @@
 <?php
 
-    use GuzzleHttp\Promise\FulfilledPromise;
-
     class WPDbOptionCest
     {
         public function _before(FunctionalTester $I)
         {
+            $I->useBlog(0);
         }
 
         public function _after(FunctionalTester $I)
@@ -107,7 +106,6 @@
         {
             $data = ['foo' => 'bar', 'baz' => 23];
             $I->haveOptionInDatabase('my_option', $data);
-            $table = $I->grabPrefixedTableNameFor('options');
 
             $onDb = $I->grabOptionFromDatabase('my_option');
 
@@ -179,9 +177,9 @@
         {
             $table = $I->grabPrefixedTableNameFor('options');
 
-            $I->haveSiteOptionInDatabase('key','value');
+            $I->haveSiteOptionInDatabase('key', 'value');
 
-            $I->seeInDatabase($table,['option_name'=>'_site_option']);
+            $I->seeInDatabase($table, ['option_name' => '_site_option_key']);
         }
 
         /**
@@ -190,7 +188,12 @@
          */
         public function it_should_allow_deleting_a_site_option(FunctionalTester $I)
         {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_option_key', 'option_value' => 'some value']);
 
+            $I->dontHaveSiteOptionInDatabase('key');
+
+            $I->dontSeeInDatabase($table, ['option_name' => '_site_option_key']);
         }
 
         /**
@@ -199,7 +202,11 @@
          */
         public function it_should_allow_adding_a_site_transient(FunctionalTester $I)
         {
+            $I->haveSiteTransientInDatabase('key', 'value');
 
+            $table = $I->grabPrefixedTableNameFor('options');
+
+            $I->seeInDatabase($table, ['option_name' => '_site_transient_key']);
         }
 
         /**
@@ -208,6 +215,12 @@
          */
         public function it_should_allow_deleting_a_site_transient(FunctionalTester $I)
         {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_transient_key', 'option_value' => 'some value']);
+
+            $I->dontHaveSiteTransientInDatabase('key');
+
+            $I->dontSeeInDatabase($table, ['option_name' => '_site_transient_key']);
         }
 
         /**
@@ -216,34 +229,11 @@
          */
         public function it_should_allow_setting_an_option_in_a_secondary_site(FunctionalTester $I)
         {
+            $I->useBlog(2);
+            $I->haveOptionInDatabase('key', 'value');
 
-        }
-
-        /**
-         * @test
-         * it should allow ovewriting a secondary site option
-         */
-        public function it_should_allow_ovewriting_a_secondary_site_option(FunctionalTester $I)
-        {
-
-        }
-
-        /**
-         * @test
-         * it should allow deleting a secondary site option
-         */
-        public function it_should_allow_deleting_a_secondary_site_option(FunctionalTester $I)
-        {
-
-        }
-
-        /**
-         * @test
-         * it should allow grabbing a secondary site option
-         */
-        public function it_should_allow_grabbing_a_secondary_site_option(FunctionalTester $I)
-        {
-
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->seeInDatabase($table, ['option_name' => 'key', 'option_value' => 'value']);
         }
 
         /**
@@ -252,7 +242,12 @@
          */
         public function it_should_allow_grabbing_a_site_option(FunctionalTester $I)
         {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_option_key', 'option_value' => 'foo']);
 
+            $value = $I->grabSiteOptionFromDatabase('key');
+
+            $I->assertEquals('foo', $value);
         }
 
         /**
@@ -261,15 +256,67 @@
          */
         public function it_should_allow_grabbing_a_site_transient(FunctionalTester $I)
         {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_transient_key', 'option_value' => 'foo']);
 
+            $value = $I->grabSiteTransientFromDatabase('key');
+
+            $I->assertEquals('foo', $value);
         }
 
         /**
          * @test
-         * it should allow grabbing a secondary site transient
+         * it should allow getting a site option while using secondary blog
          */
-        public function it_should_allow_grabbing_a_secondary_site_transient(FunctionalTester $I)
+        public function it_should_allow_getting_a_site_option_while_using_secondary_blog(FunctionalTester $I)
         {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_option_key', 'option_value' => 'foo']);
 
+            $I->useBlog(2);
+            $value = $I->grabSiteOptionFromDatabase('key');
+
+            $I->assertEquals('foo', $value);
+        }
+
+        /**
+         * @test
+         * it should allow grabbing a site transient while using secondary blog
+         */
+        public function it_should_allow_grabbing_a_site_transient_while_using_secondary_blog(FunctionalTester $I)
+        {
+            $table = $I->grabPrefixedTableNameFor('options');
+            $I->haveInDatabase($table, ['option_name' => '_site_transient_key', 'option_value' => 'foo']);
+
+            $I->useBlog(2);
+            $value = $I->grabSiteTransientFromDatabase('key');
+
+            $I->assertEquals('foo', $value);
+        }
+
+        /**
+         * @test
+         * it should allow setting a site option while using a secondary blog
+         */
+        public function it_should_allow_setting_a_site_option_while_using_a_secondary_blog(FunctionalTester $I)
+        {
+            $I->useBlog(2);
+            $I->haveSiteOptionInDatabase('key', 'value');
+
+            $I->useMainBlog();
+            $I->seeSiteOptionInDatabase('key');
+        }
+
+        /**
+         * @test
+         * it should allow setting a site transient while using a secondary blog
+         */
+        public function it_should_allow_setting_a_site_transient_while_using_a_secondary_blog(FunctionalTester $I)
+        {
+            $I->useBlog(2);
+            $I->haveSiteTransientInDatabase('key', 'value');
+
+            $I->useMainBlog();
+            $I->seeSiteSiteTransientInDatabase('key');
         }
     }

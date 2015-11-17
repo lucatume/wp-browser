@@ -16,6 +16,16 @@
      */
     class WPDb extends ExtendedDb
     {
+        protected $uniqueTables = [
+            'blogs',
+            'blog_versions',
+            'registration_log',
+            'signups',
+            'site',
+            'sitemeta',
+            'users',
+            'usermeta',
+        ];
 
         /**
          * The module required configuration parameters.
@@ -46,6 +56,11 @@
          * @var string
          */
         protected $tablePrefix = 'wp_';
+
+        /**
+         * @var int The id of the blog currently used.
+         */
+        protected $blogId = 0;
 
         /**
          * Initializes the module.
@@ -114,6 +129,15 @@
         }
 
         /**
+         * @return string
+         */
+        protected function getUsersTableName()
+        {
+            $usersTableName = $this->grabPrefixedTableNameFor('users');
+            return $usersTableName;
+        }
+
+        /**
          * Returns a prefixed table name.
          *
          * @param  string $tableName The table name, e.g. "users".
@@ -122,9 +146,92 @@
          */
         public function grabPrefixedTableNameFor($tableName = '')
         {
-            $tableName = $this->config['tablePrefix'] . $tableName;
+            $idFrag = '';
+            if (!in_array($tableName, $this->uniqueTables)) {
+                $idFrag = empty($this->blogId) ? '' : "{$this->blogId}_";
+            }
+
+            $tableName = $this->config['tablePrefix'] . $idFrag . $tableName;
 
             return $tableName;
+        }
+
+        public function grabUserIdFromDatabase($userLogin)
+        {
+            return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
+        }
+
+        /**
+         * @param $userId
+         * @param $role
+         * @return array
+         */
+        public function haveUserCapabilitiesInDatabase($userId, $role)
+        {
+            if (!is_array($role)) {
+                $meta_key = $this->grabPrefixedTableNameFor() . 'capabilities';
+                $meta_value = serialize([$role => 1]);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+                return;
+            }
+            foreach ($role as $blogId => $_role) {
+                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
+                $meta_value = serialize([$_role => 1]);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+            }
+        }
+
+        /**
+         * @param $userId
+         * @param $meta_key
+         * @param $meta_value
+         */
+        public function haveUserMetaInDatabase($userId, $meta_key, $meta_value)
+        {
+            $data = ['user_id'    => $userId,
+                     'meta_key'   => $meta_key,
+                     'meta_value' => $this->maybeSerialize($meta_value)];
+            $this->haveInDatabase($this->getUsermetaTableName(), $data);
+        }
+
+        /**
+         * @param $value
+         * @return string
+         */
+        protected function maybeSerialize($value)
+        {
+            $metaValue = (is_array($value) || is_object($value)) ? serialize($value) : $value;
+            return $metaValue;
+        }
+
+        /**
+         * @return string
+         */
+        protected function getUsermetaTableName()
+        {
+            $usermetaTable = $this->grabPrefixedTableNameFor('usermeta');
+            return $usermetaTable;
+        }
+
+        /**
+         * @param $userId
+         * @param $role
+         */
+        public function haveUserLevelsInDatabase($userId, $role)
+        {
+            if (!is_array($role)) {
+                $meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
+                $meta_value = User\Roles::getLevelForRole($role);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+                return;
+            }
+            foreach ($role as $blogId => $_role) {
+                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
+                $meta_value = User\Roles::getLevelForRole($_role);
+                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+            }
         }
 
         /**
@@ -136,10 +243,11 @@
          *
          * @return void
          */
-        public function seeSerializedOptionInDatabase($criteria)
+        public function seeSerializedOptionInDatabase($key, $value = null)
         {
-            if (isset($criteria['option_value'])) {
-                $criteria['option_value'] = @serialize($criteria['option_value']);
+            $criteria['option_name'] = $key;
+            if (!empty($value)) {
+                $criteria['option_value'] = @serialize($value);
             }
             $this->seeOptionInDatabase($criteria);
         }
@@ -149,13 +257,16 @@
          *
          * Will look in the "options" table.
          *
-         * @param  array $criteria
-         *
-         * @return void
+         * @param $key
+         * @param $value
          */
-        public function seeOptionInDatabase(array $criteria)
+        public function seeOptionInDatabase($key, $value = null)
         {
             $tableName = $this->grabPrefixedTableNameFor('options');
+            $criteria['option_name'] = $key;
+            if (!empty($value)) {
+                $criteria['option_value'] = $value;
+            }
             $this->seeInDatabase($tableName, $criteria);
         }
 
@@ -164,13 +275,14 @@
          *
          * Will look in the "options" table.
          *
-         * @param  array $criteria
+         * @param $key
+         * @param null $value
          *
-         * @return void
          */
-        public function dontSeeSerializedOptionInDatabase($criteria)
+        public function dontSeeSerializedOptionInDatabase($key, $value = null)
         {
-            if (isset($criteria['option_value'])) {
+            $criteria['option_name'] = $key;
+            if (!empty($value)) {
                 $criteria['option_value'] = @serialize($criteria['option_value']);
             }
             $this->dontSeeOptionInDatabase($criteria);
@@ -181,13 +293,16 @@
          *
          * Will look in the "options" table.
          *
-         * @param  array $criteria
-         *
-         * @return void
+         * @param $key
+         * @param null $value
          */
-        public function dontSeeOptionInDatabase(array $criteria)
+        public function dontSeeOptionInDatabase($key, $value = null)
         {
             $tableName = $this->grabPrefixedTableNameFor('options');
+            $criteria['option_name'] = $key;
+            if (!empty($value)) {
+                $criteria['option_value'] = $value;
+            }
             $this->dontSeeInDatabase($tableName, $criteria);
         }
 
@@ -311,6 +426,19 @@
         }
 
         /**
+         * Checks that some user meta value is in the database.
+         *
+         * Will look up the "usermeta" table.
+         *
+         * @param  int $user_id The user ID.
+         * @param  string $meta_key
+         * @param         string /int $meta_value
+         * @param  int $umeta_id The optional user meta id.
+         *
+         * @return void
+         */
+
+        /**
          * Checks that a user is not in the database.
          *
          * @param  array $criteria
@@ -415,39 +543,6 @@
             $criteria = array_merge($criteria, array('post_type' => 'page'));
             $tableName = $this->grabPrefixedTableNameFor('posts');
             $this->dontSeeInDatabase($tableName, $criteria);
-        }
-
-        /**
-         * Checks that some user meta value is in the database.
-         *
-         * Will look up the "usermeta" table.
-         *
-         * @param  int $user_id The user ID.
-         * @param  string $meta_key
-         * @param         string /int $meta_value
-         * @param  int $umeta_id The optional user meta id.
-         *
-         * @return void
-         */
-
-        /**
-         * Conditionally checks for a user in the database.
-         *
-         * Will look up the "users" table, will throw if not found.
-         *
-         * @param  int $user_id The user ID.
-         *
-         * @return void
-         */
-        protected function maybeCheckUserExistsInDatabase($user_id)
-        {
-            if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
-                return;
-            }
-            $tableName = $this->grabPrefixedTableNameFor('users');
-            if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $user_id))) {
-                throw new \RuntimeException("A user with an id of $user_id does not exist", 1);
-            }
         }
 
         /**
@@ -840,45 +935,6 @@
         }
 
         /**
-         * Inserts a serialized option in the database.
-         *
-         * @param  string $option_name
-         * @param         string /int $option_value
-         *
-         * @return void
-         */
-        public function haveSerializedOptionInDatabase($option_name,
-                                                       $option_value)
-        {
-            $serializedOptionValue = @serialize($option_value);
-
-            $this->haveOptionInDatabase($option_name, $serializedOptionValue);
-        }
-
-        /**
-         * Inserts an option in the database.
-         *
-         * @param  string $option_name
-         * @param         string /int $option_value
-         *
-         * @return void
-         */
-        public function haveOptionInDatabase($option_name,
-                                             $option_value)
-        {
-            $table = $this->grabPrefixedTableNameFor('options');
-
-            $this->dontHaveInDatabase($table, ['option_name' => $option_name]);
-
-            $option_value = $this->maybeSerialize($option_value);
-            $this->haveInDatabase($table, array(
-                'option_name'  => $option_name,
-                'option_value' => $option_value,
-                'autoload'     => 'yes'
-            ));
-        }
-
-        /**
          * Removes an entry from the commentmeta table.
          *
          * @param  array $criteria
@@ -914,20 +970,6 @@
         public function dontHaveLinkInDatabase(array $criteria)
         {
             $tableName = $this->grabPrefixedTableNameFor('links');
-            $this->dontHaveInDatabase($tableName, $criteria);
-        }
-
-        /**
-         * Removes an entry from the options table.
-         *
-         * @param  array $criteria
-         *
-         * @return void
-         */
-        public function dontHaveOptionInDatabase($option)
-        {
-            $tableName = $this->grabPrefixedTableNameFor('options');
-            $criteria = ['option_name' => $option];
             $this->dontHaveInDatabase($tableName, $criteria);
         }
 
@@ -1019,6 +1061,189 @@
             $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('usermeta'), ['user_id' => $userId]);
         }
 
+        public function grabUserMetaFromDatabase($userId, $meta_key)
+        {
+            $table = $this->grabPrefixedTableNameFor('usermeta');
+            $meta = $this->grabAllFromDatabase($table, 'meta_value', ['user_id' => $userId, 'meta_key' => $meta_key]);
+            if (empty($meta)) {
+                return [];
+            }
+
+            return array_map(function ($val) {
+                return $val['meta_value'];
+            }, $meta);
+        }
+
+        public function grabAllFromDatabase($table, $column, $criteria)
+        {
+            $query = $this->driver->select($column, $table, $criteria);
+
+            $sth = $this->driver->executeQuery($query, array_values($criteria));
+
+            return $sth->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function haveTransientInDatabase($transient, $value)
+        {
+            $this->haveOptionInDatabase('_transient_' . $transient, $value);
+        }
+
+        /**
+         * Inserts an option in the database.
+         *
+         * @param  string $option_name
+         * @param         string /int $option_value
+         *
+         * @return void
+         */
+        public function haveOptionInDatabase($option_name,
+                                             $option_value)
+        {
+            $table = $this->grabPrefixedTableNameFor('options');
+
+            $this->dontHaveInDatabase($table, ['option_name' => $option_name]);
+
+            $option_value = $this->maybeSerialize($option_value);
+            $this->haveInDatabase($table, array(
+                'option_name'  => $option_name,
+                'option_value' => $option_value,
+                'autoload'     => 'yes'
+            ));
+        }
+
+        public function dontHaveTransientInDatabase($transient)
+        {
+            $this->dontHaveOptionInDatabase('_transient_' . $transient);
+        }
+
+        /**
+         * Removes an entry from the options table.
+         *
+         * @param $key
+         * @param null $value
+         */
+        public function dontHaveOptionInDatabase($key, $value = null)
+        {
+            $tableName = $this->grabPrefixedTableNameFor('options');
+            $criteria['option_name'] = $key;
+            if (!empty($value)) {
+                $criteria['option_value'] = $value;
+            }
+            $this->dontHaveInDatabase($tableName, $criteria);
+        }
+
+        public function haveSiteOptionInDatabase($key, $value)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->haveOptionInDatabase('_site_option_' . $key, $value);
+            $this->useBlog($currentBlogId);
+        }
+
+        public function useMainBlog()
+        {
+            $this->useBlog(0);
+        }
+
+        public function useBlog($id = 0)
+        {
+            if (!(is_numeric($id) && intval($id) === $id && intval($id) >= 0)) {
+                throw new \InvalidArgumentException('Id must be an integer greater than or equal to 0');
+            }
+            $this->blogId = intval($id);
+        }
+
+        public function dontHaveSiteOptionInDatabase($key, $value = null)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->dontHaveOptionInDatabase('_site_option_' . $key, $value);
+            $this->useBlog($currentBlogId);
+        }
+
+        public function haveSiteTransientInDatabase($key, $value)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->haveOptionInDatabase('_site_transient_' . $key, $value);
+            $this->useBlog($currentBlogId);
+        }
+
+        public function dontHaveSiteTransientInDatabase($key)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->dontHaveOptionInDatabase('_site_transient_' . $key);
+            $this->useBlog($currentBlogId);
+        }
+
+        public function grabSiteOptionFromDatabase($key)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $value = $this->grabOptionFromDatabase('_site_option_' . $key);
+            $this->useBlog($currentBlogId);
+            return $value;
+        }
+
+        public function grabOptionFromDatabase($option_name)
+        {
+            $table = $this->grabPrefixedTableNameFor('options');
+            $option_value = $this->grabFromDatabase($table, 'option_value', ['option_name' => $option_name]);
+            return empty($option_value) ? '' : $this->maybeUnserialize($option_value);
+        }
+
+        private function maybeUnserialize($value)
+        {
+            $unserialized = @unserialize($value);
+            return false === $unserialized ? $value : $unserialized;
+        }
+
+        public function grabSiteTransientFromDatabase($key)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $value = $this->grabOptionFromDatabase('_site_transient_' . $key);
+            $this->useBlog($currentBlogId);
+            return $value;
+        }
+
+        public function seeSiteSiteTransientInDatabase($key, $value = null)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->seeOptionInDatabase('_site_transient_' . $key, $value);
+            $this->useBlog($currentBlogId);
+        }
+
+        public function seeSiteOptionInDatabase($key, $value = null)
+        {
+            $currentBlogId = $this->blogId;
+            $this->useMainBlog();
+            $this->seeOptionInDatabase('_site_option_' . $key, $value);
+            $this->useBlog($currentBlogId);
+        }
+
+        /**
+         * Conditionally checks for a user in the database.
+         *
+         * Will look up the "users" table, will throw if not found.
+         *
+         * @param  int $user_id The user ID.
+         *
+         * @return void
+         */
+        protected function maybeCheckUserExistsInDatabase($user_id)
+        {
+            if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
+                return;
+            }
+            $tableName = $this->grabPrefixedTableNameFor('users');
+            if (!$this->grabFromDatabase($tableName, 'ID', array('ID' => $user_id))) {
+                throw new \RuntimeException("A user with an id of $user_id does not exist", 1);
+            }
+        }
+
         /**
          * Conditionally check for a link in the database.
          *
@@ -1037,138 +1262,5 @@
             if (!$this->grabFromDatabase($tableName, 'link_id', array('link_id' => $link_id))) {
                 throw new \RuntimeException("A link with an id of $link_id does not exist", 1);
             }
-        }
-
-        /**
-         * @return string
-         */
-        protected function getUsersTableName()
-        {
-            $usersTableName = $this->grabPrefixedTableNameFor('users');
-            return $usersTableName;
-        }
-
-        /**
-         * @return string
-         */
-        protected function getUsermetaTableName()
-        {
-            $usermetaTable = $this->grabPrefixedTableNameFor('usermeta');
-            return $usermetaTable;
-        }
-
-        /**
-         * @param $userId
-         * @param $meta_key
-         * @param $meta_value
-         */
-        public function haveUserMetaInDatabase($userId, $meta_key, $meta_value)
-        {
-            $data = ['user_id'    => $userId,
-                     'meta_key'   => $meta_key,
-                     'meta_value' => $this->maybeSerialize($meta_value)];
-            $this->haveInDatabase($this->getUsermetaTableName(), $data);
-        }
-
-        /**
-         * @param $userId
-         * @param $role
-         * @return array
-         */
-        public function haveUserCapabilitiesInDatabase($userId, $role)
-        {
-            if (!is_array($role)) {
-                $meta_key = $this->grabPrefixedTableNameFor() . 'capabilities';
-                $meta_value = serialize([$role => 1]);
-                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-                return;
-            }
-            foreach ($role as $blogId => $_role) {
-                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
-                $meta_value = serialize([$_role => 1]);
-                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-            }
-        }
-
-        /**
-         * @param $userId
-         * @param $role
-         */
-        public function haveUserLevelsInDatabase($userId, $role)
-        {
-            if (!is_array($role)) {
-                $meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
-                $meta_value = User\Roles::getLevelForRole($role);
-                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-                return;
-            }
-            foreach ($role as $blogId => $_role) {
-                $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-                $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
-                $meta_value = User\Roles::getLevelForRole($_role);
-                $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-            }
-        }
-
-        public function grabUserIdFromDatabase($userLogin)
-        {
-            return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
-        }
-
-        /**
-         * @param $value
-         * @return string
-         */
-        protected function maybeSerialize($value)
-        {
-            $metaValue = (is_array($value) || is_object($value)) ? serialize($value) : $value;
-            return $metaValue;
-        }
-
-        public function grabOptionFromDatabase($option_name)
-        {
-            $table = $this->grabPrefixedTableNameFor('options');
-            $option_value = $this->grabFromDatabase($table, 'option_value', ['option_name' => $option_name]);
-            return empty($option_value) ? '' : $this->maybeUnserialize($option_value);
-        }
-
-        private function maybeUnserialize($value)
-        {
-            $unserialized = @unserialize($value);
-            return false === $unserialized ? $value : $unserialized;
-        }
-
-        public function grabUserMetaFromDatabase($userId, $meta_key)
-        {
-            $table = $this->grabPrefixedTableNameFor('usermeta');
-            $meta = $this->grabAllFromDatabase($table, 'meta_value', ['meta_key' => $meta_key]);
-            if (empty($meta)) {
-                return [];
-            }
-
-            return array_map(function ($val) {
-                return $val['meta_value'];
-            }, $meta);
-        }
-
-        private function grabAllFromDatabase($table, $column, $criteria)
-        {
-            $query = $this->driver->select($column, $table, $criteria);
-            $this->debugSection('Query', $query, json_encode($criteria));
-
-            $sth = $this->driver->executeQuery($query, array_values($criteria));
-
-            return $sth->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        public function haveTransientInDatabase($transient, $value)
-        {
-            $this->haveOptionInDatabase('_transient_' . $transient, $value);
-        }
-
-        public function dontHaveTransientInDatabase($transient)
-        {
-            $this->dontHaveOptionInDatabase('_transient_' . $transient);
         }
     }
