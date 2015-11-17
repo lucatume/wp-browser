@@ -3,6 +3,7 @@
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */
 
+	require_once dirname(__FILE__) . '/tad-functions.php';
 
 /*
  * Globalize some WordPress variables, because PHPUnit loads this file inside a function
@@ -74,7 +75,7 @@ if(isset($GLOBALS['wp_tests_options'])) {
 require_once rtrim( ABSPATH, '/\\' ) . '/wp-settings.php';
 
 // Delete any default posts & related data
-_delete_all_posts();
+	without_filters('_delete_all_posts()');
 
 require dirname( __FILE__ ) . '/testcase.php';
 require dirname( __FILE__ ) . '/testcase-rest-api.php';
