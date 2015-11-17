@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - namespace of the `WPRestApiTestCase` class
 - multiple loading of factory and Trac ticket classes in `WPTestCase` and `WP_UnitTestCase` classes
+- windows and PHP 5.4 compatibility problems (thanks @zdenekca)
 
 ### Changed
 - tested and modified WPDb user related methods
