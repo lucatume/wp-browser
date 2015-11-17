@@ -9,6 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - tested and modified WPDb user related methods
+- `dontHaveOptionInDatabase` method from the `WPDb` module class
+
+### Added
+- user and user meta related methods to the `WPDb` module
+- options and transients related methods to the `WPDb` module
 
 ##[1.7.14] 2015-11-10
 ### Fixed
