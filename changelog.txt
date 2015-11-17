@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Fixed
 - namespace of the `WPRestApiTestCase` class
+- multiple loading of factory and Trac ticket classes in `WPTestCase` and `WP_UnitTestCase` classes
 
 ### Changed
 - tested and modified WPDb user related methods
