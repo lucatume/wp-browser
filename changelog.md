@@ -2,7 +2,9 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+#3[unreleased] Unreleased
+
+##[1.7.15] 2015-11-17
 ### Fixed
 - namespace of the `WPRestApiTestCase` class
 - multiple loading of factory and Trac ticket classes in `WPTestCase` and `WP_UnitTestCase` classes
@@ -142,7 +144,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.14...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.15...HEAD
+[1.7.15]: https://github.com/lucatume/wp-browser/compare/1.7.14...1.7.15
 [1.7.14]: https://github.com/lucatume/wp-browser/compare/1.7.13c...1.7.14
 [1.7.13c]: https://github.com/lucatume/wp-browser/compare/1.7.12...1.7.13c
 [1.7.12]: https://github.com/lucatume/wp-browser/compare/1.7.11...1.7.12
