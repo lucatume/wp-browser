@@ -99,7 +99,7 @@ and configure `Db` parameters and the additional ones available to the `WPDb` mo
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
 An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.  
 Since this module takes charge of setting up and cleaning the database used for the tests point it to a database that does not contain sensible data!  
-Also note that this module cannot be used together with WPDb ro DB modules with the `populate` or `cleanup` settings set to `true`.  
+Also note that this module cannot be used together with WPDb or DB modules with the `populate` or `cleanup` settings set to `true`.  
 In the suite `.yml` configuration file add the module among the loaded ones
 
 ```yml
@@ -109,7 +109,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
       config:
           WPLoader:
               wpRootFolder: "/Users/User/www/wordpress"
-              dbNAme: "wpress-tests"
+              dbName: "wpress-tests"
               dbHost: "localhost"
               dbUser: "root"
               dbPassword: "root"

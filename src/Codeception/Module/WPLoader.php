@@ -143,7 +143,8 @@ class WPLoader extends Module
             }
             /** @var \Codeception\Module $module */
             $module = $allModules[$moduleName];
-            if (!empty($module->_getConfig('cleanup'))) {
+            $cleanup_config = $module->_getConfig('cleanup');
+            if ( !empty($cleanup_config) ) {
                 throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere with the WP Loader module.");
             }
         }
