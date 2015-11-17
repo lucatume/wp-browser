@@ -16,6 +16,10 @@
      */
     class WPDb extends ExtendedDb
     {
+
+        /**
+         * @var array A list of tables that WordPress will nor replicate in multisite installations.
+         */
         protected $uniqueTables = [
             'blogs',
             'blog_versions',
@@ -120,16 +124,12 @@
 
             $this->haveUserCapabilitiesInDatabase($userId, $role);
             $this->haveUserLevelsInDatabase($userId, $role);
-//            list($userLevelDefaults, $userTableData, $userCapabilitiesData) = User::makeUser($user_login, $role, $userData);
-//            $this->debugSection('Makers output', print_r($userTableData));
-//            // add the data to the database
-//            $tableName = $this->grabPrefixedTableNameFor('usermeta');
-//            $this->haveInDatabase($tableName, $userCapabilitiesData);
-//            $this->haveInDatabase($tableName, $userLevelDefaults);
         }
 
         /**
-         * @return string
+         * Returns the table name for `usermeta`.
+         *
+         * @return string The prefixed `usermeta` table name, e.g. `wp_usermeta`.
          */
         protected function getUsersTableName()
         {
@@ -138,11 +138,11 @@
         }
 
         /**
-         * Returns a prefixed table name.
+         * Returns a prefixed table name for the current blog.
          *
-         * @param  string $tableName The table name, e.g. "users".
+         * @param  string $tableName The table name, e.g. `options`.
          *
-         * @return string            The prefixed table name, e.g. "wp_users".
+         * @return string            The prefixed table name, e.g. `wp_options` or `wp_2_options`.
          */
         public function grabPrefixedTableNameFor($tableName = '')
         {
@@ -156,15 +156,24 @@
             return $tableName;
         }
 
+        /**
+         * Grabs the a user ID from the database using the user login.
+         *
+         * @param string $userLogin
+         * @return int The user ID
+         */
         public function grabUserIdFromDatabase($userLogin)
         {
             return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
         }
 
         /**
+         * Sets a user capabilities.
+         *
          * @param $userId
-         * @param $role
-         * @return array
+         * @param string|array $role Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a
+         * multisite installation.
+         * @return void
          */
         public function haveUserCapabilitiesInDatabase($userId, $role)
         {
@@ -183,6 +192,10 @@
         }
 
         /**
+         * Sets a user meta.
+         *
+         * Each call will add an entry in the `usermeta` table.
+         *
          * @param $userId
          * @param $meta_key
          * @param $meta_value
@@ -215,8 +228,11 @@
         }
 
         /**
-         * @param $userId
-         * @param $role
+         * Sets the user level in the database for a user.
+         *
+         * @param int $userId
+         * @param string|array $role Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a
+         * multisite installation.
          */
         public function haveUserLevelsInDatabase($userId, $role)
         {
@@ -235,13 +251,10 @@
         }
 
         /**
-         * Checks if an option is in the database and is serialized.
+         * Checks if an option is in the database for the current blog and is serialized.
          *
-         * Will look in the "options" table.
-         *
-         * @param  array $criteria
-         *
-         * @return void
+         * @param $key
+         * @param null $value
          */
         public function seeSerializedOptionInDatabase($key, $value = null)
         {
@@ -253,9 +266,7 @@
         }
 
         /**
-         * Checks if an option is in the database.
-         *
-         * Will look in the "options" table.
+         * Checks if an option is in the database for the current blog.
          *
          * @param $key
          * @param $value
@@ -271,9 +282,7 @@
         }
 
         /**
-         * Checks that a serialized option is not in the database.
-         *
-         * Will look in the "options" table.
+         * Checks that a serialized option is not in the database for the current blog.
          *
          * @param $key
          * @param null $value
@@ -289,9 +298,7 @@
         }
 
         /**
-         * Checks that an option is not in the database.
-         *
-         * Will look in the "options" table.
+         * Checks that an option is not in the database for the current blog.
          *
          * @param $key
          * @param null $value
@@ -307,9 +314,7 @@
         }
 
         /**
-         * Checks for a post meta value in the database.
-         *
-         * Will look up the "postmeta"  table.
+         * Checks for a post meta value in the database for the current blog.
          *
          * @param  array $criteria
          *
