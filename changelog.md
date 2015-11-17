@@ -2,7 +2,7 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-#3[unreleased] Unreleased
+##[unreleased] Unreleased
 
 ##[1.7.15] 2015-11-17
 ### Fixed
