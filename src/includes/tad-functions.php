@@ -1,12 +1,14 @@
 <?php
 
+    /**
+     * A marker function as the file might be loaded from multiple plugins under or involved in the tests.
+     */
     function tad_functions()
     {
-        // just a marker
     }
 
     /**
-     * @param $callback A callable function.
+     * @param callable $callback A callable.
      * @param array $whitelist An array of filters that should remain hooked.
      *
      * @return mixed The callback return value.
