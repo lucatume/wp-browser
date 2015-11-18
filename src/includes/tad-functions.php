@@ -15,7 +15,7 @@
      */
     function _without_filters($callback, $whitelist = array())
     {
-        if (!(function_exists($callback) || is_callable($callback))) {
+        if (!is_callable($callback)) {
             throw new InvalidArgumentException('Callback must be callable');
         }
 

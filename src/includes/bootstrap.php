@@ -77,7 +77,7 @@ if(isset($GLOBALS['wp_tests_options'])) {
 require_once rtrim( ABSPATH, '/\\' ) . '/wp-settings.php';
 
 // Delete any default posts & related data
-	_without_filters('_delete_all_posts()');
+	_without_filters('_delete_all_posts');
 
 require dirname( __FILE__ ) . '/testcase.php';
 require dirname( __FILE__ ) . '/testcase-rest-api.php';
