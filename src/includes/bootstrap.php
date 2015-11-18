@@ -3,7 +3,9 @@
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */
 
-	require_once dirname(__FILE__) . '/tad-functions.php';
+	if (!function_exists('tad_functions')) {
+		require_once dirname(__FILE__) . '/tad-functions.php';
+	}
 
 /*
  * Globalize some WordPress variables, because PHPUnit loads this file inside a function

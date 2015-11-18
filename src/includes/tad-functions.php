@@ -1,4 +1,10 @@
 <?php
+
+    function tad_functions()
+    {
+        // just a marker
+    }
+
     /**
      * @param $callback A callable function.
      * @param array $whitelist An array of filters that should remain hooked.
