@@ -2,9 +2,11 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+[unreleased] Unreleased
+
+##[1.7.16] 2015-11-18 
 ### Fixed
-- the `_delete_all_posts` function in the automated tests bootstrap file now runs without any filters/actions
+- the `_delete_all_posts` function in the automated tests bootstrap file now runs without any filters/actions hooked
 
 ##[1.7.15] 2015-11-17
 ### Fixed
@@ -147,7 +149,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.15...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.7.16...HEAD
+[1.7.16]: https://github.com/lucatume/wp-browser/compare/1.7.15...1.7.16
 [1.7.15]: https://github.com/lucatume/wp-browser/compare/1.7.14...1.7.15
 [1.7.14]: https://github.com/lucatume/wp-browser/compare/1.7.13c...1.7.14
 [1.7.13c]: https://github.com/lucatume/wp-browser/compare/1.7.12...1.7.13c
