@@ -453,13 +453,13 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
   
   public function haveSerializedOptionInDatabase($option_name, $option_value);
   
-  public function seeOptionInDatabase($option_name, $option_value);
+  public function seeOptionInDatabase(array $criteria);
   
-  public function dontSeeOptionInDatabase($option_name, $option_value);
+  public function dontSeeOptionInDatabase(array $criteria);
   
-  public function seeSerializedOptionInDatabase($option_name, $option_value);
+  public function seeSerializedOptionInDatabase(array $criteria);
   
-  public function dontSeeSerializedOptionInDatabase($option_name, $option_value);
+  public function dontSeeSerializedOptionInDatabase(array $criteria);
 ```
 
 see source for all methods.  
