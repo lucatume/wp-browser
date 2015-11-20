@@ -7,12 +7,6 @@
 
 error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 
-if(!class_exists('\Codeception\Module\WPLoader')){
-    return;
-}
-
-Codeception\Module\WPLoader::defineGlobals();
-
 // this replaces the original argument passed in with the `system` function
 $multisite = defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE;
 
