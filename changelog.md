@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Fixed
 - duplicate call to globals definition in `install.php` file
+- renamed file creating issues on with case sensitive systems (thanks @barryhuges)
 
 ##[1.7.16a] 2015-11-18 
 ### Fixed
