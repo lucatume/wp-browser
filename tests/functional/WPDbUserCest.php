@@ -156,20 +156,6 @@
 
         /**
          * @test
-         * it should serialize array user meta in database
-         */
-        public function it_should_serialize_array_user_meta_in_database(FunctionalTester $I)
-        {
-            $I->haveUserInDatabase('Luca');
-            $userId = $I->grabUserIdFromDatabase('Luca');
-            $meta = ['foo' => 'bar', 'one' => 23];
-            $I->haveUserMetaInDatabase($userId, 'foo', $meta);
-            $table = $I->grabPrefixedTableNameFor('usermeta');
-            $I->seeInDatabase($table, ['user_id' => $userId, 'meta_key' => 'foo', 'meta_value' => serialize($meta)]);
-        }
-
-        /**
-         * @test
          * it should serialize object user meta in database
          */
         public function it_should_serialize_object_user_meta_in_database(FunctionalTester $I)

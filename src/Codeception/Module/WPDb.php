@@ -1098,8 +1098,11 @@ class WPDb extends ExtendedDb {
 	 */
 	public function seeSiteSiteTransientInDatabase( $key, $value = null ) {
 		$currentBlogId = $this->blogId;
-		$this->useMainBlog();
-		$this->seeOptionInDatabase( '_site_transient_' . $key, $value );
+		$criteria      = [ 'option_name' => '_site_transient_' . $key ];
+		if ( $value ) {
+			$criteria['option_value'] = $value;
+		}
+		$this->seeOptionInDatabase( $criteria );
 		$this->useBlog( $currentBlogId );
 	}
 
@@ -1112,7 +1115,11 @@ class WPDb extends ExtendedDb {
 	public function seeSiteOptionInDatabase( $key, $value = null ) {
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
-		$this->seeOptionInDatabase( '_site_option_' . $key, $value );
+		$criteria = [ 'option_name' => '_site_option_' . $key ];
+		if ( $value ) {
+			$criteria['option_value'] = $value;
+		}
+		$this->seeOptionInDatabase( $criteria );
 		$this->useBlog( $currentBlogId );
 	}
 
