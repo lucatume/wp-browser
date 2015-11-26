@@ -843,10 +843,10 @@ class FunctionalTester extends \Codeception\Actor
      * @param  int $meta_id The optional meta ID.
      *
      * @return void
-     * @see \Codeception\Module\WPDb::havePostMetaInDatabase()
+     * @see \Codeception\Module\WPDb::havePostmetaInDatabase()
      */
     public function havePostMetaInDatabase($post_id, $meta_key, $meta_value, $meta_id = null) {
-        return $this->scenario->runStep(new \Codeception\Step\Action('havePostMetaInDatabase', func_get_args()));
+        return $this->scenario->runStep(new \Codeception\Step\Action('havePostmetaInDatabase', func_get_args()));
     }
 
  
