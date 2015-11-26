@@ -1,5 +1,6 @@
 ### Composer template
 composer.phar
+tests/_support/_generated
 vendor/
 
 # Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
