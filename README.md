@@ -449,31 +449,78 @@ The module extends `Codeception\Module\Db` and will hence act as a drop-in repla
 The module is meant to be a WordPress specific extension of the `Db` module and will hence decline the `have` and `see` methods for each WordPress table. As an example the methods for the `options` table are
 
 ```php
-  public function haveOptionInDatabase($option_name, $option_value);
-  
-  public function haveSerializedOptionInDatabase($option_name, $option_value);
-  
-  public function seeOptionInDatabase(array $criteria);
-  
-  public function dontSeeOptionInDatabase(array $criteria);
-  
-  public function seeSerializedOptionInDatabase(array $criteria);
-  
-  public function dontSeeSerializedOptionInDatabase(array $criteria);
+    public function haveUserInDatabase( $user_login, $role = 'subscriber', array $userData = [] );
+    public function grabPrefixedTableNameFor( $tableName = '' );
+    public function grabUserIdFromDatabase( $userLogin );
+    public function haveUserCapabilitiesInDatabase( $userId, $role );
+    public function haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
+    public function grabUsermetaTableName();
+    public function haveUserLevelsInDatabase( $userId, $role );
+    public function seeOptionInDatabase( array $criteria );
+    public function dontSeeOptionInDatabase( array $criteria );
+    public function seePostMetaInDatabase( array $criteria );
+    public function haveLinkInDatabase( $link_id, array $data = [] );
+    public function seeLinkInDatabase( array $criteria );
+    public function dontSeeLinkInDatabase( array $criteria );
+    public function dontSeePostMetaInDatabase( array $criteria );
+    public function seePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 );
+    public function seeUserInDatabase( array $criteria );
+    public function dontSeeUserInDatabase( array $criteria );
+    public function havePostInDatabase( array $data = [ ] );
+    public function havePageInDatabase( array $overrides = [ ] );
+    public function seePostInDatabase( array $criteria );
+    public function dontSeePostInDatabase( array $criteria );
+    public function seePageInDatabase( array$criteria );
+    public function dontSeePageInDatabase( array $criteria );
+    public function haveLinkWithTermInDatabase( $link_id, $term_id, $term_order = 0 );
+    public function haveCommentInDatabase( $comment_post_ID, array $data = [] );
+    public function seeCommentInDatabase( array $criteria );
+    public function dontSeeCommentInDatabase( array $criteria );
+    public function seeCommentMetaInDatabase( array $criteria );
+    public function dontSeeCommentMetaInDatabase( array $criteria );
+    public function havePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 );
+    public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value, $meta_id = null );
+    public function havePostmetaInDatabase( $post_id, $meta_key, $meta_value );
+    public function haveTermInDatabase( $term, $term_id, array $args = [] );
+    public function seeTermInDatabase( array $criteria );
+    public function dontSeeTermInDatabase( array $criteria );
+    public function seeUserMetaInDatabase( array $criteria );
+    public function dontSeeUserMetaInDatabase( array $criteria );
+    public function dontHaveCommentMetaInDatabase( array $criteria );
+    public function dontHaveCommentInDatabase( array $criteria );
+    public function dontHaveLinkInDatabase( array $criteria );
+    public function dontHavePostMetaInDatabase( array $criteria );
+    public function dontHavePostInDatabase( array $criteria );
+    public function dontHaveTermRelationshipInDatabase( array $criteria );
+    public function dontHaveTermTaxonomyInDatabase( array $criteria );
+    public function dontHaveTermInDatabase( array $criteria );
+    public function dontHaveUserMetaInDatabase( array $criteria );
+    public function dontHaveUserInDatabase( $userIdOrLogin );
+    public function grabUserMetaFromDatabase( $userId, $meta_key );
+    public function grabAllFromDatabase( $table, $column, $criteria );
+    public function haveTransientInDatabase( $transient, $value );
+    public function haveOptionInDatabase( $option_name, $option_value );
+    public function dontHaveTransientInDatabase( $transient );
+    public function dontHaveOptionInDatabase( $key, $value = null );
+    public function haveSiteOptionInDatabase( $key, $value );
+    public function useMainBlog();
+    public function useBlog( $id = 0 );
+    public function dontHaveSiteOptionInDatabase( $key, $value = null );
+    public function haveSiteTransientInDatabase( $key, $value );
+    public function dontHaveSiteTransientInDatabase( $key );
+    public function grabSiteOptionFromDatabase( $key );
+    public function grabOptionFromDatabase( $option_name );
+    public function grabSiteTransientFromDatabase( $key );
+    public function seeSiteSiteTransientInDatabase( $key, $value = null );
+    public function seeSiteOptionInDatabase( $key, $value = null );
+    public function grabLatestEntryByFromDatabase( $tableName, $idColumn = 'ID' );
+    public function grabPostsTableName();
+    public function grabSiteUrl();
+    public function haveManyPostsInDatabase( $count, array $overrides = [ ] );
+    public function grabPostmetaTableName();
 ```
 
-see source for all methods.  
-I've added additional methods to have full control on the database setup and be able to remove entries from each table like:
-
-```php
-  public function dontHaveOptionInDatabase(array $criteria);
-
-  public function dontHaveUserInDatabase(array $criteria);
-
-  public function dontHavePostInDatabase(array $criteria);
-```
-
-wrapping the `ExtendedDb::dontHaveInDatabase` method for quicker and clearer access; a `dontHaveSomethinInDatabase` method exists for each table, take a look at the source to see them all.
+see source for more method details.
 
 ### ExtendedDb module
 The module is an extension of the `Codeception\Module\Db` class implementing some methods to allow for more CRUD complete operations on the database with the methods
