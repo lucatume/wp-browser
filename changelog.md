@@ -2,6 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+##[1.8.1a] 2015-11-27
+### Fixed
+- fixed redundant logic in `WPDb::seeTermInDatabase` and `WPDb::dontSeeTermInDatabase` methods
+
 ##[1.8.1] 2015-11-27
 ### Changed
 - reworked term related methods in WPDb module
@@ -164,7 +168,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.1a...HEAD
+[1.8.1a]: https://github.com/lucatume/wp-browser/compare/1.8.1...1.8.1a
 [1.8.1]: https://github.com/lucatume/wp-browser/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/lucatume/wp-browser/compare/1.7.16a...1.8.0
 [1.7.16a]: https://github.com/lucatume/wp-browser/compare/1.7.15...1.7.16a
