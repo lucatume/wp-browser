@@ -258,21 +258,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Checks if an option is in the database for the current blog.
-	 *
-	 * If checking for an array or an object then the serialized version will be checked for.
-	 *
-	 * @param array $criteria An array of search criteria.
-	 */
-	public function seeOptionInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'options' );
-		if ( !empty( $criteria['option_value'] ) ) {
-			$criteria['option_value'] = $this->maybeSerialize( $criteria['option_value'] );
-		}
-		$this->seeInDatabase( $tableName, $criteria );
-	}
-
-	/**
 	 * Checks that an option is not in the database for the current blog.
 	 *
 	 * If the value is an object or an array then the serialized option will be checked for.
@@ -405,6 +390,16 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Inserts a page in the database.
+	 *
+	 * @param array $overrides An array of values to override the default ones.
+	 */
+	public function havePageInDatabase( array $overrides = [ ] ) {
+		$overrides = [ 'post_type' => 'page' ];
+		return $this->havePostInDatabase( $overrides );
+	}
+
+	/**
 	 * Inserts a post in the database.
 	 *
 	 * @param  array $data An associative array of post data to override default and random generated values.
@@ -432,33 +427,63 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a page in the database.
+	 * Gets the posts table name.
 	 *
-	 * @param array $overrides An array of values to override the default ones.
+	 * @return string The prefixed table name, e.g. `wp_posts`
 	 */
-	public function havePageInDatabase( array $overrides = [ ] ) {
-		$overrides = [ 'post_type' => 'page' ];
-		return $this->havePostInDatabase( $overrides );
+	public function grabPostsTableName() {
+		return $this->grabPrefixedTableNameFor( 'posts' );
 	}
 
 	/**
-	 * Checks for a post in the database.
+	 * Returns the id value of the last table entry.
 	 *
-	 * @param  array $criteria An array of search criteria.
+	 * @param string $tableName
+	 * @param string $idColumn
+	 *
+	 * @return mixed
 	 */
-	public function seePostInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'posts' );
-		$this->seeInDatabase( $tableName, $criteria );
+	public function grabLatestEntryByFromDatabase( $tableName, $idColumn = 'ID' ) {
+		$dbh = $this->driver->getDbh();
+		$sth = $dbh->prepare( "SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1" );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
+
+		return $sth->fetchColumn();
 	}
 
 	/**
-	 * Checks that a post is not in the database.
+	 * Adds one or more meta key and value couples in the database for a post.
 	 *
-	 * @param  array $criteria An array of search criteria.
+	 * @param int    $post_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value The value to insert in the database. Objects will be serialized and arrays will be added
+	 *                           into distinct multiple rows.
+	 *
+	 * @return int|array Either the single `meta_id` of the inserted row or an array of inserted `meta_id`.
 	 */
-	public function dontSeePostInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'posts' );
-		$this->dontSeeInDatabase( $tableName, $criteria );
+	public function havePostmetaInDatabase( $post_id, $meta_key, $meta_value ) {
+		if ( !is_int( $post_id ) ) {
+			throw new \BadMethodCallException( 'Post id must be an int', 1 );
+		}
+		if ( !is_string( $meta_key ) ) {
+			throw new \BadMethodCallException( 'Meta key must be an string', 3 );
+		}
+		$tableName   = $this->grabPostmetaTableName();
+		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
+		$meta_ids    = [ ];
+		foreach ( $meta_values as $meta_value ) {
+			$meta_ids[] = $this->haveInDatabase( $tableName, array( 'post_id' => $post_id, 'meta_key' => $meta_key, 'meta_value' => $this->maybeSerialize( $meta_value ) ) );
+		}
+	}
+
+	/**
+	 * Returns the prefixed post meta table name.
+	 *
+	 * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
+	 */
+	public function grabPostmetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'postmeta' );
 	}
 
 	/**
@@ -472,6 +497,16 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Checks for a post in the database.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function seePostInDatabase( array $criteria ) {
+		$tableName = $this->grabPrefixedTableNameFor( 'posts' );
+		$this->seeInDatabase( $tableName, $criteria );
+	}
+
+	/**
 	 * Checks that a page is not in the database.
 	 *
 	 * @param  array $criteria An array of search criteria.
@@ -479,6 +514,16 @@ class WPDb extends ExtendedDb {
 	public function dontSeePageInDatabase( array $criteria ) {
 		$criteria['post_type'] = 'page';
 		$this->dontSeePostInDatabase( $criteria );
+	}
+
+	/**
+	 * Checks that a post is not in the database.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function dontSeePostInDatabase( array $criteria ) {
+		$tableName = $this->grabPrefixedTableNameFor( 'posts' );
+		$this->dontSeeInDatabase( $tableName, $criteria );
 	}
 
 	/**
@@ -678,31 +723,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Adds one or more meta key and value couples in the database for a post.
-	 *
-	 * @param int    $post_id
-	 * @param string $meta_key
-	 * @param mixed  $meta_value The value to insert in the database. Objects will be serialized and arrays will be added
-	 *                           into distinct multiple rows.
-	 *
-	 * @return int|array Either the single `meta_id` of the inserted row or an array of inserted `meta_id`.
-	 */
-	public function havePostmetaInDatabase( $post_id, $meta_key, $meta_value ) {
-		if ( !is_int( $post_id ) ) {
-			throw new \BadMethodCallException( 'Post id must be an int', 1 );
-		}
-		if ( !is_string( $meta_key ) ) {
-			throw new \BadMethodCallException( 'Meta key must be an string', 3 );
-		}
-		$tableName   = $this->grabPostmetaTableName();
-		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
-		$meta_ids    = [ ];
-		foreach ( $meta_values as $meta_value ) {
-			$meta_ids[] = $this->haveInDatabase( $tableName, array( 'post_id' => $post_id, 'meta_key' => $meta_key, 'meta_value' => $this->maybeSerialize( $meta_value ) ) );
-		}
-	}
-
-	/**
 	 * Inserts a term in the database.
 	 *
 	 * @param  string $name      The term name, e.g. "Fuzzy".
@@ -714,15 +734,34 @@ class WPDb extends ExtendedDb {
 		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
 		$termData         = array_merge( $termDefaults, array_intersect_key( $overrides, $termDefaults ) );
 		$termData['name'] = $name;
-		$term_id          = $this->haveInDatabase( $this->grabPrefixedTermsTableName(), $termData );
+		$term_id          = $this->haveInDatabase( $this->grabTermsTableName(), $termData );
 
 		$termTaxonomyDefaults         = [ 'description' => '', 'parent' => 0, 'count' => 0 ];
 		$termTaxonomyData             = array_merge( $termTaxonomyDefaults, array_intersect_key( $overrides, $termTaxonomyDefaults ) );
 		$termTaxonomyData['taxonomy'] = $taxonomy;
 		$termTaxonomyData['term_id']  = $term_id;
-		$term_taxonomy_id             = $this->haveInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyData );
+		$term_taxonomy_id             = $this->haveInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyData );
 
 		return [ $term_id, $term_taxonomy_id ];
+	}
+
+	/**
+	 * Gets the prefixed terms table name, e.g. `wp_terms`.
+	 *
+	 * @return string
+	 */
+	public function grabTermsTableName() {
+		return $this->grabPrefixedTableNameFor( 'terms' );
+
+	}
+
+	/**
+	 * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
+	 *
+	 * @return string
+	 */
+	public function grabTermTaxonomyTableName() {
+		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
 	}
 
 	/**
@@ -1073,6 +1112,21 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Checks if an option is in the database for the current blog.
+	 *
+	 * If checking for an array or an object then the serialized version will be checked for.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function seeOptionInDatabase( array $criteria ) {
+		$tableName = $this->grabPrefixedTableNameFor( 'options' );
+		if ( !empty( $criteria['option_value'] ) ) {
+			$criteria['option_value'] = $this->maybeSerialize( $criteria['option_value'] );
+		}
+		$this->seeInDatabase( $tableName, $criteria );
+	}
+
+	/**
 	 * Checks that a site option is in the database.
 	 *
 	 * @param string     $key
@@ -1087,68 +1141,6 @@ class WPDb extends ExtendedDb {
 		}
 		$this->seeOptionInDatabase( $criteria );
 		$this->useBlog( $currentBlogId );
-	}
-
-	/**
-	 * Returns the id value of the last table entry.
-	 *
-	 * @param string $tableName
-	 * @param string $idColumn
-	 *
-	 * @return mixed
-	 */
-	public function grabLatestEntryByFromDatabase( $tableName, $idColumn = 'ID' ) {
-		$dbh = $this->driver->getDbh();
-		$sth = $dbh->prepare( "SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1" );
-		$this->debugSection( 'Query', $sth->queryString );
-		$sth->execute();
-
-		return $sth->fetchColumn();
-	}
-
-	/**
-	 * Conditionally checks for a user in the database.
-	 *
-	 * Will look up the "users" table, will throw if not found.
-	 *
-	 * @param  int $user_id The user ID.
-	 */
-	protected function maybeCheckUserExistsInDatabase( $user_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'users' );
-		if ( !$this->grabFromDatabase( $tableName, 'ID', array( 'ID' => $user_id ) ) ) {
-			throw new \RuntimeException( "A user with an id of $user_id does not exist", 1 );
-		}
-	}
-
-	/**
-	 * Conditionally check for a link in the database.
-	 *
-	 * Will look up the "links" table, will throw if not found.
-	 *
-	 * @param  int $link_id The link ID.
-	 *
-	 * @return bool True if the link exists, false otherwise.
-	 */
-	protected function maybeCheckLinkExistsInDatabase( $link_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'links' );
-		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
-			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
-		}
-	}
-
-	/**
-	 * Gets the posts table name.
-	 *
-	 * @return string The prefixed table name, e.g. `wp_posts`
-	 */
-	public function grabPostsTableName() {
-		return $this->grabPrefixedTableNameFor( 'posts' );
 	}
 
 	/**
@@ -1192,15 +1184,6 @@ class WPDb extends ExtendedDb {
 		return $ids;
 	}
 
-	/**
-	 * Returns the prefixed post meta table name.
-	 *
-	 * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
-	 */
-	public function grabPostmetaTableName() {
-		return $this->grabPrefixedTableNameFor( 'postmeta' );
-	}
-
 	protected function replaceNumbersInArray( $entry, $i ) {
 		$out = [ ];
 		foreach ( $entry as $key => $value ) {
@@ -1225,25 +1208,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Gets the prefixed terms table name, e.g. `wp_terms`.
-	 *
-	 * @return string
-	 */
-	public function grabPrefixedTermsTableName() {
-		return $this->grabPrefixedTableNameFor( 'terms' );
-
-	}
-
-	/**
-	 * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
-	 *
-	 * @return string
-	 */
-	public function grabPrefixedTermTaxonomyTableName() {
-		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
-	}
-
-	/**
 	 * Checks for a term in the database.
 	 *
 	 * Looks up the `terms` and `term_taxonomy` prefixed tables.
@@ -1258,15 +1222,15 @@ class WPDb extends ExtendedDb {
 
 			if ( !empty( $termsCriteria ) ) {
 				// this one fails... go to...
-				$this->seeInDatabase( $this->grabPrefixedTermsTableName(), $termsCriteria );
+				$this->seeInDatabase( $this->grabTermsTableName(), $termsCriteria );
 			}
 			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->seeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+				$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 			}
 		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
 			// ...this one
 			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->seeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+				$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 			}
 		}
 	}
@@ -1279,9 +1243,9 @@ class WPDb extends ExtendedDb {
 	public function dontHaveTermInDatabase( array $criteria ) {
 		$termRelationshipsKeys = [ 'term_taxonomy_id' ];
 
-		$this->dontHaveInDatabase( $this->grabPrefixedTermsTableName(), array_intersect_key( $criteria, array_flip( $this->termKeys ) ) );
-		$this->dontHaveInDatabase( $this->grabPrefixedTermTaxonomyTableName(), array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) ) );
-		$this->dontHaveInDatabase( $this->grabPrefixedTermRelationshipsTableName(), array_intersect_key( $criteria, array_flip( $termRelationshipsKeys ) ) );
+		$this->dontHaveInDatabase( $this->grabTermsTableName(), array_intersect_key( $criteria, array_flip( $this->termKeys ) ) );
+		$this->dontHaveInDatabase( $this->grabTermTaxonomyTableName(), array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) ) );
+		$this->dontHaveInDatabase( $this->grabTermRelationshipsTableName(), array_intersect_key( $criteria, array_flip( $termRelationshipsKeys ) ) );
 	}
 
 	/**
@@ -1289,7 +1253,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabPrefixedTermRelationshipsTableName() {
+	public function grabTermRelationshipsTableName() {
 		return $this->grabPrefixedTableNameFor( 'term_relationships' );
 	}
 
@@ -1308,16 +1272,52 @@ class WPDb extends ExtendedDb {
 
 			if ( !empty( $termsCriteria ) ) {
 				// this one fails... go to...
-				$this->dontSeeInDatabase( $this->grabPrefixedTermsTableName(), $termsCriteria );
+				$this->dontSeeInDatabase( $this->grabTermsTableName(), $termsCriteria );
 			}
 			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->dontSeeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+				$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 			}
 		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
 			// ...this one
 			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->dontSeeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+				$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 			}
+		}
+	}
+
+	/**
+	 * Conditionally checks for a user in the database.
+	 *
+	 * Will look up the "users" table, will throw if not found.
+	 *
+	 * @param  int $user_id The user ID.
+	 */
+	protected function maybeCheckUserExistsInDatabase( $user_id ) {
+		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
+			return;
+		}
+		$tableName = $this->grabPrefixedTableNameFor( 'users' );
+		if ( !$this->grabFromDatabase( $tableName, 'ID', array( 'ID' => $user_id ) ) ) {
+			throw new \RuntimeException( "A user with an id of $user_id does not exist", 1 );
+		}
+	}
+
+	/**
+	 * Conditionally check for a link in the database.
+	 *
+	 * Will look up the "links" table, will throw if not found.
+	 *
+	 * @param  int $link_id The link ID.
+	 *
+	 * @return bool True if the link exists, false otherwise.
+	 */
+	protected function maybeCheckLinkExistsInDatabase( $link_id ) {
+		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
+			return;
+		}
+		$tableName = $this->grabPrefixedTableNameFor( 'links' );
+		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
+			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
 		}
 	}
 }

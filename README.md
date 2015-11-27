@@ -446,81 +446,84 @@ Methods like `seePlugin...` require the use of the `amOnPluginsPage` method befo
 
 ### WPDb module
 The module extends `Codeception\Module\Db` and will hence act as a drop-in replacement for it. It adds an optional `tablePrefix` configuration parameter, defaulting to `wp`, and will require the same parameters as the original module.  
-The module is meant to be a WordPress specific extension of the `Db` module and will hence decline the `have` and `see` methods for each WordPress table. As an example the methods for the `options` table are
+The verbs used by the `Db` module are honored so `dontHave` removes an entry, `have` adds an entry, `dontSee` checks an entry is not in the database, `see` checks an entry is in the database, `grab` gets a value from the database or the module.  
+When dealing with multisite installations then the `useBlog` and `useMainBlog` methods can be used to perform any following database operation on the specified site tables if applicable; some tables are unique in a WordPress installation (e.g. `users`) and the command will not mess with it.  
+The module is meant to be a WordPress specific extension of the `Db` module and will hence decline the `have` and `see` methods for each WordPress table; here's a current list of all the defined methods:
 
-```php
-    public function haveUserInDatabase( $user_login, $role = 'subscriber', array $userData = [] );
-    public function grabPrefixedTableNameFor( $tableName = '' );
-    public function grabUserIdFromDatabase( $userLogin );
-    public function haveUserCapabilitiesInDatabase( $userId, $role );
-    public function haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
-    public function grabUsermetaTableName();
-    public function haveUserLevelsInDatabase( $userId, $role );
-    public function seeOptionInDatabase( array $criteria );
-    public function dontSeeOptionInDatabase( array $criteria );
-    public function seePostMetaInDatabase( array $criteria );
-    public function haveLinkInDatabase( $link_id, array $data = [] );
-    public function seeLinkInDatabase( array $criteria );
-    public function dontSeeLinkInDatabase( array $criteria );
-    public function dontSeePostMetaInDatabase( array $criteria );
-    public function seePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 );
-    public function seeUserInDatabase( array $criteria );
-    public function dontSeeUserInDatabase( array $criteria );
-    public function havePostInDatabase( array $data = [ ] );
-    public function havePageInDatabase( array $overrides = [ ] );
-    public function seePostInDatabase( array $criteria );
-    public function dontSeePostInDatabase( array $criteria );
-    public function seePageInDatabase( array$criteria );
-    public function dontSeePageInDatabase( array $criteria );
-    public function haveLinkWithTermInDatabase( $link_id, $term_id, $term_order = 0 );
-    public function haveCommentInDatabase( $comment_post_ID, array $data = [] );
-    public function seeCommentInDatabase( array $criteria );
-    public function dontSeeCommentInDatabase( array $criteria );
-    public function seeCommentMetaInDatabase( array $criteria );
-    public function dontSeeCommentMetaInDatabase( array $criteria );
-    public function havePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 );
-    public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value, $meta_id = null );
-    public function havePostmetaInDatabase( $post_id, $meta_key, $meta_value );
-    public function haveTermInDatabase( $term, $term_id, array $args = [] );
-    public function seeTermInDatabase( array $criteria );
-    public function dontSeeTermInDatabase( array $criteria );
-    public function seeUserMetaInDatabase( array $criteria );
-    public function dontSeeUserMetaInDatabase( array $criteria );
-    public function dontHaveCommentMetaInDatabase( array $criteria );
-    public function dontHaveCommentInDatabase( array $criteria );
-    public function dontHaveLinkInDatabase( array $criteria );
-    public function dontHavePostMetaInDatabase( array $criteria );
-    public function dontHavePostInDatabase( array $criteria );
-    public function dontHaveTermRelationshipInDatabase( array $criteria );
-    public function dontHaveTermTaxonomyInDatabase( array $criteria );
-    public function dontHaveTermInDatabase( array $criteria );
-    public function dontHaveUserMetaInDatabase( array $criteria );
-    public function dontHaveUserInDatabase( $userIdOrLogin );
-    public function grabUserMetaFromDatabase( $userId, $meta_key );
-    public function grabAllFromDatabase( $table, $column, $criteria );
-    public function haveTransientInDatabase( $transient, $value );
-    public function haveOptionInDatabase( $option_name, $option_value );
-    public function dontHaveTransientInDatabase( $transient );
-    public function dontHaveOptionInDatabase( $key, $value = null );
-    public function haveSiteOptionInDatabase( $key, $value );
-    public function useMainBlog();
-    public function useBlog( $id = 0 );
-    public function dontHaveSiteOptionInDatabase( $key, $value = null );
-    public function haveSiteTransientInDatabase( $key, $value );
-    public function dontHaveSiteTransientInDatabase( $key );
-    public function grabSiteOptionFromDatabase( $key );
-    public function grabOptionFromDatabase( $option_name );
-    public function grabSiteTransientFromDatabase( $key );
-    public function seeSiteSiteTransientInDatabase( $key, $value = null );
-    public function seeSiteOptionInDatabase( $key, $value = null );
-    public function grabLatestEntryByFromDatabase( $tableName, $idColumn = 'ID' );
-    public function grabPostsTableName();
-    public function grabSiteUrl();
-    public function haveManyPostsInDatabase( $count, array $overrides = [ ] );
-    public function grabPostmetaTableName();
-```
+* `dontHaveCommentInDatabase`
+* `dontHaveCommentMetaInDatabase`
+* `dontHaveLinkInDatabase`
+* `dontHaveOptionInDatabase`
+* `dontHavePostInDatabase`
+* `dontHavePostMetaInDatabase`
+* `dontHaveSiteOptionInDatabase`
+* `dontHaveSiteTransientInDatabase`
+* `dontHaveTermInDatabase`
+* `dontHaveTermRelationshipInDatabase`
+* `dontHaveTermTaxonomyInDatabase`
+* `dontHaveTransientInDatabase`
+* `dontHaveUserInDatabase`
+* `dontHaveUserMetaInDatabase`
+* `dontSeeCommentInDatabase`
+* `dontSeeCommentMetaInDatabase`
+* `dontSeeLinkInDatabase`
+* `dontSeeOptionInDatabase`
+* `dontSeePageInDatabase`
+* `dontSeePostInDatabase`
+* `dontSeePostMetaInDatabase`
+* `dontSeeTermInDatabase`
+* `dontSeeUserInDatabase`
+* `dontSeeUserMetaInDatabase`
+* `grabAllFromDatabase`
+* `grabLatestEntryByFromDatabase`
+* `grabOptionFromDatabase`
+* `grabPostmetaTableName`
+* `grabPostsTableName`
+* `grabPrefixedTableNameFor`
+* `grabTermRelationshipsTableName`
+* `grabTermsTableName`
+* `grabTermTaxonomyTableName`
+* `grabSiteOptionFromDatabase`
+* `grabSiteTransientFromDatabase`
+* `grabSiteUrl`
+* `grabUserIdFromDatabase`
+* `grabUserMetaFromDatabase`
+* `grabUsermetaTableName`
+* `haveCommentInDatabase`
+* `haveCommentMetaInDatabase`
+* `haveLinkInDatabase`
+* `haveLinkWithTermInDatabase`
+* `haveManyPostsInDatabase`
+* `haveOptionInDatabase`
+* `havePageInDatabase`
+* `havePostInDatabase`
+* `havePostmetaInDatabase`
+* `havePostWithTermInDatabase`
+* `haveSiteOptionInDatabase`
+* `haveSiteTransientInDatabase`
+* `haveTermInDatabase`
+* `haveTransientInDatabase`
+* `haveUserCapabilitiesInDatabase`
+* `haveUserInDatabase`
+* `haveUserLevelsInDatabase`
+* `haveUserMetaInDatabase`
+* `seeCommentInDatabase`
+* `seeCommentMetaInDatabase`
+* `seeLinkInDatabase`
+* `seeOptionInDatabase`
+* `seePageInDatabase`
+* `seePostInDatabase`
+* `seePostMetaInDatabase`
+* `seePostWithTermInDatabase`
+* `seeSiteOptionInDatabase`
+* `seeSiteSiteTransientInDatabase`
+* `seeTermInDatabase`
+* `seeUserInDatabase`
+* `seeUserMetaInDatabase`
+* `useBlog`
+* `useMainBlog`
 
-see source for more method details.
+See source for more method details.
 
 ### ExtendedDb module
 The module is an extension of the `Codeception\Module\Db` class implementing some methods to allow for more CRUD complete operations on the database with the methods
