@@ -1216,22 +1216,15 @@ class WPDb extends ExtendedDb {
 	 *                        `term_taxonomy` tables.
 	 */
 	public function seeTermInDatabase( array $criteria ) {
-		try {
-			$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
-			$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
+		$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
+		$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
 
-			if ( !empty( $termsCriteria ) ) {
-				// this one fails... go to...
-				$this->seeInDatabase( $this->grabTermsTableName(), $termsCriteria );
-			}
-			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
-			}
-		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
-			// ...this one
-			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
-			}
+		if ( !empty( $termsCriteria ) ) {
+			// this one fails... go to...
+			$this->seeInDatabase( $this->grabTermsTableName(), $termsCriteria );
+		}
+		if ( !empty( $termTaxonomyCriteria ) ) {
+			$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 		}
 	}
 
@@ -1266,22 +1259,15 @@ class WPDb extends ExtendedDb {
 	 *                        `term_taxonomy` tables.
 	 */
 	public function dontSeeTermInDatabase( array $criteria ) {
-		try {
-			$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
-			$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
+		$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
+		$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
 
-			if ( !empty( $termsCriteria ) ) {
-				// this one fails... go to...
-				$this->dontSeeInDatabase( $this->grabTermsTableName(), $termsCriteria );
-			}
-			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
-			}
-		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
-			// ...this one
-			if ( !empty( $termTaxonomyCriteria ) ) {
-				$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
-			}
+		if ( !empty( $termsCriteria ) ) {
+			// this one fails... go to...
+			$this->dontSeeInDatabase( $this->grabTermsTableName(), $termsCriteria );
+		}
+		if ( !empty( $termTaxonomyCriteria ) ) {
+			$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyCriteria );
 		}
 	}
 
