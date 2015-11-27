@@ -2,10 +2,11 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+##[1.8.1] 2015-11-27
+### Changed
+- reworked term related methods in WPDb module
 
 ##[1.8.0] 2015-11-26
-
 ### Added
 - user and user meta related methods to the WPDb module
 - options related methods to the WPDb module
@@ -163,7 +164,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.1...HEAD
+[1.8.1]: https://github.com/lucatume/wp-browser/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/lucatume/wp-browser/compare/1.7.16a...1.8.0
 [1.7.16a]: https://github.com/lucatume/wp-browser/compare/1.7.15...1.7.16a
 [1.7.15]: https://github.com/lucatume/wp-browser/compare/1.7.14...1.7.15
