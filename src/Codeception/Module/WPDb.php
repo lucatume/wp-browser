@@ -6,6 +6,7 @@ use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use PDO;
+use PHPUnit_Framework_ExpectationFailedException;
 use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\User;
@@ -15,6 +16,16 @@ use tad\WPBrowser\Generators\User;
  * methods.
  */
 class WPDb extends ExtendedDb {
+
+	/**
+	 * @var array
+	 */
+	protected $termKeys = [ 'term_id', 'name', 'slug', 'term_group' ];
+
+	/**
+	 * @var array
+	 */
+	protected $termTaxonomyKeys = [ 'term_taxonomy_id', 'term_id', 'taxonomy', 'description', 'parent', 'count' ];
 
 	/**
 	 * @var array A list of tables that WordPress will nor replicate in multisite installations.
@@ -694,59 +705,24 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Inserts a term in the database.
 	 *
-	 * @param  string $term The term scree name, e.g. "Fuzzy".
-	 * @param  int    $term_id
-	 * @param  array  $args Term arguments overriding default and generated ones.
+	 * @param  string $name      The term name, e.g. "Fuzzy".
+	 * @param string  $taxonomy  The term taxonomy
+	 * @param array   $overrides An array of values to override the default ones.
 	 *
-	 * @return void
 	 */
-	public function haveTermInDatabase( $term, $term_id, array $args = array() ) {
-		// term table entry
-		$taxonomy        = isset( $args['taxonomy'] ) ? $args['taxonomy'] : 'category';
-		$termsTableEntry = array( 'term_id' => $term_id, 'name' => $term, 'slug' => isset( $args['slug'] ) ? $args['slug'] : ( new Slugifier() )->slugify( $term ), 'term_group' => isset( $args['term_group'] ) ? $args['term_group'] : 0, );
-		$tableName       = $this->grabPrefixedTableNameFor( 'terms' );
-		$this->haveInDatabase( $tableName, $termsTableEntry );
-		// term_taxonomy table entry
-		$termTaxonomyTableEntry = array( 'term_taxonomy_id' => isset( $args['term_taxonomy_id'] ) ? $args['term_taxonomy_id'] : null, 'term_id' => $term_id, 'taxonomy' => $taxonomy, 'description' => isset( $args['description'] ) ? $args['description'] : '', 'parent' => isset( $args['parent'] ) ? $args['parent'] : 0, 'count' => isset( $args['count'] ) ? $args['count'] : 0 );
-		$tableName              = $this->grabPrefixedTableNameFor( 'term_taxonomy' );
-		$this->haveInDatabase( $tableName, $termTaxonomyTableEntry );
-	}
+	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
+		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
+		$termData         = array_merge( $termDefaults, array_intersect_key( $overrides, $termDefaults ) );
+		$termData['name'] = $name;
+		$term_id          = $this->haveInDatabase( $this->grabPrefixedTermsTableName(), $termData );
 
-	/**
-	 * Checks for a term in the database.
-	 *
-	 * @param  array $criteria An array of search criteria.
-	 */
-	public function seeTermInDatabase( array $criteria ) {
-		if ( isset( $criteria['description'] ) or isset( $criteria['taxonomy'] ) ) {
-			// the matching will be attempted against the term_taxonomy table
-			$termTaxonomyCriteria = array( 'taxonomy' => isset( $criteria['taxonomy'] ) ? $criteria['taxonomy'] : false, 'description' => isset( $criteria['description'] ) ? $criteria['description'] : false, 'term_id' => isset( $criteria['term_id'] ) ? $criteria['term_id'] : false );
-			$termTaxonomyCriteria = array_filter( $termTaxonomyCriteria );
-			$tableName            = $this->grabPrefixedTableNameFor( 'term_taxonomy' );
-			$this->seeInDatabase( $tableName, $termTaxonomyCriteria );
-		} else {
-			// the matching will be attempted against the terms table
-			$tableName = $this->grabPrefixedTableNameFor( 'terms' );
-			$this->seeInDatabase( $tableName, $criteria );
-		}
-	}
+		$termTaxonomyDefaults         = [ 'description' => '', 'parent' => 0, 'count' => 0 ];
+		$termTaxonomyData             = array_merge( $termTaxonomyDefaults, array_intersect_key( $overrides, $termTaxonomyDefaults ) );
+		$termTaxonomyData['taxonomy'] = $taxonomy;
+		$termTaxonomyData['term_id']  = $term_id;
+		$term_taxonomy_id             = $this->haveInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyData );
 
-	/**
-	 * Checks that a term is not in the database.
-	 *
-	 * @param  array $criteria An array of search criteria.
-	 */
-	public function dontSeeTermInDatabase( array $criteria ) {
-		if ( isset( $criteria['description'] ) or isset( $criteria['taxonomy'] ) ) {
-			// the matching will be attempted against the term_taxonomy table
-			$termTaxonomyCriteria = array( 'taxonomy' => isset( $criteria['taxonomy'] ) ? $criteria['taxonomy'] : false, 'description' => isset( $criteria['description'] ) ? $criteria['description'] : false, 'term_id' => isset( $criteria['term_id'] ) ? $criteria['term_id'] : false );
-			$termTaxonomyCriteria = array_filter( $termTaxonomyCriteria );
-			$tableName            = $this->grabPrefixedTableNameFor( 'term_taxonomy' );
-			$this->dontSeeInDatabase( $tableName, $termTaxonomyCriteria );
-		}
-		// the matching will be attempted against the terms table
-		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
-		$this->dontSeeInDatabase( $tableName, $criteria );
+		return [ $term_id, $term_taxonomy_id ];
 	}
 
 	/**
@@ -836,16 +812,6 @@ class WPDb extends ExtendedDb {
 	 */
 	public function dontHaveTermTaxonomyInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'term_taxonomy' );
-		$this->dontHaveInDatabase( $tableName, $criteria );
-	}
-
-	/**
-	 * Removes an entry from the terms table.
-	 *
-	 * @param  array $criteria An array of search criteria.
-	 */
-	public function dontHaveTermInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
 		$this->dontHaveInDatabase( $tableName, $criteria );
 	}
 
@@ -1256,5 +1222,102 @@ class WPDb extends ExtendedDb {
 	 */
 	protected function replaceNumbersInString( $value, $i ) {
 		return str_replace( '{{n}}', $i, $value );
+	}
+
+	/**
+	 * Gets the prefixed terms table name, e.g. `wp_terms`.
+	 *
+	 * @return string
+	 */
+	public function grabPrefixedTermsTableName() {
+		return $this->grabPrefixedTableNameFor( 'terms' );
+
+	}
+
+	/**
+	 * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
+	 *
+	 * @return string
+	 */
+	public function grabPrefixedTermTaxonomyTableName() {
+		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
+	}
+
+	/**
+	 * Checks for a term in the database.
+	 *
+	 * Looks up the `terms` and `term_taxonomy` prefixed tables.
+	 *
+	 * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
+	 *                        `term_taxonomy` tables.
+	 */
+	public function seeTermInDatabase( array $criteria ) {
+		try {
+			$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
+			$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
+
+			if ( !empty( $termsCriteria ) ) {
+				// this one fails... go to...
+				$this->seeInDatabase( $this->grabPrefixedTermsTableName(), $termsCriteria );
+			}
+			if ( !empty( $termTaxonomyCriteria ) ) {
+				$this->seeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+			}
+		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
+			// ...this one
+			if ( !empty( $termTaxonomyCriteria ) ) {
+				$this->seeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+			}
+		}
+	}
+
+	/**
+	 * Removes a term from the database.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function dontHaveTermInDatabase( array $criteria ) {
+		$termRelationshipsKeys = [ 'term_taxonomy_id' ];
+
+		$this->dontHaveInDatabase( $this->grabPrefixedTermsTableName(), array_intersect_key( $criteria, array_flip( $this->termKeys ) ) );
+		$this->dontHaveInDatabase( $this->grabPrefixedTermTaxonomyTableName(), array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) ) );
+		$this->dontHaveInDatabase( $this->grabPrefixedTermRelationshipsTableName(), array_intersect_key( $criteria, array_flip( $termRelationshipsKeys ) ) );
+	}
+
+	/**
+	 * Gets the prefixed term relationships table name, e.g. `wp_term_relationships`.
+	 *
+	 * @return string
+	 */
+	public function grabPrefixedTermRelationshipsTableName() {
+		return $this->grabPrefixedTableNameFor( 'term_relationships' );
+	}
+
+	/**
+	 * Makes sure a term is not in the database.
+	 *
+	 * Looks up both the `terms` table and the `term_taxonomy` tables.
+	 *
+	 * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
+	 *                        `term_taxonomy` tables.
+	 */
+	public function dontSeeTermInDatabase( array $criteria ) {
+		try {
+			$termsCriteria        = array_intersect_key( $criteria, array_flip( $this->termKeys ) );
+			$termTaxonomyCriteria = array_intersect_key( $criteria, array_flip( $this->termTaxonomyKeys ) );
+
+			if ( !empty( $termsCriteria ) ) {
+				// this one fails... go to...
+				$this->dontSeeInDatabase( $this->grabPrefixedTermsTableName(), $termsCriteria );
+			}
+			if ( !empty( $termTaxonomyCriteria ) ) {
+				$this->dontSeeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+			}
+		} catch ( PHPUnit_Framework_ExpectationFailedException $e ) {
+			// ...this one
+			if ( !empty( $termTaxonomyCriteria ) ) {
+				$this->dontSeeInDatabase( $this->grabPrefixedTermTaxonomyTableName(), $termTaxonomyCriteria );
+			}
+		}
 	}
 }
