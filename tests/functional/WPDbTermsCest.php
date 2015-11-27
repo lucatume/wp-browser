@@ -1,6 +1,5 @@
 <?php
 use BaconStringUtils\Slugifier;
-use \FunctionalTester;
 
 class WPDbTermsCest {
 
