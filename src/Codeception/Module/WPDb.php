@@ -514,6 +514,100 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Gets a term from the database.
+	 *
+	 * Looks up the prefixed `terms` table, e.g. `wp_terms`.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function grabTermIdFromDatabase( array $criteria ) {
+		return $this->grabFromDatabase( $this->grabTermsTableName(), 'term_id', $criteria );
+	}
+
+	/**
+	 * Gets the prefixed terms table name, e.g. `wp_terms`.
+	 *
+	 * @return string
+	 */
+	public function grabTermsTableName() {
+		return $this->grabPrefixedTableNameFor( 'terms' );
+
+	}
+
+	/**
+	 * Inserts a term in the database.
+	 *
+	 * @param  string $name      The term name, e.g. "Fuzzy".
+	 * @param string  $taxonomy  The term taxonomy
+	 * @param array   $overrides An array of values to override the default ones.
+	 *
+	 * @return array An array containing `term_id` and `term_taxonomy_id` of the inserted term.
+	 */
+	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
+		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
+		$termData         = array_merge( $termDefaults, array_intersect_key( $overrides, $termDefaults ) );
+		$termData['name'] = $name;
+		$term_id          = $this->haveInDatabase( $this->grabTermsTableName(), $termData );
+
+		$termTaxonomyDefaults         = [ 'description' => '', 'parent' => 0, 'count' => 0 ];
+		$termTaxonomyData             = array_merge( $termTaxonomyDefaults, array_intersect_key( $overrides, $termTaxonomyDefaults ) );
+		$termTaxonomyData['taxonomy'] = $taxonomy;
+		$termTaxonomyData['term_id']  = $term_id;
+		$term_taxonomy_id             = $this->haveInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyData );
+
+		return [ $term_id, $term_taxonomy_id ];
+	}
+
+	/**
+	 * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
+	 *
+	 * @return string
+	 */
+	public function grabTermTaxonomyTableName() {
+		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
+	}
+
+	/**
+	 * Gets a `term_taxonomy_id` from the database.
+	 *
+	 * Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function grabTermTaxonomyIdFromDatabase( array $criteria ) {
+		return $this->grabFromDatabase( $this->grabTermTaxonomyTableName(), 'term_taxonomy_id', $criteria );
+	}
+
+	/**
+	 * Creates a term relationship in the database.
+	 *
+	 * Please mind that no check about the consistency of the insertion is made. E.g. a post could be assigned a term from
+	 * a taxonomy that's not registered for that post type.
+	 *
+	 * @param     int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
+	 * @param     int $term_taxonomy_id
+	 * @param int     $term_order Defaults to `0`.
+	 */
+	public function haveTermRelationshipInDatabase( $object_id, $term_taxonomy_id, $term_order = 0 ) {
+		$this->haveInDatabase( $this->grabTermRelationshipsTableName(), [ 'object_id' => $object_id, 'term_taxonomy_id' => $term_taxonomy_id, 'term_order' => $term_order ] );
+	}
+
+	/**
+	 * Gets the prefixed term relationships table name, e.g. `wp_term_relationships`.
+	 *
+	 * @return string
+	 */
+	public function grabTermRelationshipsTableName() {
+		return $this->grabPrefixedTableNameFor( 'term_relationships' );
+	}
+
+	private function increaseTermCountBy( $termTaxonomyId, $by = 1 ) {
+		$updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
+
+		return $this->driver->executeQuery( $updateQuery, [ ] );
+	}
+
+	/**
 	 * Checks for a page in the database.
 	 *
 	 * @param  array $criteria An array of search criteria.
@@ -747,49 +841,6 @@ class WPDb extends ExtendedDb {
 		if ( !$this->grabFromDatabase( $tableName, 'comment_ID', array( 'commment_ID' => $comment_id ) ) ) {
 			throw new \RuntimeException( "A comment with an id of $comment_id does not exist", 1 );
 		}
-	}
-
-	/**
-	 * Inserts a term in the database.
-	 *
-	 * @param  string $name      The term name, e.g. "Fuzzy".
-	 * @param string  $taxonomy  The term taxonomy
-	 * @param array   $overrides An array of values to override the default ones.
-	 *
-	 * @return array An array containing `term_id` and `term_taxonomy_id` of the inserted term.
-	 */
-	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
-		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
-		$termData         = array_merge( $termDefaults, array_intersect_key( $overrides, $termDefaults ) );
-		$termData['name'] = $name;
-		$term_id          = $this->haveInDatabase( $this->grabTermsTableName(), $termData );
-
-		$termTaxonomyDefaults         = [ 'description' => '', 'parent' => 0, 'count' => 0 ];
-		$termTaxonomyData             = array_merge( $termTaxonomyDefaults, array_intersect_key( $overrides, $termTaxonomyDefaults ) );
-		$termTaxonomyData['taxonomy'] = $taxonomy;
-		$termTaxonomyData['term_id']  = $term_id;
-		$term_taxonomy_id             = $this->haveInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyData );
-
-		return [ $term_id, $term_taxonomy_id ];
-	}
-
-	/**
-	 * Gets the prefixed terms table name, e.g. `wp_terms`.
-	 *
-	 * @return string
-	 */
-	public function grabTermsTableName() {
-		return $this->grabPrefixedTableNameFor( 'terms' );
-
-	}
-
-	/**
-	 * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
-	 *
-	 * @return string
-	 */
-	public function grabTermTaxonomyTableName() {
-		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
 	}
 
 	/**
@@ -1270,15 +1321,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Gets the prefixed term relationships table name, e.g. `wp_term_relationships`.
-	 *
-	 * @return string
-	 */
-	public function grabTermRelationshipsTableName() {
-		return $this->grabPrefixedTableNameFor( 'term_relationships' );
-	}
-
-	/**
 	 * Makes sure a term is not in the database.
 	 *
 	 * Looks up both the `terms` table and the `term_taxonomy` tables.
@@ -1333,47 +1375,5 @@ class WPDb extends ExtendedDb {
 		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
 			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
 		}
-	}
-
-	/**
-	 * Creates a term relationship in the database.
-	 *
-	 * Please mind that no check about the consistency of the insertion is made. E.g. a post could be assigned a term from
-	 * a taxonomy that's not registered for that post type.
-	 *
-	 * @param     int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
-	 * @param     int $term_taxonomy_id
-	 * @param int     $term_order Defaults to `0`.
-	 */
-	public function haveTermRelationshipInDatabase( $object_id, $term_taxonomy_id, $term_order = 0 ) {
-		$this->haveInDatabase( $this->grabTermRelationshipsTableName(), [ 'object_id' => $object_id, 'term_taxonomy_id' => $term_taxonomy_id, 'term_order' => $term_order ] );
-	}
-
-	/**
-	 * Gets a `term_taxonomy_id` from the database.
-	 *
-	 * Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
-	 *
-	 * @param array $criteria An array of search criteria.
-	 */
-	public function grabTermTaxonomyIdFromDatabase( array $criteria ) {
-		return $this->grabFromDatabase( $this->grabTermTaxonomyTableName(), 'term_taxonomy_id', $criteria );
-	}
-
-	/**
-	 * Gets a term from the database.
-	 *
-	 * Looks up the prefixed `terms` table, e.g. `wp_terms`.
-	 *
-	 * @param array $criteria An array of search criteria.
-	 */
-	public function grabTermIdFromDatabase( array $criteria ) {
-		return $this->grabFromDatabase( $this->grabTermsTableName(), 'term_id', $criteria );
-	}
-
-	private function increaseTermCountBy( $termTaxonomyId, $by = 1 ) {
-		$updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
-
-		return $this->driver->executeQuery( $updateQuery, [ ] );
 	}
 }
