@@ -415,11 +415,38 @@ class WPDb extends ExtendedDb {
 			unset( $post['meta'] );
 		}
 
+		$hasTerms = !empty( $data['terms'] );
+		if ( $hasTerms ) {
+			$terms = $data['terms'];
+			unset( $post['terms'] );
+		}
+
 		$postId = $this->haveInDatabase( $postTableName, $post );
 
 		if ( $hasMeta ) {
 			foreach ( $meta as $meta_key => $meta_value ) {
 				$this->havePostmetaInDatabase( $postId, $meta_key, $meta_value );
+			}
+		}
+
+		if ( $hasTerms ) {
+			foreach ( $terms as $taxonomy => $termNames ) {
+				foreach ( $termNames as $termName ) {
+					$termId = $this->grabTermIdFromDatabase( [ 'name' => $termName ] );
+
+					if ( empty( $termId ) ) {
+						$termId = $this->grabTermIdFromDatabase( [ 'slug' => $termName ] );
+					}
+
+					if ( empty( $termId ) ) {
+						$termId = reset( $this->haveTermInDatabase( $termName, $taxonomy ) );
+					}
+
+					$termTaxonomyId = $this->grabTermTaxonomyIdFromDatabase( [ 'term_id' => $termId, 'taxonomy' => $taxonomy ] );
+
+					$this->haveTermRelationshipInDatabase( $postId, $termTaxonomyId );
+					$this->increaseTermCountBy( $termTaxonomyId, 1 );
+				}
 			}
 		}
 
@@ -729,6 +756,7 @@ class WPDb extends ExtendedDb {
 	 * @param string  $taxonomy  The term taxonomy
 	 * @param array   $overrides An array of values to override the default ones.
 	 *
+	 * @return array An array containing `term_id` and `term_taxonomy_id` of the inserted term.
 	 */
 	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
 		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
@@ -1305,5 +1333,47 @@ class WPDb extends ExtendedDb {
 		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
 			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
 		}
+	}
+
+	/**
+	 * Creates a term relationship in the database.
+	 *
+	 * Please mind that no check about the consistency of the insertion is made. E.g. a post could be assigned a term from
+	 * a taxonomy that's not registered for that post type.
+	 *
+	 * @param     int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
+	 * @param     int $term_taxonomy_id
+	 * @param int     $term_order Defaults to `0`.
+	 */
+	public function haveTermRelationshipInDatabase( $object_id, $term_taxonomy_id, $term_order = 0 ) {
+		$this->haveInDatabase( $this->grabTermRelationshipsTableName(), [ 'object_id' => $object_id, 'term_taxonomy_id' => $term_taxonomy_id, 'term_order' => $term_order ] );
+	}
+
+	/**
+	 * Gets a `term_taxonomy_id` from the database.
+	 *
+	 * Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function grabTermTaxonomyIdFromDatabase( array $criteria ) {
+		return $this->grabFromDatabase( $this->grabTermTaxonomyTableName(), 'term_taxonomy_id', $criteria );
+	}
+
+	/**
+	 * Gets a term from the database.
+	 *
+	 * Looks up the prefixed `terms` table, e.g. `wp_terms`.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function grabTermIdFromDatabase( array $criteria ) {
+		return $this->grabFromDatabase( $this->grabTermsTableName(), 'term_id', $criteria );
+	}
+
+	private function increaseTermCountBy( $termTaxonomyId, $by = 1 ) {
+		$updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
+
+		return $this->driver->executeQuery( $updateQuery, [ ] );
 	}
 }
