@@ -30,7 +30,16 @@ class WPDb extends ExtendedDb {
 	/**
 	 * @var array A list of tables that WordPress will nor replicate in multisite installations.
 	 */
-	protected $uniqueTables = [ 'blogs', 'blog_versions', 'registration_log', 'signups', 'site', 'sitemeta', 'users', 'usermeta', ];
+	protected $uniqueTables = [
+		'blogs',
+		'blog_versions',
+		'registration_log',
+		'signups',
+		'site',
+		'sitemeta',
+		'users',
+		'usermeta',
+	];
 
 	/**
 	 * The module required configuration parameters.
@@ -51,7 +60,12 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @var array
 	 */
-	protected $config = array( 'tablePrefix' => 'wp_', 'checkExistence' => false, 'update' => true, 'reconnect' => false );
+	protected $config = array(
+		'tablePrefix'    => 'wp_',
+		'checkExistence' => false,
+		'update'         => true,
+		'reconnect'      => false
+	);
 	/**
 	 * The table prefix to use.
 	 *
@@ -202,7 +216,11 @@ class WPDb extends ExtendedDb {
 		$ids         = [ ];
 		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
 		foreach ( $meta_values as $meta_value ) {
-			$data  = [ 'user_id' => $userId, 'meta_key' => $meta_key, 'meta_value' => $this->maybeSerialize( $meta_value ) ];
+			$data  = [
+				'user_id'    => $userId,
+				'meta_key'   => $meta_key,
+				'meta_value' => $this->maybeSerialize( $meta_value )
+			];
 			$ids[] = $this->haveInDatabase( $this->grabUsermetaTableName(), $data );
 		}
 
@@ -362,7 +380,11 @@ class WPDb extends ExtendedDb {
 	 */
 	public function seePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'term_relationships' );
-		$this->dontSeeInDatabase( $tableName, array( 'object_id' => $post_id, 'term_id' => $term_id, 'term_order' => $term_order ) );
+		$this->dontSeeInDatabase( $tableName, array(
+			'object_id'  => $post_id,
+			'term_id'    => $term_id,
+			'term_order' => $term_order
+		) );
 	}
 
 	/**
@@ -442,7 +464,10 @@ class WPDb extends ExtendedDb {
 						$termId = reset( $this->haveTermInDatabase( $termName, $taxonomy ) );
 					}
 
-					$termTaxonomyId = $this->grabTermTaxonomyIdFromDatabase( [ 'term_id' => $termId, 'taxonomy' => $taxonomy ] );
+					$termTaxonomyId = $this->grabTermTaxonomyIdFromDatabase( [
+						'term_id'  => $termId,
+						'taxonomy' => $taxonomy
+					] );
 
 					$this->haveTermRelationshipInDatabase( $postId, $termTaxonomyId );
 					$this->increaseTermCountBy( $termTaxonomyId, 1 );
@@ -500,7 +525,11 @@ class WPDb extends ExtendedDb {
 		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
 		$meta_ids    = [ ];
 		foreach ( $meta_values as $meta_value ) {
-			$meta_ids[] = $this->haveInDatabase( $tableName, array( 'post_id' => $post_id, 'meta_key' => $meta_key, 'meta_value' => $this->maybeSerialize( $meta_value ) ) );
+			$meta_ids[] = $this->haveInDatabase( $tableName, array(
+				'post_id'    => $post_id,
+				'meta_key'   => $meta_key,
+				'meta_value' => $this->maybeSerialize( $meta_value )
+			) );
 		}
 	}
 
@@ -589,7 +618,11 @@ class WPDb extends ExtendedDb {
 	 * @param int     $term_order Defaults to `0`.
 	 */
 	public function haveTermRelationshipInDatabase( $object_id, $term_taxonomy_id, $term_order = 0 ) {
-		$this->haveInDatabase( $this->grabTermRelationshipsTableName(), [ 'object_id' => $object_id, 'term_taxonomy_id' => $term_taxonomy_id, 'term_order' => $term_order ] );
+		$this->haveInDatabase( $this->grabTermRelationshipsTableName(), [
+			'object_id'        => $object_id,
+			'term_taxonomy_id' => $term_taxonomy_id,
+			'term_order'       => $term_order
+		] );
 	}
 
 	/**
@@ -665,7 +698,11 @@ class WPDb extends ExtendedDb {
 		$this->maybeCheckTermExistsInDatabase( $term_id );
 		// add the relationship in the database
 		$tableName = $this->grabPrefixedTableNameFor( 'term_relationships' );
-		$this->haveInDatabase( $tableName, array( 'object_id' => $link_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order ) );
+		$this->haveInDatabase( $tableName, array(
+			'object_id'        => $link_id,
+			'term_taxonomy_id' => $term_id,
+			'term_order'       => $term_order
+		) );
 	}
 
 	/**
@@ -697,11 +734,27 @@ class WPDb extends ExtendedDb {
 	 */
 	public function haveCommentInDatabase( $comment_post_ID, array $data = array() ) {
 		if ( !is_int( $comment_post_ID ) ) {
-			throw new \BadMethodCallException( 'Comment id and post id must be int', 1 );
+			throw new \BadMethodCallException( 'Comment post ID must be int' );
 		}
-		$comment   = Comment::makeComment( $comment_post_ID, $data );
+
+		$has_meta = !empty( $data['meta'] );
+		if ( $has_meta ) {
+			$meta = $data['meta'];
+			unset( $data['meta'] );
+		}
+
+		$comment = Comment::makeComment( $comment_post_ID, $data );
+
 		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
-		$this->haveInDatabase( $tableName, $comment );
+		$commentId = $this->haveInDatabase( $tableName, $comment );
+
+		if ( $has_meta ) {
+			foreach ( $meta as $key => $value ) {
+				$this->haveCommentMetaInDatabase( $commentId, $key, $value );
+			}
+		}
+
+		return $commentId;
 	}
 
 	/**
@@ -743,7 +796,7 @@ class WPDb extends ExtendedDb {
 	 */
 	public function seeCommentMetaInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'commentmeta' );
-		$this->dontSeeInDatabase( $tableName, $criteria );
+		$this->seeInDatabase( $tableName, $criteria );
 	}
 
 	/**
@@ -761,70 +814,28 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a post to term relationship in the database.
+	 * Inserts a comment meta field in the database.
 	 *
-	 * Will conditionally check for post and term existence if "checkExistence" is set to true.
+	 * Array and object meta values will be serialized.
 	 *
-	 * @param  int     $post_id    The post ID.
-	 * @param  int     $term_id    The term ID.
-	 * @param  integer $term_order The optional term order.
-	 *
-	 * @return void
+	 * @param int    $comment_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value
+	 * @return int The inserted comment meta ID
 	 */
-	public function havePostWithTermInDatabase( $post_id, $term_id, $term_order = 0 ) {
-		if ( !is_int( $post_id ) or !is_int( $term_id ) or !is_int( $term_order ) ) {
-			throw new \BadMethodCallException( "Post ID, term ID and term order must be strings", 1 );
-		}
-		$this->maybeCheckPostExistsInDatabase( $post_id );
-		$this->maybeCheckTermExistsInDatabase( $term_id );
-		// add the relationship in the database
-		$tableName = $this->grabPrefixedTableNameFor( 'term_relationships' );
-		$this->haveInDatabase( $tableName, array( 'object_id' => $post_id, 'term_taxonomy_id' => $term_id, 'term_order' => $term_order ) );
-	}
-
-	/**
-	 * Conditionally checks that a post exists in database, will throw if not existent.
-	 *
-	 * @param  int $post_id The post ID.
-	 *
-	 * @return void
-	 */
-	protected function maybeCheckPostExistsInDatabase( $post_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'posts' );
-		if ( !$this->grabFromDatabase( $tableName, 'ID', array( 'ID' => $post_id ) ) ) {
-			throw new \RuntimeException( "A post with an id of $post_id does not exist", 1 );
-		}
-	}
-
-	/**
-	 * Inserts a commment meta value in the database.
-	 *
-	 * @param  int    $comment_id The comment ID.
-	 * @param  string $meta_key
-	 * @param         string      /int $meta_value
-	 * @param  int    $meta_id    The optinal meta ID.
-	 *
-	 * @return void
-	 */
-	public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value, $meta_id = null ) {
+	public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value ) {
 		if ( !is_int( $comment_id ) ) {
-			throw new \BadMethodCallException( 'Comment id must be an int', 1 );
-		}
-		if ( !is_null( $meta_id ) and !is_int( $meta_key ) ) {
-			throw new \BadMethodCallException( 'Meta id must be either null or an int', 2 );
+			throw new \BadMethodCallException( 'Comment id must be an int' );
 		}
 		if ( !is_string( $meta_key ) ) {
-			throw new \BadMethodCallException( 'Meta key must be an string', 3 );
+			throw new \BadMethodCallException( 'Meta key must be an string' );
 		}
-		if ( !is_string( $meta_value ) ) {
-			throw new \BadMethodCallException( 'Meta value must be an string', 4 );
-		}
-		$this->maybeCheckCommentExistsInDatabase( $comment_id );
-		$tableName = $this->grabPrefixedTableNameFor( 'commmentmeta' );
-		$this->haveInDatabase( $tableName, array( 'meta_id' => $meta_id, 'comment_id' => $comment_id, 'meta_key' => $meta_key, 'meta_value' => $meta_value ) );
+
+		return $this->haveInDatabase( $this->grabCommentmetaTableName(), [
+			'comment_id' => $comment_id,
+			'meta_key'   => $meta_key,
+			'meta_value' => $this->maybeSerialize( $meta_value )
+		] );
 	}
 
 	/**
@@ -878,7 +889,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveCommentInDatabase( array $criteria ) {
+	public function jontHaveCommentInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
 		$this->dontHaveInDatabase( $tableName, $criteria );
 	}
@@ -1017,7 +1028,11 @@ class WPDb extends ExtendedDb {
 		$this->dontHaveInDatabase( $table, [ 'option_name' => $option_name ] );
 		$option_value = $this->maybeSerialize( $option_value );
 
-		return $this->haveInDatabase( $table, array( 'option_name' => $option_name, 'option_value' => $option_value, 'autoload' => 'yes' ) );
+		return $this->haveInDatabase( $table, array(
+			'option_name'  => $option_name,
+			'option_value' => $option_value,
+			'autoload'     => 'yes'
+		) );
 	}
 
 	/**
@@ -1376,4 +1391,56 @@ class WPDb extends ExtendedDb {
 			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
 		}
 	}
+
+	/**
+	 * Gets the comments table name.
+	 *
+	 * @return string The prefixed table name, e.g. `wp_comments`.
+	 */
+	public function grabCommentsTableName() {
+		return $this->grabPrefixedTableNameFor( 'comments' );
+	}
+
+	/**
+	 * Inserts many comments in the database.
+	 *
+	 * @param int   $count           The number of comments to insert.
+	 * @param   int $comment_post_ID The comment parent post ID.
+	 * @param array $overrides       An associative array to override the defaults.
+	 * @return int[] An array containing the inserted comments IDs.
+	 */
+	public function haveManyCommentsInDatabase( $count, $comment_post_ID, array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$ids[]         = $this->haveCommentInDatabase( $comment_post_ID, $thisOverrides );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Returns the prefixed comment meta table name.
+	 *
+	 * E.g. `wp_commentmeta`.
+	 *
+	 * @return string
+	 */
+	public function grabCommentmetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'commentmeta' );
+	}
+
+	/**
+	 * Removes an entry from the comments table.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function dontHaveCommentInDatabase( array $criteria ) {
+		$table = $this->grabCommentsTableName();
+		$this->dontHaveInDatabase( $table, $criteria );
+	}
+
 }

@@ -2,63 +2,46 @@
 
 namespace tad\WPBrowser\Generators;
 
-class Comment
-{
-    protected static $count = 1;
+class Comment {
 
-    /**
-     * Generates a comment to be used in a WordPress database.
-     * generateDefaultsFor*
-     * @param  int $comment_post_ID The ID of the post the comment relates to.
-     * @param  array $data The optional data to be used to generate the comment.
-     *
-     * @return array                    A column as key array of comment content.
-     */
-    public static function makeComment($comment_post_ID, array $data = array())
-    {
-        $defaults = self::generateDefaultsFor($comment_post_ID);
-        static::$count++;
-        return array_merge($defaults, $data);
-    }
+	/**
+	 * Generates a comment to be used in a WordPress database.
+	 * generateDefaultsFor*
+	 *
+	 * @param  int   $comment_post_ID The ID of the post the comment relates to.
+	 * @param  array $overrides       The optional data to be used to generate the comment.
+	 *
+	 * @return array                    A column as key array of comment content.
+	 */
+	public static function makeComment( $comment_post_ID, array $overrides = array() ) {
+		$defaults = self::generateDefaultsFor( $comment_post_ID );
+		return array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
+	}
 
-    /**
-     * Generate the complete comment entry default structure.
-     *
-     * @param  int $comment_post_ID The if of the post the comment refers to.
-     *
-     * @return array                An associative array of column/default values.
-     */
-    protected static function generateDefaultsFor($comment_post_ID)
-    {
-        $randIP = "" . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255);
-        $content = self::generateCommentContent();
-        $defaults = array(
-            'comment_post_ID' => $comment_post_ID,
-            'comment_author' => 'John Doe',
-            'comment_author_email' => 'john.doe@example.com',
-            'comment_author_url' => 'http://www.johndoe.com',
-            'comment_author_IP' => $randIP,
-            'comment_date' => Date::now(),
-            'comment_date_gmt' => Date::gmtNow(),
-            'comment_content' => $content,
-            'comment_karma' => 0,
-            'comment_approved' => 1,
-            'comment_agent' => '',
-            'comment_type' => '',
-            'comment_parent' => 0,
-            'user_id' => 0
-        );
-        return $defaults;
-    }
-
-    /**
-     * Generates a random comment content in a lorem ipsum fashion.
-     *
-     * @return string  The comment content.
-     */
-    protected static function generateCommentContent()
-    {
-        $template = 'Comment content %d';
-        return sprintf($template, static::$count);
-    }
+	/**
+	 * Generate the complete comment entry default structure.
+	 *
+	 * @param  int $comment_post_ID The if of the post the comment refers to.
+	 *
+	 * @return array                An associative array of column/default values.
+	 */
+	protected static function generateDefaultsFor( $comment_post_ID ) {
+		$defaults = [
+			'comment_post_ID'      => $comment_post_ID,
+			'comment_author'       => 'Mr WordPress',
+			'comment_author_email' => '',
+			'comment_author_url'   => 'https://wordpress.org/',
+			'comment_author_IP'    => '',
+			'comment_date'         => Date::now(),
+			'comment_date_gmt'     => Date::gmtNow(),
+			'comment_content'      => "Hi, this is a comment.\nTo delete a comment, just log in and view the post&#039;s comments. There you will have the option to edit or delete them.",
+			'comment_karma'        => '0',
+			'comment_approved'     => '1',
+			'comment_agent'        => '',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => 0,
+		];
+		return $defaults;
+	}
 }
