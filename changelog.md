@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.8.3] 2015-12-02
+### Changed
+- comments related methods in WPDb module
+
 ##[1.8.2] 2015-11-30
 ### Added
 - terms related methods to WPDb module
@@ -175,7 +179,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.2...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.3...HEAD
+[1.8.3]: https://github.com/lucatume/wp-browser/compare/1.8.2...1.8.3
 [1.8.2]: https://github.com/lucatume/wp-browser/compare/1.8.1a...1.8.2
 [1.8.1a]: https://github.com/lucatume/wp-browser/compare/1.8.1...1.8.1a
 [1.8.1]: https://github.com/lucatume/wp-browser/compare/1.8.0...1.8.1
