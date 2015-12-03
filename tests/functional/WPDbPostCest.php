@@ -206,8 +206,8 @@ class WPDbPostCest {
 		$post_ids = $I->haveManyPostsInDatabase( 3, $overrides );
 
 		foreach ( $overrides as $key => $value ) {
-			for ( $i = 0; $i < count( $post_ids ); $i ++ ) {
-				$post_id        = $post_ids[ $i ];
+			for ( $i = 0; $i < count( $post_ids ); $i++ ) {
+				$post_id        = $post_ids[$i];
 				$processedValue = str_replace( '{{n}}', $i, $value );
 				$I->seeInDatabase( $table, [ 'ID' => $post_id, $key => $processedValue ] );
 			}
@@ -238,8 +238,8 @@ class WPDbPostCest {
 	public function it_should_allow_having_meta_in_many_posts( FunctionalTester $I ) {
 		$meta = [ 'one' => 'meta one', 'two' => 'meta two' ];
 		$ids  = $I->haveManyPostsInDatabase( 3, [ 'meta' => $meta ] );
-		for ( $i = 0; $i < 3; $i ++ ) {
-			$id = $ids[ $i ];
+		for ( $i = 0; $i < 3; $i++ ) {
+			$id = $ids[$i];
 			$I->seeInDatabase( $I->grabPostsTableName(), [ 'ID' => $id ] );
 			foreach ( $meta as $meta_key => $meta_value ) {
 				$I->seeInDatabase( $I->grabPostmetaTableName(), [
@@ -258,8 +258,8 @@ class WPDbPostCest {
 	public function it_should_allow_having_numbered_meta_for_many_posts( FunctionalTester $I ) {
 		$meta = [ 'one_{{n}}' => 'meta {{n}}', 'two_{{n}}' => '{{n}} meta {{n}}' ];
 		$ids  = $I->haveManyPostsInDatabase( 3, [ 'meta' => $meta ] );
-		for ( $i = 0; $i < 3; $i ++ ) {
-			$id = $ids[ $i ];
+		for ( $i = 0; $i < 3; $i++ ) {
+			$id = $ids[$i];
 			$I->seeInDatabase( $I->grabPostsTableName(), [ 'ID' => $id ] );
 			foreach ( $meta as $meta_key => $meta_value ) {
 				$I->seeInDatabase( $I->grabPostmetaTableName(), [
@@ -273,20 +273,18 @@ class WPDbPostCest {
 
 	/**
 	 * @test
-	 * it should add n rows when adding array post meta
+	 * it should serialize meta value when adding array post meta
 	 */
-	public function it_should_add_n_rows_when_adding_array_post_meta( FunctionalTester $I ) {
+	public function it_should_serialize_meta_value_when_adding_array_post_meta( FunctionalTester $I ) {
 		$id = $I->havePostInDatabase();
 
 		$meta = [ 'one', 'two', 'three' ];
 		$I->havePostmetaInDatabase( $id, 'foo', $meta );
 
-		foreach ( $meta as $meta_value ) {
-			$I->seeInDatabase( $I->grabPostmetaTableName(), [
-				'post_id'    => $id,
-				'meta_key'   => 'foo',
-				'meta_value' => $meta_value
-			] );
-		}
+		$I->seeInDatabase( $I->grabPostmetaTableName(), [
+			'post_id'    => $id,
+			'meta_key'   => 'foo',
+			'meta_value' => serialize( $meta )
+		] );
 	}
 }
