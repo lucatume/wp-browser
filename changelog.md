@@ -2,6 +2,12 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+##[unreleased] Unreleased
+### Added
+- `haveManyTermsInDatabase` method to WPDb module
+- `seeTermTaxonomyInDatabase` method to WPDb module
+- `dontSeeTermTaxonomyInDatabase` method to WPDb module
+
 ##[1.8.4] 2015-12-03
 ### Added
 - `haveManyUsersInDatabase` method to WPDb module
