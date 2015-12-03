@@ -131,5 +131,100 @@ class WPDbTermsCest {
 		}
 		$I->dontSeeTermTaxonomyInDatabase( [ 'taxonomy' => 'Taxonomy {{n}}' ] );
 	}
+
+	/**
+	 * @test
+	 * it should allow having term meta in the database
+	 */
+	public function it_should_allow_having_term_meta_in_the_database( FunctionalTester $I ) {
+		$termId     = $I->haveTermInDatabase( 'term_one', 'tax_one' );
+		$termId     = reset( $termId );
+		$metaOneId  = $I->haveTermMetaInDatabase( $termId, 'foo', 'bar' );
+		$objectMeta = (object)[ 'one' => 1, 'two' => 'more' ];
+		$metaTwoId  = $I->haveTermMetaInDatabase( $termId, 'woo', $objectMeta );
+
+		$I->seeTermMetaInDatabase( [
+			'meta_id'    => $metaOneId,
+			'term_id'    => $termId,
+			'meta_key'   => 'foo',
+			'meta_value' => 'bar'
+		] );
+		$I->seeTermMetaInDatabase( [
+			'meta_id'    => $metaTwoId,
+			'term_id'    => $termId,
+			'meta_key'   => 'woo',
+			'meta_value' => serialize( $objectMeta )
+		] );
+	}
+
+	/**
+	 * @test
+	 * it should allow not to have term meta in the database
+	 */
+	public function it_should_allow_not_to_have_term_meta_in_the_database( FunctionalTester $I ) {
+		$termId     = $I->haveTermInDatabase( 'term_one', 'tax_one' );
+		$termId     = reset( $termId );
+		$metaOneId  = $I->haveTermMetaInDatabase( $termId, 'foo', 'bar' );
+		$objectMeta = (object)[ 'one' => 1, 'two' => 'more' ];
+		$metaTwoId  = $I->haveTermMetaInDatabase( $termId, 'woo', $objectMeta );
+
+		$I->dontHaveTermMetaInDatabase( [ 'term_id' => $termId, 'meta_key' => 'foo' ] );
+
+		$I->dontSeeTermMetaInDatabase( [ 'term_id' => $termId, 'meta_key' => 'foo' ] );
+	}
+
+	/**
+	 * @test
+	 * it should allow having term meta while having term
+	 */
+	public function it_should_allow_having_term_meta_while_having_term( FunctionalTester $I ) {
+		$objectMeta = (object)[
+			'one'   => 2,
+			'three' => 4
+		];
+		$termId     = reset( $I->haveTermInDatabase( 'some_term', 'some_taxonomy', [
+			'meta' => [
+				'foo' => 'bar',
+				'baz' => $objectMeta
+			]
+		] ) );
+
+		$I->seeTermInDatabase( [ 'term_id' => $termId ] );
+		$I->seeTermMetaInDatabase( [ 'term_id' => $termId, 'meta_key' => 'foo', 'meta_value' => 'bar' ] );
+		$I->seeTermMetaInDatabase( [
+			'term_id'    => $termId,
+			'meta_key'   => 'baz',
+			'meta_value' => serialize( $objectMeta )
+		] );
+	}
+
+	/**
+	 * @test
+	 * it should allow having many terms meta
+	 */
+	public function it_should_allow_having_many_terms_meta( FunctionalTester $I ) {
+		$ids = $I->haveManyTermsInDatabase( 5, 'some_term', 'some_taxonomy', [ 'meta' => [ 'foo' => 'bar' ] ] );
+
+		$termIds = array_column( $ids, 0 );
+		for ( $i = 0; $i < 5; $i++ ) {
+			$I->seeTermMetaInDatabase( [ 'term_id' => $termIds[$i], 'meta_key' => 'foo', 'meta_value' => 'bar' ] );
+		}
+	}
+
+	/**
+	 * @test
+	 * it should allow having many terms meta with number placeholder
+	 */
+	public function it_should_allow_having_many_terms_meta_with_number_placeholder( FunctionalTester $I ) {
+		$ids = $I->haveManyTermsInDatabase( 5, 'some_term', 'some_taxonomy', [ 'meta' => [ 'foo_of_{{n}}' => 'bar_of_{{n}}' ] ] );
+
+		$termIds = array_column( $ids, 0 );
+		for ( $i = 0; $i < 5; $i++ ) {
+			$I->seeTermMetaInDatabase( [ 'term_id'    => $termIds[$i],
+			                             'meta_key'   => 'foo_of_' . $i,
+			                             'meta_value' => 'bar_of_' . $i
+			] );
+		}
+	}
 }
 

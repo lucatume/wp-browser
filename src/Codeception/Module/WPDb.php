@@ -356,10 +356,9 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param int    $post_id
 	 * @param string $meta_key
-	 * @param mixed  $meta_value The value to insert in the database. Objects will be serialized and arrays will be added
-	 *                           into distinct multiple rows.
+	 * @param mixed  $meta_value The value to insert in the database, objects and arrays will be serialized.
 	 *
-	 * @return int|array Either the single `meta_id` of the inserted row or an array of inserted `meta_id`.
+	 * @return int The inserted meta `meta_id`.
 	 */
 	public function havePostmetaInDatabase( $post_id, $meta_key, $meta_value ) {
 		if ( !is_int( $post_id ) ) {
@@ -368,16 +367,12 @@ class WPDb extends ExtendedDb {
 		if ( !is_string( $meta_key ) ) {
 			throw new \BadMethodCallException( 'Meta key must be an string', 3 );
 		}
-		$tableName   = $this->grabPostmetaTableName();
-		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
-		$meta_ids    = [ ];
-		foreach ( $meta_values as $meta_value ) {
-			$meta_ids[] = $this->haveInDatabase( $tableName, array(
-				'post_id'    => $post_id,
-				'meta_key'   => $meta_key,
-				'meta_value' => $this->maybeSerialize( $meta_value )
-			) );
-		}
+		$tableName = $this->grabPostmetaTableName();
+		return $this->haveInDatabase( $tableName, array(
+			'post_id'    => $post_id,
+			'meta_key'   => $meta_key,
+			'meta_value' => $this->maybeSerialize( $meta_value )
+		) );
 	}
 
 	/**
@@ -420,7 +415,14 @@ class WPDb extends ExtendedDb {
 	 * @return array An array containing `term_id` and `term_taxonomy_id` of the inserted term.
 	 */
 	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
-		$termDefaults     = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
+		$termDefaults = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
+
+		$hasMeta      = !empty( $overrides['meta'] );
+		if ( $hasMeta ) {
+			$meta = $overrides['meta'];
+			unset( $overrides['meta'] );
+		}
+
 		$termData         = array_merge( $termDefaults, array_intersect_key( $overrides, $termDefaults ) );
 		$termData['name'] = $name;
 		$term_id          = $this->haveInDatabase( $this->grabTermsTableName(), $termData );
@@ -430,6 +432,12 @@ class WPDb extends ExtendedDb {
 		$termTaxonomyData['taxonomy'] = $taxonomy;
 		$termTaxonomyData['term_id']  = $term_id;
 		$term_taxonomy_id             = $this->haveInDatabase( $this->grabTermTaxonomyTableName(), $termTaxonomyData );
+
+		if ( $hasMeta ) {
+			foreach ( $meta as $key => $value ) {
+				$this->haveTermMetaInDatabase( $term_id, $key, $value );
+			}
+		}
 
 		return [ $term_id, $term_taxonomy_id ];
 	}
@@ -1465,4 +1473,69 @@ class WPDb extends ExtendedDb {
 	public function dontSeeTermTaxonomyInDatabase( array $criteria ) {
 		$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $criteria );
 	}
+
+	/**
+	 * Inserts a term meta row in the database.
+	 *
+	 * Objects and array meta values will be serialized.
+	 *
+	 * @param int    $term_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value
+	 *
+	 * @return int The inserted term meta `meta_id`
+	 */
+	public function haveTermMetaInDatabase( $term_id, $meta_key, $meta_value ) {
+		if ( !is_int( $term_id ) ) {
+			throw new \BadMethodCallException( 'Term id must be an int' );
+		}
+		if ( !is_string( $meta_key ) ) {
+			throw new \BadMethodCallException( 'Meta key must be an string' );
+		}
+		$tableName = $this->grabTermMetaTableName();
+		return $this->haveInDatabase( $tableName, array(
+			'term_id'    => $term_id,
+			'meta_key'   => $meta_key,
+			'meta_value' => $this->maybeSerialize( $meta_value )
+		) );
+	}
+
+	/**
+	 * Gets the terms meta table prefixed name.
+	 *
+	 * E.g.: `wp_termmeta`.
+	 *
+	 * @return string
+	 */
+	public function grabTermMetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'termmeta' );
+	}
+
+	/**
+	 * Checks for a term meta in the database.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function seeTermMetaInDatabase( array $criteria ) {
+		$this->seeInDatabase( $this->grabTermMetaTableName(), $criteria );
+	}
+
+	/**
+	 * Removes a term meta from the database.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function dontHaveTermMetaInDatabase( array $criteria ) {
+		$this->dontHaveInDatabase( $this->grabTermMetaTableName(), $criteria );
+	}
+
+	/**
+	 * Checks that a term meta is not in the database.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function dontSeeTermMetaInDatabase( array $criteria ) {
+		$this->dontSeeInDatabase( $this->grabTermMetaTableName(), $criteria );
+	}
+
 }
