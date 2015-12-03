@@ -354,4 +354,49 @@ class WPDbUserCest {
 		}
 	}
 
+	/**
+	 * @test
+	 * it should allow having user meta while having user
+	 */
+	public function it_should_allow_having_user_meta_while_having_user( FunctionalTester $I ) {
+		$userId = $I->haveUserInDatabase( 'Luca', 'editor', [ 'meta' => [ 'foo' => 'bar', 'one' => 2 ] ] );
+
+		$I->seeUserMetaInDatabase( [ 'user_id' => $userId, 'meta_key' => 'foo', 'meta_value' => 'bar' ] );
+		$I->seeUserMetaInDatabase( [ 'user_id' => $userId, 'meta_key' => 'one', 'meta_value' => 2 ] );
+	}
+
+	/**
+	 * @test
+	 * it should allow having user meta while having many users
+	 */
+	public function it_should_allow_having_user_meta_while_having_many_users( FunctionalTester $I ) {
+		$userIds = $I->haveManyUsersInDatabase( 5, 'Luca', 'editor', [ 'meta' => [ 'foo' => 'bar', 'one' => 2 ] ] );
+
+		for ( $i = 0; $i < 5; $i++ ) {
+			$I->seeUserMetaInDatabase( [ 'user_id' => $userIds[$i], 'meta_key' => 'foo', 'meta_value' => 'bar' ] );
+			$I->seeUserMetaInDatabase( [ 'user_id' => $userIds[$i], 'meta_key' => 'one', 'meta_value' => 2 ] );
+		}
+	}
+
+	/**
+	 * @test
+	 * it should allow having meta while having many users with number replaced
+	 */
+	public function it_should_allow_having_meta_while_having_many_users_with_number_replaced( FunctionalTester $I ) {
+		$userIds = $I->haveManyUsersInDatabase( 5, 'Luca', 'editor', [
+			'meta' => [
+				'foo_{{n}}' => 'bar_{{n}}',
+				'{{n}}_one' => 2
+			]
+		] );
+
+		for ( $i = 0; $i < 5; $i++ ) {
+			$I->seeUserMetaInDatabase( [
+				'user_id'    => $userIds[$i],
+				'meta_key'   => 'foo_' . $i,
+				'meta_value' => 'bar_' . $i
+			] );
+			$I->seeUserMetaInDatabase( [ 'user_id' => $userIds[$i], 'meta_key' => $i . '_one', 'meta_value' => 2 ] );
+		}
+	}
 }

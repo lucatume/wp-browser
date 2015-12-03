@@ -417,7 +417,7 @@ class WPDb extends ExtendedDb {
 	public function haveTermInDatabase( $name, $taxonomy, array $overrides = [ ] ) {
 		$termDefaults = [ 'slug' => ( new Slugifier() )->slugify( $name ), 'term_group' => 0 ];
 
-		$hasMeta      = !empty( $overrides['meta'] );
+		$hasMeta = !empty( $overrides['meta'] );
 		if ( $hasMeta ) {
 			$meta = $overrides['meta'];
 			unset( $overrides['meta'] );
@@ -1319,12 +1319,24 @@ class WPDb extends ExtendedDb {
 	 */
 	public function haveUserInDatabase( $user_login, $role = 'subscriber', array $overrides = array() ) {
 		// get the user
+		$hasMeta = !empty( $overrides['meta'] );
+		if ( $hasMeta ) {
+			$meta = $overrides['meta'];
+			unset( $overrides['meta'] );
+		}
+
 		$userTableData = User::generateUserTableDataFrom( $user_login, $overrides );
 		$this->debugSection( 'Generated users table data', json_encode( $userTableData ) );
 		$userId = $this->haveInDatabase( $this->getUsersTableName(), $userTableData );
 
 		$this->haveUserCapabilitiesInDatabase( $userId, $role );
 		$this->haveUserLevelsInDatabase( $userId, $role );
+
+		if ( $hasMeta ) {
+			foreach ( $meta as $key => $value ) {
+				$this->haveUserMetaInDatabase( $userId, $key, $value );
+			}
+		}
 
 		return $userId;
 	}
