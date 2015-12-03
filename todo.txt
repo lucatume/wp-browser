@@ -1,6 +1,5 @@
 Add:
 	wpdb:
-		- terms meta
 		- user meta when having users
 		- multisite handling
 	wploader:

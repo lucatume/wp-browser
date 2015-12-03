@@ -459,6 +459,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * dontHaveSiteOptionInDatabase
 * dontHaveSiteTransientInDatabase
 * dontHaveTermInDatabase
+* dontHaveTermMetaInDatabase
 * dontHaveTermRelationshipInDatabase
 * dontHaveTermTaxonomyInDatabase
 * dontHaveTransientInDatabase
@@ -472,6 +473,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * dontSeePostInDatabase
 * dontSeePostMetaInDatabase
 * dontSeeTermInDatabase
+* dontSeeTermMetaInDatabase
 * dontSeeTermTaxonomyInDatabase
 * dontSeeUserInDatabase
 * dontSeeUserMetaInDatabase
@@ -488,6 +490,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * grabSiteTransientFromDatabase
 * grabSiteUrl
 * grabTermIdFromDatabase
+* grabTermMetaTableName
 * grabTermRelationshipsTableName
 * grabTermsTableName
 * grabTermTaxonomyIdFromDatabase
@@ -511,6 +514,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveSiteOptionInDatabase
 * haveSiteTransientInDatabase
 * haveTermInDatabase
+* haveTermMetaInDatabase
 * haveTermRelationshipInDatabase
 * haveTransientInDatabase
 * haveUserCapabilitiesInDatabase
@@ -528,10 +532,12 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * seeSiteOptionInDatabase
 * seeSiteSiteTransientInDatabase
 * seeTermInDatabase
+* seeTermMetaInDatabase
 * seeTermTaxonomyInDatabase
 * seeUserInDatabase
 * seeUserMetaInDatabase
 * useBlog
+* useMainBlog
 
 See source for more method details.
 

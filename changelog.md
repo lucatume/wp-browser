@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `haveManyTermsInDatabase` method to WPDb module
 - `seeTermTaxonomyInDatabase` method to WPDb module
 - `dontSeeTermTaxonomyInDatabase` method to WPDb module
+- `haveTermMetaInDatabase` method to WPDb module
+- `grabTermMetaTableName` method to WPDb module
+- `seeTermMetaInDatabase` method to WPDb module
+- `dontHaveTermMetaInDatabase` method to WPDb module
+- `dontSeeTermMetaInDatabase` method to WPDb module
+
+### Changed
+- WPDb `havePostMetaInDatabase` will not add a row for each element in an array meta value but serialize it
 
 ##[1.8.4] 2015-12-03
 ### Added
