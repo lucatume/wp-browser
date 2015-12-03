@@ -119,21 +119,21 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  string $user_login The user login slug
 	 * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
-	 * @param  array  $userData   An associative array of column names and values overridind defaults in the "users"
+	 * @param  array  $overrides  An associative array of column names and values overridind defaults in the "users"
 	 *                            and "usermeta" table.
 	 *
 	 * @return void
 	 */
-	public function haveUserInDatabase( $user_login, $role = 'subscriber', array $userData = array() ) {
+	public function haveUserInDatabase( $user_login, $role = 'subscriber', array $overrides = array() ) {
 		// get the user
-		$userTableData = User::generateUserTableDataFrom( $user_login, $userData );
+		$userTableData = User::generateUserTableDataFrom( $user_login, $overrides );
 		$this->debugSection( 'Generated users table data', json_encode( $userTableData ) );
-		$this->haveInDatabase( $this->getUsersTableName(), $userTableData );
-
-		$userId = $this->grabUserIdFromDatabase( $user_login );
+		$userId = $this->haveInDatabase( $this->getUsersTableName(), $userTableData );
 
 		$this->haveUserCapabilitiesInDatabase( $userId, $role );
 		$this->haveUserLevelsInDatabase( $userId, $role );
+
+		return $userId;
 	}
 
 	/**
@@ -1455,7 +1455,7 @@ class WPDb extends ExtendedDb {
 	 * @param array|null    $overrides
 	 * @return array An array of inserted `link_id`s.
 	 */
-	public function haveManyLinksInDatabase( $count, array $overrides = [] ) {
+	public function haveManyLinksInDatabase( $count, array $overrides = [ ] ) {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
@@ -1463,6 +1463,20 @@ class WPDb extends ExtendedDb {
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
 			$ids[]         = $this->haveLinkInDatabase( $thisOverrides );
+		}
+
+		return $ids;
+	}
+
+	public function haveManyUsersInDatabase( $count, $user_login, $role = 'subscriber', array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$thisUserLogin = false === strpos( $user_login, '{{n}}' ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
+			$ids[]         = $this->haveUserInDatabase( $thisUserLogin, $role, $thisOverrides );
 		}
 
 		return $ids;
