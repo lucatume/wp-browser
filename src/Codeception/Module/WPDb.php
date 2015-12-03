@@ -6,9 +6,7 @@ use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use PDO;
-use PHPUnit_Framework_ExpectationFailedException;
 use tad\WPBrowser\Generators\Comment;
-use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\User;
@@ -115,36 +113,18 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a user and appropriate meta in the database.
+	 * Checks that an option is not in the database for the current blog.
 	 *
-	 * @param  string $user_login The user login slug
-	 * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
-	 * @param  array  $overrides  An associative array of column names and values overridind defaults in the "users"
-	 *                            and "usermeta" table.
+	 * If the value is an object or an array then the serialized option will be checked for.
 	 *
-	 * @return void
+	 * @param array $criteria An array of search criteria.
 	 */
-	public function haveUserInDatabase( $user_login, $role = 'subscriber', array $overrides = array() ) {
-		// get the user
-		$userTableData = User::generateUserTableDataFrom( $user_login, $overrides );
-		$this->debugSection( 'Generated users table data', json_encode( $userTableData ) );
-		$userId = $this->haveInDatabase( $this->getUsersTableName(), $userTableData );
-
-		$this->haveUserCapabilitiesInDatabase( $userId, $role );
-		$this->haveUserLevelsInDatabase( $userId, $role );
-
-		return $userId;
-	}
-
-	/**
-	 * Returns the users table name, e.g. `wp_users`.
-	 *
-	 * @return string
-	 */
-	protected function getUsersTableName() {
-		$usersTableName = $this->grabPrefixedTableNameFor( 'users' );
-
-		return $usersTableName;
+	public function dontSeeOptionInDatabase( array $criteria ) {
+		$tableName = $this->grabPrefixedTableNameFor( 'options' );
+		if ( !empty( $criteria['option_value'] ) ) {
+			$criteria['option_value'] = $this->maybeSerialize( $criteria['option_value'] );
+		}
+		$this->dontSeeInDatabase( $tableName, $criteria );
 	}
 
 	/**
@@ -168,68 +148,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Gets the a user ID from the database using the user login.
-	 *
-	 * @param string $userLogin
-	 *
-	 * @return int The user ID
-	 */
-	public function grabUserIdFromDatabase( $userLogin ) {
-		return $this->grabFromDatabase( 'wp_users', 'ID', [ 'user_login' => $userLogin ] );
-	}
-
-	/**
-	 * Sets a user capabilities.
-	 *
-	 * @param int          $userId
-	 * @param string|array $role Either a role string (e.g. `administrator`) or an associative array of blog IDs/roles
-	 *                           for a multisite installation; e.g. `[1 => 'administrator`, 2 => 'subscriber']`.
-	 *
-	 * @return array An array of inserted `meta_id`.
-	 */
-	public function haveUserCapabilitiesInDatabase( $userId, $role ) {
-		if ( !is_array( $role ) ) {
-			$meta_key   = $this->grabPrefixedTableNameFor() . 'capabilities';
-			$meta_value = serialize( [ $role => 1 ] );
-			return $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
-		}
-		$ids = [ ];
-		foreach ( $role as $blogId => $_role ) {
-			$blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-			$meta_key        = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
-			$meta_value      = serialize( [ $_role => 1 ] );
-			$ids[]           = array_merge( $ids, $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value ) );
-		}
-
-		return $ids;
-	}
-
-	/**
-	 * Sets a user meta.
-	 *
-	 * @param int    $userId
-	 * @param string $meta_key
-	 * @param mixed  $meta_value Either a single value or an array of values; objects will be serialized while array of
-	 *                           values will trigger the insertion of multiple rows.
-	 *
-	 * @return array An array of inserted `user_id`.
-	 */
-	public function haveUserMetaInDatabase( $userId, $meta_key, $meta_value ) {
-		$ids         = [ ];
-		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
-		foreach ( $meta_values as $meta_value ) {
-			$data  = [
-				'user_id'    => $userId,
-				'meta_key'   => $meta_key,
-				'meta_value' => $this->maybeSerialize( $meta_value )
-			];
-			$ids[] = $this->haveInDatabase( $this->grabUsermetaTableName(), $data );
-		}
-
-		return $ids;
-	}
-
-	/**
 	 * @param $value
 	 *
 	 * @return string
@@ -238,58 +156,6 @@ class WPDb extends ExtendedDb {
 		$metaValue = ( is_array( $value ) || is_object( $value ) ) ? serialize( $value ) : $value;
 
 		return $metaValue;
-	}
-
-	/**
-	 * Returns the prefixed `usermeta` table name, e.g. `wp_usermeta`.
-	 *
-	 * @return string
-	 */
-	public function grabUsermetaTableName() {
-		$usermetaTable = $this->grabPrefixedTableNameFor( 'usermeta' );
-
-		return $usermetaTable;
-	}
-
-	/**
-	 * Sets the user level in the database for a user.
-	 *
-	 * @param int          $userId
-	 * @param string|array $role Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a
-	 *                           multisite installation.
-	 *
-	 * @return array An array of inserted `meta_id`.
-	 */
-	public function haveUserLevelsInDatabase( $userId, $role ) {
-		if ( !is_array( $role ) ) {
-			$meta_key   = $this->grabPrefixedTableNameFor() . 'user_level';
-			$meta_value = User\Roles::getLevelForRole( $role );
-			return $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
-		}
-		$ids = [ ];
-		foreach ( $role as $blogId => $_role ) {
-			$blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-			$meta_key        = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
-			$meta_value      = User\Roles::getLevelForRole( $_role );
-			$ids[]           = $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
-		}
-
-		return $ids;
-	}
-
-	/**
-	 * Checks that an option is not in the database for the current blog.
-	 *
-	 * If the value is an object or an array then the serialized option will be checked for.
-	 *
-	 * @param array $criteria An array of search criteria.
-	 */
-	public function dontSeeOptionInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'options' );
-		if ( !empty( $criteria['option_value'] ) ) {
-			$criteria['option_value'] = $this->maybeSerialize( $criteria['option_value'] );
-		}
-		$this->dontSeeInDatabase( $tableName, $criteria );
 	}
 
 	/**
@@ -305,21 +171,6 @@ class WPDb extends ExtendedDb {
 			$criteria['meta_value'] = $this->maybeSerialize( $criteria['meta_value'] );
 		}
 		$this->seeInDatabase( $tableName, $criteria );
-	}
-
-	/**
-	 * Inserts a link in the database.
-	 *
-	 * @param  array $overrides The data to insert.
-	 *
-	 * @return int The inserted link `link_id`.
-	 */
-	public function haveLinkInDatabase( array $overrides = array() ) {
-		$tableName = $this->grabLinksTableName();
-		$defaults  = Links::getDefaults();
-		$overrides = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
-
-		return $this->haveInDatabase( $tableName, $overrides );
 	}
 
 	/**
@@ -411,7 +262,7 @@ class WPDb extends ExtendedDb {
 	 * @param array $overrides An array of values to override the default ones.
 	 */
 	public function havePageInDatabase( array $overrides = [ ] ) {
-		$overrides = [ 'post_type' => 'page' ];
+		$overrides['post_type'] = 'page';
 		return $this->havePostInDatabase( $overrides );
 	}
 
@@ -719,39 +570,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a comment in the database.
-	 *
-	 * @param  int   $comment_post_ID The id of the post the comment refers to.
-	 * @param  array $data            The comment data overriding default and random generated values.
-	 *
-	 * @return void
-	 */
-	public function haveCommentInDatabase( $comment_post_ID, array $data = array() ) {
-		if ( !is_int( $comment_post_ID ) ) {
-			throw new \BadMethodCallException( 'Comment post ID must be int' );
-		}
-
-		$has_meta = !empty( $data['meta'] );
-		if ( $has_meta ) {
-			$meta = $data['meta'];
-			unset( $data['meta'] );
-		}
-
-		$comment = Comment::makeComment( $comment_post_ID, $data );
-
-		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
-		$commentId = $this->haveInDatabase( $tableName, $comment );
-
-		if ( $has_meta ) {
-			foreach ( $meta as $key => $value ) {
-				$this->haveCommentMetaInDatabase( $commentId, $key, $value );
-			}
-		}
-
-		return $commentId;
-	}
-
-	/**
 	 * Checks for a comment in the database.
 	 *
 	 * Will look up the "comments" table.
@@ -808,47 +626,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a comment meta field in the database.
-	 *
-	 * Array and object meta values will be serialized.
-	 *
-	 * @param int    $comment_id
-	 * @param string $meta_key
-	 * @param mixed  $meta_value
-	 * @return int The inserted comment meta ID
-	 */
-	public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value ) {
-		if ( !is_int( $comment_id ) ) {
-			throw new \BadMethodCallException( 'Comment id must be an int' );
-		}
-		if ( !is_string( $meta_key ) ) {
-			throw new \BadMethodCallException( 'Meta key must be an string' );
-		}
-
-		return $this->haveInDatabase( $this->grabCommentmetaTableName(), [
-			'comment_id' => $comment_id,
-			'meta_key'   => $meta_key,
-			'meta_value' => $this->maybeSerialize( $meta_value )
-		] );
-	}
-
-	/**
-	 * Conditionally checks that a comment exists in database, will throw if not existent.
-	 *
-	 * @param $comment_id
-	 *
-	 */
-	protected function maybeCheckCommentExistsInDatabase( $comment_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
-		if ( !$this->grabFromDatabase( $tableName, 'comment_ID', array( 'commment_ID' => $comment_id ) ) ) {
-			throw new \RuntimeException( "A comment with an id of $comment_id does not exist", 1 );
-		}
-	}
-
-	/**
 	 * Checks for a user meta value in the database.
 	 *
 	 * @param  array $criteria An array of search criteria.
@@ -875,16 +652,6 @@ class WPDb extends ExtendedDb {
 	 */
 	public function dontHaveCommentMetaInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'commentmeta' );
-		$this->dontHaveInDatabase( $tableName, $criteria );
-	}
-
-	/**
-	 * Removes an entry from the comment table.
-	 *
-	 * @param  array $criteria An array of search criteria.
-	 */
-	public function jontHaveCommentInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
 		$this->dontHaveInDatabase( $tableName, $criteria );
 	}
 
@@ -960,6 +727,17 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Gets the a user ID from the database using the user login.
+	 *
+	 * @param string $userLogin
+	 *
+	 * @return int The user ID
+	 */
+	public function grabUserIdFromDatabase( $userLogin ) {
+		return $this->grabFromDatabase( 'wp_users', 'ID', [ 'user_login' => $userLogin ] );
+	}
+
+	/**
 	 * Gets a user meta from the database.
 	 *
 	 * @param int    $userId
@@ -1002,7 +780,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param string $transient
 	 * @param mixed  $value
-	 * @return The inserted option `option_id`.
+	 * @return int The inserted option `option_id`.
 	 */
 	public function haveTransientInDatabase( $transient, $value ) {
 		return $this->haveOptionInDatabase( '_transient_' . $transient, $value );
@@ -1015,7 +793,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  string $option_name
 	 * @param  mixed  $option_value
-	 * @return The inserted `option_id`
+	 * @return int The inserted `option_id`
 	 */
 	public function haveOptionInDatabase( $option_name, $option_value ) {
 		$table = $this->grabPrefixedTableNameFor( 'options' );
@@ -1033,7 +811,7 @@ class WPDb extends ExtendedDb {
 	 * Removes a transient from the database.
 	 *
 	 * @param $transient
-	 * @return The removed option `option_id`.
+	 * @return int The removed option `option_id`.
 	 */
 	public function dontHaveTransientInDatabase( $transient ) {
 		return $this->dontHaveOptionInDatabase( '_transient_' . $transient );
@@ -1044,7 +822,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param      $key
 	 * @param null $value
-	 * @return The removed option `option_id`.
+	 * @return int The removed option `option_id`.
 	 */
 	public function dontHaveOptionInDatabase( $key, $value = null ) {
 		$tableName               = $this->grabPrefixedTableNameFor( 'options' );
@@ -1052,7 +830,7 @@ class WPDb extends ExtendedDb {
 		if ( !empty( $value ) ) {
 			$criteria['option_value'] = $value;
 		}
-		return $this->dontHaveInDatabase( $tableName, $criteria );
+		$this->dontHaveInDatabase( $tableName, $criteria );
 	}
 
 	/**
@@ -1062,7 +840,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param string $key
 	 * @param mixed  $value
-	 * @return The inserted option `option_id`.
+	 * @return int The inserted option `option_id`.
 	 */
 	public function haveSiteOptionInDatabase( $key, $value ) {
 		$currentBlogId = $this->blogId;
@@ -1243,7 +1021,7 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Inserts many posts in the database returning their IDs.
 	 *
-	 * @param       $count     The number of posts to insert.
+	 * @param int   $count     The number of posts to insert.
 	 * @param array $overrides {
 	 *                         An array of values to override the defaults.
 	 *                         The `{{n}}` placeholder can be used to have the post count inserted in its place;
@@ -1351,6 +1129,312 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Inserts many comments in the database.
+	 *
+	 * @param int   $count           The number of comments to insert.
+	 * @param   int $comment_post_ID The comment parent post ID.
+	 * @param array $overrides       An associative array to override the defaults.
+	 * @return int[] An array containing the inserted comments IDs.
+	 */
+	public function haveManyCommentsInDatabase( $count, $comment_post_ID, array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$ids[]         = $this->haveCommentInDatabase( $comment_post_ID, $thisOverrides );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Inserts a comment in the database.
+	 *
+	 * @param  int   $comment_post_ID The id of the post the comment refers to.
+	 * @param  array $data            The comment data overriding default and random generated values.
+	 *
+	 * @return int The inserted comment `comment_id`
+	 */
+	public function haveCommentInDatabase( $comment_post_ID, array $data = array() ) {
+		if ( !is_int( $comment_post_ID ) ) {
+			throw new \BadMethodCallException( 'Comment post ID must be int' );
+		}
+
+		$has_meta = !empty( $data['meta'] );
+		if ( $has_meta ) {
+			$meta = $data['meta'];
+			unset( $data['meta'] );
+		}
+
+		$comment = Comment::makeComment( $comment_post_ID, $data );
+
+		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
+		$commentId = $this->haveInDatabase( $tableName, $comment );
+
+		if ( $has_meta ) {
+			foreach ( $meta as $key => $value ) {
+				$this->haveCommentMetaInDatabase( $commentId, $key, $value );
+			}
+		}
+
+		return $commentId;
+	}
+
+	/**
+	 * Inserts a comment meta field in the database.
+	 *
+	 * Array and object meta values will be serialized.
+	 *
+	 * @param int    $comment_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value
+	 * @return int The inserted comment meta ID
+	 */
+	public function haveCommentMetaInDatabase( $comment_id, $meta_key, $meta_value ) {
+		if ( !is_int( $comment_id ) ) {
+			throw new \BadMethodCallException( 'Comment id must be an int' );
+		}
+		if ( !is_string( $meta_key ) ) {
+			throw new \BadMethodCallException( 'Meta key must be an string' );
+		}
+
+		return $this->haveInDatabase( $this->grabCommentmetaTableName(), [
+			'comment_id' => $comment_id,
+			'meta_key'   => $meta_key,
+			'meta_value' => $this->maybeSerialize( $meta_value )
+		] );
+	}
+
+	/**
+	 * Returns the prefixed comment meta table name.
+	 *
+	 * E.g. `wp_commentmeta`.
+	 *
+	 * @return string
+	 */
+	public function grabCommentmetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'commentmeta' );
+	}
+
+	/**
+	 * Removes an entry from the comments table.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function dontHaveCommentInDatabase( array $criteria ) {
+		$table = $this->grabCommentsTableName();
+		$this->dontHaveInDatabase( $table, $criteria );
+	}
+
+	/**
+	 * Gets the comments table name.
+	 *
+	 * @return string The prefixed table name, e.g. `wp_comments`.
+	 */
+	public function grabCommentsTableName() {
+		return $this->grabPrefixedTableNameFor( 'comments' );
+	}
+
+	/**
+	 * Inserts many links in the database.
+	 *
+	 * @param           int $count
+	 * @param array|null    $overrides
+	 * @return array An array of inserted `link_id`s.
+	 */
+	public function haveManyLinksInDatabase( $count, array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$ids[]         = $this->haveLinkInDatabase( $thisOverrides );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Inserts a link in the database.
+	 *
+	 * @param  array $overrides The data to insert.
+	 *
+	 * @return int The inserted link `link_id`.
+	 */
+	public function haveLinkInDatabase( array $overrides = array() ) {
+		$tableName = $this->grabLinksTableName();
+		$defaults  = Links::getDefaults();
+		$overrides = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
+
+		return $this->haveInDatabase( $tableName, $overrides );
+	}
+
+	/**
+	 * Returns the prefixed links table name.
+	 *
+	 * E.g. `wp_links`.
+	 *
+	 * @return string
+	 */
+	public function grabLinksTableName() {
+		return $this->grabPrefixedTableNameFor( 'links' );
+	}
+
+	public function haveManyUsersInDatabase( $count, $user_login, $role = 'subscriber', array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$thisUserLogin = false === strpos( $user_login, '{{n}}' ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
+			$ids[]         = $this->haveUserInDatabase( $thisUserLogin, $role, $thisOverrides );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Inserts a user and appropriate meta in the database.
+	 *
+	 * @param  string $user_login The user login slug
+	 * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
+	 * @param  array  $overrides  An associative array of column names and values overridind defaults in the "users"
+	 *                            and "usermeta" table.
+	 *
+	 * @return int The inserted user `ID`
+	 */
+	public function haveUserInDatabase( $user_login, $role = 'subscriber', array $overrides = array() ) {
+		// get the user
+		$userTableData = User::generateUserTableDataFrom( $user_login, $overrides );
+		$this->debugSection( 'Generated users table data', json_encode( $userTableData ) );
+		$userId = $this->haveInDatabase( $this->getUsersTableName(), $userTableData );
+
+		$this->haveUserCapabilitiesInDatabase( $userId, $role );
+		$this->haveUserLevelsInDatabase( $userId, $role );
+
+		return $userId;
+	}
+
+	/**
+	 * Returns the users table name, e.g. `wp_users`.
+	 *
+	 * @return string
+	 */
+	protected function getUsersTableName() {
+		$usersTableName = $this->grabPrefixedTableNameFor( 'users' );
+
+		return $usersTableName;
+	}
+
+	/**
+	 * Sets a user capabilities.
+	 *
+	 * @param int          $userId
+	 * @param string|array $role Either a role string (e.g. `administrator`) or an associative array of blog IDs/roles
+	 *                           for a multisite installation; e.g. `[1 => 'administrator`, 2 => 'subscriber']`.
+	 *
+	 * @return array An array of inserted `meta_id`.
+	 */
+	public function haveUserCapabilitiesInDatabase( $userId, $role ) {
+		if ( !is_array( $role ) ) {
+			$meta_key   = $this->grabPrefixedTableNameFor() . 'capabilities';
+			$meta_value = serialize( [ $role => 1 ] );
+			return $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
+		}
+		$ids = [ ];
+		foreach ( $role as $blogId => $_role ) {
+			$blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+			$meta_key        = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
+			$meta_value      = serialize( [ $_role => 1 ] );
+			$ids[]           = array_merge( $ids, $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value ) );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Sets a user meta.
+	 *
+	 * @param int    $userId
+	 * @param string $meta_key
+	 * @param mixed  $meta_value Either a single value or an array of values; objects will be serialized while array of
+	 *                           values will trigger the insertion of multiple rows.
+	 *
+	 * @return array An array of inserted `user_id`.
+	 */
+	public function haveUserMetaInDatabase( $userId, $meta_key, $meta_value ) {
+		$ids         = [ ];
+		$meta_values = is_array( $meta_value ) ? $meta_value : [ $meta_value ];
+		foreach ( $meta_values as $meta_value ) {
+			$data  = [
+				'user_id'    => $userId,
+				'meta_key'   => $meta_key,
+				'meta_value' => $this->maybeSerialize( $meta_value )
+			];
+			$ids[] = $this->haveInDatabase( $this->grabUsermetaTableName(), $data );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Returns the prefixed `usermeta` table name, e.g. `wp_usermeta`.
+	 *
+	 * @return string
+	 */
+	public function grabUsermetaTableName() {
+		$usermetaTable = $this->grabPrefixedTableNameFor( 'usermeta' );
+
+		return $usermetaTable;
+	}
+
+	/**
+	 * Sets the user level in the database for a user.
+	 *
+	 * @param int          $userId
+	 * @param string|array $role Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a
+	 *                           multisite installation.
+	 *
+	 * @return array An array of inserted `meta_id`.
+	 */
+	public function haveUserLevelsInDatabase( $userId, $role ) {
+		if ( !is_array( $role ) ) {
+			$meta_key   = $this->grabPrefixedTableNameFor() . 'user_level';
+			$meta_value = User\Roles::getLevelForRole( $role );
+			return $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
+		}
+		$ids = [ ];
+		foreach ( $role as $blogId => $_role ) {
+			$blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+			$meta_key        = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
+			$meta_value      = User\Roles::getLevelForRole( $_role );
+			$ids[]           = $this->haveUserMetaInDatabase( $userId, $meta_key, $meta_value );
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Conditionally checks that a comment exists in database, will throw if not existent.
+	 *
+	 * @param $comment_id
+	 *
+	 */
+	protected function maybeCheckCommentExistsInDatabase( $comment_id ) {
+		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
+			return;
+		}
+		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
+		if ( !$this->grabFromDatabase( $tableName, 'comment_ID', array( 'commment_ID' => $comment_id ) ) ) {
+			throw new \RuntimeException( "A comment with an id of $comment_id does not exist", 1 );
+		}
+	}
+
+	/**
 	 * Conditionally checks for a user in the database.
 	 *
 	 * Will look up the "users" table, will throw if not found.
@@ -1384,101 +1468,5 @@ class WPDb extends ExtendedDb {
 		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
 			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
 		}
-	}
-
-	/**
-	 * Gets the comments table name.
-	 *
-	 * @return string The prefixed table name, e.g. `wp_comments`.
-	 */
-	public function grabCommentsTableName() {
-		return $this->grabPrefixedTableNameFor( 'comments' );
-	}
-
-	/**
-	 * Inserts many comments in the database.
-	 *
-	 * @param int   $count           The number of comments to insert.
-	 * @param   int $comment_post_ID The comment parent post ID.
-	 * @param array $overrides       An associative array to override the defaults.
-	 * @return int[] An array containing the inserted comments IDs.
-	 */
-	public function haveManyCommentsInDatabase( $count, $comment_post_ID, array $overrides = [ ] ) {
-		if ( !is_int( $count ) ) {
-			throw new \InvalidArgumentException( 'Count must be an integer value' );
-		}
-		$ids = [ ];
-		for ( $i = 0; $i < $count; $i++ ) {
-			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
-			$ids[]         = $this->haveCommentInDatabase( $comment_post_ID, $thisOverrides );
-		}
-
-		return $ids;
-	}
-
-	/**
-	 * Returns the prefixed comment meta table name.
-	 *
-	 * E.g. `wp_commentmeta`.
-	 *
-	 * @return string
-	 */
-	public function grabCommentmetaTableName() {
-		return $this->grabPrefixedTableNameFor( 'commentmeta' );
-	}
-
-	/**
-	 * Removes an entry from the comments table.
-	 *
-	 * @param  array $criteria An array of search criteria.
-	 */
-	public function dontHaveCommentInDatabase( array $criteria ) {
-		$table = $this->grabCommentsTableName();
-		$this->dontHaveInDatabase( $table, $criteria );
-	}
-
-	/**
-	 * Returns the prefixed links table name.
-	 *
-	 * E.g. `wp_links`.
-	 *
-	 * @return string
-	 */
-	public function grabLinksTableName() {
-		return $this->grabPrefixedTableNameFor( 'links' );
-	}
-
-	/**
-	 * Inserts many links in the database.
-	 *
-	 * @param           int $count
-	 * @param array|null    $overrides
-	 * @return array An array of inserted `link_id`s.
-	 */
-	public function haveManyLinksInDatabase( $count, array $overrides = [ ] ) {
-		if ( !is_int( $count ) ) {
-			throw new \InvalidArgumentException( 'Count must be an integer value' );
-		}
-		$ids = [ ];
-		for ( $i = 0; $i < $count; $i++ ) {
-			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
-			$ids[]         = $this->haveLinkInDatabase( $thisOverrides );
-		}
-
-		return $ids;
-	}
-
-	public function haveManyUsersInDatabase( $count, $user_login, $role = 'subscriber', array $overrides = [ ] ) {
-		if ( !is_int( $count ) ) {
-			throw new \InvalidArgumentException( 'Count must be an integer value' );
-		}
-		$ids = [ ];
-		for ( $i = 0; $i < $count; $i++ ) {
-			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
-			$thisUserLogin = false === strpos( $user_login, '{{n}}' ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
-			$ids[]         = $this->haveUserInDatabase( $thisUserLogin, $role, $thisOverrides );
-		}
-
-		return $ids;
 	}
 }

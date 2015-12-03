@@ -2,7 +2,10 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+##[1.8.4] 2015-12-03
+### Added
+- `haveManyUsersInDatabase` method to WPDb module
+
 ### Changed
 - links related methods in WPDb module
 
@@ -181,7 +184,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.4...HEAD
+[1.8.4]: https://github.com/lucatume/wp-browser/compare/1.8.3...1.8.4
 [1.8.3]: https://github.com/lucatume/wp-browser/compare/1.8.2...1.8.3
 [1.8.2]: https://github.com/lucatume/wp-browser/compare/1.8.1a...1.8.2
 [1.8.1a]: https://github.com/lucatume/wp-browser/compare/1.8.1...1.8.1a
