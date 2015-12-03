@@ -1,6 +1,5 @@
 Add:
 	wpdb:
-		- user meta when having users
 		- multisite handling
 	wploader:
 		- explicit theme support
