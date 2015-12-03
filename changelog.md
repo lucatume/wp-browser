@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `seeTermMetaInDatabase` method to WPDb module
 - `dontHaveTermMetaInDatabase` method to WPDb module
 - `dontSeeTermMetaInDatabase` method to WPDb module
+- the possibility to have user meta in the database while inserting the user using `haveUserInDatabase` WPDb module method
 
 ### Changed
 - WPDb `havePostMetaInDatabase` will not add a row for each element in an array meta value but serialize it
