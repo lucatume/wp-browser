@@ -17,6 +17,8 @@ use tad\WPBrowser\Generators\User;
  */
 class WPDb extends ExtendedDb {
 
+	protected $numberPlaceholder = '{{n}}';
+
 	/**
 	 * @var array
 	 */
@@ -1070,7 +1072,7 @@ class WPDb extends ExtendedDb {
 	 * @return mixed
 	 */
 	protected function replaceNumbersInString( $value, $i ) {
-		return str_replace( '{{n}}', $i, $value );
+		return str_replace( $this->numberPlaceholder, $i, $value );
 	}
 
 	/**
@@ -1290,7 +1292,7 @@ class WPDb extends ExtendedDb {
 		$ids = [ ];
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
-			$thisUserLogin = false === strpos( $user_login, '{{n}}' ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
+			$thisUserLogin = false === strpos( $user_login, $this->numberPlaceholder ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
 			$ids[]         = $this->haveUserInDatabase( $thisUserLogin, $role, $thisOverrides );
 		}
 
@@ -1419,54 +1421,48 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Conditionally checks that a comment exists in database, will throw if not existent.
+	 * Inserts many terms in the database.
 	 *
-	 * @param $comment_id
-	 *
+	 * @param       int    $count
+	 * @param       string $name      The term name.
+	 * @param       string $taxonomy  The taxonomy name.
+	 * @param array        $overrides An associative array of default overrides.
+	 * @return array An array of inserted terms `term_id`s.
 	 */
-	protected function maybeCheckCommentExistsInDatabase( $comment_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
+	public function haveManyTermsInDatabase( $count, $name, $taxonomy, array $overrides = [ ] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$tableName = $this->grabPrefixedTableNameFor( 'comments' );
-		if ( !$this->grabFromDatabase( $tableName, 'comment_ID', array( 'commment_ID' => $comment_id ) ) ) {
-			throw new \RuntimeException( "A comment with an id of $comment_id does not exist", 1 );
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisName      = false === strpos( $name, $this->numberPlaceholder ) ? $name . ' ' . $i : $this->replaceNumbersInString( $name, $i );
+			$thisTaxonomy  = $this->replaceNumbersInString( $taxonomy, $i );
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$ids[]         = $this->haveTermInDatabase( $thisName, $thisTaxonomy, $thisOverrides );
 		}
+
+		return $ids;
 	}
 
 	/**
-	 * Conditionally checks for a user in the database.
+	 * Checks for a term taxonomy in the database.
 	 *
-	 * Will look up the "users" table, will throw if not found.
+	 * Will look up the prefixed `term_taxonomy` table, e.g. `wp_term_taxonomy`.
 	 *
-	 * @param  int $user_id The user ID.
+	 * @param array $criteria An array of search criteria.
 	 */
-	protected function maybeCheckUserExistsInDatabase( $user_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'users' );
-		if ( !$this->grabFromDatabase( $tableName, 'ID', array( 'ID' => $user_id ) ) ) {
-			throw new \RuntimeException( "A user with an id of $user_id does not exist", 1 );
-		}
+	public function seeTermTaxonomyInDatabase( array $criteria ) {
+		$this->seeInDatabase( $this->grabTermTaxonomyTableName(), $criteria );
 	}
 
 	/**
-	 * Conditionally check for a link in the database.
+	 * Checks that a term taxonomy is not in the database.
 	 *
-	 * Will look up the "links" table, will throw if not found.
+	 * Will look up the prefixed `term_taxonomy` table, e.g. `wp_term_taxonomy`.
 	 *
-	 * @param  int $link_id The link ID.
-	 *
-	 * @return bool True if the link exists, false otherwise.
+	 * @param array $criteria An array of search criteria.
 	 */
-	protected function maybeCheckLinkExistsInDatabase( $link_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'links' );
-		if ( !$this->grabFromDatabase( $tableName, 'link_id', array( 'link_id' => $link_id ) ) ) {
-			throw new \RuntimeException( "A link with an id of $link_id does not exist", 1 );
-		}
+	public function dontSeeTermTaxonomyInDatabase( array $criteria ) {
+		$this->dontSeeInDatabase( $this->grabTermTaxonomyTableName(), $criteria );
 	}
 }
