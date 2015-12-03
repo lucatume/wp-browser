@@ -478,6 +478,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * grabCommentmetaTableName
 * grabCommentsTableName
 * grabLatestEntryByFromDatabase
+* grabLinksTableName
 * grabOptionFromDatabase
 * grabPostmetaTableName
 * grabPostsTableName
@@ -498,7 +499,9 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveLinkInDatabase
 * haveLinkWithTermInDatabase
 * haveManyCommentsInDatabase
+* haveManyLinksInDatabase
 * haveManyPostsInDatabase
+* haveManyUsersInDatabase
 * haveOptionInDatabase
 * havePageInDatabase
 * havePostInDatabase
@@ -512,7 +515,6 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveUserInDatabase
 * haveUserLevelsInDatabase
 * haveUserMetaInDatabase
-* jontHaveCommentInDatabase
 * seeCommentInDatabase
 * seeCommentMetaInDatabase
 * seeLinkInDatabase
@@ -528,6 +530,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * seeUserMetaInDatabase
 * useBlog
 * useMainBlog
+
 
 See source for more method details.
 
