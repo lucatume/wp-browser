@@ -1,5 +1,10 @@
 Add:
-- tests
-- theme support
-- ui/admin acceptance classes
-- look into multisite activations
+	wpdb:
+		- have many terms in database
+		- terms meta
+		- user meta when having users
+		- multisite handling
+	wploader:
+		- explicit theme support
+	wpwebdriver:
+		- ui/admin acceptance classes
