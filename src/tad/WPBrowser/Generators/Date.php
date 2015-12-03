@@ -49,4 +49,17 @@
 
 			return $time;
 		}
+
+		/**
+		 * Returns a WordPress database format date from an english format string.
+		 *
+		 * E.g.: `Date::fromString('February 4th, 2015');`
+		 *
+		 * @param $string An english format string, same type used in `strtotime` functions.
+		 * @return string A date in WordPress database format, 'Y-m-d H:i:s'
+		 *
+		 */
+		public static function fromString( $string ) {
+			return date(self::DATE_FORMAT, strtotime($string));
+		}
 	}

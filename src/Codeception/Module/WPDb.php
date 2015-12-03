@@ -8,6 +8,8 @@ use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use PDO;
 use PHPUnit_Framework_ExpectationFailedException;
 use tad\WPBrowser\Generators\Comment;
+use tad\WPBrowser\Generators\Date;
+use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\User;
 
@@ -308,20 +310,16 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Inserts a link in the database.
 	 *
-	 * Will insert in the "links" table.
+	 * @param  array $overrides The data to insert.
 	 *
-	 * @param  int   $link_id The link id to insert.
-	 * @param  array $data    The data to insert.
-	 *
-	 * @return void
+	 * @return int The inserted link `link_id`.
 	 */
-	public function haveLinkInDatabase( $link_id, array $data = array() ) {
-		if ( !is_int( $link_id ) ) {
-			throw new \BadMethodCallException( 'Link id must be an int' );
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'links' );
-		$data      = array_merge( $data, array( 'link_id' => $link_id ) );
-		$this->haveInDatabase( $tableName, $data );
+	public function haveLinkInDatabase( array $overrides = array() ) {
+		$tableName = $this->grabLinksTableName();
+		$defaults  = Links::getDefaults();
+		$overrides = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
+
+		return $this->haveInDatabase( $tableName, $overrides );
 	}
 
 	/**
@@ -329,9 +327,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * Will look up the "links" table.
 	 *
-	 * @param  array $criteria
-	 *
-	 * @return void
+	 * @param  array $criteria An array of search criteria.
 	 */
 	public function seeLinkInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'links' );
@@ -339,13 +335,11 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Checks for a link is not in the database.
+	 * Checks that a link is not in the database.
 	 *
 	 * Will look up the "links" table.
 	 *
-	 * @param  array $criteria
-	 *
-	 * @return void
+	 * @param  array $criteria An array of search criteria.
 	 */
 	public function dontSeeLinkInDatabase( array $criteria ) {
 		$tableName = $this->grabPrefixedTableNameFor( 'links' );
@@ -895,7 +889,7 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Removes an entry from the links table.
+	 * Removes a link from the database.
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
@@ -1443,4 +1437,34 @@ class WPDb extends ExtendedDb {
 		$this->dontHaveInDatabase( $table, $criteria );
 	}
 
+	/**
+	 * Returns the prefixed links table name.
+	 *
+	 * E.g. `wp_links`.
+	 *
+	 * @return string
+	 */
+	public function grabLinksTableName() {
+		return $this->grabPrefixedTableNameFor( 'links' );
+	}
+
+	/**
+	 * Inserts many links in the database.
+	 *
+	 * @param           int $count
+	 * @param array|null    $overrides
+	 * @return array An array of inserted `link_id`s.
+	 */
+	public function haveManyLinksInDatabase( $count, array $overrides = [] ) {
+		if ( !is_int( $count ) ) {
+			throw new \InvalidArgumentException( 'Count must be an integer value' );
+		}
+		$ids = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
+			$ids[]         = $this->haveLinkInDatabase( $thisOverrides );
+		}
+
+		return $ids;
+	}
 }
