@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.8.5] 2015-12-03
 ### Added
 - `haveManyTermsInDatabase` method to WPDb module
 - `seeTermTaxonomyInDatabase` method to WPDb module
@@ -199,7 +201,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.5...HEAD
+[1.8.5]: https://github.com/lucatume/wp-browser/compare/1.8.4...1.8.5
 [1.8.4]: https://github.com/lucatume/wp-browser/compare/1.8.3...1.8.4
 [1.8.3]: https://github.com/lucatume/wp-browser/compare/1.8.2...1.8.3
 [1.8.2]: https://github.com/lucatume/wp-browser/compare/1.8.1a...1.8.2
