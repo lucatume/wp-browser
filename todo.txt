@@ -1,6 +1,5 @@
 Add:
 	wpdb:
-		- have many terms in database
 		- terms meta
 		- user meta when having users
 		- multisite handling
