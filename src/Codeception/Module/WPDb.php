@@ -10,6 +10,7 @@ use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\User;
+use tad\WPBrowser\Generators\WpPassword;
 
 /**
  * An extension of Codeception Db class to add WordPress database specific
@@ -244,7 +245,15 @@ class WPDb extends ExtendedDb {
 	 * @return void
 	 */
 	public function seeUserInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'users' );
+		$tableName   = $this->grabPrefixedTableNameFor( 'users' );
+		$allCriteria = $criteria;
+		if ( !empty( $criteria['user_pass'] ) ) {
+			$userPass = $criteria['user_pass'];
+			unset( $criteria['user_pass'] );
+			$hashedPass = $this->grabFromDatabase( $tableName, 'user_pass', $criteria );
+			$passwordOk = WpPassword::instance()->check( $userPass, $hashedPass );
+			$this->assertTrue( $passwordOk, 'No matching records found for criteria ' . json_encode( $allCriteria ) . ' in table ' . $tableName );
+		}
 		$this->seeInDatabase( $tableName, $criteria );
 	}
 
@@ -254,8 +263,18 @@ class WPDb extends ExtendedDb {
 	 * @param  array $criteria An array of search criteria.
 	 */
 	public function dontSeeUserInDatabase( array $criteria ) {
-		$tableName = $this->grabPrefixedTableNameFor( 'users' );
-		$this->dontSeeInDatabase( $tableName, $criteria );
+		$tableName   = $this->grabPrefixedTableNameFor( 'users' );
+		$allCriteria = $criteria;
+		$passwordOk  = false;
+		if ( !empty( $criteria['user_pass'] ) ) {
+			$userPass = $criteria['user_pass'];
+			unset( $criteria['user_pass'] );
+			$hashedPass = $this->grabFromDatabase( $tableName, 'user_pass', [ $criteria ] );
+			$passwordOk = WpPassword::instance()->check( $userPass, $hashedPass );
+		}
+
+		$count = $this->countInDatabase( $tableName, $criteria );
+		$this->assertTrue( !$passwordOk && $count < 1, $count, 'Unexpectedly found matching records for criteria ' . json_encode( $allCriteria ) . ' in table ' . $tableName );
 	}
 
 	/**

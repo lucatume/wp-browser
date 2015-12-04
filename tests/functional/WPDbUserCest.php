@@ -1,7 +1,7 @@
 <?php
 
-use Codeception\Module\FunctionalHelper;
 use tad\WPBrowser\Generators\User\Roles;
+use tad\WPBrowser\Generators\WpPassword;
 
 class WPDbUserCest {
 
@@ -26,11 +26,10 @@ class WPDbUserCest {
 	 */
 	public function it_should_insert_a_user_in_the_database( FunctionalTester $I ) {
 		$I->wantTo( 'insert a user in the database with generated defaults' );
-		$I->haveUserInDatabase( 'Luca' );
-		$table    = $I->grabPrefixedTableNameFor( 'users' );
+		$id       = $I->haveUserInDatabase( 'Luca' );
 		$criteria = [
 			'user_login'          => 'luca',
-			'user_pass'           => 'luca',
+			'user_pass'           => 'Luca',
 			'user_nicename'       => 'Luca',
 			'user_email'          => 'luca@example.com',
 			'user_url'            => 'http://luca.example.com',
@@ -38,8 +37,9 @@ class WPDbUserCest {
 			'user_activation_key' => '',
 			'display_name'        => 'Luca',
 		];
+
 		foreach ( $criteria as $key => $value ) {
-			$I->seeInDatabase( $table, [ $key => $value ] );
+			$I->seeUserInDatabase( [ 'ID' => $id, $key => $value ] );
 		}
 	}
 
@@ -59,11 +59,9 @@ class WPDbUserCest {
 			'user_activation_key' => 'foo',
 			'display_name'        => 'theAverageDev',
 		];
-		foreach ( $overrides as $key => $value ) {
-			$uniqueUserLogin = 'Luca' . $key;
-			$I->haveUserInDatabase( $uniqueUserLogin, 'subscriber', [ $key => $value ] );
-			$I->seeInDatabase( $table, [ $key => $value ] );
-		}
+		$I->haveUserInDatabase( 'Luca', 'subscriber', $overrides );
+
+		$I->seeUserInDatabase( $overrides );
 	}
 
 	/**
@@ -399,4 +397,5 @@ class WPDbUserCest {
 			$I->seeUserMetaInDatabase( [ 'user_id' => $userIds[$i], 'meta_key' => $i . '_one', 'meta_value' => 2 ] );
 		}
 	}
+
 }

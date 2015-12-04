@@ -20,7 +20,8 @@
     "php": ">=5.4.0",
     "bacon/bacon-string-utils": "~1.0",
     "codeception/codeception": "~2.0",
-    "symfony/filesystem": "^2.7"
+    "symfony/filesystem": "^2.7",
+    "mikemclin/laravel-wp-password": "~2.0.0"
   },
   "autoload": {
     "psr-4": {

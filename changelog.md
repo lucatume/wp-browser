@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.8.6] 2015-12-04
+### Fixed
+- issue with password validation in WPDb module
+
 ##[1.8.5] 2015-12-03
 ### Added
 - `haveManyTermsInDatabase` method to WPDb module
@@ -201,7 +205,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.6...HEAD
+[1.8.6]: https://github.com/lucatume/wp-browser/compare/1.8.5...1.8.6
 [1.8.5]: https://github.com/lucatume/wp-browser/compare/1.8.4...1.8.5
 [1.8.4]: https://github.com/lucatume/wp-browser/compare/1.8.3...1.8.4
 [1.8.3]: https://github.com/lucatume/wp-browser/compare/1.8.2...1.8.3
