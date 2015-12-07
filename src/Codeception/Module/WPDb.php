@@ -1157,7 +1157,7 @@ class WPDb extends ExtendedDb {
 	 * @return mixed
 	 */
 	protected function replaceNumbersInString( $value, $i ) {
-		return $this->handlebars->render( $value, [ 'n' => $i ] );
+		return str_replace( $this->numberPlaceholder, $i, $value );
 	}
 
 	/**
