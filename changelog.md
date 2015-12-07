@@ -2,7 +2,16 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+## [unreleased] Unreleased
+
+##[1.8.7] 2015-12-07
+### Added
+- the `seeTableInDatabase` method to WPDb module
+- the `haveMultisite` method to WPDb module
+- multisite table `grabXTAbleName` methods to WPDb module
+
+### Changed
+- `havePostmetaInDatabase` method name to `havePostMetaInDatabase` in WPDb module
 
 ##[1.8.6] 2015-12-04
 ### Fixed
@@ -205,7 +214,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.6...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.7...HEAD
+[1.8.7]: https://github.com/lucatume/wp-browser/compare/1.8.6...1.8.7
 [1.8.6]: https://github.com/lucatume/wp-browser/compare/1.8.5...1.8.6
 [1.8.5]: https://github.com/lucatume/wp-browser/compare/1.8.4...1.8.5
 [1.8.4]: https://github.com/lucatume/wp-browser/compare/1.8.3...1.8.4
