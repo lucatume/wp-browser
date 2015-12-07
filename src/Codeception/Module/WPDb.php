@@ -5,10 +5,12 @@ use BaconStringUtils\Slugifier;
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
+use Handlebars\Handlebars;
 use PDO;
 use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
+use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 
@@ -18,6 +20,9 @@ use tad\WPBrowser\Generators\WpPassword;
  */
 class WPDb extends ExtendedDb {
 
+	/**
+	 * @var string
+	 */
 	protected $numberPlaceholder = '{{n}}';
 
 	/**
@@ -82,11 +87,25 @@ class WPDb extends ExtendedDb {
 	protected $blogId = 0;
 
 	/**
+	 * @var Handlebars
+	 */
+	protected $handlebars;
+
+	/**
+	 * @var Tables
+	 */
+	protected $tables;
+
+	/**
 	 * Initializes the module.
 	 *
-	 * @return void
+	 * @param Handlebars $handlebars
+	 *
+	 * @param Tables     $table
+	 * @throws ModuleConfigException
+	 * @throws \Codeception\Exception\ModuleException
 	 */
-	public function _initialize() {
+	public function _initialize( Handlebars $handlebars = null, Tables $table = null ) {
 		if ( $this->config['dump'] && ( $this->config['cleanup'] or ( $this->config['populate'] ) ) ) {
 
 			if ( !file_exists( Configuration::projectDir() . $this->config['dump'] ) ) {
@@ -113,6 +132,8 @@ class WPDb extends ExtendedDb {
 			$this->populated = true;
 		}
 		$this->tablePrefix = $this->config['tablePrefix'];
+		$this->handlebars  = $handlebars ?: new Handlebars();
+		$this->tables      = $table ?: new Tables();
 	}
 
 	/**
@@ -274,7 +295,7 @@ class WPDb extends ExtendedDb {
 		}
 
 		$count = $this->countInDatabase( $tableName, $criteria );
-		$this->assertTrue( !$passwordOk && $count < 1, $count, 'Unexpectedly found matching records for criteria ' . json_encode( $allCriteria ) . ' in table ' . $tableName );
+		$this->assertTrue( !$passwordOk && $count < 1, 'Unexpectedly found matching records for criteria ' . json_encode( $allCriteria ) . ' in table ' . $tableName );
 	}
 
 	/**
@@ -386,7 +407,7 @@ class WPDb extends ExtendedDb {
 		if ( !is_string( $meta_key ) ) {
 			throw new \BadMethodCallException( 'Meta key must be an string', 3 );
 		}
-		$tableName = $this->grabPostmetaTableName();
+		$tableName = $this->grabPostMetaTableName();
 		return $this->haveInDatabase( $tableName, array(
 			'post_id'    => $post_id,
 			'meta_key'   => $meta_key,
@@ -399,7 +420,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
 	 */
-	public function grabPostmetaTableName() {
+	public function grabPostMetaTableName() {
 		return $this->grabPrefixedTableNameFor( 'postmeta' );
 	}
 
@@ -468,6 +489,43 @@ class WPDb extends ExtendedDb {
 	 */
 	public function grabTermTaxonomyTableName() {
 		return $this->grabPrefixedTableNameFor( 'term_taxonomy' );
+	}
+
+	/**
+	 * Inserts a term meta row in the database.
+	 *
+	 * Objects and array meta values will be serialized.
+	 *
+	 * @param int    $term_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value
+	 *
+	 * @return int The inserted term meta `meta_id`
+	 */
+	public function haveTermMetaInDatabase( $term_id, $meta_key, $meta_value ) {
+		if ( !is_int( $term_id ) ) {
+			throw new \BadMethodCallException( 'Term id must be an int' );
+		}
+		if ( !is_string( $meta_key ) ) {
+			throw new \BadMethodCallException( 'Meta key must be an string' );
+		}
+		$tableName = $this->grabTermMetaTableName();
+		return $this->haveInDatabase( $tableName, array(
+			'term_id'    => $term_id,
+			'meta_key'   => $meta_key,
+			'meta_value' => $this->maybeSerialize( $meta_value )
+		) );
+	}
+
+	/**
+	 * Gets the terms meta table prefixed name.
+	 *
+	 * E.g.: `wp_termmeta`.
+	 *
+	 * @return string
+	 */
+	public function grabTermMetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'termmeta' );
 	}
 
 	/**
@@ -1099,7 +1157,7 @@ class WPDb extends ExtendedDb {
 	 * @return mixed
 	 */
 	protected function replaceNumbersInString( $value, $i ) {
-		return str_replace( $this->numberPlaceholder, $i, $value );
+		return $this->handlebars->render( $value, [ 'n' => $i ] );
 	}
 
 	/**
@@ -1506,43 +1564,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a term meta row in the database.
-	 *
-	 * Objects and array meta values will be serialized.
-	 *
-	 * @param int    $term_id
-	 * @param string $meta_key
-	 * @param mixed  $meta_value
-	 *
-	 * @return int The inserted term meta `meta_id`
-	 */
-	public function haveTermMetaInDatabase( $term_id, $meta_key, $meta_value ) {
-		if ( !is_int( $term_id ) ) {
-			throw new \BadMethodCallException( 'Term id must be an int' );
-		}
-		if ( !is_string( $meta_key ) ) {
-			throw new \BadMethodCallException( 'Meta key must be an string' );
-		}
-		$tableName = $this->grabTermMetaTableName();
-		return $this->haveInDatabase( $tableName, array(
-			'term_id'    => $term_id,
-			'meta_key'   => $meta_key,
-			'meta_value' => $this->maybeSerialize( $meta_value )
-		) );
-	}
-
-	/**
-	 * Gets the terms meta table prefixed name.
-	 *
-	 * E.g.: `wp_termmeta`.
-	 *
-	 * @return string
-	 */
-	public function grabTermMetaTableName() {
-		return $this->grabPrefixedTableNameFor( 'termmeta' );
-	}
-
-	/**
 	 * Checks for a term meta in the database.
 	 *
 	 * @param array $criteria An array of search criteria.
@@ -1569,4 +1590,105 @@ class WPDb extends ExtendedDb {
 		$this->dontSeeInDatabase( $this->grabTermMetaTableName(), $criteria );
 	}
 
+	/**
+	 * Checks for a table in the database.
+	 *
+	 * @param string $table
+	 */
+	public function seeTableInDatabase( $table ) {
+		$count = $this->_seeTableInDatabase( $table );
+
+		$this->assertTrue( $count > 0, "No matching tables found for table '" . $table . "' in database." );
+	}
+
+	/**
+	 * @param $table
+	 * @return int
+	 */
+	protected function _seeTableInDatabase( $table ) {
+		$dbh = $this->driver->getDbh();
+		$sth = $dbh->prepare( 'SHOW TABLES LIKE :table' );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute( [ 'table' => $table ] );
+		$count = $sth->rowCount();
+		return $count == 1;
+	}
+
+	/**
+	 * Gets the prefixed `blogs` table name.
+	 *
+	 * @return string
+	 */
+	public function grabBlogsTableName() {
+		return $this->grabPrefixedTableNameFor( 'blogs' );
+	}
+
+	/**
+	 * Gets the prefixed `blog_versions` table name.
+	 *
+	 * @return string
+	 */
+	public function grabBlogVersionsTableName() {
+		return $this->grabPrefixedTableNameFor( 'blog_versions' );
+	}
+
+	/**
+	 * Gets the prefixed `sitemeta` table name.
+	 *
+	 * @return string
+	 */
+	public function grabSiteMetaTableName() {
+		return $this->grabPrefixedTableNameFor( 'sitemeta' );
+	}
+
+	/**
+	 * Gets the prefixed `site` table name.
+	 *
+	 * @return string
+	 */
+	public function grabSiteTableName() {
+		return $this->grabPrefixedTableNameFor( 'site' );
+	}
+
+	/**
+	 * Gets the prefixed `signups` table name.
+	 *
+	 * @return string
+	 */
+	public function grabSignupsTableName() {
+		return $this->grabPrefixedTableNameFor( 'signups' );
+	}
+
+	/**
+	 * Gets the prefixed `registration_log` table name.
+	 *
+	 * @return string
+	 */
+	public function grabRegistrationLogTableName() {
+		return $this->grabPrefixedTableNameFor( 'registration_log' );
+	}
+
+	public function haveMultisite() {
+		$dbh = $this->driver->getDbh();
+		foreach ( $this->tables->multisiteTables() as $table ) {
+			$operation         = 'create';
+			$prefixedTableName = $this->grabPrefixedTableNameFor( $table );
+			if ( $this->_seeTableInDatabase( $prefixedTableName ) ) {
+				$query     = $this->tables->getAlterTableQuery( $table, $this->config['tablePrefix'] );
+				$operation = 'alter';
+			} else {
+				$query = $this->tables->getCreateTableQuery( $table, $this->config['tablePrefix'] );
+			}
+
+			if ( !empty ( $query ) ) {
+				$sth = $dbh->prepare( $query );
+				$this->debugSection( 'Query', $sth->queryString );
+				$out[$table] = [ 'operation' => $operation, 'exit' => $sth->execute( [ ] ) ];
+			} else {
+				$out[$table] = [ 'operation' => $operation, 'exit' => false ];
+			}
+		}
+
+		return $out;
+	}
 }
