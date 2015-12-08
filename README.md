@@ -549,6 +549,57 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * useBlog
 * useMainBlog
 
+See source code for more detail.
+
+#### Handlebar templates while having many
+When using one of the `haveMany` methods (`haveManyBlogsInDatabase`, `haveManyCommentsInDatabase`, `haveManyLinksInDatabase`, `haveManyPostsInDatabase`, `haveManyTermsInDatabase`, `haveManyUsersInDatabase`) it's possible to tap into [Handlebars PHP](https://github.com/XaminProject/handlebars.php "XaminProject/handlebars.php · GitHub") templating capabilities to set up complex testing data.  
+When specifying a string value overriding the default ones the simplest replacement is the one where the `{{n}}` placeholder is replaced with the index of the object instance in the series:
+```php
+$I->haveManyPostsInDatabase(3, ['post_title' => 'Post {{n}} title']);
+```
+
+will insert 3 posts in the database titled "Post 0 title", "Post 1 title" and "Post 2 title".  
+The string value will be used as a template and the `n` parameter will always be passed to the template; should additional template data be needed then each `haveMany` method allows for an additional `template_data` entry in the `overrides` array.
+
+```php
+$overrides = [
+	'post_title' => 'Post {{n}} title {{some_string}}', 
+	'template_data' => ['some_string' => 'foo']
+	];
+$I->haveManyPostsInDatabase(3, $overrides);
+```
+
+will insert 3 posts in the database titled "Post 0 title foo", "Post 1 title foo" and "Post 2 title foo".
+To extend the flexibility template data allows for functions and closures to be specified: each will be called passing the index as an argument.
+
+```php
+$numeral = function($n){
+	$numerals = ['First', 'Second', 'Third'];
+	return $numerals[$n];
+	};
+$overrides = [
+	'post_title' => '{{numeral}} post title',
+	'template_data' => ['numeral' => $numeral]
+	];
+$I->haveManyPostsInDatabase(3, $overrides);
+```
+
+will insert 3 posts in the database titled "First post title", "Second post title" and "Third post title".
+All of default [Handlebars PHP](https://github.com/XaminProject/handlebars.php "XaminProject/handlebars.php · GitHub") helpers are available to use in templates; the code below is an example:
+
+```php
+$numeral = function($n){
+	$numerals = ['First', 'Second', 'Third'];
+	return $numerals[$n];
+	};
+$overrides = [
+	'post_title' => '{{#if n}}{{numeral}} post title{{/if}}{{#unless n}}I have index 0{{/unless}}',
+	'template_data' => ['numeral' => $numeral]
+	];
+$I->haveManyPostsInDatabase(3, $overrides);
+```
+will insert 3 posts in the database titled "I have index 0", "Second post title" and "Third post title".
+
 ### ExtendedDb module
 The module is an extension of the `Codeception\Module\Db` class implementing some methods to allow for more CRUD complete operations on the database with the methods
 
