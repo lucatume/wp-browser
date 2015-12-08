@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 ### Added
 - blogs related methods to the WPDb module
+- `haveMany` methods in WPDb module will now parse and compile [Handlebars PHP](https://github.com/XaminProject/handlebars.php "XaminProject/handlebars.php · GitHub") templates
+
 ### Changed
 - renamed `haveMultisite` method to `haveMultisiteInDatabase` in WPDb module
 ### Removed
