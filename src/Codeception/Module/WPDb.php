@@ -98,6 +98,11 @@ class WPDb extends ExtendedDb {
 	protected $isSubdomainMultisiteInstall;
 
 	/**
+	 * @var array
+	 */
+	protected $templateData;
+
+	/**
 	 * Initializes the module.
 	 *
 	 * @param Handlebars $handlebars
@@ -1104,7 +1109,8 @@ class WPDb extends ExtendedDb {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$ids = [ ];
+		$overrides = $this->setTemplateData( $overrides );
+		$ids       = [ ];
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
 			$ids[]         = $this->havePostInDatabase( $thisOverrides );
@@ -1133,7 +1139,14 @@ class WPDb extends ExtendedDb {
 	 * @return mixed
 	 */
 	protected function replaceNumbersInString( $value, $i ) {
-		return str_replace( $this->numberPlaceholder, $i, $value );
+		if ( !is_string( $value ) ) {
+			return $value;
+		}
+		$thisTemplateData = array_merge( $this->templateData, [ 'n' => $i ] );
+		array_walk( $thisTemplateData, function ( &$value ) use ( $i ) {
+			$value = is_callable( $value ) ? $value( $i ) : $value;
+		} );
+		return $this->handlebars->render( $value, $thisTemplateData );
 	}
 
 	/**
@@ -1203,7 +1216,8 @@ class WPDb extends ExtendedDb {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$ids = [ ];
+		$overrides = $this->setTemplateData( $overrides );
+		$ids       = [ ];
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
 			$ids[]         = $this->haveCommentInDatabase( $comment_post_ID, $thisOverrides );
@@ -1311,7 +1325,8 @@ class WPDb extends ExtendedDb {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$ids = [ ];
+		$overrides = $this->setTemplateData( $overrides );
+		$ids       = [ ];
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
 			$ids[]         = $this->haveLinkInDatabase( $thisOverrides );
@@ -1350,7 +1365,8 @@ class WPDb extends ExtendedDb {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$ids = [ ];
+		$ids       = [ ];
+		$overrides = $this->setTemplateData( $overrides );
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisOverrides = $this->replaceNumbersInArray( $overrides, $i );
 			$thisUserLogin = false === strpos( $user_login, $this->numberPlaceholder ) ? $user_login . '_' . $i : $this->replaceNumbersInString( $user_login, $i );
@@ -1506,7 +1522,8 @@ class WPDb extends ExtendedDb {
 		if ( !is_int( $count ) ) {
 			throw new \InvalidArgumentException( 'Count must be an integer value' );
 		}
-		$ids = [ ];
+		$ids       = [ ];
+		$overrides = $this->setTemplateData( $overrides );
 		for ( $i = 0; $i < $count; $i++ ) {
 			$thisName      = false === strpos( $name, $this->numberPlaceholder ) ? $name . ' ' . $i : $this->replaceNumbersInString( $name, $i );
 			$thisTaxonomy  = $this->replaceNumbersInString( $taxonomy, $i );
@@ -1742,7 +1759,8 @@ class WPDb extends ExtendedDb {
 	 * @return array An array of inserted blogs `blog_id`s.
 	 */
 	public function haveManyBlogsInDatabase( $count, array $overrides = [ ] ) {
-		$blogIds = [ ];
+		$blogIds   = [ ];
+		$overrides = $this->setTemplateData( $overrides );
 		for ( $i = 0; $i < $count; $i++ ) {
 			$blogIds[] = $this->haveBlogInDatabase( 'blog' . $i, $this->replaceNumbersInArray( $overrides, $i ) );
 		}
@@ -1766,5 +1784,16 @@ class WPDb extends ExtendedDb {
 	 */
 	public function dontSeeBlogInDatabase( array $criteria ) {
 		$this->dontSeeInDatabase( $this->grabBlogsTableName(), $criteria );
+	}
+
+	protected function setTemplateData( array $overrides = [ ] ) {
+		if ( empty( $overrides['template_data'] ) ) {
+			$this->templateData = [ ];
+		} else {
+			$this->templateData = $overrides['template_data'];
+			$overrides          = array_diff_key( $overrides, [ 'template_data' => [ ] ] );
+		}
+
+		return $overrides;
 	}
 }
