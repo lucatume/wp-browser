@@ -82,18 +82,15 @@ In the suite `.yml` configuration file add the module among the loaded ones
               dump: 'tests/_data/dump.sql'
               populate: true
               cleanup: true
+              reconnect: true
               url: 'http://example.local'
               tablePrefix: 'wp_'
-              checkExistence: true
-              update: true
 ```
 
 and configure `Db` parameters and the additional ones available to the `WPDb` module:  
     
 * `url` - the site home url (required)
 * `tablePrefix` - allows specifying the table prefix used in the installation, defaults to "wp_" (optional)
-* `checkExistence` - enables some low level AI on the module side to insert needed elements in the database, e.g. will add a term and post before adding a relation between them; defaults to `false` (optional)
-* `update` - will try updating the database on duplicate entries; defaults to `true` (optional)
 
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
@@ -546,8 +543,6 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * seeUserMetaInDatabase
 * useBlog
 * useMainBlog
-
-See source for more method details.
 
 ### ExtendedDb module
 The module is an extension of the `Codeception\Module\Db` class implementing some methods to allow for more CRUD complete operations on the database with the methods
