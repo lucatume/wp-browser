@@ -93,6 +93,11 @@ class WPDb extends ExtendedDb {
 	protected $tables;
 
 	/**
+	 * @var bool
+	 */
+	protected $isSubdomainMultisiteInstall;
+
+	/**
 	 * Initializes the module.
 	 *
 	 * @param Handlebars $handlebars
@@ -1664,8 +1669,16 @@ class WPDb extends ExtendedDb {
 		return $this->grabPrefixedTableNameFor( 'registration_log' );
 	}
 
-	public function haveMultisiteInDatabase() {
-		$dbh = $this->driver->getDbh();
+	/**
+	 * Sets up the required tables for a WordPress multisite installation if not present in the database.
+	 *
+	 * @param bool $subdomainInstall Whether this is a subdomain multisite installation or a subfolder one.
+	 *
+	 * @return array An array containing exit information about multisite tables created/altered/updated.
+	 */
+	public function haveMultisiteInDatabase( $subdomainInstall = true ) {
+		$this->isSubdomainMultisiteInstall = $subdomainInstall;
+		$dbh                               = $this->driver->getDbh();
 		foreach ( $this->tables->multisiteTables() as $table ) {
 			$operation         = 'create';
 			$prefixedTableName = $this->grabPrefixedTableNameFor( $table );
@@ -1685,6 +1698,80 @@ class WPDb extends ExtendedDb {
 			}
 		}
 
+		$domain = $this->getSiteDomain();
+		$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
+
+		$multisiteConstants = [
+			'MULTISITE'            => true,
+			'SUBDOMAIN_INSTALL'    => $this->isSubdomainMultisiteInstall,
+			'DOMAIN_CURRENT_SITE'  => $this->getSiteDomain(),
+			'PATH_CURRENT_SITE'    => '/',
+			'SITE_ID_CURRENT_SITE' => 1,
+			'BLOG_ID_CURRENT_SITE' => 1
+		];
+
+		foreach ( $multisiteConstants as $multisiteConstant => $value ) {
+			if ( !defined( $multisiteConstant ) ) {
+				define( $multisiteConstant, $value );
+			}
+		}
+
 		return $out;
+	}
+
+	/**
+	 * Checks for a blog in the database, looks up the `blogs` table.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function seeBlogInDatabase( array $criteria ) {
+		$this->seeInDatabase( $this->grabBlogsTableName(), $criteria );
+	}
+
+	/**
+	 * Inserts a blog in the `blogs` table.
+	 *
+	 * @param  string $domainOrPath The subdomain or the path to the be used for the blog.
+	 * @param array   $overrides    An array of values to override the defaults.
+	 * @return int The inserted blog `blog_id`.
+	 */
+	public function haveBlogInDatabase( $domainOrPath, array $overrides = [ ] ) {
+		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults( $this->isSubdomainMultisiteInstall );
+		if ( $this->isSubdomainMultisiteInstall ) {
+			$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
+			$defaults['path']   = '/';
+		} else {
+			$defaults['domain'] = $this->getSiteDomain();
+			$defaults['path']   = sprintf( '/%s/', $domainOrPath );
+		}
+		$data = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
+
+		return $this->haveInDatabase( $this->grabBlogsTableName(), $data );
+	}
+
+	/**
+	 * Returns the site domain inferred from the `url` set in the config.
+	 *
+	 * @return string
+	 */
+	public function getSiteDomain() {
+		$domain = last( preg_split( '~//~', $this->config['url'] ) );
+		return $domain;
+	}
+
+	/**
+	 * Inserts many blogs in the database.
+	 *
+	 * @param int   $count
+	 * @param array $overrides
+	 * @return array An array of inserted blogs `blog_id`s.
+	 */
+	public function haveManyBlogsInDatabase( $count, array $overrides = [ ] ) {
+		$blogIds = [ ];
+		for ( $i = 0; $i < $count; $i++ ) {
+			$blogIds[] = $this->haveBlogInDatabase( 'blog' . $i, $this->replaceNumbersInArray( $overrides, $i ) );
+		}
+
+		return $blogIds;
 	}
 }
