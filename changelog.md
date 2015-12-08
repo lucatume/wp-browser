@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [1.8.8] 2015-12-08
 ### Added
 - blogs related methods to the WPDb module
 - `haveMany` methods in WPDb module will now parse and compile [Handlebars PHP](https://github.com/XaminProject/handlebars.php "XaminProject/handlebars.php · GitHub") templates
@@ -222,7 +224,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.7...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.8...HEAD
+[1.8.8]: https://github.com/lucatume/wp-browser/compare/1.8.7...1.8.8
 [1.8.7]: https://github.com/lucatume/wp-browser/compare/1.8.6...1.8.7
 [1.8.6]: https://github.com/lucatume/wp-browser/compare/1.8.5...1.8.6
 [1.8.5]: https://github.com/lucatume/wp-browser/compare/1.8.4...1.8.5
