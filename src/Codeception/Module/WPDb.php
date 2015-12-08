@@ -61,18 +61,14 @@ class WPDb extends ExtendedDb {
 	/**
 	 * The module optional configuration parameters.
 	 *
-	 * tablePrefix - the WordPress installation table prefix, defaults to "wp".
-	 * checkExistence - if true will attempt to insert coherent data in the database; e.g. an post with term insertion
-	 * will trigger post and term insertions before the relation between them is inserted; defaults to false. update -
-	 * if true have... methods will attempt an update on duplicate keys; defaults to true.
-	 *
 	 * @var array
 	 */
 	protected $config = array(
-		'tablePrefix'    => 'wp_',
-		'checkExistence' => false,
-		'update'         => true,
-		'reconnect'      => false
+		'tablePrefix' => 'wp_',
+		'populate'    => true,
+		'cleanup'     => true,
+		'reconnect'   => false,
+		'dump'        => null
 	);
 	/**
 	 * The table prefix to use.
