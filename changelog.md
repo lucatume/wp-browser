@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[1.8.7] 2015-12-07
 ### Added
 - the `seeTableInDatabase` method to WPDb module
-- the `haveMultisite` method to WPDb module
+- the `haveMultisiteInDatabase` method to WPDb module
 - multisite table `grabXTAbleName` methods to WPDb module
 
 ### Changed

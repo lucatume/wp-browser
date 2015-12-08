@@ -1668,7 +1668,7 @@ class WPDb extends ExtendedDb {
 		return $this->grabPrefixedTableNameFor( 'registration_log' );
 	}
 
-	public function haveMultisite() {
+	public function haveMultisiteInDatabase() {
 		$dbh = $this->driver->getDbh();
 		foreach ( $this->tables->multisiteTables() as $table ) {
 			$operation         = 'create';

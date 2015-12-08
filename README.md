@@ -513,7 +513,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveManyPostsInDatabase
 * haveManyTermsInDatabase
 * haveManyUsersInDatabase
-* haveMultisite
+* haveMultisiteInDatabase
 * haveOptionInDatabase
 * havePageInDatabase
 * havePostInDatabase
