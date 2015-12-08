@@ -197,4 +197,18 @@ class WPDbMultisiteCest {
 			] );
 		}
 	}
+
+	/**
+	 * @test
+	 * it should allow not to have blog in the database
+	 */
+	public function it_should_allow_not_to_have_blog_in_the_database( FunctionalTester $I ) {
+		$I->haveMultisiteInDatabase();
+
+		$id = $I->haveBlogInDatabase( 'foo' );
+
+		$I->dontHaveBlogInDatabase( [ 'blog_id' => $id ] );
+
+		$I->dontSeeBlogInDatabase( [ 'blog_id' => $id ] );
+	}
 }

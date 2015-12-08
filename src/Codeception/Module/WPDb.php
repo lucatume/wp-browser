@@ -614,31 +614,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a link to term relationship in the database.
-	 *
-	 * If "checkExistence" then will make some checks for missing term and/or link.
-	 *
-	 * @param  int     $link_id    The link ID.
-	 * @param  int     $term_id    The term ID.
-	 * @param  integer $term_order An optional term order value, will default to 0.
-	 *
-	 * @return void
-	 */
-	public function haveLinkWithTermInDatabase( $link_id, $term_id, $term_order = 0 ) {
-		if ( !is_int( $link_id ) or !is_int( $term_id ) or !is_int( $term_order ) ) {
-			throw new \BadMethodCallException( "Link ID, term ID and term order must be strings", 1 );
-		}
-		$this->maybeCheckTermExistsInDatabase( $term_id );
-		// add the relationship in the database
-		$tableName = $this->grabPrefixedTableNameFor( 'term_relationships' );
-		$this->haveInDatabase( $tableName, array(
-			'object_id'        => $link_id,
-			'term_taxonomy_id' => $term_id,
-			'term_order'       => $term_order
-		) );
-	}
-
-	/**
 	 * Conditionally checks that a term exists in the database.
 	 *
 	 * Will look up the "terms" table, will throw if not found.
@@ -1773,5 +1748,23 @@ class WPDb extends ExtendedDb {
 		}
 
 		return $blogIds;
+	}
+
+	/**
+	 * Removes an entry from the `blogs` table.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function dontHaveBlogInDatabase( array $criteria ) {
+		$this->dontHaveInDatabase( $this->grabBlogsTableName(), $criteria );
+	}
+
+	/**
+	 * Checks that a row is not present in the `blogs` table.
+	 *
+	 * @param array $criteria An array of search criteria.
+	 */
+	public function dontSeeBlogInDatabase( array $criteria ) {
+		$this->dontSeeInDatabase( $this->grabBlogsTableName(), $criteria );
 	}
 }
