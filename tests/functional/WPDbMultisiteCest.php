@@ -20,7 +20,7 @@ class WPDbMultisiteCest {
 	 * it should scaffold base tables
 	 */
 	public function it_should_scaffold_base_tables_if_not( FunctionalTester $I ) {
-		$I->haveMultisite();
+		$I->haveMultisiteInDatabase();
 
 		$I->seeTableInDatabase( $I->grabBlogsTableName() );
 		$I->seeTableInDatabase( $I->grabBlogVersionsTableName() );
@@ -32,15 +32,17 @@ class WPDbMultisiteCest {
 
 	/**
 	 * @test
-	 * it should alter the tables if existing
+	 * it should alter the users table
 	 */
-	public function it_should_alter_the_tables_if_existing( FunctionalTester $I ) {
-		$first  = $I->haveMultisite();
-		$second = $I->haveMultisite();
+	public function it_should_alter_the_user_table( FunctionalTester $I ) {
+		$first  = $I->haveMultisiteInDatabase();
+		$second = $I->haveMultisiteInDatabase();
 
 		foreach ( $second as $table => $output ) {
 			$I->assertEquals( 'alter', $output['operation'] );
 			$I->assertEquals( $table == 'users', $output['exit'] );
 		}
 	}
+
+
 }
