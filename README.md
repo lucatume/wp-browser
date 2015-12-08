@@ -90,7 +90,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
 and configure `Db` parameters and the additional ones available to the `WPDb` module:  
     
 * `url` - the site home url (required)
-* `tablePrefix` - allows specifying the table prefix used in the installation, defaults to "wp_" (optional)
+* `tablePrefix` - allows specifying the table prefix used in the installation, defaults to `wp_` (optional)
 
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
@@ -447,6 +447,7 @@ The verbs used by the `Db` module are honored so `dontHave` removes an entry, `h
 When dealing with multisite installations then the `useBlog` and `useMainBlog` methods can be used to perform any following database operation on the specified site tables if applicable; some tables are unique in a WordPress installation (e.g. `users`) and the command will not mess with it.  
 The module is meant to be a WordPress specific extension of the `Db` module and will hence decline the `have` and `see` methods for each WordPress table; here's a current list of all the defined methods:
 
+* dontHaveBlogInDatabase
 * dontHaveCommentInDatabase
 * dontHaveCommentMetaInDatabase
 * dontHaveLinkInDatabase
@@ -462,6 +463,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * dontHaveTransientInDatabase
 * dontHaveUserInDatabase
 * dontHaveUserMetaInDatabase
+* dontSeeBlogInDatabase
 * dontSeeCommentInDatabase
 * dontSeeCommentMetaInDatabase
 * dontSeeLinkInDatabase
@@ -474,6 +476,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * dontSeeTermTaxonomyInDatabase
 * dontSeeUserInDatabase
 * dontSeeUserMetaInDatabase
+* getSiteDomain
 * grabAllFromDatabase
 * grabBlogsTableName
 * grabBlogVersionsTableName
@@ -501,10 +504,11 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * grabUserIdFromDatabase
 * grabUserMetaFromDatabase
 * grabUsermetaTableName
+* haveBlogInDatabase
 * haveCommentInDatabase
 * haveCommentMetaInDatabase
 * haveLinkInDatabase
-* haveLinkWithTermInDatabase
+* haveManyBlogsInDatabase
 * haveManyCommentsInDatabase
 * haveManyLinksInDatabase
 * haveManyPostsInDatabase
@@ -525,6 +529,7 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveUserInDatabase
 * haveUserLevelsInDatabase
 * haveUserMetaInDatabase
+* seeBlogInDatabase
 * seeCommentInDatabase
 * seeCommentMetaInDatabase
 * seeLinkInDatabase

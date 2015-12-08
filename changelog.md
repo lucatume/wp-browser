@@ -3,8 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Added
+- blogs related methods to the WPDb module
 ### Changed
 - renamed `haveMultisite` method to `haveMultisiteInDatabase` in WPDb module
+### Removed
+- `haveLinkWithTermInDatabase` method from WPDb module
 
 ##[1.8.7] 2015-12-07
 ### Added
