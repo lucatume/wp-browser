@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [1.8.9] 2015-12-10
+### Changed
+- memory limit constants (`WP_MEMORY_LIMIT` and `WP_MAX_MEMORY_LIMIT`) will now check for pre-existing definitions in WPLoader module bootstrap
+
 ## [1.8.8] 2015-12-08
 ### Added
 - blogs related methods to the WPDb module
@@ -224,7 +228,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.8...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.9...HEAD
+[1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
 [1.8.8]: https://github.com/lucatume/wp-browser/compare/1.8.7...1.8.8
 [1.8.7]: https://github.com/lucatume/wp-browser/compare/1.8.6...1.8.7
 [1.8.6]: https://github.com/lucatume/wp-browser/compare/1.8.5...1.8.6
