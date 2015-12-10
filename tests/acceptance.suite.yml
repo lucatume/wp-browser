@@ -7,8 +7,23 @@
 class_name: AcceptanceTester
 modules:
     enabled:
-        - PhpBrowser
+        - WPBrowser
+        - WPDb
         - AcceptanceHelper
     config:
-        PhpBrowser:
-            url: 'http://localhost/myapp/'
+        WPBrowser:
+              url: 'http://codeception-acceptance.dev'
+              adminUsername: 'admin'
+              adminPassword: 'admin'
+              adminUrl: '/wp-admin'
+        WPDb:
+              dsn: 'mysql:host=127.0.0.1;dbname=codeception-acceptance'
+              user: 'root'
+              password: 'root'
+              dump: 'tests/_data/codeception-acceptance-dump.sql'
+              populate: true
+              cleanup: true
+              reconnect: true
+              url: 'http://codeception-acceptance.dev'
+              tablePrefix: 'wp_'
+

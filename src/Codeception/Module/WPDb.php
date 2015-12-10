@@ -1738,7 +1738,11 @@ class WPDb extends ExtendedDb {
 		}
 		$data = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
 
-		return $this->haveInDatabase( $this->grabBlogsTableName(), $data );
+		$blogId = $this->haveInDatabase( $this->grabBlogsTableName(), $data );
+
+		$this->scaffoldBlogTables( $blogId );
+
+		return $blogId;
 	}
 
 	/**
@@ -1795,5 +1799,13 @@ class WPDb extends ExtendedDb {
 		}
 
 		return $overrides;
+	}
+
+	private function scaffoldBlogTables( $blogId ) {
+		$query = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId );
+		$dbh   = $this->driver->getDbh();
+		$sth   = $dbh->prepare( $query );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
 	}
 }
