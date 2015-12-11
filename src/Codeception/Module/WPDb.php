@@ -1694,6 +1694,7 @@ class WPDb extends ExtendedDb {
 		$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
 
 		$multisiteConstants = [
+			'WP_ALLOW_MULTISITE'   => true,
 			'MULTISITE'            => true,
 			'SUBDOMAIN_INSTALL'    => $this->isSubdomainMultisiteInstall,
 			'DOMAIN_CURRENT_SITE'  => $this->getSiteDomain(),

@@ -12,7 +12,7 @@ modules:
         - AcceptanceHelper
     config:
         WPBrowser:
-              url: 'http://codeception-acceptance.dev'
+              url: 'http://codeception-acceptance.test'
               adminUsername: 'admin'
               adminPassword: 'admin'
               adminUrl: '/wp-admin'
@@ -23,7 +23,7 @@ modules:
               dump: 'tests/_data/codeception-acceptance-dump.sql'
               populate: true
               cleanup: true
-              reconnect: true
-              url: 'http://codeception-acceptance.dev'
+              reconnect: false
+              url: 'http://codeception-acceptance.test'
               tablePrefix: 'wp_'
 

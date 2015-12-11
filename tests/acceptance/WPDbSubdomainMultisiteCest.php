@@ -11,6 +11,18 @@ class WPDbSubdomainMultisiteCest {
 
 	/**
 	 * @test
+	 * it should be able to visit the single blog page
+	 */
+	public function it_should_be_able_to_visit_the_single_blog_page(AcceptanceTester $I) {
+		$I->haveManyPostsInDatabase(3,['post_title' => 'Title {{n}}']);
+		$I->amOnPage('/');
+
+		$I->see('Title 0');
+		$I->see('Title 1');
+		$I->see('Title 2');
+	}
+	/**
+	 * @test
 	 * it should be able to visit main blog main page
 	 */
 	public function it_should_be_able_to_visit_main_blog_main_page( AcceptanceTester $I ) {
@@ -28,6 +40,10 @@ class WPDbSubdomainMultisiteCest {
 	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
 		$I->haveMultisiteInDatabase();
 		$ids = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i ] );
+		}
 
 		$firstBlogId = reset( $ids );
 		$I->useBlog( $firstBlogId );

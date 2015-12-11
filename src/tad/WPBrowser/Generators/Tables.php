@@ -27,6 +27,21 @@ class Tables {
 		$this->templatesDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'templates';
 	}
 
+	public static function newBlogTables() {
+		return [
+			'commentmeta',
+		    'comments',
+		    'links',
+		    'options',
+		    'postmeta',
+		    'posts',
+		    'term_relationships',
+		    'term_taxonomy',
+		    'termmeta',
+		    'terms'
+		];
+	}
+
 	public function getAlterTableQuery( $table, $prefix ) {
 		$data = [ 'operation' => 'ALTER TABLE', 'prefix' => $prefix ];
 		return in_array( $table, $this->alterableTables() ) ? $this->renderQuery( $table, $data ) : '';

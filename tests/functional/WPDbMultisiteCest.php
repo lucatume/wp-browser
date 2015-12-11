@@ -211,4 +211,18 @@ class WPDbMultisiteCest {
 
 		$I->dontSeeBlogInDatabase( [ 'blog_id' => $id ] );
 	}
+
+	/**
+	 * @test
+	 * it should scaffold new blog tables
+	 */
+	public function it_should_scaffold_new_blog_tables( FunctionalTester $I ) {
+		$I->haveMultisiteInDatabase();
+		$id = $I->haveBlogInDatabase( 'test' );
+
+		$I->useBlog( $id );
+		foreach ( Tables::newBlogTables() as $table ) {
+			$I->seeTableInDatabase( $I->grabPrefixedTableNameFor( $table ) );
+		}
+	}
 }
