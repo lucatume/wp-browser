@@ -619,25 +619,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Conditionally checks that a term exists in the database.
-	 *
-	 * Will look up the "terms" table, will throw if not found.
-	 *
-	 * @param  int $term_id The term ID.
-	 *
-	 * @return void
-	 */
-	protected function maybeCheckTermExistsInDatabase( $term_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
-		if ( !$this->grabFromDatabase( $tableName, 'term_id', array( 'term_id' => $term_id ) ) ) {
-			throw new \RuntimeException( "A term with an id of $term_id does not exist", 1 );
-		}
-	}
-
-	/**
 	 * Checks for a comment in the database.
 	 *
 	 * Will look up the "comments" table.
@@ -1117,6 +1098,17 @@ class WPDb extends ExtendedDb {
 		}
 
 		return $ids;
+	}
+
+	protected function setTemplateData( array $overrides = [ ] ) {
+		if ( empty( $overrides['template_data'] ) ) {
+			$this->templateData = [ ];
+		} else {
+			$this->templateData = $overrides['template_data'];
+			$overrides          = array_diff_key( $overrides, [ 'template_data' => [ ] ] );
+		}
+
+		return $overrides;
 	}
 
 	protected function replaceNumbersInArray( $entry, $i ) {
@@ -1608,15 +1600,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Gets the prefixed `blogs` table name.
-	 *
-	 * @return string
-	 */
-	public function grabBlogsTableName() {
-		return $this->grabPrefixedTableNameFor( 'blogs' );
-	}
-
-	/**
 	 * Gets the prefixed `blog_versions` table name.
 	 *
 	 * @return string
@@ -1632,15 +1615,6 @@ class WPDb extends ExtendedDb {
 	 */
 	public function grabSiteMetaTableName() {
 		return $this->grabPrefixedTableNameFor( 'sitemeta' );
-	}
-
-	/**
-	 * Gets the prefixed `site` table name.
-	 *
-	 * @return string
-	 */
-	public function grabSiteTableName() {
-		return $this->grabPrefixedTableNameFor( 'site' );
 	}
 
 	/**
@@ -1693,23 +1667,26 @@ class WPDb extends ExtendedDb {
 		$domain = $this->getSiteDomain();
 		$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
 
-		$multisiteConstants = [
-			'WP_ALLOW_MULTISITE'   => true,
-			'MULTISITE'            => true,
-			'SUBDOMAIN_INSTALL'    => $this->isSubdomainMultisiteInstall,
-			'DOMAIN_CURRENT_SITE'  => $this->getSiteDomain(),
-			'PATH_CURRENT_SITE'    => '/',
-			'SITE_ID_CURRENT_SITE' => 1,
-			'BLOG_ID_CURRENT_SITE' => 1
-		];
-
-		foreach ( $multisiteConstants as $multisiteConstant => $value ) {
-			if ( !defined( $multisiteConstant ) ) {
-				define( $multisiteConstant, $value );
-			}
-		}
-
 		return $out;
+	}
+
+	/**
+	 * Returns the site domain inferred from the `url` set in the config.
+	 *
+	 * @return string
+	 */
+	public function getSiteDomain() {
+		$domain = last( preg_split( '~//~', $this->config['url'] ) );
+		return $domain;
+	}
+
+	/**
+	 * Gets the prefixed `site` table name.
+	 *
+	 * @return string
+	 */
+	public function grabSiteTableName() {
+		return $this->grabPrefixedTableNameFor( 'site' );
 	}
 
 	/**
@@ -1719,6 +1696,32 @@ class WPDb extends ExtendedDb {
 	 */
 	public function seeBlogInDatabase( array $criteria ) {
 		$this->seeInDatabase( $this->grabBlogsTableName(), $criteria );
+	}
+
+	/**
+	 * Gets the prefixed `blogs` table name.
+	 *
+	 * @return string
+	 */
+	public function grabBlogsTableName() {
+		return $this->grabPrefixedTableNameFor( 'blogs' );
+	}
+
+	/**
+	 * Inserts many blogs in the database.
+	 *
+	 * @param int   $count
+	 * @param array $overrides
+	 * @return array An array of inserted blogs `blog_id`s.
+	 */
+	public function haveManyBlogsInDatabase( $count, array $overrides = [ ] ) {
+		$blogIds   = [ ];
+		$overrides = $this->setTemplateData( $overrides );
+		for ( $i = 0; $i < $count; $i++ ) {
+			$blogIds[] = $this->haveBlogInDatabase( 'blog' . $i, $this->replaceNumbersInArray( $overrides, $i ) );
+		}
+
+		return $blogIds;
 	}
 
 	/**
@@ -1746,31 +1749,12 @@ class WPDb extends ExtendedDb {
 		return $blogId;
 	}
 
-	/**
-	 * Returns the site domain inferred from the `url` set in the config.
-	 *
-	 * @return string
-	 */
-	public function getSiteDomain() {
-		$domain = last( preg_split( '~//~', $this->config['url'] ) );
-		return $domain;
-	}
-
-	/**
-	 * Inserts many blogs in the database.
-	 *
-	 * @param int   $count
-	 * @param array $overrides
-	 * @return array An array of inserted blogs `blog_id`s.
-	 */
-	public function haveManyBlogsInDatabase( $count, array $overrides = [ ] ) {
-		$blogIds   = [ ];
-		$overrides = $this->setTemplateData( $overrides );
-		for ( $i = 0; $i < $count; $i++ ) {
-			$blogIds[] = $this->haveBlogInDatabase( 'blog' . $i, $this->replaceNumbersInArray( $overrides, $i ) );
-		}
-
-		return $blogIds;
+	private function scaffoldBlogTables( $blogId ) {
+		$query = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId );
+		$dbh   = $this->driver->getDbh();
+		$sth   = $dbh->prepare( $query );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
 	}
 
 	/**
@@ -1791,22 +1775,22 @@ class WPDb extends ExtendedDb {
 		$this->dontSeeInDatabase( $this->grabBlogsTableName(), $criteria );
 	}
 
-	protected function setTemplateData( array $overrides = [ ] ) {
-		if ( empty( $overrides['template_data'] ) ) {
-			$this->templateData = [ ];
-		} else {
-			$this->templateData = $overrides['template_data'];
-			$overrides          = array_diff_key( $overrides, [ 'template_data' => [ ] ] );
+	/**
+	 * Conditionally checks that a term exists in the database.
+	 *
+	 * Will look up the "terms" table, will throw if not found.
+	 *
+	 * @param  int $term_id The term ID.
+	 *
+	 * @return void
+	 */
+	protected function maybeCheckTermExistsInDatabase( $term_id ) {
+		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
+			return;
 		}
-
-		return $overrides;
-	}
-
-	private function scaffoldBlogTables( $blogId ) {
-		$query = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId );
-		$dbh   = $this->driver->getDbh();
-		$sth   = $dbh->prepare( $query );
-		$this->debugSection( 'Query', $sth->queryString );
-		$sth->execute();
+		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
+		if ( !$this->grabFromDatabase( $tableName, 'term_id', array( 'term_id' => $term_id ) ) ) {
+			throw new \RuntimeException( "A term with an id of $term_id does not exist", 1 );
+		}
 	}
 }
