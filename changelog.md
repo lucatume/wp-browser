@@ -2,13 +2,18 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased] Unreleased
+##[unreleased] Unreleased
 
-## [1.8.9] 2015-12-10
+##[1.8.10] 2015-12-11
+### Changed
+- `WPTestCase` class now set the `$backupGlobals` to `false` by default
+- removed default `$backupGlobals` value setting from test template
+
+##[1.8.9] 2015-12-10
 ### Changed
 - memory limit constants (`WP_MEMORY_LIMIT` and `WP_MAX_MEMORY_LIMIT`) will now check for pre-existing definitions in WPLoader module bootstrap
 
-## [1.8.8] 2015-12-08
+##[1.8.8] 2015-12-08
 ### Added
 - blogs related methods to the WPDb module
 - `haveMany` methods in WPDb module will now parse and compile [Handlebars PHP](https://github.com/XaminProject/handlebars.php "XaminProject/handlebars.php · GitHub") templates
@@ -228,7 +233,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.9...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.10...HEAD
+[1.8.10]: https://github.com/lucatume/wp-browser/compare/1.8.9...1.8.10
+[1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
 [1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
 [1.8.8]: https://github.com/lucatume/wp-browser/compare/1.8.7...1.8.8
 [1.8.7]: https://github.com/lucatume/wp-browser/compare/1.8.6...1.8.7

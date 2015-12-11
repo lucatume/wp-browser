@@ -17,8 +17,6 @@
 class {{name}}Test extends {{baseClass}}
 {
 
-    protected \$backupGlobals = false;
-    
     public function setUp()
     {
         // before

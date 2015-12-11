@@ -17,6 +17,7 @@ class WPTestCase extends \Codeception\TestCase\Test {
 	protected $caught_deprecated = array();
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong = array();
+	protected $backupGlobals = false;
 
 	public static function setUpBeforeClass()
 	{
