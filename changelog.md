@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- `$autoload` parameter to `WPDb::haveOptionInDatabase` method
 
 ##[1.8.10] 2015-12-11
 ### Changed

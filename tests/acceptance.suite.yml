@@ -23,7 +23,7 @@ modules:
               dump: 'tests/_data/codeception-acceptance-dump.sql'
               populate: true
               cleanup: true
-              reconnect: false
+              reconnect: true
               url: 'http://codeception-acceptance.test'
               tablePrefix: 'wp_'
 

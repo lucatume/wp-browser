@@ -8,6 +8,7 @@ use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use Handlebars\Handlebars;
 use PDO;
 use tad\WPBrowser\Generators\Comment;
+use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\Tables;
@@ -842,9 +843,10 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  string $option_name
 	 * @param  mixed  $option_value
+	 * @param string  $autoload
 	 * @return int The inserted `option_id`
 	 */
-	public function haveOptionInDatabase( $option_name, $option_value ) {
+	public function haveOptionInDatabase( $option_name, $option_value, $autoload = 'yes' ) {
 		$table = $this->grabPrefixedTableNameFor( 'options' );
 		$this->dontHaveInDatabase( $table, [ 'option_name' => $option_name ] );
 		$option_value = $this->maybeSerialize( $option_value );
@@ -852,7 +854,7 @@ class WPDb extends ExtendedDb {
 		return $this->haveInDatabase( $table, array(
 			'option_name'  => $option_name,
 			'option_value' => $option_value,
-			'autoload'     => 'yes'
+			'autoload'     => $autoload
 		) );
 	}
 
@@ -1665,7 +1667,28 @@ class WPDb extends ExtendedDb {
 		}
 
 		$domain = $this->getSiteDomain();
-		$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
+		if ( !$this->countInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain ] ) ) {
+			$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
+		}
+		if ( !$this->countInDatabase( $this->grabBlogsTableName(), [ 'blog_id' => 1 ] ) ) {
+			$this->query( "ALTER TABLE {$this->grabBlogsTableName()} AUTO_INCREMENT=1" );
+			$mainBlogData = [
+				'site_id'      => 1,
+				'domain'       => $domain,
+				'path'         => '/',
+				'registered'   => Date::now(),
+				'last_updated' => Date::now(),
+				'public'       => 1
+			];
+			$this->haveInDatabase( $this->grabBlogsTableName(), $mainBlogData );
+		}
+
+		$this->haveOptionInDatabase( '_wpbrowser', [
+			'isMultisite'      => true,
+			'subdomainInstall' => $subdomainInstall,
+			'siteDomain'       => $domain,
+			'pathCurrentSite'  => '/'
+		], 'yes' );
 
 		return $out;
 	}
@@ -1792,5 +1815,12 @@ class WPDb extends ExtendedDb {
 		if ( !$this->grabFromDatabase( $tableName, 'term_id', array( 'term_id' => $term_id ) ) ) {
 			throw new \RuntimeException( "A term with an id of $term_id does not exist", 1 );
 		}
+	}
+
+	private function query( $query ) {
+		$dbh = $this->driver->getDbh();
+		$sth = $dbh->prepare( $query );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
 	}
 }
