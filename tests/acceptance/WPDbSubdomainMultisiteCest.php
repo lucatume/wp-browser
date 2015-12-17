@@ -11,70 +11,63 @@ class WPDbSubdomainMultisiteCest {
 
 	/**
 	 * @test
-	 * it should be able to visit the single blog page
+	 * it should not activate multisite by default
 	 */
-//	public function it_should_be_able_to_visit_the_single_blog_page(AcceptanceTester $I) {
-//		$I->haveManyPostsInDatabase(3,['post_title' => 'Title {{n}}']);
-//		$I->amOnPage('/');
-//
-//		$I->see('Title 0');
-//		$I->see('Title 1');
-//		$I->see('Title 2');
-//	}
+	public function it_should_not_activate_multisite_by_default( AcceptanceTester $I ) {
+		// Set the theme to the multisite test one
+		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
+		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
-	/**
-	 * @test
-	 * it should be able to activate multisite installation
-	 */
-	public function it_should_be_able_to_activate_multisite_installation(AcceptanceTester $I) {
-		$I->haveMultisiteInDatabase();
-		$I->amOnPage('/');
-		$I->seeElement('#multisite');
+		$I->amOnPage( '/' );
+		$I->see( 'Multisite is not active' );
 	}
 
 	/**
 	 * @test
-	 * it should be able to visit main blog main page
+	 * it should be able to activate multisite
 	 */
-//	public function it_should_be_able_to_visit_main_blog_main_page( AcceptanceTester $I ) {
-//		$I->haveManyPostsInDatabase( 3, [ 'post_title' => 'Post {{n}}' ] );
-//		$I->amOnPage( '/' );
-//		$I->see( 'Post 0' );
-//		$I->see( 'Post 1' );
-//		$I->see( 'Post 2' );
-//	}
-//
-//	/**
-//	 * @test
-//	 * it should allow seing posts from different blogs
-//	 */
-//	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
-//		$I->haveMultisiteInDatabase();
-//		$ids = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
-//
-//		for ( $i = 0; $i < 3; $i++ ) {
-//			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i ] );
-//		}
-//
-//		$firstBlogId = reset( $ids );
-//		$I->useBlog( $firstBlogId );
-//		$I->haveManyPostsInDatabase( 3, [
-//			'post_title'    => 'Blog {{blog}} - Post {{n}}',
-//			'template_data' => [ 'blog' => $firstBlogId ]
-//		] );
-//
-//		$I->amOnSubdomain( 'test0' );
-//		$I->amOnPage( '/' );
-//		$I->see( "Blog $firstBlogId - Post 0" );
-//		$I->see( "Blog $firstBlogId - Post 1" );
-//		$I->see( "Blog $firstBlogId - Post 2" );
-//
-//		$I->amOnSubdomain( 'test1' );
-//		$I->amOnPage( '/' );
-//		$I->dontSee( "Blog {$ids[1]} - Post 0" );
-//
-//		$I->amOnSubdomain( 'test2' );
-//		$I->amOnPage( '/' );
-//		$I->dontSee( "Blog {$ids[2]} - Post 0" );
-//	}
+	public function it_should_be_able_to_activate_multisite( AcceptanceTester $I ) {
+		// Set the theme to the multisite test one
+		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
+		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
+
+		$I->haveMultisiteInDatabase();
+
+		$I->amOnPage( '/' );
+		$I->see( 'Multisite is active' );
+	}
+
+	/**
+	 * @test
+	 * it should allow seing posts from different blogs
+	 */
+	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
+		$I->haveMultisiteInDatabase();
+		$ids = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i ] );
+		}
+
+		$firstBlogId = reset( $ids );
+		$I->useBlog( $firstBlogId );
+		$I->haveManyPostsInDatabase( 3, [
+			'post_title'    => 'Blog {{blog}} - Post {{n}}',
+			'template_data' => [ 'blog' => $firstBlogId ]
+		] );
+
+		$I->amOnSubdomain( 'test0' );
+		$I->amOnPage( '/' );
+		$I->see( "Blog $firstBlogId - Post 0" );
+		$I->see( "Blog $firstBlogId - Post 1" );
+		$I->see( "Blog $firstBlogId - Post 2" );
+
+		$I->amOnSubdomain( 'test1' );
+		$I->amOnPage( '/' );
+		$I->dontSee( "Blog {$ids[1]} - Post 0" );
+
+		$I->amOnSubdomain( 'test2' );
+		$I->amOnPage( '/' );
+		$I->dontSee( "Blog {$ids[2]} - Post 0" );
+	}
 }

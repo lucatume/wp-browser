@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.7.9)
 # Database: codeception-acceptance
-# Generation Time: 2015-12-12 16:19:36 +0000
+# Generation Time: 2015-12-15 20:32:49 +0000
 # ************************************************************
 
 
@@ -161,8 +161,6 @@ VALUES
 	(38,'gmt_offset','0','yes'),
 	(39,'default_email_category','1','yes'),
 	(40,'recently_edited','','no'),
-	(41,'template','twentyfifteen','yes'),
-	(42,'stylesheet','twentyfifteen','yes'),
 	(43,'comment_whitelist','1','yes'),
 	(44,'blacklist_keys','','no'),
 	(45,'comment_registration','0','yes'),
@@ -247,7 +245,8 @@ VALUES
 	(125,'_transient_plugin_slugs','a:1:{i:0;s:9:\"hello.php\";}','no'),
 	(126,'_transient_timeout_dash_88ae138922fe95674369b1cb3d215a2b','1449638888','no'),
 	(127,'_transient_dash_88ae138922fe95674369b1cb3d215a2b','<div class=\"rss-widget\"><ul><li><a class=\'rsswidget\' href=\'https://wordpress.org/news/2015/11/wordpress-4-4-release-candidate/\'>WordPress 4.4 Release Candidate</a> <span class=\"rss-date\">November 25, 2015</span><div class=\"rssSummary\">The release candidate for WordPress 4.4 is now available. RC means we think we’re done, but with millions of users and thousands of plugins and themes, it’s possible we’ve missed something. We hope to ship WordPress 4.4 on Tuesday, December 8, but we need your help to get there. If you haven’t tested 4.4 yet, [&hellip;]</div></li></ul></div><div class=\"rss-widget\"><ul><li><a class=\'rsswidget\' href=\'http://ma.tt/2015/12/state-of-the-word-2015/\'>Matt: State of the Word 2015</a></li><li><a class=\'rsswidget\' href=\'http://wptavern.com/state-of-the-word-2015-javascript-and-api-driven-interfaces-are-the-future-of-wordpress\'>WPTavern: State of the Word 2015: JavaScript and API-driven Interfaces Are the Future of WordPress</a></li><li><a class=\'rsswidget\' href=\'https://poststatus.com/state-of-the-word-2015/\'>Post Status: State of the Word, 2015</a></li></ul></div><div class=\"rss-widget\"><ul><li class=\'dashboard-news-plugin\'><span>Popular Plugin:</span> <a href=\'https://wordpress.org/plugins/ml-slider/\' class=\'dashboard-news-plugin-link\'>Meta Slider</a>&nbsp;<span>(<a href=\'plugin-install.php?tab=plugin-information&amp;plugin=ml-slider&amp;_wpnonce=eba91aea54&amp;TB_iframe=true&amp;width=600&amp;height=800\' class=\'thickbox\' title=\'Meta Slider\'>Install</a>)</span></li></ul></div>','no'),
-	(128,'_wpbrowser','a:4:{s:11:\"isMultisite\";b:1;s:16:\"subdomainInstall\";b:1;s:10:\"siteDomain\";s:27:\"codeception-acceptance.test\";s:15:\"pathCurrentSite\";s:1:\"/\";}','yes');
+	(129,'stylesheet','multisite','yes'),
+	(130,'template','multisite','yes');
 
 /*!40000 ALTER TABLE `wp_options` ENABLE KEYS */;
 UNLOCK TABLES;
