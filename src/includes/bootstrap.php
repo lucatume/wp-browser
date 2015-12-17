@@ -54,8 +54,12 @@ $phpmailer = new MockPHPMailer();
 require 'install.php';
 
 if ( $multisite ) {
-	define( 'MULTISITE', true );
-	define( 'SUBDOMAIN_INSTALL', false );
+	if(!defined('MULTISITE')){
+		define( 'MULTISITE', true );
+	}
+	if(!defined('SUBDOMAIN_INSTALL')){
+		define( 'SUBDOMAIN_INSTALL', false );
+	}
 	$GLOBALS['base'] = '/';
 }
 unset( $multisite );

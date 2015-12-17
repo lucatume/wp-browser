@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.8.11] 2015-12-17
+### Fixed
+- added a check in embedded `bootstrap.php` file of WPLoader module for defined multisite vars
+
 ##[1.8.10] 2015-12-11
 ### Changed
 - `WPTestCase` class now set the `$backupGlobals` to `false` by default
@@ -233,7 +237,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.10...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.11...HEAD
+[1.8.11]: https://github.com/lucatume/wp-browser/compare/1.8.10...1.8.11
 [1.8.10]: https://github.com/lucatume/wp-browser/compare/1.8.9...1.8.10
 [1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
 [1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
