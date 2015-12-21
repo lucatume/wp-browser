@@ -42,7 +42,8 @@ class WPDbSubdomainMultisiteCest {
 	 * it should allow seing posts from different blogs
 	 */
 	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
-		$I->haveMultisiteInDatabase();
+		// subdomain, need htaccess
+		$I->haveMultisiteInDatabase( true, true );
 		$ids = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
 
 		for ( $i = 0; $i < 3; $i++ ) {

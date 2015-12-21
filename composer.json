@@ -31,7 +31,8 @@
     }
   },
   "require-dev": {
-    "codeception/codeception": "*"
+    "codeception/codeception": "*",
+    "mikey179/vfsStream": "^1.6"
   },
   "bin": [
     "wpcept"

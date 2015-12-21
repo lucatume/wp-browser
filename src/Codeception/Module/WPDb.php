@@ -5,6 +5,7 @@ use BaconStringUtils\Slugifier;
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
+use Codeception\TestCase;
 use Handlebars\Handlebars;
 use PDO;
 use tad\WPBrowser\Generators\Comment;
@@ -69,7 +70,8 @@ class WPDb extends ExtendedDb {
 		'populate'    => true,
 		'cleanup'     => true,
 		'reconnect'   => false,
-		'dump'        => null
+		'dump'        => null,
+		'wpRootFolder' => null
 	);
 	/**
 	 * The table prefix to use.
@@ -96,12 +98,22 @@ class WPDb extends ExtendedDb {
 	/**
 	 * @var bool
 	 */
-	protected $isSubdomainMultisiteInstall;
+	protected $isSubdomainMultisiteInstall = false;
 
 	/**
 	 * @var array
 	 */
 	protected $templateData;
+
+	/**
+	 * @var bool
+	 */
+	protected $isMultisite = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $needHtaccess = false;
 
 	/**
 	 * Initializes the module.
@@ -1642,10 +1654,13 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param bool $subdomainInstall Whether this is a subdomain multisite installation or a subfolder one.
 	 *
+	 * @param bool $needHtaccess     Whether an `.htaccess` file should be put in place or not.
 	 * @return array An array containing exit information about multisite tables created/altered/updated.
 	 */
-	public function haveMultisiteInDatabase( $subdomainInstall = true ) {
+	public function haveMultisiteInDatabase( $subdomainInstall = true, $needHtaccess = false ) {
 		$this->isSubdomainMultisiteInstall = $subdomainInstall;
+		$this->needHtaccess                = $needHtaccess;
+		$this->isMultisite                 = true;
 		$dbh                               = $this->driver->getDbh();
 		foreach ( $this->tables->multisiteTables() as $table ) {
 			$operation         = 'create';
@@ -1683,12 +1698,9 @@ class WPDb extends ExtendedDb {
 			$this->haveInDatabase( $this->grabBlogsTableName(), $mainBlogData );
 		}
 
-		$this->haveOptionInDatabase( '_wpbrowser', [
-			'isMultisite'      => true,
-			'subdomainInstall' => $subdomainInstall,
-			'siteDomain'       => $domain,
-			'pathCurrentSite'  => '/'
-		], 'yes' );
+		$this->insertMultisiteOptionsInDatabase();
+
+		$this->hitSite();
 
 		return $out;
 	}
@@ -1822,5 +1834,37 @@ class WPDb extends ExtendedDb {
 		$sth = $dbh->prepare( $query );
 		$this->debugSection( 'Query', $sth->queryString );
 		$sth->execute();
+	}
+
+	public function _after( TestCase $test ) {
+		parent::_after( $test );
+		if ( $this->isMultisite ) {
+			$this->insertMultisiteOptionsInDatabase( [ 'restoreHtaccess' => true ] );
+			/** @var WPBrowser $WPBrowser */
+			$this->hitSite();
+		}
+	}
+
+	private function hitSite() {
+		if ( !$this->hasModule( 'WPBrowser' ) ) {
+			return;
+		}
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->config['url']);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_exec($ch);
+		curl_close($ch);
+	}
+
+	protected function insertMultisiteOptionsInDatabase( array $overrides = [ ] ) {
+		$defaults = [
+			'isMultisite'      => true,
+			'subdomainInstall' => $this->isSubdomainMultisiteInstall,
+			'siteDomain'       => $this->getSiteDomain(),
+			'pathCurrentSite'  => '/',
+			'needHtaccess'     => $this->needHtaccess,
+		    'siteurl' => $this->grabOptionFromDatabase('siteurl')
+		];
+		$this->haveOptionInDatabase( '_wpbrowser', array_merge( $defaults, $overrides ), 'yes' );
 	}
 }

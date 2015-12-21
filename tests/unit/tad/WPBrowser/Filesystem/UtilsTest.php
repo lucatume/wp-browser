@@ -1,7 +1,7 @@
 <?php
-namespace tad\WPBrowser\Utils;
+namespace tad\WPBrowser\Filesystem;
 
-class PathUtilsTest extends \PHPUnit_Framework_TestCase
+class UtilsTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
@@ -18,7 +18,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     public function it_should_throw_if_path_is_not_a_string()
     {
         $this->setExpectedException('InvalidArgumentException');
-        PathUtils::homeify(23);
+        Utils::homeify(23);
     }
 
     public function noHomeSymbolPaths()
@@ -41,7 +41,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     public
     function it_should_return_same_string_if_no_home_symbol($path)
     {
-        $this->assertEquals($path, PathUtils::homeify($path));
+        $this->assertEquals($path, Utils::homeify($path));
     }
 
     public function homeSymbolPahts()
@@ -62,7 +62,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $locals = new SystemLocals();
         $locals->setHome('/foo/bar');
-        $this->assertEquals($expected, PathUtils::homeify($path, $locals));
+        $this->assertEquals($expected, Utils::homeify($path, $locals));
     }
 
     public function untrailslashPaths()
@@ -86,7 +86,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_untrailslash_paths($path, $expected)
     {
-        $this->assertEquals($expected, PathUtils::untrailslashit($path));
+        $this->assertEquals($expected, Utils::untrailslashit($path));
     }
 
     public function unleadslashPaths()
@@ -110,7 +110,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_unleadslash_paths($path, $expected)
     {
-        $this->assertEquals($expected, PathUtils::unleadslashit($path));
+        $this->assertEquals($expected, Utils::unleadslashit($path));
     }
 
     /**
@@ -121,7 +121,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $path = dirname(__FILE__) . '/foo.php';
         touch($path);
-        $this->assertEquals($path, PathUtils::findHereOrInParent('/foo.php', dirname(__FILE__)));
+        $this->assertEquals($path, Utils::findHereOrInParent('/foo.php', dirname(__FILE__)));
         unlink($path);
     }
 
@@ -131,7 +131,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_not_find_non_existing_file()
     {
-        $this->assertFalse(PathUtils::findHereOrInParent('/bar.php', dirname(__FILE__)));
+        $this->assertFalse(Utils::findHereOrInParent('/bar.php', dirname(__FILE__)));
     }
 
     /**
@@ -142,7 +142,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $path = dirname(dirname(dirname(__FILE__))) . '/foo.php';
         touch($path);
-        $this->assertEquals($path, PathUtils::findHereOrInParent('/foo.php', dirname(__FILE__)));
+        $this->assertEquals($path, Utils::findHereOrInParent('/foo.php', dirname(__FILE__)));
         unlink($path);
     }
 
@@ -154,7 +154,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $path = dirname(dirname(dirname(__FILE__))) . '/foo.php';
         touch($path);
-        $this->assertEquals($path, PathUtils::findHereOrInParent('foo.php', dirname(__FILE__)));
+        $this->assertEquals($path, Utils::findHereOrInParent('foo.php', dirname(__FILE__)));
         unlink($path);
     }
 
@@ -168,7 +168,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
         mkdir($folder);
         $path = dirname(dirname(dirname(__FILE__))) . '/someFolder/foo.php';
         touch($path);
-        $this->assertEquals($path, PathUtils::findHereOrInParent('someFolder/foo.php', dirname(__FILE__)));
+        $this->assertEquals($path, Utils::findHereOrInParent('someFolder/foo.php', dirname(__FILE__)));
         unlink($path);
         rmdir($folder);
     }
@@ -181,7 +181,7 @@ class PathUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $path = dirname(dirname(dirname(__FILE__))) . '/foo.php';
         touch($path);
-        $this->assertEquals($path, PathUtils::findHereOrInParent('../../foo.php', dirname(__FILE__)));
+        $this->assertEquals($path, Utils::findHereOrInParent('../../foo.php', dirname(__FILE__)));
         unlink($path);
     }
 }
