@@ -4,7 +4,7 @@ namespace tad\WPBrowser\Filesystem\FileReplacers;
 
 
 use Codeception\Exception\ModuleConfigException;
-use tad\WPBrowser\Generators\WPConfigGeneratorInterface;
+use tad\WPBrowser\Generators\TemplateProviderInterface;
 
 class AbstractFileReplacer {
 
@@ -21,14 +21,14 @@ class AbstractFileReplacer {
 	 */
 	protected $path;
 	/**
-	 * @var WPConfigGeneratorInterface
+	 * @var TemplateProviderInterface
 	 */
 	protected $contentsProvider;
 
 	/**
 	 * WPConfigFileReplacer constructor.
 	 */
-	public function __construct( $path, WPConfigGeneratorInterface $contentsProvider ) {
+	public function __construct( $path, TemplateProviderInterface $contentsProvider ) {
 		if ( !is_string( $path ) ) {
 			throw new ModuleConfigException( __CLASS__, 'Root path must be a string' );
 		}

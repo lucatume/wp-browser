@@ -5,9 +5,10 @@ namespace tad\WPBrowser\Generators;
 
 use Handlebars\Handlebars;
 
-class RedirectingWPConfig implements WPConfigGeneratorInterface {
+class RedirectingWPConfig implements TemplateProviderInterface {
 
 	protected $template = <<< PHP
+<?php
 \$options = array(
 	'subdomainInstall' => {{subdomainInstall}},
 	'siteDomain' => "{{siteDomain}}"
@@ -26,6 +27,7 @@ foreach (\$multisiteConstants as \$multisiteConstant => \$value) {
 		define(\$multisiteConstant, \$value);
 	}
 }
+include dirname(__FILE__) . '/original-wp-config.php';
 PHP;
 
 	/**

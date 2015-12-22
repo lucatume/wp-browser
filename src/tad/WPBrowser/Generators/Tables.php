@@ -30,15 +30,15 @@ class Tables {
 	public static function newBlogTables() {
 		return [
 			'commentmeta',
-		    'comments',
-		    'links',
-		    'options',
-		    'postmeta',
-		    'posts',
-		    'term_relationships',
-		    'term_taxonomy',
-		    'termmeta',
-		    'terms'
+			'comments',
+			'links',
+			'options',
+			'postmeta',
+			'posts',
+			'term_relationships',
+			'term_taxonomy',
+			'termmeta',
+			'terms'
 		];
 	}
 
@@ -117,9 +117,13 @@ class Tables {
 		return $this->renderQuery( $table, $data );
 	}
 
-	public function getBlogScaffoldQuery( $prefix, $blogId ) {
+	public function getBlogScaffoldQuery( $prefix, $blogId, array $data ) {
 		$template = $this->templates( 'new-blog' );
-		$data     = [ 'prefix' => $prefix, 'blog_id' => $blogId ];
+		$data     = array_merge( [
+			'prefix'  => $prefix,
+			'blog_id' => $blogId,
+			'scheme'  => 'http'
+		], $data );
 
 		return $this->handlebars->render( $template, $data );
 	}

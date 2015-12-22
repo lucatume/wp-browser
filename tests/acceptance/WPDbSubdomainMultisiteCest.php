@@ -31,7 +31,7 @@ class WPDbSubdomainMultisiteCest {
 		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
 		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
-		$I->haveMultisiteInDatabase();
+		$I->haveMultisiteInDatabase( true, true );
 
 		$I->amOnPage( '/' );
 		$I->see( 'Multisite is active' );
@@ -44,31 +44,27 @@ class WPDbSubdomainMultisiteCest {
 	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
 		// subdomain, need htaccess
 		$I->haveMultisiteInDatabase( true, true );
-		$ids = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
+		$blogIds = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
 
 		for ( $i = 0; $i < 3; $i++ ) {
-			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i ] );
+			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i . '.' . $I->getSiteDomain() ] );
 		}
 
-		$firstBlogId = reset( $ids );
-		$I->useBlog( $firstBlogId );
-		$I->haveManyPostsInDatabase( 3, [
-			'post_title'    => 'Blog {{blog}} - Post {{n}}',
-			'template_data' => [ 'blog' => $firstBlogId ]
-		] );
+		foreach ( $blogIds as $blogId ) {
+			$I->useBlog( $blogId );
+			$I->haveManyPostsInDatabase( 3, [
+				'post_title'    => 'Blog {{blog}} - Post {{n}}',
+				'template_data' => [ 'blog' => $blogId ]
+			] );
+		}
 
-		$I->amOnSubdomain( 'test0' );
-		$I->amOnPage( '/' );
-		$I->see( "Blog $firstBlogId - Post 0" );
-		$I->see( "Blog $firstBlogId - Post 1" );
-		$I->see( "Blog $firstBlogId - Post 2" );
-
-		$I->amOnSubdomain( 'test1' );
-		$I->amOnPage( '/' );
-		$I->dontSee( "Blog {$ids[1]} - Post 0" );
-
-		$I->amOnSubdomain( 'test2' );
-		$I->amOnPage( '/' );
-		$I->dontSee( "Blog {$ids[2]} - Post 0" );
+		for ( $i = 0; $i < 3; $i++ ) {
+			$blogId = $blogIds[$i];
+			$I->amOnSubdomain( 'test' . $i );
+			$I->amOnPage( '/' );
+			$I->see( "Blog $blogId - Post 0" );
+			$I->see( "Blog $blogId - Post 1" );
+			$I->see( "Blog $blogId - Post 2" );
+		}
 	}
 }

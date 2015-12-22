@@ -25,5 +25,6 @@ modules:
               cleanup: true
               reconnect: false
               url: 'http://codeception-acceptance.test'
+              wpRootFolder: /Users/Luca/Sites/codeception-acceptance
               tablePrefix: 'wp_'
 

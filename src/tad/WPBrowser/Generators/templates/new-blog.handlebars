@@ -148,3 +148,10 @@ PRIMARY KEY (`meta_id`),
 KEY `term_id` (`term_id`),
 KEY `meta_key` (`meta_key`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `{{prefix}}{{blog_id}}_options` (`option_id`, `option_name`, `option_value`, `autoload`)
+VALUES
+(1, 'siteurl', '{{#if scheme}}{{scheme}}{{/if}}{{#unless scheme}}http{{/unless}}://{{#if subdomain}}{{subdomain}}.{{/if}}{{domain}}{{#if subfolder}}/{{subfolder}}{{/if}}', 'yes'),
+(2, 'home', '{{#if scheme}}{{scheme}}{{/if}}{{#unless scheme}}http{{/unless}}://{{#if subdomain}}{{subdomain}}.{{/if}}{{domain}}', 'yes'),
+(3, 'stylesheet', '{{stylesheet}}', 'yes'),
+(4, 'template', '{{#if template}}{{template}}{{/if}}{{#unless template}}{{stylesheet}}{{/unless}}', 'yes');

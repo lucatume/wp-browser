@@ -8,10 +8,15 @@ use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use Codeception\TestCase;
 use Handlebars\Handlebars;
 use PDO;
+use tad\WPBrowser\Filesystem\FileReplacers\HtaccesReplacer;
+use tad\WPBrowser\Filesystem\FileReplacers\WPConfigReplacer;
 use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
+use tad\WPBrowser\Generators\RedirectingWPConfig;
+use tad\WPBrowser\Generators\SubdomainHtaccess;
+use tad\WPBrowser\Generators\SubfolderHtaccess;
 use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
@@ -66,11 +71,11 @@ class WPDb extends ExtendedDb {
 	 * @var array
 	 */
 	protected $config = array(
-		'tablePrefix' => 'wp_',
-		'populate'    => true,
-		'cleanup'     => true,
-		'reconnect'   => false,
-		'dump'        => null,
+		'tablePrefix'  => 'wp_',
+		'populate'     => true,
+		'cleanup'      => true,
+		'reconnect'    => false,
+		'dump'         => null,
 		'wpRootFolder' => null
 	);
 	/**
@@ -114,6 +119,11 @@ class WPDb extends ExtendedDb {
 	 * @var bool
 	 */
 	protected $needHtaccess = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $shouldRestoreFiles = false;
 
 	/**
 	 * Initializes the module.
@@ -1698,9 +1708,9 @@ class WPDb extends ExtendedDb {
 			$this->haveInDatabase( $this->grabBlogsTableName(), $mainBlogData );
 		}
 
-		$this->insertMultisiteOptionsInDatabase();
-
-		$this->hitSite();
+		if ( $this->needHtaccess ) {
+			$this->replaceFiles();
+		}
 
 		return $out;
 	}
@@ -1767,6 +1777,10 @@ class WPDb extends ExtendedDb {
 	 * @return int The inserted blog `blog_id`.
 	 */
 	public function haveBlogInDatabase( $domainOrPath, array $overrides = [ ] ) {
+		if ( isset( $overrides['domain'] ) ) {
+			$domainOrPath = $overrides['domain'];
+			unset( $overrides['domain'] );
+		}
 		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults( $this->isSubdomainMultisiteInstall );
 		if ( $this->isSubdomainMultisiteInstall ) {
 			$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
@@ -1779,15 +1793,22 @@ class WPDb extends ExtendedDb {
 
 		$blogId = $this->haveInDatabase( $this->grabBlogsTableName(), $data );
 
-		$this->scaffoldBlogTables( $blogId );
+		$this->scaffoldBlogTables( $blogId, $domainOrPath );
 
 		return $blogId;
 	}
 
-	private function scaffoldBlogTables( $blogId ) {
-		$query = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId );
-		$dbh   = $this->driver->getDbh();
-		$sth   = $dbh->prepare( $query );
+	private function scaffoldBlogTables( $blogId, $subdomain = null ) {
+		$stylesheet = $this->grabOptionFromDatabase( 'stylesheet' );
+		$data       = [
+			'subdomain'  => $subdomain,
+			'domain'     => $this->getSiteDomain(),
+			'subfolder'  => $this->getSiteSubfolder(),
+			'stylesheet' => $stylesheet
+		];
+		$query      = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId, $data );
+		$dbh        = $this->driver->getDbh();
+		$sth        = $dbh->prepare( $query );
 		$this->debugSection( 'Query', $sth->queryString );
 		$sth->execute();
 	}
@@ -1838,11 +1859,29 @@ class WPDb extends ExtendedDb {
 
 	public function _after( TestCase $test ) {
 		parent::_after( $test );
-		if ( $this->isMultisite ) {
-			$this->insertMultisiteOptionsInDatabase( [ 'restoreHtaccess' => true ] );
-			/** @var WPBrowser $WPBrowser */
-			$this->hitSite();
+		if ( $this->isMultisite && $this->shouldRestoreFiles ) {
+			if ( empty( $this->config['wpRootFolder'] ) ) {
+				throw new ModuleConfigException( __CLASS__, 'WordPress root folder must be set to have multisite files replaced' );
+			}
+
+			$path = $this->config['wpRootFolder'];
+
+			$htaccessReplacer = $this->makeHtaccessReplacer( $path );
+			$wpconfigReplacer = $this->makeWpConfigReplacer( $path );
+
+			$htaccessReplacer->restoreOriginal();
+			$wpconfigReplacer->restoreOriginal();
+
+			$this->shouldRestoreFiles = false;
 		}
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getSiteSubfolder() {
+		$subfolder = ltrim( end( explode( $this->getSiteDomain(), $this->config['url'] ) ), '/' );
+		return $subfolder;
 	}
 
 	private function hitSite() {
@@ -1850,21 +1889,52 @@ class WPDb extends ExtendedDb {
 			return;
 		}
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $this->config['url']);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_exec($ch);
-		curl_close($ch);
+		curl_setopt( $ch, CURLOPT_URL, $this->config['url'] );
+		curl_setopt( $ch, CURLOPT_HEADER, 0 );
+		curl_exec( $ch );
+		curl_close( $ch );
 	}
 
-	protected function insertMultisiteOptionsInDatabase( array $overrides = [ ] ) {
-		$defaults = [
-			'isMultisite'      => true,
-			'subdomainInstall' => $this->isSubdomainMultisiteInstall,
-			'siteDomain'       => $this->getSiteDomain(),
-			'pathCurrentSite'  => '/',
-			'needHtaccess'     => $this->needHtaccess,
-		    'siteurl' => $this->grabOptionFromDatabase('siteurl')
+	protected function replaceFiles( array $overrides = [ ] ) {
+		if ( empty( $this->config['wpRootFolder'] ) ) {
+			throw new ModuleConfigException( __CLASS__, 'WordPress root folder must be set to have multisite files replaced' );
+		}
+
+		$path = $this->config['wpRootFolder'];
+
+		$htaccessReplacer = $this->makeHtaccessReplacer( $path );
+		$wpconfigReplacer = $this->makeWpConfigReplacer( $path );
+
+		$htaccessReplacer->replaceOriginal();
+		$wpconfigReplacer->replaceOriginal();
+
+		$this->shouldRestoreFiles = true;
+	}
+
+	/**
+	 * @param $path
+	 */
+	protected function makeHtaccessReplacer( $path ) {
+		$subfolder    = $this->getSiteSubfolder();
+		$htaccessData = [ 'subfolder' => $subfolder ];
+		$htaccessFile = null;
+		if ( $this->isSubdomainMultisiteInstall ) {
+			$htaccessFile = new HtaccesReplacer( $path, new SubdomainHtaccess( $this->handlebars, $htaccessData ) );
+		} else {
+			$htaccessFile = new HtaccesReplacer( $path, new SubfolderHtaccess( $this->handlebars, $htaccessData ) );
+		}
+
+		return $htaccessFile;
+	}
+
+	/**
+	 * @param $path
+	 */
+	protected function makeWpConfigReplacer( $path ) {
+		$wpconfigData = [
+			'subdomainInstall' => $this->isSubdomainMultisiteInstall ? 'true' : 'false',
+			'siteDomain'       => $this->getSiteDomain()
 		];
-		$this->haveOptionInDatabase( '_wpbrowser', array_merge( $defaults, $overrides ), 'yes' );
+		return new WPConfigReplacer( $path, new RedirectingWPConfig( $this->handlebars, $wpconfigData ) );
 	}
 }
