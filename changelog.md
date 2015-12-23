@@ -3,8 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.8.12] 2015-12-23
 ### Changed
 - the `WPDb::haveMultisiteInDatabase` method will now scaffold browser accessible multisite installations starting from a single site one
+- WPDb module will drop tables created during multisite scaffolding
 
 ### Added
 - `$autoload` parameter to `WPDb::haveOptionInDatabase` method
