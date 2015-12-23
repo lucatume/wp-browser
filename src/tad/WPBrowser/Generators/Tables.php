@@ -86,6 +86,9 @@ class Tables {
 			'blogs'            => function () {
 				return file_get_contents( $this->templatesDir . DIRECTORY_SEPARATOR . ( 'blogs.handlebars' ) );
 			},
+			'drop-blog-tables' => function(){
+				return file_get_contents( $this->templatesDir . DIRECTORY_SEPARATOR . ( 'drop-blog-tables.handlebars' ) );
+			},
 			'blog_versions'    => function () {
 				return file_get_contents( $this->templatesDir . DIRECTORY_SEPARATOR . ( 'blog_versions.handlebars' ) );
 			},
@@ -124,6 +127,16 @@ class Tables {
 			'blog_id' => $blogId,
 			'scheme'  => 'http'
 		], $data );
+
+		return $this->handlebars->render( $template, $data );
+	}
+
+	public function getBlogDropQuery( $tablePrefix, $blogId ) {
+		$template = $this->templates( 'drop-blog-tables' );
+		$data     = [
+			'prefix'  => $tablePrefix,
+			'blog_id' => $blogId
+		];
 
 		return $this->handlebars->render( $template, $data );
 	}

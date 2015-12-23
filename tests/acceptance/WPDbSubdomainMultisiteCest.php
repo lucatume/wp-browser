@@ -14,7 +14,6 @@ class WPDbSubdomainMultisiteCest {
 	 * it should not activate multisite by default
 	 */
 	public function it_should_not_activate_multisite_by_default( AcceptanceTester $I ) {
-		// Set the theme to the multisite test one
 		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
 		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
@@ -27,10 +26,10 @@ class WPDbSubdomainMultisiteCest {
 	 * it should be able to activate multisite
 	 */
 	public function it_should_be_able_to_activate_multisite( AcceptanceTester $I ) {
-		// Set the theme to the multisite test one
 		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
 		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
+		// subdomain, need htaccess and wp-confing.php replaced
 		$I->haveMultisiteInDatabase( true, true );
 
 		$I->amOnPage( '/' );
@@ -42,7 +41,10 @@ class WPDbSubdomainMultisiteCest {
 	 * it should allow seing posts from different blogs
 	 */
 	public function it_should_allow_seing_posts_from_different_blogs( AcceptanceTester $I ) {
-		// subdomain, need htaccess
+		$I->haveOptionInDatabase( 'stylesheet', 'multisite', 'yes' );
+		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
+
+		// subdomain, need htaccess and wp-confing.php replaced
 		$I->haveMultisiteInDatabase( true, true );
 		$blogIds = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
 

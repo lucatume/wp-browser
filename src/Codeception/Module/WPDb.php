@@ -1777,13 +1777,11 @@ class WPDb extends ExtendedDb {
 	 * @return int The inserted blog `blog_id`.
 	 */
 	public function haveBlogInDatabase( $domainOrPath, array $overrides = [ ] ) {
-		if ( isset( $overrides['domain'] ) ) {
-			$domainOrPath = $overrides['domain'];
-			unset( $overrides['domain'] );
-		}
 		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults( $this->isSubdomainMultisiteInstall );
 		if ( $this->isSubdomainMultisiteInstall ) {
-			$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
+			if ( empty( $overrides['domain'] ) ) {
+				$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
+			}
 			$defaults['path']   = '/';
 		} else {
 			$defaults['domain'] = $this->getSiteDomain();
@@ -1799,16 +1797,22 @@ class WPDb extends ExtendedDb {
 	}
 
 	private function scaffoldBlogTables( $blogId, $subdomain = null ) {
-		$stylesheet = $this->grabOptionFromDatabase( 'stylesheet' );
-		$data       = [
+		$stylesheet    = $this->grabOptionFromDatabase( 'stylesheet' );
+		$data          = [
 			'subdomain'  => $subdomain,
 			'domain'     => $this->getSiteDomain(),
 			'subfolder'  => $this->getSiteSubfolder(),
 			'stylesheet' => $stylesheet
 		];
-		$query      = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId, $data );
-		$dbh        = $this->driver->getDbh();
-		$sth        = $dbh->prepare( $query );
+		$dbh           = $this->driver->getDbh();
+
+		$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId);
+		$sth           = $dbh->prepare( $dropQuery );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
+
+		$scaffoldQuery = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId, $data );
+		$sth           = $dbh->prepare( $scaffoldQuery );
 		$this->debugSection( 'Query', $sth->queryString );
 		$sth->execute();
 	}

@@ -3,8 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- the `WPDb::haveMultisiteInDatabase` method will now scaffold browser accessible multisite installations starting from a single site one
+
 ### Added
 - `$autoload` parameter to `WPDb::haveOptionInDatabase` method
+- `wpRootFolder` optional config parameter to the `WPDb` module
 
 ##[1.8.10] 2015-12-11
 ### Changed
