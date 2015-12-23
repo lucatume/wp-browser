@@ -5,11 +5,18 @@ use BaconStringUtils\Slugifier;
 use Codeception\Configuration as Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
+use Codeception\TestCase;
 use Handlebars\Handlebars;
 use PDO;
+use tad\WPBrowser\Filesystem\FileReplacers\HtaccesReplacer;
+use tad\WPBrowser\Filesystem\FileReplacers\WPConfigReplacer;
 use tad\WPBrowser\Generators\Comment;
+use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
+use tad\WPBrowser\Generators\RedirectingWPConfig;
+use tad\WPBrowser\Generators\SubdomainHtaccess;
+use tad\WPBrowser\Generators\SubfolderHtaccess;
 use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
@@ -19,6 +26,25 @@ use tad\WPBrowser\Generators\WpPassword;
  * methods.
  */
 class WPDb extends ExtendedDb {
+
+	/**
+	 * @var array
+	 */
+	public $scaffoldedBlogIds = [ ];
+
+	public function _cleanup() {
+		parent::_cleanup();
+
+		$dbh = $this->driver->getDbh();
+
+		foreach ( $this->scaffoldedBlogIds as $blogId ) {
+			$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId );
+			$sth       = $dbh->prepare( $dropQuery );
+			$this->debugSection( 'Query', $sth->queryString );
+			$sth->execute();
+		}
+		$this->scaffoldedBlogIds = [ ];
+	}
 
 	/**
 	 * @var string
@@ -64,11 +90,12 @@ class WPDb extends ExtendedDb {
 	 * @var array
 	 */
 	protected $config = array(
-		'tablePrefix' => 'wp_',
-		'populate'    => true,
-		'cleanup'     => true,
-		'reconnect'   => false,
-		'dump'        => null
+		'tablePrefix'  => 'wp_',
+		'populate'     => true,
+		'cleanup'      => true,
+		'reconnect'    => false,
+		'dump'         => null,
+		'wpRootFolder' => null
 	);
 	/**
 	 * The table prefix to use.
@@ -95,12 +122,27 @@ class WPDb extends ExtendedDb {
 	/**
 	 * @var bool
 	 */
-	protected $isSubdomainMultisiteInstall;
+	protected $isSubdomainMultisiteInstall = false;
 
 	/**
 	 * @var array
 	 */
 	protected $templateData;
+
+	/**
+	 * @var bool
+	 */
+	protected $isMultisite = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $needHtaccess = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $shouldRestoreFiles = false;
 
 	/**
 	 * Initializes the module.
@@ -619,25 +661,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Conditionally checks that a term exists in the database.
-	 *
-	 * Will look up the "terms" table, will throw if not found.
-	 *
-	 * @param  int $term_id The term ID.
-	 *
-	 * @return void
-	 */
-	protected function maybeCheckTermExistsInDatabase( $term_id ) {
-		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
-			return;
-		}
-		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
-		if ( !$this->grabFromDatabase( $tableName, 'term_id', array( 'term_id' => $term_id ) ) ) {
-			throw new \RuntimeException( "A term with an id of $term_id does not exist", 1 );
-		}
-	}
-
-	/**
 	 * Checks for a comment in the database.
 	 *
 	 * Will look up the "comments" table.
@@ -861,9 +884,10 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  string $option_name
 	 * @param  mixed  $option_value
+	 * @param string  $autoload
 	 * @return int The inserted `option_id`
 	 */
-	public function haveOptionInDatabase( $option_name, $option_value ) {
+	public function haveOptionInDatabase( $option_name, $option_value, $autoload = 'yes' ) {
 		$table = $this->grabPrefixedTableNameFor( 'options' );
 		$this->dontHaveInDatabase( $table, [ 'option_name' => $option_name ] );
 		$option_value = $this->maybeSerialize( $option_value );
@@ -871,7 +895,7 @@ class WPDb extends ExtendedDb {
 		return $this->haveInDatabase( $table, array(
 			'option_name'  => $option_name,
 			'option_value' => $option_value,
-			'autoload'     => 'yes'
+			'autoload'     => $autoload
 		) );
 	}
 
@@ -1117,6 +1141,17 @@ class WPDb extends ExtendedDb {
 		}
 
 		return $ids;
+	}
+
+	protected function setTemplateData( array $overrides = [ ] ) {
+		if ( empty( $overrides['template_data'] ) ) {
+			$this->templateData = [ ];
+		} else {
+			$this->templateData = $overrides['template_data'];
+			$overrides          = array_diff_key( $overrides, [ 'template_data' => [ ] ] );
+		}
+
+		return $overrides;
 	}
 
 	protected function replaceNumbersInArray( $entry, $i ) {
@@ -1608,15 +1643,6 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Gets the prefixed `blogs` table name.
-	 *
-	 * @return string
-	 */
-	public function grabBlogsTableName() {
-		return $this->grabPrefixedTableNameFor( 'blogs' );
-	}
-
-	/**
 	 * Gets the prefixed `blog_versions` table name.
 	 *
 	 * @return string
@@ -1632,15 +1658,6 @@ class WPDb extends ExtendedDb {
 	 */
 	public function grabSiteMetaTableName() {
 		return $this->grabPrefixedTableNameFor( 'sitemeta' );
-	}
-
-	/**
-	 * Gets the prefixed `site` table name.
-	 *
-	 * @return string
-	 */
-	public function grabSiteTableName() {
-		return $this->grabPrefixedTableNameFor( 'site' );
 	}
 
 	/**
@@ -1666,10 +1683,13 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param bool $subdomainInstall Whether this is a subdomain multisite installation or a subfolder one.
 	 *
+	 * @param bool $needHtaccess     Whether an `.htaccess` file should be put in place or not.
 	 * @return array An array containing exit information about multisite tables created/altered/updated.
 	 */
-	public function haveMultisiteInDatabase( $subdomainInstall = true ) {
+	public function haveMultisiteInDatabase( $subdomainInstall = true, $needHtaccess = false ) {
 		$this->isSubdomainMultisiteInstall = $subdomainInstall;
+		$this->needHtaccess                = $needHtaccess;
+		$this->isMultisite                 = true;
 		$dbh                               = $this->driver->getDbh();
 		foreach ( $this->tables->multisiteTables() as $table ) {
 			$operation         = 'create';
@@ -1691,24 +1711,46 @@ class WPDb extends ExtendedDb {
 		}
 
 		$domain = $this->getSiteDomain();
-		$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
+		if ( !$this->countInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain ] ) ) {
+			$this->haveInDatabase( $this->grabSiteTableName(), [ 'domain' => $domain, 'path' => '/' ] );
+		}
+		if ( !$this->countInDatabase( $this->grabBlogsTableName(), [ 'blog_id' => 1 ] ) ) {
+			$this->query( "ALTER TABLE {$this->grabBlogsTableName()} AUTO_INCREMENT=1" );
+			$mainBlogData = [
+				'site_id'      => 1,
+				'domain'       => $domain,
+				'path'         => '/',
+				'registered'   => Date::now(),
+				'last_updated' => Date::now(),
+				'public'       => 1
+			];
+			$this->haveInDatabase( $this->grabBlogsTableName(), $mainBlogData );
+		}
 
-		$multisiteConstants = [
-			'MULTISITE'            => true,
-			'SUBDOMAIN_INSTALL'    => $this->isSubdomainMultisiteInstall,
-			'DOMAIN_CURRENT_SITE'  => $this->getSiteDomain(),
-			'PATH_CURRENT_SITE'    => '/',
-			'SITE_ID_CURRENT_SITE' => 1,
-			'BLOG_ID_CURRENT_SITE' => 1
-		];
-
-		foreach ( $multisiteConstants as $multisiteConstant => $value ) {
-			if ( !defined( $multisiteConstant ) ) {
-				define( $multisiteConstant, $value );
-			}
+		if ( $this->needHtaccess ) {
+			$this->replaceFiles();
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Returns the site domain inferred from the `url` set in the config.
+	 *
+	 * @return string
+	 */
+	public function getSiteDomain() {
+		$domain = last( preg_split( '~//~', $this->config['url'] ) );
+		return $domain;
+	}
+
+	/**
+	 * Gets the prefixed `site` table name.
+	 *
+	 * @return string
+	 */
+	public function grabSiteTableName() {
+		return $this->grabPrefixedTableNameFor( 'site' );
 	}
 
 	/**
@@ -1721,34 +1763,12 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * Inserts a blog in the `blogs` table.
-	 *
-	 * @param  string $domainOrPath The subdomain or the path to the be used for the blog.
-	 * @param array   $overrides    An array of values to override the defaults.
-	 * @return int The inserted blog `blog_id`.
-	 */
-	public function haveBlogInDatabase( $domainOrPath, array $overrides = [ ] ) {
-		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults( $this->isSubdomainMultisiteInstall );
-		if ( $this->isSubdomainMultisiteInstall ) {
-			$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
-			$defaults['path']   = '/';
-		} else {
-			$defaults['domain'] = $this->getSiteDomain();
-			$defaults['path']   = sprintf( '/%s/', $domainOrPath );
-		}
-		$data = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
-
-		return $this->haveInDatabase( $this->grabBlogsTableName(), $data );
-	}
-
-	/**
-	 * Returns the site domain inferred from the `url` set in the config.
+	 * Gets the prefixed `blogs` table name.
 	 *
 	 * @return string
 	 */
-	public function getSiteDomain() {
-		$domain = last( preg_split( '~//~', $this->config['url'] ) );
-		return $domain;
+	public function grabBlogsTableName() {
+		return $this->grabPrefixedTableNameFor( 'blogs' );
 	}
 
 	/**
@@ -1769,6 +1789,56 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Inserts a blog in the `blogs` table.
+	 *
+	 * @param  string $domainOrPath The subdomain or the path to the be used for the blog.
+	 * @param array   $overrides    An array of values to override the defaults.
+	 * @return int The inserted blog `blog_id`.
+	 */
+	public function haveBlogInDatabase( $domainOrPath, array $overrides = [ ] ) {
+		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults( $this->isSubdomainMultisiteInstall );
+		if ( $this->isSubdomainMultisiteInstall ) {
+			if ( empty( $overrides['domain'] ) ) {
+				$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
+			}
+			$defaults['path'] = '/';
+		} else {
+			$defaults['domain'] = $this->getSiteDomain();
+			$defaults['path']   = sprintf( '/%s/', $domainOrPath );
+		}
+		$data = array_merge( $defaults, array_intersect_key( $overrides, $defaults ) );
+
+		$blogId = $this->haveInDatabase( $this->grabBlogsTableName(), $data );
+
+		$this->scaffoldBlogTables( $blogId, $domainOrPath );
+
+		return $blogId;
+	}
+
+	private function scaffoldBlogTables( $blogId, $subdomain = null ) {
+		$stylesheet = $this->grabOptionFromDatabase( 'stylesheet' );
+		$data       = [
+			'subdomain'  => $subdomain,
+			'domain'     => $this->getSiteDomain(),
+			'subfolder'  => $this->getSiteSubfolder(),
+			'stylesheet' => $stylesheet
+		];
+		$dbh        = $this->driver->getDbh();
+
+		$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId );
+		$sth       = $dbh->prepare( $dropQuery );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
+
+		$scaffoldQuery = $this->tables->getBlogScaffoldQuery( $this->config['tablePrefix'], $blogId, $data );
+		$sth           = $dbh->prepare( $scaffoldQuery );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
+
+		$this->scaffoldedBlogIds[] = $blogId;
+	}
+
+	/**
 	 * Removes an entry from the `blogs` table.
 	 *
 	 * @param array $criteria An array of search criteria.
@@ -1786,14 +1856,110 @@ class WPDb extends ExtendedDb {
 		$this->dontSeeInDatabase( $this->grabBlogsTableName(), $criteria );
 	}
 
-	protected function setTemplateData( array $overrides = [ ] ) {
-		if ( empty( $overrides['template_data'] ) ) {
-			$this->templateData = [ ];
-		} else {
-			$this->templateData = $overrides['template_data'];
-			$overrides          = array_diff_key( $overrides, [ 'template_data' => [ ] ] );
+	/**
+	 * Conditionally checks that a term exists in the database.
+	 *
+	 * Will look up the "terms" table, will throw if not found.
+	 *
+	 * @param  int $term_id The term ID.
+	 *
+	 * @return void
+	 */
+	protected function maybeCheckTermExistsInDatabase( $term_id ) {
+		if ( !isset( $this->config['checkExistence'] ) or false == $this->config['checkExistence'] ) {
+			return;
+		}
+		$tableName = $this->grabPrefixedTableNameFor( 'terms' );
+		if ( !$this->grabFromDatabase( $tableName, 'term_id', array( 'term_id' => $term_id ) ) ) {
+			throw new \RuntimeException( "A term with an id of $term_id does not exist", 1 );
+		}
+	}
+
+	private function query( $query ) {
+		$dbh = $this->driver->getDbh();
+		$sth = $dbh->prepare( $query );
+		$this->debugSection( 'Query', $sth->queryString );
+		$sth->execute();
+	}
+
+	public function _after( TestCase $test ) {
+		parent::_after( $test );
+		if ( $this->isMultisite && $this->shouldRestoreFiles ) {
+			if ( empty( $this->config['wpRootFolder'] ) ) {
+				throw new ModuleConfigException( __CLASS__, 'WordPress root folder must be set to have multisite files replaced' );
+			}
+
+			$path = $this->config['wpRootFolder'];
+
+			$htaccessReplacer = $this->makeHtaccessReplacer( $path );
+			$wpconfigReplacer = $this->makeWpConfigReplacer( $path );
+
+			$htaccessReplacer->restoreOriginal();
+			$wpconfigReplacer->restoreOriginal();
+
+			$this->shouldRestoreFiles = false;
+		}
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getSiteSubfolder() {
+		$subfolder = ltrim( end( explode( $this->getSiteDomain(), $this->config['url'] ) ), '/' );
+		return $subfolder;
+	}
+
+	private function hitSite() {
+		if ( !$this->hasModule( 'WPBrowser' ) ) {
+			return;
+		}
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, $this->config['url'] );
+		curl_setopt( $ch, CURLOPT_HEADER, 0 );
+		curl_exec( $ch );
+		curl_close( $ch );
+	}
+
+	protected function replaceFiles( array $overrides = [ ] ) {
+		if ( empty( $this->config['wpRootFolder'] ) ) {
+			throw new ModuleConfigException( __CLASS__, 'WordPress root folder must be set to have multisite files replaced' );
 		}
 
-		return $overrides;
+		$path = $this->config['wpRootFolder'];
+
+		$htaccessReplacer = $this->makeHtaccessReplacer( $path );
+		$wpconfigReplacer = $this->makeWpConfigReplacer( $path );
+
+		$htaccessReplacer->replaceOriginal();
+		$wpconfigReplacer->replaceOriginal();
+
+		$this->shouldRestoreFiles = true;
+	}
+
+	/**
+	 * @param $path
+	 */
+	protected function makeHtaccessReplacer( $path ) {
+		$subfolder    = $this->getSiteSubfolder();
+		$htaccessData = [ 'subfolder' => $subfolder ];
+		$htaccessFile = null;
+		if ( $this->isSubdomainMultisiteInstall ) {
+			$htaccessFile = new HtaccesReplacer( $path, new SubdomainHtaccess( $this->handlebars, $htaccessData ) );
+		} else {
+			$htaccessFile = new HtaccesReplacer( $path, new SubfolderHtaccess( $this->handlebars, $htaccessData ) );
+		}
+
+		return $htaccessFile;
+	}
+
+	/**
+	 * @param $path
+	 */
+	protected function makeWpConfigReplacer( $path ) {
+		$wpconfigData = [
+			'subdomainInstall' => $this->isSubdomainMultisiteInstall ? 'true' : 'false',
+			'siteDomain'       => $this->getSiteDomain()
+		];
+		return new WPConfigReplacer( $path, new RedirectingWPConfig( $this->handlebars, $wpconfigData ) );
 	}
 }

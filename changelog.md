@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.9.0] 2015-12-23
+### Changed
+- the `WPDb::haveMultisiteInDatabase` method will now scaffold browser accessible multisite installations starting from a single site one
+- WPDb module will drop tables created during multisite scaffolding
+
+### Added
+- `$autoload` parameter to `WPDb::haveOptionInDatabase` method
+- `wpRootFolder` optional config parameter to the `WPDb` module
+
 ##[1.8.11] 2015-12-17
 ### Fixed
 - added a check in embedded `bootstrap.php` file of WPLoader module for defined multisite vars
@@ -237,7 +246,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.8.11...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.0...HEAD
+[1.9.0]: https://github.com/lucatume/wp-browser/compare/1.8.11...1.9.0
 [1.8.11]: https://github.com/lucatume/wp-browser/compare/1.8.10...1.8.11
 [1.8.10]: https://github.com/lucatume/wp-browser/compare/1.8.9...1.8.10
 [1.8.9]: https://github.com/lucatume/wp-browser/compare/1.8.8...1.8.9
