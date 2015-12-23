@@ -28,6 +28,25 @@ use tad\WPBrowser\Generators\WpPassword;
 class WPDb extends ExtendedDb {
 
 	/**
+	 * @var array
+	 */
+	public $scaffoldedBlogIds = [ ];
+
+	public function _cleanup() {
+		parent::_cleanup();
+
+		$dbh = $this->driver->getDbh();
+
+		foreach ( $this->scaffoldedBlogIds as $blogId ) {
+			$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId );
+			$sth       = $dbh->prepare( $dropQuery );
+			$this->debugSection( 'Query', $sth->queryString );
+			$sth->execute();
+		}
+		$this->scaffoldedBlogIds = [ ];
+	}
+
+	/**
 	 * @var string
 	 */
 	protected $numberPlaceholder = '{{n}}';
@@ -1782,7 +1801,7 @@ class WPDb extends ExtendedDb {
 			if ( empty( $overrides['domain'] ) ) {
 				$defaults['domain'] = sprintf( '%s.%s', $domainOrPath, $this->getSiteDomain() );
 			}
-			$defaults['path']   = '/';
+			$defaults['path'] = '/';
 		} else {
 			$defaults['domain'] = $this->getSiteDomain();
 			$defaults['path']   = sprintf( '/%s/', $domainOrPath );
@@ -1797,17 +1816,17 @@ class WPDb extends ExtendedDb {
 	}
 
 	private function scaffoldBlogTables( $blogId, $subdomain = null ) {
-		$stylesheet    = $this->grabOptionFromDatabase( 'stylesheet' );
-		$data          = [
+		$stylesheet = $this->grabOptionFromDatabase( 'stylesheet' );
+		$data       = [
 			'subdomain'  => $subdomain,
 			'domain'     => $this->getSiteDomain(),
 			'subfolder'  => $this->getSiteSubfolder(),
 			'stylesheet' => $stylesheet
 		];
-		$dbh           = $this->driver->getDbh();
+		$dbh        = $this->driver->getDbh();
 
-		$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId);
-		$sth           = $dbh->prepare( $dropQuery );
+		$dropQuery = $this->tables->getBlogDropQuery( $this->config['tablePrefix'], $blogId );
+		$sth       = $dbh->prepare( $dropQuery );
 		$this->debugSection( 'Query', $sth->queryString );
 		$sth->execute();
 
@@ -1815,6 +1834,8 @@ class WPDb extends ExtendedDb {
 		$sth           = $dbh->prepare( $scaffoldQuery );
 		$this->debugSection( 'Query', $sth->queryString );
 		$sth->execute();
+
+		$this->scaffoldedBlogIds[] = $blogId;
 	}
 
 	/**
