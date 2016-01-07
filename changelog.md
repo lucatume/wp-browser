@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.9.1] 2016-01-7
+### Fixed
+- wrong table prefix in `WPDb::grabPrefixedTableNameFor` method for main blog when switching back to main blog.
+### Removed
+- the `WPDb::hitSite` method as not used anymore in code base.
+
 ##[1.9.0] 2015-12-23
 ### Changed
 - the `WPDb::haveMultisiteInDatabase` method will now scaffold browser accessible multisite installations starting from a single site one
@@ -246,7 +252,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.1...HEAD
+[1.9.1]: https://github.com/lucatume/wp-browser/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/lucatume/wp-browser/compare/1.8.11...1.9.0
 [1.8.11]: https://github.com/lucatume/wp-browser/compare/1.8.10...1.8.11
 [1.8.10]: https://github.com/lucatume/wp-browser/compare/1.8.9...1.8.10
