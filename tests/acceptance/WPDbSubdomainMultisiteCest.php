@@ -30,7 +30,7 @@ class WPDbSubdomainMultisiteCest {
 		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
 		// subdomain, need htaccess and wp-confing.php replaced
-		$I->haveMultisiteInDatabase( true, true );
+		$I->haveMultisiteInDatabase( true, true, 1 );
 
 		$I->amOnPage( '/' );
 		$I->see( 'Multisite is active' );
@@ -45,8 +45,8 @@ class WPDbSubdomainMultisiteCest {
 		$I->haveOptionInDatabase( 'template', 'multisite', 'yes' );
 
 		// subdomain, need htaccess and wp-confing.php replaced
-		$I->haveMultisiteInDatabase( true, true );
-		$blogIds = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}' ] );
+		$I->haveMultisiteInDatabase( true, true, 1 );
+		$blogIds = $I->haveManyBlogsInDatabase( 3, [ 'domain' => 'test{{n}}.' . $I->getSiteDomain() ] );
 
 		for ( $i = 0; $i < 3; $i++ ) {
 			$I->seeBlogInDatabase( [ 'domain' => 'test' . $i . '.' . $I->getSiteDomain() ] );

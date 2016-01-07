@@ -1684,9 +1684,12 @@ class WPDb extends ExtendedDb {
 	 * @param bool $subdomainInstall Whether this is a subdomain multisite installation or a subfolder one.
 	 *
 	 * @param bool $needHtaccess     Whether an `.htaccess` file should be put in place or not.
+	 * @param int $sleep A number in seconds the method should wait for db and files operation to complete; def. `0`.
+	 *
 	 * @return array An array containing exit information about multisite tables created/altered/updated.
+	 * @throws ModuleConfigException
 	 */
-	public function haveMultisiteInDatabase( $subdomainInstall = true, $needHtaccess = false ) {
+	public function haveMultisiteInDatabase( $subdomainInstall = true, $needHtaccess = false, $sleep = 0 ) {
 		$this->isSubdomainMultisiteInstall = $subdomainInstall;
 		$this->needHtaccess                = $needHtaccess;
 		$this->isMultisite                 = true;
@@ -1729,6 +1732,10 @@ class WPDb extends ExtendedDb {
 
 		if ( $this->needHtaccess ) {
 			$this->replaceFiles();
+		}
+
+		if ($sleep) {
+			sleep( $sleep );
 		}
 
 		return $out;
