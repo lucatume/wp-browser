@@ -1909,17 +1909,6 @@ class WPDb extends ExtendedDb {
 		return $subfolder;
 	}
 
-	private function hitSite() {
-		if ( !$this->hasModule( 'WPBrowser' ) ) {
-			return;
-		}
-		$ch = curl_init();
-		curl_setopt( $ch, CURLOPT_URL, $this->config['url'] );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_exec( $ch );
-		curl_close( $ch );
-	}
-
 	protected function replaceFiles( array $overrides = [ ] ) {
 		if ( empty( $this->config['wpRootFolder'] ) ) {
 			throw new ModuleConfigException( __CLASS__, 'WordPress root folder must be set to have multisite files replaced' );
