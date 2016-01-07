@@ -210,7 +210,7 @@ class WPDb extends ExtendedDb {
 	 */
 	public function grabPrefixedTableNameFor( $tableName = '' ) {
 		$idFrag = '';
-		if ( !in_array( $tableName, $this->uniqueTables ) ) {
+		if ( !( in_array( $tableName, $this->uniqueTables ) || $this->blogId == 1 ) ) {
 			$idFrag = empty( $this->blogId ) ? '' : "{$this->blogId}_";
 		}
 
@@ -1950,5 +1950,14 @@ class WPDb extends ExtendedDb {
 			'siteDomain'       => $this->getSiteDomain()
 		];
 		return new WPConfigReplacer( $path, new RedirectingWPConfig( $this->handlebars, $wpconfigData ) );
+	}
+
+	/**
+	 * Returns the table prefix, namespaced for secondary blogs if selected.
+	 *
+	 * @return string The blog aware table prefix.
+	 */
+	public function grabTablePrefix(  ) {
+		return $this->tablePrefix;
 	}
 }
