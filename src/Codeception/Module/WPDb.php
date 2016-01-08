@@ -44,6 +44,7 @@ class WPDb extends ExtendedDb {
 			$sth->execute();
 		}
 		$this->scaffoldedBlogIds = [ ];
+		$this->blogId = 0;
 	}
 
 	/**
