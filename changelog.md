@@ -7,6 +7,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - the `$sleep` parameter to the `WPDb::haveMultisiteInDatabase` method
 - missing `WPDb::$blogId` reset in cleanup method
 - the `WPDb::useTheme` method
+- the `WPDb::haveMenuInDatabase` method
+- the `WPDb::haveMenuItemInDatabase` method
+- the `WPDb::seeTermRelationshipInDatabase` method
 
 ##[1.9.1] 2016-01-7
 ### Fixed

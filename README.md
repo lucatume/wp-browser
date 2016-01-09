@@ -548,6 +548,10 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * seeUserMetaInDatabase
 * useBlog
 * useMainBlog
+* useTheme
+* haveMenuInDatabase
+* haveMenuItemInDatabase
+* seeTermRelationshipInDatabase
 
 See source code for more detail.
 
