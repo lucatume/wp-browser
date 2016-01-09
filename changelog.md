@@ -3,15 +3,17 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.9.2] 2016-01-09
 ### Added
 - the `$sleep` parameter to the `WPDb::haveMultisiteInDatabase` method
 - missing `WPDb::$blogId` reset in cleanup method
 - the `WPDb::useTheme` method
 - the `WPDb::haveMenuInDatabase` method
 - the `WPDb::haveMenuItemInDatabase` method
-- the `WPDb::seeTermRelationshipInDatabase` method
+- the `WPDb::seeTermRelationshipInDat` method
 
-##[1.9.1] 2016-01-7
+##[1.9.1] 2016-01-07
 ### Fixed
 - wrong table prefix in `WPDb::grabPrefixedTableNameFor` method for main blog when switching back to main blog.
 ### Removed
@@ -259,7 +261,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.2...HEAD
+[1.9.2]: https://github.com/lucatume/wp-browser/compare/1.9.1...1.9.2
 [1.9.1]: https://github.com/lucatume/wp-browser/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/lucatume/wp-browser/compare/1.8.11...1.9.0
 [1.8.11]: https://github.com/lucatume/wp-browser/compare/1.8.10...1.8.11
