@@ -32,6 +32,21 @@ class WPDb extends ExtendedDb {
 	 */
 	public $scaffoldedBlogIds = [ ];
 
+	/**
+	 * @var string The theme stylesheet in use.
+	 */
+	protected $stylesheet = '';
+
+	/**
+	 * @var array
+	 */
+	protected $menus = [ ];
+
+	/**
+	 * @var array
+	 */
+	protected $menuItems = [ ];
+
 	public function _cleanup() {
 		parent::_cleanup();
 
@@ -2021,5 +2036,82 @@ class WPDb extends ExtendedDb {
 		$this->haveOptionInDatabase( 'stylesheet', $stylesheet );
 		$this->haveOptionInDatabase( 'template', $template );
 		$this->haveOptionInDatabase( 'current_theme', $themeName );
+
+		$this->stylesheet           = $stylesheet;
+		$this->menus[ $stylesheet ] = empty( $this->menus[ $stylesheet ] ) ? [ ] : $this->menus[ $stylesheet ];
+	}
+
+	/**
+	 * Creates and adds a menu to a theme location in the database.
+	 *
+	 * @param string $slug The menu slug.
+	 * @param string $location The theme menu location the menu will be assigned to.
+	 * @param array $overrides An array of values to override the defaults.
+	 *
+	 * @return array An array containing the created menu `term_id` and `term_taxonomy_id`.
+	 */
+	public function haveMenuInDatabase( $slug, $location, array$overrides = [ ] ) {
+		if ( ! is_string( $slug ) ) {
+			throw new \InvalidArgumentException( 'Menu slug must be a string.' );
+		}
+		if ( ! is_string( $location ) ) {
+			throw new \InvalidArgumentException( 'Menu location must be a string.' );
+		}
+
+		if ( empty( $this->stylesheet ) ) {
+			throw new \RuntimeException( 'Stylesheet must be set to add menus, use `useTheme` first.' );
+		}
+
+		$title   = empty( $overrides['title'] ) ? ucwords( $slug, ' -_' ) : $overrides['title'];
+		$menuIds = $this->haveTermInDatabase( $title, 'nav_menu', [ 'slug' => $slug ] );
+
+		$menuTermTaxonomyIds = reset( $menuIds );
+
+		// set theme options to use the `primary` location
+		$this->haveOptionInDatabase( 'theme_mods_' . $this->stylesheet, [ 'nav_menu_locations' => [ 'primary' => $menuTermTaxonomyIds ] ] );
+
+		$this->menus[ $this->stylesheet ][ $slug ]     = $menuIds;
+		$this->menuItems[ $this->stylesheet ][ $slug ] = [ ];
+
+		return $menuIds;
+	}
+
+	/**
+	 * Adds a menu element to a menu for the current theme.
+	 *
+	 * @param string $menuSlug The menu slug the item should be added to.
+	 * @param string $title The menu item title.
+	 * @param int|null $menuOrder An optional menu order, `1` based.
+	 * @param array|null $meta An associative array that will be prefixed with `_menu_item_` for the item post meta.
+	 *
+	 * @return int The menu item post `ID`
+	 */
+	public function haveMenuItemInDatabase( $menuSlug, $title, $menuOrder = null, array $meta = [ ] ) {
+		if ( ! is_string( $menuSlug ) ) {
+			throw new \InvalidArgumentException( 'Menu slug must be a string.' );
+		}
+		if ( ! array_key_exists( $menuSlug, $this->menus[ $this->stylesheet ] ) ) {
+			throw new \RuntimeException( "Menu $menuSlug is not a registered menu for the current theme." );
+		}
+		$menuOrder  = $menuOrder ?: count( $this->menuItems[ $this->stylesheet ][ $menuSlug ] ) + 1;
+		$menuItemId = $this->havePostInDatabase( [
+			'post_title' => $title,
+			'menu_order' => $menuOrder,
+			'post_type'  => 'nav_menu_item'
+		] );
+		$defaults   = [
+			'type'      => 'custom',
+			'object_id' => $menuItemId,
+			'object'    => 'custom',
+			'url'       => 'http://example.com'
+		];
+		$meta       = array_merge( $defaults, $meta );
+		array_walk( $meta, function ( $value, $key ) use ( $menuItemId ) {
+			$this->havePostmetaInDatabase( $menuItemId, '_menu_item_' . $key, $value );
+		} );
+		$this->haveTermRelationshipInDatabase( $menuItemId, $this->menus[ $this->stylesheet ][$menuSlug][0] );
+		$this->menuItems[ $this->stylesheet ][ $menuSlug ][] = $menuItemId;
+
+		return $menuItemId;
 	}
 }
