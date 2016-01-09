@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - the `$sleep` parameter to the `WPDb::haveMultisiteInDatabase` method
 - missing `WPDb::$blogId` reset in cleanup method
+- the `WPDb::useTheme` method
 
 ##[1.9.1] 2016-01-7
 ### Fixed
