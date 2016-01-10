@@ -27,7 +27,12 @@ foreach (\$multisiteConstants as \$multisiteConstant => \$value) {
 		define(\$multisiteConstant, \$value);
 	}
 }
-include dirname(__FILE__) . '/original-wp-config.php';
+\$original = dirname(__FILE__) . '/original-wp-config.php';
+if(file_exists(\$original)){
+	include \$original;
+} else {
+	die("origina-wp-config.php file not found in '\$original'");
+}
 PHP;
 
 	/**
