@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- `wpunit` suite generation when using the `wpcept:bootstrap` command
+
 ### Changed
 - provisional redirect status `301` to `302` in temporary `.htaccess` file used by `WPDb::haveMultisisiteInDatabase` method
 

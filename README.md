@@ -163,13 +163,15 @@ The CLI application adds the `bootstrap` command argument to allow for a quick W
   wpcept bootstrap
 ```
 
-The command will generate the "Unit", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
+The command will generate the "Unit", "Wpunit", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
 
-* Unit with `Asserts` and `UnitHelper` modules
-* Functional with `Filesystem`, `WPDb`, `WPLoader` and `FunctionalHelper` modules
-* Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
+* Unit with `Asserts` and helper modules
+* Wpunit with `WPLoader` and helper modules
+* Functional with `Filesystem`, `WPDb`, `WPLoader` and helper modules
+* Acceptance with `WPBrowser`, `WPDb` and helper modules
 
 Please note that defautl Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+The "Wpunit" suite is meant to be a middle ground between the simple unit tests of classes that are able to mock any dependency and do not rely on any WordPress defined class, method or function and those that do.
 
 #### bootstrap:pyramid
 The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
