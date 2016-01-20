@@ -49,9 +49,7 @@ class WPBootstrap extends Bootstrap
                         'populate' => true,
                         'cleanup' => true,
                         'url' => 'http://wp.local',
-                        'tablePrefix' => 'wp_',
-                        'checkExistence' => true,
-                        'update' => true
+                        'tablePrefix' => 'wp_'
                     ],
                     'WPLoader' => [
                         'wpRootFolder' => '~/www/wordpress',
