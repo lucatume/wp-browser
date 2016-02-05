@@ -180,6 +180,7 @@ abstract class WPAjaxTestCase extends WPTestCase{
 	 * @param string $action
 	 */
 	protected function _handleAjax($action) {
+		$this->_last_response = NULL;
 
 		// Start output buffering
 		ini_set( 'implicit_flush', false );
