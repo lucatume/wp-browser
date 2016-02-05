@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.9.4] 2016-01-20
+### Fixed
+- proper name of `WPAjaxTestCase` class
+
 ##[1.9.3] 2016-01-20
 ### Added
 - `wpunit` suite generation when using the `wpcept:bootstrap` command
@@ -271,7 +275,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.4...HEAD
+[1.9.4]: https://github.com/lucatume/wp-browser/compare/1.9.3...1.9.4
 [1.9.3]: https://github.com/lucatume/wp-browser/compare/1.9.2...1.9.3
 [1.9.2]: https://github.com/lucatume/wp-browser/compare/1.9.1...1.9.2
 [1.9.1]: https://github.com/lucatume/wp-browser/compare/1.9.0...1.9.1
