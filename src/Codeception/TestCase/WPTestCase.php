@@ -91,6 +91,18 @@ class WPTestCase extends \Codeception\TestCase\Test {
 		}
 	}
 
+	/**
+	 * Switch between user roles
+	 * E.g. administrator, editor, author, contributor, subscriber
+	 * @param string $role
+	 */
+	protected function _setRole( $role ) {
+		$post = $_POST;
+		$user_id = self::factory()->user->create( array( 'role' => $role ) );
+		wp_set_current_user( $user_id );
+		$_POST = array_merge($_POST, $post);
+	}
+
 	function __isset($name)
 	{
 		return 'factory' === $name;
