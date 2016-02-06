@@ -162,18 +162,6 @@ abstract class WPAjaxTestCase extends WPTestCase{
 	}
 
 	/**
-	 * Switch between user roles
-	 * E.g. administrator, editor, author, contributor, subscriber
-	 * @param string $role
-	 */
-	protected function _setRole( $role ) {
-		$post = $_POST;
-		$user_id = self::factory()->user->create( array( 'role' => $role ) );
-		wp_set_current_user( $user_id );
-		$_POST = array_merge($_POST, $post);
-	}
-
-	/**
 	 * Mimic the ajax handling of admin-ajax.php
 	 * Capture the output via output buffering, and if there is any, store
 	 * it in $this->_last_message.
