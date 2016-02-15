@@ -170,7 +170,7 @@ The command will generate the "Unit", "Wpunit", "Functional" and "Acceptance" su
 * Functional with `Filesystem`, `WPDb`, `WPLoader` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
 
-Please note that defautl Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
 The "Wpunit" suite is meant to be a middle ground between the simple unit tests of classes that are able to mock any dependency and do not rely on any WordPress defined class, method or function and those that do.
 
 #### bootstrap:pyramid
@@ -181,11 +181,15 @@ The command
   wpcept bootstrap:pyramid
 ```
 
-will generate the "UI", "Service" and "Unit" suites and will take care of setting up default modules and their settings for each like:
+will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care of setting up default modules and their settings for each like:
 
 * Unit with `Asserts` and `UnitHelper` modules
+* Wpunit with `WPLoader` and helper modules
 * Functional with `Filesystem`, `WPDb`, `WPLoader` and `FunctionalHelper` modules
 * Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
+
+Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+The "Wpunit" suite is meant to be a middle ground between the simple unit tests of classes that are able to mock any dependency and do not rely on any WordPress defined class, method or function and those that do.
 
 #### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
