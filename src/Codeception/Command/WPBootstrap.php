@@ -139,18 +139,7 @@ class WPBootstrap extends Bootstrap
         $this->createDirs();
 
         if (!$input->getOption('empty')) {
-            $this->createUnitSuite();
-            $output->writeln("tests/unit created                 <- unit tests");
-            $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createWpunitSuite();
-            $output->writeln("tests/wpunit created                 <- WordPress unit tests");
-            $output->writeln("tests/wpunit.suite.yml written       <- WordPress unit tests suite configuration");
-            $this->createFunctionalSuite();
-            $output->writeln("tests/functional created           <- functional tests");
-            $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
-            $this->createAcceptanceSuite();
-            $output->writeln("tests/acceptance created           <- acceptance tests");
-            $output->writeln("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+            $this->setupSuites($output);
         }
 
         if (file_exists('.gitignore')) {
@@ -256,5 +245,24 @@ class WPBootstrap extends Bootstrap
         );
 
         return $suiteConfig;
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    protected function setupSuites(OutputInterface $output)
+    {
+        $this->createUnitSuite();
+        $output->writeln("tests/unit created                 <- unit tests");
+        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
+        $this->createWpunitSuite();
+        $output->writeln("tests/wpunit created                 <- WordPress unit tests");
+        $output->writeln("tests/wpunit.suite.yml written       <- WordPress unit tests suite configuration");
+        $this->createFunctionalSuite();
+        $output->writeln("tests/functional created           <- functional tests");
+        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
+        $this->createAcceptanceSuite();
+        $output->writeln("tests/acceptance created           <- acceptance tests");
+        $output->writeln("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
     }
 }

@@ -3,8 +3,15 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.9.5] 2016-02-15
+### Fixed
+- wrong scaffolding structure when using the `wpcept bootstrap:pyramid command`
 ### Modified
 - the `WPBrowser` and `WpWebDriver` `activatePlugin` to use DOM in place of strings (l10n friendly)
+
+###Added
+- the `wpunit` test suite to the ones scaffolded by default when using the `bootstrap:pyramid` command
 - the `WPBrowser` and `WpWebDriver` `deactivatePlugin` to use DOM in place of strings (l10n friendly)
 
 ##[1.9.4] 2016-01-20 
@@ -278,7 +285,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.9.5...HEAD
+[1.9.5]: https://github.com/lucatume/wp-browser/compare/1.9.4...1.9.5
 [1.9.4]: https://github.com/lucatume/wp-browser/compare/1.9.3...1.9.4
 [1.9.3]: https://github.com/lucatume/wp-browser/compare/1.9.2...1.9.3
 [1.9.2]: https://github.com/lucatume/wp-browser/compare/1.9.1...1.9.2
