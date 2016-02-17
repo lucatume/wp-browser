@@ -3,16 +3,16 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Modified
+- the `WPBrowser` and `WpWebDriver` `activatePlugin` to use DOM in place of strings (l10n friendly)
+- the `WPBrowser` and `WpWebDriver` `deactivatePlugin` to use DOM in place of strings (l10n friendly)
 
 ##[1.9.5] 2016-02-15
 ### Fixed
 - wrong scaffolding structure when using the `wpcept bootstrap:pyramid command`
-### Modified
-- the `WPBrowser` and `WpWebDriver` `activatePlugin` to use DOM in place of strings (l10n friendly)
 
 ###Added
 - the `wpunit` test suite to the ones scaffolded by default when using the `bootstrap:pyramid` command
-- the `WPBrowser` and `WpWebDriver` `deactivatePlugin` to use DOM in place of strings (l10n friendly)
 
 ##[1.9.4] 2016-01-20 
 ### Fixed
