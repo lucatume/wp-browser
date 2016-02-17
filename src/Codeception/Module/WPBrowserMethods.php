@@ -38,7 +38,7 @@
 		 * @return void
 		 */
 		public function activatePlugin( $pluginSlug ) {
-			$this->click( "#{$pluginSlug} span.activate a:first-of-type" );
+			$this->click( "#{$pluginSlug} span.activate > a:first-of-type" );
 		}
 
 		/**
@@ -51,7 +51,7 @@
 		 * @return void
 		 */
 		public function deactivatePlugin( $pluginSlug ) {
-			$this->click( "#{$pluginSlug} span.deactivate a:first-of-type" );
+			$this->click( "#{$pluginSlug} span.deactivate > a:first-of-type" );
 		}
 
 		/**
