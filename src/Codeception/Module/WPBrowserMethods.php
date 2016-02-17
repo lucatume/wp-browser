@@ -51,7 +51,7 @@
 		 * @return void
 		 */
 		public function deactivatePlugin( $pluginSlug ) {
-			$this->click( 'Deactivate', '#' . $pluginSlug );
+			$this->click( "#{$pluginSlug} span.deactivate a:first-of-type" );
 		}
 
 		/**

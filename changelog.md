@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Modified
 - the `WPBrowser` and `WpWebDriver` `activatePlugin` to use DOM in place of strings (l10n friendly)
+- the `WPBrowser` and `WpWebDriver` `deactivatePlugin` to use DOM in place of strings (l10n friendly)
 
 ##[1.9.4] 2016-01-20 
 ### Fixed
