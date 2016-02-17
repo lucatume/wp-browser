@@ -38,7 +38,7 @@
 		 * @return void
 		 */
 		public function activatePlugin( $pluginSlug ) {
-			$this->click( 'Activate', '#' . $pluginSlug );
+			$this->click( "#{$pluginSlug} span.activate a:first-of-type" );
 		}
 
 		/**
