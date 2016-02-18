@@ -19,6 +19,16 @@ To install simply require the package in the `composer.json` file like
 and then use `composer update` to fetch the package.  
 After that  follow the configuration instructions below.
 
+## Modules
+While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
+Not every module will make sense or work in any suite or type of test case but here's an high level view:
+
+* WPBrowser - a PHP based, JavaScript-less and headless browser for acceptance testing
+* WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for acceptance testing
+* WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database, use in acceptance and functional testing
+* WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in unit and functional tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
+* WPBootstrapper - will bootstrap (**simply load**) an existing WordPress installation to have access to it in acceptance and functional tests.
+
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
 In the suite `.yml` configuration file add the module among the loaded ones
@@ -152,6 +162,12 @@ and configure it using the required parameters:
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions that should be called after before any test case runs, after plugins have been loaded and activated.
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
+
+### WPBootstrapper
+The module will bootstrap a WordPress installation loading its `wp-load.php` file.  
+The configuration will require one parameter only :
+
+ * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
 
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
