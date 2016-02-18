@@ -163,8 +163,8 @@ and configure it using the required parameters:
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
-### WPBootstrapper
-The module will bootstrap a WordPress installation loading its `wp-load.php` file.  
+### WPBootstrapper configuration
+The module will bootstrap a WordPress installation loading its `wp-load.php` file.   
 The configuration will require one parameter only :
 
  * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
