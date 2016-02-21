@@ -17,6 +17,7 @@ use SebastianBergmann\GlobalState\Snapshot;
  */
 class WPBootstrapper extends Module
 {
+    use WPSugarMethods;
 
     protected $requiredFields = ['wpRootFolder'];
 
