@@ -32,7 +32,7 @@ trait WPSugarMethods
      */
     public function supportedWpComponents()
     {
-        return ['plugins' => 'includes/plugins.php'];
+        return ['plugins' => 'wp-admin/includes/plugin.php'];
     }
 
     /**
@@ -52,7 +52,7 @@ trait WPSugarMethods
             throw new \InvalidArgumentException("Component '$component' is not supported.");
         }
 
-        $componentPath = $this->wpRootFolder . DIRECTORY_SEPARATOR . $supportedComponents[$component];
+        $componentPath = $this->config['wpRootFolder'] . DIRECTORY_SEPARATOR . $supportedComponents[$component];
         if (!file_exists($componentPath)) {
             throw new \InvalidArgumentException("Component path [$componentPath] does not exist.");
         }
