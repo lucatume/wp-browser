@@ -217,4 +217,9 @@
 
 			return empty( $cookies ) ? null : array_pop( $cookies );
 		}
+
+		public function amOnAdminPage($path)
+		{
+			$this->amOnPage($this->adminUrl . '/' . ltrim($path, '/'));
+		}
 	}
