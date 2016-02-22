@@ -46,11 +46,13 @@ trait WPSugarMethods
             throw new \InvalidArgumentException('Component name must be a string');
         }
 
-        if (!isset($this->wpComponents[$component])) {
+        $supportedComponents = $this->supportedWpComponents();
+
+        if (!isset($supportedComponents[$component])) {
             throw new \InvalidArgumentException("Component '$component' is not supported.");
         }
 
-        $componentPath = $this->wpRootFolder . DIRECTORY_SEPARATOR . $this->wpComponents[$component];
+        $componentPath = $this->wpRootFolder . DIRECTORY_SEPARATOR . $supportedComponents[$component];
         if (!file_exists($componentPath)) {
             throw new \InvalidArgumentException("Component path [$componentPath] does not exist.");
         }
