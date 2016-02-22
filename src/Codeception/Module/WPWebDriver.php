@@ -14,18 +14,21 @@ class WPWebDriver extends WebDriver
      * @var array
      */
     protected $requiredFields = array('adminUsername', 'adminPassword', 'adminUrl');
+
     /**
      * The login screen absolute URL
      *
      * @var string
      */
     protected $loginUrl;
+
     /**
      * The admin absolute URL.
      *
-     * @var [type]
+     * @var string
      */
     protected $adminUrl;
+
     /**
      * The plugin screen absolute URL
      *
