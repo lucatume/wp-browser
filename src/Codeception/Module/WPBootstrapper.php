@@ -81,6 +81,8 @@ class WPBootstrapper extends Module
             }
         }
         codecept_debug('WPBootstrappper: WordPress bootstrapped from wp-load.php file');
+
+        sleep(2);
     }
 
     private function restoreAllGlobals()
@@ -111,6 +113,16 @@ class WPBootstrapper extends Module
         } else {
             $wpdb->check_connection();
         }
+
+        /**
+         * To avoid `mysqli_free_result` errors during the `wpdb::flush()` method set the result to `null`.
+         * See `wp-db.php` file line 1425.
+         */
+        $reflection = new \ReflectionClass($wpdb);
+        $resultProperty = $reflection->getProperty('result');
+        $resultProperty->setAccessible(true);
+        $resultProperty->setValue($wpdb, null);
+        $resultProperty->setAccessible(false);
     }
 
     public function getSnapshot()

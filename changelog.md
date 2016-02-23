@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Fixed
-- `WPBootstrapper` module `wpdb` connection and re-connection check
+- `WPBootstrapper` module `wpdb` connection and re-connection process
 
 ##[1.10.3] 2016-02-18
 ### Added
