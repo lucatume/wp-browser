@@ -634,3 +634,10 @@ The module is an extension of the `Codeception\Module\Db` class implementing som
 
   public function haveOrUpdateInDatabase($table, array $data)
 ```
+
+### WPBootstrapper
+The module adds some *sugar* methods, beside allowing for the call of any WordPress defined function or class method, to speed up teh writing of test methods:
+
+* `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
+* `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
+  * `plugins` - includes the `wp-admin/includes/plugin.php` file to access functions like `activate_plugin` and `deactivate_plugin`.
