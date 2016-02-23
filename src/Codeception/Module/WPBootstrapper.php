@@ -106,8 +106,10 @@ class WPBootstrapper extends Module
         /** @var \wpdb $wpdb */
         global $wpdb;
 
-        if (class_exists('wpdb')) {
+        if (empty($wpdb)) {
             $wpdb = new \wpdb(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
+        } else {
+            $wpdb->check_connection();
         }
     }
 
