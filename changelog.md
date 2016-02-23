@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `WPBootstrapper` module `wpdb` connection and re-connection check
 
 ##[1.10.3] 2016-02-18
+### Added
+- `WPBrowserMethods::amOnAdminPage` method, applies to WPWebDriver and WPBrowser modules
+- `WPBootstrapper::setPermalinkStructureAndFlush` method 
+- `WPBootstrapper::loadWpComponent` method 
 
 ##[1.10.0] 2016-02-18
 ### Modified
@@ -295,7 +299,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Reference to ModuleConfigException class in WPLoader class.
 
 [unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.3...HEAD
-[1.10.3]: https://github.com/lucatume/wp-browser/compare/1.9.5...1.10.3
+[1.10.3]: https://github.com/lucatume/wp-browser/compare/1.10.0...1.10.3
 [1.10.0]: https://github.com/lucatume/wp-browser/compare/1.9.5...1.10.0
 [1.9.5]: https://github.com/lucatume/wp-browser/compare/1.9.4...1.9.5
 [1.9.4]: https://github.com/lucatume/wp-browser/compare/1.9.3...1.9.4
