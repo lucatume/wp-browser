@@ -38,7 +38,7 @@
 		 * @return void
 		 */
 		public function activatePlugin( $pluginSlug ) {
-			$this->click( "#{$pluginSlug} span.activate > a:first-of-type" );
+			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type" );
 		}
 
 		/**
@@ -51,7 +51,7 @@
 		 * @return void
 		 */
 		public function deactivatePlugin( $pluginSlug ) {
-			$this->click( "#{$pluginSlug} span.deactivate > a:first-of-type" );
+			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.deactivate > a:first-of-type" );
 		}
 
 		/**
@@ -87,7 +87,7 @@
 		 */
 		public function seePluginDeactivated( $pluginSlug ) {
 			$this->seePluginInstalled( $pluginSlug );
-			$this->seeElement( "#" . $pluginSlug . '.inactive' );
+			$this->seeElement( "table.plugins tr[data-slug='$pluginSlug'].inactive" );
 		}
 
 		/**
@@ -100,7 +100,7 @@
 		 * @return void
 		 */
 		public function seePluginInstalled( $pluginSlug ) {
-			$this->seeElement( '#' . $pluginSlug );
+			$this->seeElement( "table.plugins tr[data-slug='$pluginSlug']" );
 		}
 
 		/**
@@ -114,7 +114,7 @@
 		 */
 		public function seePluginActivated( $pluginSlug ) {
 			$this->seePluginInstalled( $pluginSlug );
-			$this->seeElement( "#" . $pluginSlug . '.active' );
+			$this->seeElement( "table.plugins tr[data-slug='$pluginSlug'].active" );
 		}
 
 		/**
@@ -127,7 +127,7 @@
 		 * @return void
 		 */
 		public function dontSeePluginInstalled( $pluginSlug ) {
-			$this->dontSeeElement( '#' . $pluginSlug );
+			$this->dontSeeElement( "table.plugins tr[data-slug='$pluginSlug']" );
 		}
 
 		/**
