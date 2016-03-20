@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.10.5] 2016-03-20
+### Fixed
+- plugin activation and deactivation related methods for WPBrowser and WPWebDriver modules (thanks @dimitrismitsis)
+
 ##[1.10.4] 2016-02-23
 ### Fixed
 - `WPBootstrapper` module `wpdb` connection and re-connection process
@@ -300,7 +304,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.5...HEAD
+[1.10.5]: https://github.com/lucatume/wp-browser/compare/1.10.4...1.10.5
 [1.10.4]: https://github.com/lucatume/wp-browser/compare/1.10.3...1.10.4
 [1.10.3]: https://github.com/lucatume/wp-browser/compare/1.10.0...1.10.3
 [1.10.0]: https://github.com/lucatume/wp-browser/compare/1.9.5...1.10.0
