@@ -50,6 +50,8 @@ class WPDb extends ExtendedDb {
 	public function _cleanup() {
 		parent::_cleanup();
 
+		$this->initialize_driver();
+
 		$dbh = $this->driver->getDbh();
 
 		foreach ( $this->scaffoldedBlogIds as $blogId ) {
@@ -182,11 +184,7 @@ class WPDb extends ExtendedDb {
 			$this->sql = explode( "\n", $sql );
 		}
 
-		try {
-			$this->driver = Driver::create( $this->config['dsn'], $this->config['user'], $this->config['password'] );
-		} catch ( \PDOException $e ) {
-			throw new ModuleConfigException( __CLASS__, $e->getMessage() . ' while creating PDO connection' );
-		}
+		$this->initialize_driver();
 
 		$this->dbh = $this->driver->getDbh();
 
@@ -2125,5 +2123,13 @@ class WPDb extends ExtendedDb {
 	 */
 	public function seeTermRelationshipInDatabase( array $criteria ) {
 		$this->seeInDatabase( $this->grabPrefixedTableNameFor( 'term_relationships' ), $criteria );
+	}
+
+	protected function initialize_driver() {
+		try {
+			$this->driver = Driver::create( $this->config['dsn'], $this->config['user'], $this->config['password'] );
+		} catch ( \PDOException $e ) {
+			throw new ModuleConfigException( __CLASS__, $e->getMessage() . ' while creating PDO connection' );
+		}
 	}
 }
