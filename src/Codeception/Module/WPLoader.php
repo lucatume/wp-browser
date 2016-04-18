@@ -288,8 +288,10 @@ class WPLoader extends Module
         if (empty($this->config['activatePlugins'])) {
             return;
         }
+
         foreach ($this->config['activatePlugins'] as $plugin) {
             do_action("activate_$plugin");
+            update_option('active_plugins',array_merge(get_option('active_plugins', [ ]), [ $plugin]));
         }
 
         wp_set_current_user($currentUserIdBackup);

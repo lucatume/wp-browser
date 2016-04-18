@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.10.7] 2016-03-30
+### Fixed
+- faulty active plugin option setting
+
 ##[1.10.6] 2016-03-30
 ### Fixed
 - fixed db driver initialization in `WPDb::_cleanup` method
@@ -308,7 +312,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.6...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.7...HEAD
+[1.10.7]: https://github.com/lucatume/wp-browser/compare/1.10.6...1.10.7
 [1.10.6]: https://github.com/lucatume/wp-browser/compare/1.10.5...1.10.6
 [1.10.5]: https://github.com/lucatume/wp-browser/compare/1.10.4...1.10.5
 [1.10.4]: https://github.com/lucatume/wp-browser/compare/1.10.3...1.10.4
