@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- missing parameters errors in `wpcept` bin
+
+### Changed
+- `wpcept` bin command to include and use latest Codeception code
 
 ##[1.10.7] 2016-03-30
 ### Fixed
@@ -38,7 +43,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - wrong scaffolding structure when using the `wpcept bootstrap:pyramid command`
 
-###Added
+### Added
 - the `wpunit` test suite to the ones scaffolded by default when using the `bootstrap:pyramid` command
 
 ##[1.9.4] 2016-01-20 
