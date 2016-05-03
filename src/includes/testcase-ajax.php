@@ -50,7 +50,7 @@ abstract class WP_Ajax_UnitTestCase extends WP_UnitTestCase {
 		'menu-locations-save', 'menu-quick-search', 'meta-box-order', 'get-permalink',
 		'sample-permalink', 'inline-save', 'inline-save-tax', 'find_posts', 'widgets-order',
 		'save-widget', 'set-post-thumbnail', 'date_format', 'time_format', 'wp-fullscreen-save-post',
-		'wp-remove-post-lock', 'dismiss-wp-pointer', 'heartbeat', 'nopriv_heartbeat', 'get-revision-diffs',
+		'wp-remove-post-lock', 'dismiss-wp-pointer', 'send-attachment-to-editor', 'heartbeat', 'nopriv_heartbeat', 'get-revision-diffs',
 		'save-user-color-scheme', 'update-widget', 'query-themes', 'parse-embed', 'set-attachment-thumbnail',
 		'parse-media-shortcode', 'destroy-sessions', 'install-plugin', 'update-plugin', 'press-this-save-post',
 		'press-this-add-category', 'crop-image', 'generate-password',
@@ -175,10 +175,10 @@ abstract class WP_Ajax_UnitTestCase extends WP_UnitTestCase {
 	/**
 	 * Mimic the ajax handling of admin-ajax.php
 	 * Capture the output via output buffering, and if there is any, store
-	 * it in $this->_last_message.
+	 * it in $this->_last_response.
 	 * @param string $action
 	 */
-	protected function _handleAjax($action) {
+	protected function _handleAjax( $action ) {
 
 		// Start output buffering
 		ini_set( 'implicit_flush', false );

@@ -6,6 +6,18 @@ function rand_str($len=32) {
 	return substr(md5(uniqid(rand())), 0, $len);
 }
 
+function rand_long_str( $length ) {
+	$chars = 'abcdefghijklmnopqrstuvwxyz';
+	$string = '';
+
+	for ( $i = 0; $i < $length; $i++ ) {
+		$rand = rand( 0, strlen( $chars ) - 1 );
+		$string .= substr( $chars, $rand, 1 );
+	}
+
+	return $string;
+}
+
 // strip leading and trailing whitespace from each line in the string
 function strip_ws($txt) {
 	$lines = explode("\n", $txt);
@@ -323,18 +335,11 @@ if ( !function_exists( 'str_getcsv' ) ) {
  * Removes the post type and its taxonomy associations.
  */
 function _unregister_post_type( $cpt_name ) {
-	unset( $GLOBALS['wp_post_types'][ $cpt_name ] );
-	unset( $GLOBALS['_wp_post_type_features'][ $cpt_name ] );
-
-	foreach ( $GLOBALS['wp_taxonomies'] as $taxonomy ) {
-		if ( false !== $key = array_search( $cpt_name, $taxonomy->object_type ) ) {
-			unset( $taxonomy->object_type[$key] );
-		}
-	}
+	unregister_post_type( $cpt_name );
 }
 
 function _unregister_taxonomy( $taxonomy_name ) {
-	unset( $GLOBALS['wp_taxonomies'][$taxonomy_name] );
+	unregister_taxonomy( $taxonomy_name );
 }
 
 /**
@@ -357,7 +362,7 @@ function _cleanup_query_vars() {
 		unset( $GLOBALS[$v] );
 
 	foreach ( get_taxonomies( array() , 'objects' ) as $t ) {
-		if ( $t->public && ! empty( $t->query_var ) )
+		if ( $t->publicly_queryable && ! empty( $t->query_var ) )
 			$GLOBALS['wp']->add_query_var( $t->query_var );
 	}
 
