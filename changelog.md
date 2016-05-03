@@ -6,7 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[1.10.9] 2016-05-03
 ### Fixed
-- wrongly merged code from development version
+- wrongly merged code from development version (thanks @crebacz for the prompt message!)
+- warnings in `WPDb` module due to hasty use of array manipulation function
+
+### Removed
+- unreliable support for multisite scaffolding from WPDb module
 
 ##[1.10.8] 2016-05-02
 ### Fixed
