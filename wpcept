@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
 /**
- * Codeception CLI
- * modified to include the generate:wpunit command
- * will otherwise act exactly like `codecept` original command
+ * WPBrowser CLI
+ * Modified to include WPBrowser specific commands;
+ * will otherwise act like `codecept` original command
  */
 
-require_once dirname(__FILE__).'/autoload.php';
+require_once __DIR__.'/autoload.php';
 
 use Symfony\Component\Console\Application;
 
@@ -29,8 +29,9 @@ $app->add(new Codeception\Command\GenerateSuite('generate:suite'));
 $app->add(new Codeception\Command\GenerateHelper('generate:helper'));
 $app->add(new Codeception\Command\GenerateScenarios('generate:scenarios'));
 $app->add(new Codeception\Command\Clean('clean'));
-$app->add(new Codeception\Command\GenerateGroup('generate:group'));
+$app->add(new Codeception\Command\GenerateGroup('generate:groupobject'));
 $app->add(new Codeception\Command\GeneratePageObject('generate:pageobject'));
 $app->add(new Codeception\Command\GenerateStepObject('generate:stepobject'));
+$app->add(new Codeception\Command\GenerateEnvironment('generate:environment'));
 $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBootstrap'));
 $app->run();
