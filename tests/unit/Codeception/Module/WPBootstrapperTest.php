@@ -45,6 +45,20 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
         $this->restorer = $this->prophesize('SebastianBergmann\GlobalState\Restorer');
     }
 
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        if (!function_exists('set_site_transient')) {
+            function set_site_transient($key, $value)
+            {
+                global $_transients;
+                $_transients = is_array($_transients) ? $_transients : [];
+                $_transients[$key] = $value;
+            }
+        }
+    }
+
     protected function _after()
     {
     }
@@ -211,6 +225,32 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
         $sut->bootstrapWp();
 
         $this->assertEquals('foo', $someVar);
+    }
+
+    /**
+     * @test
+     * it should deactivate updates when bootstrapping
+     */
+    public function it_should_deactivate_updates_when_bootstrapping()
+    {
+        $root = vfsStream::setup('wproot4',
+            null,
+            ['wp' => ['wp-load.php' => '<?php global $_flag; $_flag = true; ?>']]);
+        $this->config['wpRootFolder'] = vfsStream::url('wproot4/wp');
+        $sut = $this->make_instance();
+        $sut->_initialize();
+
+        $sut->bootstrapWp();
+
+        global $_transients;
+        $this->assertInternalType('array', $_transients);
+        foreach (['update_core', 'update_plugins', 'update_themes'] as $key) {
+            $this->assertArrayHasKey($key, $_transients);
+            $this->assertInstanceOf('stdClass', $_transients[$key]);
+            $this->assertObjectHasAttribute('last_checked', $_transients[$key]);
+            $expectedTime = time() + 86400;
+            $this->assertEquals($expectedTime, $_transients[$key]->last_checked, null, 5.0);
+        }
     }
 
     private function make_instance()

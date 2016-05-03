@@ -82,6 +82,11 @@ class WPBootstrapper extends Module
         }
         codecept_debug('WPBootstrappper: WordPress bootstrapped from wp-load.php file');
 
+        // prevent WordPress from trying to update when bootstrapping
+        foreach (['update_core', 'update_plugins', 'update_themes'] as $key) {
+            set_site_transient($key, (object)['last_checked' => time() + 86400]);
+        }
+
         sleep(2);
     }
 
