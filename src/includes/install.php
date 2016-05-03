@@ -33,7 +33,12 @@ global $phpmailer;
 require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
 $phpmailer = new MockPHPMailer();
 
-$wpdb->query( 'SET storage_engine = INNODB' );
+if ( version_compare( $wpdb->db_version(), '5.5.3', '>=' ) ) {
+	$wpdb->query( 'SET default_storage_engine = InnoDB' );
+} else {
+	$wpdb->query( 'SET storage_engine = InnoDB' );
+}
+
 $wpdb->select( DB_NAME, $wpdb->dbh );
 
 echo "Installing..." . PHP_EOL;
