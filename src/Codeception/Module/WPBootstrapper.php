@@ -105,6 +105,10 @@ class WPBootstrapper extends Module
 
     private function restoreWpdbConnection()
     {
+        if (!class_exists('wpdb')) {
+            return;
+        }
+
         /** @var \wpdb $wpdb */
         global $wpdb;
 
