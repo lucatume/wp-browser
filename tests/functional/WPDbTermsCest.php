@@ -182,12 +182,13 @@ class WPDbTermsCest {
 			'one'   => 2,
 			'three' => 4
 		];
-		$termId     = reset( $I->haveTermInDatabase( 'some_term', 'some_taxonomy', [
+		$termIds = $I->haveTermInDatabase('some_term', 'some_taxonomy', [
 			'meta' => [
 				'foo' => 'bar',
 				'baz' => $objectMeta
 			]
-		] ) );
+		]);
+		$termId     = reset($termIds);
 
 		$I->seeTermInDatabase( [ 'term_id' => $termId ] );
 		$I->seeTermMetaInDatabase( [ 'term_id' => $termId, 'meta_key' => 'foo', 'meta_value' => 'bar' ] );
