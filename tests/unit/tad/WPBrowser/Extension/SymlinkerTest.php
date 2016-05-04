@@ -1,6 +1,7 @@
 <?php
 namespace tad\WPBrowser\Extension;
 
+use Codeception\Event\PrintResultEvent;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use tad\WPBrowser\Filesystem\Filesystem;
@@ -32,12 +33,24 @@ class SymlinkerTest extends \Codeception\TestCase\Test
      */
     protected $event;
 
+    /**
+     * @var PrintResultEvent
+     */
+    protected $printEvent;
+
+    /**
+     * @var string
+     */
+    protected $filename;
+
     protected function _before()
     {
+        $this->filename = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
         $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
         $this->filesystem->isDir(__DIR__)->willReturn(true);
         $this->filesystem->isWriteable(__DIR__)->willReturn(true);
         $this->event = $this->prophesize('\Codeception\Event\SuiteEvent');
+        $this->printEvent = $this->prophesize('\Codeception\Event\PrintResultEvent');
     }
 
     protected function _after()
@@ -132,10 +145,27 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
         $this->filesystem->isDir(__DIR__)->willReturn(true);
         $this->filesystem->isWriteable(__DIR__)->willReturn(true);
-        $this->filesystem->symlink(codecept_root_dir(), __DIR__, true)->shouldBeCalled();
+        $this->filesystem->fileExists($this->filename)->willReturn(false);
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $this->filename, true)->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->beforeSuite($this->event->reveal());
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should not attempt re-linking if file exists already
+     */
+    public function it_should_not_attempt_re_linking_if_file_exists_already()
+    {
+        $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
+        $this->filesystem->isDir(__DIR__)->willReturn(true);
+        $this->filesystem->isWriteable(__DIR__)->willReturn(true);
+        $this->filesystem->fileExists($this->filename)->willReturn(true);
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $this->filename, true)->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->symlink($this->event->reveal());
     }
 
     /**
@@ -147,10 +177,11 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
         $this->filesystem->isDir(__DIR__)->willReturn(true);
         $this->filesystem->isWriteable(__DIR__)->willReturn(true);
-        $this->filesystem->symlink(codecept_root_dir(), __DIR__, true)->shouldBeCalled();
+        $this->filesystem->fileExists($this->filename)->willReturn(false);
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $this->filename, true)->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->beforeSuite($this->event->reveal());
+        $sut->symlink($this->event->reveal());
     }
 
     /**
@@ -160,23 +191,39 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_unlink_the_root_folder_from_the_destination_after_the_suite_ran()
     {
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
+        $this->filesystem->fileExists($this->filename)->willReturn(true);
         $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->afterSuite($this->event->reveal());
+        $sut->unlink($this->printEvent->reveal());
     }
 
     /**
      * @test
-     * it should unlink the copied theme from the destination folder after the suite ran if mode is theme
+     * it should unlink the linked theme from the destination folder after the suite ran if mode is theme
      */
-    public function it_should_unlink_the_copied_theme_from_the_destination_folder_after_the_suite_ran_if_mode_is_theme()
+    public function it_should_unlink_the_linked_theme_from_the_destination_folder_after_the_suite_ran_if_mode_is_theme()
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled();
+        $this->filesystem->fileExists($this->filename)->willReturn(true);
+        $this->filesystem->unlink($this->filename)->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->afterSuite($this->event->reveal());
+        $sut->unlink($this->printEvent->reveal());
+    }
+
+    /**
+     * @test
+     * it should not attempt unlinking if destination file does not exist
+     */
+    public function it_should_not_attempt_unlinking_if_destination_file_does_not_exist()
+    {
+        $this->config = ['mode' => 'theme', 'destination' => __DIR__];
+        $this->filesystem->fileExists($this->filename)->willReturn(false);
+        $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->unlink($this->printEvent->reveal());
     }
 
     private function make_instance()

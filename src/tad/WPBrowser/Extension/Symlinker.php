@@ -11,14 +11,19 @@ use tad\WPBrowser\Filesystem\Filesystem;
 class Symlinker extends Extension
 {
     public static $events = [
-        'suite.before' => 'beforeSuite',
-        'suite.after' => 'afterSuite'
+        'module.init' => 'symlink',
+        'result.print.after' => 'unlink'
     ];
 
     /**
      * @var array
      */
     protected $required = ['mode' => ['plugin', 'theme'], 'destination'];
+
+    /**
+     * @var string
+     */
+    protected $destination;
 
     /**
      * @var Filesystem
@@ -31,24 +36,33 @@ class Symlinker extends Extension
         parent::__construct($config, $options);
     }
 
-    public function beforeSuite(\Codeception\Event\SuiteEvent $e)
+    public function symlink(\Codeception\Event\SuiteEvent $e)
     {
-        $rootFolder = codecept_root_dir();
+        $rootFolder = rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+        $destination = rtrim($this->config['destination'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
 
         try {
-            $this->filesystem->symlink($rootFolder, $this->config['destination'], true);
+            if (!$this->filesystem->fileExists($destination)) {
+                $this->filesystem->symlink($rootFolder, $destination, true);
+                $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
+            }
         } catch (IOException $e) {
-            throw  new ExtensionException(__CLASS__, "Error while trying to symlink plugin or theme to destination\n\n" . $e->getMessage());
-        }
+            throw  new ExtensionException(__CLASS__, "Error while trying to symlink plugin or theme to destination.\n\n" . $e->getMessage());
+        } 
     }
 
-    public function afterSuite(\Codeception\Event\SuiteEvent $e)
+    public function unlink(\Codeception\Event\PrintResultEvent $e)
     {
-        $unlinkTarget = $this->config['destination'] . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $unlinked = $this->filesystem->unlink($unlinkTarget);
-        if (!$unlinked) {
-            // let's not kill the suite but let's notify the user
-            $this->writeln('Could not unlink file [' . $unlinkTarget . '], manual removal is required.');
+        $rootFolder = rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+        $destination = rtrim($this->config['destination'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
+        if ($this->filesystem->fileExists($destination)) {
+            $unlinked = $this->filesystem->unlink($destination);
+            if (!$unlinked) {
+                // let's not kill the suite but let's notify the user
+                $this->writeln('Could not unlink file [' . $destination . '], manual removal is required.');
+            }
+
+            $this->writeln('Unliked plugin folder [' . $destination . ']');
         }
     }
 

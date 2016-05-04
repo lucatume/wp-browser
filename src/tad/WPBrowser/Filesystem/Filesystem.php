@@ -39,4 +39,9 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
     {
         return unlink($filename);
     }
+
+    public function fileExists($filename)
+    {
+        return file_exists($filename);
+    }
 }

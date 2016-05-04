@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- the `tad\WPBrowser\Extension\Symlinker` extension
+
 ### Changed
 - update check deactivation when bootstrapping WordPress using the `WPBootstrapper` module
 - updated core suite PHPUnit test files to latest version
