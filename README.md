@@ -641,3 +641,39 @@ The module adds some *sugar* methods, beside allowing for the call of any WordPr
 * `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
 * `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
   * `plugins` - includes the `wp-admin/includes/plugin.php` file to access functions like `activate_plugin` and `deactivate_plugins`.
+
+## Extensions
+The package contains an additional extension to facilitate testers' life.
+
+### Symlinker
+The `tad\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
+Since version `3.9` WordPress supports this features (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
+
+* symbolically linking a plugin or theme folder in the specified destination before any suite boots up
+* unlinking that symbolic link after all of the suites did run
+
+It's the equivalent of doing something like this from the command line (on a Mac):
+
+```bash
+ln -s /my/central/plugin/folder/my-plugin /my/local/wordpress/installation/wp-content/plugins/my-plugin
+/my/central/plugin/folder/my-plugin/vendor/bin/codecept run
+rm -rf /my/local/wordpress/installation/wp-content/plugins/my-plugin
+
+```
+
+The extension needs small configuration in the `codeception.yml` file:
+
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Symlinker # enabled extension
+    config:
+        tad\WPBrowser\Extension\Symlinker:
+            mode: plugin
+            destination: /my/local/wordpress/installation/wp-content/plugins
+```
+
+The arguments are:
+
+* `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
+* `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the neverending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
