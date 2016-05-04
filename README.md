@@ -666,7 +666,7 @@ The extension needs small configuration in the `codeception.yml` file:
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Symlinker # enabled extension
+        - tad\WPBrowser\Extension\Symlinker
     config:
         tad\WPBrowser\Extension\Symlinker:
             mode: plugin
