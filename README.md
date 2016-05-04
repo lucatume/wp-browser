@@ -647,7 +647,7 @@ The package contains an additional extension to facilitate testers' life.
 
 ### Symlinker
 The `tad\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
-Since version `3.9` WordPress supports this features (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
+Since version `3.9` WordPress supports this feature (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
 
 * symbolically linking a plugin or theme folder in the specified destination before any suite boots up
 * unlinking that symbolic link after all of the suites did run
