@@ -677,3 +677,57 @@ The arguments are:
 
 * `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
 * `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the neverending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
+
+#### Environments support
+Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  
+Codeception [supports environments](http://codeception.com/docs/07-AdvancedUsage#Environmentshttp://codeception.com/docs/07-AdvancedUsage#Environments) and the extension does as well specifyin a destination for each.  
+As an example the `acceptance.suite.yml` file might be configured to support `single` and `multisite` environments:
+
+```yaml
+env:
+    single:
+        modules:
+            config:
+                WPBrowser:
+                    url: 'http://wp.dev'
+                WPDb:
+                    dsn: 'mysql:host=127.0.0.1;dbname=wp'
+    multisite:
+        modules:
+            config:
+                WPBrowser:
+                    url: 'http://mu.dev'
+                WPDb:
+                    dsn: 'mysql:host=127.0.0.1;dbname=mu'
+```
+In the `codeception.yml` file specifying a `destination` for each supported environment will tell the extension to symbolically link the plugin or theme file to different locations according to the current environment:
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Symlinker
+    config:
+        tad\WPBrowser\Extension\Symlinker:
+            mode: plugin
+            destination:
+                single: /var/www/wp/wp-content/plugins
+                multisite: /var/www/mu/wp-content/plugins
+```
+If no destination is specified for the current environment the extension will fallback to the first specified one.  
+A `default` destination can be specified to override this behaviour.
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Symlinker
+    config:
+        tad\WPBrowser\Extension\Symlinker:
+            mode: plugin
+            destination:
+                default: /var/www/default/wp-content/plugins
+                single: /var/www/wp/wp-content/plugins
+                multisite: /var/www/mu/wp-content/plugins
+```
+When running a suite specifying more than one environment like
+```bash
+codecept run acceptance --env foo,baz,multisite
+```
+Then the extension will use the first matched one, in the case above the `multisite` destination will be used.

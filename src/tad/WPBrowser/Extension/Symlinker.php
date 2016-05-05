@@ -11,8 +11,8 @@ use tad\WPBrowser\Filesystem\Filesystem;
 class Symlinker extends Extension
 {
     public static $events = [
-        'module.init' => 'symlink',
-        'result.print.after' => 'unlink'
+        'suite.init' => 'symlink',
+        'suite.after' => 'unlink'
     ];
 
     /**
@@ -38,8 +38,8 @@ class Symlinker extends Extension
 
     public function symlink(\Codeception\Event\SuiteEvent $e)
     {
-        $rootFolder = rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
-        $destination = rtrim($this->config['destination'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
+        $rootFolder = $this->getRootFolder();
+        $destination = $this->getDestination($rootFolder, $e->getSettings());
 
         try {
             if (!$this->filesystem->fileExists($destination)) {
@@ -48,13 +48,14 @@ class Symlinker extends Extension
             }
         } catch (IOException $e) {
             throw  new ExtensionException(__CLASS__, "Error while trying to symlink plugin or theme to destination.\n\n" . $e->getMessage());
-        } 
+        }
     }
 
-    public function unlink(\Codeception\Event\PrintResultEvent $e)
+    public function unlink(\Codeception\Event\SuiteEvent $e)
     {
-        $rootFolder = rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
-        $destination = rtrim($this->config['destination'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
+        $rootFolder = $this->getRootFolder();
+        $destination = $this->getDestination($rootFolder, $e->getSettings());
+
         if ($this->filesystem->fileExists($destination)) {
             $unlinked = $this->filesystem->unlink($destination);
             if (!$unlinked) {
@@ -83,9 +84,56 @@ class Symlinker extends Extension
         if (!isset($this->config['destination'])) {
             throw new ExtensionException(__CLASS__, 'Required configuration parameter [destination] is missing.');
         }
-        if (!($this->filesystem->isDir($this->config['destination']) && $this->filesystem->isWriteable($this->config['destination']))) {
-            throw new ExtensionException(__CLASS__, '[destination] parameter [' . $this->config['destination'] . '] is not an existing and writeable directory.');
+
+        $destination = $this->config['destination'];
+
+        if (is_array($destination)) {
+            array_walk($destination, [$this, 'checkSingleDestination']);
+        } else {
+            $this->checkSingleDestination($destination);
         }
+    }
+
+    /**
+     * @param $destination
+     * @throws ExtensionException
+     */
+    protected function checkSingleDestination($destination)
+    {
+        if (!($this->filesystem->isDir($destination) && $this->filesystem->isWriteable($destination))) {
+            throw new ExtensionException(__CLASS__, '[destination] parameter [' . $destination . '] is not an existing and writeable directory.');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRootFolder()
+    {
+        $rootFolder = rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+        return $rootFolder;
+    }
+
+    /**
+     * @param $rootFolder
+     * @param array $settings
+     * @return array|mixed|string
+     */
+    protected function getDestination($rootFolder, array $settings = null)
+    {
+        $rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
+        $currentEnvs = preg_split('/\\s*,\\s*/', $rawCurrentEnvs);
+
+        $destination = $this->config['destination'];
+
+        if (is_array($destination)) {
+            $fallbackDestination = isset($destination['default']) ? $destination['default'] : reset($destination);
+            $supportedEnvs = array_intersect(array_keys($destination), $currentEnvs);
+            $firstSupported = reset($supportedEnvs);
+            $destination = isset($destination[$firstSupported]) ? $destination[$firstSupported] : $fallbackDestination;
+        }
+        $destination = rtrim($destination, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
+        return $destination;
     }
 }
 

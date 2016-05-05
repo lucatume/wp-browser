@@ -34,11 +34,6 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     protected $event;
 
     /**
-     * @var PrintResultEvent
-     */
-    protected $printEvent;
-
-    /**
      * @var string
      */
     protected $filename;
@@ -195,7 +190,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->unlink($this->printEvent->reveal());
+        $sut->unlink($this->event->reveal());
     }
 
     /**
@@ -209,7 +204,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->filesystem->unlink($this->filename)->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->unlink($this->printEvent->reveal());
+        $sut->unlink($this->event->reveal());
     }
 
     /**
@@ -223,7 +218,208 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
-        $sut->unlink($this->printEvent->reveal());
+        $sut->unlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should support array of destinations to allow for environments settings
+     */
+    public function it_should_support_array_of_destinations_to_allow_for_environments_settings()
+    {
+        $fooDestinationFolder = '/foo';
+        $barDestinationFolder = '/bar';
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $this->config = ['mode' => 'theme', 'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder]];
+        $this->event->getSettings()->willReturn(['current_environment' => 'foo']);
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($barDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($fooDestination)->willReturn(false);
+        $this->filesystem->fileExists($barDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $fooDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should fallback to use the first available destination if multiple envs destination are set but no cli env specified
+     */
+    public function it_should_fallback_to_use_the_first_available_destination_if_multiple_envs_destination_are_set_but_no_cli_env_specified()
+    {
+        $fooDestinationFolder = '/foo';
+        $barDestinationFolder = '/bar';
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $this->config = ['mode' => 'theme', 'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder]];
+        $this->event->getSettings()->willReturn([]);
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($barDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($fooDestination)->willReturn(false);
+        $this->filesystem->fileExists($barDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $fooDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should fallback to use the default destination if multiple envs destinations are set but no cli env specified
+     */
+    public function it_should_fallback_to_use_the_default_destination_if_multiple_envs_destinations_are_set_but_no_cli_env_specified()
+    {
+        $fooDestinationFolder = '/foo';
+        $barDestinationFolder = '/bar';
+        $defaultDestinationFolder = '/default';
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $this->config = ['mode' => 'theme', 'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder, 'default' => $defaultDestinationFolder]];
+        $this->event->getSettings()->willReturn([]);
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($defaultDestination)->willReturn(false);
+        $this->filesystem->fileExists($fooDestination)->shouldNotBeCalled();
+        $this->filesystem->fileExists($barDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $defaultDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should fallback to use default destination if current env has no destination assigned and default destination is specified
+     */
+    public function it_should_fallback_to_use_default_destination_if_current_env_has_no_destination_assigned_and_default_destination_is_specified()
+    {
+        $fooDestinationFolder = '/foo';
+        $barDestinationFolder = '/bar';
+        $defaultDestinationFolder = '/default';
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $this->config = ['mode' => 'theme', 'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder, 'default' => $defaultDestinationFolder]];
+        $this->event->getSettings()->willReturn(['current_environment' => 'another']);
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($barDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($defaultDestination)->willReturn(false);
+        $this->filesystem->fileExists($fooDestination)->shouldNotBeCalled();
+        $this->filesystem->fileExists($barDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $defaultDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should read supported env from comma separated list of envs
+     */
+    public function it_should_read_supported_env_from_comma_separated_list_of_envs()
+    {
+        $fooDestinationFolder = '/foo';
+        $defaultDestinationFolder = '/default';
+
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $envDestinations = ['foo' => $fooDestinationFolder, 'default' => $defaultDestinationFolder];
+        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
+        $this->event->getSettings()->willReturn(['current_environment' => 'some,other,env,foo']);
+
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($fooDestination)->willReturn(false);
+        $this->filesystem->fileExists($defaultDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $fooDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should fallback to first destination if specifying multiple envs and none supported
+     */
+    public function it_should_fallback_to_first_destination_if_specifying_multiple_envs_and_none_supported()
+    {
+        $fooDestinationFolder = '/foo';
+        $gooDestinationFolder = '/goo';
+
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $gooDestination = $gooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $envDestinations = ['foo' => $fooDestinationFolder, 'goo' => $gooDestinationFolder];
+        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
+        $this->event->getSettings()->willReturn(['current_environment' => 'bar, baz']);
+
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($gooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($gooDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($fooDestination)->willReturn(false);
+        $this->filesystem->fileExists($gooDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $fooDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
+    }
+
+    /**
+     * @test
+     * it should fallback to default destination if specified and multiple envs and none supported
+     */
+    public function it_should_fallback_to_default_destination_if_specified_and_multiple_envs_and_none_supported()
+    {
+        $fooDestinationFolder = '/foo';
+        $defaultDestinationFolder = '/default';
+
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $envDestinations = ['foo' => $fooDestinationFolder, 'default' => $defaultDestinationFolder];
+        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
+        $this->event->getSettings()->willReturn(['current_environment' => 'bar, baz']);
+
+        $this->filesystem->isDir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->isDir($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->isWriteable($defaultDestinationFolder)->willReturn(true);
+        $this->filesystem->fileExists($fooDestination)->shouldNotBeCalled(false);
+        $this->filesystem->fileExists($defaultDestination)->willReturn(false);
+        $this->filesystem->symlink(rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR), $defaultDestination, true)->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->symlink($this->event->reveal());
     }
 
     private function make_instance()
