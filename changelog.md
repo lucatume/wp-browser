@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.10.11] 2016-05-05
 ### Added
 - environments based support in `tad\WPBrowser\Extension\Symlinker` extension
 
@@ -334,7 +336,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.10...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.11...HEAD
+[1.10.11]: https://github.com/lucatume/wp-browser/compare/1.10.10...1.10.11
 [1.10.10]: https://github.com/lucatume/wp-browser/compare/1.10.9...1.10.10
 [1.10.9]: https://github.com/lucatume/wp-browser/compare/1.10.8...1.10.9
 [1.10.8]: https://github.com/lucatume/wp-browser/compare/1.10.7...1.10.8
