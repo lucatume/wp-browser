@@ -17,7 +17,7 @@ class SearchReplace extends Command
             ->addArgument('old', InputArgument::REQUIRED, 'A string to search for in the dump file')
             ->addArgument('new', InputArgument::REQUIRED, 'Replace instances of the `old` string with this new string')
             ->addArgument('file', InputArgument::REQUIRED, 'The path to the target SQL dump file')
-            ->addOption('output', null, InputOption::VALUE_OPTIONAL, 'If set, the replaced contents will be written to this file')
+            ->addArgument('output', null, InputArgument::OPTIONAL, 'If set, the replaced contents will be written to this file')
             ->addOption('skip-if-missing', null, InputOption::VALUE_OPTIONAL, 'If set, the operation will not fail if source file is missing');
     }
 
@@ -55,7 +55,7 @@ class SearchReplace extends Command
 
         $output->writeln('<info>Made ' . $count . ' replacements.</info>');
 
-        $outputFile = $input->getOption('output');
+        $outputFile = $input->getArgument('output');
         $outputFile = $outputFile ? $outputFile : $file;
 
         try {

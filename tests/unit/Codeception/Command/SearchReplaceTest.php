@@ -162,7 +162,7 @@ class SearchReplaceTest extends PHPUnit_Framework_TestCase
             'old' => 'foo',
             'new' => 'replacement',
             'file' => $root->url() . '/dump.sql',
-            '--output' => $root->url() . '/out.sql'
+            'output' => $root->url() . '/out.sql'
         ]);
 
         $this->assertRegExp('/Could not write to.*/', $commandTester->getDisplay());
@@ -190,7 +190,7 @@ class SearchReplaceTest extends PHPUnit_Framework_TestCase
             'old' => 'foo',
             'new' => 'replacement',
             'file' => $root->url() . '/dump.sql',
-            '--output' => $root->url() . '/out.sql'
+            'output' => $root->url() . '/out.sql'
         ]);
 
         $this->assertRegExp('/Modified contents written to.*/', $commandTester->getDisplay());
@@ -219,7 +219,7 @@ class SearchReplaceTest extends PHPUnit_Framework_TestCase
             'old' => 'foo',
             'new' => 'replacement',
             'file' => $root->url() . '/dump.sql',
-            '--output' => $outputFile
+            'output' => $outputFile
         ]);
 
         $this->assertStringEqualsFile($outputFile, 'replacement baz bar replacement baz bar');
@@ -245,7 +245,7 @@ class SearchReplaceTest extends PHPUnit_Framework_TestCase
             'old' => 'foo',
             'new' => 'replacement',
             'file' => $root->url() . '/dump.sql',
-            '--output' => $outputFile,
+            'output' => $outputFile,
             '--skip-if-missing' => true,
         ]);
 
