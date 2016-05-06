@@ -385,25 +385,6 @@ The command has the following arguments
 
 Each call to the command will re-generate the `phpunit.xml` and `tests/phpunit-bootstrap.php` files, changes made to the `phpunit` element attributes in the `phpunit.xml` file will be preserved across regenerations.
 
-#### search-replace
-This command will allow quick search and replace in a file.  
-The command was born to handle localization of WordPress database dump files but it is agnostic and will handle any file.  
-An example usage is the one below where a distribution version of WordPress database dump file is localized to the machine:
-
-```bash
-wpcept search-replace http://wp.local http://local-wp.dev ./tests/_data/start-dump.dist.sql ./tests/_data/start-dump.sql
-```
-
-In order the command arguments are:
-
-* `old` -  the string to replace; required  
-* `new` -  the string that will be used to replace old; required  
-* `source` -  the original file; required  
-* `output` -  the destination file modified contents should be written to; optional  
-
-If the output file is not specified the modified contents will be written to the original file.  
-The command will complain if the source file does not exist unless the `--skip-if-missing` option is used; this is useful when using the command in a script loop.
-
 ### ExtendedDb configuration
 The module has the same configuration as the `Db` one and hence will not require any additional parameter beside those required/available to the `Db` module.
 In the suite `.yml` configuration file add the module among the loaded ones
