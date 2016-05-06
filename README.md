@@ -396,10 +396,10 @@ wpcept search-replace http://wp.local http://local-wp.dev ./tests/_data/start-du
 
 In order the command arguments are:
 
-*`old` -  the string to replace; required
-*`new` -  the string that will be used to replace old; required
-*`source` -  the original file; required
-*`output` -  the destination file modified contents should be written to; optional
+* `old` -  the string to replace; required  
+* `new` -  the string that will be used to replace old; required  
+* `source` -  the original file; required  
+* `output` -  the destination file modified contents should be written to; optional  
 
 If the output file is not specified the modified contents will be written to the original file.  
 The command will complain if the source file does not exist unless the `--skip-if-missing` option is used; this is useful when using the command in a script loop.
