@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- the `wpcept searc-replace` command
 
 ##[1.10.11] 2016-05-05
 ### Added
