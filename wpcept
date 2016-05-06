@@ -34,4 +34,5 @@ $app->add(new Codeception\Command\GeneratePageObject('generate:pageobject'));
 $app->add(new Codeception\Command\GenerateStepObject('generate:stepobject'));
 $app->add(new Codeception\Command\GenerateEnvironment('generate:environment'));
 $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBootstrap'));
+$app->add(new Codeception\Command\SearchReplace('search-replace'));
 $app->run();
