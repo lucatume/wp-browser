@@ -34,10 +34,4 @@ $app->add(new Codeception\Command\GeneratePageObject('generate:pageobject'));
 $app->add(new Codeception\Command\GenerateStepObject('generate:stepobject'));
 $app->add(new Codeception\Command\GenerateEnvironment('generate:environment'));
 $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBootstrap'));
-if (class_exists('tad\Codeception\Command\SearchReplace')) {
-    $app->add(new tad\Codeception\Command\SearchReplace('search-replace'));
-}
-if (class_exists('tad\Codeception\Command\SetupLocal')) {
-    $app->add(new tad\Codeception\Command\SearchReplace('setup:local'));
-}
 $app->run();
