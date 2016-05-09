@@ -120,6 +120,7 @@ class WPBootstrapper extends Module
         if (empty($wpdb)) {
             $wpdb = new \wpdb(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
         } else {
+            $wpdb->db_connect();
             $wpdb->check_connection();
         }
 
