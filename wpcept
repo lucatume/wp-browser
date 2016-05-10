@@ -6,7 +6,7 @@
  * will otherwise act like `codecept` original command
  */
 
-require_once __DIR__.'/autoload.php';
+require_once __DIR__ . '/autoload.php';
 
 use Symfony\Component\Console\Application;
 
@@ -34,4 +34,9 @@ $app->add(new Codeception\Command\GeneratePageObject('generate:pageobject'));
 $app->add(new Codeception\Command\GenerateStepObject('generate:stepobject'));
 $app->add(new Codeception\Command\GenerateEnvironment('generate:environment'));
 $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBootstrap'));
+
+// Additional commands shimming
+$app->add(new tad\Codeception\Command\SearchReplace('search-replace'));
+$app->add(new tad\Codeception\Command\Setup('setup'));
+
 $app->run();
