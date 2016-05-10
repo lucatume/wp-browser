@@ -22,7 +22,8 @@
     "codeception/codeception": "~2.1",
     "symfony/filesystem": "^2.7",
     "mikemclin/laravel-wp-password": "~2.0.0",
-    "xamin/handlebars.php": "~0.10"
+    "xamin/handlebars.php": "~0.10",
+    "lucatume/codeception-setup-local": "~0.0.1"
   },
   "autoload": {
     "psr-4": {

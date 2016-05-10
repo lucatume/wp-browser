@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "63ccf3d5dc537c0cd6b0e0328c4ac6bc",
-    "content-hash": "778dfec1c5d934d79c59fb367390518a",
+    "hash": "c1dbc0ba4f6f25215f010bcc704b11dd",
+    "content-hash": "892d72f6e8dff678091ff20f09fa08ec",
     "packages": [
         {
             "name": "bacon/bacon-string-utils",
@@ -609,6 +609,40 @@
             "description": "The Illuminate Support package.",
             "homepage": "http://laravel.com",
             "time": "2016-04-21 13:28:36"
+        },
+        {
+            "name": "lucatume/codeception-setup-local",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucatume/codeception-setup-local.git",
+                "reference": "13b8a87f7d024449f8961ffd8daaf66bcc97f133"
+            },
+            "require": {
+                "codeception/codeception": "^2.1"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.1",
+                "mikey179/vfsstream": "^1.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "tad\\Codeception\\Command\\": "src/Command",
+                    "tad\\Codeception\\Command\\Helpers\\": "src/Helpers"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luca Tumedei",
+                    "email": "luca@theaveragedev.com"
+                }
+            ],
+            "description": "Flexible local setup for Codeception",
+            "time": "2016-05-10 13:30:34"
         },
         {
             "name": "mikemclin/laravel-wp-password",
@@ -1800,7 +1834,7 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
@@ -1857,7 +1891,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -1917,7 +1951,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -1970,7 +2004,7 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
@@ -2026,16 +2060,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "17b04e6b1ede45b57d3ad5146abe50df6c3968b4"
+                "reference": "807dde98589f9b2b00624dca326740380d78dbbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/17b04e6b1ede45b57d3ad5146abe50df6c3968b4",
-                "reference": "17b04e6b1ede45b57d3ad5146abe50df6c3968b4",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/807dde98589f9b2b00624dca326740380d78dbbc",
+                "reference": "807dde98589f9b2b00624dca326740380d78dbbc",
                 "shasum": ""
             },
             "require": {
@@ -2082,11 +2116,11 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-12 18:09:53"
+            "time": "2016-05-05 06:56:13"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.8.5",
+            "version": "v2.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -2135,7 +2169,7 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -2243,7 +2277,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
