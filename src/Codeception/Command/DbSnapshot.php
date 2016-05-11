@@ -32,7 +32,7 @@ class DbSnapshot extends Command
     {
         $this->setName('db:snapshot')
             ->setDescription('Takes a snapshot of a database to be shared as a fixture.')
-            ->addArgument('fileName', InputArgument::REQUIRED, 'Specifies the filename (without extension) of the snapshot files.')
+            ->addArgument('snapshot', InputArgument::REQUIRED, 'Specifies the filename (without extension) of the snapshot files.')
             ->addArgument('name', InputArgument::REQUIRED, 'Specifies the name of the database to snapshot.')
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'If set the specified host will be used to connect to the database', 'localhost')
             ->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'If set the specified user will be used to connect to the database', 'root')
@@ -74,7 +74,7 @@ class DbSnapshot extends Command
         if (!empty($input->getOption('dump-file'))) {
             $dumpFile = $input->getOption('dump-file');
         } else {
-            $dumpFile = codecept_data_dir($input->getArgument('fileName') . '.sql');
+            $dumpFile = codecept_data_dir($input->getArgument('snapshot') . '.sql');
         }
 
         $output->writeln('<info>Dump file will be written to [' . $dumpFile . ']</info>');
@@ -82,7 +82,7 @@ class DbSnapshot extends Command
         if (!empty($input->getOption('dist-dump-file'))) {
             $distDumpFile = $input->getOption('dist-dump-file');
         } else {
-            $distDumpFile = codecept_data_dir($input->getArgument('fileName') . '.dist.sql');
+            $distDumpFile = codecept_data_dir($input->getArgument('snapshot') . '.dist.sql');
         }
 
         $output->writeln('<info>Distribution version of dump file will be written to [' . $distDumpFile . ']</info>');

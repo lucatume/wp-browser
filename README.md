@@ -385,6 +385,41 @@ The command has the following arguments
 
 Each call to the command will re-generate the `phpunit.xml` and `tests/phpunit-bootstrap.php` files, changes made to the `phpunit` element attributes in the `phpunit.xml` file will be preserved across regenerations.
 
+#### search-replace
+This is merely a shimming of the `search-replace` command defined in [the `lucatume/codeception-setup-local` package](https://github.com/lucatume/codeception-setup-local "lucatume/codeception-setup-local · GitHub"); see package documentation for more information.
+
+#### setup
+This is merely a shimming of the `setup` command defined in [the `lucatume/codeception-setup-local` package](https://github.com/lucatume/codeception-setup-local "lucatume/codeception-setup-local · GitHub"); see package documentation for more information.
+
+#### db:snapshot
+The command allows developers to take a snapshot of a database state to be used to share database-based fixtures in a team.  
+The command takes the following arguments and options:
+
+* `snapshot` - the first argument is the name of the snapshot to be taken; e.g. `issue4455` or `ticket-ab-f00-34`; required
+* `name` - the second argument is the name of the database that should be exported; e.g. `wp` or `test-db`; required
+* `--host` - this options allows defining the database host; defaults to `localhost`; optional
+* `--user` - this options allows defining the database user; defaults to `root`; optional
+* `--pass` - this options allows defining the database password; defaults to `root`; optional
+* `--dump-file` - this options allows defining the destination file for the database dump (an absolute path); defaults to `<snapshot>.sql` in Codeception data folder; optional
+* `--dist-dump-file` - this options allows defining the destination file for the distribution database dump (an absolute path); defaults to `<snapshot>.dist.sql` in Codeception data folder; optional
+* `--skip-tables` - this options allows defining any table that shuould not be dumped (a comma separated list); e.g. `wp_posts,wp_users`; defaults to none; optional
+* `--local-url` - this options allows defining the local setup url that is hardcoded in the local version of the database by WordPress; e.g. `http://wp.dev`; defaults to `http://local.dev`; optional but probably needed
+* `--dist-url` - this options allows defining the distribution setup url that will be hardcoded in the distribution version of the database dump; e.g. `http://wptest.dev`; defaults to `http://dist.dev`; optional but probably needed
+
+A typical flow using the command would be:
+
+* a developer sets up a local version of a starting database state for a test or a series of tests
+* the developer creates a local (to be used in local tests) and distribution (to be shared with other team members) dump of his/her local database using:
+
+  ```bash
+  wpcept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev
+  ```
+* any other developer on the team can use the `search-replace` command to localize the distribution version of the database dump to suite his/her setup:
+  
+  ```bash
+  wpcept search-replace http://acme.tests.dev http://local.dev ./tests/_data/issue3344.dist.sql ./tests/_data/issue3344.sql
+  ```
+
 ### ExtendedDb configuration
 The module has the same configuration as the `Db` one and hence will not require any additional parameter beside those required/available to the `Db` module.
 In the suite `.yml` configuration file add the module among the loaded ones

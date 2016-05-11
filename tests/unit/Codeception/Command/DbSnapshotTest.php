@@ -73,7 +73,7 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'name' => 'db',
-            'fileName' => 'someSnapshot'
+            'snapshot' => 'someSnapshot'
         ]);
     }
 
@@ -97,7 +97,7 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'name' => 'db',
-            'fileName' => 'someSnapshot'
+            'snapshot' => 'someSnapshot'
         ]);
     }
 
@@ -127,7 +127,7 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'name' => 'db',
-            'fileName' => 'issue4455'
+            'snapshot' => 'issue4455'
         ]);
     }
 
@@ -161,7 +161,7 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'name' => 'db',
-            'fileName' => 'issue4455',
+            'snapshot' => 'issue4455',
             '--dump-file' => $expectedDump,
             '--dist-dump-file' => $expectedDistDump
         ]);
@@ -196,7 +196,7 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'name' => 'db',
-            'fileName' => 'issue4455',
+            'snapshot' => 'issue4455',
             '--dump-file' => $expectedDump,
             '--dist-dump-file' => $expectedDistDump,
             '--skip-tables' => 'foo,bar,baz'
