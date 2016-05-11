@@ -1,8 +1,9 @@
 <?php
 
-namespace Codeception\Command;
+namespace Codeception\Command\Tests\Unit;
 
 
+use Codeception\Command\DbSnapshot;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamFile;
 use Prophecy\Argument;
@@ -106,17 +107,19 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_dump_the_database_to_the_data_folder_by_default()
     {
-        $expectedDistDump = codecept_data_dir('issue4455.dist.sql');
         $expectedDump = codecept_data_dir('issue4455.sql');
+        $expectedDistDump = codecept_data_dir('issue4455.dist.sql');
 
         $application = new Application();
         /** @var \tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface $factory */
         $factory = $this->prophesize('\tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface');
         $dump = $this->prophesize('MySQLDump');
-        $dump->save($expectedDump)->shouldBeCalled();
-        $dump->save($expectedDistDump)->shouldBeCalled();
+        $dump->write(Argument::any())->shouldBeCalled();
+        $filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $filesystem->file_put_contents($expectedDump, Argument::type('string'))->willReturn(true);
+        $filesystem->file_put_contents($expectedDistDump, Argument::type('string'))->willReturn(true);
         $factory->makeDump(Argument::type('string'), Argument::type('string'), Argument::type('string'), Argument::type('string'))->willReturn($dump->reveal());
-        $application->add(new DbSnapshot(null, $factory->reveal()));
+        $application->add(new DbSnapshot(null, $factory->reveal(), $filesystem->reveal()));
 
         $command = $application->find('db:snapshot');
         $commandTester = new CommandTester($command);
@@ -145,10 +148,12 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         /** @var \tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface $factory */
         $factory = $this->prophesize('\tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface');
         $dump = $this->prophesize('MySQLDump');
-        $dump->save($expectedDump)->shouldBeCalled();
-        $dump->save($expectedDistDump)->shouldBeCalled();
+        $dump->write(Argument::any())->shouldBeCalled();
+        $filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $filesystem->file_put_contents($expectedDump, Argument::type('string'))->willReturn(true);
+        $filesystem->file_put_contents($expectedDistDump, Argument::type('string'))->willReturn(true);
         $factory->makeDump(Argument::type('string'), Argument::type('string'), Argument::type('string'), Argument::type('string'))->willReturn($dump->reveal());
-        $application->add(new DbSnapshot(null, $factory->reveal()));
+        $application->add(new DbSnapshot(null, $factory->reveal(), $filesystem->reveal()));
 
         $command = $application->find('db:snapshot');
         $commandTester = new CommandTester($command);
@@ -179,10 +184,11 @@ class DbSnapshotTest extends \PHPUnit_Framework_TestCase
         /** @var \tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface $factory */
         $factory = $this->prophesize('\tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface');
         $dump = $this->prophesize('MySQLDump');
-        $dump->save(Argument::type('string'))->shouldBeCalled();
-        $dump->save(Argument::type('string'))->shouldBeCalled();
+        $dump->write(Argument::any())->shouldBeCalled();
+        $filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $filesystem->file_put_contents(Argument::type('string'), Argument::type('string'))->willReturn(true);
         $factory->makeDump(Argument::type('string'), Argument::type('string'), Argument::type('string'), Argument::type('string'))->willReturn($dump->reveal());
-        $application->add(new DbSnapshot(null, $factory->reveal()));
+        $application->add(new DbSnapshot(null, $factory->reveal(), $filesystem->reveal()));
 
         $command = $application->find('db:snapshot');
         $commandTester = new CommandTester($command);

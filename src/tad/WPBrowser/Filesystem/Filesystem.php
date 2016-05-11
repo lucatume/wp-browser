@@ -44,4 +44,9 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
     {
         return file_exists($filename);
     }
+
+    public function file_put_contents($file, $data)
+    {
+        return file_put_contents($file, $data);
+    }
 }

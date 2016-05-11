@@ -39,4 +39,7 @@ $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBoot
 $app->add(new tad\Codeception\Command\SearchReplace('search-replace'));
 $app->add(new tad\Codeception\Command\Setup('setup'));
 
+// wpcept specific commands
+$app->add(new Codeception\Command\DbSnapshot('db:snapshot'));
+
 $app->run();
