@@ -101,21 +101,4 @@ class DbSnapshotTest extends \Codeception\TestCase\Test
         $distDomainCount = preg_match_all('~' . preg_quote('dist.dev') . '~', $distDumpContents);
         $this->assertEquals($localDomainCount, $distDomainCount);
     }
-
-            /**
-             * something should work
-             */
-            public function test_something_should_work()
-            {
-                /** @var \Codeception\Module\Db $db */
-                $db =$this->getModule('Db');
-                /** @var \Codeception\Lib\Driver\Db $driver */
-                $driver= $db->driver;
-                $driver->cleanup();
-                $localDump = codecept_data_dir('ticket-4455.sql');
-                $dumpFile = file_exists($localDump)? $localDump : codecept_data_dir('ticket-4455.dist.sql');
-                $driver->load(file_get_contents(codecept_data_dir($dumpFile)));
-                
-                // db fixture is loaded, run the test
-            }
 }
