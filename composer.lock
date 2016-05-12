@@ -649,11 +649,17 @@
         },
         {
             "name": "lucatume/codeception-setup-local",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/codeception-setup-local.git",
-                "reference": "13b8a87f7d024449f8961ffd8daaf66bcc97f133"
+                "reference": "73b5286858c55968a84d80d9358f5a01c84f15c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucatume/codeception-setup-local/zipball/73b5286858c55968a84d80d9358f5a01c84f15c0",
+                "reference": "73b5286858c55968a84d80d9358f5a01c84f15c0",
+                "shasum": ""
             },
             "require": {
                 "codeception/codeception": "^2.1"
@@ -669,6 +675,7 @@
                     "tad\\Codeception\\Command\\Helpers\\": "src/Helpers"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -679,7 +686,7 @@
                 }
             ],
             "description": "Flexible local setup for Codeception",
-            "time": "2016-05-10 13:30:34"
+            "time": "2016-05-12 14:00:42"
         },
         {
             "name": "mikemclin/laravel-wp-password",

@@ -2,17 +2,17 @@
 
 namespace Codeception\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use tad\Codeception\Command\BaseCommand;
 use tad\WPBrowser\Filesystem\Filesystem;
 use tad\WPBrowser\Services\Db\MySQLDumpFactory;
 use tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface;
 
-class DbSnapshot extends Command
+class DbSnapshot extends BaseCommand
 {
     /**
      * @var MySQLDumpFactoryInterface
@@ -42,6 +42,8 @@ class DbSnapshot extends Command
             ->addOption('skip-tables', null, InputOption::VALUE_OPTIONAL, 'A comma separated list of tables that should not be included in the dump.')
             ->addOption('local-url', null, InputOption::VALUE_OPTIONAL, 'The local setup domain that should be replaced in the distribution version of the dump file.', 'http://local.dev')
             ->addOption('dist-url', null, InputOption::VALUE_OPTIONAL, 'The distribution setup domain that should be used in the distribution version of the dump file.', 'http://dist.dev');
+
+        parent::configure();
     }
 
     public function __construct($name = null, MySQLDumpFactoryInterface $pdoFactory = null, Filesystem $filesystem = null)
@@ -122,6 +124,8 @@ class DbSnapshot extends Command
 
         $output->writeln('<info>Distribution version of dump file written to [' . $distDumpFile . ']</info>');
         $output->writeln('<comment>Any occurrence of [' . $localDomain . '] in it was replaced with [' . $distDomain . ']</comment>');
+
+        parent::execute($input, $output);
 
         return true;
     }

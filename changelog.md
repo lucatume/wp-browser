@@ -5,8 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Added
 - `lucatume/codeception-setup-local` package requirement
-- `wpcept setup` command shimming
-- `wpcept search-replace` command shimming
+- `wpcept setup` command shimming (from `lucatume/codeception-setup-local` package)
+- `wpcept search-replace` command shimming (from `lucatume/codeception-setup-local` package)
 - `wpdcept db:snapshot` command
 
 ##[1.10.12] 2016-05-09
