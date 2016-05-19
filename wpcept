@@ -38,9 +38,9 @@ $app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBoot
 // Additional commands shimming
 $app->add(new tad\Codeception\Command\SearchReplace('search-replace'));
 $app->add(new tad\Codeception\Command\Setup('setup'));
+$app->add(new tad\Codeception\Command\SetupScaffold('setup:scaffold'));
 
 // wpcept specific commands
 $app->add(new Codeception\Command\DbSnapshot('db:snapshot'));
-$app->add(new Codeception\Command\SetupScaffold('setup:scaffold'));
 
 $app->run();

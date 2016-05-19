@@ -17,14 +17,8 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0",
-    "bacon/bacon-string-utils": "~1.0",
-    "codeception/codeception": "~2.1",
-    "symfony/filesystem": "^2.7",
-    "mikemclin/laravel-wp-password": "~2.0.0",
-    "xamin/handlebars.php": "~0.10",
-    "lucatume/codeception-setup-local": "~0.0.1",
-    "dg/mysql-dump": "^1.3"
+    "lucatume/wp-browser-commons": "~1.0.0",
+    "lucatume/codeception-setup-local": "~1.0.0"
   },
   "autoload": {
     "psr-4": {
