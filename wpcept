@@ -41,5 +41,6 @@ $app->add(new tad\Codeception\Command\Setup('setup'));
 
 // wpcept specific commands
 $app->add(new Codeception\Command\DbSnapshot('db:snapshot'));
+$app->add(new Codeception\Command\SetupScaffold('setup:scaffold'));
 
 $app->run();

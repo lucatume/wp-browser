@@ -42,7 +42,7 @@ class Symlinker extends Extension
         $destination = $this->getDestination($rootFolder, $e->getSettings());
 
         try {
-            if (!$this->filesystem->fileExists($destination)) {
+            if (!$this->filesystem->file_exists($destination)) {
                 $this->filesystem->symlink($rootFolder, $destination, true);
                 $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
             }
@@ -56,7 +56,7 @@ class Symlinker extends Extension
         $rootFolder = $this->getRootFolder();
         $destination = $this->getDestination($rootFolder, $e->getSettings());
 
-        if ($this->filesystem->fileExists($destination)) {
+        if ($this->filesystem->file_exists($destination)) {
             $unlinked = $this->filesystem->unlink($destination);
             if (!$unlinked) {
                 // let's not kill the suite but let's notify the user
@@ -100,7 +100,7 @@ class Symlinker extends Extension
      */
     protected function checkSingleDestination($destination)
     {
-        if (!($this->filesystem->isDir($destination) && $this->filesystem->isWriteable($destination))) {
+        if (!($this->filesystem->is_dir($destination) && $this->filesystem->is_writeable($destination))) {
             throw new ExtensionException(__CLASS__, '[destination] parameter [' . $destination . '] is not an existing and writeable directory.');
         }
     }

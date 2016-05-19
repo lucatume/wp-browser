@@ -10,6 +10,16 @@ use Symfony\Component\Yaml\Yaml;
 class WPBootstrap extends Bootstrap
 {
 
+    /**
+     * Returns an array containing the names of the suites the command will scaffold.
+     * 
+     * @return array
+     */
+    public static function getScaffoldedSuitesNames()
+    {
+        return ['acceptance', 'functional', 'unit', 'wpunit'];
+    }
+
     public function getDescription()
     {
         return "Sets up a WordPress CodeCeption testing environment.";

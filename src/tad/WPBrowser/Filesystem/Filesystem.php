@@ -5,7 +5,7 @@ namespace tad\WPBrowser\Filesystem;
 
 class Filesystem extends \Symfony\Component\Filesystem\Filesystem
 {
-    public function requireOnce($file)
+    public function require_once($file)
     {
         require_once $file;
     }
@@ -25,12 +25,12 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
         return $home_dir;
     }
 
-    public function isDir($filename)
+    public function is_dir($filename)
     {
         return is_dir($filename);
     }
 
-    public function isWriteable($filename)
+    public function is_writeable($filename)
     {
         return is_writeable($filename);
     }
@@ -40,7 +40,7 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
         return unlink($filename);
     }
 
-    public function fileExists($filename)
+    public function file_exists($filename)
     {
         return file_exists($filename);
     }
@@ -48,5 +48,10 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
     public function file_put_contents($file, $data)
     {
         return file_put_contents($file, $data);
+    }
+
+    public function file_get_contents($file)
+    {
+        return file_get_contents($file);
     }
 }
