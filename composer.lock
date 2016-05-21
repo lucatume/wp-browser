@@ -551,7 +551,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v5.2.31",
+            "version": "v5.2.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -593,16 +593,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v5.2.31",
+            "version": "v5.2.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "cb5b004610baabe6b4bf532e6e4ff9eaca5eb25b"
+                "reference": "61329ea409362fdae167fdca1125f46c997ce689"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/cb5b004610baabe6b4bf532e6e4ff9eaca5eb25b",
-                "reference": "cb5b004610baabe6b4bf532e6e4ff9eaca5eb25b",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/61329ea409362fdae167fdca1125f46c997ce689",
+                "reference": "61329ea409362fdae167fdca1125f46c997ce689",
                 "shasum": ""
             },
             "require": {
@@ -645,7 +645,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "http://laravel.com",
-            "time": "2016-04-21 13:28:36"
+            "time": "2016-05-14 16:24:10"
         },
         {
             "name": "lucatume/codeception-setup-local",
@@ -691,16 +691,16 @@
         },
         {
             "name": "lucatume/wp-browser-commons",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser-commons.git",
-                "reference": "26f7160425041f9d98e1361883ff8a3ad5c25976"
+                "reference": "8c8e4fcc5802835428701e9ae22d7793074d7097"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/26f7160425041f9d98e1361883ff8a3ad5c25976",
-                "reference": "26f7160425041f9d98e1361883ff8a3ad5c25976",
+                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/8c8e4fcc5802835428701e9ae22d7793074d7097",
+                "reference": "8c8e4fcc5802835428701e9ae22d7793074d7097",
                 "shasum": ""
             },
             "require": {
@@ -732,7 +732,7 @@
                 }
             ],
             "description": "Common libraries of the WP-Browser package.",
-            "time": "2016-05-19 09:08:27"
+            "time": "2016-05-20 11:53:06"
         },
         {
             "name": "mikemclin/laravel-wp-password",
