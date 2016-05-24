@@ -14,4 +14,5 @@ install:
   - composer install --prefer-dist
 
 script:
-  - php ./vendor/codecept run unit
+  - "wget http://codeception.com/codecept.phar"
+  - php ./codecept.phar run unit
