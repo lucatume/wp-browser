@@ -175,8 +175,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $sut = $this->make_instance();
         $sut->assertQueries();
-
-        $sut->_after($this);
     }
 
     /**
@@ -207,8 +205,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $sut = $this->make_instance();
         $sut->assertQueries();
-
-        $sut->_after($this);
     }
 
     /**
@@ -241,8 +237,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
         
         $sut = $this->make_instance();
         $sut->assertNotQueries();
-
-        $sut->_after($this);
     }
 
     /**
@@ -268,8 +262,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $sut = $this->make_instance();
         $sut->assertNotQueries();
-
-        $sut->_after($this);
     }
 
     /**
@@ -305,8 +297,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $sut = $this->make_instance();
         $sut->assertCountQueries(2);
-
-        $sut->_after($this);
     }
 
     /**
@@ -344,8 +334,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
         
         $sut = $this->make_instance();
         $sut->assertCountQueries(1);
-
-        $sut->_after($this);
     }
 
     /**
@@ -398,8 +386,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
         $sut->assertQueriesCountByStatement(2, 'UPDATE');
-
-        $sut->_after($this);
     }
 
     /**
