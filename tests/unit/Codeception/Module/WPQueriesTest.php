@@ -232,9 +232,9 @@ class WPQueriesTest extends \Codeception\TestCase\Test
                 'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
             ],
         ];
-    
+
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
-        
+
         $sut = $this->make_instance();
         $sut->assertNotQueries();
     }
@@ -329,9 +329,9 @@ class WPQueriesTest extends \Codeception\TestCase\Test
                 'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
             ],
         ];
-        
+
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
-        
+
         $sut = $this->make_instance();
         $sut->assertCountQueries(1);
     }
@@ -374,13 +374,14 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
         $sut->assertQueriesByStatement('DELETE');
-        
+        $sut->assertNotQueriesByStatement('DELETE');
+
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
         $sut->assertQueriesCountByStatement(1, 'SELECT');
-        
+
         $this->expectException('PHPUnit_Framework_AssertionFailedError');
         $sut->assertQueriesCountByStatement(3, 'SELECT');
-        
+
         $sut->assertQueriesByStatement('UPDATE');
         $sut->assertQueriesCountByStatement(1, 'UPDATE');
 
@@ -394,7 +395,49 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_class_method()
     {
-        $this->markTestIncomplete();
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodOne'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodTwo'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodTwo'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodThree'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByMethod('Acme\MyPlugin', 'methodOne');
+        $sut->assertQueriesByMethod('\Acme\MyPlugin', 'methodOne');
+        $sut->assertQueriesCountByMethod(2, 'Acme\MyPlugin', 'methodTwo');
+        $sut->assertNotQueriesByMethod('Acme\MyPlugin', 'someMethod');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByMethod('Acme\MyPlugin', 'methodFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByMethod('\Acme\MyPlugin', 'methodFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByMethod(3, 'Acme\MyPlugin', 'methodTwo');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByMethod('Acme\MyPlugin', 'methodTwo');
     }
 
     /**
@@ -403,7 +446,48 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_function()
     {
-        $this->markTestIncomplete();
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                'a stack trace including functionOne'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including functionTwo'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including functionTwo'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including functionThree'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByFunction('functionOne');
+        $sut->assertQueriesCountByFunction(2, 'functionTwo');
+        $sut->assertNotQueriesByFunction('someFunction');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByFunction('functionFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByFunction('functionFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByFunction(3, 'functionTwo');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByFunction('functionTwo');
     }
 
     /**
@@ -412,18 +496,280 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_class_method_and_statement()
     {
-        $this->markTestIncomplete();
-    } 
-    
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodOne'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodTwo'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodTwo'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->methodThree'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByStatementAndMethod('INSERT', 'Acme\MyPlugin', 'methodOne');
+        $sut->assertQueriesCountByStatementAndMethod(2, 'SELECT', 'Acme\MyPlugin', 'methodTwo');
+        $sut->assertNotQueriesByStatementAndMethod('UPDATE', 'Acme\MyPlugin', 'methodOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByStatementAndMethod('UPDATE', 'Acme\MyPlugin', 'methodOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByStatementAndMethod(3, 'UPDATE', 'Acme\MyPlugin', 'methodThree');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByStatementAndMethod('SELECT', 'Acme\MyPlugin', 'methodOne');
+    }
+
     /**
      * @test
      * it should allow asserting queries by function and statement
      */
     public function it_should_allow_asserting_queries_by_function_and_statement()
     {
-        $this->markTestIncomplete();
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                'a stack trace including functionOne'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including functionTwo'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including functionTwo'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including functionThree'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByStatementAndFunction('INSERT', 'functionOne');
+        $sut->assertQueriesCountByStatementAndFunction(2, 'SELECT', 'functionTwo');
+        $sut->assertNotQueriesByStatementAndFunction('UPDATE', 'functionOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByStatementAndFunction('UPDATE', 'functionOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByStatementAndFunction(3, 'UPDATE', 'functionThree');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByStatementAndFunction('SELECT', 'functionOne');
     }
-    
+
+    /**
+     * @test
+     * it should allow asserting queries by action
+     */
+    public function it_should_allow_asserting_queries_by_action()
+    {
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                "a stack trace including do_action('actionOne')"
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                "a stack trace including do_action('actionTwo')"
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                "a stack trace including do_action('actionTwo')"
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                "a stack trace including do_action('actionThree')"
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByAction('actionOne');
+        $sut->assertQueriesCountByAction(2, 'actionTwo');
+        $sut->assertNotQueriesByAction('someAction');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByAction('actionFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByAction(3, 'actionTwo');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByAction('actionTwo');
+    }
+
+    /**
+     * @test
+     * it should allow asserting queries by action and statement
+     */
+    public function it_should_allow_asserting_queries_by_action_and_statement()
+    {
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                "a stack trace including do_action('actionOne')"],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                "a stack trace including do_action('actionTwo')"
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                "a stack trace including do_action('actionTwo')"
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                "a stack trace including do_action('actionThree')"
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByStatementAndAction('INSERT', 'actionOne');
+        $sut->assertQueriesCountByStatementAndAction(2, 'SELECT', 'actionTwo');
+        $sut->assertNotQueriesByStatementAndAction('UPDATE', 'actionOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByStatementAndAction('UPDATE', 'actionOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByStatementAndAction(3, 'UPDATE', 'actionThree');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByStatementAndAction('SELECT', 'actionOne');
+    }
+
+    /**
+     * @test
+     * it should allow asserting queries by filter
+     */
+    public function it_should_allow_asserting_queries_by_filter()
+    {
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                "a stack trace including apply_filters('filterOne')"
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                "a stack trace including apply_filters('filterTwo')"
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                "a stack trace including apply_filters('filterTwo')"
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                "a stack trace including apply_filters('filterThree')"
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByFilter('filterOne');
+        $sut->assertQueriesCountByFilter(2, 'filterTwo');
+        $sut->assertNotQueriesByFilter('someFilter');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByFilter('filterFour');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByFilter(3, 'filterTwo');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByFilter('filterTwo');
+    }
+
+    /**
+     * @test
+     * it should allow asserting queries by filter and statement
+     */
+    public function it_should_allow_asserting_queries_by_filter_and_statement()
+    {
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                'INSERT INTO ... (SELECT * ...)',
+                'some ms timing',
+                "a stack trace including apply_filters('filterOne')"],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                "a stack trace including apply_filters('filterTwo')"
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                "a stack trace including apply_filters('filterTwo')"
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                "a stack trace including apply_filters('filterThree')"
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesByStatementAndFilter('INSERT', 'filterOne');
+        $sut->assertQueriesCountByStatementAndFilter(2, 'SELECT', 'filterTwo');
+        $sut->assertNotQueriesByStatementAndFilter('UPDATE', 'filterOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesByStatementAndFilter('UPDATE', 'filterOne');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertQueriesCountByStatementAndFilter(3, 'UPDATE', 'filterThree');
+
+        $this->expectException('PHPUnit_Framework_AssertionFailedError');
+        $sut->assertNotQueriesByStatementAndFilter('SELECT', 'filterOne');
+    }
+
     /**
      * @return WPQueries
      */

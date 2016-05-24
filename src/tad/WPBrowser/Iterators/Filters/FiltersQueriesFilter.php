@@ -4,7 +4,7 @@ namespace tad\WPBrowser\Iterators\Filters;
 
 use Iterator;
 
-class FilterQueriesFilter extends QueriesCallerBasedKeepingFilterIterator
+class FiltersQueriesFilter extends QueriesCallerBasedKeepingFilterIterator
 {
     /**
      * ClassMethodQueriesFilter constructor.
