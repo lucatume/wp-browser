@@ -1,9 +1,5 @@
 Add:
-	wpdb:
-		- multisite handling
 	wploader:
 		- explicit theme support
 	wpwebdriver:
 		- ui/admin acceptance classes
-Structure:
-	- extract common libs from WPEmbedded and use here
