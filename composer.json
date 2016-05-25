@@ -17,8 +17,8 @@
     }
   ],
   "require": {
-    "lucatume/wp-browser-commons": "~1.0.0",
-    "lucatume/codeception-setup-local": "~1.0.0"
+    "lucatume/wp-browser-commons": "~1.0",
+    "lucatume/codeception-setup-local": "~1.0"
   },
   "autoload": {
     "psr-4": {
