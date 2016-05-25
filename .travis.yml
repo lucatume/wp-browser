@@ -1,0 +1,18 @@
+language: php
+php:
+  - 5.6
+  - 7.0
+
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
+
+install:
+  - composer global require "fxp/composer-asset-plugin:~1.1.1"
+  - composer self-update
+  - composer install --prefer-dist
+
+script:
+  - "wget http://codeception.com/codecept.phar"
+  - php ./codecept.phar run unit
