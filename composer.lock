@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c51c03725ca8d918c88a7f838a443d39",
-    "content-hash": "1882f439a8df3cc6f6e49216801ca968",
+    "hash": "08620ca39732eed15cc7a49fd0f7c25a",
+    "content-hash": "67aa31c18b38e8e0297fbf831c3c5f58",
     "packages": [
         {
             "name": "bacon/bacon-string-utils",
@@ -649,16 +649,16 @@
         },
         {
             "name": "lucatume/codeception-setup-local",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/codeception-setup-local.git",
-                "reference": "fbe4231bd847edb1c35bda0712ecf7cf95c94893"
+                "reference": "8764cbbaabe54866eebcb92db1cf244508ad4a71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/codeception-setup-local/zipball/fbe4231bd847edb1c35bda0712ecf7cf95c94893",
-                "reference": "fbe4231bd847edb1c35bda0712ecf7cf95c94893",
+                "url": "https://api.github.com/repos/lucatume/codeception-setup-local/zipball/8764cbbaabe54866eebcb92db1cf244508ad4a71",
+                "reference": "8764cbbaabe54866eebcb92db1cf244508ad4a71",
                 "shasum": ""
             },
             "require": {
@@ -687,20 +687,20 @@
                 }
             ],
             "description": "Flexible local setup for Codeception",
-            "time": "2016-05-19 09:27:53"
+            "time": "2016-05-21 15:04:41"
         },
         {
             "name": "lucatume/wp-browser-commons",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser-commons.git",
-                "reference": "8c8e4fcc5802835428701e9ae22d7793074d7097"
+                "reference": "b9e7b6e20203c896d3665415781ac425bf660a76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/8c8e4fcc5802835428701e9ae22d7793074d7097",
-                "reference": "8c8e4fcc5802835428701e9ae22d7793074d7097",
+                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/b9e7b6e20203c896d3665415781ac425bf660a76",
+                "reference": "b9e7b6e20203c896d3665415781ac425bf660a76",
                 "shasum": ""
             },
             "require": {
@@ -732,7 +732,7 @@
                 }
             ],
             "description": "Common libraries of the WP-Browser package.",
-            "time": "2016-05-20 11:53:06"
+            "time": "2016-05-25 04:44:27"
         },
         {
             "name": "mikemclin/laravel-wp-password",
