@@ -749,7 +749,7 @@ $queries = $I->getModule('WPQueries');
 $queries->assertQueries();
 ```
 
-The module defines the following assertion methods, see doc blocks documentation for the details:
+The module defines the following assertion methods, see code doc blocks documentation for the details:
 
 * assertQueries
 * assertNotQueries
