@@ -28,6 +28,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database, use in acceptance and functional testing
 * WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in unit and functional tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 * WPBootstrapper - will bootstrap (**simply load**) an existing WordPress installation to have access to it in acceptance and functional tests.
+* WPQueries - used in conjuction with the WPLoader or WPBootstrapper modules it allow for assertments to be made on WordPress database access
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
@@ -168,6 +169,9 @@ The module will bootstrap a WordPress installation loading its `wp-load.php` fil
 The configuration will require one parameter only :
 
  * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
+
+### WPQueries configuration
+This module requires no configuration.
 
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
@@ -714,6 +718,84 @@ The module adds some *sugar* methods, beside allowing for the call of any WordPr
 * `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
 * `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
   * `plugins` - includes the `wp-admin/includes/plugin.php` file to access functions like `activate_plugin` and `deactivate_plugins`.
+
+### WPQueries
+The module assertion methods can be accessed including it in the suite configuration file.  
+When writing tests the module can be accessed using the `getModule` method.  
+In any test case class extending the base `Codeception\TestCase\Test` class the module can be accessed like this:
+
+```php
+class QueriesTest extends Codeception\TestCase\Test{
+
+  public function test_insertion_queries(){
+    wp_insert_post(['post_type' => 'page', 'post_title' => 'Some title']);
+
+    $queries = $this->getModule('WPQueries');
+    $queries->assertQueries();
+  }
+
+}
+```
+
+In `cept` or `cest` format tests the module can be accessed in a similar way:
+
+```php
+$I = new FunctionalTester($scenario);
+$I->amOnPage('/');
+$I->click('Create random post');
+
+$queries = $I->getModule('WPQueries');
+
+$queries->assertQueries();
+```
+
+The module defines the following assertion methods, see doc blocks documentation for the details:
+
+* assertQueries
+* assertNotQueries
+* assertCountQueries 
+* assertQueriesByStatement
+* assertQueriesByMethod
+* assertNotQueriesByStatement
+* assertQueriesCountByStatement
+* assertNotQueriesByMethod
+* assertQueriesCountByMethod
+* assertQueriesByFunction
+* assertNotQueriesByFunction
+* assertQueriesCountByFunction
+* assertQueriesByStatementAndMethod
+* assertNotQueriesByStatementAndMethod
+* assertQueriesCountByStatementAndMethod
+* assertQueriesByStatementAndFunction
+* assertNotQueriesByStatementAndFunction
+* assertQueriesCountByStatementAndFunction
+* assertQueriesByAction
+* assertNotQueriesByAction
+* assertQueriesCountByAction
+* assertQueriesByStatementAndAction
+* assertNotQueriesByStatementAndAction
+* assertQueriesCountByStatementAndAction
+* assertQueriesByFilter
+* assertNotQueriesByFilter
+* assertQueriesCountByFilter
+* assertQueriesByStatementAndFilter
+* assertNotQueriesByStatementAndFilter
+* assertQueriesCountByStatementAndFilter
+
+**Note**: when used in a `WPTestCase` exending class the assertion methods will exclude queries made during `WPTestCase::setUp`, `WPTestCase::tearDown` and factory methods!  
+This means that the `test_queries` test method below will fail as no queries have been made by methods or that are not part of `setUp`, `tearDown` or factories:
+
+```php
+class QueriesTest extends Codeception\TestCase\WPTestCase {
+  public fuction test_queries(){
+    
+    $this->factory()->posts->create();
+
+    // this will fail!
+    $this->assertQueries();
+  }
+}
+```
 
 ## Extensions
 The package contains an additional extension to facilitate testers' life.
