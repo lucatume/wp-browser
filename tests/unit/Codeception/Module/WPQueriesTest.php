@@ -3,7 +3,6 @@ namespace Codeception\Module;
 
 require_once codecept_data_dir('classes/wpdb.php');
 
-use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use tad\WPBrowser\Environment\Constants;
 
@@ -29,18 +28,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     protected $constants;
 
-    protected function _before()
-    {
-        $this->moduleContainer = $this->prophesize('Codeception\Lib\ModuleContainer');
-        $wploader = $this->prophesize('Codeception\Module\WPLoader');
-        $this->moduleContainer->getModule('WPLoader')->willReturn($wploader->reveal());
-        $this->constants = $this->prophesize('tad\WPBrowser\Environment\Constants');
-    }
-
-    protected function _after()
-    {
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -53,14 +40,23 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @test
-     * it should throw if WPLoader module is not loaded in module container
+     * @return WPQueries
      */
-    public function it_should_throw_if_wp_loader_module_is_not_loaded_in_module_container()
+    private function make_instance()
+    {
+        return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal());
+    }
+
+    /**
+     * @test
+     * it should throw if WPLoader and WPBootstrapper modules are not loaded in module container
+     */
+    public function it_should_throw_if_wploader_and_wpbootstrapper_modules_are_not_loaded_in_module_container()
     {
         $this->expectException('Codeception\Exception\ModuleException');
 
-        $this->moduleContainer->getModule('WPLoader')->willThrow(new ModuleException('foo', 'bar'));
+        $this->moduleContainer->hasModule('WPLoader')->willReturn(false);
+        $this->moduleContainer->hasModule('WPBootstrapper')->willReturn(false);
 
         $this->make_instance()->_initialize();
     }
@@ -803,17 +799,21 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
         $sut = $this->make_instance();
 
-        $sut->assertQueriesCountByStatement(1,"/SELECT .* AND pm.meta_key = 'some_key'/");
+        $sut->assertQueriesCountByStatement(1, "/SELECT .* AND pm.meta_key = 'some_key'/");
         $sut->assertQueriesCountByStatement(3, 'SELECT');
 
         $sut->assertNotQueriesByStatement("/SELECT .* FROM wp_postmeta/");
     }
 
-    /**
-     * @return WPQueries
-     */
-    private function make_instance()
+    protected function _before()
     {
-        return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal());
+        $this->moduleContainer = $this->prophesize('Codeception\Lib\ModuleContainer');
+        $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
+        $this->moduleContainer->hasModule('WPBootstrapper')->willReturn(true);
+        $this->constants = $this->prophesize('tad\WPBrowser\Environment\Constants');
+    }
+
+    protected function _after()
+    {
     }
 }

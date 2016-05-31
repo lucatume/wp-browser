@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Added
+- the `WPQueries` module
+
+##[1.11.0] 2016-05-24
+### Added
 - `lucatume/codeception-setup-local` package requirement
 - `wpcept setup` command shimming (from `lucatume/codeception-setup-local` package)
 - `wpcept setup:scaffold` command shimming (from `lucatume/codeception-setup-local` package)
