@@ -153,7 +153,7 @@ class WPQueries extends Module
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
-        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries));
+        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
         \PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
     }
 
@@ -185,7 +185,7 @@ class WPQueries extends Module
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that ' . $n . ' queries beginning with statement [' . $statement . '] were made.';
-        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries));
+        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
         \PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
     }
 

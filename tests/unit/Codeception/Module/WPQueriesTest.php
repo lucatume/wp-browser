@@ -771,6 +771,45 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     }
 
     /**
+     * @test
+     * it should allow using regexes when asserting queries by statement
+     */
+    public function it_should_allow_using_regexes_when_asserting_queries_by_statement()
+    {
+        global $wpdb;
+        $wpdb = new \wpdb();
+        $wpdb->queries = [
+            [
+                "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $sut->assertQueriesCountByStatement(1,"/SELECT .* AND pm.meta_key = 'some_key'/");
+        $sut->assertQueriesCountByStatement(3, 'SELECT');
+
+        $sut->assertNotQueriesByStatement("/SELECT .* FROM wp_postmeta/");
+    }
+
+    /**
      * @return WPQueries
      */
     private function make_instance()

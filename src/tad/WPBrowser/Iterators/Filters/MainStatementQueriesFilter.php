@@ -33,10 +33,16 @@ class MainStatementQueriesFilter extends \FilterIterator
     public function accept()
     {
         $query = $this->getInnerIterator()->current();
-        if (!preg_match('/^' . $this->statement . '/i', $query[0])) {
+        $pattern = $this->isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
+        if (!preg_match($pattern, $query[0])) {
             return false;
         }
 
         return true;
+    }
+
+    private function isRegex($statement)
+    {
+        return @preg_match($statement, null) !== false;
     }
 }
