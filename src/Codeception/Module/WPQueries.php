@@ -36,6 +36,11 @@ class WPQueries extends Module
     protected $assertions = [];
 
     /**
+     * @var \wpdb
+     */
+    protected $wpdb;
+
+    /**
      * @var Constants
      */
     private $constants;
@@ -46,10 +51,12 @@ class WPQueries extends Module
      * @param ModuleContainer $moduleContainer
      * @param null $config
      * @param Constants|null $constants
+     * @param \wpdb|null $wpdb
      */
-    public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null)
+    public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null, $wpdb = null)
     {
         $this->constants = $constants ? $constants : new Constants();
+        $this->wpdb = $wpdb;
         parent::__construct($moduleContainer, $config);
     }
 
@@ -67,8 +74,7 @@ class WPQueries extends Module
      */
     public function _cleanup()
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
+        $wpdb =$this->getWpdbInstance();
         $wpdb->queries = [];
     }
 
@@ -88,8 +94,7 @@ class WPQueries extends Module
 
     private function readQueries()
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
+        $wpdb = $this->getWpdbInstance();
 
         if (empty($wpdb->queries)) {
             $this->filteredQueries = [];
@@ -97,7 +102,6 @@ class WPQueries extends Module
             $filteredQueriesIterator = $this->_getFilteredQueriesIterator();
             $this->filteredQueries = iterator_to_array($filteredQueriesIterator);
         }
-
     }
 
     /**
@@ -106,11 +110,10 @@ class WPQueries extends Module
      * @param \wpdb $wpdb
      * @return \FilterIterator
      */
-    public function _getFilteredQueriesIterator(\wpdb $wpdb = null)
+    public function _getFilteredQueriesIterator($wpdb = null)
     {
         if (null === $wpdb) {
-            /** @var \wpdb $wpdb */
-            global $wpdb;
+            $wpdb = $this->getWpdbInstance();
         }
 
         $queriesArrayIterator = new \ArrayIterator($wpdb->queries);
@@ -602,5 +605,19 @@ class WPQueries extends Module
         $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
         $iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter), $statement);
         \PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($iterator), $message);
+    }
+
+    /**
+     * @return \wpdb
+     */
+    private function getWpdbInstance()
+    {
+        if (null === $this->wpdb) {
+            /** @var \wpdb $wpdb */
+            global $wpdb;
+            return $wpdb;
+        }
+        
+        return $this->wpdb;
     }
 }

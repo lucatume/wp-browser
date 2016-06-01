@@ -1,8 +1,6 @@
 <?php
 namespace Codeception\Module;
 
-require_once codecept_data_dir('classes/wpdb.php');
-
 use Codeception\Lib\ModuleContainer;
 use tad\WPBrowser\Environment\Constants;
 
@@ -29,6 +27,11 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     protected $constants;
 
     /**
+     * @var \wpdb
+     */
+    protected $wpdb;
+
+    /**
      * @test
      * it should be instantiatable
      */
@@ -44,7 +47,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     private function make_instance()
     {
-        return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal());
+        return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal(), $this->wpdb);
     }
 
     /**
@@ -78,9 +81,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_filter_set_up_and_tear_down_queries_by_default()
     {
-        $sut = $this->make_instance();
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'first SQL statement',
                 'some ms timing',
@@ -118,7 +119,8 @@ class WPQueriesTest extends \Codeception\TestCase\Test
             ],
         ];
 
-        $iterator = $sut->_getFilteredQueriesIterator($wpdb);
+        $sut = $this->make_instance();
+        $iterator = $sut->_getFilteredQueriesIterator($this->wpdb);
 
         $items = [];
 
@@ -137,9 +139,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_return_false_if_asserting_queries_and_there_were_no_queries()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'first SQL statement',
                 'some ms timing',
@@ -179,9 +179,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_not_fail_if_asserting_queries_and_there_were_queries()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'first SQL statement',
                 'some ms timing',
@@ -209,9 +207,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_fail_if_asserting_no_queries_but_queries_were_made()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'first SQL statement',
                 'some ms timing',
@@ -241,9 +237,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_succeed_if_asserting_no_queries_and_no_queries_were_made()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'first SQL statement',
                 'some ms timing',
@@ -266,9 +260,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_counting_the_queries()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'SQL statement',
                 'some ms timing',
@@ -301,9 +293,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_fail_if_asserting_wrong_queries_count()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'SQL statement',
                 'some ms timing',
@@ -338,9 +328,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -391,9 +379,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_class_method()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -442,9 +428,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_function()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -492,9 +476,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_class_method_and_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -539,9 +521,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_function_and_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -586,9 +566,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_action()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -633,9 +611,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_action_and_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -679,9 +655,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_filter()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -726,9 +700,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_asserting_queries_by_filter_and_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
                 'some ms timing',
@@ -772,9 +744,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
      */
     public function it_should_allow_using_regexes_when_asserting_queries_by_statement()
     {
-        global $wpdb;
-        $wpdb = new \wpdb();
-        $wpdb->queries = [
+        $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
                 'some ms timing',
@@ -811,9 +781,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
         $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
         $this->moduleContainer->hasModule('WPBootstrapper')->willReturn(true);
         $this->constants = $this->prophesize('tad\WPBrowser\Environment\Constants');
-    }
-
-    protected function _after()
-    {
+        $this->wpdb = (object)['queries' => []];
     }
 }
