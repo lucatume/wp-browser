@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.12.0] 2016-06-01
 ### Added
 - the `WPQueries` module
 
@@ -354,7 +356,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.12...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.13...HEAD
+[1.10.12]: https://github.com/lucatume/wp-browser/compare/1.10.12...1.10.13
 [1.10.12]: https://github.com/lucatume/wp-browser/compare/1.10.11...1.10.12
 [1.10.11]: https://github.com/lucatume/wp-browser/compare/1.10.10...1.10.11
 [1.10.10]: https://github.com/lucatume/wp-browser/compare/1.10.9...1.10.10
