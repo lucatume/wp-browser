@@ -12,7 +12,7 @@ To install simply require the package in the `composer.json` file like
 ```json
   "require-dev":
     {
-      "lucatume/wp-browser": "master@dev"
+      "lucatume/wp-browser": "~1.11"
     }
 ```
     
