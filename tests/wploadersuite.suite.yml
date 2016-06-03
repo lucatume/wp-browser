@@ -1,7 +1,7 @@
 class_name: WploaderTester
 modules:
     enabled:
-        - \Helper\Wploader
+        - \Helper\Wploadersuite
         - WPLoader
     config:
         WPLoader:
