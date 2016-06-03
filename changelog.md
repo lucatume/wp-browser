@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 
 ##[1.12.0] 2016-06-01
+### Changed
+- updated code to follow `codeception/codeception` 2.2 update
+
+##[1.12.0] 2016-06-01
 ### Added
 - the `WPQueries` module
 
@@ -356,7 +360,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.12.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.13.0...HEAD
+[1.13.0]: https://github.com/lucatume/wp-browser/compare/1.12.0...1.13.0
 [1.12.0]: https://github.com/lucatume/wp-browser/compare/1.11.0...1.12.0
 [1.11.0]: https://github.com/lucatume/wp-browser/compare/1.10.12...1.11.0
 [1.10.12]: https://github.com/lucatume/wp-browser/compare/1.10.11...1.10.12
