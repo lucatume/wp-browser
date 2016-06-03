@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
-##[1.12.0] 2016-06-01
+##[1.13.0] 2016-06-03
 ### Changed
 - updated code to follow `codeception/codeception` 2.2 update
 
