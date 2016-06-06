@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
-##[1.13.0] 2016-06-06
+##[1.13.2] 2016-06-06
+### Fixed
+- Symlinker extension event hooking
+
+##[1.13.1] 2016-06-06
 ### Fixed
 - issue with Symlinker unlinking operation
 
@@ -364,7 +368,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.13.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.13.2...HEAD
+[1.13.2]: https://github.com/lucatume/wp-browser/compare/1.13.1...1.13.2
 [1.13.1]: https://github.com/lucatume/wp-browser/compare/1.13.0...1.13.1
 [1.13.0]: https://github.com/lucatume/wp-browser/compare/1.12.0...1.13.0
 [1.12.0]: https://github.com/lucatume/wp-browser/compare/1.11.0...1.12.0
