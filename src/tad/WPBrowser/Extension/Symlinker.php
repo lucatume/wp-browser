@@ -57,7 +57,7 @@ class Symlinker extends Extension
         $destination = $this->getDestination($rootFolder, $e->getSettings());
 
         if ($this->filesystem->file_exists($destination)) {
-            $unlinked = $this->filesystem->unlink($destination);
+            $unlinked = $this->filesystem->unlinkDir($destination);
             if (!$unlinked) {
                 // let's not kill the suite but let's notify the user
                 $this->writeln('Could not unlink file [' . $destination . '], manual removal is required.');

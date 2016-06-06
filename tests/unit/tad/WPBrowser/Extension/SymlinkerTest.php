@@ -187,7 +187,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
         $this->filesystem->file_exists($this->filename)->willReturn(true);
-        $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled();
+        $this->filesystem->unlinkDir(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->unlink($this->event->reveal());
@@ -201,7 +201,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
         $this->filesystem->file_exists($this->filename)->willReturn(true);
-        $this->filesystem->unlink($this->filename)->shouldBeCalled();
+        $this->filesystem->unlinkDir($this->filename)->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->unlink($this->event->reveal());
@@ -215,7 +215,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
         $this->filesystem->file_exists($this->filename)->willReturn(false);
-        $this->filesystem->unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
+        $this->filesystem->unlinkDir(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
         $sut->unlink($this->event->reveal());
