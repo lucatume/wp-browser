@@ -54,6 +54,7 @@ $table_prefix = WP_TESTS_TABLE_PREFIX ;
 
 // in place of executing the installation script require the (modified) installation file
 if ( !defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL ) {
+	codecept_debug('Installing WordPress in same process...');
 	require 'same-scope-install.php';
 } else {
 	$configuration = [
@@ -75,7 +76,9 @@ if ( !defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL ) 
 		],
 	];
 
-	system( WP_PHP_BINARY . ' ' . escapeshellarg( dirname( __FILE__ ) . '/isolated-install.php' ) . ' ' . escapeshellarg( serialize( $configuration ) ) . ' ' . $multisite );
+	codecept_debug('Installing WordPress in isolated process...');
+	$output = system( WP_PHP_BINARY . ' ' . escapeshellarg( dirname( __FILE__ ) . '/isolated-install.php' ) . ' ' . escapeshellarg( serialize( $configuration ) ) . ' ' . $multisite );
+	codecept_debug($output);
 }
 
 if ( $multisite ) {
@@ -204,4 +207,7 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt {
 		}
     }
 }
+
+ob_start();
 new WP_PHPUnit_Util_Getopt( $_SERVER['argv'] );
+codecept_debug(ob_get_clean());

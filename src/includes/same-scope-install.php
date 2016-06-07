@@ -37,6 +37,8 @@ if ( version_compare( $wpdb->db_version(), '5.5.3', '>=' ) ) {
 }
 $wpdb->select( DB_NAME, $wpdb->dbh );
 
+ob_start();
+
 echo "Installing..." . PHP_EOL;
 
 foreach ( $wpdb->tables() as $table => $prefixed_table ) {
@@ -82,3 +84,5 @@ if ( $multisite ) {
 	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
 	$wp_rewrite->set_permalink_structure( '' );
 }
+
+codecept_debug(ob_get_clean());
