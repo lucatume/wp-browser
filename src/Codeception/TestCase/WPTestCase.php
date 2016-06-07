@@ -7,8 +7,7 @@ if (!class_exists('WP_UnitTest_Factory')) {
 if (!class_exists('TracTickets')) {
 	require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
 }
-//@todo: update to latest version from core
-class WPTestCase extends \Codeception\TestCase\Test {
+class WPTestCase extends \Codeception\Test\Unit {
 
 	protected static $forced_tickets = array();
 	protected static $hooks_saved = array();

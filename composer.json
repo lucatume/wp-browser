@@ -27,7 +27,7 @@
     }
   },
   "require-dev": {
-    "codeception/codeception": "~2.1",
+    "codeception/codeception": "~2.2",
     "mikey179/vfsStream": "^1.6"
   },
   "bin": [
