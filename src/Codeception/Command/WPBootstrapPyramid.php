@@ -19,7 +19,7 @@ class WPBootstrapPyramid extends WPBootstrap
         $output->writeln( "tests/unit.suite.yml written          <- unit tests suite configuration" );
         $this->createIntegrationSuite();
         $output->writeln( "tests/integration created             <- integration tests" );
-        $output->writeln( "tests/wpunit.suite.yml written        <- integration tests suite configuration" );
+        $output->writeln( "tests/integration.suite.yml written   <- integration tests suite configuration" );
         $this->createServiceSuite();
         $output->writeln( "tests/service created                 <- service tests" );
         $output->writeln( "tests/service.suite.yml written       <- service tests suite configuration" );

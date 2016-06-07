@@ -17,7 +17,7 @@ class WPBootstrap extends Bootstrap
      */
     public static function getScaffoldedSuitesNames()
     {
-        return ['acceptance', 'functional', 'unit', 'wpunit'];
+        return [ 'acceptance', 'functional', 'integration', 'unit' ];
     }
 
     public function getDescription()
@@ -173,7 +173,7 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
-    protected function createIntegrationSuite( $actor = 'Wpunit' )
+    protected function createIntegrationSuite( $actor = 'Integration' )
     {
         $suiteConfig = $this->getIntegrationSuiteConfig( $actor );
 
@@ -181,7 +181,7 @@ class WPBootstrap extends Bootstrap
         $str .= "# suite for integration tests.\n";
         $str .= "# Load WordPress and test classes that rely on it.\n";
         $str .= Yaml::dump($suiteConfig, 2);
-        $this->createSuite('wpunit', $actor, $str);
+        $this->createSuite( 'integration', $actor, $str );
     }
 
     protected function createAcceptanceSuite($actor = 'Acceptance')
@@ -268,7 +268,7 @@ class WPBootstrap extends Bootstrap
         $output->writeln( "tests/unit.suite.yml written          <- unit tests suite configuration" );
         $this->createIntegrationSuite();
         $output->writeln( "tests/integration created             <- integration tests" );
-        $output->writeln( "tests/wpunit.suite.yml written        <- integration tests suite configuration" );
+        $output->writeln( "tests/integration.suite.yml written   <- integration tests suite configuration" );
         $this->createFunctionalSuite();
         $output->writeln( "tests/functional created              <- functional tests" );
         $output->writeln( "tests/functional.suite.yml written    <- functional tests suite configuration" );
