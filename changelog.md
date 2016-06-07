@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
-##[1.13.2] 2016-06-07
+##[1.13.3] 2016-06-07
 ### Changed
 - `WPTestCase` now extends `Codeception\Test\Unit` class
 
