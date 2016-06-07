@@ -2,21 +2,21 @@
 
 namespace Codeception\Command;
 
-use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
 use Codeception\Lib\Generator\WPUnit;
-use Symfony\Component\Console\Input\InputOption;
+use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
 
 /**
  * Generates skeleton for unit test as in classical PHPUnit.
  *
- * * `codecept g:wpunit unit UserTest`
- * * `codecept g:wpunit unit User`
- * * `codecept g:wpunit unit "App\User`
+ * * `wpcept g:wpunit unit UserTest`
+ * * `wpcept g:wpunit unit User`
+ * * `wpcept g:wpunit unit "App\User`
  *
  */
 class GenerateWPUnit extends Command
