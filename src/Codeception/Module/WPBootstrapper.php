@@ -50,17 +50,17 @@ class WPBootstrapper extends Module
     {
         $wpRootFolder = $this->config['wpRootFolder'];
         if (!is_dir($wpRootFolder)) {
-            throw new ModuleConfigException(__CLASS__, 'WordPress root folder is not a folder');
+            throw new ModuleConfigException(static::class, 'WordPress root folder is not a folder');
         }
         if (!is_readable($wpRootFolder)) {
-            throw new ModuleConfigException(__CLASS__, 'WordPress root folder is not readable');
+            throw new ModuleConfigException(static::class, 'WordPress root folder is not readable');
         }
         $wpLoad = $wpRootFolder . DIRECTORY_SEPARATOR . 'wp-load.php';
         if (!file_exists($wpLoad)) {
-            throw new ModuleConfigException(__CLASS__, 'WordPress root folder does not contain a wp-load.php file');
+            throw new ModuleConfigException(static::class, 'WordPress root folder does not contain a wp-load.php file');
         }
         if (!is_readable($wpLoad)) {
-            throw new ModuleConfigException(__CLASS__, 'wp-load.php file is not readable');
+            throw new ModuleConfigException(static::class, 'wp-load.php file is not readable');
         }
         $this->wpLoadPath = $wpLoad;
     }
