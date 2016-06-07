@@ -2,16 +2,19 @@
 /**
  * Installs WordPress for the purpose of the unit-tests
  *
- * @todo Reuse the init/load code in init.php
  */
 error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 
-// this replaces the original argument passed in with the `system` function
-$multisite = defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE;
+$configuration = unserialize( $argv[1]);
 
-$table_prefix = WP_TESTS_TABLE_PREFIX ;
+foreach ($configuration['constants'] as $key => $value){
+	define($key,$value);
+}
+
+$multisite = ! empty( $argv[2] ) ? $argv[2] : false;
 
 define( 'WP_INSTALLING', true );
+//require_once $config_file_path;
 require_once dirname( __FILE__ ) . '/functions.php';
 
 tests_reset__SERVER();
@@ -71,14 +74,6 @@ if ( $multisite ) {
 
 	$title = WP_TESTS_TITLE . ' Network';
 	$subdomain_install = false;
-	
-	/**
-	 * If we are on multisite the `blogs` table will not have the main blog row set up due to how the install script ran.
-	 * Let's add the row now.
-	 */
-    /** @var \wpdb $wpdb */
-	global $wpdb;
-	$wpdb->insert($wpdb->blogs, array('site_id' => 1, 'blog_id' => 1, 'domain' => WP_TESTS_DOMAIN, 'path' => '/', 'registered' => current_time('mysql')));
 
 	install_network();
 	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
