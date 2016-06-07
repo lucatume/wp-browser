@@ -173,13 +173,13 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
-    protected function createWpunitSuite($actor = 'Wpunit')
+    protected function createIntegrationSuite( $actor = 'Wpunit' )
     {
-        $suiteConfig = $this->getWpunitSuiteConfig($actor);
+        $suiteConfig = $this->getIntegrationSuiteConfig( $actor );
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for WordPress unit tests.\n";
-        $str .= "# Load WordPress and unit test classes that rely on it.\n";
+        $str .= "# suite for integration tests.\n";
+        $str .= "# Load WordPress and test classes that rely on it.\n";
         $str .= Yaml::dump($suiteConfig, 2);
         $this->createSuite('wpunit', $actor, $str);
     }
@@ -190,7 +190,7 @@ class WPBootstrap extends Bootstrap
 
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# suite for WordPress acceptance tests.\n";
-        $str .= "# perform tests in browser using WPBrowser or WPWebDriver modules.\n";
+        $str .= "# perform tests in browser the WPWebDriver module.\n";
 
         $str .= Yaml::dump($suiteConfig, 5);
         $this->createSuite('acceptance', $actor, $str);
@@ -208,7 +208,8 @@ class WPBootstrap extends Bootstrap
             'modules' => [
                 'enabled' => [
                     'Filesystem',
-                    'WPLoader',
+                    'WPBrowser',
+                    'WPDb',
                     "\\{$this->namespace}Helper\\{$actor}"
                 ]
             ]
@@ -222,7 +223,7 @@ class WPBootstrap extends Bootstrap
      *
      * @return array
      */
-    protected function getWpunitSuiteConfig($actor)
+    protected function getIntegrationSuiteConfig( $actor )
     {
         $suiteConfig = [
             'class_name' => $actor . $this->actorSuffix,
@@ -248,7 +249,7 @@ class WPBootstrap extends Bootstrap
             'class_name' => $actor . $this->actorSuffix,
             'modules' => [
                 'enabled' => [
-                    'WPBrowser',
+                    'WPWebDriver',
                     "\\{$this->namespace}Helper\\{$actor}"
                 ],
             ]
@@ -263,16 +264,16 @@ class WPBootstrap extends Bootstrap
     protected function setupSuites(OutputInterface $output)
     {
         $this->createUnitSuite();
-        $output->writeln("tests/unit created                 <- unit tests");
-        $output->writeln("tests/unit.suite.yml written       <- unit tests suite configuration");
-        $this->createWpunitSuite();
-        $output->writeln("tests/wpunit created                 <- WordPress unit tests");
-        $output->writeln("tests/wpunit.suite.yml written       <- WordPress unit tests suite configuration");
+        $output->writeln( "tests/unit created                    <- unit tests" );
+        $output->writeln( "tests/unit.suite.yml written          <- unit tests suite configuration" );
+        $this->createIntegrationSuite();
+        $output->writeln( "tests/integration created             <- integration tests" );
+        $output->writeln( "tests/wpunit.suite.yml written        <- integration tests suite configuration" );
         $this->createFunctionalSuite();
-        $output->writeln("tests/functional created           <- functional tests");
-        $output->writeln("tests/functional.suite.yml written <- functional tests suite configuration");
+        $output->writeln( "tests/functional created              <- functional tests" );
+        $output->writeln( "tests/functional.suite.yml written    <- functional tests suite configuration" );
         $this->createAcceptanceSuite();
-        $output->writeln("tests/acceptance created           <- acceptance tests");
-        $output->writeln("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+        $output->writeln( "tests/acceptance created              <- acceptance tests" );
+        $output->writeln( "tests/acceptance.suite.yml written    <- acceptance tests suite configuration" );
     }
 }
