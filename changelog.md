@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- renamed the `wpunit` suite to `integration` to stick with proper TDD terms (thanks @davert)
+- updated `wpcept` `bootstrap` and `bootstrap:pyramid` commands to scaffold suites closer in modules to TDD practices
 
 ##[1.13.3] 2016-06-07
 ### Changed
