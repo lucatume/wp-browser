@@ -50,8 +50,33 @@ if ( "1" == getenv( 'WP_MULTISITE' ) ||
 require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
 $phpmailer = new MockPHPMailer();
 
+$table_prefix = WP_TESTS_TABLE_PREFIX ;
+
 // in place of executing the installation script require the (modified) installation file
-require 'install.php';
+if ( !defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL ) {
+	require 'same-scope-install.php';
+} else {
+	$configuration = [
+		'constants' => [
+			'ABSPATH'	 => ABSPATH,
+		    'WP_DEBUG' => true,
+		    'WP_TESTS_TABLE_PREFIX' => WP_TESTS_TABLE_PREFIX,
+		    'DB_NAME' => DB_NAME,
+		    'DB_USER' => DB_USER,
+			'DB_PASSWORD' => DB_PASSWORD,
+		    'DB_HOST' => DB_HOST,
+		    'DB_CHARSET' => DB_CHARSET,
+		    'DB_COLLATE' => DB_COLLATE,
+		    'WP_TESTS_DOMAIN' => WP_TESTS_DOMAIN,
+			'WP_TESTS_EMAIL' => WP_TESTS_EMAIL,
+			'WP_TESTS_TITLE' => WP_TESTS_TITLE,
+			'WP_PHP_BINARY' => WP_PHP_BINARY,
+			'WPLANG' => WPLANG
+		],
+	];
+
+	system( WP_PHP_BINARY . ' ' . escapeshellarg( dirname( __FILE__ ) . '/isolated-install.php' ) . ' ' . escapeshellarg( serialize( $configuration ) ) . ' ' . $multisite );
+}
 
 if ( $multisite ) {
 	if(!defined('MULTISITE')){
