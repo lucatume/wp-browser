@@ -8,15 +8,9 @@ use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use Codeception\TestCase;
 use Handlebars\Handlebars;
 use PDO;
-use tad\WPBrowser\Filesystem\FileReplacers\HtaccesReplacer;
-use tad\WPBrowser\Filesystem\FileReplacers\WPConfigReplacer;
 use tad\WPBrowser\Generators\Comment;
-use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
-use tad\WPBrowser\Generators\RedirectingWPConfig;
-use tad\WPBrowser\Generators\SubdomainHtaccess;
-use tad\WPBrowser\Generators\SubfolderHtaccess;
 use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
@@ -385,6 +379,8 @@ class WPDb extends ExtendedDb
      * Inserts a post in the database.
      *
      * @param  array $data An associative array of post data to override default and random generated values.
+     *
+     * @return int post_id The inserted post ID.
      */
     public function havePostInDatabase(array $data = [])
     {
@@ -393,19 +389,20 @@ class WPDb extends ExtendedDb
         $id = $this->grabLatestEntryByFromDatabase($postTableName, $idColumn) + 1;
         $post = Post::makePost($id, $this->config['url'], $data);
         $hasMeta = !empty($data['meta']);
+        $meta = [];
         if ($hasMeta) {
             $meta = $data['meta'];
             unset($post['meta']);
         }
 
         $hasTerms = !empty($data['terms']);
+        $terms = [];
         if ($hasTerms) {
             $terms = $data['terms'];
             unset($post['terms']);
         }
 
         $postId = $this->haveInDatabase($postTableName, $post);
-
         if ($hasMeta) {
             foreach ($meta as $meta_key => $meta_value) {
                 $this->havePostmetaInDatabase($postId, $meta_key, $meta_value);
@@ -541,6 +538,7 @@ class WPDb extends ExtendedDb
         $termDefaults = ['slug' => (new Slugifier())->slugify($name), 'term_group' => 0];
 
         $hasMeta = !empty($overrides['meta']);
+        $meta = [];
         if ($hasMeta) {
             $meta = $overrides['meta'];
             unset($overrides['meta']);
@@ -1378,6 +1376,7 @@ class WPDb extends ExtendedDb
         }
 
         $has_meta = !empty($data['meta']);
+        $meta = [];
         if ($has_meta) {
             $meta = $data['meta'];
             unset($data['meta']);
@@ -1536,8 +1535,8 @@ class WPDb extends ExtendedDb
      */
     public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = array())
     {
-        // get the user
         $hasMeta = !empty($overrides['meta']);
+        $meta = [];
         if ($hasMeta) {
             $meta = $overrides['meta'];
             unset($overrides['meta']);
@@ -1887,8 +1886,6 @@ class WPDb extends ExtendedDb
 
         $blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
 
-        $this->scaffoldBlogTables($blogId, $domainOrPath);
-
         return $blogId;
     }
 
@@ -2082,13 +2079,5 @@ class WPDb extends ExtendedDb
         $subfolder = ltrim(end($frags), '/');
 
         return $subfolder;
-    }
-
-    private function query($query)
-    {
-        $dbh = $this->driver->getDbh();
-        $sth = $dbh->prepare($query);
-        $this->debugSection('Query', $sth->queryString);
-        $sth->execute();
     }
 }
