@@ -23,12 +23,13 @@ After that  follow the configuration instructions below.
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
 Not every module will make sense or work in any suite or type of test case but here's an high level view:
 
-* WPBrowser - a PHP based, JavaScript-less and headless browser for acceptance testing
+* WPBrowser - a PHP based, JavaScript-less and headless browser for functional testing
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for acceptance testing
-* WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database, use in acceptance and functional testing
-* WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in unit and functional tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
-* WPBootstrapper - will bootstrap (**simply load**) an existing WordPress installation to have access to it in acceptance and functional tests.
-* WPQueries - used in conjuction with the WPLoader or WPBootstrapper modules it allow for assertments to be made on WordPress database access
+* WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in functional testing
+* WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in integration tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
+* WPBootstrapper - will bootstrap an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
+* WPQueries - allows for assertments to be made on WordPress database access in integration tests.
+* WPRequests - makes request to an existing WordPress installation **in a separate process** and offers an API to access WordPress services in functional tests.
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
@@ -172,6 +173,16 @@ The configuration will require one parameter only :
 
 ### WPQueries configuration
 This module requires no configuration.
+
+### WPRequests configuration
+The module will require the absolute path to an existing WordPress installation; the path should point to WordPress root folder, the one containing the `wp-load.php` file.
+
+```yaml
+modules:
+    enabled:
+        WPRequests:
+            wpRootFolder: /var/www/wp
+```
 
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
@@ -796,6 +807,31 @@ class QueriesTest extends Codeception\TestCase\WPTestCase {
   }
 }
 ```
+
+### WPRequests module
+This module is meant to be used in functional tests to access those services WordPress is not exposing in independent modules.  
+The current implementation of the module offers two methods:
+
+* `public string createNonce($action, $user = 0)` to generate a nonce for the specified action and user; user `0` is the non-logged in user and the method will not check the existence of the specified user.
+* `public bool verifyNonce($nonce, $action, $user = 0)` to verify a nonce against the specified action and user; user `0` is the non-logged in user and the method will not check the existence of the specified user.
+
+```php
+class RestPostInsertionCest
+{
+    public function test_post_insertion(FunctionalTester $I)
+    {
+        $I->sendAjaxPostRequest('/wp-json/my-rest-api/v1',[
+            'nonce' => $I->createNonce('wp_rest', 1),
+            'title' => 'Some title',
+            'content'  => 'Some content'
+        ]);
+        
+        $I->seePostInDatabase(['post_title' => 'Some title', 'post_content' => 'Some content']);
+    }
+}
+```
+
+**Note**: the module will bootstrap the WordPress installation for each request! Calling the `createNonce` method 5 times will bootstrap WordPress 5 times with a huge impact on test timings; taking this into account try to cache re-usable results when possible.  
 
 ## Extensions
 The package contains an additional extension to facilitate testers' life.
