@@ -7,10 +7,10 @@
 		/**
 		 * Goes to the login page and logs in as the site admin.
 		 *
-		 * @return void
+		 * @return array An array of login credentials and auth cookies.
 		 */
 		public function loginAsAdmin() {
-			$this->loginAs( $this->config['adminUsername'], $this->config['adminPassword'] );
+			return $this->loginAs( $this->config['adminUsername'], $this->config['adminPassword'] );
 		}
 
 		/**
@@ -19,13 +19,48 @@
 		 * @param string $username
 		 * @param string $password
 		 *
-		 * @return void
+		 * @return array An array of login credentials and auth cookies.
 		 */
 		public function loginAs( $username, $password ) {
 			$this->amOnPage( $this->loginUrl );
 			$this->fillField( '#user_login', $username );
 			$this->fillField( '#user_pass', $password );
 			$this->click( '#wp-submit' );
+
+			return [
+				'username'    => $username,
+				'password'    => $password,
+				'authCookie'  => $this->grabWordPressAuthCookie(),
+				'loginCookie' => $this->grabWordPressLoginCookie()
+			];
+		}
+
+		/**
+		 * Returns WordPress default auth cookie if present.
+		 *
+		 * @param null $pattern Optional, overrides the default cookie name.
+		 *
+		 * @return mixed Either a cookie or null.
+		 */
+		public function grabWordPressAuthCookie( $pattern = null ) {
+			$pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
+			$cookies = $this->grabCookiesWithPattern( $pattern );
+
+			return empty( $cookies ) ? null : array_pop( $cookies );
+		}
+
+		/**
+		 * Returns WordPress default login cookie if present.
+		 *
+		 * @param null $pattern Optional, overrides the default cookie name.
+		 *
+		 * @return mixed Either a cookie or null.
+		 */
+		public function grabWordPressLoginCookie( $pattern = null ) {
+			$pattern = $pattern ? $pattern : '/^wordpress_logged_in_[a-z0-9]{32}$/';
+			$cookies = $this->grabCookiesWithPattern( $pattern );
+
+			return empty( $cookies ) ? null : array_pop( $cookies );
 		}
 
 		/**
@@ -188,34 +223,6 @@
 			$pattern = $pattern ? $pattern : 'wordpress_test_cookie';
 
 			return $this->grabCookie( $pattern );
-		}
-
-		/**
-		 * Returns WordPress default login cookie if present.
-		 *
-		 * @param null $pattern Optional, overrides the default cookie name.
-		 *
-		 * @return mixed Either a cookie or null.
-		 */
-		public function grabWordPressLoginCookie( $pattern = null ) {
-			$pattern = $pattern ? $pattern : '/^wordpress_logged_in_[a-z0-9]{32}$/';
-			$cookies = $this->grabCookiesWithPattern( $pattern );
-
-			return empty( $cookies ) ? null : array_pop( $cookies );
-		}
-
-		/**
-		 * Returns WordPress default auth cookie if present.
-		 *
-		 * @param null $pattern Optional, overrides the default cookie name.
-		 *
-		 * @return mixed Either a cookie or null.
-		 */
-		public function grabWordPressAuthCookie( $pattern = null ) {
-			$pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
-			$cookies = $this->grabCookiesWithPattern( $pattern );
-
-			return empty( $cookies ) ? null : array_pop( $cookies );
 		}
 
 		public function amOnAdminPage($path)
