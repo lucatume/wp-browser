@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- `WPBrowser` and `WPWebDriver` `loginAs` and `loginAsAdmin` methods will now return an array of access credentials and cookies to be used in requests
+
 ### Added
 - the `WPRequests` module
 
