@@ -206,21 +206,25 @@ class WPDb extends ExtendedDb
         preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
 
         if (empty($matches) || empty($matches[1])) {
+            codecept_debug('Tried to replace WordPress site domain but dump file is weird...');
             return $sql;
         }
 
         $dumpSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $matches[1]);
 
         if (empty($dumpSiteDomain)) {
+            codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option...');
             return $sql;
         }
 
         $thisSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $this->config['url']);
 
         if ($dumpSiteDomain === $thisSiteDomain) {
+            codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
             return $sql;
         }
 
+        codecept_debug('Dump file domain [' . $dumpSiteDomain . '] replaced with [' . $thisSiteDomain . ']');
         return str_replace($dumpSiteDomain, $thisSiteDomain, $sql);
     }
 
