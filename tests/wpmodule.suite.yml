@@ -1,10 +1,10 @@
-class_name: WploaderTester
+class_name: WpmoduleTester
 modules:
     enabled:
-        - \Helper\Wploadersuite
-        - WPLoader
+        - \Helper\Wpmodule
+        - WordPress
     config:
-        WPLoader:
+        WordPress:
             wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
             dbName: "codeception-tests"
             dbHost: "127.0.0.1"
