@@ -76,18 +76,4 @@ class WPRequests extends Module
 
         return $nonce;
     }
-
-    /**
-     * Verifies a nonce for an action and a user.
-     *
-     * @param string $nonce
-     * @param string $action
-     * @param int $user Defaults to visitor user with ID `0`
-     *
-     * @return bool
-     */
-    public function verifyNonce($nonce, $action, $user = 0)
-    {
-        return $this->wp->verifyNonce($nonce, $action, $user);
-    }
 }
