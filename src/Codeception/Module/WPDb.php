@@ -2050,6 +2050,32 @@ class WPDb extends ExtendedDb
         $this->seeInDatabase($this->grabPrefixedTableNameFor('term_relationships'), $criteria);
     }
 
+    public function replaceSiteDomainInSql($sql)
+    {
+        $optionsTable = $this->config['tablePrefix'] . 'options';
+
+        $matches = [];
+        preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
+
+        if (empty($matches) || empty($matches[1])) {
+            return $sql;
+        }
+
+        $dumpSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $matches[1]);
+
+        if (empty($dumpSiteDomain)) {
+            return $sql;
+        }
+
+        $thisSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $this->config['url']);
+
+        if ($dumpSiteDomain === $thisSiteDomain) {
+            return $sql;
+        }
+
+        return str_replace($dumpSiteDomain, $thisSiteDomain, $sql);
+    }
+
     /**
      * Conditionally checks that a term exists in the database.
      *
