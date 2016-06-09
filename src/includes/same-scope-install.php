@@ -9,8 +9,6 @@ error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 // this replaces the original argument passed in with the `system` function
 $multisite = defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE;
 
-$table_prefix = WP_TESTS_TABLE_PREFIX ;
-
 define( 'WP_INSTALLING', true );
 require_once dirname( __FILE__ ) . '/functions.php';
 
@@ -38,6 +36,8 @@ if ( version_compare( $wpdb->db_version(), '5.5.3', '>=' ) ) {
 	$wpdb->query( 'SET storage_engine = InnoDB' );
 }
 $wpdb->select( DB_NAME, $wpdb->dbh );
+
+ob_start();
 
 echo "Installing..." . PHP_EOL;
 
@@ -84,3 +84,5 @@ if ( $multisite ) {
 	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
 	$wp_rewrite->set_permalink_structure( '' );
 }
+
+codecept_debug(ob_get_clean());

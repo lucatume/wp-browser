@@ -221,6 +221,8 @@ class WPLoader extends Module
         $this->loadConfigFile();
 
         $constants = array(
+            // by default install WordPress in an isolated process
+            'WPCEPT_ISOLATED_INSTALL' => isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true,
             'ABSPATH' => $wpRootFolder,
             'DB_NAME' => $this->config['dbName'],
             'DB_USER' => $this->config['dbUser'],
