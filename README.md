@@ -104,6 +104,11 @@ and configure `Db` parameters and the additional ones available to the `WPDb` mo
 * `url` - the site home url (required)
 * `tablePrefix` - allows specifying the table prefix used in the installation, defaults to `wp_` (optional)
 
+#### Dump file domain replacement
+The SQL dump file will be loaded by the module during initialization **before** each test following the same limitations about size imposed by [Codeception Db module](http://codeception.com/docs/09-Data#db).  
+The problem with WordPress database dumps is that the website URL address is harcoded in the database itself making dump sharing a serch and replace pain.  
+The module will try to replace the domain written in the loaded SQL dump file on the fly to match the one specified in the `url` config parameter to allow dumps to work locally with no issues.
+
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
 An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.  
