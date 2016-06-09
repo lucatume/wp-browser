@@ -3,15 +3,15 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
-### Changed
-- `WPBrowser` and `WPWebDriver` `loginAs` and `loginAsAdmin` methods will now return an array of access credentials and cookies to be used in requests
 
+##[1.14.0] 2016-06-09
 ### Added
 - the `WPRequests` module
 
 ### Changed
 - renamed the `wpunit` suite to `integration` to stick with proper TDD terms (thanks @davert)
 - updated `wpcept` `bootstrap` and `bootstrap:pyramid` commands to scaffold suites closer in modules to TDD practices
+- `WPBrowser` and `WPWebDriver` `loginAs` and `loginAsAdmin` methods will now return an array of access credentials and cookies to be used in requests
 
 ##[1.13.3] 2016-06-07
 ### Changed
@@ -381,7 +381,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.13.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.0...HEAD
+[1.14.0]: https://github.com/lucatume/wp-browser/compare/1.13.3...1.14.0
 [1.13.3]: https://github.com/lucatume/wp-browser/compare/1.13.2...1.13.3
 [1.13.2]: https://github.com/lucatume/wp-browser/compare/1.13.1...1.13.2
 [1.13.1]: https://github.com/lucatume/wp-browser/compare/1.13.0...1.13.1
