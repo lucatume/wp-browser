@@ -810,18 +810,17 @@ class QueriesTest extends Codeception\TestCase\WPTestCase {
 
 ### WPRequests module
 This module is meant to be used in functional tests to access those services WordPress is not exposing in independent modules.  
-The current implementation of the module offers two methods:
+The current implementation of the module offers just one methods:
 
-* `public string createNonce($action, $user = 0)` to generate a nonce for the specified action and user; user `0` is the non-logged in user and the method will not check the existence of the specified user.
-* `public bool verifyNonce($nonce, $action, $user = 0)` to verify a nonce against the specified action and user; user `0` is the non-logged in user and the method will not check the existence of the specified user.
+* `public string createNonce(string $action, array $credentials )` to generate a nonce for the specified action and user; the `$credentials` array is usually the output of the `loginAs` or `loginAsAdmin` methods defined by the `WPBrowser` or `WPWebDriver` modules.
 
 ```php
 class RestPostInsertionCest
 {
     public function test_post_insertion(FunctionalTester $I)
     {
-        $I->sendAjaxPostRequest('/wp-json/my-rest-api/v1',[
-            'nonce' => $I->createNonce('wp_rest', 1),
+        $I->sendPOST('/create-post',[
+            'nonce' => $I->createNonce('wp_rest', $I->loginAsAdmin()),
             'title' => 'Some title',
             'content'  => 'Some content'
         ]);
