@@ -128,10 +128,11 @@ class WPRequestsTest extends \Codeception\Test\Unit
      */
     public function it_should_create_nonces()
     {
-        $this->wpBootstrapper->createNonce('some_action', 0)->willReturn('foobar');
+        $credentials = ['some' => 'credentials'];
+        $this->wpBootstrapper->createNonce('some_action', $credentials)->willReturn('foobar');
 
         $sut = $this->make_instance();
-        $this->assertEquals('foobar', $sut->createNonce('some_action', 0));
+        $this->assertEquals('foobar', $sut->createNonce('some_action', $credentials));
     }
 
     /**
@@ -140,36 +141,13 @@ class WPRequestsTest extends \Codeception\Test\Unit
      */
     public function it_should_throw_if_nonce_creation_is_falsy()
     {
-        $this->wpBootstrapper->createNonce('some_action', 1)->willReturn(false);
+        $credentials = ['some' => 'credentials'];
+        $this->wpBootstrapper->createNonce('some_action', $credentials)->willReturn(false);
 
         $this->expectException(\RuntimeException::class);
 
         $sut = $this->make_instance();
-        $this->assertEquals('foobar', $sut->createNonce('some_action', 1));
-    }
-
-    /**
-     * @test
-     * it should verify nonces
-     */
-    public function it_should_verify_nonces()
-    {
-        $this->wpBootstrapper->verifyNonce('foo', 'some_action', 1)->willReturn(true);
-
-        $sut = $this->make_instance();
-        $this->assertTrue($sut->verifyNonce('foo', 'some_action', 1));
-    }
-
-    /**
-     * @test
-     * it should return false if nonce is not verified
-     */
-    public function it_should_return_false_if_nonce_is_not_verified()
-    {
-        $this->wpBootstrapper->verifyNonce('foo', 'some_action', 1)->willReturn(false);
-
-        $sut = $this->make_instance();
-        $this->assertFalse($sut->verifyNonce('foo', 'some_action', 1));
+        $this->assertEquals('foobar', $sut->createNonce('some_action', $credentials));
     }
 
     protected function _before()
@@ -182,9 +160,5 @@ class WPRequestsTest extends \Codeception\Test\Unit
         $wpLoadFile->setContent('foo');
         $wpRootFolder->addChild($wpLoadFile);
         $this->config['wpRootFolder'] = $wpRootFolder->url();
-    }
-
-    protected function _after()
-    {
     }
 }
