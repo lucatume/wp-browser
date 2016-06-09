@@ -67,11 +67,11 @@ class WPRequests extends Module
      * @param string $action
      * @param int $user Defaults to visitor user with ID `0`
      */
-    public function createNonce($action, $user = 0)
+    public function createNonce($action, array $credentials)
     {
-        $nonce = $this->wp->createNonce($action, $user);
+        $nonce = $this->wp->createNonce($action, $credentials);
         if (empty($nonce)) {
-            throw new \RuntimeException(static::class . ': could not generate nonce for action [' . $action . '] and user [' . $user . ']');
+            throw new \RuntimeException(static::class . ': could not generate nonce for action [' . $action . '] with credentials ' . json_encode($credentials));
         }
 
         return $nonce;
