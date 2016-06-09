@@ -173,6 +173,7 @@ class WPDb extends ExtendedDb
             }
             $sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
             $sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
+            $sql = $this->replaceSiteDomainInSql($sql);
             $this->sql = explode("\n", $sql);
         }
 
@@ -189,6 +190,38 @@ class WPDb extends ExtendedDb
         $this->tablePrefix = $this->config['tablePrefix'];
         $this->handlebars = $handlebars ?: new Handlebars();
         $this->tables = $table ?: new Tables();
+    }
+
+    /**
+     * Replaces the WordPress domains in a SQL dump string.
+     *
+     * @param string $sql The input SQL dump string.
+     * @return string The modified SQL string.
+     */
+    public function replaceSiteDomainInSql($sql)
+    {
+        $optionsTable = $this->config['tablePrefix'] . 'options';
+
+        $matches = [];
+        preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
+
+        if (empty($matches) || empty($matches[1])) {
+            return $sql;
+        }
+
+        $dumpSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $matches[1]);
+
+        if (empty($dumpSiteDomain)) {
+            return $sql;
+        }
+
+        $thisSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $this->config['url']);
+
+        if ($dumpSiteDomain === $thisSiteDomain) {
+            return $sql;
+        }
+
+        return str_replace($dumpSiteDomain, $thisSiteDomain, $sql);
     }
 
     /**
@@ -2048,32 +2081,6 @@ class WPDb extends ExtendedDb
     public function seeTermRelationshipInDatabase(array $criteria)
     {
         $this->seeInDatabase($this->grabPrefixedTableNameFor('term_relationships'), $criteria);
-    }
-
-    public function replaceSiteDomainInSql($sql)
-    {
-        $optionsTable = $this->config['tablePrefix'] . 'options';
-
-        $matches = [];
-        preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
-
-        if (empty($matches) || empty($matches[1])) {
-            return $sql;
-        }
-
-        $dumpSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $matches[1]);
-
-        if (empty($dumpSiteDomain)) {
-            return $sql;
-        }
-
-        $thisSiteDomain = preg_replace("~http(s*):\\/\\/~ui", '', $this->config['url']);
-
-        if ($dumpSiteDomain === $thisSiteDomain) {
-            return $sql;
-        }
-
-        return str_replace($dumpSiteDomain, $thisSiteDomain, $sql);
     }
 
     /**
