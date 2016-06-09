@@ -3,8 +3,10 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.14.1] 2016-06-09
 ### Changed
-- the `WPDb` module will try to replace the existing dump file domain with the one specified in the configuration during initialization
+- the `WPDb` module will try to replace the existing dump file hard-coded url with the one specified in the configuration during initialization
 
 ##[1.14.0] 2016-06-09
 ### Added
@@ -383,7 +385,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.1...HEAD
+[1.14.1]: https://github.com/lucatume/wp-browser/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/lucatume/wp-browser/compare/1.13.3...1.14.0
 [1.13.3]: https://github.com/lucatume/wp-browser/compare/1.13.2...1.13.3
 [1.13.2]: https://github.com/lucatume/wp-browser/compare/1.13.1...1.13.2
