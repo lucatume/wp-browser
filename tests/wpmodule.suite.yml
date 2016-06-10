@@ -3,6 +3,7 @@ modules:
     enabled:
         - \Helper\Wpmodule
         - WordPress
+        - WPDb
     config:
         WordPress:
             wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
@@ -11,15 +12,17 @@ modules:
             dbUser: "root"
             dbPassword: "root"
             wpDebug: true
-            dbCharset: "utf8"
-            dbCollate: ""
             tablePrefix: "wp_"
             domain: "codeception-tests.dev"
-            adminEmail: "admin@codeception-tests.dev"
-            title: "Codeception WPLoader Blog"
-            phpBinary: "php"
-            language: ""
-            configFile: ""
             plugins: []
             activatePlugins: []
             booststrapActions: []
+        WPDb:
+            dsn: 'mysql:host=127.0.0.1;dbname=codeception-tests'
+            user: 'root'
+            password: 'root'
+            populate: false
+            cleanup: false
+            reconnect: false
+            url: 'http://codeception-acceptance.dev'
+            tablePrefix: 'wp_'

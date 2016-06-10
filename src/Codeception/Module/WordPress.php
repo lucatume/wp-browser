@@ -3,22 +3,22 @@
 namespace Codeception\Module;
 
 
+use Codeception\Lib\Connector\Universal as UniversalConnector;
 use Codeception\Lib\Framework;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use Codeception\TestInterface;
 
 class WordPress extends Framework
 {
     /**
-     * @var WPLoader
+     * @var string
      */
-    private $loader;
-
+    protected $index;
     /**
      * @var array
      */
     protected $requiredFields = array('wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',);
-
     protected $config = array(
         'wpDebug' => false,
         'multisite' => false,
@@ -34,8 +34,12 @@ class WordPress extends Framework
         'pluginsFolder' => '',
         'plugins' => '',
         'activatePlugins' => '',
-        'bootstrapActions' => ''
+        'bootstrapActions' => '',
     );
+    /**
+     * @var WPLoader
+     */
+    private $loader;
 
     /**
      * WordPress constructor.
@@ -47,13 +51,22 @@ class WordPress extends Framework
     public function __construct(ModuleContainer $moduleContainer, $config, WPLoader $loader = null)
     {
         $config = array_merge($this->config, (array)$config);
+        $config['isolatedInstall'] = false;
 
         parent::__construct($moduleContainer, $config);
         $this->loader = $loader ? $loader : new WPLoader($moduleContainer, $config);
+        $this->index = __DIR__ . '/wp-index.php';
     }
 
     public function _initialize()
     {
         $this->loader->_initialize();
+    }
+
+    public function _before(TestInterface $test)
+    {
+        $this->client = new UniversalConnector();
+        $this->client->followRedirects(true);
+        $this->client->setIndex($this->index);
     }
 }
