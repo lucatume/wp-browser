@@ -96,12 +96,14 @@ In the suite `.yml` configuration file add the module among the loaded ones
               cleanup: true
               reconnect: true
               url: 'http://example.local'
+              urlReplacement: true
               tablePrefix: 'wp_'
 ```
 
 and configure `Db` parameters and the additional ones available to the `WPDb` module:  
     
 * `url` - the site home url (required)
+* `urlReplacement` - the module will try to replace the WordPress URL hard-coded in the dump file with the one specified by the `url` parameter by default; set this to `false` to prevent this behaviour
 * `tablePrefix` - allows specifying the table prefix used in the installation, defaults to `wp_` (optional)
 
 #### Dump file domain replacement
