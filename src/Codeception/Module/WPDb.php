@@ -173,7 +173,11 @@ class WPDb extends ExtendedDb
             }
             $sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
             $sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
-            $sql = $this->replaceSiteDomainInSql($sql);
+
+            if (empty($this->config['urlReplacement'])) {
+                $sql = $this->replaceSiteDomainInSql($sql);
+            }
+            
             $this->sql = explode("\n", $sql);
         }
 
@@ -206,14 +210,14 @@ class WPDb extends ExtendedDb
         preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
 
         if (empty($matches) || empty($matches[1])) {
-            codecept_debug('Tried to replace WordPress site domain but dump file is weird...');
+            codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
             return $sql;
         }
 
         $dumpSiteUrl = $matches[1];
 
         if (empty($dumpSiteUrl)) {
-            codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option...');
+            codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
             return $sql;
         }
 
