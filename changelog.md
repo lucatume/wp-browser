@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.14.2] 2016-06-10
+### Added
+- support for the `urlReplacement` configuration parameter in `WPDb` module to prevent attempts at hard-coded URL replacement in dump file
+
 ##[1.14.1] 2016-06-09
 ### Changed
 - the `WPDb` module will try to replace the existing dump file hard-coded url with the one specified in the configuration during initialization
@@ -385,7 +389,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.2...HEAD
+[1.14.2]: https://github.com/lucatume/wp-browser/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/lucatume/wp-browser/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/lucatume/wp-browser/compare/1.13.3...1.14.0
 [1.13.3]: https://github.com/lucatume/wp-browser/compare/1.13.2...1.13.3
