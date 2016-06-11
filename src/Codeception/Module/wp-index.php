@@ -11,6 +11,7 @@ if (file_exists(TEMPLATEPATH . '/functions.php')) {
 }
 
 $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
+$_SERVER['PHP_SELF'] = __FILE__;
 
 wp();
 
