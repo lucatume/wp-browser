@@ -130,27 +130,7 @@ class WPDb extends ExtendedDb
     {
         parent::_cleanup();
 
-        $this->initialize_driver();
-
-        $dbh = $this->driver->getDbh();
-
-        foreach ($this->scaffoldedBlogIds as $blogId) {
-            $dropQuery = $this->tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
-            $sth = $dbh->prepare($dropQuery);
-            $this->debugSection('Query', $sth->queryString);
-            $sth->execute();
-        }
-        $this->scaffoldedBlogIds = [];
         $this->blogId = 0;
-    }
-
-    protected function initialize_driver()
-    {
-        try {
-            $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
-        } catch (\PDOException $e) {
-            throw new ModuleConfigException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
-        }
     }
 
     /**
@@ -165,6 +145,22 @@ class WPDb extends ExtendedDb
      */
     public function _initialize(Handlebars $handlebars = null, Tables $table = null)
     {
+        $this->prepareSqlDumpFile();
+
+        $this->initialize_driver();
+
+        $this->dbh = $this->driver->getDbh();
+
+        // starting with loading dump
+        $this->importSqlDumpFile();
+
+        $this->tablePrefix = $this->config['tablePrefix'];
+        $this->handlebars = $handlebars ?: new Handlebars();
+        $this->tables = $table ?: new Tables();
+    }
+
+    private function prepareSqlDumpFile()
+    {
         if ($this->config['dump'] && ($this->config['cleanup'] or ($this->config['populate']))) {
 
             if (!file_exists(Configuration::projectDir() . $this->config['dump'])) {
@@ -176,20 +172,6 @@ class WPDb extends ExtendedDb
             $sql = $this->replaceSiteDomainInSql($sql);
             $this->sql = explode("\n", $sql);
         }
-
-        $this->initialize_driver();
-
-        $this->dbh = $this->driver->getDbh();
-
-        // starting with loading dump
-        if ($this->config['populate']) {
-            $this->cleanup();
-            $this->loadDump();
-            $this->populated = true;
-        }
-        $this->tablePrefix = $this->config['tablePrefix'];
-        $this->handlebars = $handlebars ?: new Handlebars();
-        $this->tables = $table ?: new Tables();
     }
 
     /**
@@ -226,6 +208,24 @@ class WPDb extends ExtendedDb
 
         codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . ']');
         return str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+    }
+
+    protected function initialize_driver()
+    {
+        try {
+            $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
+        } catch (\PDOException $e) {
+            throw new ModuleConfigException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
+        }
+    }
+
+    private function importSqlDumpFile()
+    {
+        if ($this->config['populate']) {
+            $this->cleanup();
+            $this->loadDump();
+            $this->populated = true;
+        }
     }
 
     /**
