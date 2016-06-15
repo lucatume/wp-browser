@@ -3,7 +3,6 @@ modules:
     enabled:
         - \Helper\Wpmodule
         - WordPress
-        - WPDb
     config:
         WordPress:
             wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
@@ -17,12 +16,3 @@ modules:
             plugins: []
             activatePlugins: []
             booststrapActions: []
-        WPDb:
-            dsn: 'mysql:host=127.0.0.1;dbname=codeception-tests'
-            user: 'root'
-            password: 'root'
-            populate: false
-            cleanup: false
-            reconnect: false
-            url: 'http://codeception-acceptance.dev'
-            tablePrefix: 'wp_'
