@@ -123,6 +123,11 @@ class WPLoader extends Module
      */
     public function _initialize()
     {
+        $this->initialize();
+    }
+
+    protected function initialize()
+    {
         // let's make sure *Db Module is either not running or properly configured
         $this->ensureDbModuleCompat();
 

@@ -1,13 +1,17 @@
 <?php
 
 /*
- * @todo: handle event hooks and setUp/tearDown the WP_UnitTestCase accordingly
- * 
  * Call order is this:
  * 
  * [12-Jun-2016 12:32:51 UTC] Codeception\Module\WordPress::__construct
  * [12-Jun-2016 12:32:51 UTC] Codeception\Module\WordPress::_initialize
  * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_beforeSuite
+ * 
+ * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_cleanup
+ * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_before
+ * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_beforeStep
+ * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_afterStep
+ * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_after
  * 
  * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_cleanup
  * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_before
@@ -22,6 +26,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Connector\Universal as UniversalConnector;
 use Codeception\Lib\Framework;
 use Codeception\Lib\Generator\Test;
@@ -30,6 +35,8 @@ use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use Codeception\Util\ReflectionHelper;
+use tad\WPBrowser\Module\Support\WPFacade;
+use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
 class WordPress extends Framework
 {
@@ -80,46 +87,96 @@ class WordPress extends Framework
     protected $testCaseWasTornDown = false;
 
     /**
+     * @var \WP_UnitTest_Factory
+     */
+    protected $factory;
+
+    /**
      * @var \WP_UnitTestCase
      */
-    private $testCase;
+    protected $testCase;
+
+    /**
+     * @var WPFacadeInterface
+     */
+    protected $wp;
+
+    /**
+     * @var string
+     */
+    protected $adminPath;
 
     /**
      * WordPress constructor.
      *
      * @param ModuleContainer $moduleContainer
      * @param array $config
-     * @param WPLoader|null $loader
      * @param \WP_UnitTestCase $testCase
+     * @param WPFacadeInterface $wp
      */
-    public function __construct(ModuleContainer $moduleContainer, $config = [], WPLoader $loader = null, $testCase = null)
+    public function __construct(ModuleContainer $moduleContainer, $config = [], WPLoader $loader = null, $testCase = null, WPFacadeInterface $wp = null
+    )
     {
-        error_log(__METHOD__);
         $config = array_merge($this->config, (array)$config);
         $config['isolatedInstall'] = false;
 
         parent::__construct($moduleContainer, $config);
+        $this->loader = $loader ? $loader : new WPLoader($moduleContainer, $this->config);
 
-        $this->loader = $loader ? $loader : new WPLoader($moduleContainer, $config);
         $this->testCase = $testCase;
 
-        $this->index = __DIR__ . '/wp-index.php';
+        $this->wp = $wp ? $wp : new WPFacade($this->loader);
+
+        $this->setIndexFile();
+    }
+
+    private function setIndexFile()
+    {
+        if (empty($this->config['index'])) {
+            $this->index = __DIR__ . '/scripts/wp-index.php';
+        } else {
+            if (!file_exists($this->config['index'])) {
+                throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->config['index'] . '] does not exist.');
+            }
+            $this->index = $this->config['index'];
+        }
     }
 
     public function _initialize()
     {
-        error_log(__METHOD__);
-        $this->bootstrapWordPress();
+        $this->initializeWPLoaderModule();
+        $this->adminPath = $this->getAdminPath();
+        $this->hookTemplateInterception();
+        $this->hookWpDieHandler();
     }
 
-    private function bootstrapWordPress()
+    private function initializeWPLoaderModule()
     {
-        $this->loader->_initialize();
+        $this->wp->initialize();
+    }
+
+    private function getAdminPath()
+    {
+        return str_replace($this->wp->home_url(), '', $this->wp->admin_url());
+    }
+
+    private function hookTemplateInterception()
+    {
+        $this->wp->add_filter('template_include', [$this->wp, 'includeTemplate'], PHP_INT_MAX, 1);
+        $this->wp->add_action('get_header', [$this->wp, 'getHeader'], PHP_INT_MAX, 1);
+        $this->wp->add_action('get_footer', [$this->wp, 'getFooter'], PHP_INT_MAX, 1);
+        $this->wp->add_action('get_sidebar', [$this->wp, 'getSidebar'], PHP_INT_MAX, 1);
+    }
+
+    private function hookWpDieHandler()
+    {
+        $this->wp->add_filter('wp_die_ajax_handler', [$this->wp, 'handleAjaxDie']);
+        $this->wp->add_filter('wp_die_xmlrpc_handler', [$this->wp, 'handleXmlrpcDie']);
+        $this->wp->add_filter('wp_die_handler', [$this->wp, 'handleDie']);
     }
 
     public function _before(TestInterface $test)
     {
-        error_log(__METHOD__);
         $this->client = new UniversalConnector();
         $this->client->followRedirects(true);
         $this->client->setIndex($this->index);
@@ -135,10 +192,30 @@ class WordPress extends Framework
         }
     }
 
+    public function amOnPage($page)
+    {
+        $parts = parse_url($page);
+        $parameters = [];
+        if (!empty($parts['query'])) {
+            parse_str($parts['query'], $parameters);
+        }
+
+        $this->_loadPage('GET', $page, $parameters);
+    }
+
     public function _cleanup()
     {
-        error_log(__METHOD__);
+        $this->setWpQueryName();
         $this->resetTestCaseControlProperties();
+        $this->wp->resetInclusions();
+    }
+
+    private function setWpQueryName()
+    {
+        global $wp_query;
+        if (!isset($wp_query->query_vars['name'])) {
+            $wp_query->query_vars['name'] = '';
+        }
     }
 
     private function resetTestCaseControlProperties()
@@ -149,7 +226,6 @@ class WordPress extends Framework
 
     public function _beforeSuite($settings = [])
     {
-        error_log(__METHOD__);
 
         if (null === $this->testCase) {
             $this->testCase = new \WP_UnitTestCase();
@@ -163,7 +239,6 @@ class WordPress extends Framework
 
     public function _afterSuite()
     {
-        error_log(__METHOD__);
         /** @var \WP_UnitTestCase $class */
         $class = get_class($this->testCase);
         $class::tearDownAfterClass();
@@ -171,13 +246,11 @@ class WordPress extends Framework
 
     public function _beforeStep(Step $step)
     {
-        error_log(__METHOD__);
         $this->setUpTestCase();
     }
 
     public function _afterStep(Step $step)
     {
-        error_log(__METHOD__);
         $this->tearDownTestCase();
     }
 
@@ -193,13 +266,44 @@ class WordPress extends Framework
 
     public function _failed(TestInterface $test, $fail)
     {
-        error_log(__METHOD__);
         $this->tearDownTestCase();
     }
 
     public function _after(TestInterface $test)
     {
-        error_log(__METHOD__);
         $this->tearDownTestCase();
+    }
+
+    /**
+     * @return \WP_UnitTest_Factory
+     */
+    public function factory()
+    {
+        return $this->factory;
+    }
+
+    public function resetTemplateInclusions()
+    {
+        $this->wp->resetInclusions();
+    }
+
+    public function setPermalinkStructure($permalinkStructure)
+    {
+        $this->wp->update_option('permalink_structure', $permalinkStructure);
+        $this->flushRewriteRules();
+    }
+
+    public function flushRewriteRules()
+    {
+        $permalinkStructure = get_option('permalink_structure');
+        global /** @var \WP_Rewrite $wp_rewrite */
+        $wp_rewrite;
+        $wp_rewrite->permalink_structure = $permalinkStructure;
+        $this->wp->flush_rewrite_rules(false);
+    }
+
+    public function getIndex()
+    {
+        return $this->index;
     }
 }

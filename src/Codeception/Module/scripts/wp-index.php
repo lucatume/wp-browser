@@ -10,8 +10,13 @@ if (file_exists(TEMPLATEPATH . '/functions.php')) {
     include_once(TEMPLATEPATH . '/functions.php');
 }
 
-$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
-$_SERVER['PHP_SELF'] = __FILE__;
+if (empty($_SERVER['SERVER_PROTOCOL'])) {
+    $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
+}
+
+if (empty($_SERVER['PHP_SELF'])) {
+    $_SERVER['PHP_SELF'] = __FILE__;
+}
 
 wp();
 
