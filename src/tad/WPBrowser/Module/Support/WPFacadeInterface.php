@@ -35,4 +35,6 @@ interface WPFacadeInterface
     public function handleXmlrpcDie();
 
     public function handleDie();
+
+    public function getAdminPath();
 }

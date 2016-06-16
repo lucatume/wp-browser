@@ -27,6 +27,7 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Lib\Connector\Universal;
 use Codeception\Lib\Connector\Universal as UniversalConnector;
 use Codeception\Lib\Framework;
 use Codeception\Lib\Generator\Test;
@@ -35,6 +36,7 @@ use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use Codeception\Util\ReflectionHelper;
+use Symfony\Component\BrowserKit\Client;
 use tad\WPBrowser\Module\Support\WPFacade;
 use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
@@ -107,6 +109,21 @@ class WordPress extends Framework
     protected $adminPath;
 
     /**
+     * @var string
+     */
+    protected $adminIndex;
+
+    /**
+     * @var bool
+     */
+    protected $isMockRequest = false;
+
+    /**
+     * @var bool
+     */
+    protected $lastRequestWasAdmin = false;
+
+    /**
      * WordPress constructor.
      *
      * @param ModuleContainer $moduleContainer
@@ -128,6 +145,7 @@ class WordPress extends Framework
         $this->wp = $wp ? $wp : new WPFacade($this->loader);
 
         $this->setIndexFile();
+        $this->setAdminIndexFile();
     }
 
     private function setIndexFile()
@@ -142,10 +160,22 @@ class WordPress extends Framework
         }
     }
 
+    private function setAdminIndexFile()
+    {
+        if (empty($this->config['adminIndex'])) {
+            $this->adminIndex = __DIR__ . '/scripts/wp-admin-index.php';
+        } else {
+            if (!file_exists($this->config['adminIndex'])) {
+                throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->config['adminIndex'] . '] does not exist.');
+            }
+            $this->adminIndex = $this->config['adminIndex'];
+        }
+    }
+
     public function _initialize()
     {
         $this->initializeWPLoaderModule();
-        $this->adminPath = $this->getAdminPath();
+        $this->adminPath = $this->wp->getAdminPath();
         $this->hookTemplateInterception();
         $this->hookWpDieHandler();
     }
@@ -153,11 +183,6 @@ class WordPress extends Framework
     private function initializeWPLoaderModule()
     {
         $this->wp->initialize();
-    }
-
-    private function getAdminPath()
-    {
-        return str_replace($this->wp->home_url(), '', $this->wp->admin_url());
     }
 
     private function hookTemplateInterception()
@@ -177,7 +202,7 @@ class WordPress extends Framework
 
     public function _before(TestInterface $test)
     {
-        $this->client = new UniversalConnector();
+        $this->client = $this->client ?: new UniversalConnector();
         $this->client->followRedirects(true);
         $this->client->setIndex($this->index);
 
@@ -192,15 +217,37 @@ class WordPress extends Framework
         }
     }
 
+    /**
+     * @param string $page The relative path to a page.
+     *
+     * @return void
+     */
     public function amOnPage($page)
     {
+        if ($this->isAdminPageRequest($page)) {
+            $this->client->setIndex($this->adminIndex);
+            $this->lastRequestWasAdmin = true;
+        } else {
+            $this->client->setIndex($this->index);
+            $this->lastRequestWasAdmin = false;
+        }
+
         $parts = parse_url($page);
         $parameters = [];
         if (!empty($parts['query'])) {
             parse_str($parts['query'], $parameters);
         }
 
+        if ($this->isMockRequest) {
+            return $page;
+        }
+
         $this->_loadPage('GET', $page, $parameters);
+    }
+
+    private function isAdminPageRequest($page)
+    {
+        return 0 === strpos($page, $this->adminPath);
     }
 
     public function _cleanup()
@@ -305,5 +352,30 @@ class WordPress extends Framework
     public function getIndex()
     {
         return $this->index;
+    }
+
+    public function getAdminIndex()
+    {
+        return $this->adminIndex;
+    }
+
+    public function _setClient($client)
+    {
+        $this->client = $client;
+    }
+
+    public function _isMockRequest($isMockRequest = false)
+    {
+        $this->isMockRequest = $isMockRequest;
+    }
+
+    public function setAdminPath($adminPath)
+    {
+        $this->adminPath = $adminPath;
+    }
+
+    public function _lastRequestWasAdmin()
+    {
+        return $this->lastRequestWasAdmin;
     }
 }

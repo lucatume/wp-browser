@@ -119,4 +119,9 @@ class WPFacade implements WPFacadeInterface
     {
         return $this->dieHandler->handleDie();
     }
+
+    public function getAdminPath()
+    {
+        return rtrim(str_replace($this->wpAdapter->home_url(), '', $this->wpAdapter->admin_url()), '/');
+    }
 }
