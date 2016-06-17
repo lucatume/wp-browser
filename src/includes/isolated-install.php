@@ -83,4 +83,12 @@ if ($multisite) {
     $wp_rewrite->set_permalink_structure('');
 }
 
+// finally activate the plugins that should be activated
+if (!empty($_ENV['activePlugins'])) {
+    $activePlugins = unserialize($_ENV['activePlugins']);
+    foreach ($activePlugins as $plugin) {
+        do_action('activate_' . $plugin);
+    }
+}
+
 return ob_get_clean();

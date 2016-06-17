@@ -79,6 +79,10 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
         ])
     ];
 
+    if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
+        $environment['activePlugins'] = serialize($GLOBALS['wp_tests_options']['active_plugins']);
+    }
+
     codecept_debug('Installing WordPress in isolated process...');
 
     $isolatedInstallationScript = dirname(__FILE__) . '/isolated-install.php';
