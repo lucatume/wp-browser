@@ -11,6 +11,8 @@ foreach ($configuration['constants'] as $key => $value){
 	define($key,$value);
 }
 
+$table_prefix = WP_TESTS_TABLE_PREFIX;
+
 $multisite = ! empty( $argv[2] ) ? $argv[2] : false;
 
 define( 'WP_INSTALLING', true );
