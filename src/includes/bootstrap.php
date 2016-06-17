@@ -84,13 +84,12 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
     }
 
     codecept_debug('Installing WordPress in isolated process...');
+    codecept_debug("Active plugins:\n" . implode(", ", $GLOBALS['wp_tests_options']['active_plugins']));
 
     $isolatedInstallationScript = dirname(__FILE__) . '/isolated-install.php';
     $isolatedInstallationProcess = new PhpProcess($isolatedInstallationScript, null, $environment);
     $isolatedInstallationProcess->setPhpBinary(WP_PHP_BINARY);
     $isolatedInstallationProcess->run();
-
-    codecept_debug($isolatedInstallationProcess->getOutput());
 }
 
 if ($multisite) {
