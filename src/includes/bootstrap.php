@@ -75,7 +75,7 @@ if ( !defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL ) 
 			'WPLANG' => WPLANG
 		],
 	];
-
+	
 	codecept_debug('Installing WordPress in isolated process...');
 	$output = system( WP_PHP_BINARY . ' ' . escapeshellarg( dirname( __FILE__ ) . '/isolated-install.php' ) . ' ' . escapeshellarg( serialize( $configuration ) ) . ' ' . $multisite );
 	codecept_debug($output);
