@@ -77,6 +77,19 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
         ]
     ];
 
+    // Try to pick up extra WP constants with a fuzzy search
+    $extraWpConstants = [];
+    foreach (get_defined_constants() as $key => $value) {
+        if (isset($environment['constants'][$key])) {
+            continue;
+        }
+        if (strpos($key, 'WP') === 0) {
+            $environment['constants'][$key] = $value;
+        }
+    }
+
+    $environment['constants'] = array_merge($environment['constants'], $extraWpConstants);
+
     if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
         $environment['activePlugins'] = $GLOBALS['wp_tests_options']['active_plugins'];
         codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $GLOBALS['wp_tests_options']['active_plugins']));
