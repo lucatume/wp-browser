@@ -47,6 +47,15 @@ class WPTestCase extends \Codeception\Test\Unit {
 		return $backtrace[2]['class'];
 	}
 
+	protected static function factory()
+	{
+		static $factory = null;
+		if (!$factory) {
+			$factory = new \WP_UnitTest_Factory();
+		}
+		return $factory;
+	}
+
 	/**
 	 * Commit the queries in a transaction.
 	 *
@@ -100,15 +109,6 @@ class WPTestCase extends \Codeception\Test\Unit {
 		if ('factory' === $name) {
 			return self::factory();
 		}
-	}
-
-	protected static function factory()
-	{
-		static $factory = null;
-		if (!$factory) {
-			$factory = new \WP_UnitTest_Factory();
-		}
-		return $factory;
 	}
 
 	function setUp() {
@@ -599,7 +599,6 @@ class WPTestCase extends \Codeception\Test\Unit {
 	{
 		$exists = is_file($file);
 		if ($exists && !in_array($file, self::$ignore_files)) {
-			//error_log( $file );
 			unlink($file);
 		} elseif (!$exists) {
 			$this->fail("Trying to delete a file that doesn't exist: $file");
@@ -651,6 +650,16 @@ class WPTestCase extends \Codeception\Test\Unit {
 		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent_post_id );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
 		return $id;
+	}
+
+	/**
+	 * Returns the WPQueries module instance.
+	 *
+	 * @return \Codeception\Module\WPQueries
+	 */
+	public function queries()
+	{
+		return $this->getModule('WPQueries');
 	}
 
 	/**
@@ -761,14 +770,5 @@ class WPTestCase extends \Codeception\Test\Unit {
 	{
 		$time_array = explode(' ', $microtime);
 		return array_sum($time_array);
-	}
-
-	/**
-	 * Returns the WPQueries module instance.
-	 * 
-	 * @return \Codeception\Module\WPQueries
-	 */
-	public function queries(){
-		return $this->getModule('WPQueries');
 	}
 }
