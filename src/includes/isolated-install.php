@@ -7,6 +7,12 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $configuration = unserialize($argv[1]);
 
+if (!empty($configuration['activePlugins'])) {
+    $activePlugins = unserialize($configuration['activePlugins']);
+} else {
+    $activePlugins = [];
+}
+
 foreach ($configuration['constants'] as $key => $value) {
     define($key, $value);
 }
@@ -43,6 +49,18 @@ if (version_compare($wpdb->db_version(), '5.5.3', '>=')) {
     $wpdb->query('SET storage_engine = InnoDB');
 }
 $wpdb->select(DB_NAME, $wpdb->dbh);
+
+error_log('Tables before: ' . print_r($wpdb->tables, true));
+
+/**
+ * Before dropping the tables include the active plugins as those might define
+ * additional tables that should be dropped.
+ **/
+foreach ($activePlugins as $activePlugin) {
+    include_once WP_PLUGIN_DIR . '/' . $activePlugin;
+}
+
+error_log('Tables after: ' . print_r($wpdb->tables, true));
 
 ob_start();
 
@@ -85,8 +103,7 @@ if ($multisite) {
 }
 
 // finally activate the plugins that should be activated
-if (!empty($configuration['activePlugins'])) {
-    $activePlugins = unserialize($configuration['activePlugins']);
+if (!empty($activePlugins)) {
     foreach ($activePlugins as $plugin) {
         activate_plugin($plugin, null, $multisite, false);
     }
