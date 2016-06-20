@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+### Added
+- the `bootstrapActions` parameter of the `WPLoader` module will now accept static method signatures
+
+### Changed
+- WordPress installation for `WPLoader` module happens now in an isolated process
+
 ##[1.13.3] 2016-06-07
 ### Changed
 - `WPTestCase` now extends `Codeception\Test\Unit` class
