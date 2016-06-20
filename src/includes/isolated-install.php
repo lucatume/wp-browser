@@ -8,7 +8,7 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 $configuration = unserialize($argv[1]);
 
 if (!empty($configuration['activePlugins'])) {
-    $activePlugins = unserialize($configuration['activePlugins']);
+    $activePlugins = $configuration['activePlugins'];
 } else {
     $activePlugins = [];
 }
@@ -97,6 +97,8 @@ if ($multisite) {
     populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
     $wp_rewrite->set_permalink_structure('');
 }
+
+error_log('active_plugins: ' . print_r(get_option('active_plugins'), true));
 
 // finally activate the plugins that should be activated
 if (!empty($activePlugins)) {
