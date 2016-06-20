@@ -24,8 +24,8 @@ class WPLoader extends Module
 {
 
     public static $includeInheritedActions = true;
-    public static $onlyActions = array();
-    public static $excludeActions = array();
+    public static $onlyActions = [];
+    public static $excludeActions = [];
     /**
      * The fields the user will have to set to legit values for the module to run.
      *
@@ -41,7 +41,7 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $requiredFields = array('wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',);
+    protected $requiredFields = ['wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',];
     /**
      * The fields the user will be able to override while running tests.
      *
@@ -78,7 +78,7 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $config = array(
+    protected $config = [
         'wpDebug' => true,
         'multisite' => false,
         'dbCharset' => 'utf8',
@@ -94,7 +94,7 @@ class WPLoader extends Module
         'plugins' => '',
         'activatePlugins' => '',
         'bootstrapActions' => ''
-    );
+    ];
     /**
      * The path to the modified tests bootstrap file.
      *
@@ -144,7 +144,7 @@ class WPLoader extends Module
             /** @var \Codeception\Module $module */
             $module = $allModules[$moduleName];
             $cleanup_config = $module->_getConfig('cleanup');
-            if ( !empty($cleanup_config) ) {
+            if (!empty($cleanup_config)) {
                 throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere with the WP Loader module.");
             }
         }
@@ -220,7 +220,7 @@ class WPLoader extends Module
         // load an extra config file if any
         $this->loadConfigFile();
 
-        $constants = array(
+        $constants = [
             // by default install WordPress in an isolated process
             'WPCEPT_ISOLATED_INSTALL' => isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true,
             'ABSPATH' => $wpRootFolder,
@@ -238,7 +238,7 @@ class WPLoader extends Module
             'WPLANG' => $this->config['language'],
             'WP_DEBUG' => $this->config['wpDebug'],
             'WP_TESTS_MULTISITE' => $this->config['multisite'],
-        );
+        ];
 
         foreach ($constants as $key => $value) {
             if (!defined($key)) {
@@ -292,8 +292,8 @@ class WPLoader extends Module
         }
 
         foreach ($this->config['activatePlugins'] as $plugin) {
-            do_action("activate_$plugin");
-            update_option('active_plugins',array_merge(get_option('active_plugins', [ ]), [ $plugin]));
+            activate_plugin($plugin);
+            update_option('active_plugins', array_merge(get_option('active_plugins', []), [$plugin]));
         }
 
         wp_set_current_user($currentUserIdBackup);

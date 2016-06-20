@@ -3,8 +3,6 @@
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */
 
-use Symfony\Component\Process\PhpProcess;
-
 if (!function_exists('tad_functions')) {
     require_once dirname(__FILE__) . '/tad-functions.php';
 }
@@ -23,10 +21,10 @@ if (!defined('WP_TESTS_FORCE_KNOWN_BUGS'))
 // Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only
 define('DISABLE_WP_CRON', true);
 
-$memory_settings = array(
+$memory_settings = [
     'WP_MEMORY_LIMIT' => -1,
     'WP_MAX_MEMORY_LIMIT' => -1
-);
+];
 foreach ($memory_settings as $memory_setting => $value) {
     if (!defined($memory_setting)) {
         define($memory_setting, $value);
@@ -61,7 +59,7 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
     require 'same-scope-install.php';
 } else {
     $environment = [
-        'constants' => serialize([
+        'constants' => [
             'ABSPATH' => ABSPATH,
             'WP_DEBUG' => true,
             'WP_TESTS_TABLE_PREFIX' => WP_TESTS_TABLE_PREFIX,
@@ -76,20 +74,18 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
             'WP_TESTS_TITLE' => WP_TESTS_TITLE,
             'WP_PHP_BINARY' => WP_PHP_BINARY,
             'WPLANG' => WPLANG
-        ])
+        ]
     ];
 
     if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
         $environment['activePlugins'] = serialize($GLOBALS['wp_tests_options']['active_plugins']);
+        codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $GLOBALS['wp_tests_options']['active_plugins']));
     }
 
     codecept_debug('Installing WordPress in isolated process...');
-    codecept_debug("Active plugins:\n" . implode(", ", $GLOBALS['wp_tests_options']['active_plugins']));
-
     $isolatedInstallationScript = dirname(__FILE__) . '/isolated-install.php';
-    $isolatedInstallationProcess = new PhpProcess($isolatedInstallationScript, null, $environment);
-    $isolatedInstallationProcess->setPhpBinary(WP_PHP_BINARY);
-    $isolatedInstallationProcess->run();
+    $output = system(implode(' ', [WP_PHP_BINARY, escapeshellarg($isolatedInstallationScript), escapeshellarg(serialize($environment)), $multisite]));
+    codecept_debug($output);
 }
 
 if ($multisite) {
@@ -157,15 +153,15 @@ if (class_exists('WP_REST_Server')) {
  */
 class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt
 {
-    protected $longOptions = array(
+    protected $longOptions = [
         'exclude-group=',
         'group=',
-    );
+    ];
 
     function __construct($argv)
     {
         array_shift($argv);
-        $options = array();
+        $options = [];
         while (list($i, $arg) = each($argv)) {
             try {
                 if (strlen($arg) > 1 && $arg[0] === '-' && $arg[1] === '-') {
@@ -178,11 +174,11 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt
             }
         }
 
-        $skipped_groups = array(
+        $skipped_groups = [
             'ajax' => true,
             'ms-files' => true,
             'external-http' => true,
-        );
+        ];
 
         foreach ($options as $option) {
             switch ($option[0]) {

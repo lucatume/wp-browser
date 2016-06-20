@@ -5,8 +5,9 @@
  */
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
-$constants = unserialize($_ENV['constants']);
-foreach ($constants as $key => $value) {
+$configuration = unserialize($argv[1]);
+
+foreach ($configuration['constants'] as $key => $value) {
     define($key, $value);
 }
 
@@ -84,10 +85,10 @@ if ($multisite) {
 }
 
 // finally activate the plugins that should be activated
-if (!empty($_ENV['activePlugins'])) {
-    $activePlugins = unserialize($_ENV['activePlugins']);
+if (!empty($configuration['activePlugins'])) {
+    $activePlugins = unserialize($configuration['activePlugins']);
     foreach ($activePlugins as $plugin) {
-        do_action('activate_' . $plugin);
+        activate_plugin($plugin, null, $multisite, false);
     }
 }
 
