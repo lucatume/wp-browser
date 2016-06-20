@@ -197,11 +197,18 @@ class WPLoader extends Module
         require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
 
         $this->setActivePlugins();
-        tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-        tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
-        tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
+
+        if (!$this->requiresIsolatedInstallation()) {
+            tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
+            tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+            tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
+        }
 
         require_once $this->wpBootstrapFile;
+
+        if ($this->requiresIsolatedInstallation()) {
+            $this->bootstrapActions();
+        }
     }
 
     /**
@@ -222,7 +229,7 @@ class WPLoader extends Module
 
         $constants = [
             // by default install WordPress in an isolated process
-            'WPCEPT_ISOLATED_INSTALL' => isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true,
+            'WPCEPT_ISOLATED_INSTALL' => $this->requiresIsolatedInstallation(),
             'ABSPATH' => $wpRootFolder,
             'DB_NAME' => $this->config['dbName'],
             'DB_USER' => $this->config['dbUser'],
@@ -268,6 +275,14 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * @return bool|mixed
+     */
+    protected function requiresIsolatedInstallation()
+    {
+        return isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true;
+    }
+
     protected function setActivePlugins()
     {
         if (empty($this->config['plugins'])) {
@@ -278,6 +293,24 @@ class WPLoader extends Module
             $GLOBALS['wp_tests_options']['active_plugins'] = array_merge($GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins']);
         } else {
             $GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
+        }
+    }
+
+    /**
+     * Calls a list of user-defined actions needed in tests.
+     */
+    public function bootstrapActions()
+    {
+        if (empty($this->config['bootstrapActions'])) {
+            return;
+        }
+
+        foreach ($this->config['bootstrapActions'] as $action) {
+            if (!is_callable($action)) {
+                do_action($action);
+            } else {
+                call_user_func($action);
+            }
         }
     }
 
@@ -319,6 +352,10 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * @return string
+     * @throws ModuleConfigException
+     */
     protected function getPluginsFolder()
     {
         if (empty($this->pluginsFolder)) {
@@ -332,18 +369,5 @@ class WPLoader extends Module
         }
 
         return $this->pluginsFolder;
-    }
-
-    /**
-     * Calls a list of user-defined actions needed in tests.
-     */
-    public function bootstrapActions()
-    {
-        if (empty($this->config['bootstrapActions'])) {
-            return;
-        }
-        foreach ($this->config['bootstrapActions'] as $action) {
-            do_action($action);
-        }
     }
 }
