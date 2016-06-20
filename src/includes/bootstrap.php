@@ -83,9 +83,10 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
     }
 
     codecept_debug('Installing WordPress in isolated process...');
+    ob_start();
     $isolatedInstallationScript = dirname(__FILE__) . '/isolated-install.php';
     $output = system(implode(' ', [WP_PHP_BINARY, escapeshellarg($isolatedInstallationScript), escapeshellarg(serialize($environment)), $multisite]));
-    codecept_debug($output);
+    codecept_debug("Isolatd installation script output: \n\n" . ob_get_clean());
 }
 
 if ($multisite) {

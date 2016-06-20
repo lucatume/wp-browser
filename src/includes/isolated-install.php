@@ -50,8 +50,6 @@ if (version_compare($wpdb->db_version(), '5.5.3', '>=')) {
 }
 $wpdb->select(DB_NAME, $wpdb->dbh);
 
-error_log('Tables before: ' . print_r($wpdb->tables, true));
-
 /**
  * Before dropping the tables include the active plugins as those might define
  * additional tables that should be dropped.
@@ -60,9 +58,7 @@ foreach ($activePlugins as $activePlugin) {
     include_once WP_PLUGIN_DIR . '/' . $activePlugin;
 }
 
-error_log('Tables after: ' . print_r($wpdb->tables, true));
-
-ob_start();
+echo 'The following tables will be dropped: ', "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
 
 echo "Installing..." . PHP_EOL;
 
@@ -108,5 +104,3 @@ if (!empty($activePlugins)) {
         activate_plugin($plugin, null, $multisite, false);
     }
 }
-
-return ob_get_clean();
