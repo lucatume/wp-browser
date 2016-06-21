@@ -121,6 +121,16 @@ class WordPress extends Framework
     protected $lastRequestWasAdmin = false;
 
     /**
+     * @var string
+     */
+    protected $ajaxIndex;
+
+    /**
+     * @var string
+     */
+    protected $cronIndex;
+
+    /**
      * WordPress constructor.
      *
      * @param ModuleContainer $moduleContainer
@@ -141,43 +151,102 @@ class WordPress extends Framework
 
         $this->wp = $wp ? $wp : new WPFacade($this->loader);
 
-        $this->setIndexFile();
-        $this->setAdminIndexFile();
+        $this->setIndexFromConfig();
+        $this->setAdminIndexFromConfig();
+        $this->setAjaxIndexFromConfig();
+        $this->setCronIndexFromConfig();
     }
 
-    private function setIndexFile()
+    private function setIndexFromConfig()
     {
         if (empty($this->config['index'])) {
-            $this->index = __DIR__ . '/scripts/wp-index.php';
-        } else {
-            if (!file_exists($this->config['index'])) {
-                throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->config['index'] . '] does not exist.');
-            }
-            $this->index = $this->config['index'];
+            return;
         }
+
+        if (!file_exists($this->config['index'])) {
+            throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->config['index'] . '] does not exist.');
+        }
+        $this->index = $this->config['index'];
     }
 
-    private function setAdminIndexFile()
+    private function setAdminIndexFromConfig()
     {
         if (empty($this->config['adminIndex'])) {
-            $this->adminIndex = __DIR__ . '/scripts/wp-admin-index.php';
-        } else {
-            if (!file_exists($this->config['adminIndex'])) {
-                throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->config['adminIndex'] . '] does not exist.');
-            }
-            $this->adminIndex = $this->config['adminIndex'];
+            return;
         }
+
+        if (!file_exists($this->config['adminIndex'])) {
+            throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->config['adminIndex'] . '] does not exist.');
+        }
+        $this->adminIndex = $this->config['adminIndex'];
+    }
+
+    private function setAjaxIndexFromConfig()
+    {
+        if (empty($this->config['ajaxIndex'])) {
+            return;
+        }
+
+        if (!file_exists($this->config['ajaxIndex'])) {
+            throw new ModuleConfigException(__CLASS__, 'Ajax index file [' . $this->config['ajaxIndex'] . '] does not exist.');
+        }
+        $this->ajaxIndex = $this->config['ajaxIndex'];
+    }
+
+    private function setCronIndexFromConfig()
+    {
+        if (empty($this->config['cronIndex'])) {
+            return;
+        }
+
+        if (!file_exists($this->config['cronIndex'])) {
+            throw new ModuleConfigException(__CLASS__, 'Cron index file [' . $this->config['cronIndex'] . '] does not exist.');
+        }
+        $this->cronIndex = $this->config['cronIndex'];
     }
 
     public function _initialize()
     {
         $this->initializeWPLoaderModule();
         $this->adminPath = $this->wp->getAdminPath();
+
+        $this->setIndexFile();
+        $this->setAdminIndexFile();
+        $this->setAjaxIndexFile();
+        $this->setCronIndexFile();
     }
 
     private function initializeWPLoaderModule()
     {
         $this->wp->initialize();
+    }
+
+    private function setIndexFile()
+    {
+        if (empty($this->index)) {
+            $this->index = ltrim($this->config['wpRootFolder'], '/') . '/index.php';
+        }
+    }
+
+    private function setAdminIndexFile()
+    {
+        if (empty($this->adminIndex)) {
+            $this->adminIndex = ltrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/index.php';
+        }
+    }
+
+    private function setAjaxIndexFile()
+    {
+        if (empty($this->ajaxIndex)) {
+            $this->ajaxIndex = ltrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/admin-ajax.php';
+        }
+    }
+
+    private function setCronIndexFile()
+    {
+        if (empty($this->cronIndex)) {
+            $this->cronIndex = ltrim($this->config['wpRootFolder'], '/') . '/wp-cron.php';
+        }
     }
 
     public function _before(TestInterface $test)
@@ -351,5 +420,15 @@ class WordPress extends Framework
     public function _lastRequestWasAdmin()
     {
         return $this->lastRequestWasAdmin;
+    }
+
+    public function getAjaxIndex()
+    {
+        return $this->ajaxIndex;
+    }
+
+    public function getCronIndex()
+    {
+        return $this->cronIndex;
     }
 }

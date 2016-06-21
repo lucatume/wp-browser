@@ -196,6 +196,64 @@ class WordPressTest extends \Codeception\Test\Unit
 
     /**
      * @test
+     * it should allow specifying an ajax index file
+     */
+    public function it_should_allow_specifying_an_ajax_index_file()
+    {
+        $this->root->addChild(vfsStream::newFile('my-ajax-index.php'));
+
+        $indexPath = $this->root->url() . '/my-ajax-index.php';
+        $this->config['ajaxIndex'] = $indexPath;
+        $sut = $this->make_instance();
+
+        $this->assertEquals($indexPath, $sut->getAjaxIndex());
+    }
+
+    /**
+     * @test
+     * it should throw if specified ajax index is not existing
+     */
+    public function it_should_throw_if_specified_ajax_index_is_not_existing()
+    {
+        $ajaxIndexPath = $this->root->url() . '/foo.php';
+        $this->config['ajaxIndex'] = $ajaxIndexPath;
+
+        $this->expectException(ModuleConfigException::class);
+
+        $sut = $this->make_instance();
+    }
+
+    /**
+     * @test
+     * it should allow specifying an cron index file
+     */
+    public function it_should_allow_specifying_an_cron_index_file()
+    {
+        $this->root->addChild(vfsStream::newFile('my-cron-index.php'));
+
+        $indexPath = $this->root->url() . '/my-cron-index.php';
+        $this->config['cronIndex'] = $indexPath;
+        $sut = $this->make_instance();
+
+        $this->assertEquals($indexPath, $sut->getCronIndex());
+    }
+
+    /**
+     * @test
+     * it should throw if specified cron index is not existing
+     */
+    public function it_should_throw_if_specified_cron_index_is_not_existing()
+    {
+        $cronIndexPath = $this->root->url() . '/foo.php';
+        $this->config['cronIndex'] = $cronIndexPath;
+
+        $this->expectException(ModuleConfigException::class);
+
+        $sut = $this->make_instance();
+    }
+
+    /**
+     * @test
      * it should point client to specified index file
      */
     public function it_should_point_client_to_specified_index_file()
