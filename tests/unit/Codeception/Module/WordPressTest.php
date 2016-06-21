@@ -11,10 +11,6 @@ use Codeception\TestInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Prophecy\Argument;
-use Prophecy\Prophecy\ObjectProphecy;
-use Prophecy\Prophecy\ProphecyInterface;
-use Prophecy\Prophet;
-use Symfony\Component\BrowserKit\Client;
 use tad\PublicTestCase;
 use tad\WPBrowser\Module\Support\WPFacade;
 use tad\WPBrowser\Module\Support\WPFacadeInterface;
@@ -106,29 +102,6 @@ class WordPressTest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should initialize WPLoader and hook on _initialize
-     */
-    public function it_should_initialize_wp_loader_and_hook_on_initialize()
-    {
-        $this->wpFacade->initialize()->shouldBeCalled();
-        $this->wpFacade->getAdminPath()->shouldBeCalled();
-
-        $this->wpFacade->add_filter('template_include', [$this->wpFacade, 'includeTemplate'], Argument::type('int'), Argument::type('int'))->shouldBeCalled();
-        $this->wpFacade->add_action('get_header', [$this->wpFacade, 'getHeader'], Argument::type('int'), Argument::type('int'))->shouldBeCalled();
-        $this->wpFacade->add_action('get_footer', [$this->wpFacade, 'getFooter'], Argument::type('int'), Argument::type('int'))->shouldBeCalled();
-        $this->wpFacade->add_action('get_sidebar', [$this->wpFacade, 'getSidebar'], Argument::type('int'), Argument::type('int'))->shouldBeCalled();
-
-        $this->wpFacade->add_filter('wp_die_ajax_handler', [$this->wpFacade, 'handleAjaxDie'])->shouldBeCalled();
-        $this->wpFacade->add_filter('wp_die_xmlrpc_handler', [$this->wpFacade, 'handleXmlrpcDie'])->shouldBeCalled();
-        $this->wpFacade->add_filter('wp_die_handler', [$this->wpFacade, 'handleDie'])->shouldBeCalled();
-
-        $sut = $this->make_instance();
-
-        $sut->_initialize();
-    }
-
-    /**
-     * @test
      * it should set up the testacase on _before
      */
     public function it_should_set_up_the_testacase_on_before()
@@ -161,19 +134,6 @@ class WordPressTest extends \Codeception\Test\Unit
         $sut->_afterStep($step);
         $sut->_after($test);
         $sut->_afterStep($step);
-    }
-
-    /**
-     * @test
-     * it should reset inclusions on _cleanup
-     */
-    public function it_should_reset_inclusions_on_cleanup()
-    {
-        $this->wpFacade->resetInclusions()->shouldBeCalledTimes(1);
-
-        $sut = $this->make_instance();
-
-        $sut->_cleanup();
     }
 
     /**

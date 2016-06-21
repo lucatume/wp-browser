@@ -22,22 +22,12 @@ class WPFacade implements WPFacadeInterface
      * @var array
      */
     protected $config;
-    /**
-     * @var TemplateIncluderInterface
-     */
-    protected $templateIncluder;
-    /**
-     * @var WpDieHandlerInterface
-     */
-    private $dieHandler;
 
-    public function __construct(WPLoader $loader, array $config = [], WP $wpAdapter = null, TemplateIncluderInterface $templateIncluder = null, WpDieHandlerInterface $dieHandler = null)
+    public function __construct(WPLoader $loader, array $config = [], WP $wpAdapter = null)
     {
         $this->loader = $loader;
         $this->config = $config;
         $this->wpAdapter = $wpAdapter ? $wpAdapter : new WP();
-        $this->templateIncluder = $templateIncluder ? $templateIncluder : new TemplateIncluder($this->wpAdapter);
-        $this->dieHandler = $dieHandler ? $dieHandler : new WpDieHandler();
     }
 
     public function initialize()
@@ -65,16 +55,6 @@ class WPFacade implements WPFacadeInterface
         return $this->wpAdapter->add_action($tag, $function_to_add, $priority, $accepted_args);
     }
 
-    public function getTemplateIncluder()
-    {
-        return $this->templateIncluder;
-    }
-
-    public function resetInclusions()
-    {
-        $this->templateIncluder->resetInclusions();
-    }
-
     public function update_option($option, $new_value, $autoload = null)
     {
         return $this->wpAdapter->update_option($option, $new_value, $autoload);
@@ -83,41 +63,6 @@ class WPFacade implements WPFacadeInterface
     public function flush_rewrite_rules($hard = true)
     {
         $this->wpAdapter->flush_rewrite_rules($hard);
-    }
-
-    public function includeTemplate($template)
-    {
-        return $this->templateIncluder->includeTemplate($template);
-    }
-
-    public function getHeader($header)
-    {
-        return $this->templateIncluder->getHeader($header);
-    }
-
-    public function getFooter($footer)
-    {
-        return $this->templateIncluder->getFooter($footer);
-    }
-
-    public function getSidebar($sidebar)
-    {
-        return $this->templateIncluder->getSidebar($sidebar);
-    }
-
-    public function handleAjaxDie()
-    {
-        return $this->dieHandler->handleAjaxDie();
-    }
-
-    public function handleXmlrpcDie()
-    {
-        return $this->dieHandler->handleXmlrpcDie();
-    }
-
-    public function handleDie()
-    {
-        return $this->dieHandler->handleDie();
     }
 
     public function getAdminPath()

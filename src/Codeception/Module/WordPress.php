@@ -27,16 +27,13 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Lib\Connector\Universal;
 use Codeception\Lib\Connector\Universal as UniversalConnector;
 use Codeception\Lib\Framework;
-use Codeception\Lib\Generator\Test;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use Codeception\Util\ReflectionHelper;
-use Symfony\Component\BrowserKit\Client;
 use tad\WPBrowser\Module\Support\WPFacade;
 use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
@@ -176,28 +173,11 @@ class WordPress extends Framework
     {
         $this->initializeWPLoaderModule();
         $this->adminPath = $this->wp->getAdminPath();
-        $this->hookTemplateInterception();
-        $this->hookWpDieHandler();
     }
 
     private function initializeWPLoaderModule()
     {
         $this->wp->initialize();
-    }
-
-    private function hookTemplateInterception()
-    {
-        $this->wp->add_filter('template_include', [$this->wp, 'includeTemplate'], PHP_INT_MAX, 1);
-        $this->wp->add_action('get_header', [$this->wp, 'getHeader'], PHP_INT_MAX, 1);
-        $this->wp->add_action('get_footer', [$this->wp, 'getFooter'], PHP_INT_MAX, 1);
-        $this->wp->add_action('get_sidebar', [$this->wp, 'getSidebar'], PHP_INT_MAX, 1);
-    }
-
-    private function hookWpDieHandler()
-    {
-        $this->wp->add_filter('wp_die_ajax_handler', [$this->wp, 'handleAjaxDie']);
-        $this->wp->add_filter('wp_die_xmlrpc_handler', [$this->wp, 'handleXmlrpcDie']);
-        $this->wp->add_filter('wp_die_handler', [$this->wp, 'handleDie']);
     }
 
     public function _before(TestInterface $test)
@@ -220,7 +200,7 @@ class WordPress extends Framework
     /**
      * @param string $page The relative path to a page.
      *
-     * @return void
+     * @return null|string
      */
     public function amOnPage($page)
     {
@@ -254,7 +234,6 @@ class WordPress extends Framework
     {
         $this->setWpQueryName();
         $this->resetTestCaseControlProperties();
-        $this->wp->resetInclusions();
     }
 
     private function setWpQueryName()
@@ -327,11 +306,6 @@ class WordPress extends Framework
     public function factory()
     {
         return $this->factory;
-    }
-
-    public function resetTemplateInclusions()
-    {
-        $this->wp->resetInclusions();
     }
 
     public function setPermalinkStructure($permalinkStructure)
