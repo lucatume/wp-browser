@@ -18,7 +18,8 @@
   ],
   "require": {
     "lucatume/wp-browser-commons": "~1.0",
-    "lucatume/codeception-setup-local": "~1.0"
+    "lucatume/codeception-setup-local": "~1.0",
+    "symfony/process":"~3.1"
   },
   "autoload": {
     "psr-4": {

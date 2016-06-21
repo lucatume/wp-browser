@@ -3,21 +3,27 @@
  * Installs WordPress for the purpose of the unit-tests
  *
  */
-error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
-$configuration = unserialize( $argv[1]);
+$configuration = unserialize($argv[1]);
 
-foreach ($configuration['constants'] as $key => $value){
-	define($key,$value);
+if (!empty($configuration['activePlugins'])) {
+    $activePlugins = $configuration['activePlugins'];
+} else {
+    $activePlugins = [];
+}
+
+foreach ($configuration['constants'] as $key => $value) {
+    define($key, $value);
 }
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 
-$multisite = ! empty( $argv[2] ) ? $argv[2] : false;
+$multisite = !empty($argv[2]) ? $argv[2] : false;
 
-define( 'WP_INSTALLING', true );
+define('WP_INSTALLING', true);
 //require_once $config_file_path;
-require_once dirname( __FILE__ ) . '/functions.php';
+require_once dirname(__FILE__) . '/functions.php';
 
 tests_reset__SERVER();
 
@@ -30,58 +36,71 @@ require_once ABSPATH . '/wp-includes/wp-db.php';
 
 // Override the PHPMailer
 global $phpmailer;
-require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
+require_once(dirname(__FILE__) . '/mock-mailer.php');
 $phpmailer = new MockPHPMailer();
 
 /*
  * default_storage_engine and storage_engine are the same option, but storage_engine
  * was deprecated in MySQL (and MariaDB) 5.5.3, and removed in 5.7.
  */
-if ( version_compare( $wpdb->db_version(), '5.5.3', '>=' ) ) {
-	$wpdb->query( 'SET default_storage_engine = InnoDB' );
+if (version_compare($wpdb->db_version(), '5.5.3', '>=')) {
+    $wpdb->query('SET default_storage_engine = InnoDB');
 } else {
-	$wpdb->query( 'SET storage_engine = InnoDB' );
+    $wpdb->query('SET storage_engine = InnoDB');
 }
-$wpdb->select( DB_NAME, $wpdb->dbh );
+$wpdb->select(DB_NAME, $wpdb->dbh);
 
-ob_start();
+/**
+ * Before dropping the tables include the active plugins as those might define
+ * additional tables that should be dropped.
+ **/
+foreach ($activePlugins as $activePlugin) {
+    include_once WP_PLUGIN_DIR . '/' . $activePlugin;
+}
+
+echo 'The following tables will be dropped: ', "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
 
 echo "Installing..." . PHP_EOL;
 
-foreach ( $wpdb->tables() as $table => $prefixed_table ) {
-	$wpdb->query( "DROP TABLE IF EXISTS $prefixed_table" );
+foreach ($wpdb->tables() as $table => $prefixed_table) {
+    $wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 }
 
-foreach ( $wpdb->tables( 'ms_global' ) as $table => $prefixed_table ) {
-	$wpdb->query( "DROP TABLE IF EXISTS $prefixed_table" );
+foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
+    $wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 
-	// We need to create references to ms global tables.
-	if ( $multisite )
-		$wpdb->$table = $prefixed_table;
+    // We need to create references to ms global tables.
+    if ($multisite)
+        $wpdb->$table = $prefixed_table;
 }
 
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
-add_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
+add_action('populate_options', '_set_default_permalink_structure_for_tests');
 
-wp_install( WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password' );
+wp_install(WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password');
 
 // Delete dummy permalink structure, as prefilled above.
-if ( ! is_multisite() ) {
-	delete_option( 'permalink_structure' );
+if (!is_multisite()) {
+    delete_option('permalink_structure');
 }
-remove_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
+remove_action('populate_options', '_set_default_permalink_structure_for_tests');
 
-if ( $multisite ) {
-	echo "Installing network..." . PHP_EOL;
+if ($multisite) {
+    echo "Installing network..." . PHP_EOL;
 
-	define( 'WP_INSTALLING_NETWORK', true );
+    define('WP_INSTALLING_NETWORK', true);
 
-	$title = WP_TESTS_TITLE . ' Network';
-	$subdomain_install = false;
+    $title = WP_TESTS_TITLE . ' Network';
+    $subdomain_install = false;
 
-	install_network();
-	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
-	$wp_rewrite->set_permalink_structure( '' );
+    install_network();
+    populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
+    $wp_rewrite->set_permalink_structure('');
 }
 
-return ob_get_clean();
+// finally activate the plugins that should be activated
+if (!empty($activePlugins)) {
+    foreach ($activePlugins as $plugin) {
+        activate_plugin($plugin, null, $multisite, false);
+    }
+}

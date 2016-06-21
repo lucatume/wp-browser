@@ -24,8 +24,8 @@ class WPLoader extends Module
 {
 
     public static $includeInheritedActions = true;
-    public static $onlyActions = array();
-    public static $excludeActions = array();
+    public static $onlyActions = [];
+    public static $excludeActions = [];
     /**
      * The fields the user will have to set to legit values for the module to run.
      *
@@ -41,7 +41,7 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $requiredFields = array('wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',);
+    protected $requiredFields = ['wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',];
     /**
      * The fields the user will be able to override while running tests.
      *
@@ -78,7 +78,7 @@ class WPLoader extends Module
      *
      * @var array
      */
-    protected $config = array(
+    protected $config = [
         'wpDebug' => true,
         'multisite' => false,
         'dbCharset' => 'utf8',
@@ -94,7 +94,7 @@ class WPLoader extends Module
         'plugins' => '',
         'activatePlugins' => '',
         'bootstrapActions' => ''
-    );
+    ];
     /**
      * The path to the modified tests bootstrap file.
      *
@@ -149,7 +149,7 @@ class WPLoader extends Module
             /** @var \Codeception\Module $module */
             $module = $allModules[$moduleName];
             $cleanup_config = $module->_getConfig('cleanup');
-            if ( !empty($cleanup_config) ) {
+            if (!empty($cleanup_config)) {
                 throw new ModuleConflictException(__CLASS__, "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere with the WP Loader module.");
             }
         }
@@ -202,11 +202,18 @@ class WPLoader extends Module
         require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
 
         $this->setActivePlugins();
-        tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-        tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
-        tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
+
+        if (!$this->requiresIsolatedInstallation()) {
+            tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
+            tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+            tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
+        }
 
         require_once $this->wpBootstrapFile;
+
+        if ($this->requiresIsolatedInstallation()) {
+            $this->bootstrapActions();
+        }
     }
 
     /**
@@ -225,9 +232,9 @@ class WPLoader extends Module
         // load an extra config file if any
         $this->loadConfigFile();
 
-        $constants = array(
+        $constants = [
             // by default install WordPress in an isolated process
-            'WPCEPT_ISOLATED_INSTALL' => isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true,
+            'WPCEPT_ISOLATED_INSTALL' => $this->requiresIsolatedInstallation(),
             'ABSPATH' => $wpRootFolder,
             'DB_NAME' => $this->config['dbName'],
             'DB_USER' => $this->config['dbUser'],
@@ -243,7 +250,7 @@ class WPLoader extends Module
             'WPLANG' => $this->config['language'],
             'WP_DEBUG' => $this->config['wpDebug'],
             'WP_TESTS_MULTISITE' => $this->config['multisite'],
-        );
+        ];
 
         foreach ($constants as $key => $value) {
             if (!defined($key)) {
@@ -273,6 +280,14 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * @return bool|mixed
+     */
+    protected function requiresIsolatedInstallation()
+    {
+        return isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true;
+    }
+
     protected function setActivePlugins()
     {
         if (empty($this->config['plugins'])) {
@@ -283,6 +298,24 @@ class WPLoader extends Module
             $GLOBALS['wp_tests_options']['active_plugins'] = array_merge($GLOBALS['wp_tests_options']['active_plugins'], $this->config['plugins']);
         } else {
             $GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
+        }
+    }
+
+    /**
+     * Calls a list of user-defined actions needed in tests.
+     */
+    public function bootstrapActions()
+    {
+        if (empty($this->config['bootstrapActions'])) {
+            return;
+        }
+
+        foreach ($this->config['bootstrapActions'] as $action) {
+            if (!is_callable($action)) {
+                do_action($action);
+            } else {
+                call_user_func($action);
+            }
         }
     }
 
@@ -297,8 +330,8 @@ class WPLoader extends Module
         }
 
         foreach ($this->config['activatePlugins'] as $plugin) {
-            do_action("activate_$plugin");
-            update_option('active_plugins',array_merge(get_option('active_plugins', [ ]), [ $plugin]));
+            activate_plugin($plugin);
+            update_option('active_plugins', array_merge(get_option('active_plugins', []), [$plugin]));
         }
 
         wp_set_current_user($currentUserIdBackup);
@@ -324,6 +357,10 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * @return string
+     * @throws ModuleConfigException
+     */
     protected function getPluginsFolder()
     {
         if (empty($this->pluginsFolder)) {
@@ -337,18 +374,5 @@ class WPLoader extends Module
         }
 
         return $this->pluginsFolder;
-    }
-
-    /**
-     * Calls a list of user-defined actions needed in tests.
-     */
-    public function bootstrapActions()
-    {
-        if (empty($this->config['bootstrapActions'])) {
-            return;
-        }
-        foreach ($this->config['bootstrapActions'] as $action) {
-            do_action($action);
-        }
     }
 }
