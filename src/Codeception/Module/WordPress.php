@@ -27,13 +27,13 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Lib\Connector\Universal as UniversalConnector;
 use Codeception\Lib\Framework;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use Codeception\Util\ReflectionHelper;
+use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Module\Support\WPFacade;
 use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
@@ -131,6 +131,11 @@ class WordPress extends Framework
     protected $cronIndex;
 
     /**
+     * @var \tad\WPBrowser\Connector\WordPress
+     */
+    protected $client;
+
+    /**
      * WordPress constructor.
      *
      * @param ModuleContainer $moduleContainer
@@ -224,34 +229,47 @@ class WordPress extends Framework
     private function setIndexFile()
     {
         if (empty($this->index)) {
-            $this->index = ltrim($this->config['wpRootFolder'], '/') . '/index.php';
+            $this->index = rtrim($this->config['wpRootFolder'], '/') . '/index.php';
+            if (!file_exists($this->index)) {
+                throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->index . '] does not exist.');
+            }
         }
+
     }
 
     private function setAdminIndexFile()
     {
         if (empty($this->adminIndex)) {
-            $this->adminIndex = ltrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/index.php';
+            $this->adminIndex = rtrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/index.php';
+            if (!file_exists($this->adminIndex)) {
+                throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->adminIndex . '] does not exist.');
+            }
         }
     }
 
     private function setAjaxIndexFile()
     {
         if (empty($this->ajaxIndex)) {
-            $this->ajaxIndex = ltrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/admin-ajax.php';
+            $this->ajaxIndex = rtrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/admin-ajax.php';
+            if (!file_exists($this->ajaxIndex)) {
+                throw new ModuleConfigException(__CLASS__, 'Ajax index file [' . $this->ajaxIndex . '] does not exist.');
+            }
         }
     }
 
     private function setCronIndexFile()
     {
         if (empty($this->cronIndex)) {
-            $this->cronIndex = ltrim($this->config['wpRootFolder'], '/') . '/wp-cron.php';
+            $this->cronIndex = rtrim($this->config['wpRootFolder'], '/') . '/wp-cron.php';
+            if (!file_exists($this->cronIndex)) {
+                throw new ModuleConfigException(__CLASS__, 'Cron index file [' . $this->cronIndex . '] does not exist.');
+            }
         }
     }
 
     public function _before(TestInterface $test)
     {
-        $this->client = $this->client ?: new UniversalConnector();
+        $this->client = $this->client ?: new WordPressConnector();
         $this->client->followRedirects(true);
         $this->client->setIndex($this->index);
 
