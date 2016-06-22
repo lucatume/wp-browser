@@ -54,14 +54,19 @@ class WordPress extends Universal
             ' ' . escapeshellarg(base64_encode(serialize($env)));
         exec($command, $output);
 
+        $_COOKIE = $_COOKIE ?: [];
+        $_SERVER = $_SERVER ?: [];
+        $_FILES = $_FILES ?: [];
+        $_REQUEST = $_REQUEST ?: [];
+
         $unserializedResponse = unserialize(base64_decode($output[0]));
 
-        $_COOKIE = empty($unserializedResponse['cookie']) ?: array_merge($_COOKIE, $unserializedResponse['cookie']);
-        $_SERVER = empty($unserializedResponse['server']) ?: array_merge($_SERVER, $unserializedResponse['server']);
-        $_FILES = empty($unserializedResponse['files']) ?: array_merge($_FILES, $unserializedResponse['files']);
-        $_REQUEST = empty($unserializedResponse['request']) ?: array_merge($_REQUEST, $unserializedResponse['request']);
-        $_GET = empty($unserializedResponse['get']) ?: array_merge($_GET, $unserializedResponse['get']);
-        $_POST = empty($unserializedResponse['post']) ?: array_merge($_POST, $unserializedResponse['post']);
+        $_COOKIE = empty($unserializedResponse['cookie']) ? $_COOKIE : array_merge($_COOKIE, $unserializedResponse['cookie']);
+        $_SERVER = empty($unserializedResponse['server']) ? $_SERVER : array_merge($_SERVER, $unserializedResponse['server']);
+        $_FILES = empty($unserializedResponse['files']) ? $_FILES : array_merge($_FILES, $unserializedResponse['files']);
+        $_REQUEST = empty($unserializedResponse['request']) ? $_REQUEST : array_merge($_REQUEST, $unserializedResponse['request']);
+        $_GET = empty($unserializedResponse['get']) ? $_GET : array_merge($_GET, $unserializedResponse['get']);
+        $_POST = empty($unserializedResponse['post']) ? $_POST : array_merge($_POST, $unserializedResponse['post']);
 
         $content = $unserializedResponse['content'];
         $headers = $unserializedResponse['headers'];
