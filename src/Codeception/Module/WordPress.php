@@ -40,15 +40,17 @@ use tad\WPBrowser\Module\Support\WPFacadeInterface;
 class WordPress extends Framework
 {
     /**
+     * @var \tad\WPBrowser\Connector\WordPress
+     */
+    public $client;
+    /**
      * @var string The absolute path to the index file that should be loaded to handle requests.
      */
     protected $index;
-
     /**
      * @var array
      */
     protected $requiredFields = array('wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',);
-
     /**
      * @var array
      */
@@ -69,71 +71,54 @@ class WordPress extends Framework
         'activatePlugins' => '',
         'bootstrapActions' => '',
     );
-
     /**
      * @var WPLoader
      */
     protected $loader;
-
     /**
      * @var bool
      */
     protected $testCaseWasSetup = false;
-
     /**
      * @var
      */
     protected $testCaseWasTornDown = false;
-
     /**
      * @var \WP_UnitTest_Factory
      */
     protected $factory;
-
     /**
      * @var \WP_UnitTestCase
      */
     protected $testCase;
-
     /**
      * @var WPFacadeInterface
      */
     protected $wp;
-
     /**
      * @var string
      */
     protected $adminPath;
-
     /**
      * @var string
      */
     protected $adminIndex;
-
     /**
      * @var bool
      */
     protected $isMockRequest = false;
-
     /**
      * @var bool
      */
     protected $lastRequestWasAdmin = false;
-
     /**
      * @var string
      */
     protected $ajaxIndex;
-
     /**
      * @var string
      */
     protected $cronIndex;
-
-    /**
-     * @var \tad\WPBrowser\Connector\WordPress
-     */
-    protected $client;
 
     /**
      * WordPress constructor.

@@ -4,7 +4,6 @@ namespace Codeception\Module;
 require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Lib\Connector\Universal;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Step;
 use Codeception\TestInterface;
@@ -12,6 +11,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Prophecy\Argument;
 use tad\PublicTestCase;
+use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Module\Support\WPFacade;
 use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
@@ -263,8 +263,8 @@ class WordPressTest extends \Codeception\Test\Unit
         $indexPath = $this->root->url() . '/my-index.php';
         $this->config['index'] = $indexPath;
 
-        /** @var Universal $client */
-        $client = $this->prophesize(Universal::class);
+        /** @var WordPressConnector $client */
+        $client = $this->prophesize(WordPressConnector::class);
         $client->followRedirects(true)->shouldBeCalled();
         $client->setIndex($indexPath)->shouldBeCalled();
 
@@ -287,8 +287,8 @@ class WordPressTest extends \Codeception\Test\Unit
         $this->config['index'] = $indexPath;
         $this->config['adminIndex'] = $adminIndexPath;
 
-        /** @var Universal $client */
-        $client = $this->prophesize(Universal::class);
+        /** @var WordPressConnector $client */
+        $client = $this->prophesize(WordPressConnector::class);
         $client->followRedirects(true)->shouldBeCalled();
         $client->setIndex($indexPath)->shouldBeCalledTimes(1);
 
@@ -317,8 +317,8 @@ class WordPressTest extends \Codeception\Test\Unit
         $this->config['index'] = $indexPath;
         $this->config['adminIndex'] = $adminIndexPath;
 
-        /** @var Universal $client */
-        $client = $this->prophesize(Universal::class);
+        /** @var WordPressConnector $client */
+        $client = $this->prophesize(WordPressConnector::class);
         $client->followRedirects(true)->shouldBeCalled();
         $client->setIndex($indexPath)->shouldBeCalledTimes(3);
 
