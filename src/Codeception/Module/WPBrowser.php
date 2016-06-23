@@ -16,7 +16,7 @@ class WPBrowser extends PhpBrowser
      *
      * @var array
      */
-    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminUrl');
+    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminPath');
     /**
      * The login screen absolute URL
      *
@@ -28,13 +28,13 @@ class WPBrowser extends PhpBrowser
      *
      * @var [type]
      */
-    protected $adminUrl;
+    protected $adminPath;
     /**
      * The plugin screen absolute URL
      *
      * @var string
      */
-    protected $pluginsUrl;
+    protected $pluginsPath;
 
     /**
      * Initializes the module setting the properties values.
@@ -43,9 +43,10 @@ class WPBrowser extends PhpBrowser
     public function _initialize()
     {
         parent::_initialize();
-        $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $this->config['adminUrl']);
-        $this->adminUrl = rtrim($this->config['adminUrl'], '/');
-        $this->pluginsUrl = $this->adminUrl . '/plugins.php';
+        $adminPath = isset($this->config['adminPath'])?$this->config['adminPath'] : $this->config['adminUrl'];
+        $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
+        $this->adminPath = rtrim($adminPath, '/');
+        $this->pluginsPath = $this->adminPath . '/plugins.php';
     }
 
     /**

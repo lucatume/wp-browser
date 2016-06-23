@@ -13,7 +13,7 @@ class WPWebDriver extends WebDriver
      *
      * @var array
      */
-    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminUrl');
+    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminPath');
 
     /**
      * The login screen absolute URL
@@ -27,14 +27,14 @@ class WPWebDriver extends WebDriver
      *
      * @var string
      */
-    protected $adminUrl;
+    protected $adminPath;
 
     /**
      * The plugin screen absolute URL
      *
      * @var string
      */
-    protected $pluginsUrl;
+    protected $pluginsPath;
 
     /**
      * Initializes the module setting the properties values.
@@ -43,9 +43,10 @@ class WPWebDriver extends WebDriver
     public function _initialize()
     {
         parent::_initialize();
-        $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $this->config['adminUrl']);
-        $this->adminUrl = rtrim($this->config['adminUrl'], '/');
-        $this->pluginsUrl = $this->adminUrl . '/plugins.php';
+        $adminPath = isset($this->config['adminPath']) ? $this->config['adminPath'] : $this->config['adminUrl'];
+        $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
+        $this->adminPath = rtrim($adminPath, '/');
+        $this->pluginsPath = $this->adminPath . '/plugins.php';
     }
 
     /**
@@ -55,23 +56,24 @@ class WPWebDriver extends WebDriver
      *
      * @return array|null
      */
-    public function grabCookiesWithPattern( $cookiePattern ) {
+    public function grabCookiesWithPattern($cookiePattern)
+    {
         $cookies = $this->webDriver->manage()->getCookies();
 
-        if ( ! $cookies ) {
+        if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter( $cookies, function ( $cookie ) use ( $cookiePattern ) {
+        $matchingCookies = array_filter($cookies, function ($cookie) use ($cookiePattern) {
 
-            return preg_match( $cookiePattern, $cookie['name'] );
-        } );
-        $cookieList = array_map( function ( $cookie ) {
-            return sprintf( '{"%s": "%s"}', $cookie['name'], $cookie['value'] );
-        }, $matchingCookies );
+            return preg_match($cookiePattern, $cookie['name']);
+        });
+        $cookieList = array_map(function ($cookie) {
+            return sprintf('{"%s": "%s"}', $cookie['name'], $cookie['value']);
+        }, $matchingCookies);
 
-        $this->debug( 'Cookies matching pattern ' . $cookiePattern . ' : ' . implode( ', ', $cookieList ) );
+        $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));
 
-        return is_array( $matchingCookies ) ? $matchingCookies : null;
+        return is_array($matchingCookies) ? $matchingCookies : null;
     }
 
     /**
@@ -79,15 +81,17 @@ class WPWebDriver extends WebDriver
      *
      * @param int $time
      */
-    public function waitForJqueryAjax( $time = 10 ) {
-        return $this->waitForJS( 'return jQuery.active == 0', $time );
+    public function waitForJqueryAjax($time = 10)
+    {
+        return $this->waitForJS('return jQuery.active == 0', $time);
     }
 
     /**
      * Grabs the current page full URL including the query vars.
      */
-    public function grabFullUrl() {
-        return $this->executeJS( 'return location.href' );
+    public function grabFullUrl()
+    {
+        return $this->executeJS('return location.href');
     }
 
 }
