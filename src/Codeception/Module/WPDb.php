@@ -23,11 +23,6 @@ class WPDb extends ExtendedDb
 {
 
     /**
-     * @var array
-     */
-    public $scaffoldedBlogIds = [];
-
-    /**
      * @var string The theme stylesheet in use.
      */
     protected $stylesheet = '';
@@ -112,18 +107,6 @@ class WPDb extends ExtendedDb
      * @var array
      */
     protected $templateData;
-    /**
-     * @var bool
-     */
-    protected $isMultisite = false;
-    /**
-     * @var bool
-     */
-    protected $needHtaccess = false;
-    /**
-     * @var bool
-     */
-    protected $shouldRestoreFiles = false;
 
     public function _cleanup()
     {
