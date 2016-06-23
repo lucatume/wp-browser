@@ -6,14 +6,9 @@ require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Step;
-use Codeception\TestInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Prophecy\Argument;
-use tad\PublicTestCase;
-use tad\WPBrowser\Connector\WordPress as WordPressConnector;
-use tad\WPBrowser\Module\Support\WPFacade;
-use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
@@ -31,21 +26,6 @@ class WordPressTest extends \Codeception\Test\Unit
      * @var array
      */
     protected $config;
-
-    /**
-     * @var WPLoader
-     */
-    protected $loader;
-
-    /**
-     * @var PublicTestCase
-     */
-    protected $testCase;
-
-    /**
-     * @var WPFacadeInterface
-     */
-    protected $wpFacade;
 
     /**
      * @var vfsStreamDirectory
@@ -68,224 +48,150 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     private function make_instance()
     {
-        return new WordPress(
-            $this->moduleContainer->reveal(),
-            $this->config,
-            $this->loader->reveal(),
-            $this->testCase->reveal(),
-            $this->wpFacade->reveal());
+        return new WordPress($this->moduleContainer->reveal(), $this->config);
     }
 
     /**
      * @test
-     * it should allow setting the index in the config
+     * it should point to index file when requesting page
      */
-    public function it_should_allow_setting_the_index_in_the_config()
+    public function it_should_point_to_index_file_when_requesting_page()
     {
-        $this->root->addChild(vfsStream::newFile('my-index.php'));
-
-        $indexPath = $this->root->url() . '/my-index.php';
-        $this->config['index'] = $indexPath;
         $sut = $this->make_instance();
-
-        $this->assertEquals($indexPath, $sut->getIndex());
-    }
-
-    /**
-     * @test
-     * it should throw if specified index is not existing
-     */
-    public function it_should_throw_if_specified_index_is_not_existing()
-    {
-        $indexPath = $this->root->url() . '/foo.php';
-        $this->config['index'] = $indexPath;
-
-        $this->expectException(ModuleConfigException::class);
-
-        $sut = $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should allow specifying an admin index file
-     */
-    public function it_should_allow_specifying_an_admin_index_file()
-    {
-        $this->root->addChild(vfsStream::newFile('my-admin-index.php'));
-
-        $indexPath = $this->root->url() . '/my-admin-index.php';
-        $this->config['adminIndex'] = $indexPath;
-        $sut = $this->make_instance();
-
-        $this->assertEquals($indexPath, $sut->getAdminIndex());
-    }
-
-    /**
-     * @test
-     * it should throw if specified admin index is not existing
-     */
-    public function it_should_throw_if_specified_admin_index_is_not_existing()
-    {
-        $adminIndexPath = $this->root->url() . '/foo.php';
-        $this->config['adminIndex'] = $adminIndexPath;
-
-        $this->expectException(ModuleConfigException::class);
-
-        $sut = $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should allow specifying an ajax index file
-     */
-    public function it_should_allow_specifying_an_ajax_index_file()
-    {
-        $this->root->addChild(vfsStream::newFile('my-ajax-index.php'));
-
-        $indexPath = $this->root->url() . '/my-ajax-index.php';
-        $this->config['ajaxIndex'] = $indexPath;
-        $sut = $this->make_instance();
-
-        $this->assertEquals($indexPath, $sut->getAjaxIndex());
-    }
-
-    /**
-     * @test
-     * it should throw if specified ajax index is not existing
-     */
-    public function it_should_throw_if_specified_ajax_index_is_not_existing()
-    {
-        $ajaxIndexPath = $this->root->url() . '/foo.php';
-        $this->config['ajaxIndex'] = $ajaxIndexPath;
-
-        $this->expectException(ModuleConfigException::class);
-
-        $sut = $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should allow specifying an cron index file
-     */
-    public function it_should_allow_specifying_an_cron_index_file()
-    {
-        $this->root->addChild(vfsStream::newFile('my-cron-index.php'));
-
-        $indexPath = $this->root->url() . '/my-cron-index.php';
-        $this->config['cronIndex'] = $indexPath;
-        $sut = $this->make_instance();
-
-        $this->assertEquals($indexPath, $sut->getCronIndex());
-    }
-
-    /**
-     * @test
-     * it should throw if specified cron index is not existing
-     */
-    public function it_should_throw_if_specified_cron_index_is_not_existing()
-    {
-        $cronIndexPath = $this->root->url() . '/foo.php';
-        $this->config['cronIndex'] = $cronIndexPath;
-
-        $this->expectException(ModuleConfigException::class);
-
-        $sut = $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should point client to specified index file
-     */
-    public function it_should_point_client_to_specified_index_file()
-    {
-        $this->root->addChild(vfsStream::newFile('my-index.php'));
-
-        $indexPath = $this->root->url() . '/my-index.php';
-        $this->config['index'] = $indexPath;
-
-        /** @var WordPressConnector $client */
-        $client = $this->prophesize(WordPressConnector::class);
-        $client->followRedirects(true)->shouldBeCalled();
-        $client->setIndex($indexPath)->shouldBeCalled();
-
-        $sut = $this->make_instance();
-        $sut->_setClient($client->reveal());
-
-        $sut->_before($this->prophesize(TestInterface::class)->reveal());
-    }
-
-    /**
-     * @test
-     * it should point client to admin index when requesting an admin page
-     */
-    public function it_should_point_client_to_admin_index_when_requesting_an_admin_page()
-    {
-        $this->root->addChild(vfsStream::newFile('my-index.php'));
-        $this->root->addChild(vfsStream::newFile('my-admin-index.php'));
-        $indexPath = $this->root->url() . '/my-index.php';
-        $adminIndexPath = $this->root->url() . '/my-admin-index.php';
-        $this->config['index'] = $indexPath;
-        $this->config['adminIndex'] = $adminIndexPath;
-
-        /** @var WordPressConnector $client */
-        $client = $this->prophesize(WordPressConnector::class);
-        $client->followRedirects(true)->shouldBeCalled();
-        $client->setIndex($indexPath)->shouldBeCalledTimes(1);
-
-        $sut = $this->make_instance();
-        $sut->_setClient($client->reveal());
-        $sut->_before($this->prophesize(TestInterface::class)->reveal());
-
-        $sut->setAdminPath('/subfolder/wp-admin');
-
-        $client->setIndex($adminIndexPath)->shouldBeCalledTimes(1);
-
         $sut->_isMockRequest(true);
-        $sut->amOnPage('/subfolder/wp-admin/some-admin-page.php');
+        $page = $sut->amOnPage('/');
+
+        $this->assertEquals('/', $page);
     }
 
     /**
      * @test
-     * it should go from index to admin to index when requesting different index/admin/index pages
+     * it should point to index file and query vars
      */
-    public function it_should_go_from_index_to_admin_to_index_when_requesting_different_index_admin_index_pages()
+    public function it_should_point_to_index_file_and_query_vars()
     {
-        $this->root->addChild(vfsStream::newFile('my-index.php'));
-        $this->root->addChild(vfsStream::newFile('my-admin-index.php'));
-        $indexPath = $this->root->url() . '/my-index.php';
-        $adminIndexPath = $this->root->url() . '/my-admin-index.php';
-        $this->config['index'] = $indexPath;
-        $this->config['adminIndex'] = $adminIndexPath;
-
-        /** @var WordPressConnector $client */
-        $client = $this->prophesize(WordPressConnector::class);
-        $client->followRedirects(true)->shouldBeCalled();
-        $client->setIndex($indexPath)->shouldBeCalledTimes(3);
-
         $sut = $this->make_instance();
-        $sut->_setClient($client->reveal());
-        $sut->_before($this->prophesize(TestInterface::class)->reveal());
-
-        $sut->setAdminPath('/subfolder/wp-admin');
-
-        $client->setIndex($adminIndexPath)->shouldBeCalledTimes(1);
-
         $sut->_isMockRequest(true);
-        $sut->amOnPage('/foo-front-end-path');
-        $this->assertFalse($sut->_lastRequestWasAdmin());
+        $page = $sut->amOnPage('/?some=var');
 
-        $sut->amOnPage('/subfolder/wp-admin/some-admin-page.php');
-        $this->assertTrue($sut->_lastRequestWasAdmin());
+        $this->assertEquals('/?some=var', $page);
+    }
 
-        $sut->amOnPage('/bar-front-end-path');
-        $this->assertFalse($sut->_lastRequestWasAdmin());
+    /**
+     * @test
+     * it should point to index file when requesting pretty permalinks
+     */
+    public function it_should_point_to_index_file_when_requesting_pretty_permalinks()
+    {
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnPage('/some/pretty/permalink');
+
+        $this->assertEquals('/some/pretty/permalink', $page);
+    }
+
+    /**
+     * @test
+     * it should point to admin index when requesting admin root
+     */
+    public function it_should_point_to_admin_index_when_requesting_admin_root()
+    {
+        $this->config['adminPath'] = '/wp-admin';
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnAdminPage('/');
+
+        $this->assertEquals('/wp-admin/index.php', $page);
+    }
+
+    /**
+     * @test
+     * it should point to specific admin page when requesting specific admin page
+     */
+    public function it_should_point_to_specific_admin_page_when_requesting_specific_admin_page()
+    {
+        $this->config['adminPath'] = '/wp-admin';
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnAdminPage('/some-page.php');
+
+        $this->assertEquals('/wp-admin/some-page.php', $page);
+    }
+
+    /**
+     * @test
+     * it should point to admin pretty page when specifying admin pretty page
+     */
+    public function it_should_point_to_admin_pretty_page_when_specifying_admin_pretty_page()
+    {
+        $this->config['adminPath'] = '/wp-admin';
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnAdminPage('/some/pretty/permalink');
+
+        $this->assertEquals('/wp-admin/some/pretty/permalink', $page);
+    }
+
+    /**
+     * @test
+     * it should point to ajax file when requesting ajax page
+     */
+    public function it_should_point_to_ajax_file_when_requesting_ajax_page()
+    {
+        $this->config['adminPath'] = '/wp-admin';
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnAdminAjaxPage();
+
+        $this->assertEquals('/wp-admin/admin-ajax.php', $page);
+    }
+
+    /**
+     * @test
+     * it should point to cron file when requesting cron page
+     */
+    public function it_should_point_to_cron_file_when_requesting_cron_page()
+    {
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnCronPage();
+
+        $this->assertEquals('/wp-cron.php', $page);
+    }
+
+    /**
+     * @test
+     * it should throw if specified wpRootFolder does not exist
+     */
+    public function it_should_throw_if_specified_wp_root_folder_does_not_exist()
+    {
+        $this->config['wpRootFolder'] = '/some/folder';
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->make_instance();
+    }
+
+    /**
+     * @test
+     * it should throw if specified wpRootFolder does not contain wp-settings.php file
+     */
+    public function it_should_throw_if_specified_wp_root_folder_does_not_contain_wp_settings_php_file()
+    {
+        $root = vfsStream::setup();
+
+        $this->config['wpRootFolder'] = $root->url();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->make_instance();
     }
 
     protected function _before()
     {
         $root = vfsStream::setup();
-        $wpLoadFile = vfsStream::newFile('wp-load.php');
-        $wpLoadFile->setContent('wp-load.php content');
+        $wpLoadFile = vfsStream::newFile('wp-settings.php');
+        $wpLoadFile->setContent('wp-settings.php content');
         $root->addChild($wpLoadFile);
 
         $this->root = $root;
@@ -296,9 +202,6 @@ class WordPressTest extends \Codeception\Test\Unit
             'adminUsername' => 'admin',
             'adminPassword' => 'admin'
         ];
-        $this->loader = $this->prophesize(WPLoader::class);
-        $this->testCase = $this->prophesize(PublicTestCase::class);
-        $this->wpFacade = $this->prophesize(WPFacade::class);
     }
 
     protected function _after()

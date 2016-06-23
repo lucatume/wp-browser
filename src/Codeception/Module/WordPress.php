@@ -41,42 +41,30 @@ class WordPress extends Framework implements DependsOnModule
      * @var \tad\WPBrowser\Connector\WordPress
      */
     public $client;
-    /**
-     * @var string The absolute path to the index file that should be loaded to handle requests.
-     */
-    protected $index;
+
     /**
      * @var array
      */
     protected $requiredFields = ['adminUsername', 'adminPassword'];
+
     /**
      * @var array
      */
     protected $config = ['adminPath' => '/wp-admin'];
+
     /**
      * @var string
      */
     protected $adminPath;
     /**
-     * @var string
-     */
-    protected $adminIndex;
-    /**
      * @var bool
      */
+
     protected $isMockRequest = false;
     /**
      * @var bool
      */
     protected $lastRequestWasAdmin = false;
-    /**
-     * @var string
-     */
-    protected $ajaxIndex;
-    /**
-     * @var string
-     */
-    protected $cronIndex;
 
     /**
      * @var string
@@ -114,152 +102,26 @@ EOF;
     public function __construct(ModuleContainer $moduleContainer, $config = [])
     {
         parent::__construct($moduleContainer, $config);
-
+        $this->ensureWpRoot();
         $this->adminPath = $this->config['adminPath'];
-
-        $this->setIndexFromConfig();
-        $this->setAdminIndexFromConfig();
-        $this->setAjaxIndexFromConfig();
-        $this->setCronIndexFromConfig();
     }
 
-    private function setIndexFromConfig()
+    private function ensureWpRoot()
     {
-        if (empty($this->config['index'])) {
-            return;
+        $wpRootFolder = $this->config['wpRootFolder'];
+        if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+            throw new ModuleConfigException(__CLASS__, "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder.");
         }
-
-        if (!file_exists($this->config['index'])) {
-            throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->config['index'] . '] does not exist.');
-        }
-        $this->index = $this->config['index'];
-    }
-
-    private function setAdminIndexFromConfig()
-    {
-        if (empty($this->config['adminIndex'])) {
-            return;
-        }
-
-        if (!file_exists($this->config['adminIndex'])) {
-            throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->config['adminIndex'] . '] does not exist.');
-        }
-        $this->adminIndex = $this->config['adminIndex'];
-    }
-
-    private function setAjaxIndexFromConfig()
-    {
-        if (empty($this->config['ajaxIndex'])) {
-            return;
-        }
-
-        if (!file_exists($this->config['ajaxIndex'])) {
-            throw new ModuleConfigException(__CLASS__, 'Ajax index file [' . $this->config['ajaxIndex'] . '] does not exist.');
-        }
-        $this->ajaxIndex = $this->config['ajaxIndex'];
-    }
-
-    private function setCronIndexFromConfig()
-    {
-        if (empty($this->config['cronIndex'])) {
-            return;
-        }
-
-        if (!file_exists($this->config['cronIndex'])) {
-            throw new ModuleConfigException(__CLASS__, 'Cron index file [' . $this->config['cronIndex'] . '] does not exist.');
-        }
-        $this->cronIndex = $this->config['cronIndex'];
     }
 
     public function _initialize()
     {
-        $this->setIndexFile();
-        $this->setAdminIndexFile();
-        $this->setAjaxIndexFile();
-        $this->setCronIndexFile();
-    }
-
-    private function setIndexFile()
-    {
-        if (empty($this->index)) {
-            $this->index = rtrim($this->config['wpRootFolder'], '/') . '/index.php';
-            if (!file_exists($this->index)) {
-                throw new ModuleConfigException(__CLASS__, 'Index file [' . $this->index . '] does not exist.');
-            }
-        }
-
-    }
-
-    private function setAdminIndexFile()
-    {
-        if (empty($this->adminIndex)) {
-            $this->adminIndex = rtrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/index.php';
-            if (!file_exists($this->adminIndex)) {
-                throw new ModuleConfigException(__CLASS__, 'Admin index file [' . $this->adminIndex . '] does not exist.');
-            }
-        }
-    }
-
-    private function setAjaxIndexFile()
-    {
-        if (empty($this->ajaxIndex)) {
-            $this->ajaxIndex = rtrim($this->config['wpRootFolder'], '/') . $this->adminPath . '/admin-ajax.php';
-            if (!file_exists($this->ajaxIndex)) {
-                throw new ModuleConfigException(__CLASS__, 'Ajax index file [' . $this->ajaxIndex . '] does not exist.');
-            }
-        }
-    }
-
-    private function setCronIndexFile()
-    {
-        if (empty($this->cronIndex)) {
-            $this->cronIndex = rtrim($this->config['wpRootFolder'], '/') . '/wp-cron.php';
-            if (!file_exists($this->cronIndex)) {
-                throw new ModuleConfigException(__CLASS__, 'Cron index file [' . $this->cronIndex . '] does not exist.');
-            }
-        }
     }
 
     public function _before(TestInterface $test)
     {
         $this->client = $this->client ?: new WordPressConnector();
         $this->client->followRedirects(true);
-        $this->client->setIndex($this->index);
-    }
-
-    /**
-     * @param string $page The relative path to a page.
-     *
-     * @return null|string
-     */
-    public function amOnPage($page)
-    {
-        if ($this->isAdminPageRequest($page)) {
-            $this->client->setIndex($this->adminIndex);
-            $this->lastRequestWasAdmin = true;
-        } else {
-            $this->client->setIndex($this->index);
-            $this->lastRequestWasAdmin = false;
-        }
-
-        if ($this->isMockRequest) {
-            return $page;
-        }
-
-        $parts = parse_url($page);
-        $parameters = [];
-        if (!empty($parts['query'])) {
-            parse_str($parts['query'], $parameters);
-        }
-
-        $this->_loadPage('GET', $page, $parameters);
-
-        return null;
-    }
-
-    private function isAdminPageRequest($page)
-    {
-        return 0 === strpos($page, $this->adminPath);
     }
 
     public function _cleanup()
@@ -290,16 +152,6 @@ EOF;
     {
     }
 
-    public function getIndex()
-    {
-        return $this->index;
-    }
-
-    public function getAdminIndex()
-    {
-        return $this->adminIndex;
-    }
-
     public function _setClient($client)
     {
         $this->client = $client;
@@ -320,16 +172,6 @@ EOF;
         return $this->lastRequestWasAdmin;
     }
 
-    public function getAjaxIndex()
-    {
-        return $this->ajaxIndex;
-    }
-
-    public function getCronIndex()
-    {
-        return $this->cronIndex;
-    }
-
     /**
      * Specifies class or module which is required for current one.
      *
@@ -346,6 +188,55 @@ EOF;
     public function _inject(WPDb $wpdbModule)
     {
         $this->wpdbModule = $wpdbModule;
+    }
+
+    public function amOnAdminAjaxPage()
+    {
+        return $this->amOnAdminPage('admin-ajax.php');
+    }
+
+    public function amOnAdminPage($page)
+    {
+        $page = $page === '/' || $page === '' ? 'index.php' : $page;
+        return $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
+    }
+
+    /**
+     * @param string $page The relative path to a page.
+     *
+     * @return null|string
+     */
+    public function amOnPage($page)
+    {
+        if ($this->isAdminPageRequest($page)) {
+            $this->lastRequestWasAdmin = true;
+        } else {
+            $this->lastRequestWasAdmin = false;
+        }
+
+        if ($this->isMockRequest) {
+            return $page;
+        }
+
+        $parts = parse_url($page);
+        $parameters = [];
+        if (!empty($parts['query'])) {
+            parse_str($parts['query'], $parameters);
+        }
+
+        $this->_loadPage('GET', $page, $parameters);
+
+        return null;
+    }
+
+    private function isAdminPageRequest($page)
+    {
+        return 0 === strpos($page, $this->adminPath);
+    }
+
+    public function amOnCronPage()
+    {
+        return $this->amOnPage('/wp-cron.php');
     }
 
 }
