@@ -14,7 +14,7 @@ foreach ($env['headers'] as $header) {
     $header($header);
 }
 
-function tad_handle_shutdown()
+function wpbrowser_handle_shutdown()
 {
     $response = [];
 
@@ -48,7 +48,7 @@ function tad_handle_shutdown()
     echo(base64_encode(serialize($response)));
 }
 
-register_shutdown_function('tad_handle_shutdown');
+register_shutdown_function('wpbrowser_handle_shutdown');
 
 ob_start();
 include $indexFile;
