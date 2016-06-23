@@ -97,7 +97,7 @@
 		 * @return void
 		 */
 		public function amOnPluginsPage() {
-			$this->amOnPage( $this->pluginsUrl );
+			$this->amOnPage( $this->pluginsPath );
 		}
 
 		/**
@@ -108,7 +108,7 @@
 		 * @return void
 		 */
 		public function amOnPagesPage() {
-			$this->amOnPage( $this->adminUrl . '/edit.php?post_type=page' );
+			$this->amOnPage( $this->adminPath . '/edit.php?post_type=page' );
 		}
 
 		/**
@@ -227,6 +227,6 @@
 
 		public function amOnAdminPage($path)
 		{
-			$this->amOnPage($this->adminUrl . '/' . ltrim($path, '/'));
+			$this->amOnPage($this->adminPath . '/' . ltrim($path, '/'));
 		}
 	}

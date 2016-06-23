@@ -15,7 +15,7 @@ modules:
               url: 'http://codeception-acceptance.dev'
               adminUsername: 'admin'
               adminPassword: 'admin'
-              adminUrl: '/wp-admin'
+              adminPath: '/wp-admin'
         WPDb:
               dsn: 'mysql:host=127.0.0.1;dbname=codeception-acceptance'
               user: 'root'
