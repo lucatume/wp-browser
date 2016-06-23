@@ -34,4 +34,16 @@ class FrontendAccessCest
         $I->amOnPage('/');
         $I->dontSee('A post');
     }
+
+    /**
+     * @test
+     * it should be able to visit the home page multiple times
+     */
+    public function it_should_be_able_to_visit_the_home_page_multiple_times(WpmoduleTester $I)
+    {
+        $I->amOnPage('/');
+        $I->amOnPage('/');
+        $I->amOnPage('/');
+        $I->amOnPage('/');
+    }
 }
