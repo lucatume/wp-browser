@@ -84,8 +84,7 @@ class WPDb extends ExtendedDb
         'populate' => true,
         'cleanup' => true,
         'reconnect' => false,
-        'dump' => null,
-        'wpRootFolder' => null
+        'dump' => null
     );
     /**
      * The table prefix to use.
