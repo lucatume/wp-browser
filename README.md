@@ -23,13 +23,14 @@ After that  follow the configuration instructions below.
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
 Not every module will make sense or work in any suite or type of test case but here's an high level view:
 
-* WPBrowser - a PHP based, JavaScript-less and headless browser for functional testing
-* WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for acceptance testing
-* WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in functional testing
-* WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in integration tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
+* WPBrowser - a PHP based, JavaScript-less and headless browser for **acceptance testing not requiring JavaScript support**
+* WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
+* WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
+* WPLoader - will load and configure a **blank** WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 * WPBootstrapper - will bootstrap an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
-* WPQueries - allows for assertments to be made on WordPress database access in integration tests.
-* WPRequests - makes request to an existing WordPress installation **in a separate process** and offers an API to access WordPress services in functional tests.
+* WPQueries - allows for assertments to be made on WordPress database access in **integration** and **functional** tests.
+* WPRequests - makes request to an existing WordPress installation **in a separate process** and offers an API to access WordPress services in **acceptance** tests.
+* WordPress - to be used in **functional** tests it will load WordPress code in the same variable scope as the tests but will make GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
@@ -195,6 +196,24 @@ modules:
             wpRootFolder: /var/www/wp
 ```
 
+ * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
+
+### WordPress module configuration
+The module is meant to be used in **functional** tests and is best used coupled with the `WPDb` module to offer clean and isolated database fixtures to each test and database factory methods.  
+
+```yaml
+modules:
+    enabled:
+        WordPress:
+            wpRootFolder: /var/www/wp
+            adminUsername: admin
+            adminPassword: password
+```
+
+* `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value (required)
+* `adminUsername` - the site administrator username (required)
+* `adminPassword` - the site administrator login name (required)
+
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
 
@@ -205,15 +224,14 @@ The CLI application adds the `bootstrap` command argument to allow for a quick W
   wpcept bootstrap
 ```
 
-The command will generate the "Unit", "Wpunit", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
+The command will generate the "Unit", "Integration", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
 
 * Unit with `Asserts` and helper modules
-* Wpunit with `WPLoader` and helper modules
-* Functional with `Filesystem`, `WPDb`, `WPLoader` and helper modules
+* Integration with `WPLoader` and helper modules
+* Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
 
 Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
-The "Wpunit" suite is meant to be a middle ground between the simple unit tests of classes that are able to mock any dependency and do not rely on any WordPress defined class, method or function and those that do.
 
 #### bootstrap:pyramid
 The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
@@ -226,12 +244,11 @@ The command
 will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care of setting up default modules and their settings for each like:
 
 * Unit with `Asserts` and `UnitHelper` modules
-* Wpunit with `WPLoader` and helper modules
-* Functional with `Filesystem`, `WPDb`, `WPLoader` and `FunctionalHelper` modules
-* Acceptance with `WPBrowser`, `WPDb` and `AcceptanceHelper` modules
+* Integration with `WPLoader` and helper modules
+* Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
+* Acceptance with `WPBrowser`, `WPDb` and helper modules
 
 Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
-The "Wpunit" suite is meant to be a middle ground between the simple unit tests of classes that are able to mock any dependency and do not rely on any WordPress defined class, method or function and those that do.
 
 #### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
