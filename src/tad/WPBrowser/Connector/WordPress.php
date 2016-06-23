@@ -48,6 +48,9 @@ class WordPress extends Universal
 
         $requestScript = dirname(dirname(__DIR__)) . '/scripts/request.php';
 
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
         $command = PHP_BINARY .
             ' ' . escapeshellarg($requestScript) .
             ' ' . escapeshellarg($this->index) .
