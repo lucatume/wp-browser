@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - the `WordPress` module to be used for real functional tests
 
 ### Changed
-- WordPress installation for `WPLoader` module happens now in an isolated process
+- WordPress installation for `WPLoader` module happens now in an isolated process the same way the Core suite does (thanks @jbrinley)
 - the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`
 
 ##[1.14.1] 2016-06-09
