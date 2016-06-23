@@ -4,8 +4,6 @@ namespace tad\WPBrowser\Module\Support;
 
 interface WPFacadeInterface
 {
-    public function initialize();
-
     public function home_url($path = '', $scheme = null);
 
     public function admin_url($path = '', $scheme = 'admin');

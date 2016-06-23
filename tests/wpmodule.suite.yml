@@ -2,17 +2,15 @@ class_name: WpmoduleTester
 modules:
     enabled:
         - \Helper\Wpmodule
-        - WordPress
-    config:
-        WordPress:
+        - WordPress:
             wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
-            dbName: "codeception-tests"
-            dbHost: "127.0.0.1"
-            dbUser: "root"
-            dbPassword: "root"
-            wpDebug: true
-            tablePrefix: "wp_"
-            domain: "codeception-tests.dev"
-            plugins: []
-            activatePlugins: []
-            booststrapActions: []
+            adminUsername: 'admin'
+            adminPassword: 'admin'
+        - WPDb:
+            dsn: 'mysql:host=127.0.0.1;dbname=codeception-acceptance'
+            user: 'root'
+            password: 'root'
+            dump: 'tests/_data/dump.sql'
+            reconnect: false
+            url: 'http://codeception-acceptance.dev'
+            tablePrefix: 'wp_'

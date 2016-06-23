@@ -3,15 +3,10 @@
 namespace tad\WPBrowser\Module\Support;
 
 
-use Codeception\Module\WPLoader;
 use tad\WPBrowser\Adapters\WP;
 
 class WPFacade implements WPFacadeInterface
 {
-    /**
-     * @var WPLoader
-     */
-    protected $loader;
 
     /**
      * @var WP
@@ -23,16 +18,10 @@ class WPFacade implements WPFacadeInterface
      */
     protected $config;
 
-    public function __construct(WPLoader $loader, array $config = [], WP $wpAdapter = null)
+    public function __construct(array $config = [], WP $wpAdapter = null)
     {
-        $this->loader = $loader;
         $this->config = $config;
         $this->wpAdapter = $wpAdapter ? $wpAdapter : new WP();
-    }
-
-    public function initialize()
-    {
-        $this->loader->_initialize();
     }
 
     public function home_url($path = '', $scheme = null)
