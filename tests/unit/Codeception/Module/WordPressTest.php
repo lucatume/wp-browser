@@ -78,66 +78,6 @@ class WordPressTest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should set WPLoader not to run isolated installation routine
-     */
-    public function it_should_set_wp_loader_not_to_run_isolated_installation_routine()
-    {
-        $sut = $this->make_instance();
-
-        $this->assertFalse($sut->_getConfig('isolatedInstall'));
-    }
-
-    /**
-     * @test
-     * it should set WPLoader not to run isolated install event if config specifies it
-     */
-    public function it_should_set_wp_loader_not_to_run_isolated_install_event_if_config_specifies_it()
-    {
-        $this->config['isolatedInstall'] = true;
-
-        $sut = $this->make_instance();
-
-        $this->assertFalse($sut->_getConfig('isolatedInstall'));
-    }
-
-    /**
-     * @test
-     * it should set up the testacase on _before
-     */
-    public function it_should_set_up_the_testacase_on_before()
-    {
-        $this->testCase->setUp()->shouldBeCalledTimes(1);
-        $sut = $this->make_instance();
-
-        $test = $this->prophesize(TestInterface::class)->reveal();
-        $step = $this->prophesize(Step::class)->reveal();
-
-        $sut->_before($test);
-        $sut->_beforeStep($step);
-        $sut->_before($test);
-        $sut->_beforeStep($step);
-    }
-
-    /**
-     * @test
-     * it should tear down test case on _after
-     */
-    public function it_should_tear_down_test_case_on_after()
-    {
-        $this->testCase->tearDown()->shouldBeCalledTimes(1);
-        $sut = $this->make_instance();
-
-        $test = $this->prophesize(TestInterface::class)->reveal();
-        $step = $this->prophesize(Step::class)->reveal();
-
-        $sut->_after($test);
-        $sut->_afterStep($step);
-        $sut->_after($test);
-        $sut->_afterStep($step);
-    }
-
-    /**
-     * @test
      * it should allow setting the index in the config
      */
     public function it_should_allow_setting_the_index_in_the_config()
@@ -353,10 +293,8 @@ class WordPressTest extends \Codeception\Test\Unit
         $this->moduleContainer = $this->prophesize(ModuleContainer::class);
         $this->config = [
             'wpRootFolder' => $root->url(),
-            'dbName' => 'dbName',
-            'dbHost' => 'dbHost',
-            'dbUser' => 'dbUser',
-            'dbPassword' => 'dbPassword'
+            'adminUsername' => 'admin',
+            'adminPassword' => 'admin'
         ];
         $this->loader = $this->prophesize(WPLoader::class);
         $this->testCase = $this->prophesize(PublicTestCase::class);
