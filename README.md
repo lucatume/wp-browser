@@ -199,12 +199,22 @@ modules:
  * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
 
 ### WordPress module configuration
-The module is meant to be used in **functional** tests and is best used coupled with the `WPDb` module to offer clean and isolated database fixtures to each test and database factory methods.  
+The module is meant to be used in **functional** tests and requires the `WPDb` module to work.  
+See `WPDb` module configuration section for more information abou the required module.  
 
 ```yaml
 modules:
     enabled:
+        - WPDb:
+            dsn: 'mysql:host=localhost;dbname=wp'
+            user: 'root'
+            password: 'root'
+            dump: 'tests/_data/dump.sql'
+            reconnect: false
+            url: 'http://wp.dev'
+            tablePrefix: 'wp_'
         WordPress:
+            depends: WPDb
             wpRootFolder: /var/www/wp
             adminUsername: admin
             adminPassword: password
