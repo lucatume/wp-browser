@@ -33,9 +33,6 @@ use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
-use tad\WPBrowser\Module\Support\Submodules;
-use tad\WPBrowser\Module\Support\WPFacade;
-use tad\WPBrowser\Module\Support\WPFacadeInterface;
 
 class WordPress extends Framework
 {
@@ -50,23 +47,11 @@ class WordPress extends Framework
     /**
      * @var array
      */
-    protected $requiredFields = array('wpRootFolder', 'adminUsername', 'adminPassword');
+    protected $requiredFields = ['adminUsername', 'adminPassword'];
     /**
      * @var array
      */
-    protected $config = array(
-        'tablePrefix' => 'wp_',
-        'reconnect' => false,
-        'dump' => null
-    );
-    /**
-     * @var WPLoader
-     */
-    protected $bootstrapper;
-    /**
-     * @var WPFacadeInterface
-     */
-    protected $wp;
+    protected $config = [];
     /**
      * @var string
      */
@@ -93,33 +78,14 @@ class WordPress extends Framework
     protected $cronIndex;
 
     /**
-     * @var Submodules
-     */
-    protected $submodules;
-
-    /**
      * WordPress constructor.
      * @param ModuleContainer $moduleContainer
      * @param array $config
-     * @param WPDb|null $wpdb
-     * @param WPBootstrapper|null $bootstrapper
-     * @param WPFacadeInterface|null $wp
      */
     public function __construct(ModuleContainer $moduleContainer,
-                                $config = [],
-                                Submodules $submodules = null,
-                                WPFacadeInterface $wp = null
-    )
+                                $config = [])
     {
-        $config = array_merge($this->config, (array)$config);
-
-        $config['populate'] = true;
-        $config['cleanup'] = true;
-
         parent::__construct($moduleContainer, $config);
-
-        $this->submodules = $submodules ? $submodules : new Submodules([WPBootstrapper::class], $this->moduleContainer, $this->config);
-        $this->wp = $wp ? $wp : new WPFacade();
 
         $this->setIndexFromConfig();
         $this->setAdminIndexFromConfig();
@@ -177,28 +143,6 @@ class WordPress extends Framework
 
     public function _initialize()
     {
-//        $wpdbConfig = [
-//            'dsn' => $this->config['dsn'],
-//            'user' => $this->config['user'],
-//            'password' => $this->config['password'],
-//            'populate' => true,
-//            'cleanup' => true,
-//            'tablePrefix' => $this->config['tablePrefix'],
-//            'reconnect' => $this->config['reconnect'],
-//            'dump' => $this->config['dump'],
-//            'url' => $this->config['url']
-//        ];
-        $wpBootstrapperConfig = [
-            'wpRootFolder' => $this->config['wpRootFolder']
-        ];
-
-//        $this->submodules->addModuleConfig('WPDb', $wpdbConfig);
-//        $this->submodules->initializeModule('WPDb');
-        $this->submodules->addModuleConfig('WPBootstrapper', $wpBootstrapperConfig);
-        $this->submodules->initializeModule('WPBootstrapper', ['bootstrapWp']);
-
-        $this->adminPath = $this->wp->getAdminPath();
-
         $this->setIndexFile();
         $this->setAdminIndexFile();
         $this->setAjaxIndexFile();
@@ -268,14 +212,14 @@ class WordPress extends Framework
             $this->lastRequestWasAdmin = false;
         }
 
+        if ($this->isMockRequest) {
+            return $page;
+        }
+
         $parts = parse_url($page);
         $parameters = [];
         if (!empty($parts['query'])) {
             parse_str($parts['query'], $parameters);
-        }
-
-        if ($this->isMockRequest) {
-            return $page;
         }
 
         $this->_loadPage('GET', $page, $parameters);
@@ -314,28 +258,6 @@ class WordPress extends Framework
 
     public function _after(TestInterface $test)
     {
-    }
-
-    /**
-     * @return \WP_UnitTest_Factory
-     */
-    public function factory()
-    {
-    }
-
-    public function setPermalinkStructure($permalinkStructure)
-    {
-        $this->wp->update_option('permalink_structure', $permalinkStructure);
-        $this->flushRewriteRules();
-    }
-
-    public function flushRewriteRules()
-    {
-        $permalinkStructure = get_option('permalink_structure');
-        global /** @var \WP_Rewrite $wp_rewrite */
-        $wp_rewrite;
-        $wp_rewrite->permalink_structure = $permalinkStructure;
-        $this->wp->flush_rewrite_rules(false);
     }
 
     public function getIndex()
