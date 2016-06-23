@@ -2,10 +2,6 @@ class_name: WpmoduleTester
 modules:
     enabled:
         - \Helper\Wpmodule
-        - WordPress:
-            wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
-            adminUsername: 'admin'
-            adminPassword: 'admin'
         - WPDb:
             dsn: 'mysql:host=127.0.0.1;dbname=codeception-acceptance'
             user: 'root'
@@ -14,3 +10,8 @@ modules:
             reconnect: false
             url: 'http://codeception-acceptance.dev'
             tablePrefix: 'wp_'
+        - WordPress:
+            depends: WPDb
+            wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
+            adminUsername: 'admin'
+            adminPassword: 'admin'

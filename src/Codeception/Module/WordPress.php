@@ -28,13 +28,14 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Framework;
+use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 
-class WordPress extends Framework
+class WordPress extends Framework implements DependsOnModule
 {
     /**
      * @var \tad\WPBrowser\Connector\WordPress
@@ -76,6 +77,34 @@ class WordPress extends Framework
      * @var string
      */
     protected $cronIndex;
+
+    /**
+     * @var string
+     */
+    protected $dependencyMessage = <<< EOF
+Example configuring WPDb
+--
+modules
+    enabled:
+        - WPDb:
+            dsn: 'mysql:host=localhost;dbname=wp'
+            user: 'root'
+            password: 'root'
+            dump: 'tests/_data/dump.sql'
+            reconnect: false
+            url: 'http://wp.dev'
+            tablePrefix: 'wp_'
+        - WordPress:
+            depends: WPDb
+            wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
+            adminUsername: 'admin'
+            adminPassword: 'admin'
+EOF;
+
+    /**
+     * @var WPDb
+     */
+    protected $wpdbModule;
 
     /**
      * WordPress constructor.
@@ -300,4 +329,23 @@ class WordPress extends Framework
     {
         return $this->cronIndex;
     }
+
+    /**
+     * Specifies class or module which is required for current one.
+     *
+     * THis method should return array with key as class name and value as error message
+     * [className => errorMessage]
+     *
+     * @return array
+     */
+    public function _depends()
+    {
+        return ['Codeception\Module\WPDb' => $this->dependencyMessage];
+    }
+
+    public function _inject(WPDb $wpdbModule)
+    {
+        $this->wpdbModule = $wpdbModule;
+    }
+
 }
