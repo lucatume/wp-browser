@@ -45,14 +45,14 @@ In the suite `.yml` configuration file add the module among the loaded ones
               url: 'http://example.local'
               adminUsername: 'root'
               adminPassword: 'root'
-              adminUrl: '/wp-core/wp-admin'
+              adminPath: '/wp-core/wp-admin'
 ```
 
 and configure `PHPBrowser` parameters and the additional ones available to the `WPBrowser` module:  
 
 * `adminUsername` - the site administrator username (required)
 * `adminPassword` - the site administrator login name (required)
-* `adminUrl` - the relative to the `url` parameter path to the administration area of the site  (required)
+* `adminPath` - the path, relative to the WordPress installation folder, to the admin area
 
 ### WPWebDriver configuration
 WPWebDriver extends `WebDriver` module hence any parameter required and available to that module is required and available in `WPWebDriver` as well.
@@ -70,14 +70,14 @@ In the suite `.yml` configuration file add the module among the loaded ones
               window_size: '1024x768'
               adminUsername: 'root'
               adminPassword: 'root'
-              adminUrl: '/wp-core/wp-admin'
+              adminPath: '/wp-core/wp-admin'
 ```
 
 and configure `WPWebDriver` parameters and the additional ones available to the `WPWebDriver` module:
 
 * `adminUsername` - the site administrator username (required)
 * `adminPassword` - the site administrator login name (required)
-* `adminUrl` - the relative to the `url` parameter path to the administration area of the site  (required)
+* `adminPath` - the path, relative to the WordPress installation folder, to the admin area
 
 ### WPDb configuration
 The module extends the `Db` module hence any parameter required and available by the `Db module` is required and available in the `WPDb` module as well.  
@@ -138,9 +138,9 @@ In the suite `.yml` configuration file add the module among the loaded ones
               phpBinary: "php"
               language: ""
               configFile: ""
-			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
-			  activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
-			  booststrapActions: ['my-first-action', 'my-second-action']
+      			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
+      			  activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
+      			  booststrapActions: ['my-first-action', 'my-second-action']
 ```
 
 and configure it using the required parameters:
@@ -208,11 +208,13 @@ modules:
             wpRootFolder: /var/www/wp
             adminUsername: admin
             adminPassword: password
+            adminPath: /some-path/to/wp-admin
 ```
 
 * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value (required)
 * `adminUsername` - the site administrator username (required)
 * `adminPassword` - the site administrator login name (required)
+* `adminPath` - the path, relative to the WordPress installation folder, to the admin area
 
 ### wpcept command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
