@@ -51,7 +51,7 @@ class WordPress extends Framework
     /**
      * @var array
      */
-    protected $config = [];
+    protected $config = ['adminPath' => '/wp-admin'];
     /**
      * @var string
      */
@@ -82,10 +82,11 @@ class WordPress extends Framework
      * @param ModuleContainer $moduleContainer
      * @param array $config
      */
-    public function __construct(ModuleContainer $moduleContainer,
-                                $config = [])
+    public function __construct(ModuleContainer $moduleContainer, $config = [])
     {
         parent::__construct($moduleContainer, $config);
+
+        $this->adminPath = $this->config['adminPath'];
 
         $this->setIndexFromConfig();
         $this->setAdminIndexFromConfig();
