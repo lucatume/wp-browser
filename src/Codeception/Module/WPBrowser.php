@@ -16,7 +16,7 @@ class WPBrowser extends PhpBrowser
      *
      * @var array
      */
-    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminPath');
+    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
     /**
      * The login screen absolute URL
      *
@@ -43,7 +43,7 @@ class WPBrowser extends PhpBrowser
     public function _initialize()
     {
         parent::_initialize();
-        $adminPath = isset($this->config['adminPath'])?$this->config['adminPath'] : $this->config['adminUrl'];
+        $adminPath = $this->config['adminPath'];
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
         $this->adminPath = rtrim($adminPath, '/');
         $this->pluginsPath = $this->adminPath . '/plugins.php';
@@ -56,25 +56,26 @@ class WPBrowser extends PhpBrowser
      *
      * @return Cookie|null
      */
-    public function grabCookiesWithPattern( $cookiePattern ) {
+    public function grabCookiesWithPattern($cookiePattern)
+    {
         /**
          * @var Cookie[]
          */
         $cookies = $this->client->getCookieJar()->all();
 
-        if ( ! $cookies ) {
+        if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter( $cookies, function ( Cookie $cookie ) use ( $cookiePattern ) {
+        $matchingCookies = array_filter($cookies, function (Cookie $cookie) use ($cookiePattern) {
 
-            return preg_match( $cookiePattern, $cookie->getName() );
-        } );
-        $cookieList = array_map( function ( Cookie $cookie ) {
-            return sprintf( '{"%s": "%s"}', $cookie->getName(), $cookie->getValue() );
-        }, $matchingCookies );
+            return preg_match($cookiePattern, $cookie->getName());
+        });
+        $cookieList = array_map(function (Cookie $cookie) {
+            return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
+        }, $matchingCookies);
 
-        $this->debug( 'Cookies matching pattern ' . $cookiePattern . ' : ' . implode( ', ', $cookieList ) );
+        $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));
 
-        return is_array( $matchingCookies ) ? $matchingCookies : null;
+        return is_array($matchingCookies) ? $matchingCookies : null;
     }
 }

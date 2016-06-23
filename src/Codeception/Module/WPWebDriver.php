@@ -13,7 +13,7 @@ class WPWebDriver extends WebDriver
      *
      * @var array
      */
-    protected $requiredFields = array('adminUsername', 'adminPassword', 'adminPath');
+    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * The login screen absolute URL
@@ -43,7 +43,8 @@ class WPWebDriver extends WebDriver
     public function _initialize()
     {
         parent::_initialize();
-        $adminPath = isset($this->config['adminPath']) ? $this->config['adminPath'] : $this->config['adminUrl'];
+
+        $adminPath = $this->config['adminPath'];
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
         $this->adminPath = rtrim($adminPath, '/');
         $this->pluginsPath = $this->adminPath . '/plugins.php';
