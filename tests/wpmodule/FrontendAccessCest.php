@@ -24,4 +24,14 @@ class FrontendAccessCest
         $I->amOnPage('/');
         $I->see('A post');
     }
+
+    /**
+     * @test
+     * it should clean the database between tests
+     */
+    public function it_should_clean_the_database_between_tests(WpmoduleTester $I)
+    {
+        $I->amOnPage('/');
+        $I->dontSee('A post');
+    }
 }
