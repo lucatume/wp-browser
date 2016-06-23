@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - WordPress installation for `WPLoader` module happens now in an isolated process
+- the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`
 
 ##[1.14.1] 2016-06-09
 ### Changed
