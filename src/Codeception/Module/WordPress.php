@@ -79,6 +79,8 @@ modules
             user: 'root'
             password: 'root'
             dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: true
             reconnect: false
             url: 'http://wp.dev'
             tablePrefix: 'wp_'
@@ -208,6 +210,7 @@ EOF;
      */
     public function amOnPage($page)
     {
+
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
         } else {
