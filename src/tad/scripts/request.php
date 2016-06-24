@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
 $indexFile = $argv[1];
 
 $env = unserialize(base64_decode($argv[2]));
