@@ -7,6 +7,8 @@ modules:
             user: 'root'
             password: 'root'
             dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: true
             reconnect: false
             url: 'http://codeception-acceptance.dev'
             tablePrefix: 'wp_'
