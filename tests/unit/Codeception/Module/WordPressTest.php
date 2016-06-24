@@ -61,7 +61,7 @@ class WordPressTest extends \Codeception\Test\Unit
         $sut->_isMockRequest(true);
         $page = $sut->amOnPage('/');
 
-        $this->assertEquals('/', $page);
+        $this->assertEquals('/index.php', $page);
     }
 
     /**

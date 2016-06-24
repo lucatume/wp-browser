@@ -211,6 +211,9 @@ EOF;
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
         } else {
+            if (empty($page) || $page === '/') {
+                $page = '/index.php';
+            }
             $this->lastRequestWasAdmin = false;
         }
 
@@ -223,6 +226,8 @@ EOF;
         if (!empty($parts['query'])) {
             parse_str($parts['query'], $parameters);
         }
+
+        $this->client->setIndex($this->config['wpRootFolder'] . $page);
 
         $this->_loadPage('GET', $page, $parameters);
 
