@@ -4,13 +4,22 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 $indexFile = $argv[1];
 
 $env = unserialize(base64_decode($argv[2]));
-
-$_COOKIE = empty($env['cookie']) ? [] : $env['cookie'];
-$_SERVER = empty($env['server']) ? [] : $env['server'];
-$_FILES = empty($env['files']) ? [] : $env['files'];
-$_REQUEST = empty($env['request']) ? [] : $env['request'];
-$_GET = empty($env['get']) ? [] : $env['get'];
-$_POST = empty($env['post']) ? [] : $env['post'];
+$superGlobals = [
+    'cookie' => $_COOKIE,
+    'server' => $_SERVER,
+    'files' => $_FILES,
+    'request' => $_REQUEST,
+    'get' => $_GET,
+    'post' => $_POST,
+//    'session' => $_SESSION
+];
+foreach ($superGlobals as $key => $superGlobal) {
+    if (!empty($env[$key])) {
+        foreach ($env[$key] as $subKey => $subValue) {
+            $superGlobal[$subKey] = $subValue;
+        }
+    }
+}
 
 foreach ($env['headers'] as $header) {
     $header($header);
@@ -20,7 +29,8 @@ function wpbrowser_handle_shutdown()
 {
     $response = [];
 
-    $contents = ob_get_clean();
+    $contents = ob_get_contents();
+    ob_end_clean();
 
     $response['content'] = $contents;
 

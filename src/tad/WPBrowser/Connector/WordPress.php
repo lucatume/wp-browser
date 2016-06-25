@@ -48,21 +48,30 @@ class WordPress extends Universal
 
         $requestScript = dirname(dirname(__DIR__)) . '/scripts/request.php';
 
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-
         $command = PHP_BINARY .
             ' ' . escapeshellarg($requestScript) .
             ' ' . escapeshellarg($this->index) .
             ' ' . escapeshellarg(base64_encode(serialize($env)));
-        exec($command, $output);
+
+        $pipesDescriptor = array(
+            1 => array("pipe", "w")
+        );
+        $requestProcess = proc_open($command, $pipesDescriptor, $pipes);
+
+        if (!is_resource($requestProcess)) {
+            throw new \RuntimeException('Could not start separate request process.');
+        }
 
         $_COOKIE = $_COOKIE ?: [];
         $_SERVER = $_SERVER ?: [];
         $_FILES = $_FILES ?: [];
         $_REQUEST = $_REQUEST ?: [];
 
-        $unserializedResponse = unserialize(base64_decode($output[0]));
+        $rawProcessOutput = stream_get_contents($pipes[1]);
+        $unserializedResponse = unserialize(base64_decode($rawProcessOutput));
+        fclose($pipes[1]);
+
+        proc_close($requestProcess);
 
         $_COOKIE = empty($unserializedResponse['cookie']) ? $_COOKIE : array_merge($_COOKIE, $unserializedResponse['cookie']);
         $_SERVER = empty($unserializedResponse['server']) ? $_SERVER : array_merge($_SERVER, $unserializedResponse['server']);
