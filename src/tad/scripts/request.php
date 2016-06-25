@@ -11,7 +11,7 @@ $superGlobals = [
     'request' => $_REQUEST,
     'get' => $_GET,
     'post' => $_POST,
-//    'session' => $_SESSION
+    // @todo: session!
 ];
 foreach ($superGlobals as $key => $superGlobal) {
     if (!empty($env[$key])) {
