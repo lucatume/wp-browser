@@ -12,13 +12,13 @@ modules:
       - Asserts
     config:
       WPDb:
-        dsn: 'mysql:host=127.0.0.1;dbname=codeception-acceptance'
+        dsn: 'mysql:host=127.0.0.1;dbname=wordpress'
         user: 'root'
         password: 'root'
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
         reconnect: false
-        url: 'http://codeception-acceptance.dev'
+        url: 'http://wordpress.dev'
         tablePrefix: 'wp_'
 

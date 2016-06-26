@@ -7,12 +7,16 @@ use Symfony\Component\BrowserKit\Response;
 
 class WordPress extends Universal
 {
+    /**
+     * @var bool
+     */
+    protected $insulated = true;
 
     /**
      * @param object $request
      * @return Response
      */
-    public function doRequest($request)
+    public function doRequestInProcess($request)
     {
         if ($this->mockedResponse) {
             $response = $this->mockedResponse;
@@ -30,6 +34,7 @@ class WordPress extends Universal
 
         $_server['REQUEST_METHOD'] = strtoupper($request->getMethod());
         $_server['REQUEST_URI'] = $uri;
+        $_server['HTTP_HOST'] = 'codeception-acceptance.dev';
 
         $env = [
             'indexFile' => $this->index,

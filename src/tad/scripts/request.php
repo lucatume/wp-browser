@@ -12,6 +12,7 @@ $superGlobals = [
     'get' => $_GET,
     'post' => $_POST,
 ];
+
 foreach ($superGlobals as $key => $superGlobal) {
     if (!empty($env[$key])) {
         foreach ($env[$key] as $subKey => $subValue) {
@@ -60,6 +61,6 @@ function wpbrowser_handle_shutdown()
 }
 
 register_shutdown_function('wpbrowser_handle_shutdown');
-
+//$_SERVER['HTTP_HOST'] = 'codeception-acceptance.dev';
 ob_start();
 include $indexFile;

@@ -5,7 +5,7 @@ modules:
         - WPLoader
     config:
         WPLoader:
-            wpRootFolder: "/Users/Luca/Sites/codeception-acceptance"
+            wpRootFolder: "/Users/Luca/Sites/wordpress"
             dbName: "codeception-tests"
             dbHost: "127.0.0.1"
             dbUser: "root"
