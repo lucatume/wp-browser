@@ -1,28 +1,35 @@
 <?php
+
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $indexFile = $argv[1];
 
 $env = unserialize(base64_decode($argv[2]));
-$superGlobals = [
-    'cookie' => $_COOKIE,
-    'server' => $_SERVER,
-    'files' => $_FILES,
-    'request' => $_REQUEST,
-    'get' => $_GET,
-    'post' => $_POST,
-];
 
-foreach ($superGlobals as $key => $superGlobal) {
-    if (!empty($env[$key])) {
-        foreach ($env[$key] as $subKey => $subValue) {
-            $superGlobal[$subKey] = $subValue;
-        }
+foreach ($env['cookie'] as $key => $value) {
+    $_COOKIE[$key] = $value;
+}
+foreach ($env['server'] as $key => $value) {
+    $_SERVER[$key] = $value;
+}
+foreach ($env['files'] as $key => $value) {
+    $_FILES[$key] = $value;
+}
+foreach ($env['request'] as $key => $value) {
+    $_REQUEST[$key] = $value;
+}
+if (!empty($env['get'])) {
+    foreach ($env['get'] as $key => $value) {
+        $_GET[$key] = $value;
     }
 }
-
+if (!empty($env['post'])) {
+    foreach ($env['post'] as $key => $value) {
+        $_POST[$key] = $value;
+    }
+}
 foreach ($env['headers'] as $header) {
-    $header($header);
+    header($header);
 }
 
 function wpbrowser_handle_shutdown()
@@ -61,6 +68,6 @@ function wpbrowser_handle_shutdown()
 }
 
 register_shutdown_function('wpbrowser_handle_shutdown');
-//$_SERVER['HTTP_HOST'] = 'codeception-acceptance.dev';
+
 ob_start();
 include $indexFile;

@@ -199,8 +199,19 @@ EOF;
 
     public function amOnAdminPage($page)
     {
-        $page = $page === '/' || $page === '' ? 'index.php' : $page;
+        $page = $this->preparePage($page);
         return $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
+    }
+
+    /**
+     * @param $page
+     * @return string
+     */
+    private function preparePage($page)
+    {
+        $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
+
+        return $page;
     }
 
     /**
@@ -214,9 +225,7 @@ EOF;
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
         } else {
-            if (empty($page) || $page === '/') {
-                $page = '/index.php';
-            }
+            $page = $this->preparePage($page);
             $this->lastRequestWasAdmin = false;
         }
 
@@ -230,7 +239,7 @@ EOF;
             parse_str($parts['query'], $parameters);
         }
 
-        $this->client->setIndex($this->config['wpRootFolder'] . $page);
+        $this->setClientIndex($page);
 
         $this->_loadPage('GET', $page, $parameters);
 
@@ -240,6 +249,21 @@ EOF;
     private function isAdminPageRequest($page)
     {
         return 0 === strpos($page, $this->adminPath);
+    }
+
+    /**
+     * @param $page
+     */
+    private function setClientIndex($page)
+    {
+        $map = [
+            '/' => '/index.php'
+        ];
+
+        $page = isset($map[$page]) ? $map[$page] : $page;
+
+        $this->client->setIndex($this->config['wpRootFolder'] . $page);
+
     }
 
     public function amOnCronPage()

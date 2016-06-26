@@ -34,14 +34,15 @@ class WordPress extends Universal
 
         $_server['REQUEST_METHOD'] = strtoupper($request->getMethod());
         $_server['REQUEST_URI'] = $uri;
-        $_server['HTTP_HOST'] = 'codeception-acceptance.dev';
+        $_server['HTTP_HOST'] = 'wordpress.dev';
+        $_server['SERVER_PROTOCOL'] = 'HTTP/1.1';
 
         $env = [
             'indexFile' => $this->index,
             'headers' => headers_list(),
             'cookie' => $_cookie,
             'server' => $_server,
-            'file' => $_files,
+            'files' => $_files,
             'request' => $_request,
         ];
 
@@ -59,7 +60,7 @@ class WordPress extends Universal
             ' ' . escapeshellarg(base64_encode(serialize($env)));
 
         $pipesDescriptor = array(
-            1 => array("pipe", "w")
+            1 => array('pipe', 'w')
         );
         $requestProcess = proc_open($command, $pipesDescriptor, $pipes);
 
