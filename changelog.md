@@ -8,12 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - the `WPLoader` module will now run the installation process in a separate process by default (thanks @jbrinley)
 
+### Fixed
+- issue with multisite database dumps and domain replacement (thanks @LeRondPoint)
+
 ##[1.14.2] 2016-06-10
 ### Added
 - support for the `urlReplacement` configuration parameter in `WPDb` module to prevent attempts at hard-coded URL replacement in dump file
-
-### Fixed
-- issue with multisite database dumps and domain replacement (thanks @LeRondPoint)
 
 ##[1.14.1] 2016-06-09
 ### Changed
