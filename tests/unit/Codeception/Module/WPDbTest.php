@@ -147,6 +147,71 @@ SQL;
         $this->assertNotRegExp('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
+    /**
+     * @test
+     * it should not replace domain in sites and blogs table if domain is same
+     */
+    public function it_should_not_replace_domain_in_sites_and_blogs_table_if_domain_is_same()
+    {
+        $this->config['url'] = 'https://original.dev/wp';
+        $sut = $this->make_instance();
+
+        $sql = <<< SQL
+LOCK TABLES `wp_blogs` WRITE;
+/*!40000 ALTER TABLE `wp_blogs` DISABLE KEYS */;
+INSERT INTO `wp_blogs` VALUES (1,2,'original.dev/wp','/','2016-05-03 07:49:57','0000-00-00 00:00:00',1,0,0,0,0,0),(2,2,'second.original.dev/wp','/','2016-05-03 08:03:21','2016-05-03 08:03:21',1,0,0,0,0,0);
+/*!40000 ALTER TABLE `wp_blogs` ENABLE KEYS */;
+UNLOCK TABLES;
+DROP TABLE IF EXISTS `wp_site`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wp_site` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `domain` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `path` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `domain` (`domain`(140),`path`(51))
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL;
+
+        $sql = $sut->replaceSiteDomainInMultisiteSql($sut->replaceSiteDomainInSql($sql));
+
+        $this->assertRegExp('~.*original.dev/wp.*~', $sql);
+    }
+
+    /**
+     * @test
+     * it should replace domain in sites and blogs table if domain is not same
+     */
+    public function it_should_replace_domain_in_sites_and_blogs_table_if_domain_is_not_same()
+    {
+        $this->config['url'] = 'https://some-wp.dev';
+        $sut = $this->make_instance();
+
+        $sql = <<< SQL
+LOCK TABLES `wp_blogs` WRITE;
+/*!40000 ALTER TABLE `wp_blogs` DISABLE KEYS */;
+INSERT INTO `wp_blogs` VALUES (1,2,'original.dev/wp','/','2016-05-03 07:49:57','0000-00-00 00:00:00',1,0,0,0,0,0),(2,2,'second.original.dev/wp','/','2016-05-03 08:03:21','2016-05-03 08:03:21',1,0,0,0,0,0);
+/*!40000 ALTER TABLE `wp_blogs` ENABLE KEYS */;
+UNLOCK TABLES;
+DROP TABLE IF EXISTS `wp_site`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wp_site` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `domain` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `path` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `domain` (`domain`(140),`path`(51))
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL;
+
+        $sql = $sut->replaceSiteDomainInMultisiteSql($sut->replaceSiteDomainInSql($sql));
+
+        $this->assertRegExp('~.*some-wp.dev.*~', $sql);
+        $this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
+    }
+
     protected function _before()
     {
         $this->moduleContainer = $this->prophesize(ModuleContainer::class);

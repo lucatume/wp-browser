@@ -12,6 +12,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - support for the `urlReplacement` configuration parameter in `WPDb` module to prevent attempts at hard-coded URL replacement in dump file
 
+### Fixed
+- issue with multisite database dumps and domain replacement (thanks @LeRondPoint)
 
 ##[1.14.1] 2016-06-09
 ### Changed

@@ -176,8 +176,9 @@ class WPDb extends ExtendedDb
 
             if (empty($this->config['urlReplacement'])) {
                 $sql = $this->replaceSiteDomainInSql($sql);
+                $sql = $this->replaceSiteDomainInMultisiteSql($sql);
             }
-            
+
             $this->sql = explode("\n", $sql);
         }
 
@@ -229,7 +230,46 @@ class WPDb extends ExtendedDb
         }
 
         codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . ']');
+
         return str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+    }
+
+    public function replaceSiteDomainInMultisiteSql($sql)
+    {
+        $tables = [
+            'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
+            'site' => "VALUES\\s+\\(\\d+,\\s*'(.*)',/uiU"
+        ];
+
+        $thisSiteUrl = preg_replace('~https?:\\/\\/~', '', $this->config['url']);
+
+        foreach ($tables as $table => $pattern) {
+            $currentTable = $this->config['tablePrefix'] . $table;
+            $matches = [];
+            preg_match("/INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}", $sql, $matches);
+
+            if (empty($matches) || empty($matches[1])) {
+                codecept_debug('Tried to replace WordPress site domain but dump file does not contain a table INSERT instruction for table [' . $table . '].');
+                continue;
+            }
+
+            $dumpSiteUrl = $matches[1];
+            if (empty($dumpSiteUrl)) {
+                codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of [domain] option.');
+                continue;
+            }
+
+            if ($dumpSiteUrl === $thisSiteUrl) {
+                codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration [' . $dumpSiteUrl . '].');
+                continue;
+            }
+
+            codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
+
+            $sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+        }
+
+        return $sql;
     }
 
     /**
