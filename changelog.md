@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[1.14.3] 2016-06-10
 ### Changed
-- the `WPLoader` module will now run the installation process in a separate process by default
+- the `WPLoader` module will now run the installation process in a separate process by default (thanks @jbrinley)
 
 ##[1.14.2] 2016-06-10
 ### Added
