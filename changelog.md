@@ -4,8 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.14.3] 2016-06-10
+### Changed
+- the `WPLoader` module will now run the installation process in a separate process by default
+
 ##[1.14.2] 2016-06-10
 ### Added
+- support for the `urlReplacement` configuration parameter in `WPDb` module to prevent attempts at hard-coded URL replacement in dump file
 
 
 ##[1.14.1] 2016-06-09
@@ -389,7 +394,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.2...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.3...HEAD
+[1.14.3]: https://github.com/lucatume/wp-browser/compare/1.14.2...1.14.3
 [1.14.2]: https://github.com/lucatume/wp-browser/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/lucatume/wp-browser/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/lucatume/wp-browser/compare/1.13.3...1.14.0
