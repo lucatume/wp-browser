@@ -13,6 +13,26 @@ class WordPress extends Universal
     protected $insulated = true;
 
     /**
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * @var string
+     */
+    protected $domain;
+
+    /**
+     * @var array
+     */
+    protected $headers;
+
+    /**
+     * @var string
+     */
+    protected $wpRootFolder;
+
+    /**
      * @param object $request
      * @return Response
      */
@@ -34,12 +54,15 @@ class WordPress extends Universal
 
         $_server['REQUEST_METHOD'] = strtoupper($request->getMethod());
         $_server['REQUEST_URI'] = $uri;
-        $_server['HTTP_HOST'] = 'wordpress.dev';
+        $_server['HTTP_HOST'] = $this->domain;
         $_server['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_server['PHP_SELF'] = $this->index;
+
+        $this->updateIndexFromUri($uri);
 
         $env = [
             'indexFile' => $this->index,
-            'headers' => headers_list(),
+            'headers' => $this->headers,
             'cookie' => $_cookie,
             'server' => $_server,
             'files' => $_files,
@@ -79,18 +102,63 @@ class WordPress extends Universal
 
         proc_close($requestProcess);
 
-        $_COOKIE = empty($unserializedResponse['cookie']) ? $_COOKIE : array_merge($_COOKIE, $unserializedResponse['cookie']);
-        $_SERVER = empty($unserializedResponse['server']) ? $_SERVER : array_merge($_SERVER, $unserializedResponse['server']);
-        $_FILES = empty($unserializedResponse['files']) ? $_FILES : array_merge($_FILES, $unserializedResponse['files']);
-        $_REQUEST = empty($unserializedResponse['request']) ? $_REQUEST : array_merge($_REQUEST, $unserializedResponse['request']);
-        $_GET = empty($unserializedResponse['get']) ? $_GET : array_merge($_GET, $unserializedResponse['get']);
-        $_POST = empty($unserializedResponse['post']) ? $_POST : array_merge($_POST, $unserializedResponse['post']);
+        $_COOKIE = empty($unserializedResponse['cookie']) ? [] : $unserializedResponse['cookie'];
+        $_SERVER = empty($unserializedResponse['server']) ? [] : $unserializedResponse['server'];
+        $_FILES = empty($unserializedResponse['files']) ? [] : $unserializedResponse['files'];
+        $_REQUEST = empty($unserializedResponse['request']) ? [] : $unserializedResponse['request'];
+        $_GET = empty($unserializedResponse['get']) ? [] : $unserializedResponse['get'];
+        $_POST = empty($unserializedResponse['post']) ? [] : $unserializedResponse['post'];
 
         $content = $unserializedResponse['content'];
-        $headers = $unserializedResponse['headers'];
+        $headers = $this->replaceSiteUrlDeep($unserializedResponse['headers'], $this->url);
 
-        $response = new Response($content, 200, $headers);
+        $response = new Response($content, $unserializedResponse['status'], $headers);
 
         return $response;
+    }
+
+    private function updateIndexFromUri($uri)
+    {
+        preg_match("/(^\\/?.*\\.php)/uiU", $uri, $matches);
+        if (!empty($matches[1])) {
+            $this->index = $this->wpRootFolder . '/' . ltrim($matches[1], '/');
+        }
+    }
+
+    private function replaceSiteUrlDeep($array, $url)
+    {
+        if (empty($array)) {
+            return [];
+        }
+        $replaced = [];
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $replaced[$key] = $this->replaceSiteUrlDeep($value, $url);
+            } else {
+                $replaced[$key] = str_replace($url, 'http://localhost', $value);
+            }
+        }
+
+        return $replaced;
+    }
+
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    public function setDomain($domain)
+    {
+        $this->domain = $domain;
+    }
+
+    public function setHeaders(array $headers = [])
+    {
+        $this->headers = $headers;
+    }
+
+    public function setRootFolder($wpRootFolder)
+    {
+        $this->wpRootFolder = $wpRootFolder;
     }
 }

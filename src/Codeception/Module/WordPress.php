@@ -123,6 +123,9 @@ EOF;
     public function _before(TestInterface $test)
     {
         $this->client = $this->client ?: new WordPressConnector();
+        $wpdb = $this->getModule('WPDb');
+        $this->client->setUrl($wpdb->grabSiteUrl());
+        $this->client->setDomain($wpdb->getSiteDomain());
         $this->client->followRedirects(true);
     }
 
@@ -199,8 +202,8 @@ EOF;
 
     public function amOnAdminPage($page)
     {
-        $page = $this->preparePage($page);
-        return $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
+        $page = $this->preparePage($this->adminPath . '/' . ltrim($page, '/'));
+        return $this->amOnPage($page);
     }
 
     /**
@@ -209,9 +212,20 @@ EOF;
      */
     private function preparePage($page)
     {
+        $page = $this->untrailslashIt($page);
         $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
 
         return $page;
+    }
+
+    /**
+     * @param $path
+     * @return mixed
+     */
+    private function untrailslashIt($path)
+    {
+        $path = preg_replace('~\\/?$~', '', $path);
+        return $path;
     }
 
     /**
@@ -239,7 +253,10 @@ EOF;
             parse_str($parts['query'], $parameters);
         }
 
-        $this->setClientIndex($page);
+        $this->client->setRootFolder($this->untrailslashIt($this->config['wpRootFolder']));
+        $this->client->setIndex($this->getClientIndex($page));
+        $this->client->followRedirects(true);
+        $this->client->setHeaders($this->headers);
 
         $this->_loadPage('GET', $page, $parameters);
 
@@ -254,16 +271,18 @@ EOF;
     /**
      * @param $page
      */
-    private function setClientIndex($page)
+    private function getClientIndex($page)
     {
         $map = [
-            '/' => '/index.php'
+            '/' => '/index.php',
+            '/wp-admin' => '/wp-admin/index.php',
+            '/wp-admin/admin-ajax.php' => '/wp-admin/admin-ajax.php',
+            '/wp-cron.php' => '/wp-cron.php'
         ];
 
         $page = isset($map[$page]) ? $map[$page] : $page;
 
-        $this->client->setIndex($this->config['wpRootFolder'] . $page);
-
+        return $this->config['wpRootFolder'] . $page;
     }
 
     public function amOnCronPage()
