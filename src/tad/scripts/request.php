@@ -5,6 +5,8 @@ include dirname(__FILE__) . '/cli-headers-patch.php';
 
 $indexFile = $argv[1];
 
+// @todo: add a constants file possibility to disable updates and checks by default
+
 $env = unserialize(base64_decode($argv[2]));
 
 foreach ($env['cookie'] as $key => $value) {
