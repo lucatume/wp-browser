@@ -121,7 +121,13 @@ class WordPress extends Universal
     {
         preg_match("/(^\\/?.*\\.php)/uiU", $uri, $matches);
         if (!empty($matches[1])) {
-            $this->index = $this->wpRootFolder . '/' . ltrim($matches[1], '/');
+            $candidateIndex = $this->wpRootFolder . '/' . ltrim($matches[1], '/');
+            if (!file_exists($candidateIndex)) {
+                // could be a pretty link
+                return;
+            }
+
+            $this->index = $candidateIndex;
         }
     }
 
