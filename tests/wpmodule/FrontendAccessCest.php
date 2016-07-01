@@ -27,6 +27,28 @@ class FrontendAccessCest
 
     /**
      * @test
+     * it should be able to navigate to a post using ugly permalinks
+     */
+    public function it_should_be_able_to_navigate_to_a_post_using_ugly_permalinks(WpmoduleTester $I)
+    {
+        $post_id = $I->havePostInDatabase(['post_type' => 'post', 'post_title' => 'A post', 'post_status' => 'publish']);
+        $I->amOnPage('/?p=' . $post_id);
+        $I->seeElement('body.single');
+    }
+
+    /**
+     * @test
+     * it should be able to navigate to a post single using pretty permalinks
+     */
+    public function it_should_be_able_to_navigate_to_a_post_single_using_pretty_permalinks(WpmoduleTester $I)
+    {
+        $I->havePostInDatabase(['post_type' => 'post', 'post_title' => 'A post', 'post_status' => 'publish', 'post_name' => 'a-post']);
+        $I->amOnPage('/a-post');
+        $I->seeElement('body.single');
+    }
+
+    /**
+     * @test
      * it should clean the database between tests
      */
     public function it_should_clean_the_database_between_tests(WpmoduleTester $I)
