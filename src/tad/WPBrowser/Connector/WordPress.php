@@ -3,7 +3,10 @@
 namespace tad\WPBrowser\Connector;
 
 use Codeception\Lib\Connector\Universal;
+use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Response;
+use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
 class WordPress extends Universal
 {
@@ -31,6 +34,16 @@ class WordPress extends Universal
      * @var string
      */
     protected $wpRootFolder;
+    /**
+     * @var UriToIndexMapper
+     */
+    protected $uriToIndexMapper;
+
+    public function __construct(array $server = array(), History $history = null, CookieJar $cookieJar = null, UriToIndexMapper $uriToIndexMapper = null)
+    {
+        parent::__construct($server, $history, $cookieJar);
+        $this->uriToIndexMapper = $uriToIndexMapper ? $uriToIndexMapper : new UriToIndexMapper($this->wpRootFolder);
+    }
 
     /**
      * @param object $request
@@ -58,7 +71,7 @@ class WordPress extends Universal
         $_server['SERVER_PROTOCOL'] = 'HTTP/1.1';
         $_server['PHP_SELF'] = $this->index;
 
-        $this->updateIndexFromUri($uri);
+        $this->index = $this->uriToIndexMapper->getIndexForUri($uri);
 
         $env = [
             'indexFile' => $this->index,
@@ -117,20 +130,6 @@ class WordPress extends Universal
         return $response;
     }
 
-    private function updateIndexFromUri($uri)
-    {
-        preg_match("/(^\\/?.*\\.php)/uiU", $uri, $matches);
-        if (!empty($matches[1])) {
-            $candidateIndex = $this->wpRootFolder . '/' . ltrim($matches[1], '/');
-            if (!file_exists($candidateIndex)) {
-                // could be a pretty link
-                return;
-            }
-
-            $this->index = $candidateIndex;
-        }
-    }
-
     private function replaceSiteUrlDeep($array, $url)
     {
         if (empty($array)) {
@@ -166,5 +165,11 @@ class WordPress extends Universal
     public function setRootFolder($wpRootFolder)
     {
         $this->wpRootFolder = $wpRootFolder;
+        $this->uriToIndexMapper->setRoot($wpRootFolder);
+    }
+
+    public function setIndexFor($uri)
+    {
+        $this->index = $this->uriToIndexMapper->getIndexForUri($uri);
     }
 }

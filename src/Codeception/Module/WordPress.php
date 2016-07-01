@@ -254,7 +254,7 @@ EOF;
         }
 
         $this->client->setRootFolder($this->untrailslashIt($this->config['wpRootFolder']));
-        $this->client->setIndex($this->getClientIndex($page));
+        $this->client->setIndexFor($page);
         $this->client->followRedirects(true);
         $this->client->setHeaders($this->headers);
 
@@ -266,23 +266,6 @@ EOF;
     private function isAdminPageRequest($page)
     {
         return 0 === strpos($page, $this->adminPath);
-    }
-
-    /**
-     * @param $page
-     */
-    private function getClientIndex($page)
-    {
-        $map = [
-            '/' => '/index.php',
-            '/wp-admin' => '/wp-admin/index.php',
-            '/wp-admin/admin-ajax.php' => '/wp-admin/admin-ajax.php',
-            '/wp-cron.php' => '/wp-cron.php'
-        ];
-
-        $page = isset($map[$page]) ? $map[$page] : $page;
-
-        return $this->config['wpRootFolder'] . $page;
     }
 
     public function amOnCronPage()
