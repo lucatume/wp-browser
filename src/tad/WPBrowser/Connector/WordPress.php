@@ -33,7 +33,7 @@ class WordPress extends Universal
     /**
      * @var string
      */
-    protected $wpRootFolder;
+    protected $rootFolder;
     /**
      * @var UriToIndexMapper
      */
@@ -42,7 +42,7 @@ class WordPress extends Universal
     public function __construct(array $server = array(), History $history = null, CookieJar $cookieJar = null, UriToIndexMapper $uriToIndexMapper = null)
     {
         parent::__construct($server, $history, $cookieJar);
-        $this->uriToIndexMapper = $uriToIndexMapper ? $uriToIndexMapper : new UriToIndexMapper($this->wpRootFolder);
+        $this->uriToIndexMapper = $uriToIndexMapper ? $uriToIndexMapper : new UriToIndexMapper($this->rootFolder);
     }
 
     /**
@@ -57,29 +57,29 @@ class WordPress extends Universal
             return $response;
         }
 
-        $_cookie = $request->getCookies();
-        $_server = $request->getServer();
-        $_files = $this->remapFiles($request->getFiles());
+        $requestCookie = $request->getCookies();
+        $requestServer = $request->getServer();
+        $requestFiles = $this->remapFiles($request->getFiles());
 
         $uri = str_replace('http://localhost', '', $request->getUri());
 
-        $_request = $this->remapRequestParameters($request->getParameters());
+        $requestRequestArray = $this->remapRequestParameters($request->getParameters());
 
-        $_server['REQUEST_METHOD'] = strtoupper($request->getMethod());
-        $_server['REQUEST_URI'] = $uri;
-        $_server['HTTP_HOST'] = $this->domain;
-        $_server['SERVER_PROTOCOL'] = 'HTTP/1.1';
-        $_server['PHP_SELF'] = $this->index;
+        $requestServer['REQUEST_METHOD'] = strtoupper($request->getMethod());
+        $requestServer['REQUEST_URI'] = $uri;
+        $requestServer['HTTP_HOST'] = $this->domain;
+        $requestServer['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $requestServer['PHP_SELF'] = $this->index;
 
         $this->index = $this->uriToIndexMapper->getIndexForUri($uri);
 
         $env = [
             'indexFile' => $this->index,
             'headers' => $this->headers,
-            'cookie' => $_cookie,
-            'server' => $_server,
-            'files' => $_files,
-            'request' => $_request,
+            'cookie' => $requestCookie,
+            'server' => $requestServer,
+            'files' => $requestFiles,
+            'request' => $requestRequestArray,
         ];
 
         if (strtoupper($request->getMethod()) == 'GET') {
@@ -162,14 +162,40 @@ class WordPress extends Universal
         $this->headers = $headers;
     }
 
-    public function setRootFolder($wpRootFolder)
+    /**
+     * @param string $rootFolder
+     */
+    public function setRootFolder($rootFolder)
     {
-        $this->wpRootFolder = $wpRootFolder;
-        $this->uriToIndexMapper->setRoot($wpRootFolder);
+        if (!is_dir($rootFolder)) {
+            throw new \InvalidArgumentException('Root folder [' . $rootFolder . '] is not an existing folder!');
+        }
+        $this->rootFolder = $rootFolder;
+        $this->uriToIndexMapper->setRoot($rootFolder);
     }
 
     public function setIndexFor($uri)
     {
-        $this->index = $this->uriToIndexMapper->getIndexForUri($uri);
+        $this->index = $this->rootFolder . $this->uriToIndexMapper->getIndexForUri($uri);
+    }
+
+    public function getIndex()
+    {
+        return $this->index;
+    }
+
+    public function getRootFolder()
+    {
+        return $this->rootFolder;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function getDomain()
+    {
+        return $this->domain;
     }
 }
