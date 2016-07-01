@@ -901,12 +901,14 @@ extensions:
         tad\WPBrowser\Extension\Symlinker:
             mode: plugin
             destination: /my/local/wordpress/installation/wp-content/plugins
+            rootFolder: /some/plugin/folder
 ```
 
 The arguments are:
 
 * `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
 * `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the neverending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
+* `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
 
 #### Environments support
 Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  

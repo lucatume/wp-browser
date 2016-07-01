@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - the `bootstrapActions` parameter of the `WPLoader` module will now accept static method signatures
 - the `WordPress` module to be used for real functional tests
+- support for the `rootFolder` parameter in the `Symlinker` extension
 
 ### Changed
 - WordPress installation for `WPLoader` module happens now in an isolated process the same way the Core suite does (thanks @jbrinley)
