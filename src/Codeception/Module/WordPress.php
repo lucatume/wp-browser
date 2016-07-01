@@ -101,11 +101,12 @@ EOF;
      * @param ModuleContainer $moduleContainer
      * @param array $config
      */
-    public function __construct(ModuleContainer $moduleContainer, $config = [])
+    public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
     {
         parent::__construct($moduleContainer, $config);
         $this->ensureWpRoot();
         $this->adminPath = $this->config['adminPath'];
+        $this->client = $client;
     }
 
     private function ensureWpRoot()
@@ -122,7 +123,7 @@ EOF;
 
     public function _before(TestInterface $test)
     {
-        $this->client = $this->client ?: new WordPressConnector();
+        $this->client = $this->client ? $this->client : new WordPressConnector();
         $wpdb = $this->getModule('WPDb');
         $this->client->setUrl($wpdb->grabSiteUrl());
         $this->client->setDomain($wpdb->getSiteDomain());
@@ -235,17 +236,7 @@ EOF;
      */
     public function amOnPage($page)
     {
-
-        if ($this->isAdminPageRequest($page)) {
-            $this->lastRequestWasAdmin = true;
-        } else {
-            $page = $this->preparePage($page);
-            $this->lastRequestWasAdmin = false;
-        }
-
-        if ($this->isMockRequest) {
-            return $page;
-        }
+        $this->setRequestType($page);
 
         $parts = parse_url($page);
         $parameters = [];
@@ -258,9 +249,27 @@ EOF;
         $this->client->followRedirects(true);
         $this->client->setHeaders($this->headers);
 
+        if ($this->isMockRequest) {
+            return $page;
+        }
+
         $this->_loadPage('GET', $page, $parameters);
 
         return null;
+    }
+
+    /**
+     * @param $page
+     * @return string
+     */
+    private function setRequestType($page)
+    {
+        if ($this->isAdminPageRequest($page)) {
+            $this->lastRequestWasAdmin = true;
+        } else {
+            $page = $this->preparePage($page);
+            $this->lastRequestWasAdmin = false;
+        }
     }
 
     private function isAdminPageRequest($page)

@@ -9,6 +9,7 @@ use Codeception\Step;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Prophecy\Argument;
+use tad\WPBrowser\Connector\WordPress as Connector;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
@@ -33,6 +34,11 @@ class WordPressTest extends \Codeception\Test\Unit
     protected $root;
 
     /**
+     * @var Connector
+     */
+    protected $client;
+
+    /**
      * @test
      * it should be instantiatable
      */
@@ -48,7 +54,7 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     private function make_instance()
     {
-        return new WordPress($this->moduleContainer->reveal(), $this->config);
+        return new WordPress($this->moduleContainer->reveal(), $this->config, $this->client->reveal());
     }
 
     /**
@@ -57,11 +63,18 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_index_file_when_requesting_page()
     {
+        $page = '/';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
-        $page = $sut->amOnPage('/');
+        $page = $sut->amOnPage($page);
 
-        $this->assertEquals('/', $page);
+        $this->assertEquals($page, $page);
     }
 
     /**
@@ -70,11 +83,18 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_index_file_and_query_vars()
     {
+        $page = '/?some=var';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
-        $page = $sut->amOnPage('/?some=var');
+        $page = $sut->amOnPage($page);
 
-        $this->assertEquals('/?some=var', $page);
+        $this->assertEquals($page, $page);
     }
 
     /**
@@ -83,11 +103,18 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_index_file_when_requesting_pretty_permalinks()
     {
+        $page = '/some/pretty/permalink';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
-        $page = $sut->amOnPage('/some/pretty/permalink');
+        $page = $sut->amOnPage($page);
 
-        $this->assertEquals('/some/pretty/permalink', $page);
+        $this->assertEquals($page, $page);
     }
 
     /**
@@ -96,12 +123,19 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_admin_index_when_requesting_admin_root()
     {
+        $page = '/wp-admin';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
         $page = $sut->amOnAdminPage('/');
 
-        $this->assertEquals('/wp-admin/', $page);
+        $this->assertEquals('/wp-admin', $page);
     }
 
     /**
@@ -110,6 +144,13 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_specific_admin_page_when_requesting_specific_admin_page()
     {
+        $page = '/wp-admin/some-page.php';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -124,6 +165,13 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_admin_pretty_page_when_specifying_admin_pretty_page()
     {
+        $page = '/wp-admin/some/pretty/permalink';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -138,6 +186,13 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_ajax_file_when_requesting_ajax_page()
     {
+        $page = '/wp-admin/admin-ajax.php';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -152,6 +207,13 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_cron_file_when_requesting_cron_page()
     {
+        $page = '/wp-cron.php';
+
+        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
+        $this->client->setIndexFor($page)->shouldBeCalled();
+        $this->client->followRedirects(true)->shouldBeCalled();
+        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
         $page = $sut->amOnCronPage();
@@ -202,6 +264,8 @@ class WordPressTest extends \Codeception\Test\Unit
             'adminUsername' => 'admin',
             'adminPassword' => 'admin'
         ];
+
+        $this->client = $this->prophesize(Connector::class);
     }
 
     protected function _after()
