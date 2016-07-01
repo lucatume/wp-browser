@@ -17,15 +17,6 @@ class UriToIndexMapperTest extends \Codeception\Test\Unit
      */
     protected $root;
 
-    protected function _before()
-    {
-        $this->root = vfsStream::setup();
-    }
-
-    protected function _after()
-    {
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -35,6 +26,14 @@ class UriToIndexMapperTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->assertInstanceOf(UriToIndexMapper::class, $sut);
+    }
+
+    /**
+     * @return UriToIndexMapper
+     */
+    private function make_instance()
+    {
+        return new UriToIndexMapper($this->root->url());
     }
 
     /**
@@ -317,14 +316,14 @@ class UriToIndexMapperTest extends \Codeception\Test\Unit
 
         $expected = $this->root->url() . '/wp-admin/index.php';
         $this->assertEquals($expected, $indexFile);
-        $this->markTestIncomplete();
     }
 
-    /**
-     * @return UriToIndexMapper
-     */
-    private function make_instance()
+    protected function _before()
     {
-        return new UriToIndexMapper($this->root->url());
+        $this->root = vfsStream::setup();
+    }
+
+    protected function _after()
+    {
     }
 }

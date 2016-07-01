@@ -127,6 +127,7 @@ EOF;
         $wpdb = $this->getModule('WPDb');
         $this->client->setUrl($wpdb->grabSiteUrl());
         $this->client->setDomain($wpdb->getSiteDomain());
+        $this->client->setRootFolder($this->config['wpRootFolder']);
         $this->client->followRedirects(true);
     }
 
@@ -244,9 +245,6 @@ EOF;
             parse_str($parts['query'], $parameters);
         }
 
-        $this->client->setRootFolder($this->untrailslashIt($this->config['wpRootFolder']));
-        $this->client->setIndexFor($page);
-        $this->client->followRedirects(true);
         $this->client->setHeaders($this->headers);
 
         if ($this->isMockRequest) {
@@ -267,7 +265,6 @@ EOF;
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
         } else {
-            $page = $this->preparePage($page);
             $this->lastRequestWasAdmin = false;
         }
     }

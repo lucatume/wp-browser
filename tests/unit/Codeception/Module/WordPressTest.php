@@ -65,9 +65,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
@@ -85,9 +82,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/?some=var';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
@@ -105,9 +99,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/some/pretty/permalink';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $sut = $this->make_instance();
@@ -125,9 +116,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $this->config['adminPath'] = '/wp-admin';
@@ -146,9 +134,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin/some-page.php';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $this->config['adminPath'] = '/wp-admin';
@@ -167,9 +152,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin/some/pretty/permalink';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $this->config['adminPath'] = '/wp-admin';
@@ -188,9 +170,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin/admin-ajax.php';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $this->config['adminPath'] = '/wp-admin';
@@ -209,9 +188,6 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-cron.php';
 
-        $this->client->setRootFolder($this->config['wpRootFolder'])->shouldBeCalled();
-        $this->client->setIndexFor($page)->shouldBeCalled();
-        $this->client->followRedirects(true)->shouldBeCalled();
         $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
         
         $sut = $this->make_instance();
