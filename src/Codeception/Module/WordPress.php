@@ -303,10 +303,18 @@ EOF;
         $this->submitForm('#loginform', $params);
     }
 
+    public function amEditingPostWithId($id)
+    {
+        if (!is_numeric($id) && intval($id) == $id) {
+            throw new \InvalidArgumentException('ID must be an int value');
+        }
+
+        $this->amOnAdminPage('/post.php?post=' . $id . '&action=edit');
+    }
+
     protected function getAbsoluteUrlFor($uri)
     {
         $uri = str_replace($this->siteUrl, 'http://localhost', str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
         return parent::getAbsoluteUrlFor($uri);
     }
-
 }
