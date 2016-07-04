@@ -41,20 +41,6 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     protected $root;
 
-    protected function _before()
-    {
-        $this->server = [];
-        $this->history = $this->prophesize(History::class);
-        $this->cookieJar = $this->prophesize(CookieJar::class);
-        $this->uriToIndexMapper = $this->prophesize(UriToIndexMapper::class);
-
-        $this->root = vfsStream::setup();
-    }
-
-    protected function _after()
-    {
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -64,6 +50,14 @@ class WordPressTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->assertInstanceOf(WordPress::class, $sut);
+    }
+
+    /**
+     * @return WordPress
+     */
+    private function make_instance()
+    {
+        return new WordPress($this->server, $this->history->reveal(), $this->cookieJar->reveal(), $this->uriToIndexMapper->reveal());
     }
 
     /**
@@ -162,12 +156,18 @@ class WordPressTest extends \Codeception\Test\Unit
 
         $this->assertEquals($this->root->url() . '/some-index.php', $sut->getIndex());
     }
-    
-    /**
-     * @return WordPress
-     */
-    private function make_instance()
+
+    protected function _before()
     {
-        return new WordPress($this->server, $this->history->reveal(), $this->cookieJar->reveal(), $this->uriToIndexMapper->reveal());
+        $this->server = [];
+        $this->history = $this->prophesize(History::class);
+        $this->cookieJar = $this->prophesize(CookieJar::class);
+        $this->uriToIndexMapper = $this->prophesize(UriToIndexMapper::class);
+
+        $this->root = vfsStream::setup();
+    }
+
+    protected function _after()
+    {
     }
 }

@@ -97,6 +97,11 @@ EOF;
     protected $wpdbModule;
 
     /**
+     * @var string
+     */
+    protected $siteUrl;
+
+    /**
      * WordPress constructor.
      * @param ModuleContainer $moduleContainer
      * @param array $config
@@ -125,7 +130,8 @@ EOF;
     {
         $this->client = $this->client ? $this->client : new WordPressConnector();
         $wpdb = $this->getModule('WPDb');
-        $this->client->setUrl($wpdb->grabSiteUrl());
+        $this->siteUrl = $wpdb->grabSiteUrl();
+        $this->client->setUrl($this->siteUrl);
         $this->client->setDomain($wpdb->getSiteDomain());
         $this->client->setRootFolder($this->config['wpRootFolder']);
         $this->client->followRedirects(true);
@@ -277,6 +283,25 @@ EOF;
     public function amOnCronPage()
     {
         return $this->amOnPage('/wp-cron.php');
+    }
+
+    public function loginAs($user, $password)
+    {
+        $this->amOnPage('/wp-login.php');
+        $params = [
+            'log' => $user,
+            'pwd' => $password,
+            'rememberme' => 'forever',
+            'redirect_to' => '/',
+            'testcookie' => '1'
+        ];
+        $this->submitForm('#loginform', $params);
+    }
+
+    protected function getAbsoluteUrlFor($uri)
+    {
+        $uri = str_replace($this->siteUrl, 'http://localhost', str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
+        return parent::getAbsoluteUrlFor($uri);
     }
 
 }

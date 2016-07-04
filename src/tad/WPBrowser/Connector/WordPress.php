@@ -69,9 +69,11 @@ class WordPress extends Universal
         $requestServer['REQUEST_URI'] = $uri;
         $requestServer['HTTP_HOST'] = $this->domain;
         $requestServer['SERVER_PROTOCOL'] = 'HTTP/1.1';
-        $requestServer['PHP_SELF'] = $this->index;
 
         $this->index = $this->uriToIndexMapper->getIndexForUri($uri);
+
+        $phpSelf = str_replace($this->rootFolder, '', $this->index);
+        $requestServer['PHP_SELF'] = $phpSelf;
 
         $env = [
             'indexFile' => $this->index,
@@ -152,28 +154,6 @@ class WordPress extends Universal
         $this->url = $url;
     }
 
-    public function setDomain($domain)
-    {
-        $this->domain = $domain;
-    }
-
-    public function setHeaders(array $headers = [])
-    {
-        $this->headers = $headers;
-    }
-
-    /**
-     * @param string $rootFolder
-     */
-    public function setRootFolder($rootFolder)
-    {
-        if (!is_dir($rootFolder)) {
-            throw new \InvalidArgumentException('Root folder [' . $rootFolder . '] is not an existing folder!');
-        }
-        $this->rootFolder = $rootFolder;
-        $this->uriToIndexMapper->setRoot($rootFolder);
-    }
-
     public function setIndexFor($uri)
     {
         $this->index = $this->rootFolder . $this->uriToIndexMapper->getIndexForUri($uri);
@@ -189,13 +169,35 @@ class WordPress extends Universal
         return $this->rootFolder;
     }
 
+    /**
+     * @param string $rootFolder
+     */
+    public function setRootFolder($rootFolder)
+    {
+        if (!is_dir($rootFolder)) {
+            throw new \InvalidArgumentException('Root folder [' . $rootFolder . '] is not an existing folder!');
+        }
+        $this->rootFolder = $rootFolder;
+        $this->uriToIndexMapper->setRoot($rootFolder);
+    }
+
     public function getHeaders()
     {
         return $this->headers;
     }
 
+    public function setHeaders(array $headers = [])
+    {
+        $this->headers = $headers;
+    }
+
     public function getDomain()
     {
         return $this->domain;
+    }
+
+    public function setDomain($domain)
+    {
+        $this->domain = $domain;
     }
 }
