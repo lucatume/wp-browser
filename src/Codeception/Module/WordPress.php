@@ -45,7 +45,7 @@ class WordPress extends Framework implements DependsOnModule
     /**
      * @var array
      */
-    protected $requiredFields = ['adminUsername', 'adminPassword'];
+    protected $requiredFields = ['wpRootFolder', 'adminUsername', 'adminPassword'];
 
     /**
      * @var array
@@ -283,6 +283,11 @@ EOF;
     public function amOnCronPage()
     {
         return $this->amOnPage('/wp-cron.php');
+    }
+
+    public function loginAsAdmin()
+    {
+        $this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
     }
 
     public function loginAs($user, $password)
