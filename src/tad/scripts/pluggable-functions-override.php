@@ -1,9 +1,4 @@
 <?php
-global $cli_headers;
-/**
- * An associative array in the [header => status] format.
- */
-$cli_headers = [];
 
 /**
  * Copy and paste of WordPress original function where headers are but stored
@@ -52,38 +47,6 @@ function wp_redirect($location, $status = 302)
 
     return true;
 }
-
-function cli_headers_list()
-{
-    $headers = [];
-    global $cli_headers;
-    $php_headers = array_keys($cli_headers);
-    foreach ($php_headers as $value) {
-        // Get the header name
-        $parts = explode(':', $value);
-        if (count($parts) > 1) {
-            $name = trim(array_shift($parts));
-            // Build the header hash map
-            $headers[$name] = trim(implode(':', $parts));
-        }
-    }
-    $headers['Content-type'] = isset($headers['Content-type'])
-        ? $headers['Content-type']
-        : "text/html; charset=UTF-8";
-
-    return $headers;
-}
-
-function cli_headers_last_status()
-{
-    global $cli_headers;
-    if (empty($cli_headers)) {
-        return 200;
-    }
-
-    return end($cli_headers);
-}
-
 
 /**
  * Copy and paste of WordPress original function.
