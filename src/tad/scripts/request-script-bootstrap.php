@@ -34,5 +34,5 @@ foreach ($env['headers'] as $header) {
     header($header);
 }
 
-// set the TEST_COOKIE to spoof WordPress cookie support detection
-$_COOKIE['wordpress_test_cookie'] = 'WP Cookie check';
+// disable CRON tasks to avoid parallel processes running on an empty database
+define('DISABLE_WP_CRON', true);

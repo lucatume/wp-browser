@@ -33,7 +33,7 @@ class UriToIndexMapper
 
     public function getIndexForUri($uri)
     {
-        preg_match('~\\/?(.*\\.php)~', $uri, $matches);
+        preg_match('~\\/?(.*?\\.php)~', $uri, $matches);
         if (!empty($matches[1])) {
             $uri = '/' . $matches[1];
         }

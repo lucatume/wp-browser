@@ -5,6 +5,7 @@ namespace tad\WPBrowser\Connector;
 use Codeception\Lib\Connector\Universal;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
+use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
@@ -46,7 +47,7 @@ class WordPress extends Universal
     }
 
     /**
-     * @param object $request
+     * @param Request $request
      * @return Response
      */
     public function doRequestInProcess($request)
@@ -117,7 +118,6 @@ class WordPress extends Universal
 
         proc_close($requestProcess);
 
-        $_COOKIE = empty($unserializedResponse['cookie']) ? [] : $unserializedResponse['cookie'];
         $_SERVER = empty($unserializedResponse['server']) ? [] : $unserializedResponse['server'];
         $_FILES = empty($unserializedResponse['files']) ? [] : $unserializedResponse['files'];
         $_REQUEST = empty($unserializedResponse['request']) ? [] : $unserializedResponse['request'];
@@ -142,7 +142,7 @@ class WordPress extends Universal
             if (is_array($value)) {
                 $replaced[$key] = $this->replaceSiteUrlDeep($value, $url);
             } else {
-                $replaced[$key] = str_replace($url, 'http://localhost', $value);
+                $replaced[$key] = str_replace(urlencode($url), urldecode(''), str_replace($url, '', $value));
             }
         }
 
@@ -199,5 +199,10 @@ class WordPress extends Universal
     public function setDomain($domain)
     {
         $this->domain = $domain;
+    }
+
+    public function resetCookies()
+    {
+        $this->cookieJar = new CookieJar();
     }
 }

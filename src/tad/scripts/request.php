@@ -6,7 +6,6 @@ function wpbrowser_handle_shutdown()
     $response = [];
     $response['content'] = ob_get_clean();
     $response['headers'] = cli_headers_list();
-
     if (!empty($_COOKIE)) {
         $response['headers']['Set-Cookie'] = [];
         foreach ($_COOKIE as $key => $value) {
@@ -25,7 +24,6 @@ function wpbrowser_handle_shutdown()
 }
 
 register_shutdown_function('wpbrowser_handle_shutdown');
-
 ob_start();
 /** @noinspection PhpIncludeInspection */
 include $indexFile;

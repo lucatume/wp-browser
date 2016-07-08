@@ -105,6 +105,7 @@ class UriToIndexMapperTest extends \Codeception\Test\Unit
             ['wp-login.php/?some=param'],
             ['wp-login.php/?some=param&another=param'],
             ['wp-login.php/?some=param&another=param&more=param'],
+            ['/wp-login.php?redirect_to=%2Fwp-admin%2Fpost.php%3Fpost%3D1%26action%3Dedit&reauth=1']
         ];
     }
 

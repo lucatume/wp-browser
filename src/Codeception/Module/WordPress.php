@@ -128,13 +128,21 @@ EOF;
 
     public function _before(TestInterface $test)
     {
-        $this->client = $this->client ? $this->client : new WordPressConnector();
+        /** @var WPDb $wpdb */
         $wpdb = $this->getModule('WPDb');
         $this->siteUrl = $wpdb->grabSiteUrl();
+        $this->setupClient($wpdb->getSiteDomain());
+    }
+
+    private function setupClient($siteDomain)
+    {
+        $this->client = $this->client ? $this->client : new WordPressConnector();
         $this->client->setUrl($this->siteUrl);
-        $this->client->setDomain($wpdb->getSiteDomain());
+        $this->client->setDomain($siteDomain);
         $this->client->setRootFolder($this->config['wpRootFolder']);
         $this->client->followRedirects(true);
+        $this->client->resetCookies();
+        $this->setCookiesFromOptions();
     }
 
     public function _cleanup()
@@ -257,6 +265,7 @@ EOF;
             return $page;
         }
 
+        $this->setCookie('wordpress_test_cookie', 'WP Cookie check');
         $this->_loadPage('GET', $page, $parameters);
 
         return null;
