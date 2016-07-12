@@ -99,10 +99,10 @@ class WordPress extends Universal
             ' ' . escapeshellarg($this->index) .
             ' ' . escapeshellarg(base64_encode(serialize($env)));
 
-        $process = new Process($command, getcwd());
+        $process = new Process($command);
         $process->run();
         $rawProcessOutput = $process->getOutput();
-        
+
         $unserializedResponse = unserialize(base64_decode($rawProcessOutput));
 
         $_SERVER = empty($unserializedResponse['server']) ? [] : $unserializedResponse['server'];
