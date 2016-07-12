@@ -7,6 +7,7 @@ use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\Process\Process;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
 class WordPress extends Universal
@@ -98,25 +99,11 @@ class WordPress extends Universal
             ' ' . escapeshellarg($this->index) .
             ' ' . escapeshellarg(base64_encode(serialize($env)));
 
-        $pipesDescriptor = array(
-            1 => array('pipe', 'w')
-        );
-        $requestProcess = proc_open($command, $pipesDescriptor, $pipes);
-
-        if (!is_resource($requestProcess)) {
-            throw new \RuntimeException('Could not start separate request process.');
-        }
-
-        $_COOKIE = $_COOKIE ?: [];
-        $_SERVER = $_SERVER ?: [];
-        $_FILES = $_FILES ?: [];
-        $_REQUEST = $_REQUEST ?: [];
-
-        $rawProcessOutput = stream_get_contents($pipes[1]);
+        $process = new Process($command, getcwd());
+        $process->run();
+        $rawProcessOutput = $process->getOutput();
+        
         $unserializedResponse = unserialize(base64_decode($rawProcessOutput));
-        fclose($pipes[1]);
-
-        proc_close($requestProcess);
 
         $_SERVER = empty($unserializedResponse['server']) ? [] : $unserializedResponse['server'];
         $_FILES = empty($unserializedResponse['files']) ? [] : $unserializedResponse['files'];
