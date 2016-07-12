@@ -78,7 +78,6 @@ class WordPress extends Universal
         $requestServer['PHP_SELF'] = $phpSelf;
 
         $env = [
-            'indexFile' => $this->index,
             'headers' => $this->headers,
             'cookie' => $requestCookie,
             'server' => $requestServer,
