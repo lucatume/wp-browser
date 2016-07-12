@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copies of original WordPress "pluggable" functions to log WordPress set headers that
+ * would not be available in CLI execution.
+ */
 
 /**
  * Copy and paste of WordPress original function where headers are but stored
