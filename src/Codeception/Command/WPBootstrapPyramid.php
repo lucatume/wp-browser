@@ -35,7 +35,7 @@ class WPBootstrapPyramid extends WPBootstrap
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for service tests.\n";
         $str .= "# Emulate web requests and make the WordPress application process them.\n";
-        $str .= Yaml::dump($suiteConfig, 2);
+        $str .= Yaml::dump($suiteConfig, 5);
         $this->createSuite('service', $actor, $str);
     }
 
