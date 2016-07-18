@@ -28,8 +28,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
 * WPLoader - will load and configure a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 * WPBootstrapper - will bootstrap an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
-* WPQueries - allows for assertments to be made on WordPress database access in **integration** and **functional** tests.
-* WPRequests - makes request to an existing WordPress installation **in a separate process** and offers an API to access WordPress services in **acceptance** tests.
+* WPQueries - allows for assertments to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it will load WordPress code in the same variable scope as the tests but will make GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 
 ### WPBrowser configuration
@@ -281,12 +280,12 @@ The command will generate a skeleton test case like
 
 class SomeClassTest extends \Codeception\TestCase\WPTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
       parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
       parent::tearDown();
     }
@@ -314,12 +313,12 @@ The command will generate a skeleton test case like
 
 class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
       parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
       parent::tearDown();
     }
@@ -347,12 +346,12 @@ The command will generate a skeleton test case like
 
 class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
       parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
       parent::tearDown();
     }
@@ -380,12 +379,12 @@ The command will generate a skeleton test case like
 
 class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
       parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
       parent::tearDown();
     }
@@ -413,12 +412,12 @@ The command will generate a skeleton test case like
 
 class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
       parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
       parent::tearDown();
     }
