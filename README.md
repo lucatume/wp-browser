@@ -97,12 +97,14 @@ In the suite `.yml` configuration file add the module among the loaded ones
               cleanup: true
               reconnect: true
               url: 'http://example.local'
+              urlReplacement: true
               tablePrefix: 'wp_'
 ```
 
 and configure `Db` parameters and the additional ones available to the `WPDb` module:  
     
 * `url` - the site home url (required)
+* `urlReplacement` - the module will try to replace the WordPress URL hard-coded in the dump file with the one specified by the `url` parameter by default; set this to `false` to prevent this behaviour
 * `tablePrefix` - allows specifying the table prefix used in the installation, defaults to `wp_` (optional)
 
 #### Dump file domain replacement
@@ -128,6 +130,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               dbHost: "localhost"
               dbUser: "root"
               dbPassword: "root"
+              isolatedInstall: true
               wpDebug: true
               dbCharset: "utf8"
               dbCollate: ""
@@ -153,6 +156,7 @@ and configure it using the required parameters:
 
  Optional parameters are available to the module to reproduce the original testing suite possibilities as closely as possible:
 
+* `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not.
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
 * `multisite` - bool, def. `false`, if set to `true` will create a multisite instllation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.

@@ -9,8 +9,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - support for the `rootFolder` parameter in the `Symlinker` extension
 
 ### Changed
-- WordPress installation for `WPLoader` module happens now in an isolated process the same way the Core suite does (thanks @jbrinley)
 - the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`
+
+##[1.14.3] 2016-06-10
+### Changed
+- the `WPLoader` module will now run the installation process in a separate process by default (thanks @jbrinley)
+
+### Fixed
+- issue with multisite database dumps and domain replacement (thanks @LeRondPoint)
+
+##[1.14.2] 2016-06-10
+### Added
+- support for the `urlReplacement` configuration parameter in `WPDb` module to prevent attempts at hard-coded URL replacement in dump file
 
 ##[1.14.1] 2016-06-09
 ### Changed
@@ -18,7 +28,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[1.14.0] 2016-06-09
 ### Added
-- the `WPRequests` module
+
 
 ### Changed
 - renamed the `wpunit` suite to `integration` to stick with proper TDD terms (thanks @davert)
@@ -393,7 +403,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.3...HEAD
+[1.14.3]: https://github.com/lucatume/wp-browser/compare/1.14.2...1.14.3
+[1.14.2]: https://github.com/lucatume/wp-browser/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/lucatume/wp-browser/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/lucatume/wp-browser/compare/1.13.3...1.14.0
 [1.13.3]: https://github.com/lucatume/wp-browser/compare/1.13.2...1.13.3
