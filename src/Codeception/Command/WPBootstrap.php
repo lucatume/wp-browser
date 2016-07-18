@@ -248,7 +248,7 @@ class_name: $className
 modules:
     enabled:
         - \\{$this->namespace}Helper\\{$actor}
-        - WPBrowser
+        - WPBrowser:
             url: 'http://wp.local'
             adminUsername: admin
             adminPassword: password
