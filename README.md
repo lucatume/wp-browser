@@ -189,18 +189,6 @@ The configuration will require one parameter only :
 ### WPQueries configuration
 This module requires no configuration.
 
-### WPRequests configuration
-The module will require the absolute path to an existing WordPress installation; the path should point to WordPress root folder, the one containing the `wp-load.php` file.
-
-```yaml
-modules:
-    enabled:
-        WPRequests:
-            wpRootFolder: /var/www/wp
-```
-
- * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
-
 ### WordPress module configuration
 The module is meant to be used in **functional** tests and requires the `WPDb` module to work.  
 See `WPDb` module configuration section for more information abou the required module.  
@@ -850,30 +838,6 @@ class QueriesTest extends Codeception\TestCase\WPTestCase {
   }
 }
 ```
-
-### WPRequests module
-This module is meant to be used in functional tests to access those services WordPress is not exposing in independent modules.  
-The current implementation of the module offers just one methods:
-
-* `public string createNonce(string $action, array $credentials )` to generate a nonce for the specified action and user; the `$credentials` array is usually the output of the `loginAs` or `loginAsAdmin` methods defined by the `WPBrowser` or `WPWebDriver` modules.
-
-```php
-class RestPostInsertionCest
-{
-    public function test_post_insertion(FunctionalTester $I)
-    {
-        $I->sendPOST('/create-post',[
-            'nonce' => $I->createNonce('wp_rest', $I->loginAsAdmin()),
-            'title' => 'Some title',
-            'content'  => 'Some content'
-        ]);
-        
-        $I->seePostInDatabase(['post_title' => 'Some title', 'post_content' => 'Some content']);
-    }
-}
-```
-
-**Note**: the module will bootstrap the WordPress installation for each request! Calling the `createNonce` method 5 times will bootstrap WordPress 5 times with a huge impact on test timings; taking this into account try to cache re-usable results when possible.  
 
 ## Extensions
 The package contains an additional extension to facilitate testers' life.

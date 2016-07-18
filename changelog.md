@@ -12,6 +12,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`, was previously `adminUrl`
 - default modules configurations to reflect new module usage
 
+### Removed
+- the `WPRequests` module to use the `WordPress` functional module in its place
+
 ##[1.14.3] 2016-06-10
 ### Changed
 - the `WPLoader` module will now run the installation process in a separate process by default (thanks @jbrinley)
