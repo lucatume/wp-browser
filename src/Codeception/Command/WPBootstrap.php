@@ -201,7 +201,7 @@ class_name: $className
 modules:
     enabled:
         - \\{$this->namespace}Helper\\{$actor}
-        - Filesystem,
+        - Filesystem
         - WPDb:
             dsn: mysql:host=localhost;dbname=wordpress-tests
             user: root
