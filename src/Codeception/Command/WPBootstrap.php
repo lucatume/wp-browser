@@ -12,12 +12,12 @@ class WPBootstrap extends Bootstrap
 
     /**
      * Returns an array containing the names of the suites the command will scaffold.
-     * 
+     *
      * @return array
      */
     public static function getScaffoldedSuitesNames()
     {
-        return [ 'acceptance', 'functional', 'integration', 'unit' ];
+        return ['acceptance', 'functional', 'integration', 'unit'];
     }
 
     public function getDescription()
@@ -89,9 +89,9 @@ class WPBootstrap extends Bootstrap
         $basicConfig = [
             'actor' => $this->actorSuffix,
             'paths' => [
-                'tests'   => 'tests',
-                'log'     => $this->logDir,
-                'data'    => $this->dataDir,
+                'tests' => 'tests',
+                'log' => $this->logDir,
+                'data' => $this->dataDir,
                 'helpers' => $this->supportDir
             ],
             'settings' => [
@@ -103,38 +103,9 @@ class WPBootstrap extends Bootstrap
                 'config' => [
                     'WPBrowser' => [
                         'url' => 'http://wp.local',
-                        'adminUsername' => 'adminUsername',
-                        'adminPassword' => 'adminPassword',
+                        'adminUsername' => 'admin',
+                        'adminPassword' => 'password',
                         'adminPath' => '/wp-admin'
-                    ],
-                    'WPDb' => [
-                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
-                        'user' => 'root',
-                        'password' => 'root',
-                        'dump' => 'tests/_data/dump.sql',
-                        'populate' => true,
-                        'cleanup' => true,
-                        'url' => 'http://wp.local',
-                        'tablePrefix' => 'wp_'
-                    ],
-                    'WPLoader' => [
-                        'wpRootFolder' => '~/www/wordpress',
-                        'dbName' => 'wordpress-tests',
-                        'dbHost' => 'localhost',
-                        'dbUser' => 'root',
-                        'dbPassword' => 'root',
-                        'wpDebug' => true,
-                        'dbCharset' => 'utf8',
-                        'dbCollate' => '',
-                        'tablePrefix' => 'wp_',
-                        'domain' => 'wp.local',
-                        'adminEmail' => 'admin@wp.local',
-                        'title' => 'WP Tests',
-                        'phpBinary' => 'php',
-                        'language' => '',
-                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'bootstrapActions' => ['my-first-action', 'my-second-action']
                     ],
                     'WPWebDriver' => [
                         'url' => 'http://wp.local',
@@ -142,8 +113,8 @@ class WPBootstrap extends Bootstrap
                         'port' => 4444,
                         'restart' => true,
                         'wait' => 2,
-                        'adminUsername' => 'adminUsername',
-                        'adminPassword' => 'adminPassword',
+                        'adminUsername' => 'admin',
+                        'adminPassword' => 'password',
                         'adminPath' => '/wp-admin'
                     ]
                 ]
@@ -176,15 +147,15 @@ class WPBootstrap extends Bootstrap
         $output->writeln("tests/acceptance.suite.yml written    <- acceptance tests suite configuration");
     }
 
-    protected function createIntegrationSuite( $actor = 'Integration' )
+    protected function createIntegrationSuite($actor = 'Integration')
     {
-        $suiteConfig = $this->getIntegrationSuiteConfig( $actor );
+        $suiteConfig = $this->getIntegrationSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for integration tests.\n";
-        $str .= "# Load WordPress and test classes that rely on it.\n";
+        $str .= "# Suite for integration tests.\n";
+        $str .= "# Load WordPress and test classes that rely on its functions and classes.\n";
         $str .= Yaml::dump($suiteConfig, 2);
-        $this->createSuite( 'integration', $actor, $str );
+        $this->createSuite('integration', $actor, $str);
     }
 
     /**
@@ -198,8 +169,21 @@ class WPBootstrap extends Bootstrap
             'class_name' => $actor . $this->actorSuffix,
             'modules' => [
                 'enabled' => [
-                    'WPLoader',
-                    "\\{$this->namespace}Helper\\{$actor}"
+                    "\\{$this->namespace}Helper\\{$actor}",
+                    'WPLoader' => [
+                        'wpRootFolder' => '/var/www/wordpress',
+                        'dbName' => 'wordpress-tests',
+                        'dbHost' => 'localhost',
+                        'dbUser' => 'root',
+                        'dbPassword' => 'root',
+                        'tablePrefix' => 'wp_',
+                        'domain' => 'wp.local',
+                        'adminEmail' => 'admin@wp.local',
+                        'title' => 'WP Tests',
+                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'bootstrapActions' => ['my-first-action', 'my-second-action']
+                    ]
                 ]
             ]
         ];
@@ -212,8 +196,8 @@ class WPBootstrap extends Bootstrap
         $suiteConfig = $this->getFunctionalSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for WordPress functional tests.\n";
-        $str .= "# Emulate web requests and make application process them.\n";
+        $str .= "# Suite for WordPress functional tests.\n";
+        $str .= "# Emulate web requests and make the WordPress application process them.\n";
         $str .= Yaml::dump($suiteConfig, 2);
         $this->createSuite('functional', $actor, $str);
     }
@@ -229,10 +213,24 @@ class WPBootstrap extends Bootstrap
             'class_name' => $actor . $this->actorSuffix,
             'modules' => [
                 'enabled' => [
+                    "\\{$this->namespace}Helper\\{$actor}",
                     'Filesystem',
-                    'WPBrowser',
-                    'WPDb',
-                    "\\{$this->namespace}Helper\\{$actor}"
+                    'WPDb' => [
+                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
+                        'user' => 'root',
+                        'password' => 'root',
+                        'dump' => 'tests/_data/dump.sql',
+                        'populate' => true,
+                        'cleanup' => true,
+                        'url' => 'http://wp.local',
+                        'tablePrefix' => 'wp_'
+                    ],
+                    'WordPress' => [
+                        'depends' => 'WPDb',
+                        'wpRootFolder' => '/var/www/wordpress',
+                        'adminUsername' => 'admin',
+                        'adminPassword' => 'password'
+                    ]
                 ]
             ]
         ];
@@ -245,8 +243,8 @@ class WPBootstrap extends Bootstrap
         $suiteConfig = $this->getAcceptanceSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for WordPress acceptance tests.\n";
-        $str .= "# perform tests in browser the WPWebDriver module.\n";
+        $str .= "# Suite for WordPress acceptance tests.\n";
+        $str .= "# Perform tests using or simulating a browser.\n";
 
         $str .= Yaml::dump($suiteConfig, 5);
         $this->createSuite('acceptance', $actor, $str);
@@ -263,8 +261,8 @@ class WPBootstrap extends Bootstrap
             'class_name' => $actor . $this->actorSuffix,
             'modules' => [
                 'enabled' => [
-                    'WPWebDriver',
-                    "\\{$this->namespace}Helper\\{$actor}"
+                    "\\{$this->namespace}Helper\\{$actor}",
+                    'WPWebDriver'
                 ],
             ]
         );
