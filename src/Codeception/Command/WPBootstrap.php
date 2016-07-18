@@ -99,26 +99,6 @@ class WPBootstrap extends Bootstrap
                 'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
                 'memory_limit' => '1024M'
             ],
-            'modules' => [
-                'config' => [
-                    'WPBrowser' => [
-                        'url' => 'http://wp.local',
-                        'adminUsername' => 'admin',
-                        'adminPassword' => 'password',
-                        'adminPath' => '/wp-admin'
-                    ],
-                    'WPWebDriver' => [
-                        'url' => 'http://wp.local',
-                        'browser' => 'phantomjs',
-                        'port' => 4444,
-                        'restart' => true,
-                        'wait' => 2,
-                        'adminUsername' => 'admin',
-                        'adminPassword' => 'password',
-                        'adminPath' => '/wp-admin'
-                    ]
-                ]
-            ]
         ];
 
         $str = Yaml::dump($basicConfig, 4);
@@ -165,28 +145,33 @@ class WPBootstrap extends Bootstrap
      */
     protected function getIntegrationSuiteConfig($actor)
     {
-        $suiteConfig = [
-            'class_name' => $actor . $this->actorSuffix,
-            'modules' => [
-                'enabled' => [
-                    "\\{$this->namespace}Helper\\{$actor}",
-                    'WPLoader' => [
-                        'wpRootFolder' => '/var/www/wordpress',
-                        'dbName' => 'wordpress-tests',
-                        'dbHost' => 'localhost',
-                        'dbUser' => 'root',
-                        'dbPassword' => 'root',
-                        'tablePrefix' => 'wp_',
-                        'domain' => 'wp.local',
-                        'adminEmail' => 'admin@wp.local',
-                        'title' => 'WP Tests',
-                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'bootstrapActions' => ['my-first-action', 'my-second-action']
-                    ]
-                ]
-            ]
-        ];
+        $className = $actor . $this->actorSuffix;
+
+        $suiteConfig = <<< YAML
+class_name: {$className}
+modules:
+    enabled:
+        - \\{$this->namespace}Helper\\{$actor}
+        - WPLoader:
+            wpRootFolder: /var/www/wordpress
+            dbName: wordpress-tests
+            dbHost: localhost
+            dbUser: root
+            dbPassword: root
+            tablePrefix: wp_
+            domain: wp.local
+            adminEmail: admin@wp.local
+            title: WP Tests
+            plugins: 
+                - hello.php
+                - my-plugin/my-plugin.php
+            activatePlugins: 
+                - hello.php
+                - my-plugin/my-plugin.php
+            bootstrapActions:
+                - my-first-action
+                - my-second-action
+YAML;
 
         return $suiteConfig;
     }
@@ -209,31 +194,30 @@ class WPBootstrap extends Bootstrap
      */
     protected function getFunctionalSuiteConfig($actor)
     {
-        $suiteConfig = [
-            'class_name' => $actor . $this->actorSuffix,
-            'modules' => [
-                'enabled' => [
-                    "\\{$this->namespace}Helper\\{$actor}",
-                    'Filesystem',
-                    'WPDb' => [
-                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
-                        'user' => 'root',
-                        'password' => 'root',
-                        'dump' => 'tests/_data/dump.sql',
-                        'populate' => true,
-                        'cleanup' => true,
-                        'url' => 'http://wp.local',
-                        'tablePrefix' => 'wp_'
-                    ],
-                    'WordPress' => [
-                        'depends' => 'WPDb',
-                        'wpRootFolder' => '/var/www/wordpress',
-                        'adminUsername' => 'admin',
-                        'adminPassword' => 'password'
-                    ]
-                ]
-            ]
-        ];
+        $className = $actor . $this->actorSuffix;
+
+        $suiteConfig = <<< YAML
+class_name: $className
+modules:
+    enabled:
+        - \\{$this->namespace}Helper\\{$actor}
+        - Filesystem,
+        - WPDb:
+            dsn: mysql:host=localhost;dbname=wordpress-tests
+            user: root
+            password: root
+            dump: tests/_data/dump.sql
+            populate: true
+            cleanup: true
+            url: http://wp.local
+            tablePrefix: wp_
+        - WordPress:
+            depends: WPDb
+            wpRootFolder: /var/www/wordpress
+            adminUsername: admin
+            adminPassword: password
+YAML;
+
 
         return $suiteConfig;
     }
@@ -257,15 +241,20 @@ class WPBootstrap extends Bootstrap
      */
     protected function getAcceptanceSuiteConfig($actor)
     {
-        $suiteConfig = array(
-            'class_name' => $actor . $this->actorSuffix,
-            'modules' => [
-                'enabled' => [
-                    "\\{$this->namespace}Helper\\{$actor}",
-                    'WPWebDriver'
-                ],
-            ]
-        );
+        $className = $actor . $this->actorSuffix;
+
+        $suiteConfig = <<< YAML
+class_name: $className
+modules:
+    enabled:
+        - \\{$this->namespace}Helper\\{$actor}
+        - WPBrowser
+            url: http://wp.local
+            adminUsername: admin
+            adminPassword: password
+            adminPath: /wp-admin
+YAML;
+
 
         return $suiteConfig;
     }
