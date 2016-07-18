@@ -33,8 +33,8 @@ class WPBootstrapPyramid extends WPBootstrap
         $suiteConfig = $this->getFunctionalSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for service (functional) tests.\n";
-        $str .= "# Emulate web requests and make application process them.\n";
+        $str .= "# Suite for service tests.\n";
+        $str .= "# Emulate web requests and make the WordPress application process them.\n";
         $str .= Yaml::dump($suiteConfig, 2);
         $this->createSuite('service', $actor, $str);
     }
@@ -44,8 +44,8 @@ class WPBootstrapPyramid extends WPBootstrap
         $suiteConfig = $this->getAcceptanceSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for UI (acceptance) tests.\n";
-        $str .= "# perform tests in browser using WPWebDriver modules.\n";
+        $str .= "# Suite for UI tests.\n";
+        $str .= "# Perform tests using or simulating a browser.\n";
 
         $str .= Yaml::dump($suiteConfig, 5);
         $this->createSuite('ui', $actor, $str);
