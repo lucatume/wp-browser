@@ -209,7 +209,7 @@ modules:
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            url: http://wp.local
+            url: 'http://wp.local'
             tablePrefix: wp_
         - WordPress:
             depends: WPDb
@@ -249,7 +249,7 @@ modules:
     enabled:
         - \\{$this->namespace}Helper\\{$actor}
         - WPBrowser
-            url: http://wp.local
+            url: 'http://wp.local'
             adminUsername: admin
             adminPassword: password
             adminPath: /wp-admin
