@@ -78,4 +78,14 @@ class WPBrowser extends PhpBrowser
 
         return is_array($matchingCookies) ? $matchingCookies : null;
     }
+
+    protected function validateConfig()
+    {
+        // back-compat
+        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
+            $this->config['adminPath'] = $this->config['adminUrl'];
+        }
+
+        parent::validateConfig();
+    }
 }

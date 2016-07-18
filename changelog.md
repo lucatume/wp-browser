@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - support for the `rootFolder` parameter in the `Symlinker` extension
 
 ### Changed
-- the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`
+- the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`, was previously `adminUrl`
 
 ##[1.14.3] 2016-06-10
 ### Changed

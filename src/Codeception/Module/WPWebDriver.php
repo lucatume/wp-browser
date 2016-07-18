@@ -95,4 +95,14 @@ class WPWebDriver extends WebDriver
         return $this->executeJS('return location.href');
     }
 
+
+    protected function validateConfig()
+    {
+        // back-compat
+        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
+            $this->config['adminPath'] = $this->config['adminUrl'];
+        }
+
+        parent::validateConfig();
+    }
 }

@@ -25,97 +25,8 @@ class WPBootstrap extends Bootstrap
         return "Sets up a WordPress CodeCeption testing environment.";
     }
 
-    public function createGlobalConfig()
+    public function execute(InputInterface $input, OutputInterface $output)
     {
-        $basicConfig = [
-            'actor' => $this->actorSuffix,
-            'paths' => [
-                'tests'   => 'tests',
-                'log'     => $this->logDir,
-                'data'    => $this->dataDir,
-                'helpers' => $this->supportDir
-            ],
-            'settings' => [
-                'bootstrap' => '_bootstrap.php',
-                'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
-                'memory_limit' => '1024M'
-            ],
-            'modules' => [
-                'config' => [
-                    'Db' => [
-                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
-                        'user' => 'root',
-                        'password' => 'root',
-                        'dump' => 'tests/_data/dump.sql'
-                    ],
-                    'WPBrowser' => [
-                        'url' => 'http://wp.local',
-                        'adminUsername' => 'adminUsername',
-                        'adminPassword' => 'adminPassword',
-                        'adminUrl' => '/wp-admin'
-                    ],
-                    'WPDb' => [
-                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
-                        'user' => 'root',
-                        'password' => 'root',
-                        'dump' => 'tests/_data/dump.sql',
-                        'populate' => true,
-                        'cleanup' => true,
-                        'url' => 'http://wp.local',
-                        'tablePrefix' => 'wp_'
-                    ],
-                    'WPLoader' => [
-                        'wpRootFolder' => '~/www/wordpress',
-                        'dbName' => 'wordpress-tests',
-                        'dbHost' => 'localhost',
-                        'dbUser' => 'root',
-                        'dbPassword' => 'root',
-                        'wpDebug' => true,
-                        'dbCharset' => 'utf8',
-                        'dbCollate' => '',
-                        'tablePrefix' => 'wp_',
-                        'domain' => 'wp.local',
-                        'adminEmail' => 'admin@wp.local',
-                        'title' => 'WP Tests',
-                        'phpBinary' => 'php',
-                        'language' => '',
-                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
-                        'bootstrapActions' => ['my-first-action', 'my-second-action']
-                    ],
-                    'WPWebDriver' => [
-                        'url' => 'http://wp.local',
-                        'browser' => 'phantomjs',
-                        'port' => 4444,
-                        'restart' => true,
-                        'wait' => 2,
-                        'adminUsername' => 'adminUsername',
-                        'adminPassword' => 'adminPassword',
-                        'adminUrl' => '/wp-admin'
-                    ]
-                ]
-            ]
-        ];
-
-        $str = Yaml::dump($basicConfig, 4);
-        if ($this->namespace) {
-            $str = "namespace: {$this->namespace}\n" . $str;
-        }
-        file_put_contents('codeception.yml', $str);
-    }
-
-    protected function createFunctionalSuite($actor = 'Functional')
-    {
-        $suiteConfig = $this->getFunctionalSuiteConfig($actor);
-
-        $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for WordPress functional tests.\n";
-        $str .= "# Emulate web requests and make application process them.\n";
-        $str .= Yaml::dump($suiteConfig, 2);
-        $this->createSuite('functional', $actor, $str);
-    }
-
-    public function execute( InputInterface $input, OutputInterface $output ) {
         if ($input->getOption('namespace')) {
             $this->namespace = trim($input->getOption('namespace'), '\\') . '\\';
         }
@@ -173,6 +84,104 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
+    public function createGlobalConfig()
+    {
+        $basicConfig = [
+            'actor' => $this->actorSuffix,
+            'paths' => [
+                'tests'   => 'tests',
+                'log'     => $this->logDir,
+                'data'    => $this->dataDir,
+                'helpers' => $this->supportDir
+            ],
+            'settings' => [
+                'bootstrap' => '_bootstrap.php',
+                'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
+                'memory_limit' => '1024M'
+            ],
+            'modules' => [
+                'config' => [
+                    'Db' => [
+                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
+                        'user' => 'root',
+                        'password' => 'root',
+                        'dump' => 'tests/_data/dump.sql'
+                    ],
+                    'WPBrowser' => [
+                        'url' => 'http://wp.local',
+                        'adminUsername' => 'adminUsername',
+                        'adminPassword' => 'adminPassword',
+                        'adminPath' => '/wp-admin'
+                    ],
+                    'WPDb' => [
+                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
+                        'user' => 'root',
+                        'password' => 'root',
+                        'dump' => 'tests/_data/dump.sql',
+                        'populate' => true,
+                        'cleanup' => true,
+                        'url' => 'http://wp.local',
+                        'tablePrefix' => 'wp_'
+                    ],
+                    'WPLoader' => [
+                        'wpRootFolder' => '~/www/wordpress',
+                        'dbName' => 'wordpress-tests',
+                        'dbHost' => 'localhost',
+                        'dbUser' => 'root',
+                        'dbPassword' => 'root',
+                        'wpDebug' => true,
+                        'dbCharset' => 'utf8',
+                        'dbCollate' => '',
+                        'tablePrefix' => 'wp_',
+                        'domain' => 'wp.local',
+                        'adminEmail' => 'admin@wp.local',
+                        'title' => 'WP Tests',
+                        'phpBinary' => 'php',
+                        'language' => '',
+                        'plugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'activatePlugins' => ['hello.php', 'my-plugin/my-plugin.php'],
+                        'bootstrapActions' => ['my-first-action', 'my-second-action']
+                    ],
+                    'WPWebDriver' => [
+                        'url' => 'http://wp.local',
+                        'browser' => 'phantomjs',
+                        'port' => 4444,
+                        'restart' => true,
+                        'wait' => 2,
+                        'adminUsername' => 'adminUsername',
+                        'adminPassword' => 'adminPassword',
+                        'adminPath' => '/wp-admin'
+                    ]
+                ]
+            ]
+        ];
+
+        $str = Yaml::dump($basicConfig, 4);
+        if ($this->namespace) {
+            $str = "namespace: {$this->namespace}\n" . $str;
+        }
+        file_put_contents('codeception.yml', $str);
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    protected function setupSuites(OutputInterface $output)
+    {
+        $this->createUnitSuite();
+        $output->writeln("tests/unit created                    <- unit tests");
+        $output->writeln("tests/unit.suite.yml written          <- unit tests suite configuration");
+        $this->createIntegrationSuite();
+        $output->writeln("tests/integration created             <- integration tests");
+        $output->writeln("tests/integration.suite.yml written   <- integration tests suite configuration");
+        $this->createFunctionalSuite();
+        $output->writeln("tests/functional created              <- functional tests");
+        $output->writeln("tests/functional.suite.yml written    <- functional tests suite configuration");
+        $this->createAcceptanceSuite();
+        $output->writeln("tests/acceptance created              <- acceptance tests");
+        $output->writeln("tests/acceptance.suite.yml written    <- acceptance tests suite configuration");
+    }
+
     protected function createIntegrationSuite( $actor = 'Integration' )
     {
         $suiteConfig = $this->getIntegrationSuiteConfig( $actor );
@@ -184,16 +193,35 @@ class WPBootstrap extends Bootstrap
         $this->createSuite( 'integration', $actor, $str );
     }
 
-    protected function createAcceptanceSuite($actor = 'Acceptance')
+    /**
+     * @param $actor
+     *
+     * @return array
+     */
+    protected function getIntegrationSuiteConfig($actor)
     {
-        $suiteConfig = $this->getAcceptanceSuiteConfig($actor);
+        $suiteConfig = [
+            'class_name' => $actor . $this->actorSuffix,
+            'modules' => [
+                'enabled' => [
+                    'WPLoader',
+                    "\\{$this->namespace}Helper\\{$actor}"
+                ]
+            ]
+        ];
+
+        return $suiteConfig;
+    }
+
+    protected function createFunctionalSuite($actor = 'Functional')
+    {
+        $suiteConfig = $this->getFunctionalSuiteConfig($actor);
 
         $str = "# Codeception Test Suite Configuration\n\n";
-        $str .= "# suite for WordPress acceptance tests.\n";
-        $str .= "# perform tests in browser the WPWebDriver module.\n";
-
-        $str .= Yaml::dump($suiteConfig, 5);
-        $this->createSuite('acceptance', $actor, $str);
+        $str .= "# suite for WordPress functional tests.\n";
+        $str .= "# Emulate web requests and make application process them.\n";
+        $str .= Yaml::dump($suiteConfig, 2);
+        $this->createSuite('functional', $actor, $str);
     }
 
     /**
@@ -218,24 +246,16 @@ class WPBootstrap extends Bootstrap
         return $suiteConfig;
     }
 
-    /**
-     * @param $actor
-     *
-     * @return array
-     */
-    protected function getIntegrationSuiteConfig( $actor )
+    protected function createAcceptanceSuite($actor = 'Acceptance')
     {
-        $suiteConfig = [
-            'class_name' => $actor . $this->actorSuffix,
-            'modules' => [
-                'enabled' => [
-                    'WPLoader',
-                    "\\{$this->namespace}Helper\\{$actor}"
-                ]
-            ]
-        ];
+        $suiteConfig = $this->getAcceptanceSuiteConfig($actor);
 
-        return $suiteConfig;
+        $str = "# Codeception Test Suite Configuration\n\n";
+        $str .= "# suite for WordPress acceptance tests.\n";
+        $str .= "# perform tests in browser the WPWebDriver module.\n";
+
+        $str .= Yaml::dump($suiteConfig, 5);
+        $this->createSuite('acceptance', $actor, $str);
     }
 
     /**
@@ -256,24 +276,5 @@ class WPBootstrap extends Bootstrap
         );
 
         return $suiteConfig;
-    }
-
-    /**
-     * @param OutputInterface $output
-     */
-    protected function setupSuites(OutputInterface $output)
-    {
-        $this->createUnitSuite();
-        $output->writeln( "tests/unit created                    <- unit tests" );
-        $output->writeln( "tests/unit.suite.yml written          <- unit tests suite configuration" );
-        $this->createIntegrationSuite();
-        $output->writeln( "tests/integration created             <- integration tests" );
-        $output->writeln( "tests/integration.suite.yml written   <- integration tests suite configuration" );
-        $this->createFunctionalSuite();
-        $output->writeln( "tests/functional created              <- functional tests" );
-        $output->writeln( "tests/functional.suite.yml written    <- functional tests suite configuration" );
-        $this->createAcceptanceSuite();
-        $output->writeln( "tests/acceptance created              <- acceptance tests" );
-        $output->writeln( "tests/acceptance.suite.yml written    <- acceptance tests suite configuration" );
     }
 }
