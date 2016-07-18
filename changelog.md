@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - the parameter to specify the path to the admin area in the `WPBrowser` and `WPWebDriver` modules has been renamed to `adminPath`, was previously `adminUrl`
+- default modules configurations to reflect new module usage
 
 ##[1.14.3] 2016-06-10
 ### Changed
