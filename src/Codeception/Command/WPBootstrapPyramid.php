@@ -3,7 +3,6 @@
 namespace Codeception\Command;
 
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 class WPBootstrapPyramid extends WPBootstrap
 {
@@ -13,19 +12,20 @@ class WPBootstrapPyramid extends WPBootstrap
         return "Sets up a WordPress testing environment using the test pyramid suite organization.";
     }
 
-    protected function setupSuites( OutputInterface $output ) {
+    protected function setupSuites(OutputInterface $output)
+    {
         $this->createUnitSuite();
-        $output->writeln( "tests/unit created                    <- unit tests" );
-        $output->writeln( "tests/unit.suite.yml written          <- unit tests suite configuration" );
+        $output->writeln("tests/unit created                    <- unit tests");
+        $output->writeln("tests/unit.suite.yml written          <- unit tests suite configuration");
         $this->createIntegrationSuite();
-        $output->writeln( "tests/integration created             <- integration tests" );
-        $output->writeln( "tests/integration.suite.yml written   <- integration tests suite configuration" );
+        $output->writeln("tests/integration created             <- integration tests");
+        $output->writeln("tests/integration.suite.yml written   <- integration tests suite configuration");
         $this->createServiceSuite();
-        $output->writeln( "tests/service created                 <- service tests" );
-        $output->writeln( "tests/service.suite.yml written       <- service tests suite configuration" );
+        $output->writeln("tests/service created                 <- service tests");
+        $output->writeln("tests/service.suite.yml written       <- service tests suite configuration");
         $this->createUiSuite();
-        $output->writeln( "tests/ui created                      <- ui tests" );
-        $output->writeln( "tests/ui.suite.yml written            <- ui tests suite configuration" );
+        $output->writeln("tests/ui created                      <- ui tests");
+        $output->writeln("tests/ui.suite.yml written            <- ui tests suite configuration");
     }
 
     protected function createServiceSuite($actor = 'Service')
@@ -35,7 +35,7 @@ class WPBootstrapPyramid extends WPBootstrap
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for service tests.\n";
         $str .= "# Emulate web requests and make the WordPress application process them.\n";
-        $str .= Yaml::dump($suiteConfig, 5);
+        $str .= $suiteConfig;
         $this->createSuite('service', $actor, $str);
     }
 
@@ -47,7 +47,7 @@ class WPBootstrapPyramid extends WPBootstrap
         $str .= "# Suite for UI tests.\n";
         $str .= "# Perform tests using or simulating a browser.\n";
 
-        $str .= Yaml::dump($suiteConfig, 5);
+        $str .= $suiteConfig;
         $this->createSuite('ui', $actor, $str);
     }
 }

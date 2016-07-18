@@ -134,7 +134,7 @@ class WPBootstrap extends Bootstrap
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for integration tests.\n";
         $str .= "# Load WordPress and test classes that rely on its functions and classes.\n";
-        $str .= Yaml::dump($suiteConfig, 5);
+        $str .= $suiteConfig;
         $this->createSuite('integration', $actor, $str);
     }
 
@@ -183,7 +183,7 @@ YAML;
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for WordPress functional tests.\n";
         $str .= "# Emulate web requests and make the WordPress application process them.\n";
-        $str .= Yaml::dump($suiteConfig, 5);
+        $str .= $suiteConfig;
         $this->createSuite('functional', $actor, $str);
     }
 
@@ -230,7 +230,7 @@ YAML;
         $str .= "# Suite for WordPress acceptance tests.\n";
         $str .= "# Perform tests using or simulating a browser.\n";
 
-        $str .= Yaml::dump($suiteConfig, 5);
+        $str .= $suiteConfig;
         $this->createSuite('acceptance', $actor, $str);
     }
 
