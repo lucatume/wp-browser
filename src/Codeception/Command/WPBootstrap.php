@@ -101,12 +101,6 @@ class WPBootstrap extends Bootstrap
             ],
             'modules' => [
                 'config' => [
-                    'Db' => [
-                        'dsn' => 'mysql:host=localhost;dbname=wordpress-tests',
-                        'user' => 'root',
-                        'password' => 'root',
-                        'dump' => 'tests/_data/dump.sql'
-                    ],
                     'WPBrowser' => [
                         'url' => 'http://wp.local',
                         'adminUsername' => 'adminUsername',
