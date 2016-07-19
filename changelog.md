@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.15.0] 2016-07-19
 ### Added
 - the `bootstrapActions` parameter of the `WPLoader` module will now accept static method signatures
 - the `WordPress` module to be used for real functional tests
@@ -407,7 +409,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.14.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.0...HEAD
+[1.15.0]: https://github.com/lucatume/wp-browser/compare/1.14.3...1.15.0
 [1.14.3]: https://github.com/lucatume/wp-browser/compare/1.14.2...1.14.3
 [1.14.2]: https://github.com/lucatume/wp-browser/compare/1.14.1...1.14.2
 [1.14.1]: https://github.com/lucatume/wp-browser/compare/1.14.0...1.14.1
