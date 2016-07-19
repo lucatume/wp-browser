@@ -148,6 +148,7 @@ class WPBootstrap extends Bootstrap
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
+        
 class_name: {$className}
 modules:
     enabled:
@@ -197,6 +198,7 @@ YAML;
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
+        
 class_name: $className
 modules:
     enabled:
@@ -244,6 +246,7 @@ YAML;
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
+        
 class_name: $className
 modules:
     enabled:
