@@ -134,6 +134,7 @@ class WPBootstrap extends Bootstrap
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for integration tests.\n";
         $str .= "# Load WordPress and test classes that rely on its functions and classes.\n";
+        $str .= "\n";
         $str .= $suiteConfig;
         $this->createSuite('integration', $actor, $str);
     }
@@ -148,7 +149,6 @@ class WPBootstrap extends Bootstrap
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
-        
 class_name: {$className}
 modules:
     enabled:
@@ -184,6 +184,7 @@ YAML;
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for WordPress functional tests.\n";
         $str .= "# Emulate web requests and make the WordPress application process them.\n";
+        $str .= "\n";
         $str .= $suiteConfig;
         $this->createSuite('functional', $actor, $str);
     }
@@ -198,7 +199,6 @@ YAML;
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
-        
 class_name: $className
 modules:
     enabled:
@@ -231,7 +231,7 @@ YAML;
         $str = "# Codeception Test Suite Configuration\n\n";
         $str .= "# Suite for WordPress acceptance tests.\n";
         $str .= "# Perform tests using or simulating a browser.\n";
-
+        $str .= "\n";
         $str .= $suiteConfig;
         $this->createSuite('acceptance', $actor, $str);
     }
@@ -246,7 +246,6 @@ YAML;
         $className = $actor . $this->actorSuffix;
 
         $suiteConfig = <<< YAML
-        
 class_name: $className
 modules:
     enabled:
