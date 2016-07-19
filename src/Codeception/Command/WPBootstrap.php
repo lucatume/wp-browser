@@ -205,7 +205,7 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
         - Filesystem
         - WPDb:
-            dsn: mysql:host=localhost;dbname=wordpress-tests
+            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
             user: root
             password: root
             dump: tests/_data/dump.sql
