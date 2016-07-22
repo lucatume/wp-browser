@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
-##[1.15.1] 2016-07-19
+##[1.15.1] 2016-07-22
 ### Fixed
 - missing back-compatibility configuration call in `WPBrowser` and `WPWebDriver` modules
 
