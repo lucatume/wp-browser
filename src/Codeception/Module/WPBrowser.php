@@ -43,10 +43,20 @@ class WPBrowser extends PhpBrowser
     public function _initialize()
     {
         parent::_initialize();
+
+        $this->configBackCompat();
+
         $adminPath = $this->config['adminPath'];
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
         $this->adminPath = rtrim($adminPath, '/');
         $this->pluginsPath = $this->adminPath . '/plugins.php';
+    }
+
+    protected function configBackCompat()
+    {
+        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
+            $this->config['adminPath'] = $this->config['adminUrl'];
+        }
     }
 
     /**
@@ -81,10 +91,7 @@ class WPBrowser extends PhpBrowser
 
     protected function validateConfig()
     {
-        // back-compat
-        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
-            $this->config['adminPath'] = $this->config['adminUrl'];
-        }
+        $this->configBackCompat();
 
         parent::validateConfig();
     }

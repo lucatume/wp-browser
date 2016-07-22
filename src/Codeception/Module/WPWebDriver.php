@@ -52,6 +52,13 @@ class WPWebDriver extends WebDriver
         $this->pluginsPath = $this->adminPath . '/plugins.php';
     }
 
+    protected function configBackCompat()
+    {
+        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
+            $this->config['adminPath'] = $this->config['adminUrl'];
+        }
+    }
+
     /**
      * Returns all the cookies whose name matches a regex pattern.
      *
@@ -97,25 +104,10 @@ class WPWebDriver extends WebDriver
         return $this->executeJS('return location.href');
     }
 
-
     protected function validateConfig()
     {
         $this->configBackCompat();
 
         parent::validateConfig();
-    }
-
-    protected function validateConfig()
-    {
-        $this->configBackCompat();
-
-        parent::validateConfig();
-    }
-
-    protected function configBackCompat()
-    {
-        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
-            $this->config['adminPath'] = $this->config['adminUrl'];
-        }
     }
 }
