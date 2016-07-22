@@ -44,6 +44,8 @@ class WPWebDriver extends WebDriver
     {
         parent::_initialize();
 
+        $this->configBackCompat();
+
         $adminPath = $this->config['adminPath'];
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
         $this->adminPath = rtrim($adminPath, '/');
@@ -98,11 +100,22 @@ class WPWebDriver extends WebDriver
 
     protected function validateConfig()
     {
-        // back-compat
+        $this->configBackCompat();
+
+        parent::validateConfig();
+    }
+
+    protected function validateConfig()
+    {
+        $this->configBackCompat();
+
+        parent::validateConfig();
+    }
+
+    protected function configBackCompat()
+    {
         if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
             $this->config['adminPath'] = $this->config['adminUrl'];
         }
-
-        parent::validateConfig();
     }
 }
