@@ -326,11 +326,4 @@ EOF;
         $uri = str_replace($this->siteUrl, 'http://localhost', str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
         return parent::getAbsoluteUrlFor($uri);
     }
-
-    public function getInternalDomains()
-    {
-        $internalDomains = [];
-        $internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST)) . '$/';
-        return $internalDomains;
-    }
 }
