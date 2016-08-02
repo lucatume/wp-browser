@@ -167,6 +167,7 @@ EOF;
 
     public function _failed(TestInterface $test, $fail)
     {
+        parent::_failed($test, $fail);
     }
 
     public function _after(TestInterface $test)
