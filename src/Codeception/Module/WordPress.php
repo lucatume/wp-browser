@@ -304,6 +304,18 @@ EOF;
         $this->amOnAdminPage('/post.php?post=' . $id . '&action=edit');
     }
 
+    /**
+     * Returns a list of recognized domain names
+     *
+     * @return array
+     */
+    public function getInternalDomains()
+    {
+        $internalDomains = [];
+        $internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST)) . '$/';
+        return $internalDomains;
+    }
+
     protected function getAbsoluteUrlFor($uri)
     {
         $uri = str_replace($this->siteUrl, 'http://localhost', str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
