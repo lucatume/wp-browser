@@ -24,4 +24,4 @@ install:
 
 script:
 #  - php ./vendor/bin/codecept run unit
-  - php ./vendor/bin/codecept run tests/wpmodule/AdminAccessTest.php:it_should_be_able_to_visit_the_admin_area_when_unlogged
+  - php ./vendor/bin/codecept run ./tests/wpmodule/AdminAccessTest.php:it_should_be_able_to_visit_the_admin_area_when_unlogged
