@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- `WordPres` module not dumping page source on failure (thanks @kbmt)
 
 ##[1.15.1] 2016-07-22
 ### Fixed
