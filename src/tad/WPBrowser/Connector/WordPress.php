@@ -63,7 +63,11 @@ class WordPress extends Universal
         $requestServer = $request->getServer();
         $requestFiles = $this->remapFiles($request->getFiles());
 
-        $uri = str_replace('http://localhost', '', $request->getUri());
+        $parseResult = parse_url($request->getUri());
+        $uri = $parseResult["path"];
+        if (array_key_exists("query", $parseResult)) {
+            $uri .= "?" . $parseResult["query"];
+        }
 
         $requestRequestArray = $this->remapRequestParameters($request->getParameters());
 
