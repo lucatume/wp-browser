@@ -3,8 +3,13 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.15.2] 2016-08-10
 ### Fixed
 - `WordPres` module not dumping page source on failure (thanks @kbmt)
+
+### Changed
+- better uri parsing in `WordPres` module (thanks @kbmt)
 
 ##[1.15.1] 2016-07-22
 ### Fixed
@@ -415,7 +420,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.2...HEAD
+[1.15.2]: https://github.com/lucatume/wp-browser/compare/1.15.1...1.15.2
 [1.15.1]: https://github.com/lucatume/wp-browser/compare/1.15.0...1.15.1
 [1.15.0]: https://github.com/lucatume/wp-browser/compare/1.14.3...1.15.0
 [1.14.3]: https://github.com/lucatume/wp-browser/compare/1.14.2...1.14.3
