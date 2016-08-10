@@ -15,4 +15,4 @@ install:
 
 script:
   - "wget http://codeception.com/codecept.phar"
-  - php ./codecept.phar run unit
+  - php ./vendor/bin/codecept run unit
