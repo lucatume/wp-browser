@@ -23,5 +23,5 @@ install:
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
-  - php ./vendor/bin/codecept run unit
-  - php ./vendor/bin/codecept run wpmodule
+#  - php ./vendor/bin/codecept run unit
+  - php ./vendor/bin/codecept run tests/wpmodule/AdminAccessTest:it_should_be_able_to_visit_the_admin_area_when_unlogged
