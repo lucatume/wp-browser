@@ -8,8 +8,8 @@ modules:
             wpRootFolder: "/Users/Luca/Sites/wordpress"
             dbName: "codeception-tests"
             dbHost: "127.0.0.1"
-            dbUser: "root"
-            dbPassword: "root"
+            dbUser: root
+            dbPassword: ''
             wpDebug: true
             dbCharset: "utf8"
             dbCollate: ""
