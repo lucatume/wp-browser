@@ -12,6 +12,7 @@ class FrontendAccessCest
     public function it_should_be_able_to_navigate_to_main_page(WpmoduleTester $I)
     {
         $I->amOnPage('/');
+        $I->seeElement('body.home');
     }
 
     /**

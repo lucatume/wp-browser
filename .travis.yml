@@ -8,7 +8,7 @@ php:
   - 7.0
 
 env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=admin WP_TEST_USER_PASS=admin
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://0.0.0.0:12000 WP_TEST_USER=admin WP_TEST_USER_PASS=admin
 
 cache:
   directories:
