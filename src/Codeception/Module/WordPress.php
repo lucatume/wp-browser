@@ -1,27 +1,5 @@
 <?php
 
-/*
- * Call order is this:
- * 
- * [12-Jun-2016 12:32:51 UTC] Codeception\Module\WordPress::__construct
- * [12-Jun-2016 12:32:51 UTC] Codeception\Module\WordPress::_initialize
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_beforeSuite
- * 
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_cleanup
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_before
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_beforeStep
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_afterStep
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_after
- * 
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_cleanup
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_before
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_beforeStep
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_afterStep
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_after
- * 
- * [12-Jun-2016 12:32:52 UTC] Codeception\Module\WordPress::_afterSuite
-*/
-
 // @todo: add a note in docs that _after and _before methods should call the parent!
 
 namespace Codeception\Module;
@@ -30,7 +8,6 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Framework;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Module;
 use Codeception\Step;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
@@ -147,22 +124,27 @@ EOF;
 
     public function _cleanup()
     {
+        parent::_cleanup();
     }
 
     public function _beforeSuite($settings = [])
     {
+        parent::_beforeSuite($settings);
     }
 
     public function _afterSuite()
     {
+        parent::_afterSuite();
     }
 
     public function _beforeStep(Step $step)
     {
+        parent::_beforeStep($step);
     }
 
     public function _afterStep(Step $step)
     {
+        parent::_afterStep($step);
     }
 
     public function _failed(TestInterface $test, $fail)
@@ -172,6 +154,7 @@ EOF;
 
     public function _after(TestInterface $test)
     {
+        parent::_after($test);
     }
 
     public function _setClient($client)
@@ -274,7 +257,6 @@ EOF;
 
     /**
      * @param $page
-     * @return string
      */
     private function setRequestType($page)
     {
