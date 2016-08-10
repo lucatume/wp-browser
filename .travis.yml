@@ -1,7 +1,13 @@
+sudo: false
+
 language: php
+
 php:
   - 5.6
   - 7.0
+
+env:
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=admin WP_TEST_USER_PASS=admin
 
 cache:
   directories:
@@ -12,6 +18,9 @@ install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
   - composer self-update
   - composer install --prefer-dist
+  - git clone https://github.com/Seravo/wordpress-test-template wp-tests
+  - bash wp-tests/bin/install-wp-tests.sh test root root localhost $WP_VERSION
 
 script:
   - php ./vendor/bin/codecept run unit
+  - php ./vendor/bin/codecept run wpmodule

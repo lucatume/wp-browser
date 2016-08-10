@@ -1,0 +1,25 @@
+class_name: WploaderTester
+modules:
+    enabled:
+        - \Helper\Wploadersuite
+        - WPLoader
+    config:
+        WPLoader:
+            wpRootFolder: "/Users/Luca/Sites/wordpress"
+            dbName: "codeception-tests"
+            dbHost: "127.0.0.1"
+            dbUser: "root"
+            dbPassword: "root"
+            wpDebug: true
+            dbCharset: "utf8"
+            dbCollate: ""
+            tablePrefix: "wp_"
+            domain: "codeception-tests.dev"
+            adminEmail: "admin@codeception-tests.dev"
+            title: "Codeception WPLoader Blog"
+            phpBinary: "php"
+            language: ""
+            configFile: ""
+            plugins: []
+            activatePlugins: []
+            booststrapActions: []

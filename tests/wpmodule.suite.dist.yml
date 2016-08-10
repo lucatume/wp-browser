@@ -1,0 +1,19 @@
+class_name: WpmoduleTester
+modules:
+    enabled:
+        - \Helper\Wpmodule
+        - WPDb:
+            dsn: 'mysql:host=localhost;dbname=test'
+            user: 'root'
+            password: 'root'
+            dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: 'http://localhost:12000'
+            tablePrefix: 'wp_'
+        - WordPress:
+            depends: WPDb
+            wpRootFolder: "/tmp/wordpress"
+            adminUsername: 'admin'
+            adminPassword: 'admin'

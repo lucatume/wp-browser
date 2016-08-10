@@ -9,3 +9,10 @@ vendor/
 
 # Created by .ignore support plugin (hsz.mobi)
 tests/_output
+
+# local configuration files
+tests/acceptance.suite.yml
+tests/functional.suite.yml
+tests/unit.suite.yml
+tests/wploadersuite.suite.yml
+tests/wpmodule.suite.yml
