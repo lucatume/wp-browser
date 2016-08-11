@@ -1,26 +1,43 @@
-language: php
+sudo: false
 
-services:
-  - mysql
+language: php
 
 php:
   - 5.6
   - 7.0
 
-env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://0.0.0.0:12000 WP_TEST_USER=admin WP_TEST_USER_PASS=admin
+services:
+  - mysql
 
 cache:
   directories:
     - vendor
     - $HOME/.composer/cache
 
+env:
+    - WP_VERSION=master WP_MULTISITE=1
+
+before_script:
+    # Set up WordPress installation.
+    - export WP_DEVELOP_DIR=/tmp/wordpress/
+    - mkdir -p $WP_DEVELOP_DIR
+    # Use the Git mirror of WordPress.
+    - git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ $WP_DEVELOP_DIR
+    # Set up WordPress configuration.
+    - cd $WP_DEVELOP_DIR
+    - echo $WP_DEVELOP_DIR
+    - cp wp-tests-config-sample.php wp-tests-config.php
+    - sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
+    - sed -i "s/yourusernamehere/root/" wp-tests-config.php
+    - sed -i "s/yourpasswordhere//" wp-tests-config.php
+    # Set up multisite subdomain based installation
+    # Create WordPress database.
+    - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
+
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
   - composer self-update
   - composer install --prefer-dist
-  - git clone https://github.com/Seravo/wordpress-test-template wp-tests
-  - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
 #  - php ./vendor/bin/codecept run unit
