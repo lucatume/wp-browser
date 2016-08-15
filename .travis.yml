@@ -36,10 +36,10 @@ before_script:
   - git clone https://github.com/lucatume/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
   # create a wordpress.dev virtual host in Apache served from the /tmp/wordpress folder
-  - sudo sed -i -e "s,/var/www,/tmp/wordpress,g" /etc/apache2/sites-available/default
-  - sudo sed -i -e "/DocumentRoot/i\ServerName wordpress.dev" /etc/apache2/sites-available/default
+  - sed -i -e "s,/var/www,/tmp/wordpress,g" /etc/apache2/sites-available/default
+  - sed -i -e "/DocumentRoot/i\ServerName wordpress.dev" /etc/apache2/sites-available/default
   - echo "127.0.0.1 wordpress.dev" | sudo tee -a /etc/hosts
-  - sudo /etc/init.d/apache2 restart
+  - /etc/init.d/apache2 restart
 
 script:
 #  - php ./vendor/bin/codecept run unit
