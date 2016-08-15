@@ -41,7 +41,7 @@ before_script:
   # enable the wordpress.dev virtual host
   - sudo vhost -d /tmp/wordpress -s wordpress.dev
   - echo "127.0.0.1 wordpress.dev"  | sudo tee -a /etc/hosts
-  - sudo a2ensite example.com
+  - sudo a2ensite wordpress.dev
   # list the enabled sites
   - sudo ls -la /etc/apache2/sites-enabled
   - sudo apache2ctl -S
