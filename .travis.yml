@@ -37,13 +37,18 @@ before_script:
   # configure Apache virtual hosts
   - sudo chown -R $USER:$USER /tmp/wordpress
   - sudo chmod -R 755 /tmp/wordpress
+  # download virtual host script
+  - curl https://gist.github.com/fideloper/2710970/raw/cbe308f44bfd299a3f410bb1a06aa67a2753763a/vhost.sh > vhost
+  - sudo chmod guo+x vhost
+  - sudo mv vhost /usr/local/bin
   # enable the wordpress.dev virtual host
-  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/wordpress.dev
-  - sudo a2ensite wordpress.dev
-#  - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%/tmp/wordpress/?g" --in-place /etc/apache2/sites-available/default
-#  - sudo cat /etc/apache2/sites-available/default
+  - sudo vhost -d /tmp/wordpress -s wordpress.dev
+  #  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/wordpress.dev
+  #  - sudo a2ensite wordpress.dev
+  #  - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%/tmp/wordpress/?g" --in-place /etc/apache2/sites-available/default
+  #  - sudo cat /etc/apache2/sites-available/default
   # restart Apache
-  - sudo service apache2 restart
+  #  - sudo service apache2 restart
   # resolve wordpress.dev locally
   - echo "127.0.0.1 wordpress.dev"  | sudo tee -a /etc/hosts
 
