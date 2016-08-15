@@ -42,7 +42,7 @@ before_script:
   - sudo vhost -d /tmp/wordpress -s wordpress.dev
   - echo "127.0.0.1 wordpress.dev"  | sudo tee -a /etc/hosts
   # list the enabled sites
-  - sudo ls -la /etc/apache2/sites-enables
+  - sudo ls -la /etc/apache2/sites-enabled
   - sudo apache2ctl -S
 
 script:
