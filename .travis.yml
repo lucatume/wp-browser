@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: php
 
@@ -15,16 +15,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test
-
-addons:
-  apt:
-    packages:
-    - apache2
-    - libapache2-mod-php5
-    - php5-curl
-    - php5-mysql
-    - php5-intl
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test WP_CORE_DIR=/tmp/wordpress/
 
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
@@ -32,14 +23,21 @@ install:
   - composer install --prefer-dist
 
 before_script:
-  # install WordPress in /tmp/wordpress and serve it on http://localhost:12000
+  # install WordPress in /tmp/wordpress
   - git clone https://github.com/lucatume/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
-  # create a wordpress.dev virtual host in Apache served from the /tmp/wordpress folder
-  - sed -i -e "s,/var/www,/tmp/wordpress,g" /etc/apache2/sites-available/default
-  - sed -i -e "/DocumentRoot/i\ServerName wordpress.dev" /etc/apache2/sites-available/default
+  - sudo apt-get update
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  # enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # configure apache virtual hosts
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%WP_CORE_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo service apache2 restart
   - echo "127.0.0.1 wordpress.dev" | sudo tee -a /etc/hosts
-  - /etc/init.d/apache2 restart
 
 script:
 #  - php ./vendor/bin/codecept run unit
