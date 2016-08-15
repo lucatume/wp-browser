@@ -24,6 +24,6 @@ modules:
               populate: true
               cleanup: true
               reconnect: false
-              url: 'http://wordpress.dev'
+              url: 'http://localhost'
               tablePrefix: 'wp_'
 

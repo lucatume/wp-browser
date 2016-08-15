@@ -1,6 +1,5 @@
 <VirtualHost *:80>
-  ServerName wordpress.dev
-  ServerAlias *.wordpress.dev
+  ServerName localhost
   DocumentRoot /tmp/wordpress
 
   <Directory "/tmp/wordpress">
