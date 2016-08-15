@@ -1,6 +1,7 @@
 <VirtualHost *:80>
-  ServerName localhost
-  DocumentRoot /tmp/wordpress/
+  ServerName wordpress.dev
+  ServerAlias *.wordpress.dev
+  DocumentRoot /tmp/wordpress
 
   <Directory "/tmp/wordpress">
     Options FollowSymLinks MultiViews ExecCGI
