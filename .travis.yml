@@ -41,4 +41,5 @@ before_script:
 script:
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
-  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
+  - curl wordpress.dev
+#  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
