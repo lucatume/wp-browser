@@ -35,6 +35,7 @@ before_script:
   # configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%/tmp/wordpress/?g" --in-place /etc/apache2/sites-available/default
+  - echo "ServerName localhost" | sudo tee /etc/apache2/conf.d/fqdn
   - sudo service apache2 restart
   - echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
 
