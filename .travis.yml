@@ -23,7 +23,7 @@ install:
 before_script:
   # install WordPress in /tmp/wordpress
   - git clone https://github.com/lucatume/wordpress-test-template wp-tests
-  - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
+  - bash wp-tests/bin/install-wp-tests.sh wp-tests root '' localhost $WP_VERSION
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi
   # enable php-fpm
