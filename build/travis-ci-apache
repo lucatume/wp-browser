@@ -1,9 +1,9 @@
 <VirtualHost *:80>
   ServerName wordpress.dev
   ServerAlias *.wordpress.dev
-  DocumentRoot %WP_CORE_DIR%
+  DocumentRoot /tmp/wordpress
 
-  <Directory "%WP_CORE_DIR%">
+  <Directory "/tmp/wordpress">
     Options FollowSymLinks MultiViews ExecCGI
     AllowOverride All
     Order deny,allow

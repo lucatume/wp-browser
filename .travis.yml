@@ -13,7 +13,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test WP_CORE_DIR=/tmp/wordpress/
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test
 
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
@@ -34,7 +34,7 @@ before_script:
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
   # configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%WP_CORE_DIR%?g" --in-place /etc/apache2/sites-available/default
+  - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%/tmp/wordpress/?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
   - echo "127.0.0.1 wordpress.dev" | sudo tee -a /etc/hosts
 
