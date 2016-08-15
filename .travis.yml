@@ -34,12 +34,13 @@ before_script:
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
   # configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%WP_CORE_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?WP_CORE_DIR?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
   - echo "127.0.0.1 wordpress.dev" | sudo tee -a /etc/hosts
 
 script:
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
+  - cat /etc/apache2/sites-available/default
   - curl wordpress.dev
 #  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
