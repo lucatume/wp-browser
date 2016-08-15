@@ -34,7 +34,7 @@ before_script:
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
   # configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?WP_CORE_DIR?g" --in-place /etc/apache2/sites-available/default
+  - sudo sed -e "s?/etc/apache2/%TRAVIS_BUILD_DIR%?%WP_CORE_DIR%?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
   - echo "127.0.0.1 wordpress.dev" | sudo tee -a /etc/hosts
 
