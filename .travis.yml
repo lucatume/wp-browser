@@ -45,6 +45,7 @@ before_script:
   # list the enabled sites
   - sudo ls -la /etc/apache2/sites-enabled
   - sudo apache2ctl -S
+  - sudo service apache2 reload
 
 script:
 #  - php ./vendor/bin/codecept run unit
