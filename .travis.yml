@@ -39,6 +39,7 @@ before_script:
   - sudo chmod -R 755 /tmp/wordpress
   - sudo cp build/travis-ci-apache /etc/apache2/sites-available/wordpress.dev
   - sudo a2ensite wordpress.dev
+  - sudo a2dissite 000-default.conf
   # resolve wordpress.dev locally
   - echo "127.0.0.1 wordpress.dev"  | sudo tee -a /etc/hosts
   # list the enabled sites
