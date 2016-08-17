@@ -13,7 +13,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test WP_TEST_URL=127.0.0.1:80
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test WP_TEST_URL=localhost
 
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
@@ -25,7 +25,7 @@ before_script:
   # credit: https://github.com/Koodimonni/wordpress-test-template
   - git clone https://github.com/lucatume/wordpress-test-template wp-tests
 
-  # install WordPress in /tmp/wordpress, assumes it will be served on localhost:12000
+  # install WordPress in /tmp/wordpress, assumes it will be served on localhost
   - bash wp-tests/bin/install-wp-tests.sh wp-tests root '' localhost $WP_VERSION
 
   # update and install apache2 packages
@@ -52,7 +52,6 @@ before_script:
 script:
   - cat /etc/apache2/sites-available/default
   - sudo apache2ctl -S
-#  - curl http://127.0.0.1:80
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
   - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
