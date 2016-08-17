@@ -43,16 +43,17 @@ before_script:
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
   # Configure apache virtual hosts
-  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/default
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/wordpress
+  - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/wordpress
+  - sudo a2dissite 000-default
+  - sudo a2ensite wordpress
 
   # Restart services
   - sudo service apache2 restart
 
 script:
-  # can we reache the WordPress installation homepage?
+  - cat /etc/apache2/sites-available/default
   - curl http://localhost:12000
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
-#  - cat /etc/apache2/sites-available/default
 #  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
