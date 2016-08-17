@@ -40,7 +40,7 @@ before_script:
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
   - sudo echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - sudo ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
   # Configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
@@ -52,7 +52,7 @@ before_script:
 script:
   - cat /etc/apache2/sites-available/default
   - sudo apache2ctl -S
-  - curl http://127.0.0.1:80
+#  - curl http://127.0.0.1:80
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
-#  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
+  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv
