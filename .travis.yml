@@ -21,35 +21,38 @@ install:
   - composer install --prefer-dist
 
 before_script:
-  # install WordPress in /tmp/wordpress
+  # clone the repo containing WordPress installation scripts
+  # credit: https://github.com/Koodimonni/wordpress-test-template
   - git clone https://github.com/lucatume/wordpress-test-template wp-tests
+
+  # install WordPress in /tmp/wordpress, assumes it will be served on localhost:12000
   - bash wp-tests/bin/install-wp-tests.sh wp-tests root '' localhost $WP_VERSION
-  # update apm sources
+
+  # update and install apache2 packages
+  # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
   - sudo apt-get update
-  # install Apache 2.2 server
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
-  # enable php-fpm in Apache
+  - sudo apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
+  - sudo apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-curl php5-gd php5-json php5-sqlite php5-pgsql
+  - sudo a2enmod headers
+
+  # Enable php-fpm
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
   - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-  # enable the wordpress.dev virtual host
-  - sudo chown -R $USER:$USER /tmp/wordpress
-  - sudo chmod -R 755 /tmp/wordpress
-  - sudo cp build/travis-ci-apache /etc/apache2/sites-available/wordpress.dev
-  - sudo a2ensite wordpress.dev
-  - sudo a2dissite 000-default
-  # resolve wordpress.dev locally
-  - echo "127.0.0.1 wordpress.dev"  | sudo tee -a /etc/hosts
-  # list the enabled sites
-  - sudo ls -la /etc/apache2/sites-enabled
-  - sudo apache2ctl -S
-  - sudo service apache2 reload
+
+  # Configure apache virtual hosts
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/default
+
+  # Restart services
+  - sudo service apache2 restart
 
 script:
+  # can we reache the WordPress installation homepage?
+  - curl http://localhost:12000
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
 #  - cat /etc/apache2/sites-available/default
-  - curl wordpress.dev
 #  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv

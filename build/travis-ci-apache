@@ -1,9 +1,9 @@
-<VirtualHost *:80>
-  ServerName wordpress.dev
-  ServerAlias *.wordpress.dev
-  DocumentRoot /tmp/wordpress
+<VirtualHost *:12000>
 
-  <Directory "/tmp/wordpress">
+  ServerName localhost
+  DocumentRoot %WP_DIR%
+
+  <Directory "%WP_DIR%">
     Options FollowSymLinks MultiViews ExecCGI
     AllowOverride All
     Order deny,allow
@@ -18,7 +18,7 @@
     FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -host 127.0.0.1:9000 -pass-header Authorization
   </IfModule>
 
-    ErrorLog "%TRAVIS_BUILD_DIR%/apache-error.log"
-    CustomLog "%TRAVIS_BUILD_DIR%/apache-access.log" combined
+    ErrorLog "%WP_DIR%/apache-error.log"
+    CustomLog "%WP_DIR%/apache-access.log" combined
 
 </VirtualHost>
