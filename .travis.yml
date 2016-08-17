@@ -1,3 +1,5 @@
+sudo: required
+
 language: php
 
 php:
@@ -12,8 +14,8 @@ cache:
     - vendor
     - $HOME/.composer/cache
 
-env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test WP_TEST_URL=localhost
+before_install:
+  - mysql -e "create database IF NOT EXISTS test;" -uroot
 
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
@@ -21,12 +23,22 @@ install:
   - composer install --prefer-dist
 
 before_script:
-  # clone the repo containing WordPress installation scripts
-  # credit: https://github.com/Koodimonni/wordpress-test-template
-  - git clone https://github.com/lucatume/wordpress-test-template wp-tests
+  # install wp-cli
+  - cd /tmp
+  - mkdir tools
+  - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  - chmod +x wp-cli.phar
 
-  # install WordPress in /tmp/wordpress, assumes it will be served on localhost
-  - bash wp-tests/bin/install-wp-tests.sh wp-tests root '' localhost $WP_VERSION
+  # download wordpress
+  - cd /tmp
+  - mkdir wordpress
+  - cd /tmp/wordpress
+  - /tmp/tools/wp-cli.phar core download
+
+  # install wordpress
+  - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
+  - /tmp/tools/wp-cli.phar core install --url=localhost --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
+  - /tmp/tools/wp-cli.phar core version
 
   # update and install apache2 packages
   # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
