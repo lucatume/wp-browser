@@ -1,4 +1,4 @@
-<VirtualHost *:12000>
+<VirtualHost *:80>
 
   ServerName localhost
   DocumentRoot %WP_DIR%
