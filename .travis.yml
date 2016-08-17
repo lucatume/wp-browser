@@ -13,7 +13,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://wordpress.dev WP_TEST_USER=test WP_TEST_USER_PASS=test WP_TEST_URL=127.0.0.1:80
 
 install:
   - composer global require "fxp/composer-asset-plugin:~1.1.1"
@@ -39,8 +39,8 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
-  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  - sudo echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - sudo ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
   # Configure apache virtual hosts
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
@@ -52,7 +52,7 @@ before_script:
 script:
   - cat /etc/apache2/sites-available/default
   - sudo apache2ctl -S
-  - curl http://localhost:12000
+  - curl http://127.0.0.1:80
 #  - php ./vendor/bin/codecept run unit
 #  - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
 #  - php ./vendor/bin/codecept run acceptance HomepageCept -vvv

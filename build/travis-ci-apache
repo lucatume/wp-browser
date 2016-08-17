@@ -1,6 +1,6 @@
 <VirtualHost *:80>
 
-  ServerName localhost
+  ServerName 127.0.0.1
   DocumentRoot %WP_DIR%
 
   <Directory "%WP_DIR%">
