@@ -47,7 +47,7 @@ before_script:
   - sudo a2enmod headers
 
   # Enable php-fpm
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp $TRAVIS_BUILD_DIR/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
   - sudo echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
