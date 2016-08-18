@@ -16,6 +16,7 @@ cache:
 
 before_install:
   - mysql -e "create database IF NOT EXISTS test;" -uroot
+  - mysql -e "create database IF NOT EXISTS wploader;" -uroot
 
 install:
   - composer update --prefer-dist
@@ -26,16 +27,15 @@ before_script:
   - mkdir -p /tmp/wordpress
 
   # install wp-cli
-  - cd /tmp/tools
-  - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-  - chmod +x wp-cli.phar
+  - wget -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
+  - chmod +x /tmp/tools/wp-cli.phar
 
   # download wordpress
   - cd /tmp/wordpress
   - /tmp/tools/wp-cli.phar core download
 
   # install WordPress
-  - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
+  - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=wp_ --skip-salts
   - /tmp/tools/wp-cli.phar core multisite-install --url=wordpress.dev --base=/ --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com --subdomains --skip-email
   - /tmp/tools/wp-cli.phar site create --slug=test1 --title="Test Subdomain 1"
   - /tmp/tools/wp-cli.phar site create --slug=test2 --title="Test Subdomain 2"

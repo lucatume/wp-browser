@@ -10,7 +10,7 @@ modules:
             populate: true
             cleanup: true
             reconnect: false
-            url: 'http://0.0.0.0:12000'
+            url: 'http://wordpress.dev'
             tablePrefix: 'wp_'
         - WordPress:
             depends: WPDb

@@ -5,18 +5,18 @@ modules:
         - WPLoader
     config:
         WPLoader:
-            wpRootFolder: "/Users/Luca/Sites/wordpress"
-            dbName: "codeception-tests"
-            dbHost: "127.0.0.1"
+            wpRootFolder: "/tmp/wordpress"
+            dbName: "wploader"
+            dbHost: "localhost"
             dbUser: root
             dbPassword: ''
             wpDebug: true
             dbCharset: "utf8"
             dbCollate: ""
             tablePrefix: "wp_"
-            domain: "codeception-tests.dev"
-            adminEmail: "admin@codeception-tests.dev"
-            title: "Codeception WPLoader Blog"
+            domain: "wordpress.dev"
+            adminEmail: "admin@wordpress.dev"
+            title: "Test"
             phpBinary: "php"
             language: ""
             configFile: ""
