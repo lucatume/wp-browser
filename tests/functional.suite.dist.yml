@@ -12,9 +12,9 @@ modules:
       - Asserts
     config:
       WPDb:
-        dsn: 'mysql:host=127.0.0.1;dbname=wordpress'
+        dsn: 'mysql:host=127.0.0.1;dbname=test'
         user: 'root'
-        password: 'root'
+        password: ''
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
