@@ -36,7 +36,9 @@ before_script:
 
   # install WordPress
   - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
-  - /tmp/tools/wp-cli.phar core install --url=wordpress.dev --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
+  - /tmp/tools/wp-cli.phar core multisite-install --url=wordpress.dev --base=/ --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com --subdomains --skip-emailj
+  - /tmp/tools/wp-cli.phar site create --slug=test1 --title="Test Subdomain 1"
+  - /tmp/tools/wp-cli.phar site create --slug=test2 --title="Test Subdomain 2"
   - /tmp/tools/wp-cli.phar core version
 
   # export a dump of the just installed database to the _data folder
@@ -68,4 +70,4 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - php vendor/bin/codecept run acceptance HomepageCept -vvv
+  - php vendor/bin/codecept run acceptance
