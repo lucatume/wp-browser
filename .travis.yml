@@ -27,7 +27,7 @@ before_script:
   - mkdir -p /tmp/wordpress
 
   # install wp-cli
-  - wget -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
+  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
   - chmod +x /tmp/tools/wp-cli.phar
 
   # download wordpress
