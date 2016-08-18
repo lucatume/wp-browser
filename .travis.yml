@@ -39,6 +39,9 @@ before_script:
   - /tmp/tools/wp-cli.phar core install --url=localhost --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
   - /tmp/tools/wp-cli.phar core version
 
+  # export a dump of the just installed database to the _data folder
+  - /tmp/tools/wp-cli.phar db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
+
   # update and install apache2 packages
   # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
   - sudo apt-get update
