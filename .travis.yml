@@ -26,6 +26,7 @@ before_script:
   # install wp-cli
   - cd /tmp
   - mkdir tools
+  - cd tools
   - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
   - chmod +x wp-cli.phar
 
