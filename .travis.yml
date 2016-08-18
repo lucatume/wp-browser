@@ -21,18 +21,20 @@ install:
   - composer update --prefer-dist
 
 before_script:
-  # install wp-cli
+  # set up folders
   - mkdir -p /tmp/tools
+  - mkdir -p /tmp/wordpress
+
+  # install wp-cli
   - cd /tmp/tools
   - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
   - chmod +x wp-cli.phar
 
   # download wordpress
-  - mkdir -p /tmp/wordpress
   - cd /tmp/wordpress
   - /tmp/tools/wp-cli.phar core download
 
-  # install wordpress
+  # install WordPress
   - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
   - /tmp/tools/wp-cli.phar core install --url=localhost --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
   - /tmp/tools/wp-cli.phar core version
@@ -63,5 +65,5 @@ script:
   # - sudo apache2ctl -S
    # - php ./vendor/bin/codecept run unit
    # - php ./vendor/bin/codecept run wpmodule AdminAccessCest:it_should_be_able_to_visit_the_admin_area_when_unlogged -vvv
-#  - php $TRAVIS_BUILD_DIR/vendor/bin/codecept run acceptance HomepageCept -vvv
   - curl http://localhost
+  - php vendor/bin/codecept run acceptance HomepageCept -vvv
