@@ -1,6 +1,8 @@
 <VirtualHost *:80>
 
-  ServerName 127.0.0.1
+  ServerName wordpress.dev
+  ServerAlias *.wordpress.dev
+
   DocumentRoot %WP_DIR%
 
   <Directory "%WP_DIR%">

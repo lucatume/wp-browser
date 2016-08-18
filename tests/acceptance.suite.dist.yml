@@ -12,7 +12,7 @@ modules:
         - AcceptanceHelper
     config:
         WPBrowser:
-              url: 'http://localhost'
+              url: 'http://wordpress.dev'
               adminUsername: 'admin'
               adminPassword: 'admin'
               adminPath: '/wp-admin'
@@ -24,6 +24,6 @@ modules:
               populate: true
               cleanup: true
               reconnect: false
-              url: 'http://localhost'
+              url: 'http://wordpress.dev'
               tablePrefix: 'wp_'
 

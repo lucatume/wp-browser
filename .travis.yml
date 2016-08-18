@@ -36,7 +36,7 @@ before_script:
 
   # install WordPress
   - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
-  - /tmp/tools/wp-cli.phar core install --url=localhost --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
+  - /tmp/tools/wp-cli.phar core install --url=wordpress.dev --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com
   - /tmp/tools/wp-cli.phar core version
 
   # export a dump of the just installed database to the _data folder
@@ -59,6 +59,7 @@ before_script:
   # Configure apache virtual hosts
   - sudo cp -f $TRAVIS_BUILD_DIR/build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/default
+  - echo '127.0.0.1 wordpress.dev' | sudo tee --append /etc/hosts > /dev/null
 
   # Restart services
   - sudo service apache2 restart
