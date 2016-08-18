@@ -70,4 +70,4 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - php vendor/bin/codecept run acceptance
+  - php vendor/bin/codecept run
