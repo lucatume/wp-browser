@@ -48,7 +48,7 @@ class DbSnapshotTest extends \Codeception\TestCase\Test
 
         $commandTester->execute([
             'command' => $command->getName(),
-            'name' => 'codeception-acceptance',
+            'name' => 'test',
             'snapshot' => 'issue4455',
             '--dump-file' => $dumpFile,
             '--dist-dump-file' => $distDumpFile,
@@ -87,7 +87,7 @@ class DbSnapshotTest extends \Codeception\TestCase\Test
 
         $commandTester->execute([
             'command' => $command->getName(),
-            'name' => 'codeception-acceptance',
+            'name' => 'test',
             'snapshot' => 'issue4455',
             '--dump-file' => $dumpFile,
             '--dist-dump-file' => $distDumpFile,
