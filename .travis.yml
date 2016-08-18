@@ -60,6 +60,8 @@ before_script:
   # Restart services
   - sudo service apache2 restart
 
+  # Get back to Travis build dir
+  - cd $TRAVIS_BUILD_DIR
+
 script:
-  - ls
-#  - php vendor/bin/codecept run acceptance HomepageCept -vvv
+  - php vendor/bin/codecept run acceptance HomepageCept -vvv
