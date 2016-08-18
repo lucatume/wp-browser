@@ -36,7 +36,7 @@ before_script:
 
   # install WordPress
   - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=acceptance_ --skip-salts
-  - /tmp/tools/wp-cli.phar core multisite-install --url=wordpress.dev --base=/ --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com --subdomains --skip-emailj
+  - /tmp/tools/wp-cli.phar core multisite-install --url=wordpress.dev --base=/ --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com --subdomains --skip-email
   - /tmp/tools/wp-cli.phar site create --slug=test1 --title="Test Subdomain 1"
   - /tmp/tools/wp-cli.phar site create --slug=test2 --title="Test Subdomain 2"
   - /tmp/tools/wp-cli.phar core version
