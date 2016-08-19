@@ -4,9 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.15.3] 2016-08-19
+### Addded
+- Travis CI integration
+
+### Fixed
+- a smaller issue with tests for the `WPBootstrapper` module and `DbSnapshot` command
+
 ##[1.15.2] 2016-08-10
 ### Fixed
-- `WordPres` module not dumping page source on failure (thanks @kbmt)
+- `WordPress` module not dumping page source on failure (thanks @kbmt)
 
 ### Changed
 - better uri parsing in `WordPres` module (thanks @kbmt)
@@ -420,7 +427,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.2...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.3...HEAD
+[1.15.3]: https://github.com/lucatume/wp-browser/compare/1.15.2...1.15.3
 [1.15.2]: https://github.com/lucatume/wp-browser/compare/1.15.1...1.15.2
 [1.15.1]: https://github.com/lucatume/wp-browser/compare/1.15.0...1.15.1
 [1.15.0]: https://github.com/lucatume/wp-browser/compare/1.14.3...1.15.0
