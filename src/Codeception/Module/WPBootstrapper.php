@@ -7,6 +7,7 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use SebastianBergmann\GlobalState\Restorer;
 use SebastianBergmann\GlobalState\Snapshot;
+use tad\WPBrowser\Adapters\WP;
 
 /**
  * Class WPBootstrapper
@@ -38,12 +39,18 @@ class WPBootstrapper extends Module
     /**
      * @var Restorer
      */
-    private $restorer;
+    protected $restorer;
 
-    public function __construct(ModuleContainer $moduleContainer, $config, Restorer $restorer = null)
+    /**
+     * @var WP
+     */
+    protected $wp;
+
+    public function __construct(ModuleContainer $moduleContainer, $config, Restorer $restorer = null, WP $wp = null)
     {
         parent::__construct($moduleContainer, $config);
         $this->restorer = $restorer ?: new Restorer();
+        $this->wp = $wp ? $wp : new WP();
     }
 
     public function _initialize()
@@ -84,7 +91,7 @@ class WPBootstrapper extends Module
 
         // prevent WordPress from trying to update when bootstrapping
         foreach (['update_core', 'update_plugins', 'update_themes'] as $key) {
-            set_site_transient($key, (object)['last_checked' => time() + 86400]);
+            $this->wp->set_site_transient($key, (object)['last_checked' => time() + 86400]);
         }
 
         sleep(2);

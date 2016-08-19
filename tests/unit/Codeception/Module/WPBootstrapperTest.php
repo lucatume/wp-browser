@@ -6,6 +6,7 @@ use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use SebastianBergmann\GlobalState\Restorer;
+use tad\WPBrowser\Adapters\WP;
 
 class WPBootstrapperTest extends \Codeception\TestCase\Test
 {
@@ -29,6 +30,11 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
      * @var Restorer
      */
     protected $restorer;
+
+    /**
+     * @var WP
+     */
+    protected $wp;
 
     public static function setUpBeforeClass()
     {
@@ -57,7 +63,7 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
 
     private function make_instance()
     {
-        return new WPBootstrapper($this->module_container->reveal(), $this->config, $this->restorer->reveal());
+        return new WPBootstrapper($this->module_container->reveal(), $this->config, $this->restorer->reveal(), $this->wp->reveal());
     }
 
     /**
@@ -211,32 +217,27 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
     {
         vfsStream::setup('wproot4', null, ['wp' => ['wp-load.php' => '<?php global $_flag; $_flag = true; ?>']]);
         $this->config['wpRootFolder'] = vfsStream::url('wproot4/wp');
+        foreach (['update_core', 'update_plugins', 'update_themes'] as $key) {
+            $this->wp->set_site_transient($key, Argument::type('stdClass'), Argument::any())->shouldBeCalled();
+        }
         $sut = $this->make_instance();
         $sut->_initialize();
 
         $sut->bootstrapWp();
-
-        global $_transients;
-        $this->assertInternalType('array', $_transients);
-        foreach (['update_core', 'update_plugins', 'update_themes'] as $key) {
-            $this->assertArrayHasKey($key, $_transients);
-            $this->assertInstanceOf('stdClass', $_transients[$key]);
-            $this->assertObjectHasAttribute('last_checked', $_transients[$key]);
-            $expectedTime = time() + 86400;
-            $this->assertEquals($expectedTime, $_transients[$key]->last_checked, null, 5.0);
-        }
     }
 
     protected function _before()
     {
         global $_flag;
         $_flag = false;
-        $this->module_container = $this->prophesize('Codeception\Lib\ModuleContainer');
+        $this->module_container = $this->prophesize(ModuleContainer::class);
         vfsStream::setup('wproot', null, ['wp' => ['wp-load.php' => '// load WordPress']]);
         $this->config = [
             'wpRootFolder' => vfsStream::url('wproot')
         ];
-        $this->restorer = $this->prophesize('SebastianBergmann\GlobalState\Restorer');
+        $this->restorer = $this->prophesize(Restorer::class);
+        $this->wp = $this->prophesize(WP::class);
+        $this->wp->set_site_transient(Argument::type('string'), Argument::any(), Argument::any())->willReturn(true);
     }
 
     protected function _after()
