@@ -19,8 +19,8 @@ env:
   - WPDBNAME=test WPLOADERDBNAME=wploader WPDBPREFIX=wp_ WPURL=wordpress.dev WPADMINUSERNAME=admin WPAMDINPASSWORD=admin WPSUBDOMAIN1=test1 WPSUBDOMAIN1TITLE="Test Subdomain 1" WPSUBDOMAIN2=test2 WPSUBDOMAIN2TITLE="Test Subdomain 2"
 
 before_install:
-  - mysql -e "create database IF NOT EXISTS ${WPDBNAME};" -uroot
-  - mysql -e "create database IF NOT EXISTS ${WPLOADERDBNAME};" -uroot
+  - mysql -e "create database IF NOT EXISTS test;" -uroot
+  - mysql -e "create database IF NOT EXISTS wploader;" -uroot
 
 install:
   - composer update --prefer-dist
