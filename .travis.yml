@@ -13,36 +13,48 @@ cache:
   directories:
     - vendor
     - $HOME/.composer/cache
+    #todo: add wp-cli cache folder here
+
+env:
+  - WPDBNAME=test
+  - WPLOADERDBNAME=test
+  - WPDBPREFIX=wp_
+  - WPURL=wordpress.dev
+  - WPADMINUSERNAME=admin
+  - WPAMDINPASSWORD=admin
+  - WPSUBDOMAIN1=test1
+  - WPSUBDOMAIN1TITLE="Test Subdomain 1"
+  - WPSUBDOMAIN2=test2
+  - WPSUBDOMAIN2TITLE="Test Subdomain 2"
 
 before_install:
-  - mysql -e "create database IF NOT EXISTS test;" -uroot
-  - mysql -e "create database IF NOT EXISTS wploader;" -uroot
+  - mysql -e "create database IF NOT EXISTS $WPDBNAME;" -uroot
+  - mysql -e "create database IF NOT EXISTS $WPLOADERDBNAME;" -uroot
 
 install:
   - composer update --prefer-dist
 
 before_script:
   # set up folders
-  - mkdir -p /tmp/tools
-  - mkdir -p /tmp/wordpress
+  - mkdir -p $HOME/tools /tmp/wordpress
 
   # install wp-cli
-  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
-  - chmod +x /tmp/tools/wp-cli.phar
+  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $HOME/tools/
+  - chmod +x $HOME/tools/wp-cli.phar && mv $HOME/tools/wp-cli.phar $HOME/tools/wp
+  - echo 'export PATH="$PATH:$HOME/tools:vendor/bin"' >> $HOME/.bashrc && source $HOME/.bashrc
 
   # download wordpress
-  - cd /tmp/wordpress
-  - /tmp/tools/wp-cli.phar core download
+  - cd /tmp/wordpress && wp core download
 
   # install WordPress
-  - /tmp/tools/wp-cli.phar core config --dbname=test --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=wp_ --skip-salts
-  - /tmp/tools/wp-cli.phar core multisite-install --url=wordpress.dev --base=/ --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@test.com --subdomains --skip-email
-  - /tmp/tools/wp-cli.phar site create --slug=test1 --title="Test Subdomain 1"
-  - /tmp/tools/wp-cli.phar site create --slug=test2 --title="Test Subdomain 2"
-  - /tmp/tools/wp-cli.phar core version
+  -  wp core config --dbname=$WPDBNAME --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=WPDBPREFIX --skip-salts
+  -  wp core multisite-install --url=$WPURL --base=/ --title=Test --admin_user=$WPADMINUSERNAME --admin_password=$WPAMDINPASSWORD --admin_email=admin@$WPURL --subdomains --skip-email
+  -  wp site create --slug=$WPSUBDOMAIN1 --title="$WPSUBDOMAIN1TITLE"
+  -  wp site create --slug=$WPSUBDOMAIN2 --title="$WPSUBDOMAIN2TITLE"
+  -  wp core version
 
   # export a dump of the just installed database to the _data folder
-  - /tmp/tools/wp-cli.phar db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
+  -  wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
   # update and install apache2 packages
   # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
