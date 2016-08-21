@@ -31,7 +31,7 @@ before_script:
   # install wp-cli
   - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $HOME/tools/
   - chmod +x $HOME/tools/wp-cli.phar && mv $HOME/tools/wp-cli.phar $HOME/tools/wp
-  - echo 'export PATH="$PATH:$HOME/tools:vendor/bin"' >> $HOME/.bashrc && source && exec bash
+  - echo 'export PATH="$PATH:$HOME/tools:vendor/bin"' >> $HOME/.bashrc && source ~/.bashrc 
   
   # download wordpress
   - cd /tmp/wordpress && wp core download
