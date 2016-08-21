@@ -16,20 +16,10 @@ cache:
     #todo: add wp-cli cache folder here
 
 env:
-  - WPDBNAME=test
-  - WPLOADERDBNAME=test
-  - WPDBPREFIX=wp_
-  - WPURL=wordpress.dev
-  - WPADMINUSERNAME=admin
-  - WPAMDINPASSWORD=admin
-  - WPSUBDOMAIN1=test1
-  - WPSUBDOMAIN1TITLE="Test Subdomain 1"
-  - WPSUBDOMAIN2=test2
-  - WPSUBDOMAIN2TITLE="Test Subdomain 2"
-
+  - WPDBNAME=test WPLOADERDBNAME=test WPDBPREFIX=wp_ WPURL=wordpress.dev WPADMINUSERNAME=admin WPAMDINPASSWORD=admin WPSUBDOMAIN1=test1 WPSUBDOMAIN1TITLE="Test Subdomain 1" WPSUBDOMAIN2=test2 WPSUBDOMAIN2TITLE="Test Subdomain 2"
 before_install:
-  - mysql -e "create database IF NOT EXISTS $WPDBNAME;" -uroot
-  - mysql -e "create database IF NOT EXISTS $WPLOADERDBNAME;" -uroot
+  - mysql -e "create database IF NOT EXISTS ${WPDBNAME};" -uroot
+  - mysql -e "create database IF NOT EXISTS ${WPLOADERDBNAME};" -uroot
 
 install:
   - composer update --prefer-dist
