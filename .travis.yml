@@ -29,9 +29,9 @@ before_script:
   - mkdir -p $HOME/tools /tmp/wordpress
 
   # install wp-cli
-  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $HOME/tools/
-  - chmod +x $HOME/tools/wp-cli.phar && mv $HOME/tools/wp-cli.phar $HOME/tools/wp
-  - echo 'export PATH="$PATH:$HOME/tools:vendor/bin"' >> $HOME/.bashrc && source ~/.bashrc 
+  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
+  - chmod +x /tmp/tools/wp-cli.phar && mv /tmp/tools/wp-cli.phar /tmp/tools/wp
+  - export PATH=$PATH:/tmp/tools:vendor/bin
   
   # download wordpress
   - cd /tmp/wordpress && wp core download
