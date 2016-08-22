@@ -13,13 +13,13 @@ cache:
   directories:
     - vendor
     - $HOME/.composer/cache
-    #todo: add wp-cli cache folder here
 
 env:
-  - wp_dbname=test wp_loader_dbname=test wp_dbprefix=wp_ wp_url=wordpress.dev wp_adminUsername=admin wp_adminPassword=admin wp_subdomain1=test1 wp_subdomain1Title="Test Subdomain 1" wp_subdomain2=test2 wp_subdomain2Title="Test Subdomain 2"
+  - wpDbName=test wpLoaderDbName=test wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
+
 before_install:
-  - mysql -e "create database IF NOT EXISTS $wp_dbname;" -uroot
-  - mysql -e "create database IF NOT EXISTS $wp_loader_dbname;" -uroot
+  - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
+  - mysql -e "create database IF NOT EXISTS $wpLoaderDbName;" -uroot
 
 install:
   - composer update --prefer-dist
@@ -29,18 +29,18 @@ before_script:
   - mkdir -p $HOME/tools /tmp/wordpress
 
   # install wp-cli
-  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $HOME/tools/
-  - chmod +x $HOME/tools/wp-cli.phar && mv $HOME/tools/wp-cli.phar $HOME/tools/wp
-  - echo 'export PATH="$PATH:$HOME/tools:vendor/bin"' >> $HOME/.bashrc && source ~/.bashrc 
-  
+  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P /tmp/tools/
+  - chmod +x /tmp/tools/wp-cli.phar && mv /tmp/tools/wp-cli.phar /tmp/tools/wp
+  - export PATH=$PATH:/tmp/tools:vendor/bin
+
   # download wordpress
   - cd /tmp/wordpress && wp core download
 
   # install WordPress
-  -  wp core config --dbname=$wp_dbname --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wp_dbprefix --skip-salts
-  -  wp core multisite-install --url=$wp_url --base=/ --title=Test --admin_user=$wp_adminUsername --admin_password=$wp_adminPassword --admin_email=admin@$wp_url --subdomains --skip-email
-  -  wp site create --slug=$wp_subdomain1 --title=$wp_subdomain1Title
-  -  wp site create --slug=$wp_subdomain2 --title=$wp_subdomain2Title
+  -  wp core config --dbname=$wpDbName --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wpDbPrefix --skip-salts
+  -  wp core multisite-install --url=$wpUrl --base=/ --title=Test --admin_user=$wpAdminUsername --admin_password=$wpAdminPassword --admin_email=admin@$wpUrl --subdomains --skip-email
+  -  wp site create --slug=$wpSubdomain1 --title=$wpSubdomain1Title
+  -  wp site create --slug=$wpSubdomain2 --title=$wpSubdomain2Title
   -  wp core version
 
   # export a dump of the just installed database to the _data folder
