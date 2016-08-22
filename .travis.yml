@@ -39,8 +39,8 @@ before_script:
   # install WordPress
   -  wp core config --dbname=$wpDbName --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wpDbPrefix --skip-salts
   -  wp core multisite-install --url=$wpUrl --base=/ --title=Test --admin_user=$wpAdminUsername --admin_password=$wpAdminPassword --admin_email=admin@$wpUrl --subdomains --skip-email
-  -  wp site create --slug=$wpSubdomain1 --title=$wpSubdomain1Title
-  -  wp site create --slug=$wpSubdomain2 --title=$wpSubdomain2Title
+  -  wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
+  -  wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
   -  wp core version
 
   # export a dump of the just installed database to the _data folder
