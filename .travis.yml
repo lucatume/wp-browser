@@ -16,10 +16,10 @@ cache:
     #todo: add wp-cli cache folder here
 
 env:
-  - WPDBNAME=test WPLOADERDBNAME=test WPDBPREFIX=wp_ WPURL=wordpress.dev WPADMINUSERNAME=admin WPAMDINPASSWORD=admin WPSUBDOMAIN1=test1 WPSUBDOMAIN1TITLE="Test Subdomain 1" WPSUBDOMAIN2=test2 WPSUBDOMAIN2TITLE="Test Subdomain 2"
+  - wp_dbname=test wp_loader_dbname=test wp_dbprefix=wp_ wp_url=wordpress.dev wp_adminUsername=admin wp_adminPassword=admin wp_subdomain1=test1 wp_subdomain1Title="Test Subdomain 1" wp_subdomain2=test2 wp_subdomain2Title="Test Subdomain 2"
 before_install:
-  - mysql -e "create database IF NOT EXISTS ${WPDBNAME};" -uroot
-  - mysql -e "create database IF NOT EXISTS ${WPLOADERDBNAME};" -uroot
+  - mysql -e "create database IF NOT EXISTS $wp_dbname;" -uroot
+  - mysql -e "create database IF NOT EXISTS $wp_loader_dbname;" -uroot
 
 install:
   - composer update --prefer-dist
@@ -37,10 +37,10 @@ before_script:
   - cd /tmp/wordpress && wp core download
 
   # install WordPress
-  -  wp core config --dbname=$WPDBNAME --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=WPDBPREFIX --skip-salts
-  -  wp core multisite-install --url=$WPURL --base=/ --title=Test --admin_user=$WPADMINUSERNAME --admin_password=$WPAMDINPASSWORD --admin_email=admin@$WPURL --subdomains --skip-email
-  -  wp site create --slug=$WPSUBDOMAIN1 --title="$WPSUBDOMAIN1TITLE"
-  -  wp site create --slug=$WPSUBDOMAIN2 --title="$WPSUBDOMAIN2TITLE"
+  -  wp core config --dbname=$wp_dbname --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wp_dbprefix --skip-salts
+  -  wp core multisite-install --url=$wp_url --base=/ --title=Test --admin_user=$wp_adminUsername --admin_password=$wp_adminPassword --admin_email=admin@$wp_url --subdomains --skip-email
+  -  wp site create --slug=$wp_subdomain1 --title=$wp_subdomain1Title
+  -  wp site create --slug=$wp_subdomain2 --title=$wp_subdomain2Title
   -  wp core version
 
   # export a dump of the just installed database to the _data folder
