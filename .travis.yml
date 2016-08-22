@@ -15,7 +15,16 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - wpDbName=test wpLoaderDbName=test wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
+  - wpDbName=test
+  - wpLoaderDbName=wploader
+  - wpDbPrefix=wp_
+  - wpUrl=wordpress.dev
+  - wpAdminUsername=admin
+  - wpAdminPassword=admin
+  - wpSubdomain1=test1
+  - wpSubdomain1Title="Test Subdomain 1"
+  - wpSubdomain2=test2
+  - wpSubdomain2Title="Test Subdomain 2"
 
 before_install:
   - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
