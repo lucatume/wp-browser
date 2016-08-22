@@ -40,11 +40,14 @@ before_script:
   - cd /tmp/wordpress && wp core download
 
   # install WordPress
-  -  wp core config --dbname=$wpDbName --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wpDbPrefix --skip-salts
-  -  wp core multisite-install --url=$wpUrl --base=/ --title=Test --admin_user=$wpAdminUsername --admin_password=$wpAdminPassword --admin_email=admin@$wpUrl --subdomains --skip-email
-  -  wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
-  -  wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
-  -  wp core version
+  - wp core config --dbname=$wpDbName --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wpDbPrefix --skip-salts
+  - wp core multisite-install --url=$wpUrl --base=/ --title=Test --admin_user=$wpAdminUsername --admin_password=$wpAdminPassword --admin_email=admin@$wpUrl --subdomains --skip-email
+  - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
+  - wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
+  - wp site empty --yes
+  - wp plugin delete $(wp plugin list --field=name)
+  - wp theme activate twentysixteen && wp theme delete $(wp theme list --field=name --status=inactive)
+  - wp core version
 
   # export a dump of the just installed database to the _data folder
   -  wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
@@ -66,6 +69,7 @@ before_script:
   # Configure apache virtual hosts
   - sudo cp -f $TRAVIS_BUILD_DIR/build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/default
+  - sudo sed -e "s?%WP_URL%?$wpUrl?g" --in-place /etc/apache2/sites-available/default
   - echo '127.0.0.1 wordpress.dev' | sudo tee --append /etc/hosts > /dev/null
 
   # Restart services
@@ -75,4 +79,4 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - php vendor/bin/codecept run
+  - codecept run
