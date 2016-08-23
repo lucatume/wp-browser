@@ -1,10 +1,5 @@
 Add:
-	wploader:
-		- explicit theme support
 	wpwebdriver:
 		- ui/admin acceptance classes
 	module:
-	    - real functional module
-	module:
-	    - wp-cli integration
-	    for db and site manipulation
+	    - wp-cli integration for db and site manipulation
