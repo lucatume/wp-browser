@@ -36,6 +36,9 @@ before_script:
   - chmod +x /tmp/tools/wp-cli.phar && mv /tmp/tools/wp-cli.phar /tmp/tools/wp
   - export PATH=$PATH:/tmp/tools:vendor/bin
 
+  # install Apache setup script
+  - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/apache-setup && chmod +x /tmp/tools/apache-setup/apache-setup.sh && mv /tmp/tools/apache-setup/apache-setup.sh /tmp/tools/apache-setup
+
   # download wordpress
   - cd /tmp/wordpress && wp core download
 
@@ -50,30 +53,10 @@ before_script:
   - wp core version
 
   # export a dump of the just installed database to the _data folder
-  -  wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
+  - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
-  # update and install apache2 packages
-  - sudo apt-get update
-  - sudo apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
-  - sudo apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-curl php5-gd php5-json php5-sqlite php5-pgsql
-  - sudo a2enmod headers
-
-  # Enable php-fpm
-  # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp $TRAVIS_BUILD_DIR/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
-  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sudo a2enmod rewrite actions fastcgi alias
-  - sudo echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-
-  # Configure apache virtual hosts
-  - sudo cp -f $TRAVIS_BUILD_DIR/build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%WP_DIR%?/tmp/wordpress?g" --in-place /etc/apache2/sites-available/default
-  - sudo sed -e "s?%WP_URL%?$wpUrl?g" --in-place /etc/apache2/sites-available/default
-  - echo '127.0.0.1 wordpress.dev' | sudo tee --append /etc/hosts > /dev/null
-
-  # Restart services
-  - sudo service apache2 restart
+  # set up Apache virtual host
+  - sudo apache-setup -h="127.0.0.1" -u=$wpUrl -f=/tmp/wordpress
 
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
