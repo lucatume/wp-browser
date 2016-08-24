@@ -37,7 +37,7 @@ before_script:
   - export PATH=$PATH:/tmp/tools:vendor/bin
 
   # install Apache setup script
-  - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/travis-apache-setup && chmod +x /tmp/tools/travis-apache-setup/apache-setup.sh && mv /tmp/tools/travis-apache-setup/apache-setup.sh /tmp/tools/apache-setup
+  - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/travis-apache-setup && chmod +x /tmp/tools/travis-apache-setup/apache-setup.sh
 
   # download wordpress
   - cd /tmp/wordpress && wp core download
@@ -56,7 +56,7 @@ before_script:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
   # set up Apache virtual host
-  - sudo apache-setup -h="127.0.0.1" -u=$wpUrl -f=/tmp/wordpress
+  - sudo sh /tmp/tools/travis-apache-setup/apache-setup.sh -h="127.0.0.1" -u=$wpUrl -f=/tmp/wordpress
 
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
