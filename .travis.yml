@@ -37,7 +37,9 @@ before_script:
   - export PATH=$PATH:/tmp/tools:vendor/bin
 
   # install Apache setup script
-  - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/travis-apache-setup && chmod +x /tmp/tools/travis-apache-setup/apache-setup.sh && mv /tmp/tools/travis-apache-setup/apache-setup.sh /tmp/tools/apache-setup
+  - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/travis-apache-setup
+  - chmod +x /tmp/tools/travis-apache-setup/apache-setup.sh
+  - mv /tmp/tools/travis-apache-setup/apache-setup.sh /tmp/tools/apache-setup
 
   # download wordpress
   - cd /tmp/wordpress && wp core download
