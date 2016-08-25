@@ -56,7 +56,7 @@ before_script:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
   # set up Apache virtual host
-  - apache-setup -h "127.0.0.1" -u "$wpUrl" -f "/tmp/wordpress
+  - apache-setup -h "127.0.0.1" -u "$wpUrl" -f "/tmp/wordpress"
 
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
