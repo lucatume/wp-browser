@@ -44,7 +44,7 @@ before_script:
   # download wordpress
   - cd /tmp/wordpress && wp core download
 
-  # install WordPress
+  # install WordPress as multisite
   - wp core config --dbname=$wpDbName --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=$wpDbPrefix --skip-salts
   - wp core multisite-install --url=$wpUrl --base=/ --title=Test --admin_user=$wpAdminUsername --admin_password=$wpAdminPassword --admin_email=admin@$wpUrl --subdomains --skip-email
   - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
