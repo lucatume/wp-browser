@@ -36,7 +36,7 @@ before_script:
   - chmod +x /tmp/tools/wp-cli.phar && mv /tmp/tools/wp-cli.phar /tmp/tools/wp
   - export PATH=$PATH:/tmp/tools:vendor/bin
 
-  # install Apache setup script
+  # install Apache and WordPress setup scripts
   - git clone https://github.com/lucatume/travis-apache-setup.git /tmp/tools/travis-apache-setup
   - chmod +x /tmp/tools/travis-apache-setup/apache-setup.sh
   - chmod +x /tmp/tools/travis-apache-setup/wp-install.sh
