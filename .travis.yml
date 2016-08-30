@@ -44,7 +44,7 @@ before_script:
   - ln -s /tmp/tools/travis-apache-setup/wp-install.sh /tmp/tools/wp-install
 
   # download and install WordPress
-  - wp-install --dir=/tmp/wordpress --multisite --empty --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbprefix=wp_ --domain="wordpress.dev" --title="Test" --base=/ --admin_user=admin --admin_password=admin --admin_email=admin@wordpress.dev --theme=twentysixteen
+  - wp-install --dir=/tmp/wordpress --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbprefix=wp_ --domain="wordpress.dev" --title="Test" --base=/ --admin_user=admin --admin_password=admin --admin_email=admin@wordpress.dev --theme=twentysixteen --multisite --empty 
   - cd /tmp/wordpress
   - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
   - wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
