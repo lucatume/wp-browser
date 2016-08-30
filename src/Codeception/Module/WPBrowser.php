@@ -95,4 +95,20 @@ class WPBrowser extends PhpBrowser
 
         parent::validateConfig();
     }
+
+    public function activatePlugin($pluginSlug)
+    {
+        $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+        $this->selectOption('action', 'activate-selected');
+        $this->click("doaction");
+    }
+
+    public function deactivatePlugin($pluginSlug)
+    {
+        $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+        $this->selectOption('action', 'deactivate-selected');
+        $this->click("doaction");
+    }
+
+
 }
