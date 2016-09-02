@@ -3,3 +3,4 @@ modules:
     enabled:
         - \Helper\Climodule
         - WPCLI
+        - WPDb

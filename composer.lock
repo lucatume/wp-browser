@@ -3421,7 +3421,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Symfony\\Component\\Process\\": ""
+                    "Symfony\\Component\\Executor\\": ""
                 },
                 "exclude-from-classmap": [
                     "/Tests/"
@@ -3441,7 +3441,7 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony Process Component",
+            "description": "Symfony Executor Component",
             "homepage": "https://symfony.com",
             "time": "2016-07-28 11:13:19"
         },
