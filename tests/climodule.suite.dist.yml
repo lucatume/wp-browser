@@ -4,3 +4,22 @@ modules:
         - \Helper\Climodule
         - WPCLI
         - WPDb
+        - WPBrowser
+    config:
+        WPCLI:
+            path: /tmp/wordpress
+        WPDb:
+              dsn: 'mysql:host=localhost;dbname=test'
+              user: 'root'
+              password: ''
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              reconnect: false
+              url: 'http://wordpress.dev'
+              tablePrefix: 'wp_'
+        WPBrowser:
+              url: 'http://wordpress.dev'
+              adminUsername: 'admin'
+              adminPassword: 'admin'
+              adminPath: '/wp-admin'

@@ -61,7 +61,11 @@ class WPCLI extends Module
 
         $command = implode(' ', [PHP_BINARY, $this->bootPath, $this->getCommonOptions(), $userCommand]);
 
-        return $this->executor->exec($command, $output);
+        $this->debugSection('command', $command);
+        $return = $this->executor->exec($command, $output);
+        $this->debugSection('output', $output);
+
+        return $return;
     }
 
     /**
@@ -81,7 +85,6 @@ class WPCLI extends Module
     {
         $commonOptions = [
             'path' => $this->config['path'],
-            'debug' => true
         ];
 
         foreach ($this->options as $key) {

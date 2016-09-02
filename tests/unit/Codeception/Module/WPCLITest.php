@@ -111,22 +111,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut->cli('core version');
     }
 
-    /**
-     * @test
-     * it should set debug paramter by default
-     */
-    public function it_should_set_debug_paramter_by_default()
-    {
-        $this->executor->exec(Argument::containingString('--debug'), Argument::any(), Argument::any())->shouldBeCalled();
-
-        $sut = $this->make_instance();
-
-        $sut->cli('core version');
-    }
-
     public function skippedOptions()
     {
         return [
+            ['debug'],
             ['color'],
             ['prompt'],
             ['quiet']
