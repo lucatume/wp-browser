@@ -88,7 +88,8 @@ class WPCLI extends Module
             $this->initWpCliPaths();
         }
 
-        $command = implode(' ', [PHP_BINARY, $this->bootPath, $this->getCommonOptions(), $userCommand]);
+        $mergedCommand = $this->mergeCommandOptions($userCommand);
+        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
 
         $this->debugSection('command', $command);
         $return = $this->executor->exec($command, $output);
@@ -110,25 +111,33 @@ class WPCLI extends Module
         $this->bootPath = $this->wpCliRoot . '/php/boot-fs.php';
     }
 
-    private function getCommonOptions()
+    protected function mergeCommandOptions($userCommand)
     {
         $commonOptions = [
             'path' => $this->config['path'],
         ];
 
+        $lineOptions = [];
+
+        $nonOverriddenOptions = [];
         foreach ($this->options as $key) {
+            if ($key !== 'require' && false !== strpos($userCommand, '--' . $key)) {
+                continue;
+            }
+            $nonOverriddenOptions[] = $key;
+        }
+
+        foreach ($nonOverriddenOptions as $key) {
             if (isset($this->config[$key])) {
                 $commonOptions[$key] = $this->config[$key];
             }
         }
 
-        $lineOptions = [];
-
         foreach ($commonOptions as $key => $value) {
             $lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
         }
 
-        return implode(' ', $lineOptions);
+        return $userCommand . ' ' . implode(' ', $lineOptions);
     }
 
     protected function debugSection($title, $message)

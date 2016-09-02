@@ -136,6 +136,22 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut->cli('core version');
     }
 
+    /**
+     * @test
+     * it should allow overriding options with inline command
+     * @dataProvider optionalOptionsWithArguments
+     */
+    public function it_should_allow_overriding_options_with_inline_command($option, $optionValue)
+    {
+        $this->config[$option] = $optionValue;
+        $overrideValue = 'another-' . $option . '-value';
+        $this->executor->exec(Argument::containingString('--' . $option . '=' . $overrideValue), Argument::any(), Argument::any())->shouldBeCalled();
+
+        $sut = $this->make_instance();
+
+        $sut->cli('core version --' . $option . '=' . $overrideValue);
+    }
+
     protected function _before()
     {
         $this->moduleContainer = $this->prophesize(ModuleContainer::class);
