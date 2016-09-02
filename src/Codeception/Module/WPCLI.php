@@ -9,11 +9,20 @@ use Codeception\Module;
 use tad\WPBrowser\Environment\Executor;
 use WP_CLI\Configurator;
 
+/**
+ * Class WPCLI
+ *
+ * Wraps calls to the wp-cli tool.
+ *
+ * @package Codeception\Module
+ */
 class WPCLI extends Module
 
 {
     /**
-     * @var array
+     * @var array {
+     * @param string $path The absolute path to the target WordPress installation root folder.
+     * }
      */
     protected $requiredFields = ['path'];
 
@@ -42,6 +51,15 @@ class WPCLI extends Module
      */
     protected $options = ['ssh', 'http', 'url', 'user', 'skip-plugins', 'skip-themes', 'skip-packages', 'require'];
 
+    /**
+     * WPCLI constructor.
+     *
+     * @param ModuleContainer $moduleContainer
+     * @param null|array $config
+     * @param Executor|null $executor
+     *
+     * @throws ModuleConfigException If specifiec path is not a folder.
+     */
     public function __construct(ModuleContainer $moduleContainer, $config, Executor $executor = null)
     {
         parent::__construct($moduleContainer, $config);
@@ -53,6 +71,17 @@ class WPCLI extends Module
         $this->executor = $executor ?: new Executor($this->prettyName);
     }
 
+    /**
+     * Executes a wp-cli command.
+     *
+     * The method is a wrapper around isolated calls to the wp-cli tool.
+     * The library will use its own wp-cli version to run the commands.
+     *
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                            e.g. a terminal call like `wp core version` becomes `core version`
+     *                            omitting the call to wp-cli script.
+     * @return int wp-cli exit value for the command
+     */
     public function cli($userCommand = 'core version')
     {
         if (empty($this->wpCliRoot)) {
