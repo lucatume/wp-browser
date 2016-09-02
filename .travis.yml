@@ -28,7 +28,6 @@ install:
   - composer update --prefer-dist
 
 before_script:
-  - composer clear-cache
   # set up folders
   - mkdir -p $HOME/tools /tmp/wordpress
 
