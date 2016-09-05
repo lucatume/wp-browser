@@ -28,10 +28,11 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPBrowser - a PHP based, JavaScript-less and headless browser for **acceptance testing not requiring JavaScript support**
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
-* WPLoader - will load and configure a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
-* WPBootstrapper - will bootstrap an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
+* WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
+* WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertments to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it will load WordPress code in the same variable scope as the tests but will make GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
+* WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* testst.
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
@@ -219,7 +220,64 @@ modules:
 * `adminPassword` - the site administrator login name (required)
 * `adminPath` - the path, relative to the WordPress installation folder, to the admin area
 
-### wpcept command
+### WordPress module configuration
+This module is meant to be used in *functional* and *acceptance* tests to tap into the [wp-cli](http://wp-cli.org/) tool during tests.  
+An embedded wp-cli installation will be used skipping a missing or already defined one, **a working local installation of wp-cli is not required for this module**.  
+Calls to wp-cli are **synchronous** and **isolated**: wp-cli will run in a separate PHP process and will not share the environment with the test code.  
+The example configuration below shows the module used in an acceptance test conjunction with the WPBrowser module.
+
+```yaml
+modules:
+    enabled:
+        WPBrowser:
+            url: 'http://wp.dev'
+        WPCLI:
+            path: /Users/Luca/Sites/wp
+            throw: true
+```
+
+* `path` - string, required; the absolute path to the WordPress installation under test; if a [`config.yml` file] is found here it will be ignored by the module.
+* `throw` - bool, optional, defaults to `true`; whether errors returned from wp-cli execution should cause an exception or not; defaults to 
+* `ssh` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `http` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `url` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `user` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `skip-plugins` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `skip-themes` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `skip-packages` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+* `require` - string, optional; an SSH access string, see [wp-cli global parameters](http://wp-cli.org/config/#global-parameters).
+
+The module defines two methods wrapping calls to the wp-cli tool:
+
+* `cli(string $userCommand)` - executes `$userCommand` and returns **the command exit status**; `0` (shell equivalent of OK) will be cast to `true`.
+    ```php
+    $activated = $I->cli('plugin activate acme');
+    ```
+* `cliToArray(string $userCommand)` - executes `$userCommand` and returns the command output cast to array; the command will try to guess if the output should be split by newlines or spaces.
+    ```php
+    $inactiveThemes = $I->cliToArray('theme list --status=active --field=name');
+    ```
+    Should the default guessing prove wrong the optional `$splitCallback` argument can be used; the callback function will be passed 3 arguments:
+    
+    ```php
+    function splitCallback(string $output, string $userCommand, WPCLI $wpcli)
+    ```
+   
+   and is expected to return an array output.
+ 
+##### Option overrides
+Any option specified in the module configuration will be overridden (save for the `require` one that will be merged) by options and arguments specified inline in a command.  
+
+```php
+// Even if the config YAML file for the module defines the 'url' var the one specified inline will be used.
+$I->cli('wp post create --post_title=Foo --post_content=Foo --post_excerpt=Foo --url=http://subdomain.wordpress.dev');
+```
+   
+#### Configuration files
+Global and local [configuration files](http://wp-cli.org/config/#config-file) will be ignored; any additional parameter should be specified inline.  
+This prevents tests from running commands that would impact the WordPress installation in a way that would not be reversible (e.g. create or modify the `.htaccess` file); as a general guideline the wrapper is meant to be used to perform database reversible operations.
+
+### The `wpcept` command
 The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
 
 #### bootstrap

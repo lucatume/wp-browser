@@ -53,6 +53,13 @@ class WPCLI extends Module
     protected $options = ['ssh', 'http', 'url', 'user', 'skip-plugins', 'skip-themes', 'skip-packages', 'require'];
 
     /**
+     * @var array
+     */
+    protected $config = [
+        'throw' => true
+    ];
+
+    /**
      * WPCLI constructor.
      *
      * @param ModuleContainer $moduleContainer
@@ -214,7 +221,6 @@ class WPCLI extends Module
 
         $command = $this->buildCommand($userCommand);
 
-        $output = [];
         $this->debugSection('command', $command);
         $output = $this->executor->execAndOutput($command, $status);
         $this->debugSection('output', $output);
