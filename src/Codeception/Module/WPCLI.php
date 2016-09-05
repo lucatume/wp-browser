@@ -189,7 +189,7 @@ class WPCLI extends Module
      */
     protected function evaluateStatus(&$output, $status)
     {
-        if (!empty($this->config['throw']) && $status <= 0) {
+        if (!empty($this->config['throw']) && $status < 0) {
             $output = !is_array($output) ?: json_encode($output);
             $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
             throw new ModuleException(__CLASS__, $message);
@@ -215,7 +215,7 @@ class WPCLI extends Module
      *
      * @return array An array containing the output of wp-cli split into single elements.
      */
-    public function cliToArray($userCommand = 'post list --format=ids')
+    public function cliToArray($userCommand = 'post list --format=ids', callable  $splitCallback = null)
     {
         $this->initPaths();
 
@@ -231,10 +231,20 @@ class WPCLI extends Module
             return [];
         }
 
-        if (!preg_match('/[\\n]+/', $output)) {
-            $output = preg_split('/\\s+/', $output);
+        $hasSplitCallback = !is_null($splitCallback);
+        $originalOutput = $output;
+        if (!$hasSplitCallback) {
+            if (!preg_match('/[\\n]+/', $output)) {
+                $output = preg_split('/\\s+/', $output);
+            } else {
+                $output = preg_split('/\\s*\\n+\\s*/', $output);
+            }
         } else {
-            $output = preg_split('/\\s*\\n+\\s*/', $output);
+            $output = $splitCallback($output, $userCommand, $this);
+        }
+
+        if (!is_array($output) && $hasSplitCallback) {
+            throw new ModuleException(__CLASS__, "Split callback must return an array, it returned: \n" . print_r($output, true) . "\nfor original output:\n" . print_r($originalOutput, true));
         }
 
         return empty($output) ? [] : array_map('trim', $output);

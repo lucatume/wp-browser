@@ -36,7 +36,7 @@ class WPCLITest extends \Codeception\Test\Unit
      * @var array
      */
     protected $config = [
-        'throw' => false
+        'throw' => true
     ];
 
     /**
@@ -155,16 +155,6 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut->cli('core version --' . $option . '=' . $overrideValue);
     }
 
-    protected function _before()
-    {
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
-        $this->root = vfsStream::setup('root');
-        $wpDir = vfsStream::newDirectory('wp');
-        $this->root->addChild($wpDir);
-        $this->config = ['path' => $this->root->url() . '/wp'];
-        $this->executor = $this->prophesize(Executor::class);
-    }
-
     /**
      * @test
      * it should cast wp-cli errors to exceptions if specified in config
@@ -222,7 +212,49 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->assertEquals($expected, $ids);
     }
 
-    protected function _after()
+    /**
+     * @test
+     * it should allow defining a split callback function
+     */
+    public function it_should_allow_defining_a_split_callback_function()
     {
+        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('23 12');
+        $expected = [1, 2, 3];
+        $splitCallback = function () use ($expected) {
+            return $expected;
+        };
+
+        $sut = $this->make_instance();
+        $ids = $sut->cliToArray('post list --format==ids', $splitCallback);
+
+        $this->assertEquals($expected, $ids);
+    }
+
+    /**
+     * @test
+     * it should throw if split callback function does not return an array
+     */
+    public function it_should_throw_if_split_callback_function_does_not_return_an_array()
+    {
+        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('23 12');
+        $splitCallback = function () {
+            return 'foo';
+        };
+
+        $sut = $this->make_instance();
+
+
+        $this->expectException(ModuleException::class);
+        $ids = $sut->cliToArray('post list --format==ids', $splitCallback);
+    }
+
+    protected function _before()
+    {
+        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->root = vfsStream::setup('root');
+        $wpDir = vfsStream::newDirectory('wp');
+        $this->root->addChild($wpDir);
+        $this->config = ['path' => $this->root->url() . '/wp'];
+        $this->executor = $this->prophesize(Executor::class);
     }
 }
