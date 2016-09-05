@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.16.0] 2016-09-05
 ### Added
 - WPCLI module to use and access [wp-cli](http://wp-cli.org/) functionalities from within tests
 
@@ -432,7 +434,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.15.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.16.0...HEAD
+[1.16.0]: https://github.com/lucatume/wp-browser/compare/1.15.3...1.16.0
 [1.15.3]: https://github.com/lucatume/wp-browser/compare/1.15.2...1.15.3
 [1.15.2]: https://github.com/lucatume/wp-browser/compare/1.15.1...1.15.2
 [1.15.1]: https://github.com/lucatume/wp-browser/compare/1.15.0...1.15.1
