@@ -102,6 +102,13 @@ class WPCLI extends Module
         return $status;
     }
 
+    protected function initPaths()
+    {
+        if (empty($this->wpCliRoot)) {
+            $this->initWpCliPaths();
+        }
+    }
+
     /**
      * Initializes the wp-cli root location.
      *
@@ -115,6 +122,21 @@ class WPCLI extends Module
         $this->bootPath = $this->wpCliRoot . '/php/boot-fs.php';
     }
 
+    /**
+     * @param $userCommand
+     * @return string
+     */
+    protected function buildCommand($userCommand)
+    {
+        $mergedCommand = $this->mergeCommandOptions($userCommand);
+        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
+        return $command;
+    }
+
+    /**
+     * @param string $userCommand
+     * @return string
+     */
     protected function mergeCommandOptions($userCommand)
     {
         $commonOptions = [
@@ -144,6 +166,48 @@ class WPCLI extends Module
         return $userCommand . ' ' . implode(' ', $lineOptions);
     }
 
+    /**
+     * @param string $title
+     * @param string $message
+     */
+    protected function debugSection($title, $message)
+    {
+        parent::debugSection($this->prettyName . ' ' . $title, $message);
+    }
+
+    /**
+     * @param $output
+     * @param $status
+     * @throws ModuleException
+     */
+    protected function evaluateStatus(&$output, $status)
+    {
+        if (!empty($this->config['throw']) && $status <= 0) {
+            $output = !is_array($output) ?: json_encode($output);
+            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
+            throw new ModuleException(__CLASS__, $message);
+        }
+    }
+
+    /**
+     * Returns the output of a wp-cli command as an array.
+     *
+     * This method should be used in conjuction with wp-cli commands that will return lists.
+     * E.g.
+     *
+     *      $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
+     *
+     * The above command could return an array like
+     *
+     *      ['twentyfourteen', 'twentyfifteen']
+     *
+     * No check will be made on the command the user inserted for coherency with a split-able
+     * output.
+     *
+     * @param string $userCommand
+     *
+     * @return array An array containing the output of wp-cli split into single elements.
+     */
     public function cliToArray($userCommand = 'post list --format=ids')
     {
         $this->initPaths();
@@ -168,42 +232,5 @@ class WPCLI extends Module
         }
 
         return empty($output) ? [] : array_map('trim', $output);
-    }
-
-    protected function debugSection($title, $message)
-    {
-        parent::debugSection($this->prettyName . ' ' . $title, $message);
-    }
-
-    protected function initPaths()
-    {
-        if (empty($this->wpCliRoot)) {
-            $this->initWpCliPaths();
-        }
-    }
-
-    /**
-     * @param $userCommand
-     * @return string
-     */
-    protected function buildCommand($userCommand)
-    {
-        $mergedCommand = $this->mergeCommandOptions($userCommand);
-        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
-        return $command;
-    }
-
-    /**
-     * @param $output
-     * @param $status
-     * @throws ModuleException
-     */
-    protected function evaluateStatus(&$output, $status)
-    {
-        if (!empty($this->config['throw']) && $status <= 0) {
-            $output = !is_array($output) ?: json_encode($output);
-            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
-            throw new ModuleException(__CLASS__, $message);
-        }
     }
 }
