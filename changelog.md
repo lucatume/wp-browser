@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- WPCLI module to use and access [wp-cli](http://wp-cli.org/) functionalities from within tests
+
 ### Changed
 - Travis configuration file `.travis.yml` to use [external Apache setuup script](https://github.com/lucatume/travis-apache-set)
 
