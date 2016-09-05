@@ -3,6 +3,7 @@ namespace Codeception\Module;
 
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -34,7 +35,9 @@ class WPCLITest extends \Codeception\Test\Unit
     /**
      * @var array
      */
-    protected $config;
+    protected $config = [
+        'throw' => false
+    ];
 
     /**
      * @test
@@ -160,6 +163,50 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->root->addChild($wpDir);
         $this->config = ['path' => $this->root->url() . '/wp'];
         $this->executor = $this->prophesize(Executor::class);
+    }
+
+    /**
+     * @test
+     * it should cast wp-cli errors to exceptions if specified in config
+     */
+    public function it_should_cast_wp_cli_errors_to_exceptions_if_specified_in_config()
+    {
+        $this->config['throw'] = true;
+        $this->executor->exec(Argument::type('string'), Argument::any(), Argument::any())->willReturn(-1);
+        $this->expectException(ModuleException::class);
+
+        $sut = $this->make_instance();
+
+        $sut->cli('core version');
+    }
+
+    /**
+     * @test
+     * it should not throw any exception if specified in config
+     */
+    public function it_should_not_throw_any_exception_if_specified_in_config()
+    {
+        $this->config['throw'] = false;
+        $this->executor->exec(Argument::type('string'), Argument::any(), Argument::any())->willReturn(-1);
+
+        $sut = $this->make_instance();
+
+        $sut->cli('core version');
+    }
+
+    /**
+     * @test
+     * it should not cast output to any format
+     */
+    public function it_should_not_cast_output_to_any_format()
+    {
+        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('1,2,3,4,5');
+
+        $sut = $this->make_instance();
+
+        $ids = $sut->cliToArray('post list --format==ids');
+
+        $this->assertEquals([1, 2, 3, 4, 5], $ids);
     }
 
     protected function _after()

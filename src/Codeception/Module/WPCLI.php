@@ -4,6 +4,7 @@ namespace Codeception\Module;
 
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use tad\WPBrowser\Environment\Executor;
@@ -81,21 +82,24 @@ class WPCLI extends Module
      *                            e.g. a terminal call like `wp core version` becomes `core version`
      *                            omitting the call to wp-cli script.
      * @return int wp-cli exit value for the command
+     *
+     * @throws ModuleException if the `throw` option is enabled in the config and
+     *          wp-cli return status is not 0.
      */
-    public function cli($userCommand = 'core version')
+    public function cli($userCommand = 'core version', &$output = [])
     {
-        if (empty($this->wpCliRoot)) {
-            $this->initWpCliPaths();
-        }
+        $this->initPaths();
 
-        $mergedCommand = $this->mergeCommandOptions($userCommand);
-        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
+        $command = $this->buildCommand($userCommand);
 
+        $output = [];
         $this->debugSection('command', $command);
-        $return = $this->executor->exec($command, $output);
+        $status = $this->executor->exec($command, $output);
         $this->debugSection('output', $output);
 
-        return $return;
+        $this->evaluateStatus($output, $status);
+
+        return $status;
     }
 
     /**
@@ -140,8 +144,56 @@ class WPCLI extends Module
         return $userCommand . ' ' . implode(' ', $lineOptions);
     }
 
+    public function cliToArray($userCommand = 'post list --format=ids')
+    {
+        $this->initPaths();
+
+        $command = $this->buildCommand($userCommand);
+
+        $output = [];
+        $this->debugSection('command', $command);
+        $output = $this->executor->execAndOutput($command, $status);
+        $this->debugSection('output', $output);
+
+        $this->evaluateStatus($output, $status);
+
+        return preg_split('/[\\s,]+/', $output);
+    }
+
     protected function debugSection($title, $message)
     {
         parent::debugSection($this->prettyName . ' ' . $title, $message);
+    }
+
+    protected function initPaths()
+    {
+        if (empty($this->wpCliRoot)) {
+            $this->initWpCliPaths();
+        }
+    }
+
+    /**
+     * @param $userCommand
+     * @return string
+     */
+    protected function buildCommand($userCommand)
+    {
+        $mergedCommand = $this->mergeCommandOptions($userCommand);
+        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
+        return $command;
+    }
+
+    /**
+     * @param $output
+     * @param $status
+     * @throws ModuleException
+     */
+    protected function evaluateStatus(&$output, $status)
+    {
+        if (!empty($this->config['throw']) && $status <= 0) {
+            $output = !is_array($output) ?: json_encode($output);
+            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
+            throw new ModuleException(__CLASS__, $message);
+        }
     }
 }

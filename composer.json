@@ -17,7 +17,7 @@
     }
   ],
   "require": {
-    "lucatume/wp-browser-commons": "~1.0",
+    "lucatume/wp-browser-commons": "^1.2.5",
     "lucatume/codeception-setup-local": "~1.0",
     "wp-cli/wp-cli": "^0.24.1",
     "symfony/process": "~2.1"
