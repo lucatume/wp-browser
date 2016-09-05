@@ -194,19 +194,32 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut->cli('core version');
     }
 
+    public function cliReturnValues()
+    {
+        return [
+            ['1 2 3 4 5', [1, 2, 3, 4, 5]],
+            ['', []],
+            ["Post 1\nPost 2\nPost 3", ['Post 1', 'Post 2', 'Post 3']],
+            ["Post 1\n Post 2\n Post 3", ['Post 1', 'Post 2', 'Post 3']],
+            ["Post 1 \n Post 2 \n Post 3", ['Post 1', 'Post 2', 'Post 3']],
+            ["Post 1 \nPost 2 \nPost 3", ['Post 1', 'Post 2', 'Post 3']],
+        ];
+    }
+
     /**
      * @test
      * it should not cast output to any format
+     * @dataProvider cliReturnValues
      */
-    public function it_should_not_cast_output_to_any_format()
+    public function it_should_not_cast_output_to_any_format($raw, $expected)
     {
-        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('1,2,3,4,5');
+        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn($raw);
 
         $sut = $this->make_instance();
 
         $ids = $sut->cliToArray('post list --format==ids');
 
-        $this->assertEquals([1, 2, 3, 4, 5], $ids);
+        $this->assertEquals($expected, $ids);
     }
 
     protected function _after()

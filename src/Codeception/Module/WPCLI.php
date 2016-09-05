@@ -157,7 +157,17 @@ class WPCLI extends Module
 
         $this->evaluateStatus($output, $status);
 
-        return preg_split('/[\\s,]+/', $output);
+        if (empty($output)) {
+            return [];
+        }
+
+        if (!preg_match('/[\\n]+/', $output)) {
+            $output = preg_split('/\\s+/', $output);
+        } else {
+            $output = preg_split('/\\s*\\n+\\s*/', $output);
+        }
+
+        return empty($output) ? [] : array_map('trim', $output);
     }
 
     protected function debugSection($title, $message)
