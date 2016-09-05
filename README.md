@@ -251,8 +251,15 @@ The module defines two methods wrapping calls to the wp-cli tool:
 
 * `cli(string $userCommand)` - executes `$userCommand` and returns **the command exit status**; `0` (shell equivalent of OK) will be cast to `true`.
     ```php
-    $activated = $I->cli('plugin activate acme');
+    $deleted = $I->cli('user delete user001');
     ```
+    Test wp-cli exit stati as many commands raising warnings will return a `0` status, e.g:
+    ```php
+    $activated = $I->cli('plugin activate existing-plugin');
+    $activated = $I->cli('plugin activate non-existing-plugin');
+    ```
+    The `$activated` var will have a value of `true` in both cases as the exit status, even if the `non-existing-plugin` does not exist, will be `0`.
+    
 * `cliToArray(string $userCommand)` - executes `$userCommand` and returns the command output cast to array; the command will try to guess if the output should be split by newlines or spaces.
     ```php
     $inactiveThemes = $I->cliToArray('theme list --status=active --field=name');
