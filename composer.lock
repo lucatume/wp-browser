@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1e71014c45b80e80c67ee3e60d28acc5",
-    "content-hash": "cba2577d3bbffa5e126127d8c2608c10",
+    "hash": "36764f3e1ecf4110ce550b7b396e5430",
+    "content-hash": "960f41f3bdaf60bc58854e6c61f6a352",
     "packages": [
         {
             "name": "bacon/bacon-string-utils",
@@ -3815,6 +3815,68 @@
             "description": "Virtual file system to mock the real file system in unit tests.",
             "homepage": "http://vfs.bovigo.org/",
             "time": "2016-07-18 14:02:57"
+        },
+        {
+            "name": "ofbeaton/console-tester",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ofbeaton/console-tester.git",
+                "reference": "a619187a1837bfcc97e8d8cd2545d38a210b4e09"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ofbeaton/console-tester/zipball/a619187a1837bfcc97e8d8cd2545d38a210b4e09",
+                "reference": "a619187a1837bfcc97e8d8cd2545d38a210b4e09",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "symfony/console": "~2.3"
+            },
+            "require-dev": {
+                "humbug/humbug": "dev-master",
+                "mayflower/php-codebrowser": "~1.1",
+                "phing/phing": "~2.10",
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ofbeaton\\Console\\Tester\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Finlay Beaton",
+                    "email": "ofbeaton@gmail.com"
+                },
+                {
+                    "name": "of Beaton Community",
+                    "homepage": "https://github.com/ofbeaton/console-tester/graphs/contributors"
+                }
+            ],
+            "description": "Symfony Console Question Helper Tester",
+            "homepage": "https://github.com/ofbeaton/console-tester",
+            "keywords": [
+                "command",
+                "console",
+                "helper",
+                "input",
+                "question",
+                "symfony"
+            ],
+            "time": "2015-05-22 20:27:42"
         }
     ],
     "aliases": [],

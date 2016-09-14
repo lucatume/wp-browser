@@ -3,13 +3,21 @@
 namespace Codeception\Command;
 
 use Codeception\Lib\Generator\AcceptanceSuiteConfig;
+use Codeception\Lib\Generator\FunctionalSuiteConfig;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
 class WPBootstrap extends Bootstrap
 {
+    /**
+     * @var array
+     */
+    public $userConfig = [];
+
     /**
      * Returns an array containing the names of the suites the command will scaffold.
      *
@@ -50,6 +58,10 @@ class WPBootstrap extends Bootstrap
             return;
         }
 
+        if ($input->getOption('interactive')) {
+            $this->askQuestions($input, $output);
+        }
+
         $output->writeln(
             "<fg=white;bg=magenta> Initializing Codeception in " . $realpath . " </fg=white;bg=magenta>\n"
         );
@@ -77,7 +89,7 @@ class WPBootstrap extends Bootstrap
 
         $output->writeln("<info>Building initial {$this->actorSuffix} classes</info>");
 
-        if ($input->getOption('build')) {
+        if (!$input->getOption('no-build')) {
             $this->getApplication()->find('build')->run(
                 new ArrayInput(['command' => 'build']),
                 $output
@@ -85,6 +97,13 @@ class WPBootstrap extends Bootstrap
         }
 
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
+    }
+
+    protected function configure()
+    {
+        parent::configure();
+        $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
+        $this->addOption('interactive', null, InputOption::VALUE_NONE, 'Interactive bootstrap');
     }
 
     public function createGlobalConfig()
@@ -200,31 +219,16 @@ YAML;
     protected function getFunctionalSuiteConfig($actor)
     {
         $className = $actor . $this->actorSuffix;
+        $defaults = [
+            'actor' => $actor,
+            'className' => $className,
+            'namespace' => $this->namespace,
+            'dbHost' => 'localhost'
+        ];
 
-        $suiteConfig = <<< YAML
-class_name: $className
-modules:
-    enabled:
-        - \\{$this->namespace}Helper\\{$actor}
-        - Filesystem
-        - WPDb:
-            dsn: 'mysql:host=localhost;dbname=wordpress-tests'
-            user: root
-            password: root
-            dump: tests/_data/dump.sql
-            populate: true
-            cleanup: true
-            url: 'http://wp.local'
-            tablePrefix: wp_
-        - WordPress:
-            depends: WPDb
-            wpRootFolder: /var/www/wordpress
-            adminUsername: admin
-            adminPassword: password
-YAML;
+        $settings = array_merge($defaults, $this->userConfig);
 
-
-        return $suiteConfig;
+        return (new FunctionalSuiteConfig($settings))->produce();
     }
 
     protected function createAcceptanceSuite($actor = 'Acceptance')
@@ -253,5 +257,21 @@ YAML;
             'className' => $className,
             'namespace' => $this->namespace
         ]))->produce();
+    }
+
+    public function askQuestions(InputInterface $input, OutputInterface $output)
+    {
+        $helper = $this->getHelper('question');
+        $question = new Question("What's the MySQL database host?", 'localhost');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database host string should not contain any space'
+                );
+            }
+            return trim($answer);
+        });
+
+        $this->userConfig['dbHost'] = $helper->ask($input, $output, $question);
     }
 }
