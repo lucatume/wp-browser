@@ -4,6 +4,7 @@ namespace Codeception\Command;
 
 use Codeception\Lib\Generator\AcceptanceSuiteConfig;
 use Codeception\Lib\Generator\FunctionalSuiteConfig;
+use Codeception\Lib\Generator\IntegrationSuiteConfig;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -142,7 +143,7 @@ class WPBootstrap extends Bootstrap
 
         $this->userConfig['dbUser'] = $helper->ask($input, $output, $question);
 
-        $question = new Question("MySQL database password?", 'root');
+        $question = new Question("MySQL database password?", '');
 
         $this->userConfig['dbPassword'] = $helper->ask($input, $output, $question);
 
@@ -163,7 +164,7 @@ class WPBootstrap extends Bootstrap
         $question->setValidator(function ($answer) {
             if (!filter_var($answer, FILTER_VALIDATE_URL)) {
                 throw new \RuntimeException(
-                    'The site url should be in the \'http://example.com\' format'
+                    "The site url should be in the 'http://example.com' format"
                 );
             }
             return trim($answer);
@@ -171,6 +172,14 @@ class WPBootstrap extends Bootstrap
         $question->setMaxAttempts(2);
 
         $this->userConfig['url'] = $helper->ask($input, $output, $question);
+
+        $host = parse_url($this->userConfig['url'], PHP_URL_HOST);
+        $port = parse_url($this->userConfig['url'], PHP_URL_PORT);
+        $candidateDomain = $port ? $host . ':' . $port : $host;
+
+        $question = new Question("WordPress site domain?", $candidateDomain);
+
+        $this->userConfig['domain'] = $helper->ask($input, $output, $question);
 
         $question = new Question("Absolute path to the WordPress root directory?", '/var/www/wp');
         $question->setValidator(function ($answer) {
@@ -201,6 +210,26 @@ class WPBootstrap extends Bootstrap
         $question = new Question("Administrator password?", 'admin');
 
         $this->userConfig['adminPassword'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("Administrator email?", 'admin@' . $this->userConfig['domain']);
+        $question->setValidator(function ($answer) {
+            if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
+                throw new \RuntimeException(
+                    "The Administrator email '$answer' is not a valid email format"
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['adminEmail'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("Relative path (from WordPress root) to administration area?", '/wp-admin');
+        $question->setValidator(function ($answer) {
+            return '/' . trim($answer, '/');
+        });
+
+        $this->userConfig['adminPath'] = $helper->ask($input, $output, $question);
     }
 
     public function createGlobalConfig()
@@ -211,12 +240,12 @@ class WPBootstrap extends Bootstrap
                 'tests' => 'tests',
                 'log' => $this->logDir,
                 'data' => $this->dataDir,
-                'helpers' => $this->supportDir
+                'helpers' => $this->supportDir,
             ],
             'settings' => [
                 'bootstrap' => '_bootstrap.php',
                 'colors' => (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN'),
-                'memory_limit' => '1024M'
+                'memory_limit' => '1024M',
             ],
         ];
 
@@ -266,34 +295,17 @@ class WPBootstrap extends Bootstrap
     protected function getIntegrationSuiteConfig($actor)
     {
         $className = $actor . $this->actorSuffix;
+        $defaults = [
+            'actor' => $actor,
+            'className' => $className,
+            'namespace' => $this->namespace,
+        ];
 
-        $suiteConfig = <<< YAML
-class_name: {$className}
-modules:
-    enabled:
-        - \\{$this->namespace}Helper\\{$actor}
-        - WPLoader:
-            wpRootFolder: /var/www/wordpress
-            dbName: wordpress-tests
-            dbHost: localhost
-            dbUser: root
-            dbPassword: root
-            tablePrefix: wp_
-            domain: wp.local
-            adminEmail: admin@wp.local
-            title: WP Tests
-            plugins: 
-                - hello.php
-                - my-plugin/my-plugin.php
-            activatePlugins: 
-                - hello.php
-                - my-plugin/my-plugin.php
-            bootstrapActions:
-                - my-first-action
-                - my-second-action
-YAML;
+        $wploaderDefaults = $this->getWploaderDefaults();
 
-        return $suiteConfig;
+        $settings = array_merge($defaults, $wploaderDefaults, $this->userConfig);
+
+        return (new IntegrationSuiteConfig($settings))->produce();
     }
 
     protected function createFunctionalSuite($actor = 'Functional')
@@ -320,19 +332,12 @@ YAML;
             'actor' => $actor,
             'className' => $className,
             'namespace' => $this->namespace,
-            'dbHost' => 'localhost',
-            'dbName' => 'wordpress-tests',
-            'dbUser' => 'root',
-            'dbPassword' => 'root',
-            'url' => 'http://wp.local',
-            'tablePrefix' => 'wp_',
-            'wpRootFolder' => '/var/www/wordpress',
-            'adminUsername' => 'admin',
-            'adminPassword' => 'password',
-
         ];
 
-        $settings = array_merge($defaults, $this->userConfig);
+        $wpdbDefaults = $this->getWpdbConfigDefaults();
+        $wordpressDefaults = $this->getWordpressConfigDefaults();
+
+        $settings = array_merge($defaults, $wpdbDefaults, $wordpressDefaults, $this->userConfig);
 
         return (new FunctionalSuiteConfig($settings))->produce();
     }
@@ -358,11 +363,18 @@ YAML;
     {
         $className = $actor . $this->actorSuffix;
 
-        return (new AcceptanceSuiteConfig([
+        $defaults = [
             'actor' => $actor,
             'className' => $className,
-            'namespace' => $this->namespace
-        ]))->produce();
+            'namespace' => $this->namespace,
+        ];
+
+        $wpdbDefaults = $this->getWpdbConfigDefaults();
+        $wpbrowserDefaults = $this->getWpbrowserDefaults();
+
+        $settings = array_merge($defaults, $wpdbDefaults, $wpbrowserDefaults, $this->userConfig);
+
+        return (new AcceptanceSuiteConfig($settings))->produce();
     }
 
     protected function configure()
@@ -370,5 +382,63 @@ YAML;
         parent::configure();
         $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
         $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWpdbConfigDefaults()
+    {
+        $wpdbDefaults = [
+            'dbHost' => 'localhost',
+            'dbName' => 'wordpress-tests',
+            'dbUser' => 'root',
+            'dbPassword' => '',
+            'url' => 'http://wp.local',
+            'tablePrefix' => 'wp_',
+        ];
+        return $wpdbDefaults;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWordpressConfigDefaults()
+    {
+        $wordpressDefaults = [
+            'wpRootFolder' => '/var/www/wordpress',
+            'adminUsername' => 'admin',
+            'adminPassword' => 'password',
+        ];
+        return $wordpressDefaults;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWpbrowserDefaults()
+    {
+        $wpbrowserDefaults = [
+            'url' => 'http://wp.local',
+            'adminUsername' => 'admin',
+            'adminPassword' => 'password',
+            'adminPath' => '/wp-admin',
+        ];
+        return $wpbrowserDefaults;
+    }
+
+    protected function getWploaderDefaults()
+    {
+        $wploaderDefaults = [
+            'wpRootFolder' => '/var/www/wordpress',
+            'dbName' => 'wordpress-tests',
+            'dbHost' => 'localhost',
+            'dbUser' => 'root',
+            'dbPassword' => '',
+            'tablePrefix' => 'wp_',
+            'domain' => 'wp.local',
+            'adminEmail' => 'admin@wp.local'
+        ];
+        return $wploaderDefaults;
     }
 }

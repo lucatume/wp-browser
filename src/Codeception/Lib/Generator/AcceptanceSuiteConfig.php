@@ -12,10 +12,22 @@ class_name: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}
-        - WPBrowser:
-            url: 'http://wp.local'
-            adminUsername: admin
-            adminPassword: password
-            adminPath: /wp-admin
+        - WPDb
+        - WPBrowser
+    config:
+        WPDb:
+            dsn: 'mysql:host={{dbHost}};dbname={{dbName}}'
+            user: {{dbUser}}
+            password: {{dbPassword}}
+            dump: tests/_data/dump.sql
+            populate: true
+            cleanup: true
+            url: '{{url}}'
+            tablePrefix: {{tablePrefix}}
+        WPBrowser:
+            url: '{{url}}'
+            adminUsername: {{adminUsername}}
+            adminPassword: {{adminPassword}}
+            adminPath: {{adminPath}}
 YAML;
 }
