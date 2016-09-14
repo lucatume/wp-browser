@@ -102,17 +102,105 @@ class WPBootstrap extends Bootstrap
     public function askQuestions(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
-        $question = new Question("What's the MySQL database host?", 'localhost');
+
+        $question = new Question("MySQL database host?", 'localhost');
         $question->setValidator(function ($answer) {
             if (false !== strpos($answer, ' ')) {
                 throw new \RuntimeException(
-                    'MySQL database host string should not contain any space'
+                    'MySQL database host should not contain any space'
                 );
             }
             return trim($answer);
         });
+        $question->setMaxAttempts(2);
 
         $this->userConfig['dbHost'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("MySQL database name? This will be used for functional and acceptance tests.", 'wpTests');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database name should not contain any space'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['dbName'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("MySQL database username?", 'root');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database name should not contain any space'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['dbUser'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("MySQL database password?", 'root');
+
+        $this->userConfig['dbPassword'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("MySQL database table prefix?", 'wp_');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database table prefix should not contain any space'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['tablePrefix'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("WordPress site url?", 'http://wp.dev');
+        $question->setValidator(function ($answer) {
+            if (!filter_var($answer, FILTER_VALIDATE_URL)) {
+                throw new \RuntimeException(
+                    'The site url should be in the \'http://example.com\' format'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['url'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("Absolute path to the WordPress root directory?", '/var/www/wp');
+        $question->setValidator(function ($answer) {
+            if (!is_dir($answer)) {
+                throw new \RuntimeException(
+                    "'$answer' is not a directory, does not exist or is not accessible"
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['wpRootFolder'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("Administrator username?", 'admin');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'The Administrator username should not contain any spaces'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['adminUsername'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("Administrator password?", 'admin');
+
+        $this->userConfig['adminPassword'] = $helper->ask($input, $output, $question);
     }
 
     public function createGlobalConfig()
@@ -232,7 +320,16 @@ YAML;
             'actor' => $actor,
             'className' => $className,
             'namespace' => $this->namespace,
-            'dbHost' => 'localhost'
+            'dbHost' => 'localhost',
+            'dbName' => 'wordpress-tests',
+            'dbUser' => 'root',
+            'dbPassword' => 'root',
+            'url' => 'http://wp.local',
+            'tablePrefix' => 'wp_',
+            'wpRootFolder' => '/var/www/wordpress',
+            'adminUsername' => 'admin',
+            'adminPassword' => 'password',
+
         ];
 
         $settings = array_merge($defaults, $this->userConfig);

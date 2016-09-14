@@ -2,12 +2,10 @@
 
 namespace Codeception\Lib\Generator;
 
+class FunctionalSuiteConfig extends AbstractGenerator implements GeneratorInterface {
+	public static $requiredSettings = ['className', 'namespace', 'actor'];
 
-class FunctionalSuiteConfig extends AbstractGenerator implements GeneratorInterface
-{
-    public static $requiredSettings = ['className', 'namespace', 'actor'];
-
-    protected $template = <<< YAML
+	protected $template = <<< YAML
 class_name: {{className}}
 modules:
     enabled:
@@ -17,18 +15,18 @@ modules:
         - WordPress
     config:
         WPDb:
-            dsn: 'mysql:host={{dbHost}};dbname=wordpress-tests'
-            user: root
-            password: root
+            dsn: 'mysql:host={{dbHost}};dbname={{dbName}}'
+            user: {{dbUser}}
+            password: {{dbPassword}}
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            url: 'http://wp.local'
-            tablePrefix: wp_
+            url: '{{url}}'
+            tablePrefix: {{tablePrefix}}
         WordPress:
             depends: WPDb
-            wpRootFolder: /var/www/wordpress
-            adminUsername: admin
-            adminPassword: password
+            wpRootFolder: {{wpRootFolder}}
+            adminUsername: {{adminUsername}}
+            adminPassword: {{adminPassword}}
 YAML;
 }

@@ -117,8 +117,18 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
+        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+
         $questionsAndAnswers = [
-            'MySQL database host?' => 'mysql'
+            'database host' => 'mysql',
+            'database name' => 'wpFuncTests',
+            'database user' => 'notRoot',
+            'database password' => 'notRootPass',
+            'table prefix' => 'func_',
+            'WordPress.*url' => 'http://some.dev',
+            'WordPress.*root directory' => $wpFolder,
+            '(A|a)dmin.*username' => 'luca',
+            '(A|a)dmin.*password' => 'dadada'
         ];
 
         $this->mockAnswers($command, $questionsAndAnswers);
@@ -140,8 +150,15 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 
         $decoded = Yaml::parse($fileContents);
 
-        $this->assertNotEmpty($decoded['modules']['config']['WPDb']['dsn']);
         $this->assertContains('mysql:host=mysql', $decoded['modules']['config']['WPDb']['dsn']);
+        $this->assertContains('dbname=wpFuncTests', $decoded['modules']['config']['WPDb']['dsn']);
+        $this->assertEquals('notRoot', $decoded['modules']['config']['WPDb']['user']);
+        $this->assertEquals('notRootPass', $decoded['modules']['config']['WPDb']['password']);
+        $this->assertEquals('func_', $decoded['modules']['config']['WPDb']['tablePrefix']);
+        $this->assertEquals('http://some.dev', $decoded['modules']['config']['WPDb']['url']);
+        $this->assertEquals($wpFolder, $decoded['modules']['config']['WordPress']['wpRootFolder']);
+        $this->assertEquals('luca', $decoded['modules']['config']['WordPress']['adminUsername']);
+        $this->assertEquals('dadada', $decoded['modules']['config']['WordPress']['adminPassword']);
     }
 
     /**
@@ -152,7 +169,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     {
         $this->mockQuestionHelper($command, function ($text, $order, Question $question) use ($questionsAndAnswers) {
             foreach ($questionsAndAnswers as $key => $value) {
-                if (strpos($text, $key) !== false) {
+                if (preg_match('/' . $key . '/', $text)) {
                     return $value;
                 }
             }
