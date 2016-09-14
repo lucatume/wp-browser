@@ -99,11 +99,20 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
-    protected function configure()
+    public function askQuestions(InputInterface $input, OutputInterface $output)
     {
-        parent::configure();
-        $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
-        $this->addOption('interactive', null, InputOption::VALUE_NONE, 'Interactive bootstrap');
+        $helper = $this->getHelper('question');
+        $question = new Question("What's the MySQL database host?", 'localhost');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database host string should not contain any space'
+                );
+            }
+            return trim($answer);
+        });
+
+        $this->userConfig['dbHost'] = $helper->ask($input, $output, $question);
     }
 
     public function createGlobalConfig()
@@ -259,19 +268,10 @@ YAML;
         ]))->produce();
     }
 
-    public function askQuestions(InputInterface $input, OutputInterface $output)
+    protected function configure()
     {
-        $helper = $this->getHelper('question');
-        $question = new Question("What's the MySQL database host?", 'localhost');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database host string should not contain any space'
-                );
-            }
-            return trim($answer);
-        });
-
-        $this->userConfig['dbHost'] = $helper->ask($input, $output, $question);
+        parent::configure();
+        $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
+        $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
     }
 }
