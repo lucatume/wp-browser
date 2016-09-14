@@ -13,6 +13,7 @@ tests/_output
 # local configuration files
 tests/acceptance.suite.yml
 tests/functional.suite.yml
+tests/integration.suite.yml
 tests/unit.suite.yml
 tests/wploadersuite.suite.yml
 tests/wpmodule.suite.yml

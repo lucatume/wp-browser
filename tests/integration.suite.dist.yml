@@ -1,0 +1,4 @@
+class_name: IntegrationTester
+modules:
+    enabled:
+        - \Helper\Integration

@@ -2,6 +2,7 @@
 
 namespace Codeception\Command;
 
+use Codeception\Lib\Generator\AcceptanceSuiteConfig;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,7 +10,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class WPBootstrap extends Bootstrap
 {
-
     /**
      * Returns an array containing the names of the suites the command will scaffold.
      *
@@ -245,19 +245,10 @@ YAML;
     {
         $className = $actor . $this->actorSuffix;
 
-        $suiteConfig = <<< YAML
-class_name: $className
-modules:
-    enabled:
-        - \\{$this->namespace}Helper\\{$actor}
-        - WPBrowser:
-            url: 'http://wp.local'
-            adminUsername: admin
-            adminPassword: password
-            adminPath: /wp-admin
-YAML;
-
-
-        return $suiteConfig;
+        return (new AcceptanceSuiteConfig([
+            'actor' => $actor,
+            'className' => $className,
+            'namespace' => $this->namespace
+        ]))->produce();
     }
 }

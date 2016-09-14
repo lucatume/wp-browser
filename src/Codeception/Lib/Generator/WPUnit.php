@@ -1,17 +1,19 @@
 <?php
-    namespace Codeception\Lib\Generator;
+namespace Codeception\Lib\Generator;
 
-    use Codeception\Lib\Generator\Shared\Classname;
-    use Codeception\Util\Shared\Namespaces;
-    use Codeception\Util\Template;
+use Codeception\Lib\Generator\Shared\Classname;
+use Codeception\Util\Shared\Namespaces;
+use Codeception\Util\Template;
 
-    class WPUnit
-    {
+class WPUnit extends AbstractGenerator implements GeneratorInterface
+{
+    use Classname;
+    use Namespaces;
 
-        use Classname;
-        use Namespaces;
-
-        protected $template = <<<EOF
+    protected $settings;
+    protected $name;
+    protected $baseClass;
+    protected $template = <<<EOF
 <?php
 {{namespace}}
 class {{name}}Test extends {{baseClass}}
@@ -41,26 +43,20 @@ class {{name}}Test extends {{baseClass}}
 }
 EOF;
 
-        protected $settings;
-        protected $name;
-        protected $baseClass;
-
-        public function __construct($settings, $name, $baseClass)
-        {
-            $this->settings = $settings;
-            $this->name = $this->removeSuffix($name, 'Test');
-            $this->baseClass = $baseClass;
-        }
-
-        public function produce()
-        {
-            $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
-
-            return (new Template($this->template))->place('namespace', $ns)
-                ->place('baseClass', $this->baseClass)
-                ->place('name', $this->getShortClassName($this->name))
-                ->produce();
-        }
-
+    public function __construct($settings, $name, $baseClass)
+    {
+        $this->settings = $settings;
+        $this->name = $this->removeSuffix($name, 'Test');
+        $this->baseClass = $baseClass;
     }
 
+    public function produce()
+    {
+        $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
+
+        return (new Template($this->template))->place('namespace', $ns)
+            ->place('baseClass', $this->baseClass)
+            ->place('name', $this->getShortClassName($this->name))
+            ->produce();
+    }
+}
