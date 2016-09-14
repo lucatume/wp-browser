@@ -76,10 +76,13 @@ class WPBootstrap extends Bootstrap
         $output->writeln("tests/_bootstrap.php written <- global bootstrap file");
 
         $output->writeln("<info>Building initial {$this->actorSuffix} classes</info>");
-        $this->getApplication()->find('build')->run(
-            new ArrayInput(['command' => 'build']),
-            $output
-        );
+
+        if ($input->getOption('build')) {
+            $this->getApplication()->find('build')->run(
+                new ArrayInput(['command' => 'build']),
+                $output
+            );
+        }
 
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
