@@ -20,7 +20,12 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     /**
      * @var Application
      */
-    public $application;
+    protected $application;
+
+    /**
+     * @var array
+     */
+    protected $answerShiftReg = [];
 
     /**
      * @var OutputInterface
@@ -404,8 +409,50 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertEquals('func_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
         $this->assertEquals('some.dev', $decoded['modules']['config']['WPLoader']['domain']);
         $this->assertEquals('luca@theaveragedev.com', $decoded['modules']['config']['WPLoader']['adminEmail']);
+    }
 
-        // @todo: plugins, activation, bootstrap actions
+    /**
+     * @test
+     * it should allow user to specify plugins
+     */
+    public function it_should_allow_user_to_specify_plugins()
+    {
+        $app = new Application();
+        $app->add(new WPBootstrap('bootstrap'));
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+
+        $expected = [
+            'required/plugin.php',
+            'acme/plugin-1.php',
+            'acme/plugin-2.php'
+        ];
+        $this->mockAnswers($command, array_merge(
+            $this->getDefaultQuestionsAndAnswers($wpFolder),
+            ['(A|a)ctiv.*plugin(s)*' => $expected]
+        ));
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--interactive' => true
+        ]);
+
+        $file = $this->testDir('tests/integration.suite.yml');
+
+        $this->assertFileExists($file);
+
+        $fileContents = file_get_contents($file);
+
+        $this->assertNotEmpty($fileContents);
+
+        $decoded = Yaml::parse($fileContents);
+
+        $this->assertEquals($expected, $decoded['modules']['config']['WPLoader']['plugins']);
+        $this->assertEquals($expected, $decoded['modules']['config']['WPLoader']['activatePlugins']);
     }
 
     /**
@@ -417,6 +464,15 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->mockQuestionHelper($command, function ($text, $order, Question $question) use ($questionsAndAnswers) {
             foreach ($questionsAndAnswers as $key => $value) {
                 if (preg_match('/' . $key . '/', $text)) {
+                    if (is_array($value)) {
+                        $index = !isset($this->answerShiftReg[$key]) ? 0 : $this->answerShiftReg[$key] + 1;
+                        if ($index > count($value) - 1) {
+                            $value = '';
+                        } else {
+                            $value = $value[$index];
+                            $this->answerShiftReg[$key] = $index;
+                        }
+                    }
                     return $value;
                 }
             }
@@ -444,7 +500,8 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*username' => 'luca',
             '(A|a)dmin.*password' => 'dadada',
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
-            'path.*administration' => '/app/wp-admin'
+            'path.*administration' => '/app/wp-admin',
+            '(A|a)ctiv.*plugin(s)*' => ''
         ];
         return $questionsAndAnswers;
     }

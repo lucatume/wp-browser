@@ -230,6 +230,36 @@ class WPBootstrap extends Bootstrap
         });
 
         $this->userConfig['adminPath'] = $helper->ask($input, $output, $question);
+
+        $pluginValidator = function ($answer) {
+            if (!(empty($answer) || preg_match('/.*\\.php$/', $answer))) {
+                throw new \RuntimeException(
+                    "Each plugin entry should be a string in the 'hello.php' or 'acme/plugin.php' format, leave blank to move on"
+                );
+            }
+            return $answer;
+        };
+
+        $plugins = [];
+        do {
+            $questionText = empty($plugins) ?
+                "Activate a plugin? (order matters, leave blank to move on)"
+                : "Activate another plugin? (order matters, leave blank to move on)";
+            $question = new Question($questionText, '');
+            $question->setValidator($pluginValidator);
+            $question->setMaxAttempts(2);
+
+            $plugin = $helper->ask($input, $output, $question);
+
+            if (!empty($plugin)) {
+                $plugins[] = $plugin;
+            }
+        } while (!empty($plugin));
+
+        $yamlPlugins = Yaml::dump($plugins, 0);
+
+        $this->userConfig['plugins'] = $yamlPlugins;
+        $this->userConfig['activatePlugins'] = $yamlPlugins;
     }
 
     public function createGlobalConfig()
@@ -437,7 +467,8 @@ class WPBootstrap extends Bootstrap
             'dbPassword' => '',
             'tablePrefix' => 'wp_',
             'domain' => 'wp.local',
-            'adminEmail' => 'admin@wp.local'
+            'adminEmail' => 'admin@wp.local',
+            'plugins' => Yaml::dump(['hello.php'], 0)
         ];
         return $wploaderDefaults;
     }
