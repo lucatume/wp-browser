@@ -151,7 +151,7 @@ class WPBootstrap extends Bootstrap
         $question->setValidator(function ($answer) {
             if (false !== strpos($answer, ' ')) {
                 throw new \RuntimeException(
-                    'MySQL database table prefix should not contain any space'
+                    'MySQL database table prefix should not contain any spaces'
                 );
             }
             return trim($answer);
@@ -159,6 +159,19 @@ class WPBootstrap extends Bootstrap
         $question->setMaxAttempts(2);
 
         $this->userConfig['tablePrefix'] = $helper->ask($input, $output, $question);
+
+        $question = new Question("MySQL database table prefix for integration testing?", 'int_');
+        $question->setValidator(function ($answer) {
+            if (false !== strpos($answer, ' ')) {
+                throw new \RuntimeException(
+                    'MySQL database table prefix for integration testing should not contain any spaces'
+                );
+            }
+            return trim($answer);
+        });
+        $question->setMaxAttempts(2);
+
+        $this->userConfig['integrationTablePrefix'] = $helper->ask($input, $output, $question);
 
         $question = new Question("WordPress site url?", 'http://wp.dev');
         $question->setValidator(function ($answer) {
@@ -465,7 +478,7 @@ class WPBootstrap extends Bootstrap
             'dbHost' => 'localhost',
             'dbUser' => 'root',
             'dbPassword' => '',
-            'tablePrefix' => 'wp_',
+            'tablePrefix' => 'int_',
             'domain' => 'wp.local',
             'adminEmail' => 'admin@wp.local',
             'plugins' => Yaml::dump(['hello.php'], 0)

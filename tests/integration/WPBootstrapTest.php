@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Yaml\Yaml;
+use function tad\WPBrowser\Tests\Support\rrmdir;
 
 class WPBootstrapTest extends \Codeception\Test\Unit
 {
@@ -147,7 +148,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertContains('dbname=wpFuncTests', $decoded['modules']['config']['WPDb']['dsn']);
         $this->assertEquals('notRoot', $decoded['modules']['config']['WPDb']['user']);
         $this->assertEquals('notRootPass', $decoded['modules']['config']['WPDb']['password']);
-        $this->assertEquals('func_', $decoded['modules']['config']['WPDb']['tablePrefix']);
+        $this->assertEquals('wordpress_', $decoded['modules']['config']['WPDb']['tablePrefix']);
         $this->assertEquals('http://some.dev', $decoded['modules']['config']['WPDb']['url']);
         $this->assertEquals($wpFolder, $decoded['modules']['config']['WordPress']['wpRootFolder']);
         $this->assertEquals('luca', $decoded['modules']['config']['WordPress']['adminUsername']);
@@ -190,7 +191,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertContains('dbname=wpFuncTests', $decoded['modules']['config']['WPDb']['dsn']);
         $this->assertEquals('notRoot', $decoded['modules']['config']['WPDb']['user']);
         $this->assertEquals('notRootPass', $decoded['modules']['config']['WPDb']['password']);
-        $this->assertEquals('func_', $decoded['modules']['config']['WPDb']['tablePrefix']);
+        $this->assertEquals('wordpress_', $decoded['modules']['config']['WPDb']['tablePrefix']);
         $this->assertEquals('http://some.dev', $decoded['modules']['config']['WPDb']['url']);
         $this->assertEquals('http://some.dev', $decoded['modules']['config']['WPBrowser']['url']);
         $this->assertEquals('luca', $decoded['modules']['config']['WPBrowser']['adminUsername']);
@@ -406,7 +407,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertEquals('wpFuncTests', $decoded['modules']['config']['WPLoader']['dbName']);
         $this->assertEquals('notRoot', $decoded['modules']['config']['WPLoader']['dbUser']);
         $this->assertEquals('notRootPass', $decoded['modules']['config']['WPLoader']['dbPassword']);
-        $this->assertEquals('func_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
+        $this->assertEquals('integration_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
         $this->assertEquals('some.dev', $decoded['modules']['config']['WPLoader']['domain']);
         $this->assertEquals('luca@theaveragedev.com', $decoded['modules']['config']['WPLoader']['adminEmail']);
     }
@@ -493,7 +494,8 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             'database name' => 'wpFuncTests',
             'database user' => 'notRoot',
             'database password' => 'notRootPass',
-            'table prefix' => 'func_',
+            'table prefix.*integration' => 'integration_',
+            'table prefix.*' => 'wordpress_',
             'WordPress.*url' => 'http://some.dev',
             'WordPress.*domain' => 'some.dev',
             'WordPress.*root directory' => $wpFolder,

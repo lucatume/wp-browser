@@ -21,7 +21,7 @@ modules:
             dbHost: {{dbHost}}
             dbUser: {{dbUser}}
             dbPassword: {{dbPassword}}
-            tablePrefix: {{tablePrefix}}
+            tablePrefix: {{integrationTablePrefix}}
             domain: {{domain}}
             adminEmail: {{adminEmail}}
             title: WP Tests
