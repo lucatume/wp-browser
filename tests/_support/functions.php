@@ -22,9 +22,9 @@ function rrmdir($src) {
 	rmdir($src);
 }
 
-function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost') {
-	$commandTemplate = 'mysql -h%s -u%s %s %s < %s';
-	$dbPassEntry = $dbPass ? '-p' . $dbPass : '';
+function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost', &$output = null) {
+	$commandTemplate = 'mysql --host=%s --user=%s %s %s < %s';
+	$dbPassEntry = $dbPass ? '--password=' . $dbPass : '';
 	$command = sprintf($commandTemplate, $dbHost, $dbUser, $dbPassEntry, $dbName, $dumpFile);
 	exec($command, $output, $status);
 
