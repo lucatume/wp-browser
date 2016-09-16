@@ -196,7 +196,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertEquals('http://some.dev', $decoded['modules']['config']['WPBrowser']['url']);
         $this->assertEquals('luca', $decoded['modules']['config']['WPBrowser']['adminUsername']);
         $this->assertEquals('dadada', $decoded['modules']['config']['WPBrowser']['adminPassword']);
-        $this->assertEquals('/app/wp-admin', $decoded['modules']['config']['WPBrowser']['adminPath']);
+        $this->assertEquals('/wp-admin', $decoded['modules']['config']['WPBrowser']['adminPath']);
     }
 
     /**
@@ -299,15 +299,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             ['/wp-admin', '/wp-admin'],
             ['wp-admin', '/wp-admin'],
             ['wp-admin/', '/wp-admin'],
-            ['/wp-admin/', '/wp-admin'],
-            ['/wp/wp-admin', '/wp/wp-admin'],
-            ['wp/wp-admin', '/wp/wp-admin'],
-            ['wp/wp-admin/', '/wp/wp-admin'],
-            ['/wp/wp-admin/', '/wp/wp-admin'],
-            ['/app/core/wp-admin', '/app/core/wp-admin'],
-            ['app/core/wp-admin', '/app/core/wp-admin'],
-            ['app/core/wp-admin/', '/app/core/wp-admin'],
-            ['/app/core/wp-admin/', '/app/core/wp-admin'],
+            ['/wp-admin/', '/wp-admin']
         ];
     }
 
@@ -502,7 +494,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*username' => 'luca',
             '(A|a)dmin.*password' => 'dadada',
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
-            'path.*administration' => '/app/wp-admin',
+            'path.*administration' => '/wp-admin',
             '(A|a)ctiv.*plugin(s)*' => ''
         ];
         return $questionsAndAnswers;

@@ -52,11 +52,12 @@ class Validator
     public function isRelativeWpAdminDir($root)
     {
         return function ($answer) use ($root) {
-            $path = $root . '/' . trim($answer, '/');
+            $answer = trim($answer, '/');
+            $path = $root . '/' . $answer;
             if (!is_dir($path)) {
                 throw new \RuntimeException("'$path' does not exist or is not accessible");
             }
-            return $path;
+            return '/' . $answer;
         };
     }
 
@@ -64,9 +65,12 @@ class Validator
     {
         return function ($answer) {
             $answer = trim($answer);
-            if (empty($answer) || !preg_match('~^[\\w-]+(/[\\w]+)?\\.php$~ui', $answer)) {
+            if (empty($answer)) {
+                return $answer;
+            }
+            if (empty($answer) || !preg_match('~^[\\w-]+(/[\\w-]+)?\\.php$~ui', $answer)) {
                 throw new \RuntimeException(
-                    "Each plugin entry should be a string in the 'hello.php' or 'acme/plugin.php' format, leave blank to move on"
+                    "'$answer' is not in the 'hello.php' or 'acme/plugin.php' format, leave blank to move on"
                 );
             }
             return $answer;

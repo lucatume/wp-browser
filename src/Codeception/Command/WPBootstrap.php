@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use tad\WPBrowser\Interactions\ButlerInterface;
 use tad\WPBrowser\Interactions\WPBootsrapButler;
 
 class WPBootstrap extends Bootstrap
@@ -50,7 +51,7 @@ class WPBootstrap extends Bootstrap
 
         $path = $input->getArgument('path');
 
-        if (!is_dir($path)) {
+        if (!(empty($path) || is_dir($path))) {
             $output->writeln("<error>\nDirectory '$path' does not exist\n</error>");
             return;
         }
@@ -104,7 +105,7 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
-    public function __construct($name, WPBootsrapButler $butler = null)
+    public function __construct($name, ButlerInterface $butler = null)
     {
         parent::__construct($name);
         $this->butler = $butler ?: new WPBootsrapButler();
