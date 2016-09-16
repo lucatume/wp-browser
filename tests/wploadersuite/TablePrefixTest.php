@@ -7,9 +7,17 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 
     public static $otherInstallationPrefix = 'foo_';
 
+    public static function setUpBeforeClass()
+    {
+        self::importOtherPrefixInstallation();
+
+        parent::setUpBeforeClass();
+    }
+
     protected static function importOtherPrefixInstallation()
     {
-        list($dumpFile, $dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        $dumpFile = self::getDumpFilePath();
+        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
         if (0 !== importDump($dumpFile, $dbName, $dbUser, $dbPass, $dbHost)) {
             throw new PHPUnit_Framework_AssertionFailedError('Test failed as MySQL import failed');
@@ -17,17 +25,25 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
     }
 
     /**
+     * @return string
+     */
+    protected static function getDumpFilePath()
+    {
+        $dumpFile = codecept_data_dir('foo-installation.sql');
+        return $dumpFile;
+    }
+
+    /**
      * @return array
      */
     protected static function getDbAccessCredentials()
     {
-        $dumpFile = codecept_data_dir('foo-installation.sql');
         $dbName = getenv('wpLoaderDbName') ?: 'codeception-tests';
         $dbUser = 'root';
-        $dbPass = getenv('ciDbPass') ?: 'root';
+        $dbPass = false === getenv('ciDbPass') ? getenv('ciDbPass') : 'root';
         $dbHost = 'localhost';
 
-        return array($dumpFile, $dbName, $dbUser, $dbPass, $dbHost);
+        return array($dbName, $dbUser, $dbPass, $dbHost);
     }
 
     public function setUp()
@@ -46,20 +62,13 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
         parent::tearDown();
     }
 
-    public static function setUpBeforeClass()
-    {
-        self::importOtherPrefixInstallation();
-
-        parent::setUpBeforeClass();
-    }
-
     /**
      * @test
      * it should not destroy another installation on the same database
      */
     public function it_should_not_destroy_another_installation_on_the_same_database()
     {
-        list($dumpFile, $dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
         try {
             $db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
