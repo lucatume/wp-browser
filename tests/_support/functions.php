@@ -24,8 +24,8 @@ function rrmdir($src)
 }
 
 function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
-{
-    $command = 'mysql -h' . $dbHost . ' -u' . $dbUser . ' -p' . $dbPass . ' ' . $dbName . ' < ' . $dumpFile;
+{   $commandTemplate = 'mysql -h%s -u%s %s %s < %s';
+    $command = sprintf($commandTemplate, $dbHost, $dbUser , $dbPass ? '-p' . $dbPass : '',  $dbName, $dumpFile;
     exec($command, $output, $status);
 
     return $status;
