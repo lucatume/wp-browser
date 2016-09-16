@@ -20,7 +20,8 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
         list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
         if (0 !== importDump($dumpFile, $dbName, $dbUser, $dbPass, $dbHost)) {
-            throw new PHPUnit_Framework_AssertionFailedError('Test failed as MySQL import failed');
+            throw new PHPUnit_Framework_AssertionFailedError("Test failed as MySQL import failed\nCredentials: " .
+                print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
         }
     }
 
