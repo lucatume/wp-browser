@@ -41,7 +41,7 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
     {
         $dbName = getenv('wpLoaderDbName') ?: 'codeception-tests';
         $dbUser = 'root';
-        $dbPass = false === getenv('ciDbPass') ? getenv('ciDbPass') : 'root';
+        $dbPass = getenv('TRAVIS') ? '' : 'root';
         $dbHost = 'localhost';
 
         return array($dbName, $dbUser, $dbPass, $dbHost);
