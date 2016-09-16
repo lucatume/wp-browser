@@ -1,4 +1,4 @@
-# ************************************************************
+﻿# ************************************************************
 # Sequel Pro SQL dump
 # Version 4541
 #
@@ -6,8 +6,8 @@
 # https://github.com/sequelpro/sequelpro
 #
 # Host: localhost (MySQL 5.7.15)
-# Database: wordpress
-# Generation Time: 2016-09-15 15:53:31 +0000
+# Database: codeception-tests
+# Generation Time: 2016-09-16 20:17:52 +0000
 # ************************************************************
 
 
