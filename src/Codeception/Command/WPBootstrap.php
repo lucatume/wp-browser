@@ -9,8 +9,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
+use tad\WPBrowser\Interactions\WPBootsrapButler;
 
 class WPBootstrap extends Bootstrap
 {
@@ -18,6 +18,10 @@ class WPBootstrap extends Bootstrap
      * @var array
      */
     public $userConfig = [];
+    /**
+     * @var WPBootsrapButler
+     */
+    private $butler;
 
     /**
      * Returns an array containing the names of the suites the command will scaffold.
@@ -60,7 +64,7 @@ class WPBootstrap extends Bootstrap
         }
 
         if ($input->getOption('interactive')) {
-            $this->askQuestions($input, $output);
+            $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
         }
 
         $output->writeln(
@@ -100,179 +104,10 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
     }
 
-    public function askQuestions(InputInterface $input, OutputInterface $output)
+    public function __construct($name, WPBootsrapButler $butler = null)
     {
-        $helper = $this->getHelper('question');
-
-        $question = new Question("MySQL database host?", 'localhost');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database host should not contain any space'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['dbHost'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("MySQL database name? This will be used for functional and acceptance tests.", 'wpTests');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database name should not contain any space'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['dbName'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("MySQL database username?", 'root');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database name should not contain any space'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['dbUser'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("MySQL database password?", '');
-
-        $this->userConfig['dbPassword'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("MySQL database table prefix?", 'wp_');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database table prefix should not contain any spaces'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['tablePrefix'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("MySQL database table prefix for integration testing?", 'int_');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'MySQL database table prefix for integration testing should not contain any spaces'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['integrationTablePrefix'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("WordPress site url?", 'http://wp.dev');
-        $question->setValidator(function ($answer) {
-            if (!filter_var($answer, FILTER_VALIDATE_URL)) {
-                throw new \RuntimeException(
-                    "The site url should be in the 'http://example.com' format"
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['url'] = $helper->ask($input, $output, $question);
-
-        $host = parse_url($this->userConfig['url'], PHP_URL_HOST);
-        $port = parse_url($this->userConfig['url'], PHP_URL_PORT);
-        $candidateDomain = $port ? $host . ':' . $port : $host;
-
-        $question = new Question("WordPress site domain?", $candidateDomain);
-
-        $this->userConfig['domain'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("Absolute path to the WordPress root directory?", '/var/www/wp');
-        $question->setValidator(function ($answer) {
-            if (!is_dir($answer)) {
-                throw new \RuntimeException(
-                    "'$answer' is not a directory, does not exist or is not accessible"
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['wpRootFolder'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("Administrator username?", 'admin');
-        $question->setValidator(function ($answer) {
-            if (false !== strpos($answer, ' ')) {
-                throw new \RuntimeException(
-                    'The Administrator username should not contain any spaces'
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['adminUsername'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("Administrator password?", 'admin');
-
-        $this->userConfig['adminPassword'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("Administrator email?", 'admin@' . $this->userConfig['domain']);
-        $question->setValidator(function ($answer) {
-            if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                throw new \RuntimeException(
-                    "The Administrator email '$answer' is not a valid email format"
-                );
-            }
-            return trim($answer);
-        });
-        $question->setMaxAttempts(2);
-
-        $this->userConfig['adminEmail'] = $helper->ask($input, $output, $question);
-
-        $question = new Question("Relative path (from WordPress root) to administration area?", '/wp-admin');
-        $question->setValidator(function ($answer) {
-            return '/' . trim($answer, '/');
-        });
-
-        $this->userConfig['adminPath'] = $helper->ask($input, $output, $question);
-
-        $pluginValidator = function ($answer) {
-            if (!(empty($answer) || preg_match('/.*\\.php$/', $answer))) {
-                throw new \RuntimeException(
-                    "Each plugin entry should be a string in the 'hello.php' or 'acme/plugin.php' format, leave blank to move on"
-                );
-            }
-            return $answer;
-        };
-
-        $plugins = [];
-        do {
-            $questionText = empty($plugins) ?
-                "Activate a plugin? (order matters, leave blank to move on)"
-                : "Activate another plugin? (order matters, leave blank to move on)";
-            $question = new Question($questionText, '');
-            $question->setValidator($pluginValidator);
-            $question->setMaxAttempts(2);
-
-            $plugin = $helper->ask($input, $output, $question);
-
-            if (!empty($plugin)) {
-                $plugins[] = $plugin;
-            }
-        } while (!empty($plugin));
-
-        $yamlPlugins = Yaml::dump($plugins, 0);
-
-        $this->userConfig['plugins'] = $yamlPlugins;
-        $this->userConfig['activatePlugins'] = $yamlPlugins;
+        parent::__construct($name);
+        $this->butler = $butler ?: new WPBootsrapButler();
     }
 
     public function createGlobalConfig()
