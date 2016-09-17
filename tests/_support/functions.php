@@ -23,22 +23,37 @@ function rrmdir($src)
     rmdir($src);
 }
 
-function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost', &$output = null)
+function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
-    $dumpFileContents = file_get_contents($dumpFile);
-    if (empty($dumpFileContents)) {
-        return -1;
+    $commandTemplate = 'mysql --host=%s --user=%s %s %s < %s';
+    $dbPassEntry = $dbPass ? '--password=' . $dbPass : '';
+
+    if (version_compare(getMySQLVersion(), '5.5.3', '<')) {
+        $sql = file_get_contents($dumpFile);
+        if (false === $sql) {
+            return false;
+        }
+
+        $conversionMarker = "#converted";
+        if (false === strpos($sql, $conversionMarker)) {
+            $sql = "{$conversionMarker}\n" . $sql;
+            $sql = preg_replace('(CHARSET=utf8[^\\s]*)', 'CHARSET=utf8', $sql);
+            $sql = preg_replace('(COLLATE=utf8[^\\s]*)', 'COLLATE=utf8_bin', $sql);
+            if (false === file_put_contents($dumpFile, $sql)) {
+                return false;
+            }
+        }
     }
 
-    $dsn = sprintf('mysql:host=%s;dbname=%s', $dbHost, $dbName);
-    $db = new \PDO($dsn, $dbUser, $dbPass);
+    $command = sprintf($commandTemplate, $dbHost, $dbUser, $dbPassEntry, $dbName, $dumpFile);
+    exec($command, $output, $status);
 
-    $mysqlVersion = $db->getAttribute(\PDO::ATTR_CLIENT_VERSION);
+    return $status !== false;
+}
 
-    if (version_compare($mysqlVersion, '5.5.3', '<')) {
-        $dumpFileContents = preg_replace('/CHARSET=(utf8[^\\s]*)/', 'CHARSET=utf8', $dumpFileContents);
-        $dumpFileContents = preg_replace('/COLLATE=(utf8[^\\s]*)/', 'COLLATE=utf8_bin', $dumpFileContents);
-    }
-
-    return false !== $db->exec($dumpFileContents);
+function getMySQLVersion()
+{
+    $output = shell_exec('mysql -V');
+    preg_match('@[0-9]+\.[0-9]+\.[0-9]+@', $output, $version);
+    return $version[0];
 }
