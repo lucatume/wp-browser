@@ -182,7 +182,14 @@ class WPBootstrap extends Bootstrap
 
         $wploaderDefaults = $this->getWploaderDefaults();
 
-        $settings = array_merge($defaults, $wploaderDefaults, $this->userConfig);
+        $userConfig = $this->userConfig;
+        if (!empty($this->userConfig['usingIntegrationDatabase'])) {
+            $userConfig['dbName'] = $this->userConfig['integrationDbName'];
+            $userConfig['dbUser'] = $this->userConfig['integrationDbUser'];
+            $userConfig['dbPassword'] = $this->userConfig['integrationDbPassword'];
+        }
+
+        $settings = array_merge($defaults, $wploaderDefaults, $userConfig);
 
         return (new IntegrationSuiteConfig($settings))->produce();
     }

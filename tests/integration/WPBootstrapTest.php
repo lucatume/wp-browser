@@ -486,7 +486,8 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             'database name' => 'wpFuncTests',
             'database user' => 'notRoot',
             'database password' => 'notRootPass',
-            'table prefix.*integration' => 'integration_',
+            'using.*different.*integration' => 'n',
+            '(I|i)ntegration.*table prefix' => 'integration_',
             'table prefix.*' => 'wordpress_',
             'WordPress.*url' => 'http://some.dev',
             'WordPress.*domain' => 'some.dev',
@@ -495,9 +496,55 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*password' => 'dadada',
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
             'path.*administration' => '/wp-admin',
-            '(A|a)ctiv.*plugin(s)*' => ''
+            '(A|a)ctiv.*plugin(s)*' => '',
         ];
         return $questionsAndAnswers;
+    }
+
+    /**
+     * @test
+     * it should allow using a different database for integration testing
+     */
+    public function it_should_allow_using_a_different_database_for_integration_testing()
+    {
+        $app = new Application();
+        $app->add(new WPBootstrap('bootstrap'));
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+
+        $questionsAndAnswers = [
+                'using.*different.*integration' => 'y',
+                '(I|i)ntegration.*database name' => 'intTests',
+                '(I|i)ntegration.*database user' => 'intUser',
+                '(I|i)ntegration.*database password' => 'intPass',
+                '(I|i)ntegration.*table prefix' => 'inte_',
+            ] + $this->getDefaultQuestionsAndAnswers($wpFolder);
+
+        $this->mockAnswers($command, $questionsAndAnswers);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--interactive' => true
+        ]);
+
+        $file = $this->testDir('tests/integration.suite.yml');
+
+        $this->assertFileExists($file);
+
+        $fileContents = file_get_contents($file);
+
+        $this->assertNotEmpty($fileContents);
+
+        $decoded = Yaml::parse($fileContents);
+
+        $this->assertEquals('intTests', $decoded['modules']['config']['WPLoader']['dbName']);
+        $this->assertEquals('intUser', $decoded['modules']['config']['WPLoader']['dbUser']);
+        $this->assertEquals('intPass', $decoded['modules']['config']['WPLoader']['dbPassword']);
+        $this->assertEquals('inte_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
     }
 
 }

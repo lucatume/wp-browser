@@ -5,6 +5,7 @@ namespace tad\WPBrowser\Interactions;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
@@ -26,25 +27,43 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         $question->setMaxAttempts(2);
         $answers['dbHost'] = $helper->ask($input, $output, $question);
 
-        $question = new Question($this->question("MySQL database name? (wpTests)"), 'wpTests');
+        $question = new Question($this->question("Test database name? (wpTests)"), 'wpTests');
         $question->setValidator($this->validator->noSpaces('MySQL database name should not contain any space'));
         $question->setMaxAttempts(2);
         $answers['dbName'] = $helper->ask($input, $output, $question);
 
-        $question = new Question($this->question("MySQL database username? (root)"), 'root');
+        $question = new Question($this->question("Test database username? (root)"), 'root');
         $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
         $question->setMaxAttempts(2);
         $answers['dbUser'] = $helper->ask($input, $output, $question);
 
-        $question = new Question($this->question("MySQL database password? (empty)"), '');
+        $question = new Question($this->question("Test database password? (empty)"), '');
         $answers['dbPassword'] = $helper->ask($input, $output, $question);
 
-        $question = new Question($this->question("MySQL database table prefix for acceptance and functional testing? (wp_)"), 'wp_');
+        $question = new Question($this->question("Test database table prefix for acceptance and functional testing? (wp_)"), 'wp_');
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix should not contain any spaces'));
         $question->setMaxAttempts(2);
         $answers['tablePrefix'] = $helper->ask($input, $output, $question);
 
-        $question = new Question($this->question("MySQL database table prefix for integration testing? (int_)"), 'int_');
+        $question = new ConfirmationQuestion($this->question("Are you using a different database to run integration tests? (yes)"), false);
+        $answers['usingIntegrationDatabase'] = $helper->ask($input, $output, $question);
+
+        if (!empty($answers['usingIntegrationDatabase'])) {
+            $question = new Question($this->question("Integration tests database name? (integrationTests)"), 'integrationTests');
+            $question->setValidator($this->validator->noSpaces('MySQL database name should not contain any space'));
+            $question->setMaxAttempts(2);
+            $answers['integrationDbName'] = $helper->ask($input, $output, $question);
+
+            $question = new Question($this->question("Integration tests database username? (root)"), 'root');
+            $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
+            $question->setMaxAttempts(2);
+            $answers['integrationDbUser'] = $helper->ask($input, $output, $question);
+
+            $question = new Question($this->question("Integration tests database password? (empty)"), '');
+            $answers['integrationDbPassword'] = $helper->ask($input, $output, $question);
+        }
+
+        $question = new Question($this->question("Integration tests database table prefix? (int_)"), 'int_');
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix for integration testing should not contain any spaces'));
         $question->setMaxAttempts(2);
         $answers['integrationTablePrefix'] = $helper->ask($input, $output, $question);
