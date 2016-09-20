@@ -31,7 +31,7 @@
   "require-dev": {
     "codeception/codeception": "~2.2",
     "mikey179/vfsStream": "^1.6",
-    "ofbeaton/console-tester": "^1.1"
+    "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1"
   },
   "bin": [
