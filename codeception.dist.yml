@@ -13,6 +13,6 @@ extensions:
         - Codeception\Extension\Phantoman
     config:
         Codeception\Extension\Phantoman:
-            path: 'phantomjs'
+            path: 'phantomjsbin'
             port: 4444
             suites: ['phantomjs']
