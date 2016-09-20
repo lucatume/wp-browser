@@ -18,7 +18,8 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - wpDbName=test wpLoaderDbName=wploader wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
+  - wpVersion=latest wpFolder=/tmp/wordpress wpDbName=test wpLoaderDbName=wploader wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
+  - wpVersion=4.5.3 wpFolder=/tmp/wordpress wpDbName=test wpLoaderDbName=wploader wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
 
 before_install:
   - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
@@ -44,7 +45,7 @@ before_script:
   - ln -s /tmp/tools/travis-apache-setup/wp-install.sh /tmp/tools/wp-install
 
   # download and install WordPress
-  - wp-install --dir=/tmp/wordpress --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbprefix=wp_ --domain="wordpress.dev" --title="Test" --base=/ --admin_user=admin --admin_password=admin --admin_email=admin@wordpress.dev --theme=twentysixteen --multisite --subdomains --empty 
+  - wp-install --version="$wpVersion" --dir=/tmp/wordpress --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbprefix=wp_ --domain="wordpress.dev" --title="Test" --base=/ --admin_user=admin --admin_password=admin --admin_email=admin@wordpress.dev --theme=twentysixteen --multisite --subdomains
   - cd /tmp/wordpress
   - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
   - wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
