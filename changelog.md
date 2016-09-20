@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- first draft of interactive mode to the `bootstrap` command
+
 ### Fixed
 - plugin activation/deactivation in `WPBrowser` module, thanks [Ippey](https://github.com/Ippey) 
 
