@@ -61,7 +61,7 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
   # set the path to the phantomjs bin in Phantoman
-  - sed -i '' "s/phantomjsbin/$(where phantomjs)/" codeception.dist.yml
+  - sed -i '' "s_phantomjsbin_$(whereis phantomjs)_" codeception.dist.yml
 
 script:
   - codecept run
