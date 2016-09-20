@@ -57,11 +57,11 @@ before_script:
   # set up Apache virtual host
   - sudo env "PATH=$PATH" apache-setup --host="127.0.0.1" --url="$wpUrl" --dir="/tmp/wordpress" 
 
+  # set the path to the phantomjs bin in Phantoman
+  - sed -i "s_phantomjsbin_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
+
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
-
-  # set the path to the phantomjs bin in Phantoman
-  - sed -i '' "s_phantomjsbin_$(which phantomjs)_" codeception.dist.yml
 
 script:
   - codecept run
