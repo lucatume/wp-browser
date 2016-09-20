@@ -73,7 +73,9 @@
 		 * @return void
 		 */
 		public function activatePlugin( $pluginSlug ) {
-			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type" );
+            $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+            $this->selectOption('action', 'activate-selected');
+            $this->click("doaction");
 		}
 
 		/**
@@ -86,7 +88,9 @@
 		 * @return void
 		 */
 		public function deactivatePlugin( $pluginSlug ) {
-			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.deactivate > a:first-of-type" );
+            $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+            $this->selectOption('action', 'deactivate-selected');
+            $this->click("doaction");
 		}
 
 		/**
