@@ -16,4 +16,6 @@ tests/functional.suite.yml
 tests/unit.suite.yml
 tests/wploadersuite.suite.yml
 tests/wpmodule.suite.yml
+tests/phantomjs.suite.yml
 tests/climodule.suite.yml
+codeception.yml
