@@ -65,6 +65,10 @@ class WPBootstrap extends Bootstrap
         }
 
         if ($input->getOption('interactive')) {
+            $output->writeln("<info>This script will help you setting up a WordPress plugin or theme thests using wp-browser and Codeception.</info>");
+            $output->writeln("<info>If this is the first time you do it take your time to read the notes for each question.</info>");
+            $output->writeln("\n");
+
             $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
         }
 
