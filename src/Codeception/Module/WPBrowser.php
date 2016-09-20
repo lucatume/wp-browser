@@ -95,4 +95,38 @@ class WPBrowser extends PhpBrowser
 
         parent::validateConfig();
     }
+
+    /**
+     * In the plugin administration screen activates a plugin clicking the "Activate" link.
+     *
+     * The method will presume the browser is in the plugin screen already.
+     *
+     * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+     *
+     * @return void
+     */
+    public function activatePlugin($pluginSlug)
+    {
+        $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+        $this->selectOption('action', 'activate-selected');
+        $this->click("doaction");
+    }
+
+    /**
+     * In the plugin administration screen deactivates a plugin clicking the "Deactivate" link.
+     *
+     * The method will presume the browser is in the plugin screen already.
+     *
+     * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+     *
+     * @return void
+     */
+    public function deactivatePlugin($pluginSlug)
+    {
+        $this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+        $this->selectOption('action', 'deactivate-selected');
+        $this->click("doaction");
+    }
+
+
 }

@@ -73,7 +73,7 @@
 		 * @return void
 		 */
 		public function activatePlugin( $pluginSlug ) {
-			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type" );
+            $this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type" );
 		}
 
 		/**
@@ -86,7 +86,7 @@
 		 * @return void
 		 */
 		public function deactivatePlugin( $pluginSlug ) {
-			$this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.deactivate > a:first-of-type" );
+            $this->click( "table.plugins tr[data-slug='{$pluginSlug}'] span.deactivate > a:first-of-type" );
 		}
 
 		/**
