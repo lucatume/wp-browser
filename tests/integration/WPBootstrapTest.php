@@ -123,7 +123,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, $this->getDefaultQuestionsAndAnswers($wpFolder));
 
@@ -166,7 +166,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, $this->getDefaultQuestionsAndAnswers($wpFolder));
 
@@ -210,7 +210,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, array_merge(
                 $this->getDefaultQuestionsAndAnswers($wpFolder),
@@ -265,7 +265,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, array_merge(
                 $this->getDefaultQuestionsAndAnswers($wpFolder),
@@ -315,7 +315,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, array_merge(
                 $this->getDefaultQuestionsAndAnswers($wpFolder),
@@ -373,7 +373,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $this->mockAnswers($command, $this->getDefaultQuestionsAndAnswers($wpFolder));
 
@@ -415,7 +415,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $expected = [
             'required/plugin.php',
@@ -497,6 +497,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
             'path.*administration' => '/wp-admin',
             '(A|a)ctiv.*plugin(s)*' => '',
+            'pre-flight check' => 'n'
         ];
         return $questionsAndAnswers;
     }
@@ -512,7 +513,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
-        $wpFolder = getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $wpFolder = $this->getWpFolder();
 
         $questionsAndAnswers = [
                 'using.*different.*integration' => 'y',
@@ -545,6 +546,11 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertEquals('intUser', $decoded['modules']['config']['WPLoader']['dbUser']);
         $this->assertEquals('intPass', $decoded['modules']['config']['WPLoader']['dbPassword']);
         $this->assertEquals('inte_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
+    }
+
+    protected function getWpFolder()
+    {
+        return getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
     }
 
 }

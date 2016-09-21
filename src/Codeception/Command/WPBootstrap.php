@@ -70,6 +70,7 @@ class WPBootstrap extends Bootstrap
             $output->writeln("\n");
 
             $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
+
         }
 
         $output->writeln(
@@ -107,6 +108,11 @@ class WPBootstrap extends Bootstrap
         }
 
         $output->writeln("<info>\nBootstrap is done. Check out " . $realpath . "/tests directory</info>");
+
+
+        if ($input->getOption('interactive')) {
+            $this->scaffoldBaseTestsAdvice($output);
+        }
     }
 
     public function __construct($name, ButlerInterface $butler = null)
@@ -331,5 +337,31 @@ class WPBootstrap extends Bootstrap
             'plugins' => Yaml::dump(['hello.php'], 0)
         ];
         return $wploaderDefaults;
+    }
+
+    private function scaffoldBaseTestsAdvice(OutputInterface $output)
+    {
+        $dumpPath = codecept_data_dir('dump.sql');
+        $wpPath = $this->userConfig['wpRootFolder'];
+
+        $output->writeln("\n");
+        $output->writeln('<info>Generate your first unit test running:</info>');
+        $output->writeln("\t<fg=blue>wpcept generate:test unit Sample</>");
+        $output->writeln('<info>Generate your first integration test running:</info>');
+        $output->writeln("\t<fg=blue>wpcept generate:wpunit integration Sample</>");
+        $output->writeln('<info>Generate your first functional test running:</info>');
+        $output->writeln("\t<fg=blue>wpcept generate:cest functional Sample</>");
+        $output->writeln('<info>Generate your first acceptance test running:</info>');
+        $output->writeln("\t<fg=blue>wpcept generate:cept acceptance Sample</>");
+        $output->writeln("\n");
+        $output->writeln("<info>If you haven\'t done it yet it's good practice to set up the WordPress installation that will</info>");
+        $output->writeln("<info>be used to run the acceptance and functional tests to a pristine initial state and dump its database.</info>");
+        $output->writeln("<info>If you are testing a plugin this could mean activating it and any additional plugin it might require</info>");
+        $output->writeln("<info>and one of WordPress default themes; if you are testing a theme this could mean activating the theme and</info>");
+        $output->writeln("<info>any plugin it might require to work.</info>");
+        $output->writeln("<info>When you feel like the initial state is ok dump the local WordPress installation database using a GUI tool</info>");
+        $output->writeln("<info>like SequelPro (https://www.sequelpro.com/) or a CLI tool like wp-cli (http://wp-cli.org/).</info>");
+        $output->writeln("<info>If you have installed wp-cli use this command to dump the database:</info>");
+        $output->writeln("\t<fg=blue>wp export dump $dumpPath --path=$wpPath</>");
     }
 }

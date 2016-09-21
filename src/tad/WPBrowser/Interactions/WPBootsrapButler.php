@@ -41,7 +41,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("MySQL database host? (localhost)"), 'localhost');
         $question->setValidator($this->validator->noSpaces('MySQL database host should not contain any space'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['dbHost'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -49,13 +49,13 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>During acceptance and functional tests a database will be emptied and refilled from</info>');
             $output->writeln('<info>a database dump before each test. That database should not contain any information you care about</info>');
             $output->writeln('<info>and be dedicated to these tests only. Furthermore the database should exist already.</info>');
-            $output->writeln('<info>If it does not create it with `mysql -e "create database IF NOT EXISTS <dbName>;" -uroot`.</info>');
+            $output->writeln('<info>If it doesn\'t exist run the command <fg=blue>`mysql -e "create database IF NOT EXISTS <dbName>;" -uroot`.</> to create it.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file</info>');
             $output->writeln('<info>as "DB_NAME".</info>');
         }
         $question = new Question($this->question("Test database name? (wpTests)"), 'wpTests');
         $question->setValidator($this->validator->noSpaces('MySQL database name should not contain any space'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['dbName'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -67,7 +67,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("Test database username? (root)"), 'root');
         $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['dbUser'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -89,7 +89,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("Test database table prefix for acceptance and functional testing? (wp_)"), 'wp_');
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix should not contain any spaces'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['tablePrefix'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -100,7 +100,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>specifying a different table prefix but it\'s risky and a completely different database is the</info>');
             $output->writeln('<info>safest choice.</info>');
         }
-        $question = new ConfirmationQuestion($this->question("Are you using a different database to run integration tests? (yes)"), false);
+        $question = new ConfirmationQuestion($this->question("Are you using a different database to run integration tests? (yes)"), true);
         $answers['usingIntegrationDatabase'] = $helper->ask($input, $output, $question);
 
         if (!empty($answers['usingIntegrationDatabase'])) {
@@ -109,11 +109,11 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
                 $output->writeln('<info>During integration tests a database will be emptied and refilled from</info>');
                 $output->writeln('<info>a database dump before each test. That database should not contain any information you care about</info>');
                 $output->writeln('<info>and be dedicated to these tests only. Furthermore the database should exist already.</info>');
-                $output->writeln('<info>If it does not create it with `mysql -e "create database IF NOT EXISTS <dbName>;" -uroot`.</info>');
+                $output->writeln('<info>If it doesn\'t exist run the command <fg=blue>`mysql -e "create database IF NOT EXISTS <dbName>;" -uroot`.</> to create it.</info>');
             }
             $question = new Question($this->question("Integration tests database name? (integrationTests)"), 'integrationTests');
             $question->setValidator($this->validator->noSpaces('MySQL database name should not contain any space'));
-            $question->setMaxAttempts(2);
+            $question->setMaxAttempts(5);
             $answers['integrationDbName'] = $helper->ask($input, $output, $question);
 
             if ($verbose) {
@@ -123,7 +123,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             }
             $question = new Question($this->question("Integration tests database username? (root)"), 'root');
             $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
-            $question->setMaxAttempts(2);
+            $question->setMaxAttempts(5);
             $answers['integrationDbUser'] = $helper->ask($input, $output, $question);
 
             if ($verbose) {
@@ -144,7 +144,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("Integration tests database table prefix? (int_)"), 'int_');
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix for integration testing should not contain any spaces'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['integrationTablePrefix'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -157,7 +157,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("WordPress site url? (http://wp.dev)"), 'http://wp.dev');
         $question->setValidator($this->validator->isUrl("The site url should be in the 'http://example.com' format"));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['url'] = $helper->ask($input, $output, $question);
 
         $host = parse_url($answers['url'], PHP_URL_HOST);
@@ -181,7 +181,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("Absolute path to the WordPress root directory? (/var/www/wp)"), '/var/www/wp');
         $question->setValidator($this->validator->isWpDir());
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['wpRootFolder'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -192,7 +192,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("WP administrator username? (admin)"), 'admin');
         $question->setValidator($this->validator->noSpaces('The Administrator username should not contain any spaces'));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['adminUsername'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -214,7 +214,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         $candidateEmail = 'admin@' . $answers['domain'];
         $question = new Question($this->question("WP Administrator email? ($candidateEmail)"), $candidateEmail);
         $question->setValidator($this->validator->isEmail());
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['adminEmail'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -226,7 +226,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         }
         $question = new Question($this->question("Relative path (from WordPress root) to administration area? (/wp-admin)"), '/wp-admin');
         $question->setValidator($this->validator->isRelativeWpAdminDir($answers['wpRootFolder']));
-        $question->setMaxAttempts(2);
+        $question->setMaxAttempts(5);
         $answers['adminPath'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -244,7 +244,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
                 : "Activate another plugin? (order matters, leave blank to move on)";
             $question = new Question($this->question($questionText), '');
             $question->setValidator($this->validator->isPlugin());
-            $question->setMaxAttempts(2);
+            $question->setMaxAttempts(5);
 
             $plugin = $helper->ask($input, $output, $question);
 
