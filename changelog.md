@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Added
-- first draft of interactive mode to the `bootstrap` command
+- first version of interactive mode to the `bootstrap` command
 
 ### Fixed
 - plugin activation/deactivation in `WPBrowser` module, thanks [Ippey](https://github.com/Ippey) 
