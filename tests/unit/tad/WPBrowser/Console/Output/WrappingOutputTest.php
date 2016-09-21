@@ -2,6 +2,7 @@
 namespace tad\WPBrowser\Console\Output;
 
 
+use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class WrappingOutputTest extends \Codeception\Test\Unit
@@ -49,8 +50,8 @@ class WrappingOutputTest extends \Codeception\Test\Unit
             'dolor'
         ];
 
-        $this->output->write(implode("\n", $expectedLines))->shouldBeCalled();
-        $this->output->writeln(implode("\n", $expectedLines))->shouldBeCalled();
+        $this->output->write(implode("\n", $expectedLines), Argument::any(), Argument::any())->shouldBeCalled();
+        $this->output->writeln(implode("\n", $expectedLines), Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->wrapAt($wrapAt);
@@ -67,8 +68,8 @@ class WrappingOutputTest extends \Codeception\Test\Unit
         $line = 'loremdolor';
         $wrapAt = 5;
 
-        $this->output->write('loremdolor')->shouldBeCalled();
-        $this->output->writeln('loremdolor')->shouldBeCalled();
+        $this->output->write('loremdolor', Argument::any(), Argument::any())->shouldBeCalled();
+        $this->output->writeln('loremdolor', Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->wrapAt($wrapAt);
@@ -91,12 +92,12 @@ class WrappingOutputTest extends \Codeception\Test\Unit
             "lorem\ndolor",
             "ipsum\namet",
             "foo\ndolor",
-        ])->shouldBeCalled();
+        ], Argument::any(), Argument::any())->shouldBeCalled();
         $this->output->writeln([
             "lorem\ndolor",
             "ipsum\namet",
             "foo\ndolor",
-        ])->shouldBeCalled();
+        ], Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->wrapAt($wrapAt);
@@ -119,12 +120,12 @@ class WrappingOutputTest extends \Codeception\Test\Unit
             'lorem dolor ipsum amet',
             'ipsum amet lorem dolor',
             'foo dolor baz bar',
-        ])->shouldBeCalled();
+        ], Argument::any(), Argument::any())->shouldBeCalled();
         $this->output->writeln([
             'lorem dolor ipsum amet',
             'ipsum amet lorem dolor',
             'foo dolor baz bar',
-        ])->shouldBeCalled();
+        ], Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->wrapAt($wrapAt);
@@ -141,8 +142,8 @@ class WrappingOutputTest extends \Codeception\Test\Unit
         $line = 'lorem dolor ipsum amet';
         $wrapAt = 12;
 
-        $this->output->write("lorem dolor\nipsum amet")->shouldBeCalled();
-        $this->output->writeln("lorem dolor\nipsum amet")->shouldBeCalled();
+        $this->output->write("lorem dolor\nipsum amet", Argument::any(), Argument::any())->shouldBeCalled();
+        $this->output->writeln("lorem dolor\nipsum amet", Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->wrapAt($wrapAt);

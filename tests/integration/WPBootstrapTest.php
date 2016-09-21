@@ -15,6 +15,16 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 {
     use QuestionTester;
 
+    /**
+     * @var string
+     */
+    protected $acceptanceSuiteConfigFile = 'tests/acceptance.suite.yml';
+
+    /**
+     * @var string
+     */
+    protected $functionalSuiteConfigFile = 'tests/functional.suite.yml';
+
     protected static $path;
     protected static $cwdBackup;
 
@@ -81,7 +91,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_scaffold_acceptance_suite()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
@@ -90,7 +100,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--no-build' => true
         ]);
 
-        $this->assertFileExists($this->testDir('tests/acceptance.suite.yml'));
+        $this->assertFileExists($this->testDir($this->acceptanceSuiteConfigFile));
     }
 
     /**
@@ -100,7 +110,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_scaffold_functional_test_suite()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
@@ -109,7 +119,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--no-build' => true
         ]);
 
-        $this->assertFileExists($this->testDir('tests/functional.suite.yml'));
+        $this->assertFileExists($this->testDir($this->functionalSuiteConfigFile));
     }
 
     /**
@@ -119,7 +129,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_user_to_specify_params_through_questions_for_functional_suite()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -134,7 +144,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--interactive' => true
         ]);
 
-        $file = $this->testDir('tests/functional.suite.yml');
+        $file = $this->testDir($this->functionalSuiteConfigFile);
 
         $this->assertFileExists($file);
 
@@ -162,7 +172,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_users_to_specify_params_through_questions_for_acceptance_suite()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -177,7 +187,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--interactive' => true
         ]);
 
-        $file = $this->testDir('tests/acceptance.suite.yml');
+        $file = $this->testDir($this->acceptanceSuiteConfigFile);
 
         $this->assertFileExists($file);
 
@@ -206,7 +216,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_the_database_password_to_be_empty()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -225,7 +235,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--interactive' => true
         ]);
 
-        $file = $this->testDir('tests/acceptance.suite.yml');
+        $file = $this->testDir($this->acceptanceSuiteConfigFile);
 
         $this->assertFileExists($file);
 
@@ -261,7 +271,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_for_different_format_urls($url)
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -280,7 +290,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--interactive' => true
         ]);
 
-        $file = $this->testDir('tests/acceptance.suite.yml');
+        $file = $this->testDir($this->acceptanceSuiteConfigFile);
 
         $this->assertFileExists($file);
 
@@ -311,7 +321,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_different_admin_path_formats($adminPath, $expectedAdminPath)
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -330,7 +340,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '--interactive' => true
         ]);
 
-        $file = $this->testDir('tests/acceptance.suite.yml');
+        $file = $this->testDir($this->acceptanceSuiteConfigFile);
 
         $this->assertFileExists($file);
 
@@ -350,7 +360,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_scaffold_the_integration_suite_config_file()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
@@ -369,7 +379,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_setting_integration_configuration_with_user_provided_params()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -411,7 +421,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_user_to_specify_plugins()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -497,7 +507,6 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
             'path.*administration' => '/wp-admin',
             '(A|a)ctiv.*plugin(s)*' => '',
-            'pre-flight check' => 'n'
         ];
         return $questionsAndAnswers;
     }
@@ -509,7 +518,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     public function it_should_allow_using_a_different_database_for_integration_testing()
     {
         $app = new Application();
-        $app->add(new WPBootstrap('bootstrap'));
+        $this->addCommand($app);
         $command = $app->find('bootstrap');
         $commandTester = new CommandTester($command);
 
@@ -551,6 +560,14 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     protected function getWpFolder()
     {
         return getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+    }
+
+    /**
+     * @param Application $app
+     */
+    protected function addCommand(Application $app)
+    {
+        $app->add(new WPBootstrap('bootstrap'));
     }
 
 }
