@@ -33,21 +33,25 @@ class PyramidWordsOutput extends OutputDecorator implements OutputInterface
     {
         $messages = (array)$messages;
         $patterns = [
-            '/(F|f)unctional/' => [$this, 'replaceFunctional'],
-            '/(A|a)cceptance/' => [$this, 'replaceAcceptance'],
+            '/(F|f)unctional/',
+            '/(A|a)cceptance/'
         ];
-        $messages = preg_replace_callback_array($patterns, $messages);
+
+        $messages = preg_replace_callback($patterns, [$this, 'replaceWord'], $messages);
 
         return count($messages) === 1 ? $messages[0] : $messages;
     }
 
-    protected function replaceFunctional($matches)
+    protected function replaceWord($matches)
     {
-        return $matches[1] === 'F' ? 'Service' : 'service';
+        switch ($matches[1]) {
+            case 'F':
+                return 'Service';
+            case 'f':
+                return 'service';
+            default:
+                return 'UI';
+        }
     }
 
-    protected function replaceAcceptance()
-    {
-        return 'UI';
-    }
 }
