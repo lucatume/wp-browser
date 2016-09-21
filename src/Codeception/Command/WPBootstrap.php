@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use tad\WPBrowser\Console\Output\WrappingOutput;
 use tad\WPBrowser\Interactions\ButlerInterface;
 use tad\WPBrowser\Interactions\WPBootsrapButler;
 
@@ -64,9 +65,11 @@ class WPBootstrap extends Bootstrap
             return;
         }
 
+        $output = new WrappingOutput($output);
+        $output->wrapAt(100);
+
         if ($input->getOption('interactive')) {
-            $output->writeln("<info>This script will help you setting up a WordPress plugin or theme thests using wp-browser and Codeception.</info>");
-            $output->writeln("<info>If this is the first time you do it take your time to read the notes for each question.</info>");
+            $output->writeln("<info>This script will help you setting up a WordPress plugin or theme thests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
             $output->writeln("\n");
 
             $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
@@ -354,13 +357,8 @@ class WPBootstrap extends Bootstrap
         $output->writeln('<info>Generate your first acceptance test running:</info>');
         $output->writeln("\t<fg=blue>wpcept generate:cept acceptance Sample</>");
         $output->writeln("\n");
-        $output->writeln("<info>If you haven\'t done it yet it's good practice to set up the WordPress installation that will</info>");
-        $output->writeln("<info>be used to run the acceptance and functional tests to a pristine initial state and dump its database.</info>");
-        $output->writeln("<info>If you are testing a plugin this could mean activating it and any additional plugin it might require</info>");
-        $output->writeln("<info>and one of WordPress default themes; if you are testing a theme this could mean activating the theme and</info>");
-        $output->writeln("<info>any plugin it might require to work.</info>");
-        $output->writeln("<info>When you feel like the initial state is ok dump the local WordPress installation database using a GUI tool</info>");
-        $output->writeln("<info>like SequelPro (https://www.sequelpro.com/) or a CLI tool like wp-cli (http://wp-cli.org/).</info>");
+        $output->writeln('<info>If you haven\'t done it yet it\'s good practice to set up the WordPress installation that will be used to run the acceptance and functional tests to a pristine initial state and dump its database. If you are testing a plugin this could mean activating it and any additional plugin it might require and one of WordPress default themes; if you are testing a theme this could mean activating the theme and any plugin it might require to work.</info>');
+        $output->writeln("<info>When you feel like the initial state is ok dump the local WordPress installation database using a GUI tool like SequelPro (https://www.sequelpro.com/) or a CLI tool like wp-cli (http://wp-cli.org/).</info>");
         $output->writeln("<info>If you have installed wp-cli use this command to dump the database:</info>");
         $output->writeln("\t<fg=blue>wp export dump $dumpPath --path=$wpPath</>");
     }
