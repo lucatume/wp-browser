@@ -25,10 +25,9 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         $answers = [];
 
         if ($verbose) {
-            $output->writeln('<info>Acceptance and functional tests will need to visit (as a user would do) a real website like "http://wordpress.dev". This should be a WordPress installation that\'s already running and available: you should be able to visit the address with your browser and not get any error.</info>');
+            $output->writeln('<info>Acceptance and functional tests will need to visit a real website like "http://wordpress.dev" as a user would do. This should be a WordPress installation that\'s already running and available: you should be able to visit the address with your browser and not get any error.</info>');
             $output->writeln("\n");
-            $output->writeln('<info>The "host" is the address or alias where your database server listens for connections</info>');
-            $output->writeln('<info>The "localhost" address is usually a safe assumption but it could be "127.0.0.1", an alias set in your hosts file like "mysql" or the IP address of a Vagrant or Docker instance.</info>');
+            $output->writeln('<info>The "host" is the address or alias where your database server listens for connections; the "localhost" address is usually a safe assumption but it could be "127.0.0.1", an alias set in your hosts file like "mysql" or the IP address of a Vagrant or Docker instance.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_HOST"</info>');
         }
         $question = new Question($this->question("MySQL database host? (localhost)"), 'localhost');
@@ -40,6 +39,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln("\n");
             $output->writeln('<info>During acceptance and functional tests a database will be emptied and refilled from a database dump before each test. That database should not contain any information you care about and be dedicated to these tests only. Furthermore the database should exist already.</info>');
             $output->writeln('<info>If it doesn\'t exist run the command <fg=blue>`mysql -e "create database IF NOT EXISTS <dbName>;" -uroot`.</> to create it.</info>');
+
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_NAME".</info>');
         }
         $question = new Question($this->question("Test database name? (wpTests)"), 'wpTests');
@@ -69,7 +69,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
 
         if ($verbose) {
             $output->writeln("\n");
-            $output->writeln('<info>Each WordPress installation "lives" in a set of tables all prefixed with the same string.</info>');
+            $output->writeln('<info>Each WordPress installation "lives" in a set of tables all prefixed by the same string.</info>');
             $output->writeln('<info>The default prefix is "wp_" but you might have a different value.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "$table_prefix".</info>');
         }
@@ -118,7 +118,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
 
         if ($verbose) {
             $output->writeln("\n");
-            $output->writeln('<info>The integration tests will install WordPress in a set of tables all prefixed in the same way.</info>');
+            $output->writeln('<info>The integration tests will install WordPress in a set of tables all prefixed by the same string.</info>');
             $output->writeln('<info>The default prefix is "wp_" but you should specify a different value.</info>');
             $output->writeln('<info>If you decided not to use a different database for integration tests then this value should not be the same as the table prefix used for acceptance and functional tests.</info>');
         }

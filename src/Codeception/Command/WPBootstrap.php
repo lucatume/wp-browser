@@ -26,6 +26,12 @@ class WPBootstrap extends Bootstrap
      */
     protected $butler;
 
+    public function __construct($name, ButlerInterface $butler = null)
+    {
+        parent::__construct($name);
+        $this->butler = $butler ?: new WPBootsrapButler();
+    }
+
     /**
      * Returns an array containing the names of the suites the command will scaffold.
      *
@@ -71,7 +77,7 @@ class WPBootstrap extends Bootstrap
         $output->wrapAt(120);
 
         if ($input->getOption('interactive')) {
-            $output->writeln("<info>This script will help you setting up a WordPress plugin or theme thests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
+            $output->writeln("<info>This script will help you to set up a WordPress plugin or theme thests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
             $output->writeln("\n");
 
             $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
@@ -120,10 +126,14 @@ class WPBootstrap extends Bootstrap
         }
     }
 
-    public function __construct($name, ButlerInterface $butler = null)
+    /**
+     * @param OutputInterface $output
+     * @return OutputInterface|WrappingOutput
+     */
+    protected function decorateOutput(OutputInterface $output)
     {
-        parent::__construct($name);
-        $this->butler = $butler ?: new WPBootsrapButler();
+        $output = new WrappingOutput($output);
+        return $output;
     }
 
     public function createGlobalConfig()
@@ -209,6 +219,22 @@ class WPBootstrap extends Bootstrap
         return (new IntegrationSuiteConfig($settings))->produce();
     }
 
+    protected function getWploaderDefaults()
+    {
+        $wploaderDefaults = [
+            'wpRootFolder' => '/var/www/wordpress',
+            'dbName' => 'wordpress-tests',
+            'dbHost' => 'localhost',
+            'dbUser' => 'root',
+            'dbPassword' => '',
+            'tablePrefix' => 'int_',
+            'domain' => 'wp.local',
+            'adminEmail' => 'admin@wp.local',
+            'plugins' => Yaml::dump(['hello.php'], 0)
+        ];
+        return $wploaderDefaults;
+    }
+
     protected function createFunctionalSuite($actor = 'Functional')
     {
         $suiteConfig = $this->getFunctionalSuiteConfig($actor);
@@ -241,6 +267,35 @@ class WPBootstrap extends Bootstrap
         $settings = array_merge($defaults, $wpdbDefaults, $wordpressDefaults, $this->userConfig);
 
         return (new FunctionalSuiteConfig($settings))->produce();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWpdbConfigDefaults()
+    {
+        $wpdbDefaults = [
+            'dbHost' => 'localhost',
+            'dbName' => 'wordpress-tests',
+            'dbUser' => 'root',
+            'dbPassword' => '',
+            'url' => 'http://wp.local',
+            'tablePrefix' => 'wp_',
+        ];
+        return $wpdbDefaults;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWordpressConfigDefaults()
+    {
+        $wordpressDefaults = [
+            'wpRootFolder' => '/var/www/wordpress',
+            'adminUsername' => 'admin',
+            'adminPassword' => 'password',
+        ];
+        return $wordpressDefaults;
     }
 
     protected function createAcceptanceSuite($actor = 'Acceptance')
@@ -278,42 +333,6 @@ class WPBootstrap extends Bootstrap
         return (new AcceptanceSuiteConfig($settings))->produce();
     }
 
-    protected function configure()
-    {
-        parent::configure();
-        $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
-        $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
-    }
-
-    /**
-     * @return array
-     */
-    protected function getWpdbConfigDefaults()
-    {
-        $wpdbDefaults = [
-            'dbHost' => 'localhost',
-            'dbName' => 'wordpress-tests',
-            'dbUser' => 'root',
-            'dbPassword' => '',
-            'url' => 'http://wp.local',
-            'tablePrefix' => 'wp_',
-        ];
-        return $wpdbDefaults;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getWordpressConfigDefaults()
-    {
-        $wordpressDefaults = [
-            'wpRootFolder' => '/var/www/wordpress',
-            'adminUsername' => 'admin',
-            'adminPassword' => 'password',
-        ];
-        return $wordpressDefaults;
-    }
-
     /**
      * @return array
      */
@@ -326,22 +345,6 @@ class WPBootstrap extends Bootstrap
             'adminPath' => '/wp-admin',
         ];
         return $wpbrowserDefaults;
-    }
-
-    protected function getWploaderDefaults()
-    {
-        $wploaderDefaults = [
-            'wpRootFolder' => '/var/www/wordpress',
-            'dbName' => 'wordpress-tests',
-            'dbHost' => 'localhost',
-            'dbUser' => 'root',
-            'dbPassword' => '',
-            'tablePrefix' => 'int_',
-            'domain' => 'wp.local',
-            'adminEmail' => 'admin@wp.local',
-            'plugins' => Yaml::dump(['hello.php'], 0)
-        ];
-        return $wploaderDefaults;
     }
 
     private function scaffoldBaseTestsAdvice(OutputInterface $output)
@@ -365,13 +368,10 @@ class WPBootstrap extends Bootstrap
         $output->writeln("\t<fg=blue>wp export dump $dumpPath --path=$wpPath</>");
     }
 
-    /**
-     * @param OutputInterface $output
-     * @return OutputInterface|WrappingOutput
-     */
-    protected function decorateOutput(OutputInterface $output)
+    protected function configure()
     {
-        $output = new WrappingOutput($output);
-        return $output;
+        parent::configure();
+        $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
+        $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
     }
 }
