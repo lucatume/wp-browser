@@ -291,7 +291,7 @@ The package will create a link to the `bin/wpcept` script file; that's an extens
 The CLI application adds the `bootstrap` command argument to allow for a quick WordPress testing environment setup replacing the default bootstrap configuration created by Codeception.
 
 ```sh
-  wpcept bootstrap
+wpcept bootstrap
 ```
 
 The command will generate the "Unit", "Integration", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
@@ -301,14 +301,18 @@ The command will generate the "Unit", "Integration", "Functional" and "Acceptanc
 * Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
 
-Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
+
+```sh
+wpcept bootstrap --interactive
+```
 
 #### bootstrap:pyramid
 The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
 The command
 
 ```sh
-  wpcept bootstrap:pyramid
+wpcept bootstrap:pyramid
 ```
 
 will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care of setting up default modules and their settings for each like:
@@ -318,7 +322,11 @@ will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care
 * Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
 
-Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command.
+Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
+
+```sh
+wpcept bootstrap --interactive
+```
 
 #### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
