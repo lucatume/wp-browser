@@ -3,6 +3,9 @@
 namespace Codeception\Command;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use tad\WPBrowser\Console\Output\PyramidWordsOutput;
+use tad\WPBrowser\Interactions\ButlerInterface;
+use tad\WPBrowser\Interactions\WPBootstrapPyramidButler;
 
 class WPBootstrapPyramid extends WPBootstrap
 {
@@ -49,5 +52,12 @@ class WPBootstrapPyramid extends WPBootstrap
 
         $str .= $suiteConfig;
         $this->createSuite('ui', $actor, $str);
+    }
+
+    protected function decorateOutput(OutputInterface $output)
+    {
+        $output = new PyramidWordsOutput($output);
+
+        return parent::decorateOutput($output);
     }
 }

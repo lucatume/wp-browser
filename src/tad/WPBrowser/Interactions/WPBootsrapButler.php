@@ -119,8 +119,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         if ($verbose) {
             $output->writeln("\n");
             $output->writeln('<info>The integration tests will install WordPress in a set of tables all prefixed in the same way.</info>');
-            $output->writeln('<info>The default prefix is "wp_" but you really should specify a different value.</info>');
-            $output->writeln('<info>If you decided not to use a different database for integration tests then this value should really not be the same as the table prefix used for acceptance and functional tests.</info>');
+            $output->writeln('<info>The default prefix is "wp_" but you should specify a different value.</info>');
+            $output->writeln('<info>If you decided not to use a different database for integration tests then this value should not be the same as the table prefix used for acceptance and functional tests.</info>');
         }
         $question = new Question($this->question("Integration tests database table prefix? (int_)"), 'int_');
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix for integration testing should not contain any spaces'));
@@ -175,7 +175,7 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
 
         if ($verbose) {
             $output->writeln("\n");
-            $output->writeln('<info>When performing some operations WordPress could send emails to notice the administrator; this setting is not fundamental and could very well be a fantasy email address unless you are using something like Mailcatcher or other email catching mechanisms.</info>');
+            $output->writeln('<info>When performing some operations WordPress could send emails to notice the administrator; this setting is not fundamental and could be a fantasy email address unless you are using something like MailCatcher (https://mailcatcher.me/) or other email capture mechanisms.</info>');
         }
         $candidateEmail = 'admin@' . $answers['domain'];
         $question = new Question($this->question("WP Administrator email? ($candidateEmail)"), $candidateEmail);
@@ -195,8 +195,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
 
         if ($verbose) {
             $output->writeln("\n");
-            $output->writeln('<info>When running integration tests no plugins will be activated by default.</info>');
-            $output->writeln('<info>To specify which plugins should be active and in which order those should be activated use this setting. The stack is first-in-first-out so the first plugin you set will be activated first and so on. Plugins must be specified in their basename format: that\'s usually "folder/main-plugin-file.php".</info>');
+            $output->writeln('<info>When running integration tests no plugin will be activated by default.</info>');
+            $output->writeln('<info>To specify which plugins should be active and in which order use this setting. The stack is first-in-first-out so the first plugin you set will be activated first and so on. Plugins must be specified in their basename format: that\'s usually "folder/main-plugin-file.php".</info>');
         }
         $plugins = [];
         do {

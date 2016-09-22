@@ -20,10 +20,11 @@ class WPBootstrap extends Bootstrap
      * @var array
      */
     public $userConfig = [];
+
     /**
      * @var WPBootsrapButler
      */
-    private $butler;
+    protected $butler;
 
     /**
      * Returns an array containing the names of the suites the command will scaffold.
@@ -65,8 +66,9 @@ class WPBootstrap extends Bootstrap
             return;
         }
 
-        $output = new WrappingOutput($output);
-        $output->wrapAt(100);
+        $output = $this->decorateOutput($output);
+
+        $output->wrapAt(120);
 
         if ($input->getOption('interactive')) {
             $output->writeln("<info>This script will help you setting up a WordPress plugin or theme thests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
@@ -361,5 +363,15 @@ class WPBootstrap extends Bootstrap
         $output->writeln("<info>When you feel like the initial state is ok dump the local WordPress installation database using a GUI tool like SequelPro (https://www.sequelpro.com/) or a CLI tool like wp-cli (http://wp-cli.org/).</info>");
         $output->writeln("<info>If you have installed wp-cli use this command to dump the database:</info>");
         $output->writeln("\t<fg=blue>wp export dump $dumpPath --path=$wpPath</>");
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @return OutputInterface|WrappingOutput
+     */
+    protected function decorateOutput(OutputInterface $output)
+    {
+        $output = new WrappingOutput($output);
+        return $output;
     }
 }
