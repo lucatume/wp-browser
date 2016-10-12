@@ -373,5 +373,16 @@ class WPBootstrap extends Bootstrap
         parent::configure();
         $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
         $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
+        $this->addOption('dbHost', null, InputOption::VALUE_REQUIRED, 'A preset database host');
+        $this->addOption('dbName', null, InputOption::VALUE_REQUIRED, 'A preset database name');
+        $this->addOption('dbUser', null, InputOption::VALUE_REQUIRED, 'A preset database user');
+        $this->addOption('dbPassword', null, InputOption::VALUE_REQUIRED, 'A preset database password');
+        $this->addOption('tablePrefix', null, InputOption::VALUE_REQUIRED, 'A preset table prefix');
+        $this->addOption('url', null, InputOption::VALUE_REQUIRED, 'A preset site URL');
+        $this->addOption('wpRootFolder', null, InputOption::VALUE_REQUIRED, 'A preset WordPress root folder');
+        $this->addOption('adminUsername', null, InputOption::VALUE_REQUIRED, 'A preset administrator username');
+        $this->addOption('adminPassword', null, InputOption::VALUE_REQUIRED, 'A preset administratore password');
+        $this->addOption('adminPath', null, InputOption::VALUE_REQUIRED, 'A preset administration area path');
+        $this->addOption('plugins', null, InputOption::VALUE_REQUIRED, 'A preset list of plugins (comma separated slugs list)');
     }
 }

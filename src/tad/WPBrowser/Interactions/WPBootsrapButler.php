@@ -30,7 +30,9 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>The "host" is the address or alias where your database server listens for connections; the "localhost" address is usually a safe assumption but it could be "127.0.0.1", an alias set in your hosts file like "mysql" or the IP address of a Vagrant or Docker instance.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_HOST"</info>');
         }
-        $question = new Question($this->question("MySQL database host? (localhost)"), 'localhost');
+
+        $default = $this->getOptionDefault($input, 'dbHost', 'localhost');
+        $question = new Question($this->question("MySQL database host? ({$default})"), $default);
         $question->setValidator($this->validator->noSpaces('MySQL database host should not contain any space'));
         $question->setMaxAttempts(5);
         $answers['dbHost'] = $helper->ask($input, $output, $question);
@@ -42,7 +44,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
 
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_NAME".</info>');
         }
-        $question = new Question($this->question("Test database name? (wpTests)"), 'wpTests');
+        $default = $this->getOptionDefault($input, 'dbName', 'wpTests');
+        $question = new Question($this->question("Test database name? ({$default})"), $default);
         $question->setValidator($this->validator->noSpaces('MySQL database name should not contain any space'));
         $question->setMaxAttempts(5);
         $answers['dbName'] = $helper->ask($input, $output, $question);
@@ -53,7 +56,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>If you do not know what the database user is "root" is a safe assumption.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_USER".</info>');
         }
-        $question = new Question($this->question("Test database username? (root)"), 'root');
+        $default = $this->getOptionDefault($input, 'dbUser', 'root');
+        $question = new Question($this->question("Test database username? ({$default})"), $default);
         $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
         $question->setMaxAttempts(5);
         $answers['dbUser'] = $helper->ask($input, $output, $question);
@@ -64,7 +68,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>If you do not know what the database password is "root" or "" (empty) are safe assumptions.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "DB_PASSWORD".</info>');
         }
-        $question = new Question($this->question("Test database password? (empty)"), '');
+        $default = $this->getOptionDefault($input, 'dbPassword', '');
+        $question = new Question($this->question("Test database password? ({$default})"), $default);
         $answers['dbPassword'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -73,7 +78,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>The default prefix is "wp_" but you might have a different value.</info>');
             $output->writeln('<info>This is probably the same value you have set in the WordPress installation "wp-config.php" file as "$table_prefix".</info>');
         }
-        $question = new Question($this->question("Test database table prefix for acceptance and functional testing? (wp_)"), 'wp_');
+        $default = $this->getOptionDefault($input, 'tablePrefix', 'wp_');
+        $question = new Question($this->question("Test database table prefix for acceptance and functional testing? ({$default})"), $default);
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix should not contain any spaces'));
         $question->setMaxAttempts(5);
         $answers['tablePrefix'] = $helper->ask($input, $output, $question);
@@ -102,7 +108,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
                 $output->writeln('<info>The integration test suite will need to access the datbase as an authenticated user, ideally with root access.</info>');
                 $output->writeln('<info>If you do not know what the database user is "root" is a safe assumption.</info>');
             }
-            $question = new Question($this->question("Integration tests database username? (root)"), 'root');
+            $default = $this->getOptionDefault($input, 'dbUser', 'root');
+            $question = new Question($this->question("Integration tests database username? ({$default})"), $default);
             $question->setValidator($this->validator->noSpaces('MySQL database username should not contain any space'));
             $question->setMaxAttempts(5);
             $answers['integrationDbUser'] = $helper->ask($input, $output, $question);
@@ -112,7 +119,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
                 $output->writeln('<info>The integration test suite will need to access the datbase as an authenticated user, ideally with root access.</info>');
                 $output->writeln('<info>If you do not know what the database password is "root" or "" (empty) are safe assumptions.</info>');
             }
-            $question = new Question($this->question("Integration tests database password? (empty)"), '');
+            $default = $this->getOptionDefault($input, 'dbPassword', '');
+            $question = new Question($this->question("Integration tests database password? ({$default})"), $default);
             $answers['integrationDbPassword'] = $helper->ask($input, $output, $question);
         }
 
@@ -122,7 +130,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>The default prefix is "wp_" but you should specify a different value.</info>');
             $output->writeln('<info>If you decided not to use a different database for integration tests then this value should not be the same as the table prefix used for acceptance and functional tests.</info>');
         }
-        $question = new Question($this->question("Integration tests database table prefix? (int_)"), 'int_');
+        $default = $this->getOptionDefault($input, 'tablePrefix', 'wp_');
+        $question = new Question($this->question("Integration tests database table prefix? (int_{$default})"), 'int_' . $default);
         $question->setValidator($this->validator->noSpaces('MySQL database table prefix for integration testing should not contain any spaces'));
         $question->setMaxAttempts(5);
         $answers['integrationTablePrefix'] = $helper->ask($input, $output, $question);
@@ -132,7 +141,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>What\'s the URL of the WordPress installation used for the tests?</info>');
             $output->writeln('<info>WordPress stores the site URL in the database and uses it in many operations hence it\'s important to set this value to the same URL you would write in a browser to visit your local WordPress installation. It should be something like "http://wp.dev", "http://localhost:8080" or "http://192.168.10.254" depending on your local server setup.</info>');
         }
-        $question = new Question($this->question("WordPress site url? (http://wp.dev)"), 'http://wp.dev');
+        $default = $this->getOptionDefault($input, 'url', 'http://wp.dev');
+        $question = new Question($this->question("WordPress site url? ({$default})"), $default);
         $question->setValidator($this->validator->isUrl("The site url should be in the 'http://example.com' format"));
         $question->setMaxAttempts(5);
         $answers['url'] = $helper->ask($input, $output, $question);
@@ -152,7 +162,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln("\n");
             $output->writeln('<info>Functional and integration tests will interact with the WordPress installation on a filesystem level; as such they should be provided with the absolute path to the WordPress installation root folder. The "root folder" is the folder containing the "wp-load.php" file.</info>');
         }
-        $question = new Question($this->question("Absolute path to the WordPress root directory? (/var/www/wp)"), '/var/www/wp');
+        $default = $this->getOptionDefault($input, 'wpRootFolder', '/var/www/wp');
+        $question = new Question($this->question("Absolute path to the WordPress root directory? ({$default})"), $default);
         $question->setValidator($this->validator->isWpDir());
         $question->setMaxAttempts(5);
         $answers['wpRootFolder'] = $helper->ask($input, $output, $question);
@@ -161,7 +172,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln("\n");
             $output->writeln('<info>Functional and acceptance tests will interact with the WordPress installation acting as users; the administrator username is what you would enter in your local installation login form in the "Username or Email" field.</info>');
         }
-        $question = new Question($this->question("WP administrator username? (admin)"), 'admin');
+        $default = $this->getOptionDefault($input, 'adminUsername', 'admin');
+        $question = new Question($this->question("WP administrator username? ({$default})"), $default);
         $question->setValidator($this->validator->noSpaces('The Administrator username should not contain any spaces'));
         $question->setMaxAttempts(5);
         $answers['adminUsername'] = $helper->ask($input, $output, $question);
@@ -170,7 +182,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln("\n");
             $output->writeln('<info>Functional and acceptance tests will interact with the WordPress installation acting as users; the administrator password is what you would enter in your local installation login form in the "Password" field.</info>');
         }
-        $question = new Question($this->question("WP Administrator password? (admin)"), 'admin');
+        $default = $this->getOptionDefault($input, 'adminPassword', 'admin');
+        $question = new Question($this->question("WP Administrator password? ({$default})"), $default);
         $answers['adminPassword'] = $helper->ask($input, $output, $question);
 
         if ($verbose) {
@@ -188,7 +201,8 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>The administration area is usually reachable at the "/wp-admin" path of a WordPress installation.</info>');
             $output->writeln('<info>This could not be the case for your local setup, set this value to the path you would append to the local WordPress installation URL to access the administration area.</info>');
         }
-        $question = new Question($this->question("Relative path (from WordPress root) to administration area? (/wp-admin)"), '/wp-admin');
+        $default = $this->getOptionDefault($input, 'adminPath', '/wp-admin');
+        $question = new Question($this->question("Relative path (from WordPress root) to administration area? ({$default})"), $default);
         $question->setValidator($this->validator->isRelativeWpAdminDir($answers['wpRootFolder']));
         $question->setMaxAttempts(5);
         $answers['adminPath'] = $helper->ask($input, $output, $question);
@@ -199,6 +213,10 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $output->writeln('<info>To specify which plugins should be active and in which order use this setting. The stack is first-in-first-out so the first plugin you set will be activated first and so on. Plugins must be specified in their basename format: that\'s usually "folder/main-plugin-file.php".</info>');
         }
         $plugins = [];
+        $default = $this->getOptionDefault($input, 'plugins', '');
+        if (!empty($default)) {
+            $plugins = explode(',', $default);
+        }
         do {
             $questionText = empty($plugins) ?
                 "Activate a plugin? (order matters, leave blank to move on)"
@@ -220,6 +238,18 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
         $answers['activatePlugins'] = $yamlPlugins;
 
         return $answers;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param $option
+     * @param $default
+     */
+    protected function getOptionDefault(InputInterface $input, $option, $default)
+    {
+        $value = $input->getOption($option);
+
+        return empty($value) ? $default : $value;
     }
 
     protected function question($questionText)
