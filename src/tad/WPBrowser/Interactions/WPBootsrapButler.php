@@ -218,9 +218,10 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
             $plugins = explode(',', $default);
         }
         do {
+            $active = implode(', ', $plugins);
             $questionText = empty($plugins) ?
                 "Activate a plugin? (order matters, leave blank to move on)"
-                : "Activate another plugin? (order matters, leave blank to move on)";
+                : "Plugins: {$active}\nActivate another plugin? (order matters, leave blank to move on,)";
             $question = new Question($this->question($questionText), '');
             $question->setValidator($this->validator->isPlugin());
             $question->setMaxAttempts(5);
