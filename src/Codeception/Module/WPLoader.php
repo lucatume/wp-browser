@@ -93,7 +93,8 @@ class WPLoader extends Module
         'pluginsFolder' => '',
         'plugins' => '',
         'activatePlugins' => '',
-        'bootstrapActions' => ''
+        'bootstrapActions' => '',
+        'theme' => ''
     ];
     /**
      * The path to the modified tests bootstrap file.
@@ -374,5 +375,28 @@ class WPLoader extends Module
         }
 
         return $this->pluginsFolder;
+    }
+
+    /**
+     * Sets the active template and stylesheet according to the `theme` configuration parameter.
+     */
+    public function _setActiveTheme()
+    {
+        if (empty($this->config['theme'])) {
+            return;
+        }
+
+        if (!is_array($this->config['theme'])) {
+            $template = $this->config['theme'];
+            $stylesheet = $this->config['theme'];
+        } else {
+            $template = reset($this->config['theme']);
+            $stylesheet = end($this->config['theme']);
+        }
+
+        $GLOBALS['wp_tests_options']['template'] = $template;
+        $GLOBALS['wp_tests_options']['stylesheet'] = $stylesheet;
+
+        codecept_debug('Set template to [' . $template . '] and stylesheet to [' . $stylesheet . ']');
     }
 }

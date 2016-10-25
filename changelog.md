@@ -3,9 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
 ### Added
 - first version of interactive mode to the `bootstrap` command
 - first version of interactive mode to the `bootstrap:pyramid` command
+- support for the `theme` configuration parameter in the `WPLoader` module configuration
 
 ### Fixed
 - plugin activation/deactivation in `WPBrowser` module, thanks [Ippey](https://github.com/Ippey) 

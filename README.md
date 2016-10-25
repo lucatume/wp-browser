@@ -143,9 +143,10 @@ In the suite `.yml` configuration file add the module among the loaded ones
               phpBinary: "php"
               language: ""
               configFile: ""
-      			  plugins: ['hello.php', 'my-plugin/my-plugin.php']
-      			  activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
-      			  booststrapActions: ['my-first-action', 'my-second-action']
+              plugins: ['hello.php', 'my-plugin/my-plugin.php']
+              activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
+              booststrapActions: ['my-first-action', 'my-second-action']
+              theme: 'my-theme'
 ```
 
 and configure it using the required parameters:
@@ -174,12 +175,27 @@ and configure it using the required parameters:
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format.
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions or **static functions** that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
+
     ```yaml
     bootstrapActions:
         - action_one
         - action_two
         - [MyClass, myStaticMethod]
     ```
+
+* `theme` - string|array, dev. ``, the theme that should be activated for the tests; if a string is passed then both `template` and `stylesheet` options will be set to the passed value; if an array is passed then the `template` and `stylesheet` will be set in that order:
+
+    ```yaml
+    theme: my-theme
+    ```
+
+    The theme will be set to `my-theme`.
+
+    ```yaml
+    theme: [ parent, child ]
+    ```
+
+    The `template` will be set to `parent`, the `stylesheet` will be set to `child`.
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
