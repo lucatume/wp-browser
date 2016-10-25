@@ -212,6 +212,7 @@ class WPBootstrap extends Bootstrap
             $userConfig['dbName'] = $this->userConfig['integrationDbName'];
             $userConfig['dbUser'] = $this->userConfig['integrationDbUser'];
             $userConfig['dbPassword'] = $this->userConfig['integrationDbPassword'];
+            $userConfig['integrationTablePrefix'] = $this->userConfig['integrationTablePrefix'];
         }
 
         $settings = array_merge($defaults, $wploaderDefaults, $userConfig);
@@ -227,7 +228,7 @@ class WPBootstrap extends Bootstrap
             'dbHost' => 'localhost',
             'dbUser' => 'root',
             'dbPassword' => '',
-            'tablePrefix' => 'int_',
+            'integrationTablePrefix' => 'int_',
             'domain' => 'wp.local',
             'adminEmail' => 'admin@wp.local',
             'plugins' => Yaml::dump(['hello.php'], 0)
