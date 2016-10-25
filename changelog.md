@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.17.0] 2016-10-25
 ### Added
 - first version of interactive mode to the `bootstrap` command
 - first version of interactive mode to the `bootstrap:pyramid` command
@@ -442,7 +443,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.16.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.17.0...HEAD
+[1.17.0]: https://github.com/lucatume/wp-browser/compare/1.16.0...1.17.0
 [1.16.0]: https://github.com/lucatume/wp-browser/compare/1.15.3...1.16.0
 [1.15.3]: https://github.com/lucatume/wp-browser/compare/1.15.2...1.15.3
 [1.15.2]: https://github.com/lucatume/wp-browser/compare/1.15.1...1.15.2
