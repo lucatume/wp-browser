@@ -77,7 +77,7 @@ class WPBootstrap extends Bootstrap
         $output->wrapAt(120);
 
         if ($input->getOption('interactive')) {
-            $output->writeln("<info>This script will help you to set up a WordPress plugin or theme thests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
+            $output->writeln("<info>This script will help you to set up a WordPress plugin or theme tests using wp-browser and Codeception. If this is the first time you do it take your time to read the notes for each question.</info>");
             $output->writeln("\n");
 
             $this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
