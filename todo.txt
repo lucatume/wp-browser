@@ -1,5 +1,0 @@
-Add:
-	wpwebdriver:
-		- ui/admin acceptance classes
-	module:
-	    - wp-cli integration for db and site manipulation

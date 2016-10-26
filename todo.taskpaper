@@ -1,0 +1,4 @@
+Add:
+    - gherkin translation of all WPBrowser methods
+	- wpwebdriver:
+		- ui/admin acceptance classes
