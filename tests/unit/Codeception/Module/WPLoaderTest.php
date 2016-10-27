@@ -4,6 +4,8 @@ namespace Codeception\Module;
 
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
+use Prophecy\Argument;
+use tad\WPBrowser\Adapters\WP;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
@@ -22,6 +24,11 @@ class WPLoaderTest extends \Codeception\Test\Unit
      */
     protected $config;
 
+    /**
+     * @var WP
+     */
+    protected $wp;
+
 
     protected function _before()
     {
@@ -39,6 +46,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
             'dbUser' => 'somePass',
             'dbPassword' => 'somePass',
         ];
+        $this->wp = $this->prophesize(WP::class);
     }
 
     /**
@@ -89,10 +97,49 @@ class WPLoaderTest extends \Codeception\Test\Unit
     }
 
     /**
+     * @test
+     * it should switch to theme if set
+     */
+    public function it_should_switch_to_theme_if_set()
+    {
+        $this->config['theme'] = ['foo', 'bar'];
+        $this->wp->switch_theme('bar')->shouldBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->_switch_theme();
+    }
+
+    /**
+     * @test
+     * it should switch theme to just stylesheet if no template
+     */
+    public function it_should_switch_theme_to_just_stylesheet_if_no_template()
+    {
+        $this->config['theme'] = 'foo';
+        $this->wp->switch_theme('foo')->shouldBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->_switch_theme();
+    }
+
+    /**
+     * @test
+     * it should not switch to theme if not set
+     */
+    public function it_should_not_switch_to_theme_if_not_set()
+    {
+        unset($this->config['theme']);
+        $this->wp->switch_theme(Argument::type('string'))->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->_switch_theme();
+    }
+
+    /**
      * @return WPLoader
      */
     private function make_instance()
     {
-        return new WPLoader($this->moduleContainer->reveal(), $this->config);
+        return new WPLoader($this->moduleContainer->reveal(), $this->config, $this->wp->reveal());
     }
 }

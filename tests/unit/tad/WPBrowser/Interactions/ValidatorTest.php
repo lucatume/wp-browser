@@ -256,6 +256,40 @@ class ValidatorTest extends \Codeception\Test\Unit
         $this->assertInstanceOf(Validator::class, $sut);
     }
 
+    public function themeEntries()
+    {
+        return [
+            ['foo', true],
+            ['foo-bar', true],
+            ['foo-bar-baz', true],
+            ['foo-bar-baz,bar', true],
+            ['foo-bar-baz,bar-foo', true],
+            [',foo-bar-baz,bar-foo', true],
+            ['', false],
+            ['some/theme', false],
+            ['some/theme', false],
+            ['some-foo/theme', false],
+            ['some-foo,/theme', false],
+            ['some-foo,bar/theme', false],
+        ];
+    }
+
+    /**
+     * @test
+     * it should validate theme entries
+     * @dataProvider themeEntries
+     */
+    public function it_should_validate_theme_entries($value, $shouldValidate)
+    {
+        if (!$shouldValidate) {
+            $this->expectException(\RuntimeException::class);
+        }
+
+        $sut = $this->make_instance();
+        $f = $sut->isTheme();
+        $f($value);
+    }
+
     /**
      * @return Validator
      */

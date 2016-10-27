@@ -76,4 +76,21 @@ class Validator
             return $answer;
         };
     }
+
+    public function isTheme()
+    {
+        return function ($answer) {
+            if (empty($answer)) {
+                throw new \RuntimeException("Theme cannot be empty");
+            }
+
+            $answer = trim(trim($answer), ',');
+
+            if (!preg_match('/^[,A-Za-z0-9-_]+$/', $answer)) {
+                throw new \RuntimeException("{$answer} contains invalid chars");
+            }
+
+            return strpos($answer, ',') !== false ? preg_split('/\\s*,\\s*/', $answer) : [$answer];
+        };
+    }
 }

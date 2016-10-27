@@ -5,6 +5,7 @@ namespace Codeception\Command;
 use Codeception\Lib\Generator\AcceptanceSuiteConfig;
 use Codeception\Lib\Generator\FunctionalSuiteConfig;
 use Codeception\Lib\Generator\IntegrationSuiteConfig;
+use Codeception\Lib\Generator\IntegrationSuiteThemeConfig;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,6 +26,11 @@ class WPBootstrap extends Bootstrap
      * @var WPBootsrapButler
      */
     protected $butler;
+
+    /**
+     * @var string|array Either a theme slug or an array in the [<parent>,<child>] format.
+     */
+    protected $theme;
 
     public function __construct($name, ButlerInterface $butler = null)
     {
@@ -58,6 +64,17 @@ class WPBootstrap extends Bootstrap
         }
 
         $path = $input->getArgument('path');
+
+        if ($input->getOption('type') === 'theme') {
+            $themeOption = $input->getOption('theme');
+
+            if (empty($themeOption)) {
+                throw new \RuntimeException('When the `type` option is set to `theme` the `theme` option must be set.');
+            }
+
+            $this->theme = strpos($themeOption, ',') !== 0 ? preg_split('/\\s*,\\s*/', $themeOption) : [$themeOption];
+        }
+
 
         if (!(empty($path) || is_dir($path))) {
             $output->writeln("<error>\nDirectory '$path' does not exist\n</error>");
@@ -217,6 +234,9 @@ class WPBootstrap extends Bootstrap
 
         $settings = array_merge($defaults, $wploaderDefaults, $userConfig);
 
+        if (!empty($this->theme)) {
+            return (new IntegrationSuiteThemeConfig($settings))->produce();
+        }
         return (new IntegrationSuiteConfig($settings))->produce();
     }
 
@@ -233,6 +253,11 @@ class WPBootstrap extends Bootstrap
             'adminEmail' => 'admin@wp.local',
             'plugins' => Yaml::dump(['hello.php'], 0)
         ];
+
+        if (!empty($this->theme)) {
+            $wploaderDefaults['theme'] = count($this->theme) > 1 ? Yaml::dump($this->theme, 0) : reset($this->theme);
+        }
+
         return $wploaderDefaults;
     }
 
@@ -374,16 +399,18 @@ class WPBootstrap extends Bootstrap
         parent::configure();
         $this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
         $this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
-        $this->addOption('dbHost', null, InputOption::VALUE_REQUIRED, 'A preset database host');
-        $this->addOption('dbName', null, InputOption::VALUE_REQUIRED, 'A preset database name');
-        $this->addOption('dbUser', null, InputOption::VALUE_REQUIRED, 'A preset database user');
-        $this->addOption('dbPassword', null, InputOption::VALUE_REQUIRED, 'A preset database password');
-        $this->addOption('tablePrefix', null, InputOption::VALUE_REQUIRED, 'A preset table prefix');
-        $this->addOption('url', null, InputOption::VALUE_REQUIRED, 'A preset site URL');
-        $this->addOption('wpRootFolder', null, InputOption::VALUE_REQUIRED, 'A preset WordPress root folder');
-        $this->addOption('adminUsername', null, InputOption::VALUE_REQUIRED, 'A preset administrator username');
-        $this->addOption('adminPassword', null, InputOption::VALUE_REQUIRED, 'A preset administratore password');
-        $this->addOption('adminPath', null, InputOption::VALUE_REQUIRED, 'A preset administration area path');
-        $this->addOption('plugins', null, InputOption::VALUE_REQUIRED, 'A preset list of plugins (comma separated slugs list)');
+        $this->addOption('dbHost', null, InputOption::VALUE_REQUIRED, 'A preset database host', 'localhost');
+        $this->addOption('dbName', null, InputOption::VALUE_REQUIRED, 'A preset database name', 'database');
+        $this->addOption('dbUser', null, InputOption::VALUE_REQUIRED, 'A preset database user', 'root');
+        $this->addOption('dbPassword', null, InputOption::VALUE_REQUIRED, 'A preset database password', '');
+        $this->addOption('tablePrefix', null, InputOption::VALUE_REQUIRED, 'A preset table prefix', 'wp_');
+        $this->addOption('url', null, InputOption::VALUE_REQUIRED, 'A preset site URL', 'http://wp.dev');
+        $this->addOption('wpRootFolder', null, InputOption::VALUE_REQUIRED, 'A preset WordPress root folder', '/var/www/wp');
+        $this->addOption('adminUsername', null, InputOption::VALUE_REQUIRED, 'A preset administrator username', 'admin');
+        $this->addOption('adminPassword', null, InputOption::VALUE_REQUIRED, 'A preset administratore password', 'password');
+        $this->addOption('adminPath', null, InputOption::VALUE_REQUIRED, 'A preset administration area path', '/wp-admin');
+        $this->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of the component that will be tested ("plugin" or "theme"), def. to "plugin". If set to "theme" the "theme" option is required.', '');
+        $this->addOption('theme', null, InputOption::VALUE_REQUIRED, 'The slug of the theme that should be tested, e.g. "my-theme" or "parent-theme,child-theme" to test a child theme.', '');
+        $this->addOption('plugins', null, InputOption::VALUE_REQUIRED, 'A preset list of plugins (comma separated slugs list)', '');
     }
 }

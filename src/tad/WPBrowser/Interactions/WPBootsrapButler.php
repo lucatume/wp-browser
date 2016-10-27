@@ -5,6 +5,7 @@ namespace tad\WPBrowser\Interactions;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
@@ -23,6 +24,22 @@ class WPBootsrapButler extends BaseButler implements ButlerInterface
     public function askQuestions($helper, InputInterface $input, OutputInterface $output, $verbose = true)
     {
         $answers = [];
+
+        if (empty($input->getOption('type'))) {
+            $default = $this->getOptionDefault($input, 'type', 'plugin');
+            $question = new ChoiceQuestion($this->question("Are you testing a plugin or a theme? ({$default})"), ['plugin', 'theme'], $default);
+            $answers['type'] = $helper->ask($input, $output, $question);
+
+            if ($answers['type'] === 'theme') {
+                $default = $this->getOptionDefault($input, 'theme', 'my-theme');
+                $question = new Question($this->question("What's the theme slug?"
+                    . "If testing a child theme enter the parent theme slug and the child theme slug separated by a comma like 'parent,child'. "
+                    . "({$default})"), $default);
+                $question->setValidator($this->validator->isTheme());
+                $question->setMaxAttempts(5);
+                $answers['theme'] = $helper->ask($input, $output, $question);
+            }
+        }
 
         if ($verbose) {
             $output->writeln('<info>Acceptance and functional tests will need to visit a real website like "http://wordpress.dev" as a user would do. This should be a WordPress installation that\'s already running and available: you should be able to visit the address with your browser and not get any error.</info>');

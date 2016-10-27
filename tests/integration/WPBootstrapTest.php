@@ -3,6 +3,7 @@
 
 use Codeception\Command\WPBootstrap;
 use Ofbeaton\Console\Tester\QuestionTester;
+use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,6 +52,11 @@ class WPBootstrapTest extends \Codeception\Test\Unit
      * @var \IntegrationTester
      */
     protected $tester;
+
+    /**
+     * @var array
+     */
+    protected $asked = [];
 
 
     public static function setUpBeforeClass()
@@ -464,9 +470,13 @@ class WPBootstrapTest extends \Codeception\Test\Unit
      */
     protected function mockAnswers($command, $questionsAndAnswers)
     {
-        $this->mockQuestionHelper($command, function ($text, $order, Question $question) use ($questionsAndAnswers) {
+        $this->asked = new stdClass();
+        $this->asked->questions = [];
+        $asked = $this->asked;
+        $this->mockQuestionHelper($command, function ($text, $order, Question $question) use ($questionsAndAnswers, &$asked) {
             foreach ($questionsAndAnswers as $key => $value) {
                 if (preg_match('/' . $key . '/', $text)) {
+                    $asked->questions[] = $key;
                     if (is_array($value)) {
                         $index = !isset($this->answerShiftReg[$key]) ? 0 : $this->answerShiftReg[$key] + 1;
                         if ($index > count($value) - 1) {
@@ -507,6 +517,8 @@ class WPBootstrapTest extends \Codeception\Test\Unit
             '(A|a)dmin.*email' => 'luca@theaveragedev.com',
             'path.*administration' => '/wp-admin',
             '(A|a)ctiv.*plugin(s)*' => '',
+            'plugin.*or.*theme' => 'plugin',
+            'theme.*slug' => 'my-theme'
         ];
         return $questionsAndAnswers;
     }
@@ -557,9 +569,176 @@ class WPBootstrapTest extends \Codeception\Test\Unit
         $this->assertEquals('inte_', $decoded['modules']['config']['WPLoader']['tablePrefix']);
     }
 
-    protected function getWpFolder()
+    /**
+     * @test
+     * it should allow to pass the type of the bootstrap with the --type option
+     */
+    public function it_should_allow_to_pass_the_type_of_the_bootstrap_with_the_type_option()
     {
-        return getenv('wpFolder') ? getenv('wpFolder') : '/Users/Luca/Sites/wordpress';
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = $this->getWpFolder();
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--type' => 'plugin'
+        ]);
+
+        $file = $this->testDir('tests/integration.suite.yml');
+
+        $this->assertFileExists($file);
+
+        $fileContents = file_get_contents($file);
+
+        $this->assertNotEmpty($fileContents);
+
+        $decoded = Yaml::parse($fileContents);
+
+        $this->assertNotContains('theme', $decoded['modules']['config']['WPLoader']);
+    }
+
+    /**
+     * @test
+     * it should default the bootstrap type to plugin when not specified
+     */
+    public function it_should_default_the_bootstrap_type_to_plugin_when_not_specified()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = $this->getWpFolder();
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true
+        ]);
+
+        $file = $this->testDir('tests/integration.suite.yml');
+
+        $this->assertFileExists($file);
+
+        $fileContents = file_get_contents($file);
+
+        $this->assertNotEmpty($fileContents);
+
+        $decoded = Yaml::parse($fileContents);
+
+        $this->assertNotContains('theme', $decoded['modules']['config']['WPLoader']);
+    }
+
+    /**
+     * @test
+     * it should require the theme value if the bootstrap type is set to theme
+     */
+    public function it_should_require_the_theme_value_if_the_bootstrap_type_is_set_to_theme()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = $this->getWpFolder();
+
+        $this->expectException(RuntimeException::class);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--type' => 'theme'
+        ]);
+    }
+
+    /**
+     * @test
+     * it should set the theme slug when passed with option
+     */
+    public function it_should_set_the_theme_slug_when_passed_with_option()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $wpFolder = $this->getWpFolder();
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--type' => 'theme',
+            '--theme' => 'my-theme'
+        ]);
+
+        $file = $this->testDir('tests/integration.suite.yml');
+
+        $this->assertFileExists($file);
+
+        $fileContents = file_get_contents($file);
+
+        $this->assertNotEmpty($fileContents);
+
+        $decoded = Yaml::parse($fileContents);
+
+        $this->assertArrayHasKey('theme', $decoded['modules']['config']['WPLoader']);
+        $this->assertEquals('my-theme', $decoded['modules']['config']['WPLoader']['theme']);
+    }
+
+
+    /**
+     * @test
+     * it should ask for the type in interactive mode if not passed as an option
+     */
+    public function it_should_ask_for_the_type_in_interactive_mode_if_not_passed_as_an_option()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $this->mockAnswers($command, $this->getDefaultQuestionsAndAnswers($this->getWpFolder()));
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--interactive' => true
+        ]);
+
+        $this->assertQuestionAsked('plugin.*or.*theme');
+    }
+
+    /**
+     * @test
+     * it should not ask for the type in interactive mode is passed as option
+     */
+    public function it_should_not_ask_for_the_type_in_interactive_mode_is_passed_as_option()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('bootstrap');
+        $commandTester = new CommandTester($command);
+
+        $this->mockAnswers($command, $this->getDefaultQuestionsAndAnswers($this->getWpFolder()));
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'path' => $this->testDir(),
+            '--no-build' => true,
+            '--type' => 'theme',
+            '--theme' => 'my-theme',
+            '--interactive' => true
+        ]);
+
+        $this->assertQuestionNotAsked('plugin or theme');
     }
 
     /**
@@ -568,6 +747,34 @@ class WPBootstrapTest extends \Codeception\Test\Unit
     protected function addCommand(Application $app)
     {
         $app->add(new WPBootstrap('bootstrap'));
+    }
+
+    protected function assertQuestionNotAsked($unexpected)
+    {
+        $this->assertNotContains($unexpected, $this->asked->questions, "Question [{$unexpected}] was asked.");
+    }
+
+    protected function assertQuestionAsked($expected)
+    {
+        $this->assertContains($expected, $this->asked->questions, "Question [{$expected}] was never asked.");
+    }
+
+    /**
+     * @return \org\bovigo\vfs\vfsStreamDirectory
+     */
+    protected function getWpFolder()
+    {
+        $root = vfsStream::setup();
+        $wp = vfsStream::newDirectory('wp', 0777);
+        $wpAdmin = vfsStream::newDirectory('wp-admin', 0777);
+        $wpLoad = vfsStream::newFile('wp-load.php', 0777);
+        $wpLoad->setContent('<?php //not-loading ?>');
+
+        $wp->addChild($wpLoad);
+        $wp->addChild($wpAdmin);
+        $root->addChild($wp);
+
+        return $root->url() . '/wp';
     }
 
 }

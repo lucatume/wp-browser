@@ -4,7 +4,9 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
+use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 
 /**
@@ -24,6 +26,17 @@ class WPLoader extends Module
 {
 
     public static $includeInheritedActions = true;
+    /**
+     * @var WP
+     */
+    private $wp;
+
+    public function __construct(ModuleContainer $moduleContainer, $config, WP $wp = null)
+    {
+        parent::__construct($moduleContainer, $config);
+        $this->wp = $wp ? $wp : new WP();
+    }
+
     public static $onlyActions = [];
     public static $excludeActions = [];
     /**
@@ -203,17 +216,20 @@ class WPLoader extends Module
         require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
 
         $this->setActivePlugins();
+        $this->_setActiveTheme();
 
         if (!$this->requiresIsolatedInstallation()) {
             tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
             tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
             tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
+            tests_add_filter('plugins_loaded', [$this, '_switch_theme']);
         }
 
         require_once $this->wpBootstrapFile;
 
         if ($this->requiresIsolatedInstallation()) {
             $this->bootstrapActions();
+            $this->_switch_theme();
         }
     }
 
@@ -398,5 +414,13 @@ class WPLoader extends Module
         $GLOBALS['wp_tests_options']['stylesheet'] = $stylesheet;
 
         codecept_debug('Set template to [' . $template . '] and stylesheet to [' . $stylesheet . ']');
+    }
+
+    public function _switch_theme()
+    {
+        if (!empty($this->config['theme'])) {
+            $stylesheet = is_array($this->config['theme']) ? end($this->config['theme']) : $this->config['theme'];
+            call_user_func([$this->wp, 'switch_theme'], $stylesheet);
+        }
     }
 }
