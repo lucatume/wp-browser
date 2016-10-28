@@ -420,6 +420,10 @@ class WPLoader extends Module
     {
         if (!empty($this->config['theme'])) {
             $stylesheet = is_array($this->config['theme']) ? end($this->config['theme']) : $this->config['theme'];
+            $functionsFile = WP_CONTENT_DIR . '/themes/' . $stylesheet . '/functions.php';
+            if (file_exists($functionsFile)) {
+                require_once($functionsFile);
+            }
             call_user_func([$this->wp, 'switch_theme'], $stylesheet);
         }
     }
