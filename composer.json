@@ -16,6 +16,7 @@
       "role": "Developer"
     }
   ],
+  "prefer-stable": true,
   "require": {
     "lucatume/wp-browser-commons": "^1.2.5",
     "lucatume/codeception-setup-local": "~1.0",
