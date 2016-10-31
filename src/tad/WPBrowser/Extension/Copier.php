@@ -3,7 +3,7 @@
 namespace tad\WPBrowser\Extension;
 
 
-use Codeception\Event\SuiteEvent;
+use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use tad\WPBrowser\Filesystem\Utils;
@@ -11,8 +11,8 @@ use tad\WPBrowser\Filesystem\Utils;
 class Copier extends Extension
 {
     public static $events = [
-        'suite.before' => 'copyFiles',
-        'suite.after' => 'removeFiles'
+        Events::MODULE_INIT => 'copyFiles',
+        Events::SUITE_AFTER => 'removeFiles'
     ];
 
     public function __construct($config, $options)
@@ -25,7 +25,7 @@ class Copier extends Extension
         parent::__construct($config, $options);
     }
 
-    public function copyFiles(SuiteEvent $event)
+    public function copyFiles()
     {
         if (empty($this->config['files'])) {
             return;
@@ -34,46 +34,55 @@ class Copier extends Extension
         array_walk($this->config['files'], [$this, 'copy']);
     }
 
-    public function removeFiles(SuiteEvent $event)
+    public function removeFiles()
     {
-        if (empty($this->config['slug'])) {
+        if (empty($this->config['files'])) {
             return;
         }
 
-        if (!is_dir($this->themeDestinationFolder . $slug)) {
-            return;
-        }
-
-        \tad\WPBrowser\Tests\Support\rrmdir($this->themeDestinationFolder . $slug);
-
-        if (is_dir($this->themeDestinationFolder . $slug)) {
-            throw new RuntimeException('Dummy theme [' . $this->themeDestinationFolder . $slug . '] could not be removed ');
-        }
+        array_walk($this->config['files'], [$this, 'remove']);
     }
 
     protected function ensureSource($destination, $source)
     {
-        if (!(file_exists($source) && is_readable($source))) {
+        if (!(
+            (file_exists($source) || file_exists(getcwd() . DIRECTORY_SEPARATOR . trim($source, DIRECTORY_SEPARATOR)))
+            && is_readable($source)
+        )
+        ) {
             throw new ExtensionException(__CLASS__, 'Source file [' . $source . '] does not exist');
         }
     }
 
-    private function ensureDestination($destination)
+    protected function ensureDestination($destination)
     {
         if (!(is_dir(dirname($destination)) && is_writable(dirname($destination)))) {
             throw new ExtensionException(__CLASS__, 'Destination [' . dirname($destination) . '] does not exist.');
         }
         if (file_exists($destination)) {
-            throw new ExtensionException(__CLASS__, 'Destination file [' . $destination . '] already exists');
+            $this->remove($destination);
         }
     }
 
-    private function copy($destination, $source)
+    protected function copy($destination, $source)
     {
         if (!is_dir($source)) {
             copy($source, $destination);
             return;
         }
         Utils::recurseCopy($source, $destination);
+    }
+
+    protected function remove($destination)
+    {
+        if (!file_exists($destination)) {
+            return;
+        }
+
+        if (!is_dir($destination)) {
+            unlink($destination);
+            return;
+        }
+        Utils::recurseRemoveDir($destination);
     }
 }

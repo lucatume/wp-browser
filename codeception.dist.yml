@@ -11,8 +11,12 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\Phantoman
+        - tad\WPBrowser\Extension\Copier
     config:
         Codeception\Extension\Phantoman:
             path: 'phantomjsbin'
             port: 4444
             suites: ['phantomjs']
+        tad\WPBrowser\Extension\Copier:
+            files:
+               'tests/_data/themes/dummy': '/tmp/wordpress/wp-content/themes/dummy'

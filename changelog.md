@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - support for `--type` option in `wpcept bootstrap` interactive mode
 - theme activation during `WPLoader` module activation
+- the Copier extension
 
 ##[1.17.0] 2016-10-25
 ### Added

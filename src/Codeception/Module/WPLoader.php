@@ -425,6 +425,7 @@ class WPLoader extends Module
                 require_once($functionsFile);
             }
             call_user_func([$this->wp, 'switch_theme'], $stylesheet);
+            do_action('after_switch_theme', $stylesheet);
         }
     }
 }
