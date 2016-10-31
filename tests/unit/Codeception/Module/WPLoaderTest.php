@@ -104,6 +104,8 @@ class WPLoaderTest extends \Codeception\Test\Unit
     {
         $this->config['theme'] = ['foo', 'bar'];
         $this->wp->switch_theme('bar')->shouldBeCalled();
+        $this->wp->WP_CONTENT_DIR()->willReturn('');
+        $this->wp->do_action('after_switch_theme', 'bar')->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_switch_theme();
@@ -117,6 +119,8 @@ class WPLoaderTest extends \Codeception\Test\Unit
     {
         $this->config['theme'] = 'foo';
         $this->wp->switch_theme('foo')->shouldBeCalled();
+        $this->wp->WP_CONTENT_DIR()->willReturn('');
+        $this->wp->do_action('after_switch_theme', 'foo')->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_switch_theme();

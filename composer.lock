@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0b52d4ba89199f118324fce8d51cb16e",
-    "content-hash": "a4250e901dfc235e87a03231a25b77fd",
+    "hash": "9bca05eb8f39128d6486d5766cd2dbc3",
+    "content-hash": "cd6507a38aba76e58ad474d17a58ae7b",
     "packages": [
         {
             "name": "bacon/bacon-string-utils",
@@ -4004,7 +4004,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
