@@ -75,8 +75,10 @@ class WPBootstrapper extends Module
     public function bootstrapWp()
     {
         include_once($this->wpLoadPath);
+
         if ($this->config['backupGlobals']) {
             if ($this->globalStateSnapshot === false) {
+                $this->unsetGlobalClosures();
                 $this->globalStateSnapshot = new Snapshot();
                 codecept_debug('WPBootstrapper: backed up global state.');
             } else {
@@ -145,5 +147,31 @@ class WPBootstrapper extends Module
     public function getSnapshot()
     {
         return $this->globalStateSnapshot;
+    }
+
+    protected function unsetGlobalClosures()
+    {
+        global $wp_filter, $merged_filters;
+        foreach ([$wp_filter, $merged_filters] as $g) {
+            if (empty($g)) {
+                continue;
+            }
+            array_walk($g, [$this, 'recursiveUnsetClosures']);
+        }
+    }
+
+    protected function recursiveUnsetClosures(&$value)
+    {
+        if (
+            (is_array($value) && !empty($value))
+            || (is_object($value) && (new \ReflectionClass($value))->isIterateable())
+        ) {
+            array_walk($value, [$this, 'recursiveUnsetClosures']);
+            return;
+        }
+
+        if (is_object($value) && ($value instanceof \Closure)) {
+            $value = null;
+        }
     }
 }
