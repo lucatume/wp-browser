@@ -12,6 +12,7 @@ use tad\WPBrowser\Environment\Executor;
 
 class WPCLITest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

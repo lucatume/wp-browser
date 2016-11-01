@@ -5,6 +5,7 @@ use tad\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter as Filter;
 
 class ClassMethodQueriesFilterTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -32,6 +33,11 @@ class ClassMethodQueriesFilterTest extends \Codeception\TestCase\Test
         }
 
         $this->assertCount(0, $items);
+    }
+
+    private function make_instance($class = '', $method = '')
+    {
+        return new Filter(new \ArrayIterator($this->array), $class, $method);
     }
 
     public function queries()
@@ -64,10 +70,5 @@ class ClassMethodQueriesFilterTest extends \Codeception\TestCase\Test
         }
 
         $this->assertCount($expectedCount, $items);
-    }
-
-    private function make_instance($class = '', $method = '')
-    {
-        return new Filter(new \ArrayIterator($this->array), $class, $method);
     }
 }

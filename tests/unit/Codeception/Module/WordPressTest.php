@@ -5,7 +5,6 @@ require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Step;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Prophecy\Argument;
@@ -13,6 +12,7 @@ use tad\WPBrowser\Connector\WordPress as Connector;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

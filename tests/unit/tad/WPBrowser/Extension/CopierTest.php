@@ -8,6 +8,7 @@ use org\bovigo\vfs\vfsStream;
 
 class CopierTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -27,19 +28,6 @@ class CopierTest extends \Codeception\Test\Unit
      * @var SuiteEvent
      */
     protected $suiteEvent;
-
-    protected function _before()
-    {
-        $this->suiteEvent = $this->prophesize(SuiteEvent::class);
-    }
-
-    protected function _after()
-    {
-        $destination = codecept_data_dir('destination');
-        if (file_exists($destination)) {
-            \tad\WPBrowser\Tests\Support\rrmdir($destination);
-        }
-    }
 
     /**
      * @test
@@ -309,5 +297,18 @@ class CopierTest extends \Codeception\Test\Unit
         $this->assertFileExists($destination . '/some-file');
         $this->assertFileExists($destination . '/some-folder');
         $this->assertFileExists($destination . '/some-folder/some-file');
+    }
+
+    protected function _before()
+    {
+        $this->suiteEvent = $this->prophesize(SuiteEvent::class);
+    }
+
+    protected function _after()
+    {
+        $destination = codecept_data_dir('destination');
+        if (file_exists($destination)) {
+            \tad\WPBrowser\Tests\Support\rrmdir($destination);
+        }
     }
 }

@@ -5,6 +5,7 @@ use tad\WPBrowser\Iterators\Filters\MainStatementQueriesFilter as Filter;
 
 class MainStatementQueriesFilterTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -32,6 +33,11 @@ class MainStatementQueriesFilterTest extends \Codeception\TestCase\Test
         }
 
         $this->assertCount(0, $items);
+    }
+
+    private function make_instance($statement = 'SELECT')
+    {
+        return new Filter(new \ArrayIterator($this->array), $statement);
     }
 
     public function queries()
@@ -70,10 +76,5 @@ class MainStatementQueriesFilterTest extends \Codeception\TestCase\Test
         }
 
         $this->assertCount($expectedCount, $items);
-    }
-
-    private function make_instance($statement = 'SELECT')
-    {
-        return new Filter(new \ArrayIterator($this->array), $statement);
     }
 }

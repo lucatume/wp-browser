@@ -6,6 +6,7 @@ use Codeception\Lib\ModuleContainer;
 
 class WPDbTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

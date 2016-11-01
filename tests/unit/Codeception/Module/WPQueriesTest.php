@@ -6,6 +6,7 @@ use tad\WPBrowser\Environment\Constants;
 
 class WPQueriesTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

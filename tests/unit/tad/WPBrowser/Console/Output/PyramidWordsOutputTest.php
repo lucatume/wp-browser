@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PyramidWordsOutputTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

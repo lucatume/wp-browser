@@ -4,6 +4,7 @@ namespace Codeception\Lib\Generator;
 
 class AcceptanceSuiteConfigTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     protected $classUnderTest = AcceptanceSuiteConfig::class;
 
     /**

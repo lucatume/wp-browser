@@ -9,6 +9,7 @@ use tad\WPBrowser\Adapters\WP;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -29,26 +30,6 @@ class WPLoaderTest extends \Codeception\Test\Unit
      */
     protected $wp;
 
-
-    protected function _before()
-    {
-        $root = vfsStream::setup();
-        $wpFolder = vfsStream::newDirectory('wp');
-        $wpLoadFile = vfsStream::newFile('wp-load.php', 0777);
-        $wpFolder->addChild($wpLoadFile);
-        $root->addChild($wpFolder);
-
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
-        $this->config = [
-            'wpRootFolder' => $root->url() . '/wp',
-            'dbName' => 'someDb',
-            'dbHost' => 'localhost',
-            'dbUser' => 'somePass',
-            'dbPassword' => 'somePass',
-        ];
-        $this->wp = $this->prophesize(WP::class);
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -58,6 +39,14 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->assertInstanceOf(WPLoader::class, $sut);
+    }
+
+    /**
+     * @return WPLoader
+     */
+    private function make_instance()
+    {
+        return new WPLoader($this->moduleContainer->reveal(), $this->config, $this->wp->reveal());
     }
 
     /**
@@ -139,11 +128,22 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $sut->_switch_theme();
     }
 
-    /**
-     * @return WPLoader
-     */
-    private function make_instance()
+    protected function _before()
     {
-        return new WPLoader($this->moduleContainer->reveal(), $this->config, $this->wp->reveal());
+        $root = vfsStream::setup();
+        $wpFolder = vfsStream::newDirectory('wp');
+        $wpLoadFile = vfsStream::newFile('wp-load.php', 0777);
+        $wpFolder->addChild($wpLoadFile);
+        $root->addChild($wpFolder);
+
+        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->config = [
+            'wpRootFolder' => $root->url() . '/wp',
+            'dbName' => 'someDb',
+            'dbHost' => 'localhost',
+            'dbUser' => 'somePass',
+            'dbPassword' => 'somePass',
+        ];
+        $this->wp = $this->prophesize(WP::class);
     }
 }

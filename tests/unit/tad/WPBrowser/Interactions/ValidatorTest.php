@@ -6,6 +6,7 @@ use org\bovigo\vfs\vfsStream;
 
 class ValidatorTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -40,6 +41,14 @@ class ValidatorTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
         $f = $sut->noSpaces('foo');
         $f($value);
+    }
+
+    /**
+     * @return Validator
+     */
+    protected function make_instance()
+    {
+        return new Validator();
     }
 
     public function urls()
@@ -288,13 +297,5 @@ class ValidatorTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
         $f = $sut->isTheme();
         $f($value);
-    }
-
-    /**
-     * @return Validator
-     */
-    protected function make_instance()
-    {
-        return new Validator();
     }
 }

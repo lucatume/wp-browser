@@ -6,6 +6,7 @@ use tad\WPBrowser\Filesystem\Filesystem;
 
 class SymlinkerTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

@@ -11,6 +11,7 @@ use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

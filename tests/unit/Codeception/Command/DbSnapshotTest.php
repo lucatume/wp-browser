@@ -12,6 +12,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class DbSnapshotTest extends \PHPUnit_Framework_TestCase
 {
+    protected $backupGlobals = false;
+
     /**
      * @test
      * it should require the database name

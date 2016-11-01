@@ -7,6 +7,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class UriToIndexMapperTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */

@@ -10,6 +10,7 @@ use tad\WPBrowser\Adapters\WP;
 
 class WPBootstrapperTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
 
     /**
      * @var \UnitTester

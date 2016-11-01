@@ -5,6 +5,7 @@ use tad\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter as Filter;
 
 class SetupTearDownQueriesFilterTest extends \Codeception\TestCase\Test
 {
+    protected $backupGlobals = false;
     /**
      * @var \UnitTester
      */
@@ -15,14 +16,6 @@ class SetupTearDownQueriesFilterTest extends \Codeception\TestCase\Test
      */
     protected $array = [];
 
-    protected function _before()
-    {
-    }
-
-    protected function _after()
-    {
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -32,6 +25,11 @@ class SetupTearDownQueriesFilterTest extends \Codeception\TestCase\Test
         $sut = $this->make_instance();
 
         $this->assertInstanceOf('tad\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter', $sut);
+    }
+
+    private function make_instance()
+    {
+        return new Filter((new \ArrayObject($this->array))->getIterator());
     }
 
     /**
@@ -145,8 +143,11 @@ class SetupTearDownQueriesFilterTest extends \Codeception\TestCase\Test
         $this->assertCount(0, $items);
     }
 
-    private function make_instance()
+    protected function _before()
     {
-        return new Filter((new \ArrayObject($this->array))->getIterator());
+    }
+
+    protected function _after()
+    {
     }
 }

@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WrappingOutputTest extends \Codeception\Test\Unit
 {
+    protected $backupGlobals = false;
     /**
      * @var OutputInterface
      */
@@ -17,15 +18,6 @@ class WrappingOutputTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    protected function _before()
-    {
-        $this->output = $this->prophesize(OutputInterface::class);
-    }
-
-    protected function _after()
-    {
-    }
-
     /**
      * @test
      * it should be instantiatable
@@ -35,6 +27,14 @@ class WrappingOutputTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->assertInstanceOf(WrappingOutput::class, $sut);
+    }
+
+    /**
+     * @return WrappingOutput
+     */
+    private function make_instance()
+    {
+        return new WrappingOutput($this->output->reveal());
     }
 
     /**
@@ -152,14 +152,6 @@ class WrappingOutputTest extends \Codeception\Test\Unit
     }
 
     /**
-     * @return WrappingOutput
-     */
-    private function make_instance()
-    {
-        return new WrappingOutput($this->output->reveal());
-    }
-
-    /**
      * @test
      * it should throw if trying to wrap with non int wrap
      */
@@ -170,5 +162,14 @@ class WrappingOutputTest extends \Codeception\Test\Unit
         $this->expectException(\InvalidArgumentException::class);
 
         $sut->wrapAt('foo');
+    }
+
+    protected function _before()
+    {
+        $this->output = $this->prophesize(OutputInterface::class);
+    }
+
+    protected function _after()
+    {
     }
 }
