@@ -79,7 +79,7 @@ class WPBootstrapper extends Module
             if ($this->globalStateSnapshot === false) {
                 try {
                     $this->globalStateSnapshot = new Snapshot();
-                } catch (\Error $e) {
+                } catch (\Throwable $e) {
                     codecept_debug('Error in snapshot: ' . $e->getMessage());
                 }
                 codecept_debug('WPBootstrapper: backed up global state.');
