@@ -77,7 +77,11 @@ class WPBootstrapper extends Module
         include_once($this->wpLoadPath);
         if ($this->config['backupGlobals']) {
             if ($this->globalStateSnapshot === false) {
-                $this->globalStateSnapshot = new Snapshot();
+                try {
+                    $this->globalStateSnapshot = new Snapshot();
+                } catch (Exception $e) {
+                    codecept_debug("WPBootstrapper: could not back up the global state, cause:\n" . $e->getMessage());
+                }
                 codecept_debug('WPBootstrapper: backed up global state.');
             } else {
                 $this->restorer->restoreGlobalVariables($this->globalStateSnapshot);
