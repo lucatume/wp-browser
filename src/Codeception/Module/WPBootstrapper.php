@@ -107,7 +107,7 @@ class WPBootstrapper extends Module
 
     private function recursiveUnsetClosure($value)
     {
-        if (is_array($value) || (new \ReflectionClass($value))->isIterateable()) {
+        if (is_array($value)) {
             foreach ($value as $key => $subValue) {
                 $value[$key] = $this->recursiveUnsetClosure($subValue);
             }
