@@ -77,11 +77,8 @@ class WPBootstrapper extends Module
         include_once($this->wpLoadPath);
         if ($this->config['backupGlobals']) {
             if ($this->globalStateSnapshot === false) {
-                try {
-                    $this->globalStateSnapshot = new Snapshot();
-                } catch (\Throwable $e) {
-                    codecept_debug('Error in snapshot: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-                }
+                $this->unsetGlobalClosures();
+                $this->globalStateSnapshot = new Snapshot();
                 codecept_debug('WPBootstrapper: backed up global state.');
             } else {
                 $this->restorer->restoreGlobalVariables($this->globalStateSnapshot);
@@ -99,6 +96,25 @@ class WPBootstrapper extends Module
         }
 
         sleep(2);
+    }
+
+    private function unsetGlobalClosures()
+    {
+        foreach ($GLOBALS as $key => $value) {
+            $GLOBALS[$key] = $this->recursiveUnsetClosure($value);
+        }
+    }
+
+    private function recursiveUnsetClosure($value)
+    {
+        if (is_array($value) || (new \ReflectionClass($value))->isIterateable()) {
+            foreach ($value as $key => $subValue) {
+                $value[$key] = $this->recursiveUnsetClosure($subValue);
+            }
+            return $value;
+        }
+
+        return !is_string($value) && !is_array($value) && is_callable($value) ? null : $value;
     }
 
     private function restoreAllGlobals()
