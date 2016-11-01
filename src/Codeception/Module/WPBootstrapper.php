@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use SebastianBergmann\GlobalState\Blacklist;
 use SebastianBergmann\GlobalState\Restorer;
 use SebastianBergmann\GlobalState\Snapshot;
 use tad\WPBrowser\Adapters\WP;
@@ -77,7 +78,10 @@ class WPBootstrapper extends Module
         include_once($this->wpLoadPath);
         if ($this->config['backupGlobals']) {
             if ($this->globalStateSnapshot === false) {
-                $this->globalStateSnapshot = new Snapshot();
+                $blacklist = new Blacklist();
+                $blacklist->addGlobalVariable('wp_filter');
+                $blacklist->addGlobalVariable('merged_filters');
+                $this->globalStateSnapshot = new Snapshot($blacklist);
                 codecept_debug('WPBootstrapper: backed up global state.');
             } else {
                 $this->restorer->restoreGlobalVariables($this->globalStateSnapshot);
