@@ -19,15 +19,22 @@ use tad\WPBrowser\Adapters\WP;
 class WPBootstrapper extends Module
 {
 
+    use WPSugarMethods;
+
+
     /**
      * @var array
      */
-    protected $IDEGlobals = ['GLOBALS', 'IDE_EVAL_CACHE'];
+    protected $globalSnapshotSkipKeys = ['GLOBALS', 'IDE_EVAL_CACHE'];
 
-    use WPSugarMethods;
-
+    /**
+     * @var array
+     */
     protected $requiredFields = ['wpRootFolder'];
 
+    /**
+     * @var array
+     */
     protected $config = [
         'backupGlobals' => true
     ];
@@ -140,10 +147,8 @@ class WPBootstrapper extends Module
 
     public function unsetGlobalClosures()
     {
-        $toSkip = array_merge($this->superGlobalArrays, $this->IDEGlobals);
-
         foreach ($GLOBALS as $key => &$value) {
-            if (in_array($key, $toSkip)) {
+            if (in_array($key, $this->globalSnapshotSkipKeys)) {
                 continue;
             }
             $value = $this->nullClosures($value);
