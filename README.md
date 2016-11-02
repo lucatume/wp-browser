@@ -143,6 +143,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               phpBinary: "php"
               language: ""
               configFile: ""
+              theme: my-theme
               plugins: ['hello.php', 'my-plugin/my-plugin.php']
               activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
               booststrapActions: ['my-first-action', 'my-second-action']
@@ -967,6 +968,27 @@ The arguments are:
 * `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
 * `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the neverending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
 * `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
+
+### Copier
+The `tad\WPBrowser\Extension\Copier` extension provides an automation to have specificic files and folders copied to specified destination files and folders before the suites run.
+While WordPress handles symbolic linking pretty well there are some cases, like themes and drop-ins, where there is a need for "real" files to be put in place.
+The extension follows the standard Codeception extension activation and has one configuration parameter only:
+
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Copier
+    config:
+        tad\WPBrowser\Extension\Copier:
+            files:
+                tests/_data/required-drop-in.php: /var/www/wordpress/wp-content/drop-in.php
+                tests/_data/themes/dummy: /var/www/wordpress/wp-content/themes/dummy
+                /Users/Me/Repos/required-plugin: /var/www/wordpress/wp-content/plugins/required-plugin.php
+                /Users/Me/Repos/mu-plugin.php: ../../../../wp-content/mu-plugins/mu-plugin.php
+```
+
+The extension will handle absolute and relative paths for sources and destinations and will resolve relative paths from the project root folder.
+When copying directories the extension will only create the destination folder and not the folder tree required; in the example configuration above the last entry specifies that a `mu-plugin.php` file should be copied to the `mu-plugins` folder: that `mu-plugins` folder must be there already.
 
 #### Environments support
 Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  
