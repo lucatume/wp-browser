@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.18.0] 2016-11-02
 ### Added
 - support for `--type` option in `wpcept bootstrap` interactive mode
 - theme activation during `WPLoader` module activation
