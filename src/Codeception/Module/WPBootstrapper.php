@@ -117,8 +117,7 @@ class WPBootstrapper extends Module
         sleep(1);
     }
 
-    protected
-    function setupSuperglobalArrays()
+    protected function setupSuperglobalArrays()
     {
         $this->superGlobalArrays = array(
             '_ENV',
@@ -174,8 +173,7 @@ class WPBootstrapper extends Module
         return $value;
     }
 
-    protected
-    function isClosure($value)
+    protected function isClosure($value)
     {
         if (!is_callable($value)) {
             return false;
