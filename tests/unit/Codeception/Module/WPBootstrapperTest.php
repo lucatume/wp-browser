@@ -227,6 +227,68 @@ class WPBootstrapperTest extends \Codeception\TestCase\Test
         $sut->bootstrapWp();
     }
 
+    /**
+     * @test
+     * it should unset closures in global array when saving global state
+     */
+    public function it_should_unset_closures_in_global_array_when_saving_global_state()
+    {
+        vfsStream::setup('wproot3', null, ['wp' => ['wp-load.php' => 'some content']]);
+        $this->config['wpRootFolder'] = vfsStream::url('wproot3/wp');
+
+        $sut = $this->make_instance();
+
+        $sut->_initialize();
+
+        global $someVar;
+
+        $someVar = function () {
+            $foo = 'bar';
+        };
+
+        $sut->bootstrapWp();
+
+        $this->assertEquals(null, $someVar);
+    }
+
+    /**
+     * @test
+     * it should unset closures in nested global array when saving global state
+     */
+    public function it_should_unset_closures_in_nested_global_array_when_saving_global_state()
+    {
+        vfsStream::setup('wproot3', null, ['wp' => ['wp-load.php' => 'some content']]);
+        $this->config['wpRootFolder'] = vfsStream::url('wproot3/wp');
+
+        $sut = $this->make_instance();
+
+        $sut->_initialize();
+
+        global $someVar;
+
+        $someVar = array(
+            '1' => array(
+                '2' => array(
+                    '3' => function () {
+                        $foo = 'bar';
+                    }
+                )
+            )
+        );
+
+
+        $sut->bootstrapWp();
+
+        $expected = array(
+            '1' => array(
+                '2' => array(
+                    '3' => null
+                )
+            )
+        );
+        $this->assertEquals($expected, $someVar);
+    }
+
     protected function _before()
     {
         global $_flag;

@@ -63,4 +63,4 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - codecept run -s wploadersuite
+  - codecept run

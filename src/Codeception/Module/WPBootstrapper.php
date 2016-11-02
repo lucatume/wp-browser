@@ -18,6 +18,12 @@ use tad\WPBrowser\Adapters\WP;
  */
 class WPBootstrapper extends Module
 {
+
+    /**
+     * @var array
+     */
+    protected $IDEGlobals = ['GLOBALS', 'IDE_EVAL_CACHE'];
+
     use WPSugarMethods;
 
     protected $requiredFields = ['wpRootFolder'];
@@ -45,6 +51,11 @@ class WPBootstrapper extends Module
      * @var WP
      */
     protected $wp;
+
+    /**
+     * @var array
+     */
+    protected $superGlobalArrays;
 
     public function __construct(ModuleContainer $moduleContainer, $config, Restorer $restorer = null, WP $wp = null)
     {
@@ -77,6 +88,8 @@ class WPBootstrapper extends Module
         include_once($this->wpLoadPath);
         if ($this->config['backupGlobals']) {
             if ($this->globalStateSnapshot === false) {
+                $this->setupSuperglobalArrays();
+                $this->unsetGlobalClosures();
                 $this->globalStateSnapshot = new Snapshot();
                 codecept_debug('WPBootstrapper: backed up global state.');
             } else {
@@ -95,6 +108,77 @@ class WPBootstrapper extends Module
         }
 
         sleep(1);
+    }
+
+    protected
+    function setupSuperglobalArrays()
+    {
+        $this->superGlobalArrays = array(
+            '_ENV',
+            '_POST',
+            '_GET',
+            '_COOKIE',
+            '_SERVER',
+            '_FILES',
+            '_REQUEST'
+        );
+
+        if (ini_get('register_long_arrays') == '1') {
+            $this->superGlobalArrays = array_merge(
+                $this->superGlobalArrays,
+                array(
+                    'HTTP_ENV_VARS',
+                    'HTTP_POST_VARS',
+                    'HTTP_GET_VARS',
+                    'HTTP_COOKIE_VARS',
+                    'HTTP_SERVER_VARS',
+                    'HTTP_POST_FILES'
+                )
+            );
+        }
+    }
+
+    public function unsetGlobalClosures()
+    {
+        $toSkip = array_merge($this->superGlobalArrays, $this->IDEGlobals);
+
+        foreach ($GLOBALS as $key => &$value) {
+            if (in_array($key, $toSkip)) {
+                continue;
+            }
+            $value = $this->nullClosures($value);
+        }
+    }
+
+    protected function nullClosures($value, $level = 0)
+    {
+        if (empty($value)) {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            if ($level >= 20) {
+                return $value;
+            }
+            foreach ($value as $key => $subvalue)
+                $value[$key] = $this->nullClosures($subvalue, ++$level);
+        } else {
+            $value = $this->isClosure($value) ? null : $value;
+        }
+
+        return $value;
+    }
+
+    protected
+    function isClosure($value)
+    {
+        if (!is_callable($value)) {
+            return false;
+        }
+
+        $reflection = new \ReflectionFunction($value);
+
+        return (bool)$reflection->isClosure();
     }
 
     private function restoreAllGlobals()
