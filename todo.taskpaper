@@ -1,5 +1,7 @@
 Add:
-    - network wide activated plugins on multisite installations
+    WPLoader:
+        - allow for dumps to be loaded into the db before the tests
+        - network wide activated plugins on multisite installations
     - gherkin translation of all WPBrowser methods
-	- wpwebdriver:
+	- WpWebDriver:
 		- ui/admin acceptance classes
