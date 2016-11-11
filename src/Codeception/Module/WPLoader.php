@@ -428,4 +428,8 @@ class WPLoader extends Module
             $this->wp->do_action('after_switch_theme', $stylesheet);
         }
     }
+
+    public function importDump()
+    {
+    }
 }

@@ -2,6 +2,7 @@
 namespace Codeception\Module;
 
 
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
@@ -126,6 +127,66 @@ class WPLoaderTest extends \Codeception\Test\Unit
 
         $sut = $this->make_instance();
         $sut->_switch_theme();
+    }
+
+    /**
+     * @test
+     * it should not dump any database dump if not set
+     */
+    public function it_should_d_not_dump_any_database_dump_if_not_set()
+    {
+        unset($this->config['dump']);
+        $this->wp->importDump(Argument::type('string'))->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->importDump();
+    }
+
+    /**
+     * @test
+     * it should not dump any database dump if set but empty
+     */
+    public function it_should_not_dump_any_database_dump_if_set_but_empty()
+    {
+        $this->config['dump'] = '';
+        $this->wp->importDump(Argument::type('string'))->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->importDump();
+    }
+
+    /**
+     * @test
+     * it should throw if database dump set to non existing file
+     */
+    public function it_should_throw_if_database_dump_set_to_non_existing_file()
+    {
+        $this->config['dump'] = '/some/file/foo.sql';
+        $this->wp->importDump(Argument::type('string'))->shouldNotBeCalled();
+
+        $sut = $this->make_instance();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $sut->importDump();
+    }
+
+    /**
+     * @test
+     * it should throw if database dump set to non readable file
+     */
+    public function it_should_throw_if_database_dump_set_to_non_readable_file()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     * it should dump the database file if set and accessible
+     */
+    public function it_should_dump_the_database_file_if_set_and_accessible()
+    {
+        $this->markTestIncomplete();
     }
 
     protected function _before()
