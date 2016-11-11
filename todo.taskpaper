@@ -1,6 +1,7 @@
 Add:
     WPLoader:
         - network wide activated plugins on multisite installations
+        - network wide activated themes on multisite installations
     - gherkin translation of all WPBrowser methods
 	- WpWebDriver:
 		- ui/admin acceptance classes
