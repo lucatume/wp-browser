@@ -61,6 +61,7 @@ class WPLoader extends Module
      * All of the fields have a correspondant in the standard `wp-tests-config.php`
      * file found in [WordPress automated testing suite.](http://make.wordpress.org/core/handbook/automated-testing/)
      *
+     * isolatedInstall - bool, def. `true`, whether the WP installation should happen in an isolated process(core like) or not (previous wp-browser method).
      * wpDebug - bool, def. `true`, the WP_DEBUG global value.
      * multisite - bool, def. `false`, if set to `true` will create a
      * multisite instllation, the WP_TESTS_MULTISITE global value.
@@ -92,6 +93,7 @@ class WPLoader extends Module
      * @var array
      */
     protected $config = [
+        'isolatedInstall' => true,
         'wpDebug' => true,
         'multisite' => false,
         'dbCharset' => 'utf8',
@@ -107,7 +109,7 @@ class WPLoader extends Module
         'plugins' => '',
         'activatePlugins' => '',
         'bootstrapActions' => '',
-        'theme' => ''
+        'theme' => '',
     ];
     /**
      * The path to the modified tests bootstrap file.
@@ -427,9 +429,5 @@ class WPLoader extends Module
             call_user_func([$this->wp, 'switch_theme'], $stylesheet);
             $this->wp->do_action('after_switch_theme', $stylesheet);
         }
-    }
-
-    public function importDump()
-    {
     }
 }

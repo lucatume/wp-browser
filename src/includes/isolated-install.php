@@ -3,9 +3,29 @@
  * Installs WordPress for the purpose of the unit-tests
  *
  */
+
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $configuration = unserialize($argv[1]);
+
+$multisite = !empty($argv[2]) ? $argv[2] : false;
+
+// require_once 'vendor/autoload.php';
+require_once $configuration['autoload'];
+
+if (!empty($multisite)) {
+    wpbrowser_include_patchwork();
+
+    Patchwork\redefine('is_multisite', function () {
+        global $_is_multisite;
+
+        if (empty($_is_multisite)) {
+            return Patchwork\relay();
+        }
+
+        return true;
+    });
+}
 
 if (!empty($configuration['activePlugins'])) {
     $activePlugins = $configuration['activePlugins'];
@@ -13,13 +33,14 @@ if (!empty($configuration['activePlugins'])) {
     $activePlugins = [];
 }
 
+printf("\nConfiguration:\n\n%s\n\n", json_encode($configuration, JSON_PRETTY_PRINT));
+
 foreach ($configuration['constants'] as $key => $value) {
     define($key, $value);
 }
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 
-$multisite = !empty($argv[2]) ? $argv[2] : false;
 
 define('WP_INSTALLING', true);
 //require_once $config_file_path;
@@ -55,12 +76,13 @@ $wpdb->select(DB_NAME, $wpdb->dbh);
  * additional tables that should be dropped.
  **/
 foreach ($activePlugins as $activePlugin) {
+    printf("Including plugin [%s] files\n", $activePlugin);
     include_once WP_PLUGIN_DIR . '/' . $activePlugin;
 }
 
-echo 'The following tables will be dropped: ', "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
+echo "\nThe following tables will be dropped: ", "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
 
-echo "Installing..." . PHP_EOL;
+echo "\nInstalling WordPress...\n";
 
 foreach ($wpdb->tables() as $table => $prefixed_table) {
     $wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
@@ -96,11 +118,27 @@ if ($multisite) {
     install_network();
     populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
     $wp_rewrite->set_permalink_structure('');
+
+
+    // activate monkey-patching on `is_multisite` using Patchwork, see above
+    // this is to allow plugins that could check for `is_multisite` on activation to work as intended
+    global $_is_multisite, $current_site;
+    $_is_multisite = $multisite;
+
+    // spoof the `$current_site` global
+    if (empty($current_site)) {
+        $current_site = new stdClass();
+    }
+
+    $current_site->id = 1;
+    $current_site->blog_id = 1;
 }
 
 // finally activate the plugins that should be activated
 if (!empty($activePlugins)) {
+    $activePlugins = array_unique($activePlugins);
     foreach ($activePlugins as $plugin) {
+        printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
         activate_plugin($plugin, null, $multisite, false);
     }
 }

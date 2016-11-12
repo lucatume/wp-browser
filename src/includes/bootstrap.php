@@ -59,6 +59,7 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
     require 'same-scope-install.php';
 } else {
     $environment = [
+        'autoload' => wpbrowser_vendor_path('autoload.php'),
         'constants' => [
             'ABSPATH' => ABSPATH,
             'WP_DEBUG' => true,
@@ -88,8 +89,9 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
     }
 
     if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
-        $environment['activePlugins'] = $GLOBALS['wp_tests_options']['active_plugins'];
-        codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $GLOBALS['wp_tests_options']['active_plugins']));
+        $uniqueActivePlugins = array_unique($GLOBALS['wp_tests_options']['active_plugins']);
+        $environment['activePlugins'] = $uniqueActivePlugins;
+        codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $uniqueActivePlugins));
     }
 
     codecept_debug('Installing WordPress in isolated process...');

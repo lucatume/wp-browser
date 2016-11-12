@@ -2,7 +2,6 @@
 namespace Codeception\Module;
 
 
-use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;

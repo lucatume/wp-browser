@@ -1,10 +1,11 @@
-class_name: WploaderTester
+class_name: MuloaderTester
 modules:
     enabled:
-        - \Helper\Wploadersuite
+        - \Helper\Muloader
         - WPLoader
     config:
         WPLoader:
+            multisite: true
             wpRootFolder: "/tmp/wordpress"
             dbName: "wploader"
             dbHost: "localhost"
