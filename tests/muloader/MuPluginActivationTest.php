@@ -1,7 +1,7 @@
 <?php
 namespace tad\WPBrowser\Tests;
 
-class MuPluginActivationCestTest extends \Codeception\TestCase\WPTestCase
+class MuPluginActivationTest extends \Codeception\TestCase\WPTestCase
 {
 
     public function setUp()
