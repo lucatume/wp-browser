@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.19.0] 2016-11-13
 ### Added
 - network activation of plugins in multisite `WPLoader` tests
 
@@ -454,7 +456,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.18.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.0...HEAD
+[1.19.0]: https://github.com/lucatume/wp-browser/compare/1.18.0...1.19.0
 [1.18.0]: https://github.com/lucatume/wp-browser/compare/1.17.0...1.18.0
 [1.17.0]: https://github.com/lucatume/wp-browser/compare/1.16.0...1.17.0
 [1.16.0]: https://github.com/lucatume/wp-browser/compare/1.15.3...1.16.0
