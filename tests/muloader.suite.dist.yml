@@ -23,5 +23,5 @@ modules:
             configFile: ""
             theme: dummy
             plugins: ['mu-plugin-1/plugin.php']
-            activatePlugins: []
+            activatePlugins: ['mu-plugin-1/plugin.php']
             booststrapActions: []

@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- explicit support for network activation of plugins in multisite `WPLoader` tests
+
+### Fixed
+- more verbose output for `WPLoader` isolated installation process
 
 ##[1.18.0] 2016-11-02
 ### Added
