@@ -17,7 +17,6 @@ class PluginActivationTest extends \Codeception\TestCase\WPTestCase
      */
     public function it_should_not_network_activate_network_plugins_on_non_mu_installation()
     {
-        $this->assertEquals('not-mu-activate', get_option('muplugin1'));
-        $this->assertFalse('mu-activated', (bool)get_network_option(null, 'muplugin1'));
+        $this->assertEquals('not-mu-activated', get_option('muplugin1'));
     }
 }
