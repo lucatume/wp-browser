@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Added
-- explicit support for network activation of plugins in multisite `WPLoader` tests
+- network activation of plugins in multisite `WPLoader` tests
 
 ### Fixed
 - more verbose output for `WPLoader` isolated installation process
