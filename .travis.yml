@@ -64,7 +64,7 @@ before_script:
 
 script:
   - codecept run unit
-  - codecepet run integration
+  - codecept run integration
   - codecept run acceptance
   - codecept run phantomjs
   - codecept run functional
