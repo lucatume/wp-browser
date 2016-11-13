@@ -63,8 +63,7 @@ class WPLoader extends Module
      *
      * isolatedInstall - bool, def. `true`, whether the WP installation should happen in an isolated process(core like) or not (previous wp-browser method).
      * wpDebug - bool, def. `true`, the WP_DEBUG global value.
-     * multisite - bool, def. `false`, if set to `true` will create a
-     * multisite instllation, the WP_TESTS_MULTISITE global value.
+     * multisite - bool, def. `false`, if set to `true` will create a multisite installation, the WP_TESTS_MULTISITE global value.
      * dbCharset - string, def. `utf8`, the DB_CHARSET global value.
      * dbCollate - string, def. ``, the DB_COLLATE global value.
      * tablePrefix - string, def. `wptests_`, the WP_TESTS_TABLE_PREFIX value.

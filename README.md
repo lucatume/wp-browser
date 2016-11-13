@@ -8,6 +8,8 @@ While working on the module I've added some methods to the `Codeception\Module\D
 
 ![Travis CI master branch build status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)
 
+[Example usage](https://github.com/lucatume/idlikethis).
+
 ## Installation
 To install simply require the package in the `composer.json` file like
 
@@ -127,6 +129,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
           - WPLoader
       config:
           WPLoader:
+              multisite: false
               wpRootFolder: "/Users/User/www/wordpress"
               dbName: "wpress-tests"
               dbHost: "localhost"
@@ -152,6 +155,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
 
 and configure it using the required parameters:
 
+ * `multisite` - if set to `true` the WordPress installation will be a multisite one, the WP_TESTS_MULTISITE global value.
  * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
  * `dbNAme` - the name of the database to use for the tests, will be trashed during tests so take care, will be the `DB_NAME` global.
  * `dbHost` - the host the database can be found at, will be the `DB_HOST` global.
@@ -174,7 +178,7 @@ and configure it using the required parameters:
 * `configFile` - string or array, def. ` `, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
 * `pluginsFolder` - string, def. ` `, the relative path to the plugins folder from the `wpRootFolder` if different from the `wp-content/plugins` default one
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
-* `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format.
+* `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format; when the `multisite` option is set to `true` the plugins will be **network activated** during the installation.
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions or **static functions** that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
 
     ```yaml
