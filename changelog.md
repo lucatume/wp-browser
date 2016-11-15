@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- support for `tax_input` in place of `terms` in `WPDb` module to stick with `wp_insert_post` function convention
+- support for `meta_input` in place of `meta` in `WPDb` module to stick with `wp_insert_post` function convention
 
 ##[1.19.0] 2016-11-13
 ### Added
