@@ -287,4 +287,61 @@ class WPDbPostCest {
 			'meta_value' => serialize( $meta )
 		] );
 	}
+
+	/**
+	 * @test
+	 * it should allow inserting post meta when inserting a post using meta input
+	 */
+	public function it_should_allow_inserting_post_meta_when_inserting_a_post_using_meta_input( FunctionalTester $I ) {
+		$meta = [ 'one' => 'meta one', 'two' => 'meta two' ];
+		$id   = $I->havePostInDatabase( [ 'meta_input' => $meta ] );
+		$I->seeInDatabase( $I->grabPostsTableName(), [ 'ID' => $id ] );
+		foreach ( $meta as $meta_key => $meta_value ) {
+			$I->seeInDatabase( $I->grabPostmetaTableName(), [
+				'post_id'    => $id,
+				'meta_key'   => $meta_key,
+				'meta_value' => $meta_value
+			] );
+		}
+	}
+
+	/**
+	 * @test
+	 * it should allow having meta in many posts using meta input
+	 */
+	public function it_should_allow_having_meta_in_many_posts_using_meta_input( FunctionalTester $I ) {
+		$meta = [ 'one' => 'meta one', 'two' => 'meta two' ];
+		$ids  = $I->haveManyPostsInDatabase( 3, [ 'meta_input' => $meta ] );
+		for ( $i = 0; $i < 3; $i++ ) {
+			$id = $ids[$i];
+			$I->seeInDatabase( $I->grabPostsTableName(), [ 'ID' => $id ] );
+			foreach ( $meta as $meta_key => $meta_value ) {
+				$I->seeInDatabase( $I->grabPostmetaTableName(), [
+					'post_id'    => $id,
+					'meta_key'   => $meta_key,
+					'meta_value' => $meta_value
+				] );
+			}
+		}
+	}
+
+	/**
+	 * @test
+	 * it should allow having numbered meta for many posts using meta_input
+	 */
+	public function it_should_allow_having_numbered_meta_for_many_posts_using_meta_input( FunctionalTester $I ) {
+		$meta = [ 'one_{{n}}' => 'meta {{n}}', 'two_{{n}}' => '{{n}} meta {{n}}' ];
+		$ids  = $I->haveManyPostsInDatabase( 3, [ 'meta_input' => $meta ] );
+		for ( $i = 0; $i < 3; $i++ ) {
+			$id = $ids[$i];
+			$I->seeInDatabase( $I->grabPostsTableName(), [ 'ID' => $id ] );
+			foreach ( $meta as $meta_key => $meta_value ) {
+				$I->seeInDatabase( $I->grabPostmetaTableName(), [
+					'post_id'    => $id,
+					'meta_key'   => str_replace( '{{n}}', $i, $meta_key ),
+					'meta_value' => str_replace( '{{n}}', $i, $meta_value )
+				] );
+			}
+		}
+	}
 }

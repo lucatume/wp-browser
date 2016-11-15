@@ -430,16 +430,29 @@ class WPDb extends ExtendedDb {
 		$idColumn = 'ID';
 		$id = $this->grabLatestEntryByFromDatabase($postTableName, $idColumn) + 1;
 		$post = Post::makePost($id, $this->config['url'], $data);
-		$hasMeta = !empty($data['meta']);
+		$hasMeta = !empty($data['meta']) || !empty($data['meta_input']);
+		$hasTerms = !empty($data['terms']) || !empty($data['tax_input']);
 		$meta = [];
 		if ($hasMeta) {
+			if ( ! empty( $data['meta_input'] ) ) {
+				$data['meta'] = $data['meta_input'];
+				unset( $data['meta_input'] );
+			}
 			$meta = $data['meta'];
 			unset($post['meta']);
 		}
 
-		$hasTerms = !empty($data['terms']);
+		if ( ! empty( $data['tax_input'] ) ) {
+			$data['terms'] = $data['tax_input'];
+			unset( $data['tax_input'] );
+		}
+
 		$terms = [];
 		if ($hasTerms) {
+			if ( ! empty( $data['tax_input'] ) ) {
+				$data['terms'] = $data['tax_input'];
+				unset( $data['tax_input'] );
+			}
 			$terms = $data['terms'];
 			unset($post['terms']);
 		}
