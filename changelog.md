@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.19.1] 2016-11-15
 ### Added
 - support for `tax_input` in place of `terms` in `WPDb` module to stick with `wp_insert_post` function convention
 - support for `meta_input` in place of `meta` in `WPDb` module to stick with `wp_insert_post` function convention
@@ -459,7 +461,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.10.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.1...HEAD
+[1.19.1]: https://github.com/lucatume/wp-browser/compare/1.19.0...1.19.1
 [1.19.0]: https://github.com/lucatume/wp-browser/compare/1.18.0...1.19.0
 [1.18.0]: https://github.com/lucatume/wp-browser/compare/1.17.0...1.18.0
 [1.17.0]: https://github.com/lucatume/wp-browser/compare/1.16.0...1.17.0
