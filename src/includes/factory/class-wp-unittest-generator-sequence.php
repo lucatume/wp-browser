@@ -1,12 +1,14 @@
 <?php
 
-class WP_UnitTest_Generator_Sequence {
+class WP_UnitTest_Generator_Sequence
+{
 	static $incr = -1;
 	public $next;
 	public $template_string;
 
-	function __construct( $template_string = '%s', $start = null ) {
-		if ( $start ) {
+	function __construct($template_string = '%s', $start = null)
+	{
+		if ($start) {
 			$this->next = $start;
 		} else {
 			self::$incr++;
@@ -15,8 +17,9 @@ class WP_UnitTest_Generator_Sequence {
 		$this->template_string = $template_string;
 	}
 
-	function next() {
-		$generated = sprintf( $this->template_string , $this->next );
+	function next()
+	{
+		$generated = sprintf($this->template_string, $this->next);
 		$this->next++;
 		return $generated;
 	}
@@ -28,7 +31,8 @@ class WP_UnitTest_Generator_Sequence {
 	 *
 	 * @return int
 	 */
-	public function get_incr() {
+	public function get_incr()
+	{
 		return self::$incr;
 	}
 
@@ -39,7 +43,8 @@ class WP_UnitTest_Generator_Sequence {
 	 *
 	 * @return string
 	 */
-	public function get_template_string() {
+	public function get_template_string()
+	{
 		return $this->template_string;
 	}
 }

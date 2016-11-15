@@ -12,15 +12,15 @@
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = null)
  *
  * @SuppressWarnings(PHPMD)
-*/
+ */
 class WploaderTester extends \Codeception\Actor
 {
-    use _generated\WploaderTesterActions;
+	use _generated\WploaderTesterActions;
 
-   /**
-    * Define custom actions here
-    */
+	/**
+	 * Define custom actions here
+	 */
 }

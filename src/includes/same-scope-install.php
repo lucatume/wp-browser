@@ -4,13 +4,13 @@
  *
  * @todo Reuse the init/load code in init.php
  */
-error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 // this replaces the original argument passed in with the `system` function
 $multisite = defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE;
 
-define( 'WP_INSTALLING', true );
-require_once dirname( __FILE__ ) . '/functions.php';
+define('WP_INSTALLING', true);
+require_once dirname(__FILE__) . '/functions.php';
 
 tests_reset__SERVER();
 
@@ -23,66 +23,73 @@ require_once ABSPATH . '/wp-includes/wp-db.php';
 
 // Override the PHPMailer
 global $phpmailer;
-require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
+require_once(dirname(__FILE__) . '/mock-mailer.php');
 $phpmailer = new MockPHPMailer();
 
 /*
  * default_storage_engine and storage_engine are the same option, but storage_engine
  * was deprecated in MySQL (and MariaDB) 5.5.3, and removed in 5.7.
  */
-if ( version_compare( $wpdb->db_version(), '5.5.3', '>=' ) ) {
-	$wpdb->query( 'SET default_storage_engine = InnoDB' );
+if (version_compare($wpdb->db_version(), '5.5.3', '>=')) {
+	$wpdb->query('SET default_storage_engine = InnoDB');
 } else {
-	$wpdb->query( 'SET storage_engine = InnoDB' );
+	$wpdb->query('SET storage_engine = InnoDB');
 }
-$wpdb->select( DB_NAME, $wpdb->dbh );
+$wpdb->select(DB_NAME, $wpdb->dbh);
 
 ob_start();
 
 echo "Installing..." . PHP_EOL;
 
-foreach ( $wpdb->tables() as $table => $prefixed_table ) {
-	$wpdb->query( "DROP TABLE IF EXISTS $prefixed_table" );
+foreach ($wpdb->tables() as $table => $prefixed_table) {
+	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 }
 
-foreach ( $wpdb->tables( 'ms_global' ) as $table => $prefixed_table ) {
-	$wpdb->query( "DROP TABLE IF EXISTS $prefixed_table" );
+foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
+	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 
 	// We need to create references to ms global tables.
-	if ( $multisite )
+	if ($multisite) {
 		$wpdb->$table = $prefixed_table;
+	}
 }
 
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
-add_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
+add_action('populate_options', '_set_default_permalink_structure_for_tests');
 
-wp_install( WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password' );
+wp_install(WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password');
 
 // Delete dummy permalink structure, as prefilled above.
-if ( ! is_multisite() ) {
-	delete_option( 'permalink_structure' );
+if (!is_multisite()) {
+	delete_option('permalink_structure');
 }
-remove_action( 'populate_options', '_set_default_permalink_structure_for_tests' );
+remove_action('populate_options', '_set_default_permalink_structure_for_tests');
 
-if ( $multisite ) {
+if ($multisite) {
 	echo "Installing network..." . PHP_EOL;
 
-	define( 'WP_INSTALLING_NETWORK', true );
+	define('WP_INSTALLING_NETWORK', true);
 
 	$title = WP_TESTS_TITLE . ' Network';
 	$subdomain_install = false;
-	
+
 	/**
 	 * If we are on multisite the `blogs` table will not have the main blog row set up due to how the install script ran.
 	 * Let's add the row now.
 	 */
-    /** @var \wpdb $wpdb */
+	/** @var \wpdb $wpdb */
 	global $wpdb;
-	$wpdb->insert($wpdb->blogs, array('site_id' => 1, 'blog_id' => 1, 'domain' => WP_TESTS_DOMAIN, 'path' => '/', 'registered' => current_time('mysql')));
+	$wpdb->insert($wpdb->blogs, array(
+		'site_id' => 1,
+		'blog_id' => 1,
+		'domain' => WP_TESTS_DOMAIN,
+		'path' => '/',
+		'registered' => current_time('mysql')
+	));
 
 	install_network();
-	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
-	$wp_rewrite->set_permalink_structure( '' );
+	populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
+	$wp_rewrite->set_permalink_structure('');
 }
 
 codecept_debug(ob_get_clean());

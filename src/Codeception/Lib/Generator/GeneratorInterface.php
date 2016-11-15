@@ -5,5 +5,5 @@ namespace Codeception\Lib\Generator;
 
 interface GeneratorInterface
 {
-    public function produce();
+	public function produce();
 }

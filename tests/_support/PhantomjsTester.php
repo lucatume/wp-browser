@@ -12,15 +12,15 @@
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = null)
  *
  * @SuppressWarnings(PHPMD)
-*/
+ */
 class PhantomjsTester extends \Codeception\Actor
 {
-    use _generated\PhantomjsTesterActions;
+	use _generated\PhantomjsTesterActions;
 
-   /**
-    * Define custom actions here
-    */
+	/**
+	 * Define custom actions here
+	 */
 }

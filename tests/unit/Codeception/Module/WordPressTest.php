@@ -12,239 +12,239 @@ use tad\WPBrowser\Connector\WordPress as Connector;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
-    protected $backupGlobals = false;
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
+	protected $backupGlobals = false;
+	/**
+	 * @var \UnitTester
+	 */
+	protected $tester;
 
-    /**
-     * @var ModuleContainer
-     */
-    protected $moduleContainer;
+	/**
+	 * @var ModuleContainer
+	 */
+	protected $moduleContainer;
 
-    /**
-     * @var array
-     */
-    protected $config;
+	/**
+	 * @var array
+	 */
+	protected $config;
 
-    /**
-     * @var vfsStreamDirectory
-     */
-    protected $root;
+	/**
+	 * @var vfsStreamDirectory
+	 */
+	protected $root;
 
-    /**
-     * @var Connector
-     */
-    protected $client;
+	/**
+	 * @var Connector
+	 */
+	protected $client;
 
-    /**
-     * @test
-     * it should be instantiatable
-     */
-    public function it_should_be_instantiatable()
-    {
-        $sut = $this->make_instance();
+	/**
+	 * @test
+	 * it should be instantiatable
+	 */
+	public function it_should_be_instantiatable()
+	{
+		$sut = $this->make_instance();
 
-        $this->assertInstanceOf(WordPress::class, $sut);
-    }
+		$this->assertInstanceOf(WordPress::class, $sut);
+	}
 
-    /**
-     * @return WordPress
-     */
-    private function make_instance()
-    {
-        return new WordPress($this->moduleContainer->reveal(), $this->config, $this->client->reveal());
-    }
+	/**
+	 * @return WordPress
+	 */
+	private function make_instance()
+	{
+		return new WordPress($this->moduleContainer->reveal(), $this->config, $this->client->reveal());
+	}
 
-    /**
-     * @test
-     * it should point to index file when requesting page
-     */
-    public function it_should_point_to_index_file_when_requesting_page()
-    {
-        $page = '/';
+	/**
+	 * @test
+	 * it should point to index file when requesting page
+	 */
+	public function it_should_point_to_index_file_when_requesting_page()
+	{
+		$page = '/';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnPage($page);
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnPage($page);
 
-        $this->assertEquals($page, $page);
-    }
+		$this->assertEquals($page, $page);
+	}
 
-    /**
-     * @test
-     * it should point to index file and query vars
-     */
-    public function it_should_point_to_index_file_and_query_vars()
-    {
-        $page = '/?some=var';
+	/**
+	 * @test
+	 * it should point to index file and query vars
+	 */
+	public function it_should_point_to_index_file_and_query_vars()
+	{
+		$page = '/?some=var';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnPage($page);
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnPage($page);
 
-        $this->assertEquals($page, $page);
-    }
+		$this->assertEquals($page, $page);
+	}
 
-    /**
-     * @test
-     * it should point to index file when requesting pretty permalinks
-     */
-    public function it_should_point_to_index_file_when_requesting_pretty_permalinks()
-    {
-        $page = '/some/pretty/permalink';
+	/**
+	 * @test
+	 * it should point to index file when requesting pretty permalinks
+	 */
+	public function it_should_point_to_index_file_when_requesting_pretty_permalinks()
+	{
+		$page = '/some/pretty/permalink';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnPage($page);
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $this->assertEquals($page, $page);
-    }
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnPage($page);
 
-    /**
-     * @test
-     * it should point to admin index when requesting admin root
-     */
-    public function it_should_point_to_admin_index_when_requesting_admin_root()
-    {
-        $page = '/wp-admin';
+		$this->assertEquals($page, $page);
+	}
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $this->config['adminPath'] = '/wp-admin';
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnAdminPage('/');
+	/**
+	 * @test
+	 * it should point to admin index when requesting admin root
+	 */
+	public function it_should_point_to_admin_index_when_requesting_admin_root()
+	{
+		$page = '/wp-admin';
 
-        $this->assertEquals('/wp-admin', $page);
-    }
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-    /**
-     * @test
-     * it should point to specific admin page when requesting specific admin page
-     */
-    public function it_should_point_to_specific_admin_page_when_requesting_specific_admin_page()
-    {
-        $page = '/wp-admin/some-page.php';
+		$this->config['adminPath'] = '/wp-admin';
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnAdminPage('/');
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $this->config['adminPath'] = '/wp-admin';
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnAdminPage('/some-page.php');
+		$this->assertEquals('/wp-admin', $page);
+	}
 
-        $this->assertEquals('/wp-admin/some-page.php', $page);
-    }
+	/**
+	 * @test
+	 * it should point to specific admin page when requesting specific admin page
+	 */
+	public function it_should_point_to_specific_admin_page_when_requesting_specific_admin_page()
+	{
+		$page = '/wp-admin/some-page.php';
 
-    /**
-     * @test
-     * it should point to admin pretty page when specifying admin pretty page
-     */
-    public function it_should_point_to_admin_pretty_page_when_specifying_admin_pretty_page()
-    {
-        $page = '/wp-admin/some/pretty/permalink';
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $this->config['adminPath'] = '/wp-admin';
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnAdminPage('/some/pretty/permalink');
+		$this->config['adminPath'] = '/wp-admin';
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnAdminPage('/some-page.php');
 
-        $this->assertEquals('/wp-admin/some/pretty/permalink', $page);
-    }
+		$this->assertEquals('/wp-admin/some-page.php', $page);
+	}
 
-    /**
-     * @test
-     * it should point to ajax file when requesting ajax page
-     */
-    public function it_should_point_to_ajax_file_when_requesting_ajax_page()
-    {
-        $page = '/wp-admin/admin-ajax.php';
+	/**
+	 * @test
+	 * it should point to admin pretty page when specifying admin pretty page
+	 */
+	public function it_should_point_to_admin_pretty_page_when_specifying_admin_pretty_page()
+	{
+		$page = '/wp-admin/some/pretty/permalink';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $this->config['adminPath'] = '/wp-admin';
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnAdminAjaxPage();
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $this->assertEquals('/wp-admin/admin-ajax.php', $page);
-    }
+		$this->config['adminPath'] = '/wp-admin';
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnAdminPage('/some/pretty/permalink');
 
-    /**
-     * @test
-     * it should point to cron file when requesting cron page
-     */
-    public function it_should_point_to_cron_file_when_requesting_cron_page()
-    {
-        $page = '/wp-cron.php';
+		$this->assertEquals('/wp-admin/some/pretty/permalink', $page);
+	}
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
-        
-        $sut = $this->make_instance();
-        $sut->_isMockRequest(true);
-        $page = $sut->amOnCronPage();
+	/**
+	 * @test
+	 * it should point to ajax file when requesting ajax page
+	 */
+	public function it_should_point_to_ajax_file_when_requesting_ajax_page()
+	{
+		$page = '/wp-admin/admin-ajax.php';
 
-        $this->assertEquals('/wp-cron.php', $page);
-    }
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-    /**
-     * @test
-     * it should throw if specified wpRootFolder does not exist
-     */
-    public function it_should_throw_if_specified_wp_root_folder_does_not_exist()
-    {
-        $this->config['wpRootFolder'] = '/some/folder';
+		$this->config['adminPath'] = '/wp-admin';
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnAdminAjaxPage();
 
-        $this->expectException(ModuleConfigException::class);
+		$this->assertEquals('/wp-admin/admin-ajax.php', $page);
+	}
 
-        $this->make_instance();
-    }
+	/**
+	 * @test
+	 * it should point to cron file when requesting cron page
+	 */
+	public function it_should_point_to_cron_file_when_requesting_cron_page()
+	{
+		$page = '/wp-cron.php';
 
-    /**
-     * @test
-     * it should throw if specified wpRootFolder does not contain wp-settings.php file
-     */
-    public function it_should_throw_if_specified_wp_root_folder_does_not_contain_wp_settings_php_file()
-    {
-        $root = vfsStream::setup();
+		$this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
 
-        $this->config['wpRootFolder'] = $root->url();
+		$sut = $this->make_instance();
+		$sut->_isMockRequest(true);
+		$page = $sut->amOnCronPage();
 
-        $this->expectException(ModuleConfigException::class);
+		$this->assertEquals('/wp-cron.php', $page);
+	}
 
-        $this->make_instance();
-    }
+	/**
+	 * @test
+	 * it should throw if specified wpRootFolder does not exist
+	 */
+	public function it_should_throw_if_specified_wp_root_folder_does_not_exist()
+	{
+		$this->config['wpRootFolder'] = '/some/folder';
 
-    protected function _before()
-    {
-        $root = vfsStream::setup();
-        $wpLoadFile = vfsStream::newFile('wp-settings.php');
-        $wpLoadFile->setContent('wp-settings.php content');
-        $root->addChild($wpLoadFile);
+		$this->expectException(ModuleConfigException::class);
 
-        $this->root = $root;
+		$this->make_instance();
+	}
 
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
-        $this->config = [
-            'wpRootFolder' => $root->url(),
-            'adminUsername' => 'admin',
-            'adminPassword' => 'admin'
-        ];
+	/**
+	 * @test
+	 * it should throw if specified wpRootFolder does not contain wp-settings.php file
+	 */
+	public function it_should_throw_if_specified_wp_root_folder_does_not_contain_wp_settings_php_file()
+	{
+		$root = vfsStream::setup();
 
-        $this->client = $this->prophesize(Connector::class);
-    }
+		$this->config['wpRootFolder'] = $root->url();
 
-    protected function _after()
-    {
-    }
+		$this->expectException(ModuleConfigException::class);
+
+		$this->make_instance();
+	}
+
+	protected function _before()
+	{
+		$root = vfsStream::setup();
+		$wpLoadFile = vfsStream::newFile('wp-settings.php');
+		$wpLoadFile->setContent('wp-settings.php content');
+		$root->addChild($wpLoadFile);
+
+		$this->root = $root;
+
+		$this->moduleContainer = $this->prophesize(ModuleContainer::class);
+		$this->config = [
+			'wpRootFolder' => $root->url(),
+			'adminUsername' => 'admin',
+			'adminPassword' => 'admin'
+		];
+
+		$this->client = $this->prophesize(Connector::class);
+	}
+
+	protected function _after()
+	{
+	}
 }

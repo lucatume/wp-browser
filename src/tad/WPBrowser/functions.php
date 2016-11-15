@@ -12,12 +12,12 @@
  */
 function wpbrowser_vendor_path($path = '')
 {
-    $ref = new ReflectionClass('Composer\Autoload\ClassLoader');
-    $file = $ref->getFileName();
+	$ref = new ReflectionClass('Composer\Autoload\ClassLoader');
+	$file = $ref->getFileName();
 
-    $vendorDir = dirname(dirname($file));
+	$vendorDir = dirname(dirname($file));
 
-    return empty($path) ? $vendorDir : $vendorDir . DIRECTORY_SEPARATOR . $path;
+	return empty($path) ? $vendorDir : $vendorDir . DIRECTORY_SEPARATOR . $path;
 }
 
 /**
@@ -25,5 +25,5 @@ function wpbrowser_vendor_path($path = '')
  */
 function wpbrowser_include_patchwork()
 {
-    require_once wpbrowser_vendor_path('antecedent/patchwork/Patchwork.php');
+	require_once wpbrowser_vendor_path('antecedent/patchwork/Patchwork.php');
 }

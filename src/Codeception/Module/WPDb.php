@@ -18,7 +18,8 @@ use tad\WPBrowser\Generators\WpPassword;
  * An extension of Codeception Db class to add WordPress database specific
  * methods.
  */
-class WPDb extends ExtendedDb {
+class WPDb extends ExtendedDb
+{
 
 	/**
 	 * @var string The theme stylesheet in use.
@@ -106,7 +107,8 @@ class WPDb extends ExtendedDb {
 	 */
 	protected $templateData;
 
-	public function _cleanup() {
+	public function _cleanup()
+	{
 		parent::_cleanup();
 
 		$this->blogId = 0;
@@ -122,7 +124,8 @@ class WPDb extends ExtendedDb {
 	 * @throws ModuleConfigException
 	 * @throws \Codeception\Exception\ModuleException
 	 */
-	public function _initialize(Handlebars $handlebars = null, Tables $table = null) {
+	public function _initialize(Handlebars $handlebars = null, Tables $table = null)
+	{
 		$this->prepareSqlDumpFile();
 
 		$this->initialize_driver();
@@ -137,7 +140,8 @@ class WPDb extends ExtendedDb {
 		$this->tables = $table ?: new Tables();
 	}
 
-	private function prepareSqlDumpFile() {
+	private function prepareSqlDumpFile()
+	{
 		if ($this->config['dump'] && ($this->config['cleanup'] or ($this->config['populate']))) {
 
 			if (!file_exists(Configuration::projectDir() . $this->config['dump'])) {
@@ -162,7 +166,8 @@ class WPDb extends ExtendedDb {
 	 * @param string $sql The input SQL dump string.
 	 * @return string The modified SQL string.
 	 */
-	public function replaceSiteDomainInSql($sql) {
+	public function replaceSiteDomainInSql($sql)
+	{
 		$optionsTable = $this->config['tablePrefix'] . 'options';
 
 		$matches = [];
@@ -192,23 +197,8 @@ class WPDb extends ExtendedDb {
 		return str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
 	}
 
-	protected function initialize_driver() {
-		try {
-			$this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
-		} catch (\PDOException $e) {
-			throw new ModuleConfigException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
-		}
-	}
-
-	private function importSqlDumpFile() {
-		if ($this->config['populate']) {
-			$this->cleanup();
-			$this->loadDump();
-			$this->populated = true;
-		}
-	}
-
-	public function replaceSiteDomainInMultisiteSql($sql) {
+	public function replaceSiteDomainInMultisiteSql($sql)
+	{
 		$tables = [
 			'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
 			'site' => "VALUES\\s+\\(\\d+,\\s*'(.*)',/uiU",
@@ -245,6 +235,24 @@ class WPDb extends ExtendedDb {
 		return $sql;
 	}
 
+	protected function initialize_driver()
+	{
+		try {
+			$this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
+		} catch (\PDOException $e) {
+			throw new ModuleConfigException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
+		}
+	}
+
+	private function importSqlDumpFile()
+	{
+		if ($this->config['populate']) {
+			$this->cleanup();
+			$this->loadDump();
+			$this->populated = true;
+		}
+	}
+
 	/**
 	 * Checks that an option is not in the database for the current blog.
 	 *
@@ -252,7 +260,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontSeeOptionInDatabase(array $criteria) {
+	public function dontSeeOptionInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('options');
 		if (!empty($criteria['option_value'])) {
 			$criteria['option_value'] = $this->maybeSerialize($criteria['option_value']);
@@ -269,7 +278,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string            The prefixed table name, e.g. `wp_options` or `wp_2_options`.
 	 */
-	public function grabPrefixedTableNameFor($tableName = '') {
+	public function grabPrefixedTableNameFor($tableName = '')
+	{
 		$idFrag = '';
 		if (!(in_array($tableName, $this->uniqueTables) || $this->blogId == 1)) {
 			$idFrag = empty($this->blogId) ? '' : "{$this->blogId}_";
@@ -285,7 +295,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	protected function maybeSerialize($value) {
+	protected function maybeSerialize($value)
+	{
 		$metaValue = (is_array($value) || is_object($value)) ? serialize($value) : $value;
 
 		return $metaValue;
@@ -298,7 +309,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function seePostMetaInDatabase(array $criteria) {
+	public function seePostMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('postmeta');
 		if (!empty($criteria['meta_value'])) {
 			$criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
@@ -313,7 +325,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function seeLinkInDatabase(array $criteria) {
+	public function seeLinkInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('links');
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -325,7 +338,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeeLinkInDatabase(array $criteria) {
+	public function dontSeeLinkInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('links');
 		$this->dontSeeInDatabase($tableName, $criteria);
 	}
@@ -337,7 +351,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeePostMetaInDatabase(array $criteria) {
+	public function dontSeePostMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('postmeta');
 		if (!empty($criteria['meta_value'])) {
 			$criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
@@ -356,7 +371,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0) {
+	public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('term_relationships');
 		$this->dontSeeInDatabase($tableName, array(
 			'object_id' => $post_id,
@@ -374,7 +390,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function seeUserInDatabase(array $criteria) {
+	public function seeUserInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('users');
 		$allCriteria = $criteria;
 		if (!empty($criteria['user_pass'])) {
@@ -382,7 +399,8 @@ class WPDb extends ExtendedDb {
 			unset($criteria['user_pass']);
 			$hashedPass = $this->grabFromDatabase($tableName, 'user_pass', $criteria);
 			$passwordOk = WpPassword::instance()->check($userPass, $hashedPass);
-			$this->assertTrue($passwordOk, 'No matching records found for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName);
+			$this->assertTrue($passwordOk,
+				'No matching records found for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName);
 		}
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -392,7 +410,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeeUserInDatabase(array $criteria) {
+	public function dontSeeUserInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('users');
 		$allCriteria = $criteria;
 		$passwordOk = false;
@@ -404,7 +423,8 @@ class WPDb extends ExtendedDb {
 		}
 
 		$count = $this->countInDatabase($tableName, $criteria);
-		$this->assertTrue(!$passwordOk && $count < 1, 'Unexpectedly found matching records for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName);
+		$this->assertTrue(!$passwordOk && $count < 1,
+			'Unexpectedly found matching records for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName);
 	}
 
 	/**
@@ -412,7 +432,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $overrides An array of values to override the default ones.
 	 */
-	public function havePageInDatabase(array $overrides = []) {
+	public function havePageInDatabase(array $overrides = [])
+	{
 		$overrides['post_type'] = 'page';
 
 		return $this->havePostInDatabase($overrides);
@@ -425,7 +446,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int post_id The inserted post ID.
 	 */
-	public function havePostInDatabase(array $data = []) {
+	public function havePostInDatabase(array $data = [])
+	{
 		$postTableName = $this->grabPostsTableName();
 		$idColumn = 'ID';
 		$id = $this->grabLatestEntryByFromDatabase($postTableName, $idColumn) + 1;
@@ -488,7 +510,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed table name, e.g. `wp_posts`
 	 */
-	public function grabPostsTableName() {
+	public function grabPostsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('posts');
 	}
 
@@ -500,7 +523,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return mixed
 	 */
-	public function grabLatestEntryByFromDatabase($tableName, $idColumn = 'ID') {
+	public function grabLatestEntryByFromDatabase($tableName, $idColumn = 'ID')
+	{
 		$dbh = $this->driver->getDbh();
 		$sth = $dbh->prepare("SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1");
 		$this->debugSection('Query', $sth->queryString);
@@ -518,7 +542,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted meta `meta_id`.
 	 */
-	public function havePostmetaInDatabase($post_id, $meta_key, $meta_value) {
+	public function havePostmetaInDatabase($post_id, $meta_key, $meta_value)
+	{
 		if (!is_int($post_id)) {
 			throw new \BadMethodCallException('Post id must be an int', 1);
 		}
@@ -539,7 +564,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
 	 */
-	public function grabPostMetaTableName() {
+	public function grabPostMetaTableName()
+	{
 		return $this->grabPrefixedTableNameFor('postmeta');
 	}
 
@@ -550,7 +576,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function grabTermIdFromDatabase(array $criteria) {
+	public function grabTermIdFromDatabase(array $criteria)
+	{
 		return $this->grabFromDatabase($this->grabTermsTableName(), 'term_id', $criteria);
 	}
 
@@ -559,7 +586,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabTermsTableName() {
+	public function grabTermsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('terms');
 
 	}
@@ -573,7 +601,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array containing `term_id` and `term_taxonomy_id` of the inserted term.
 	 */
-	public function haveTermInDatabase($name, $taxonomy, array $overrides = []) {
+	public function haveTermInDatabase($name, $taxonomy, array $overrides = [])
+	{
 		$termDefaults = ['slug' => (new Slugifier())->slugify($name), 'term_group' => 0];
 
 		$hasMeta = !empty($overrides['meta']);
@@ -607,7 +636,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabTermTaxonomyTableName() {
+	public function grabTermTaxonomyTableName()
+	{
 		return $this->grabPrefixedTableNameFor('term_taxonomy');
 	}
 
@@ -622,7 +652,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted term meta `meta_id`
 	 */
-	public function haveTermMetaInDatabase($term_id, $meta_key, $meta_value) {
+	public function haveTermMetaInDatabase($term_id, $meta_key, $meta_value)
+	{
 		if (!is_int($term_id)) {
 			throw new \BadMethodCallException('Term id must be an int');
 		}
@@ -645,7 +676,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabTermMetaTableName() {
+	public function grabTermMetaTableName()
+	{
 		return $this->grabPrefixedTableNameFor('termmeta');
 	}
 
@@ -656,7 +688,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function grabTermTaxonomyIdFromDatabase(array $criteria) {
+	public function grabTermTaxonomyIdFromDatabase(array $criteria)
+	{
 		return $this->grabFromDatabase($this->grabTermTaxonomyTableName(), 'term_taxonomy_id', $criteria);
 	}
 
@@ -670,7 +703,8 @@ class WPDb extends ExtendedDb {
 	 * @param     int $term_taxonomy_id
 	 * @param int $term_order Defaults to `0`.
 	 */
-	public function haveTermRelationshipInDatabase($object_id, $term_taxonomy_id, $term_order = 0) {
+	public function haveTermRelationshipInDatabase($object_id, $term_taxonomy_id, $term_order = 0)
+	{
 		$this->haveInDatabase($this->grabTermRelationshipsTableName(), [
 			'object_id' => $object_id,
 			'term_taxonomy_id' => $term_taxonomy_id,
@@ -683,11 +717,13 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabTermRelationshipsTableName() {
+	public function grabTermRelationshipsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('term_relationships');
 	}
 
-	private function increaseTermCountBy($termTaxonomyId, $by = 1) {
+	private function increaseTermCountBy($termTaxonomyId, $by = 1)
+	{
 		$updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
 
 		return $this->driver->executeQuery($updateQuery, []);
@@ -698,7 +734,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function seePageInDatabase(array $criteria) {
+	public function seePageInDatabase(array $criteria)
+	{
 		$criteria['post_type'] = 'page';
 		$this->seePostInDatabase($criteria);
 	}
@@ -708,7 +745,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function seePostInDatabase(array $criteria) {
+	public function seePostInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('posts');
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -718,7 +756,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeePageInDatabase(array $criteria) {
+	public function dontSeePageInDatabase(array $criteria)
+	{
 		$criteria['post_type'] = 'page';
 		$this->dontSeePostInDatabase($criteria);
 	}
@@ -728,7 +767,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeePostInDatabase(array $criteria) {
+	public function dontSeePostInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('posts');
 		$this->dontSeeInDatabase($tableName, $criteria);
 	}
@@ -742,7 +782,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function seeCommentInDatabase(array $criteria) {
+	public function seeCommentInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('comments');
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -756,7 +797,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function dontSeeCommentInDatabase(array $criteria) {
+	public function dontSeeCommentInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('comments');
 		$this->dontSeeInDatabase($tableName, $criteria);
 	}
@@ -770,7 +812,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function seeCommentMetaInDatabase(array $criteria) {
+	public function seeCommentMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('commentmeta');
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -784,7 +827,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	public function dontSeeCommentMetaInDatabase(array $criteria) {
+	public function dontSeeCommentMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('commentmeta');
 		$this->dontSeeInDatabase($tableName, $criteria);
 	}
@@ -794,7 +838,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function seeUserMetaInDatabase(array $criteria) {
+	public function seeUserMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('usermeta');
 		$this->seeInDatabase($tableName, $criteria);
 	}
@@ -804,7 +849,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontSeeUserMetaInDatabase(array $criteria) {
+	public function dontSeeUserMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('usermeta');
 		$this->dontSeeInDatabase($tableName, $criteria);
 	}
@@ -814,7 +860,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveCommentMetaInDatabase(array $criteria) {
+	public function dontHaveCommentMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('commentmeta');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -824,7 +871,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveLinkInDatabase(array $criteria) {
+	public function dontHaveLinkInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('links');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -834,7 +882,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHavePostMetaInDatabase(array $criteria) {
+	public function dontHavePostMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('postmeta');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -844,7 +893,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHavePostInDatabase(array $criteria) {
+	public function dontHavePostInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('posts');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -854,7 +904,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveTermRelationshipInDatabase(array $criteria) {
+	public function dontHaveTermRelationshipInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('term_relationships');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -864,7 +915,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveTermTaxonomyInDatabase(array $criteria) {
+	public function dontHaveTermTaxonomyInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('term_taxonomy');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -874,7 +926,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveUserMetaInDatabase(array $criteria) {
+	public function dontHaveUserMetaInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('usermeta');
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
@@ -884,7 +937,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param int|string $userIdOrLogin
 	 */
-	public function dontHaveUserInDatabase($userIdOrLogin) {
+	public function dontHaveUserInDatabase($userIdOrLogin)
+	{
 		$userId = is_numeric($userIdOrLogin) ? intval($userIdOrLogin) : $this->grabUserIdFromDatabase($userIdOrLogin);
 		$this->dontHaveInDatabase($this->grabPrefixedTableNameFor('users'), ['ID' => $userId]);
 		$this->dontHaveInDatabase($this->grabPrefixedTableNameFor('usermeta'), ['user_id' => $userId]);
@@ -897,7 +951,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The user ID
 	 */
-	public function grabUserIdFromDatabase($userLogin) {
+	public function grabUserIdFromDatabase($userLogin)
+	{
 		return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
 	}
 
@@ -909,7 +964,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An associative array of meta key/values.
 	 */
-	public function grabUserMetaFromDatabase($userId, $meta_key) {
+	public function grabUserMetaFromDatabase($userId, $meta_key)
+	{
 		$table = $this->grabPrefixedTableNameFor('usermeta');
 		$meta = $this->grabAllFromDatabase($table, 'meta_value', ['user_id' => $userId, 'meta_key' => $meta_key]);
 		if (empty($meta)) {
@@ -931,7 +987,8 @@ class WPDb extends ExtendedDb {
 	 * @return array An array of results.
 	 * @throws \Exception
 	 */
-	public function grabAllFromDatabase($table, $column, $criteria) {
+	public function grabAllFromDatabase($table, $column, $criteria)
+	{
 		$query = $this->driver->select($column, $table, $criteria);
 
 		$sth = $this->driver->executeQuery($query, array_values($criteria));
@@ -949,7 +1006,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted option `option_id`.
 	 */
-	public function haveTransientInDatabase($transient, $value) {
+	public function haveTransientInDatabase($transient, $value)
+	{
 		return $this->haveOptionInDatabase('_transient_' . $transient, $value);
 	}
 
@@ -964,7 +1022,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted `option_id`
 	 */
-	public function haveOptionInDatabase($option_name, $option_value, $autoload = 'yes') {
+	public function haveOptionInDatabase($option_name, $option_value, $autoload = 'yes')
+	{
 		$table = $this->grabPrefixedTableNameFor('options');
 		$this->dontHaveInDatabase($table, ['option_name' => $option_name]);
 		$option_value = $this->maybeSerialize($option_value);
@@ -983,7 +1042,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The removed option `option_id`.
 	 */
-	public function dontHaveTransientInDatabase($transient) {
+	public function dontHaveTransientInDatabase($transient)
+	{
 		return $this->dontHaveOptionInDatabase('_transient_' . $transient);
 	}
 
@@ -995,7 +1055,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The removed option `option_id`.
 	 */
-	public function dontHaveOptionInDatabase($key, $value = null) {
+	public function dontHaveOptionInDatabase($key, $value = null)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('options');
 		$criteria['option_name'] = $key;
 		if (!empty($value)) {
@@ -1014,7 +1075,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted option `option_id`.
 	 */
-	public function haveSiteOptionInDatabase($key, $value) {
+	public function haveSiteOptionInDatabase($key, $value)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$option_id = $this->haveOptionInDatabase('_site_option_' . $key, $value);
@@ -1026,7 +1088,8 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Sets the current blog to the main one (`blog_id` 1).
 	 */
-	public function useMainBlog() {
+	public function useMainBlog()
+	{
 		$this->useBlog(0);
 	}
 
@@ -1035,7 +1098,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param int $id
 	 */
-	public function useBlog($id = 0) {
+	public function useBlog($id = 0)
+	{
 		if (!(is_numeric($id) && intval($id) === $id && intval($id) >= 0)) {
 			throw new \InvalidArgumentException('Id must be an integer greater than or equal to 0');
 		}
@@ -1048,7 +1112,8 @@ class WPDb extends ExtendedDb {
 	 * @param      $key
 	 * @param null $value
 	 */
-	public function dontHaveSiteOptionInDatabase($key, $value = null) {
+	public function dontHaveSiteOptionInDatabase($key, $value = null)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$this->dontHaveOptionInDatabase('_site_option_' . $key, $value);
@@ -1063,7 +1128,8 @@ class WPDb extends ExtendedDb {
 	 * @param $key
 	 * @param $value
 	 */
-	public function haveSiteTransientInDatabase($key, $value) {
+	public function haveSiteTransientInDatabase($key, $value)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$option_id = $this->haveOptionInDatabase('_site_transient_' . $key, $value);
@@ -1077,7 +1143,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param string $key
 	 */
-	public function dontHaveSiteTransientInDatabase($key) {
+	public function dontHaveSiteTransientInDatabase($key)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$this->dontHaveOptionInDatabase('_site_transient_' . $key);
@@ -1091,7 +1158,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return mixed|string
 	 */
-	public function grabSiteOptionFromDatabase($key) {
+	public function grabSiteOptionFromDatabase($key)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$value = $this->grabOptionFromDatabase('_site_option_' . $key);
@@ -1107,14 +1175,16 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return mixed|string
 	 */
-	public function grabOptionFromDatabase($option_name) {
+	public function grabOptionFromDatabase($option_name)
+	{
 		$table = $this->grabPrefixedTableNameFor('options');
 		$option_value = $this->grabFromDatabase($table, 'option_value', ['option_name' => $option_name]);
 
 		return empty($option_value) ? '' : $this->maybeUnserialize($option_value);
 	}
 
-	private function maybeUnserialize($value) {
+	private function maybeUnserialize($value)
+	{
 		$unserialized = @unserialize($value);
 
 		return false === $unserialized ? $value : $unserialized;
@@ -1127,7 +1197,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return mixed|string
 	 */
-	public function grabSiteTransientFromDatabase($key) {
+	public function grabSiteTransientFromDatabase($key)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$value = $this->grabOptionFromDatabase('_site_transient_' . $key);
@@ -1142,7 +1213,8 @@ class WPDb extends ExtendedDb {
 	 * @param string $key
 	 * @param mixed|null $value
 	 */
-	public function seeSiteSiteTransientInDatabase($key, $value = null) {
+	public function seeSiteSiteTransientInDatabase($key, $value = null)
+	{
 		$currentBlogId = $this->blogId;
 		$criteria = ['option_name' => '_site_transient_' . $key];
 		if ($value) {
@@ -1159,7 +1231,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function seeOptionInDatabase(array $criteria) {
+	public function seeOptionInDatabase(array $criteria)
+	{
 		$tableName = $this->grabPrefixedTableNameFor('options');
 		if (!empty($criteria['option_value'])) {
 			$criteria['option_value'] = $this->maybeSerialize($criteria['option_value']);
@@ -1173,7 +1246,8 @@ class WPDb extends ExtendedDb {
 	 * @param string $key
 	 * @param mixed|null $value
 	 */
-	public function seeSiteOptionInDatabase($key, $value = null) {
+	public function seeSiteOptionInDatabase($key, $value = null)
+	{
 		$currentBlogId = $this->blogId;
 		$this->useMainBlog();
 		$criteria = ['option_name' => '_site_option_' . $key];
@@ -1189,7 +1263,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The current site URL
 	 */
-	public function grabSiteUrl() {
+	public function grabSiteUrl()
+	{
 		return $this->config['url'];
 	}
 
@@ -1212,7 +1287,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array
 	 */
-	public function haveManyPostsInDatabase($count, array $overrides = []) {
+	public function haveManyPostsInDatabase($count, array $overrides = [])
+	{
 		if (!is_int($count)) {
 			throw new \InvalidArgumentException('Count must be an integer value');
 		}
@@ -1226,7 +1302,8 @@ class WPDb extends ExtendedDb {
 		return $ids;
 	}
 
-	protected function setTemplateData(array $overrides = []) {
+	protected function setTemplateData(array $overrides = [])
+	{
 		if (empty($overrides['template_data'])) {
 			$this->templateData = [];
 		} else {
@@ -1237,7 +1314,8 @@ class WPDb extends ExtendedDb {
 		return $overrides;
 	}
 
-	protected function replaceNumbersInArray($entry, $i) {
+	protected function replaceNumbersInArray($entry, $i)
+	{
 		$out = [];
 		foreach ($entry as $key => $value) {
 			if (is_array($value)) {
@@ -1256,7 +1334,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return mixed
 	 */
-	protected function replaceNumbersInString($value, $i) {
+	protected function replaceNumbersInString($value, $i)
+	{
 		if (!is_string($value)) {
 			return $value;
 		}
@@ -1276,7 +1355,8 @@ class WPDb extends ExtendedDb {
 	 * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
 	 *                        `term_taxonomy` tables.
 	 */
-	public function seeTermInDatabase(array $criteria) {
+	public function seeTermInDatabase(array $criteria)
+	{
 		$termsCriteria = array_intersect_key($criteria, array_flip($this->termKeys));
 		$termTaxonomyCriteria = array_intersect_key($criteria, array_flip($this->termTaxonomyKeys));
 
@@ -1294,12 +1374,16 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontHaveTermInDatabase(array $criteria) {
+	public function dontHaveTermInDatabase(array $criteria)
+	{
 		$termRelationshipsKeys = ['term_taxonomy_id'];
 
-		$this->dontHaveInDatabase($this->grabTermsTableName(), array_intersect_key($criteria, array_flip($this->termKeys)));
-		$this->dontHaveInDatabase($this->grabTermTaxonomyTableName(), array_intersect_key($criteria, array_flip($this->termTaxonomyKeys)));
-		$this->dontHaveInDatabase($this->grabTermRelationshipsTableName(), array_intersect_key($criteria, array_flip($termRelationshipsKeys)));
+		$this->dontHaveInDatabase($this->grabTermsTableName(),
+			array_intersect_key($criteria, array_flip($this->termKeys)));
+		$this->dontHaveInDatabase($this->grabTermTaxonomyTableName(),
+			array_intersect_key($criteria, array_flip($this->termTaxonomyKeys)));
+		$this->dontHaveInDatabase($this->grabTermRelationshipsTableName(),
+			array_intersect_key($criteria, array_flip($termRelationshipsKeys)));
 	}
 
 	/**
@@ -1310,7 +1394,8 @@ class WPDb extends ExtendedDb {
 	 * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
 	 *                        `term_taxonomy` tables.
 	 */
-	public function dontSeeTermInDatabase(array $criteria) {
+	public function dontSeeTermInDatabase(array $criteria)
+	{
 		$termsCriteria = array_intersect_key($criteria, array_flip($this->termKeys));
 		$termTaxonomyCriteria = array_intersect_key($criteria, array_flip($this->termTaxonomyKeys));
 
@@ -1332,7 +1417,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int[] An array containing the inserted comments IDs.
 	 */
-	public function haveManyCommentsInDatabase($count, $comment_post_ID, array $overrides = []) {
+	public function haveManyCommentsInDatabase($count, $comment_post_ID, array $overrides = [])
+	{
 		if (!is_int($count)) {
 			throw new \InvalidArgumentException('Count must be an integer value');
 		}
@@ -1354,7 +1440,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted comment `comment_id`
 	 */
-	public function haveCommentInDatabase($comment_post_ID, array $data = array()) {
+	public function haveCommentInDatabase($comment_post_ID, array $data = array())
+	{
 		if (!is_int($comment_post_ID)) {
 			throw new \BadMethodCallException('Comment post ID must be int');
 		}
@@ -1391,7 +1478,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted comment meta ID
 	 */
-	public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value) {
+	public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value)
+	{
 		if (!is_int($comment_id)) {
 			throw new \BadMethodCallException('Comment id must be an int');
 		}
@@ -1413,7 +1501,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabCommentmetaTableName() {
+	public function grabCommentmetaTableName()
+	{
 		return $this->grabPrefixedTableNameFor('commentmeta');
 	}
 
@@ -1422,7 +1511,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param  array $criteria An array of search criteria.
 	 */
-	public function dontHaveCommentInDatabase(array $criteria) {
+	public function dontHaveCommentInDatabase(array $criteria)
+	{
 		$table = $this->grabCommentsTableName();
 		$this->dontHaveInDatabase($table, $criteria);
 	}
@@ -1432,7 +1522,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed table name, e.g. `wp_comments`.
 	 */
-	public function grabCommentsTableName() {
+	public function grabCommentsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('comments');
 	}
 
@@ -1444,7 +1535,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted `link_id`s.
 	 */
-	public function haveManyLinksInDatabase($count, array $overrides = []) {
+	public function haveManyLinksInDatabase($count, array $overrides = [])
+	{
 		if (!is_int($count)) {
 			throw new \InvalidArgumentException('Count must be an integer value');
 		}
@@ -1465,7 +1557,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted link `link_id`.
 	 */
-	public function haveLinkInDatabase(array $overrides = array()) {
+	public function haveLinkInDatabase(array $overrides = array())
+	{
 		$tableName = $this->grabLinksTableName();
 		$defaults = Links::getDefaults();
 		$overrides = array_merge($defaults, array_intersect_key($overrides, $defaults));
@@ -1480,11 +1573,13 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabLinksTableName() {
+	public function grabLinksTableName()
+	{
 		return $this->grabPrefixedTableNameFor('links');
 	}
 
-	public function haveManyUsersInDatabase($count, $user_login, $role = 'subscriber', array $overrides = []) {
+	public function haveManyUsersInDatabase($count, $user_login, $role = 'subscriber', array $overrides = [])
+	{
 		if (!is_int($count)) {
 			throw new \InvalidArgumentException('Count must be an integer value');
 		}
@@ -1492,7 +1587,8 @@ class WPDb extends ExtendedDb {
 		$overrides = $this->setTemplateData($overrides);
 		for ($i = 0; $i < $count; $i++) {
 			$thisOverrides = $this->replaceNumbersInArray($overrides, $i);
-			$thisUserLogin = false === strpos($user_login, $this->numberPlaceholder) ? $user_login . '_' . $i : $this->replaceNumbersInString($user_login, $i);
+			$thisUserLogin = false === strpos($user_login,
+				$this->numberPlaceholder) ? $user_login . '_' . $i : $this->replaceNumbersInString($user_login, $i);
 			$ids[] = $this->haveUserInDatabase($thisUserLogin, $role, $thisOverrides);
 		}
 
@@ -1509,7 +1605,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted user `ID`
 	 */
-	public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = array()) {
+	public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = array())
+	{
 		$hasMeta = !empty($overrides['meta']);
 		$meta = [];
 		if ($hasMeta) {
@@ -1538,7 +1635,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	protected function getUsersTableName() {
+	protected function getUsersTableName()
+	{
 		$usersTableName = $this->grabPrefixedTableNameFor('users');
 
 		return $usersTableName;
@@ -1553,7 +1651,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted `meta_id`.
 	 */
-	public function haveUserCapabilitiesInDatabase($userId, $role) {
+	public function haveUserCapabilitiesInDatabase($userId, $role)
+	{
 		if (!is_array($role)) {
 			$meta_key = $this->grabPrefixedTableNameFor() . 'capabilities';
 			$meta_value = serialize([$role => 1]);
@@ -1581,7 +1680,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted `user_id`.
 	 */
-	public function haveUserMetaInDatabase($userId, $meta_key, $meta_value) {
+	public function haveUserMetaInDatabase($userId, $meta_key, $meta_value)
+	{
 		$ids = [];
 		$meta_values = is_array($meta_value) ? $meta_value : [$meta_value];
 		foreach ($meta_values as $meta_value) {
@@ -1601,7 +1701,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabUsermetaTableName() {
+	public function grabUsermetaTableName()
+	{
 		$usermetaTable = $this->grabPrefixedTableNameFor('usermeta');
 
 		return $usermetaTable;
@@ -1616,7 +1717,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted `meta_id`.
 	 */
-	public function haveUserLevelsInDatabase($userId, $role) {
+	public function haveUserLevelsInDatabase($userId, $role)
+	{
 		if (!is_array($role)) {
 			$meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
 			$meta_value = User\Roles::getLevelForRole($role);
@@ -1644,14 +1746,16 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted terms `term_id`s.
 	 */
-	public function haveManyTermsInDatabase($count, $name, $taxonomy, array $overrides = []) {
+	public function haveManyTermsInDatabase($count, $name, $taxonomy, array $overrides = [])
+	{
 		if (!is_int($count)) {
 			throw new \InvalidArgumentException('Count must be an integer value');
 		}
 		$ids = [];
 		$overrides = $this->setTemplateData($overrides);
 		for ($i = 0; $i < $count; $i++) {
-			$thisName = false === strpos($name, $this->numberPlaceholder) ? $name . ' ' . $i : $this->replaceNumbersInString($name, $i);
+			$thisName = false === strpos($name,
+				$this->numberPlaceholder) ? $name . ' ' . $i : $this->replaceNumbersInString($name, $i);
 			$thisTaxonomy = $this->replaceNumbersInString($taxonomy, $i);
 			$thisOverrides = $this->replaceNumbersInArray($overrides, $i);
 			$ids[] = $this->haveTermInDatabase($thisName, $thisTaxonomy, $thisOverrides);
@@ -1667,7 +1771,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function seeTermTaxonomyInDatabase(array $criteria) {
+	public function seeTermTaxonomyInDatabase(array $criteria)
+	{
 		$this->seeInDatabase($this->grabTermTaxonomyTableName(), $criteria);
 	}
 
@@ -1678,7 +1783,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontSeeTermTaxonomyInDatabase(array $criteria) {
+	public function dontSeeTermTaxonomyInDatabase(array $criteria)
+	{
 		$this->dontSeeInDatabase($this->grabTermTaxonomyTableName(), $criteria);
 	}
 
@@ -1687,7 +1793,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function seeTermMetaInDatabase(array $criteria) {
+	public function seeTermMetaInDatabase(array $criteria)
+	{
 		$this->seeInDatabase($this->grabTermMetaTableName(), $criteria);
 	}
 
@@ -1696,7 +1803,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontHaveTermMetaInDatabase(array $criteria) {
+	public function dontHaveTermMetaInDatabase(array $criteria)
+	{
 		$this->dontHaveInDatabase($this->grabTermMetaTableName(), $criteria);
 	}
 
@@ -1705,7 +1813,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontSeeTermMetaInDatabase(array $criteria) {
+	public function dontSeeTermMetaInDatabase(array $criteria)
+	{
 		$this->dontSeeInDatabase($this->grabTermMetaTableName(), $criteria);
 	}
 
@@ -1714,7 +1823,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param string $table
 	 */
-	public function seeTableInDatabase($table) {
+	public function seeTableInDatabase($table)
+	{
 		$count = $this->_seeTableInDatabase($table);
 
 		$this->assertTrue($count > 0, "No matching tables found for table '" . $table . "' in database.");
@@ -1725,7 +1835,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int
 	 */
-	protected function _seeTableInDatabase($table) {
+	protected function _seeTableInDatabase($table)
+	{
 		$dbh = $this->driver->getDbh();
 		$sth = $dbh->prepare('SHOW TABLES LIKE :table');
 		$this->debugSection('Query', $sth->queryString);
@@ -1740,7 +1851,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabBlogVersionsTableName() {
+	public function grabBlogVersionsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('blog_versions');
 	}
 
@@ -1749,7 +1861,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabSiteMetaTableName() {
+	public function grabSiteMetaTableName()
+	{
 		return $this->grabPrefixedTableNameFor('sitemeta');
 	}
 
@@ -1758,7 +1871,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabSignupsTableName() {
+	public function grabSignupsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('signups');
 	}
 
@@ -1767,7 +1881,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabRegistrationLogTableName() {
+	public function grabRegistrationLogTableName()
+	{
 		return $this->grabPrefixedTableNameFor('registration_log');
 	}
 
@@ -1776,7 +1891,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabSiteTableName() {
+	public function grabSiteTableName()
+	{
 		return $this->grabPrefixedTableNameFor('site');
 	}
 
@@ -1785,7 +1901,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function seeBlogInDatabase(array $criteria) {
+	public function seeBlogInDatabase(array $criteria)
+	{
 		$this->seeInDatabase($this->grabBlogsTableName(), $criteria);
 	}
 
@@ -1794,7 +1911,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function grabBlogsTableName() {
+	public function grabBlogsTableName()
+	{
 		return $this->grabPrefixedTableNameFor('blogs');
 	}
 
@@ -1806,7 +1924,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of inserted blogs `blog_id`s.
 	 */
-	public function haveManyBlogsInDatabase($count, array $overrides = []) {
+	public function haveManyBlogsInDatabase($count, array $overrides = [])
+	{
 		$blogIds = [];
 		$overrides = $this->setTemplateData($overrides);
 		for ($i = 0; $i < $count; $i++) {
@@ -1824,7 +1943,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The inserted blog `blog_id`.
 	 */
-	public function haveBlogInDatabase($domainOrPath, array $overrides = []) {
+	public function haveBlogInDatabase($domainOrPath, array $overrides = [])
+	{
 		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults($this->isSubdomainMultisiteInstall);
 		if ($this->isSubdomainMultisiteInstall) {
 			if (empty($overrides['domain'])) {
@@ -1847,7 +1967,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string
 	 */
-	public function getSiteDomain() {
+	public function getSiteDomain()
+	{
 		$domain = last(preg_split('~//~', $this->config['url']));
 
 		return $domain;
@@ -1858,7 +1979,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontHaveBlogInDatabase(array $criteria) {
+	public function dontHaveBlogInDatabase(array $criteria)
+	{
 		$this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
 	}
 
@@ -1867,7 +1989,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function dontSeeBlogInDatabase(array $criteria) {
+	public function dontSeeBlogInDatabase(array $criteria)
+	{
 		$this->dontSeeInDatabase($this->grabBlogsTableName(), $criteria);
 	}
 
@@ -1876,7 +1999,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The blog aware table prefix.
 	 */
-	public function grabTablePrefix() {
+	public function grabTablePrefix()
+	{
 		return $this->tablePrefix;
 	}
 
@@ -1887,7 +2011,8 @@ class WPDb extends ExtendedDb {
 	 * @param string|null $template The theme template slug, e.g. `twentysixteen`, defaults to `$stylesheet`.
 	 * @param string|null $themeName The theme name, e.g. `Twentysixteen`, defaults to title version of `$stylesheet`.
 	 */
-	public function useTheme($stylesheet, $template = null, $themeName = null) {
+	public function useTheme($stylesheet, $template = null, $themeName = null)
+	{
 		if (!(is_string($stylesheet))) {
 			throw new \InvalidArgumentException('Stylesheet must be a string');
 		}
@@ -1918,7 +2043,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array containing the created menu `term_id` and `term_taxonomy_id`.
 	 */
-	public function haveMenuInDatabase($slug, $location, array $overrides = []) {
+	public function haveMenuInDatabase($slug, $location, array $overrides = [])
+	{
 		if (!is_string($slug)) {
 			throw new \InvalidArgumentException('Menu slug must be a string.');
 		}
@@ -1936,7 +2062,8 @@ class WPDb extends ExtendedDb {
 		$menuTermTaxonomyIds = reset($menuIds);
 
 		// set theme options to use the `primary` location
-		$this->haveOptionInDatabase('theme_mods_' . $this->stylesheet, ['nav_menu_locations' => [$location => $menuTermTaxonomyIds]]);
+		$this->haveOptionInDatabase('theme_mods_' . $this->stylesheet,
+			['nav_menu_locations' => [$location => $menuTermTaxonomyIds]]);
 
 		$this->menus[$this->stylesheet][$slug] = $menuIds;
 		$this->menuItems[$this->stylesheet][$slug] = [];
@@ -1954,7 +2081,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int The menu item post `ID`
 	 */
-	public function haveMenuItemInDatabase($menuSlug, $title, $menuOrder = null, array $meta = []) {
+	public function haveMenuItemInDatabase($menuSlug, $title, $menuOrder = null, array $meta = [])
+	{
 		if (!is_string($menuSlug)) {
 			throw new \InvalidArgumentException('Menu slug must be a string.');
 		}
@@ -1991,7 +2119,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param array $criteria An array of search criteria.
 	 */
-	public function seeTermRelationshipInDatabase(array $criteria) {
+	public function seeTermRelationshipInDatabase(array $criteria)
+	{
 		$this->seeInDatabase($this->grabPrefixedTableNameFor('term_relationships'), $criteria);
 	}
 
@@ -2004,7 +2133,8 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return void
 	 */
-	protected function maybeCheckTermExistsInDatabase($term_id) {
+	protected function maybeCheckTermExistsInDatabase($term_id)
+	{
 		if (!isset($this->config['checkExistence']) or false == $this->config['checkExistence']) {
 			return;
 		}
@@ -2017,7 +2147,8 @@ class WPDb extends ExtendedDb {
 	/**
 	 * @return string
 	 */
-	protected function getSiteSubfolder() {
+	protected function getSiteSubfolder()
+	{
 		$frags = explode($this->getSiteDomain(), $this->config['url']);
 		$subfolder = ltrim(end($frags), '/');
 

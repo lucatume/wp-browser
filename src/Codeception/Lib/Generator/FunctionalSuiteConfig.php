@@ -2,7 +2,8 @@
 
 namespace Codeception\Lib\Generator;
 
-class FunctionalSuiteConfig extends AbstractGenerator implements GeneratorInterface {
+class FunctionalSuiteConfig extends AbstractGenerator implements GeneratorInterface
+{
 	public static $requiredSettings = ['className', 'namespace', 'actor'];
 
 	protected $template = <<< YAML

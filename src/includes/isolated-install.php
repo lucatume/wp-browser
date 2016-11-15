@@ -14,29 +14,29 @@ $multisite = !empty($argv[2]) ? $argv[2] : false;
 require_once $configuration['autoload'];
 
 if (!empty($multisite)) {
-    wpbrowser_include_patchwork();
+	wpbrowser_include_patchwork();
 
-    Patchwork\redefine('is_multisite', function () {
-        global $_is_multisite;
+	Patchwork\redefine('is_multisite', function () {
+		global $_is_multisite;
 
-        if (empty($_is_multisite)) {
-            return Patchwork\relay();
-        }
+		if (empty($_is_multisite)) {
+			return Patchwork\relay();
+		}
 
-        return true;
-    });
+		return true;
+	});
 }
 
 if (!empty($configuration['activePlugins'])) {
-    $activePlugins = $configuration['activePlugins'];
+	$activePlugins = $configuration['activePlugins'];
 } else {
-    $activePlugins = [];
+	$activePlugins = [];
 }
 
 printf("\nConfiguration:\n\n%s\n\n", json_encode($configuration, JSON_PRETTY_PRINT));
 
 foreach ($configuration['constants'] as $key => $value) {
-    define($key, $value);
+	define($key, $value);
 }
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
@@ -65,9 +65,9 @@ $phpmailer = new MockPHPMailer();
  * was deprecated in MySQL (and MariaDB) 5.5.3, and removed in 5.7.
  */
 if (version_compare($wpdb->db_version(), '5.5.3', '>=')) {
-    $wpdb->query('SET default_storage_engine = InnoDB');
+	$wpdb->query('SET default_storage_engine = InnoDB');
 } else {
-    $wpdb->query('SET storage_engine = InnoDB');
+	$wpdb->query('SET storage_engine = InnoDB');
 }
 $wpdb->select(DB_NAME, $wpdb->dbh);
 
@@ -76,8 +76,8 @@ $wpdb->select(DB_NAME, $wpdb->dbh);
  * additional tables that should be dropped.
  **/
 foreach ($activePlugins as $activePlugin) {
-    printf("Including plugin [%s] files\n", $activePlugin);
-    include_once WP_PLUGIN_DIR . '/' . $activePlugin;
+	printf("Including plugin [%s] files\n", $activePlugin);
+	include_once WP_PLUGIN_DIR . '/' . $activePlugin;
 }
 
 echo "\nThe following tables will be dropped: ", "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
@@ -85,15 +85,16 @@ echo "\nThe following tables will be dropped: ", "\n\t- ", implode("\n\t- ", $wp
 echo "\nInstalling WordPress...\n";
 
 foreach ($wpdb->tables() as $table => $prefixed_table) {
-    $wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
+	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 }
 
 foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
-    $wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
+	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 
-    // We need to create references to ms global tables.
-    if ($multisite)
-        $wpdb->$table = $prefixed_table;
+	// We need to create references to ms global tables.
+	if ($multisite) {
+		$wpdb->$table = $prefixed_table;
+	}
 }
 
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
@@ -103,42 +104,42 @@ wp_install(WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password');
 
 // Delete dummy permalink structure, as prefilled above.
 if (!is_multisite()) {
-    delete_option('permalink_structure');
+	delete_option('permalink_structure');
 }
 remove_action('populate_options', '_set_default_permalink_structure_for_tests');
 
 if ($multisite) {
-    echo "Installing network..." . PHP_EOL;
+	echo "Installing network..." . PHP_EOL;
 
-    define('WP_INSTALLING_NETWORK', true);
+	define('WP_INSTALLING_NETWORK', true);
 
-    $title = WP_TESTS_TITLE . ' Network';
-    $subdomain_install = false;
+	$title = WP_TESTS_TITLE . ' Network';
+	$subdomain_install = false;
 
-    install_network();
-    populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
-    $wp_rewrite->set_permalink_structure('');
+	install_network();
+	populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
+	$wp_rewrite->set_permalink_structure('');
 
 
-    // activate monkey-patching on `is_multisite` using Patchwork, see above
-    // this is to allow plugins that could check for `is_multisite` on activation to work as intended
-    global $_is_multisite, $current_site;
-    $_is_multisite = $multisite;
+	// activate monkey-patching on `is_multisite` using Patchwork, see above
+	// this is to allow plugins that could check for `is_multisite` on activation to work as intended
+	global $_is_multisite, $current_site;
+	$_is_multisite = $multisite;
 
-    // spoof the `$current_site` global
-    if (empty($current_site)) {
-        $current_site = new stdClass();
-    }
+	// spoof the `$current_site` global
+	if (empty($current_site)) {
+		$current_site = new stdClass();
+	}
 
-    $current_site->id = 1;
-    $current_site->blog_id = 1;
+	$current_site->id = 1;
+	$current_site->blog_id = 1;
 }
 
 // finally activate the plugins that should be activated
 if (!empty($activePlugins)) {
-    $activePlugins = array_unique($activePlugins);
-    foreach ($activePlugins as $plugin) {
-        printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
-        activate_plugin($plugin, null, $multisite, false);
-    }
+	$activePlugins = array_unique($activePlugins);
+	foreach ($activePlugins as $plugin) {
+		printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
+		activate_plugin($plugin, null, $multisite, false);
+	}
 }

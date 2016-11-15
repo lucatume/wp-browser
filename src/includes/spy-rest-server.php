@@ -1,6 +1,7 @@
 <?php
 
-class Spy_REST_Server extends WP_REST_Server {
+class Spy_REST_Server extends WP_REST_Server
+{
 
 	public $sent_headers = array();
 	public $sent_body = '';
@@ -11,7 +12,8 @@ class Spy_REST_Server extends WP_REST_Server {
 	 *
 	 * @return array
 	 */
-	public function get_raw_endpoint_data() {
+	public function get_raw_endpoint_data()
+	{
 		return $this->endpoints;
 	}
 
@@ -22,12 +24,14 @@ class Spy_REST_Server extends WP_REST_Server {
 	 * @param array $args Arguments to pass to the method
 	 * @return mixed
 	 */
-	public function __call( $method, $args ) {
-		return call_user_func_array( array( $this, $method ), $args );
+	public function __call($method, $args)
+	{
+		return call_user_func_array(array($this, $method), $args);
 	}
 
-	public function send_header( $header, $value ) {
-		$this->sent_headers[ $header ] = $value;
+	public function send_header($header, $value)
+	{
+		$this->sent_headers[$header] = $value;
 	}
 
 	/**
@@ -36,15 +40,17 @@ class Spy_REST_Server extends WP_REST_Server {
 	 * @param  WP_REST_Request $request
 	 * @return WP_REST_Response Response returned by the callback.
 	 */
-	public function dispatch( $request ) {
+	public function dispatch($request)
+	{
 		$this->last_request = $request;
-		return parent::dispatch( $request );
+		return parent::dispatch($request);
 	}
 
-	public function serve_request( $path = null ) {
+	public function serve_request($path = null)
+	{
 
 		ob_start();
-		$result = parent::serve_request( $path );
+		$result = parent::serve_request($path);
 		$this->sent_body = ob_get_clean();
 		return $result;
 	}
