@@ -432,32 +432,23 @@ class WPDb extends ExtendedDb {
 		$post = Post::makePost($id, $this->config['url'], $data);
 		$hasMeta = !empty($data['meta']) || !empty($data['meta_input']);
 		$hasTerms = !empty($data['terms']) || !empty($data['tax_input']);
+
 		$meta = [];
 		if ($hasMeta) {
-			if ( ! empty( $data['meta_input'] ) ) {
-				$data['meta'] = $data['meta_input'];
-				unset( $data['meta_input'] );
-			}
-			$meta = $data['meta'];
+			$meta = !empty($data['meta']) ? $data['meta'] : $data['meta_input'];
 			unset($post['meta']);
-		}
-
-		if ( ! empty( $data['tax_input'] ) ) {
-			$data['terms'] = $data['tax_input'];
-			unset( $data['tax_input'] );
+			unset($post['meta_input']);
 		}
 
 		$terms = [];
 		if ($hasTerms) {
-			if ( ! empty( $data['tax_input'] ) ) {
-				$data['terms'] = $data['tax_input'];
-				unset( $data['tax_input'] );
-			}
-			$terms = $data['terms'];
+			$terms = !empty($data['terms']) ? $data['terms'] : $data['tax_input'];
 			unset($post['terms']);
+			unset($post['tax_input']);
 		}
 
 		$postId = $this->haveInDatabase($postTableName, $post);
+
 		if ($hasMeta) {
 			foreach ($meta as $meta_key => $meta_value) {
 				$this->havePostmetaInDatabase($postId, $meta_key, $meta_value);
