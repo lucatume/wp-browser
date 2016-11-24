@@ -42,7 +42,7 @@ if (!empty($env['get'])) {
     }
 }
 
-if (!empty($env['post')) {
+if (!empty($env['post'])) {
     if (!empty($env['post'])) {
         foreach ($env['post'] as $key => $value) {
             $_POST[$key] = $value;
