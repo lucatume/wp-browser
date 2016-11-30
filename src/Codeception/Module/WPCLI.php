@@ -20,235 +20,237 @@ use WP_CLI\Configurator;
 class WPCLI extends Module
 
 {
-	/**
-	 * @var array {
-	 * @param string $path The absolute path to the target WordPress installation root folder.
-	 * }
-	 */
-	protected $requiredFields = ['path'];
+    /**
+     * @var array {
+     * @param string $path The absolute path to the target WordPress installation root folder.
+     * }
+     */
+    protected $requiredFields = ['path'];
 
-	/**
-	 * @var string
-	 */
-	protected $prettyName = 'WPCLI';
+    /**
+     * @var string
+     */
+    protected $prettyName = 'WPCLI';
 
-	/**
-	 * @var string
-	 */
-	protected $wpCliRoot = '';
+    /**
+     * @var string
+     */
+    protected $wpCliRoot = '';
 
-	/**
-	 * @var string
-	 */
-	protected $bootPath;
+    /**
+     * @var string
+     */
+    protected $bootPath;
 
-	/**
-	 * @var Executor
-	 */
-	protected $executor;
+    /**
+     * @var Executor
+     */
+    protected $executor;
 
-	/**
-	 * @var array
-	 */
-	protected $options = ['ssh', 'http', 'url', 'user', 'skip-plugins', 'skip-themes', 'skip-packages', 'require'];
+    /**
+     * @var array
+     */
+    protected $options = ['ssh', 'http', 'url', 'user', 'skip-plugins', 'skip-themes', 'skip-packages', 'require'];
 
-	/**
-	 * @var array
-	 */
-	protected $config = [
-		'throw' => true
-	];
+    /**
+     * @var array
+     */
+    protected $config = [
+        'throw' => true
+    ];
 
-	/**
-	 * WPCLI constructor.
-	 *
-	 * @param ModuleContainer $moduleContainer
-	 * @param null|array $config
-	 * @param Executor|null $executor
-	 *
-	 * @throws ModuleConfigException If specifiec path is not a folder.
-	 */
-	public function __construct(ModuleContainer $moduleContainer, $config, Executor $executor = null)
-	{
-		parent::__construct($moduleContainer, $config);
+    /**
+     * WPCLI constructor.
+     *
+     * @param ModuleContainer $moduleContainer
+     * @param null|array $config
+     * @param Executor|null $executor
+     *
+     * @throws ModuleConfigException If specifiec path is not a folder.
+     */
+    public function __construct(ModuleContainer $moduleContainer, $config, Executor $executor = null)
+    {
+        parent::__construct($moduleContainer, $config);
 
-		if (!is_dir($config['path'])) {
-			throw new ModuleConfigException(__CLASS__, 'Specified path [' . $config['path'] . '] is not a directory.');
-		}
+        if (!is_dir($config['path'])) {
+            throw new ModuleConfigException(__CLASS__, 'Specified path [' . $config['path'] . '] is not a directory.');
+        }
 
-		$this->executor = $executor ?: new Executor($this->prettyName);
-	}
+        $this->executor = $executor ?: new Executor($this->prettyName);
+    }
 
-	/**
-	 * Executes a wp-cli command.
-	 *
-	 * The method is a wrapper around isolated calls to the wp-cli tool.
-	 * The library will use its own wp-cli version to run the commands.
-	 *
-	 * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
-	 *                            e.g. a terminal call like `wp core version` becomes `core version`
-	 *                            omitting the call to wp-cli script.
-	 * @return int wp-cli exit value for the command
-	 *
-	 * @throws ModuleException if the `throw` option is enabled in the config and
-	 *          wp-cli return status is not 0.
-	 */
-	public function cli($userCommand = 'core version', &$output = [])
-	{
-		$this->initPaths();
+    /**
+     * Executes a wp-cli command.
+     *
+     * The method is a wrapper around isolated calls to the wp-cli tool.
+     * The library will use its own wp-cli version to run the commands.
+     *
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                            e.g. a terminal call like `wp core version` becomes `core version`
+     *                            omitting the call to wp-cli script.
+     * @return int wp-cli exit value for the command
+     *
+     * @throws ModuleException if the `throw` option is enabled in the config and
+     *          wp-cli return status is not 0.
+     */
+    public function cli($userCommand = 'core version', &$output = [])
+    {
+        $this->initPaths();
 
-		$command = $this->buildCommand($userCommand);
+        $command = $this->buildCommand($userCommand);
 
-		$output = [];
-		$this->debugSection('command', $command);
-		$status = $this->executor->exec($command, $output);
-		$this->debugSection('output', $output);
+        $output = [];
+        $this->debugSection('command', $command);
+        $status = $this->executor->exec($command, $output);
+        $this->debugSection('output', $output);
 
-		$this->evaluateStatus($output, $status);
+        $this->evaluateStatus($output, $status);
 
-		return $status == 0 ? true : $status;
-	}
+        return $status == 0 ? true : $status;
+    }
 
-	protected function initPaths()
-	{
-		if (empty($this->wpCliRoot)) {
-			$this->initWpCliPaths();
-		}
-	}
+    protected function initPaths()
+    {
+        if (empty($this->wpCliRoot)) {
+            $this->initWpCliPaths();
+        }
+    }
 
-	/**
-	 * Initializes the wp-cli root location.
-	 *
-	 * The way the location works is an ugly hack that assumes the folder structure
-	 * of the code to climb the tree and find the root folder.
-	 */
-	protected function initWpCliPaths()
-	{
-		$ref = new \ReflectionClass(Configurator::class);
-		$this->wpCliRoot = dirname(dirname(dirname($ref->getFileName())));
-		$this->bootPath = $this->wpCliRoot . '/php/boot-fs.php';
-	}
+    /**
+     * Initializes the wp-cli root location.
+     *
+     * The way the location works is an ugly hack that assumes the folder structure
+     * of the code to climb the tree and find the root folder.
+     */
+    protected function initWpCliPaths()
+    {
+        $ref = new \ReflectionClass(Configurator::class);
+        $this->wpCliRoot = dirname(dirname(dirname($ref->getFileName())));
+        $this->bootPath = $this->wpCliRoot . '/php/boot-fs.php';
+    }
 
-	/**
-	 * @param $userCommand
-	 * @return string
-	 */
-	protected function buildCommand($userCommand)
-	{
-		$mergedCommand = $this->mergeCommandOptions($userCommand);
-		$command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
-		return $command;
-	}
+    /**
+     * @param $userCommand
+     * @return string
+     */
+    protected function buildCommand($userCommand)
+    {
+        $mergedCommand = $this->mergeCommandOptions($userCommand);
+        $command = implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
+        return $command;
+    }
 
-	/**
-	 * @param string $userCommand
-	 * @return string
-	 */
-	protected function mergeCommandOptions($userCommand)
-	{
-		$commonOptions = [
-			'path' => $this->config['path'],
-		];
+    /**
+     * @param string $userCommand
+     * @return string
+     */
+    protected function mergeCommandOptions($userCommand)
+    {
+        $commonOptions = [
+            'path' => $this->config['path'],
+        ];
 
-		$lineOptions = [];
+        $lineOptions = [];
 
-		$nonOverriddenOptions = [];
-		foreach ($this->options as $key) {
-			if ($key !== 'require' && false !== strpos($userCommand, '--' . $key)) {
-				continue;
-			}
-			$nonOverriddenOptions[] = $key;
-		}
+        $nonOverriddenOptions = [];
+        foreach ($this->options as $key) {
+            if ($key !== 'require' && false !== strpos($userCommand, '--' . $key)) {
+                continue;
+            }
+            $nonOverriddenOptions[] = $key;
+        }
 
-		foreach ($nonOverriddenOptions as $key) {
-			if (isset($this->config[$key])) {
-				$commonOptions[$key] = $this->config[$key];
-			}
-		}
+        foreach ($nonOverriddenOptions as $key) {
+            if (isset($this->config[$key])) {
+                $commonOptions[$key] = $this->config[$key];
+            }
+        }
 
-		foreach ($commonOptions as $key => $value) {
-			$lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
-		}
+        foreach ($commonOptions as $key => $value) {
+            $lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
+        }
 
-		return $userCommand . ' ' . implode(' ', $lineOptions);
-	}
+        return $userCommand . ' ' . implode(' ', $lineOptions);
+    }
 
-	/**
-	 * @param string $title
-	 * @param string $message
-	 */
-	protected function debugSection($title, $message)
-	{
-		parent::debugSection($this->prettyName . ' ' . $title, $message);
-	}
+    /**
+     * @param string $title
+     * @param string $message
+     */
+    protected function debugSection($title, $message)
+    {
+        parent::debugSection($this->prettyName . ' ' . $title, $message);
+    }
 
-	/**
-	 * @param $output
-	 * @param $status
-	 * @throws ModuleException
-	 */
-	protected function evaluateStatus(&$output, $status)
-	{
-		if (!empty($this->config['throw']) && $status < 0) {
-			$output = !is_array($output) ?: json_encode($output);
-			$message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
-			throw new ModuleException(__CLASS__, $message);
-		}
-	}
+    /**
+     * @param $output
+     * @param $status
+     * @throws ModuleException
+     */
+    protected function evaluateStatus(&$output, $status)
+    {
+        if (!empty($this->config['throw']) && $status < 0) {
+            $output = !is_array($output) ?: json_encode($output);
+            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
+            throw new ModuleException(__CLASS__, $message);
+        }
+    }
 
-	/**
-	 * Returns the output of a wp-cli command as an array.
-	 *
-	 * This method should be used in conjuction with wp-cli commands that will return lists.
-	 * E.g.
-	 *
-	 *      $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
-	 *
-	 * The above command could return an array like
-	 *
-	 *      ['twentyfourteen', 'twentyfifteen']
-	 *
-	 * No check will be made on the command the user inserted for coherency with a split-able
-	 * output.
-	 *
-	 * @param string $userCommand
-	 *
-	 * @return array An array containing the output of wp-cli split into single elements.
-	 */
-	public function cliToArray($userCommand = 'post list --format=ids', callable  $splitCallback = null)
-	{
-		$this->initPaths();
+    /**
+     * Returns the output of a wp-cli command as an array.
+     *
+     * This method should be used in conjuction with wp-cli commands that will return lists.
+     * E.g.
+     *
+     *      $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
+     *
+     * The above command could return an array like
+     *
+     *      ['twentyfourteen', 'twentyfifteen']
+     *
+     * No check will be made on the command the user inserted for coherency with a split-able
+     * output.
+     *
+     * @param string $userCommand
+     *
+     * @return array An array containing the output of wp-cli split into single elements.
+     */
+    public function cliToArray($userCommand = 'post list --format=ids', callable  $splitCallback = null)
+    {
+        $this->initPaths();
 
-		$command = $this->buildCommand($userCommand);
+        $command = $this->buildCommand($userCommand);
 
-		$this->debugSection('command', $command);
-		$output = $this->executor->execAndOutput($command, $status);
-		$this->debugSection('output', $output);
+        $this->debugSection('command', $command);
+        $output = $this->executor->execAndOutput($command, $status);
+        $this->debugSection('output', $output);
 
-		$this->evaluateStatus($output, $status);
+        $this->evaluateStatus($output, $status);
 
-		if (empty($output)) {
-			return [];
-		}
+        if (empty($output)) {
+            return [];
+        }
 
-		$hasSplitCallback = !is_null($splitCallback);
-		$originalOutput = $output;
-		if (!$hasSplitCallback) {
-			if (!preg_match('/[\\n]+/', $output)) {
-				$output = preg_split('/\\s+/', $output);
-			} else {
-				$output = preg_split('/\\s*\\n+\\s*/', $output);
-			}
-		} else {
-			$output = $splitCallback($output, $userCommand, $this);
-		}
+        $hasSplitCallback = !is_null($splitCallback);
+        $originalOutput = $output;
+        if (!is_array($output)) {
+            if (!$hasSplitCallback) {
+                if (!preg_match('/[\\n]+/', $output)) {
+                    $output = preg_split('/\\s+/', $output);
+                } else {
+                    $output = preg_split('/\\s*\\n+\\s*/', $output);
+                }
+            } else {
+                $output = $splitCallback($output, $userCommand, $this);
+            }
+        }
 
-		if (!is_array($output) && $hasSplitCallback) {
-			throw new ModuleException(__CLASS__,
-				"Split callback must return an array, it returned: \n" . print_r($output,
-					true) . "\nfor original output:\n" . print_r($originalOutput, true));
-		}
+        if (!is_array($output) && $hasSplitCallback) {
+            throw new ModuleException(__CLASS__,
+                "Split callback must return an array, it returned: \n" . print_r($output,
+                    true) . "\nfor original output:\n" . print_r($originalOutput, true));
+        }
 
-		return empty($output) ? [] : array_map('trim', $output);
-	}
+        return empty($output) ? [] : array_map('trim', $output);
+    }
 }
