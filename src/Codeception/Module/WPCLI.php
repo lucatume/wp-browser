@@ -233,7 +233,10 @@ class WPCLI extends Module
 
         $hasSplitCallback = !is_null($splitCallback);
         $originalOutput = $output;
-        if (!is_array($output)) {
+        if (!is_array($output) || (is_array($output) && $hasSplitCallback)) {
+            if (is_array($output)) {
+                $output = implode(PHP_EOL, $output);
+            }
             if (!$hasSplitCallback) {
                 if (!preg_match('/[\\n]+/', $output)) {
                     $output = preg_split('/\\s+/', $output);

@@ -315,10 +315,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $callback = function ($output) {
-            return preg_split('/123/', $output);
+            return preg_split('/123\\n/', $output);
         };
 
-        $expected = preg_split('/123/', implode(PHP_EOL, $output));
+        $expected = preg_split('/123\\n/', implode(PHP_EOL, $output));
         $this->assertEquals($expected, $sut->cliToArray('post list --format=ids', $callback));
     }
 }
