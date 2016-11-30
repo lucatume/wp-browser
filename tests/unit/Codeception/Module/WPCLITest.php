@@ -302,4 +302,23 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $this->assertEquals([], $sut->cliToArray('post list --format=ids'));
     }
+
+    /**
+     * @test
+     * it should call the split callback even if the output is an array
+     */
+    public function it_should_call_the_split_callback_even_if_the_output_is_an_array()
+    {
+        $output = ['123foo', 'foo123', '123foo', 'bar'];
+        $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn($output);
+
+        $sut = $this->make_instance();
+
+        $callback = function ($output) {
+            return preg_split('/123/', $output);
+        };
+
+        $expected = preg_split('/123/', implode(PHP_EOL, $output));
+        $this->assertEquals($expected, $sut->cliToArray('post list --format=ids', $callback));
+    }
 }
