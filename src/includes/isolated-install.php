@@ -143,6 +143,7 @@ if (!empty($activePlugins)) {
         require(ABSPATH . WPINC . '/class-wp-site-query.php');
         require(ABSPATH . WPINC . '/class-wp-network-query.php');
         require(ABSPATH . WPINC . '/ms-blogs.php');
+        require(ABSPATH . WPINC . '/ms-settings.php');
     }
 
     foreach ($activePlugins as $plugin) {
