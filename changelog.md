@@ -4,9 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.19.5] 2016-12-07
+### Fixed
+- `WPLoader` module WordPress 4.7 compatibility issues, [#60](https://github.com/lucatume/wp-browser/issues/60)
+
 ##[1.19.4] 2016-11-30
 ### Fixed
-- `WPCLI` module exception on non string output, [#59](https://github.com/lucatume/wp-browser/issues/59
+- `WPCLI` module exception on non string output, [#59](https://github.com/lucatume/wp-browser/issues/59)
 
 ##[1.19.3] 2016-11-24
 ### Fixed
@@ -473,7 +477,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.5...HEAD
+[1.19.5]: https://github.com/lucatume/wp-browser/compare/1.19.4...1.19.5
 [1.19.4]: https://github.com/lucatume/wp-browser/compare/1.19.3...1.19.4
 [1.19.3]: https://github.com/lucatume/wp-browser/compare/1.19.2...1.19.3
 [1.19.3]: https://github.com/lucatume/wp-browser/compare/1.19.2...1.19.3
