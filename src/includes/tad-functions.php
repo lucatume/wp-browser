@@ -26,7 +26,7 @@ function _without_filters($callback, $whitelist = array())
 
     $whitelist = array_combine($whitelist, $whitelist);
     $wp_filter = array_intersect_key($wp_filter, $whitelist);
-    if (is_array($merged_filters)) {
+    if (!empty($merged_filters)) {
         $merged_filters = array_intersect_key($merged_filters, $whitelist);
     }
 
@@ -34,7 +34,7 @@ function _without_filters($callback, $whitelist = array())
 
     // Restore previous state
     $wp_filter = $wp_filter_backup;
-    if (is_array($merged_filters_backup)) {
+    if (!empty($merged_filters_backup)) {
         $merged_filters = $merged_filters_backup;
     }
 
