@@ -140,7 +140,9 @@ if (!empty($activePlugins)) {
     $activePlugins = array_unique($activePlugins);
 
     if ($multisite) {
-        require_once(ABSPATH . 'wp-includes/ms-blogs.php');
+        require(ABSPATH . WPINC . '/class-wp-site-query.php');
+        require(ABSPATH . WPINC . '/class-wp-network-query.php');
+        require(ABSPATH . WPINC . '/ms-blogs.php');
     }
 
     foreach ($activePlugins as $plugin) {
