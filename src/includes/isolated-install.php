@@ -138,6 +138,11 @@ if ($multisite) {
 // finally activate the plugins that should be activated
 if (!empty($activePlugins)) {
     $activePlugins = array_unique($activePlugins);
+
+    if ($multisite) {
+        require_once(ABSPATH . 'wp-includes/ms-blogs.php');
+    }
+
     foreach ($activePlugins as $plugin) {
         printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
         activate_plugin($plugin, null, $multisite, false);
