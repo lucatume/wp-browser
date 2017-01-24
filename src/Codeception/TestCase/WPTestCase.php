@@ -79,7 +79,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 	protected static function factory() {
 		static $factory = null;
 		if (!$factory) {
-			$factory = new WP_UnitTest_Factory();
+			$factory = new \WP_UnitTest_Factory();
 		}
 		return $factory;
 	}
@@ -134,7 +134,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 	 * @param bool $condition
 	 * @param string $message
 	 *
-	 * @throws PHPUnit_Framework_AssertionFailedError
+	 * @throws \PHPUnit_Framework_AssertionFailedError
 	 */
 	public static function assertNotFalse($condition, $message = '') {
 		self::assertThat($condition, self::logicalNot(self::isFalse()), $message);
@@ -220,8 +220,8 @@ class WPTestCase extends \Codeception\Test\Unit {
 	function files_in_dir($dir) {
 		$files = array();
 
-		$iterator = new RecursiveDirectoryIterator($dir);
-		$objects = new RecursiveIteratorIterator($iterator);
+		$iterator = new \RecursiveDirectoryIterator($dir);
+		$objects = new \RecursiveIteratorIterator($iterator);
 		foreach ($objects as $name => $object) {
 			if (is_file($name)) {
 				$files[] = $name;
@@ -311,7 +311,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @global WP_Rewrite $wp_rewrite
+	 * @global \WP_Rewrite $wp_rewrite
 	 *
 	 * @param string      $structure Optional. Permalink structure to set. Default empty.
 	 */
@@ -364,8 +364,8 @@ class WPTestCase extends \Codeception\Test\Unit {
 				restore_current_blog();
 			}
 		}
-		$wp_query = new WP_Query();
-		$wp = new WP();
+		$wp_query = new \WP_Query();
+		$wp = new \WP();
 
 		// Reset globals related to the post loop and `setup_postdata()`.
 		$post_globals = array(
@@ -442,7 +442,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 			$message = '0';
 		}
 
-		throw new WPDieException($message);
+		throw new \WPDieException($message);
 	}
 
 	/**
@@ -579,13 +579,13 @@ class WPTestCase extends \Codeception\Test\Unit {
 
 		self::flush_cache();
 		unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
-		$GLOBALS['wp_the_query'] = new WP_Query();
+		$GLOBALS['wp_the_query'] = new \WP_Query();
 		$GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
 
 		$public_query_vars = $GLOBALS['wp']->public_query_vars;
 		$private_query_vars = $GLOBALS['wp']->private_query_vars;
 
-		$GLOBALS['wp'] = new WP();
+		$GLOBALS['wp'] = new \WP();
 		$GLOBALS['wp']->public_query_vars = $public_query_vars;
 		$GLOBALS['wp']->private_query_vars = $private_query_vars;
 
@@ -597,9 +597,9 @@ class WPTestCase extends \Codeception\Test\Unit {
 	/**
 	 * Define constants after including files.
 	 */
-	function prepareTemplate(Text_Template $template) {
+	function prepareTemplate(\Text_Template $template) {
 		$template->setVar(array('constants' => ''));
-		$template->setVar(array('wp_constants' => PHPUnit_Util_GlobalState::getConstantsAsString()));
+		$template->setVar(array('wp_constants' => \PHPUnit_Util_GlobalState::getConstantsAsString()));
 		parent::prepareTemplate($template);
 	}
 
@@ -821,7 +821,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 		if (WP_TESTS_FORCE_KNOWN_BUGS) {
 			return;
 		}
-		$tickets = PHPUnit_Util_Test::getTickets(get_class($this), $this->getName(false));
+		$tickets = \PHPUnit_Util_Test::getTickets(get_class($this), $this->getName(false));
 		foreach ($tickets as $ticket) {
 			if (is_numeric($ticket)) {
 				$this->knownWPBug($ticket);
@@ -846,7 +846,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array($ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
+		if (!\TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('WordPress Ticket #%d is not fixed', $ticket_id));
 		}
 	}
@@ -858,7 +858,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('UT' . $ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
+		if (!\TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('Unit Tests Ticket #%d is not fixed', $ticket_id));
 		}
 	}
@@ -870,7 +870,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('Plugin' . $ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
+		if (!\TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('WordPress Plugin Ticket #%d is not fixed', $ticket_id));
 		}
 	}
