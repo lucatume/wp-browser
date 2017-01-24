@@ -73,20 +73,6 @@ if ($multisite) {
 	$title = WP_TESTS_TITLE . ' Network';
 	$subdomain_install = false;
 
-	/**
-	 * If we are on multisite the `blogs` table will not have the main blog row set up due to how the install script ran.
-	 * Let's add the row now.
-	 */
-	/** @var \wpdb $wpdb */
-	global $wpdb;
-	$wpdb->insert($wpdb->blogs, array(
-		'site_id' => 1,
-		'blog_id' => 1,
-		'domain' => WP_TESTS_DOMAIN,
-		'path' => '/',
-		'registered' => current_time('mysql')
-	));
-
 	install_network();
 	populate_network(1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install);
 	$wp_rewrite->set_permalink_structure('');
