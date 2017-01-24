@@ -8,28 +8,47 @@ if (!class_exists('TracTickets')) {
 	require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
 }
 
+/**
+ * Defines a basic fixture to run multiple tests.
+ *
+ * Resets the state of the WordPress installation before and after every test.
+ *
+ * Includes utility functions and assertions useful for testing WordPress.
+ *
+ * All WordPress unit tests should inherit from this class.
+ */
 class WPTestCase extends \Codeception\Test\Unit
 {
 
 	protected static $forced_tickets = array();
-	protected static $hooks_saved = array();
-	protected static $ignore_files;
 	protected $expected_deprecated = array();
 	protected $caught_deprecated = array();
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong = array();
+
+	protected static $hooks_saved = array();
+	protected static $ignore_files;
+
 	protected $backupGlobals = false;
 
 	public static function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
 
+		global $wpdb;
+
+		$wpdb->suppress_errors = false;
+		$wpdb->show_errors = true;
+		$wpdb->db_connect();
+		ini_set('display_errors', 1 );
+
 		$c = self::get_called_class();
-		if (!method_exists($c, 'wpSetUpBeforeClass')) {
+		if ( ! method_exists( $c, 'wpSetUpBeforeClass' ) ) {
+			self::commit_transaction();
 			return;
 		}
 
-		call_user_func(array($c, 'wpSetUpBeforeClass'), self::factory());
+		call_user_func( array( $c, 'wpSetUpBeforeClass' ), self::factory() );
 
 		self::commit_transaction();
 	}
