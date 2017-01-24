@@ -1,25 +1,23 @@
 <?php
+
 namespace Codeception\TestCase;
 
 include_once(ABSPATH . 'wp-admin/includes/admin.php');
 include_once(ABSPATH . WPINC . '/class-IXR.php');
 include_once(ABSPATH . WPINC . '/class-wp-xmlrpc-server.php');
 
-class WPXMLRPCTestCase extends WPTestCase
-{
+class WPXMLRPCTestCase extends WPTestCase {
 	protected $myxmlrpcserver;
 
-	function setUp()
-	{
+	function setUp() {
 		parent::setUp();
 
 		add_filter('pre_option_enable_xmlrpc', '__return_true');
 
-		$this->myxmlrpcserver = new \wp_xmlrpc_server();
+		$this->myxmlrpcserver = new wp_xmlrpc_server();
 	}
 
-	function tearDown()
-	{
+	function tearDown() {
 		remove_filter('pre_option_enable_xmlrpc', '__return_true');
 
 		$this->remove_added_uploads();
@@ -27,13 +25,11 @@ class WPXMLRPCTestCase extends WPTestCase
 		parent::tearDown();
 	}
 
-	protected function make_user_by_role($role)
-	{
+	protected function make_user_by_role($role) {
 		return self::factory()->user->create(array(
 			'user_login' => $role,
 			'user_pass' => $role,
 			'role' => $role
 		));
 	}
-
 }

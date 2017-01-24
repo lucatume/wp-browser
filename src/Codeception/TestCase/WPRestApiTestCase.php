@@ -1,10 +1,9 @@
 <?php
+
 namespace Codeception\TestCase;
 
-abstract class WPRestApiTestCase extends WPTestCase
-{
-	protected function assertErrorResponse($code, $response, $status = null)
-	{
+abstract class WPRestApiTestCase extends WPTestCase {
+	protected function assertErrorResponse($code, $response, $status = null) {
 
 		if (is_a($response, 'WP_REST_Response')) {
 			$response = $response->as_error();

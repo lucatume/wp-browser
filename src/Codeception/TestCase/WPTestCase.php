@@ -1,4 +1,5 @@
 <?php
+
 namespace Codeception\TestCase;
 
 if (!class_exists('WP_UnitTest_Factory')) {
@@ -17,44 +18,40 @@ if (!class_exists('TracTickets')) {
  *
  * All WordPress unit tests should inherit from this class.
  */
-class WPTestCase extends \Codeception\Test\Unit
-{
+class WPTestCase extends \Codeception\Test\Unit {
 
 	protected static $forced_tickets = array();
+	protected static $hooks_saved = array();
+	protected static $ignore_files;
 	protected $expected_deprecated = array();
 	protected $caught_deprecated = array();
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong = array();
 
-	protected static $hooks_saved = array();
-	protected static $ignore_files;
-
 	protected $backupGlobals = false;
 
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
-
+	public static function setUpBeforeClass() {
 		global $wpdb;
 
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors = true;
 		$wpdb->db_connect();
-		ini_set('display_errors', 1 );
+		ini_set('display_errors', 1);
+
+		parent::setUpBeforeClass();
 
 		$c = self::get_called_class();
-		if ( ! method_exists( $c, 'wpSetUpBeforeClass' ) ) {
+		if (!method_exists($c, 'wpSetUpBeforeClass')) {
 			self::commit_transaction();
 			return;
 		}
 
-		call_user_func( array( $c, 'wpSetUpBeforeClass' ), self::factory() );
+		call_user_func(array($c, 'wpSetUpBeforeClass'), self::factory());
 
 		self::commit_transaction();
 	}
 
-	public static function get_called_class()
-	{
+	public static function get_called_class() {
 		if (function_exists('get_called_class')) {
 			return get_called_class();
 		}
@@ -69,168 +66,42 @@ class WPTestCase extends \Codeception\Test\Unit
 		return $backtrace[2]['class'];
 	}
 
-	protected static function factory()
-	{
-		static $factory = null;
-		if (!$factory) {
-			$factory = new \WP_UnitTest_Factory();
-		}
-		return $factory;
-	}
-
 	/**
 	 * Commit the queries in a transaction.
 	 *
 	 * @since 4.1.0
 	 */
-	public static function commit_transaction()
-	{
+	public static function commit_transaction() {
 		global $wpdb;
 		$wpdb->query('COMMIT;');
 	}
 
-	public static function tearDownAfterClass()
-	{
+	protected static function factory() {
+		static $factory = null;
+		if (!$factory) {
+			$factory = new WP_UnitTest_Factory();
+		}
+		return $factory;
+	}
+
+	public static function tearDownAfterClass() {
+		parent::tearDownAfterClass();
+
+		_delete_all_data();
+		self::flush_cache();
+
 		$c = self::get_called_class();
 		if (!method_exists($c, 'wpTearDownAfterClass')) {
+			self::commit_transaction();
 			return;
 		}
 
 		call_user_func(array($c, 'wpTearDownAfterClass'));
 
 		self::commit_transaction();
-
-		parent::tearDownAfterClass();
 	}
 
-	public static function forceTicket($ticket)
-	{
-		self::$forced_tickets[] = $ticket;
-	}
-
-	/**
-	 * Multisite-agnostic way to delete a user from the database.
-	 *
-	 * @since 4.3.0
-	 */
-	public static function delete_user($user_id)
-	{
-		if (is_multisite()) {
-			return wpmu_delete_user($user_id);
-		} else {
-			return wp_delete_user($user_id);
-		}
-	}
-
-	function __isset($name)
-	{
-		return 'factory' === $name;
-	}
-
-	function __get($name)
-	{
-		if ('factory' === $name) {
-			return self::factory();
-		}
-	}
-
-	function setUp()
-	{
-		parent::setUp();
-		set_time_limit(0);
-
-		if (!self::$ignore_files) {
-			self::$ignore_files = $this->scan_user_uploads();
-		}
-
-		if (!self::$hooks_saved) {
-			$this->_backup_hooks();
-		}
-
-		global $wpdb, $wp_rewrite;
-		$wpdb->suppress_errors = false;
-		$wpdb->show_errors = true;
-		$wpdb->db_connect();
-		ini_set('display_errors', 1);
-		$this->clean_up_global_scope();
-
-		/*
-		 * When running core tests, ensure that post types and taxonomies
-		 * are reset for each test. We skip this step for non-core tests,
-		 * given the large number of plugins that register post types and
-		 * taxonomies at 'init'.
-		 */
-		if (defined('WP_RUN_CORE_TESTS') && WP_RUN_CORE_TESTS) {
-			$this->reset_post_types();
-			$this->reset_taxonomies();
-			$this->reset_post_statuses();
-
-			if ($wp_rewrite->permalink_structure) {
-				$this->set_permalink_structure('');
-			}
-		}
-
-		$this->start_transaction();
-		$this->expectDeprecated();
-		add_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
-	}
-
-	function scan_user_uploads()
-	{
-		static $files = array();
-		if (!empty($files)) {
-			return $files;
-		}
-
-		$uploads = wp_upload_dir();
-		$files = $this->files_in_dir($uploads['basedir']);
-		return $files;
-	}
-
-	function files_in_dir($dir)
-	{
-		$files = array();
-
-		$iterator = new \RecursiveDirectoryIterator($dir);
-		$objects = new \RecursiveIteratorIterator($iterator);
-		foreach ($objects as $name => $object) {
-			if (is_file($name)) {
-				$files[] = $name;
-			}
-		}
-
-		return $files;
-	}
-
-	/**
-	 * Saves the action and filter-related globals so they can be restored later.
-	 *
-	 * Stores $merged_filters, $wp_actions, $wp_current_filter, and $wp_filter
-	 * on a class variable so they can be restored on tearDown() using _restore_hooks().
-	 *
-	 * @global array $merged_filters
-	 * @global array $wp_actions
-	 * @global array $wp_current_filter
-	 * @global array $wp_filter
-	 * @return void
-	 */
-	protected function _backup_hooks()
-	{
-		$globals = array('merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter');
-		foreach ($globals as $key) {
-			self::$hooks_saved[$key] = $GLOBALS[$key];
-		}
-	}
-
-	function clean_up_global_scope()
-	{
-		$_GET = array();
-		$_POST = array();
-		$this->flush_cache();
-	}
-
-	function flush_cache()
-	{
+	static function flush_cache() {
 		global $wp_object_cache;
 		$wp_object_cache->group_ops = array();
 		$wp_object_cache->stats = array();
@@ -258,16 +129,149 @@ class WPTestCase extends \Codeception\Test\Unit
 	}
 
 	/**
+	 * Asserts that a condition is not false.
+	 *
+	 * @param bool $condition
+	 * @param string $message
+	 *
+	 * @throws PHPUnit_Framework_AssertionFailedError
+	 */
+	public static function assertNotFalse($condition, $message = '') {
+		self::assertThat($condition, self::logicalNot(self::isFalse()), $message);
+	}
+
+	public static function forceTicket($ticket) {
+		self::$forced_tickets[] = $ticket;
+	}
+
+	/**
+	 * Multisite-agnostic way to delete a user from the database.
+	 *
+	 * @since 4.3.0
+	 */
+	public static function delete_user($user_id) {
+		if (is_multisite()) {
+			return wpmu_delete_user($user_id);
+		} else {
+			return wp_delete_user($user_id);
+		}
+	}
+
+	function __isset($name) {
+		return 'factory' === $name;
+	}
+
+	function __get($name) {
+		if ('factory' === $name) {
+			return self::factory();
+		}
+	}
+
+	function setUp() {
+		parent::setUp();
+
+		set_time_limit(0);
+
+		if (!self::$ignore_files) {
+			self::$ignore_files = $this->scan_user_uploads();
+		}
+
+		if (!self::$hooks_saved) {
+			$this->_backup_hooks();
+		}
+
+		global $wp_rewrite;
+
+		$this->clean_up_global_scope();
+
+		/*
+		 * When running core tests, ensure that post types and taxonomies
+		 * are reset for each test. We skip this step for non-core tests,
+		 * given the large number of plugins that register post types and
+		 * taxonomies at 'init'.
+		 */
+		if (defined('WP_RUN_CORE_TESTS') && WP_RUN_CORE_TESTS) {
+			$this->reset_post_types();
+			$this->reset_taxonomies();
+			$this->reset_post_statuses();
+			$this->reset__SERVER();
+
+			if ($wp_rewrite->permalink_structure) {
+				$this->set_permalink_structure('');
+			}
+		}
+
+		$this->start_transaction();
+		$this->expectDeprecated();
+		add_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
+	}
+
+	function scan_user_uploads() {
+		static $files = array();
+		if (!empty($files)) {
+			return $files;
+		}
+
+		$uploads = wp_upload_dir();
+		$files = $this->files_in_dir($uploads['basedir']);
+		return $files;
+	}
+
+	function files_in_dir($dir) {
+		$files = array();
+
+		$iterator = new RecursiveDirectoryIterator($dir);
+		$objects = new RecursiveIteratorIterator($iterator);
+		foreach ($objects as $name => $object) {
+			if (is_file($name)) {
+				$files[] = $name;
+			}
+		}
+
+		return $files;
+	}
+
+	/**
+	 * Saves the action and filter-related globals so they can be restored later.
+	 *
+	 * Stores $merged_filters, $wp_actions, $wp_current_filter, and $wp_filter
+	 * on a class variable so they can be restored on tearDown() using _restore_hooks().
+	 *
+	 * @global array $merged_filters
+	 * @global array $wp_actions
+	 * @global array $wp_current_filter
+	 * @global array $wp_filter
+	 * @return void
+	 */
+	protected function _backup_hooks() {
+		$globals = array('wp_actions', 'wp_current_filter');
+		foreach ($globals as $key) {
+			self::$hooks_saved[$key] = $GLOBALS[$key];
+		}
+		self::$hooks_saved['wp_filter'] = array();
+		foreach ($GLOBALS['wp_filter'] as $hook_name => $hook_object) {
+			self::$hooks_saved['wp_filter'][$hook_name] = clone $hook_object;
+		}
+	}
+
+	function clean_up_global_scope() {
+		$_GET = array();
+		$_POST = array();
+		self::flush_cache();
+	}
+
+	/**
 	 * Unregister existing post types and register defaults.
 	 *
 	 * Run before each test in order to clean up the global scope, in case
 	 * a test forgets to unregister a post type on its own, or fails before
 	 * it has a chance to do so.
 	 */
-	protected function reset_post_types()
-	{
-		foreach (get_post_types() as $pt) {
-			_unregister_post_type($pt);
+	protected function reset_post_types() {
+		foreach (get_post_types(array(), 'objects') as $pt) {
+			if (empty($pt->tests_no_auto_unregister)) {
+				_unregister_post_type($pt->name);
+			}
 		}
 		create_initial_post_types();
 	}
@@ -279,8 +283,7 @@ class WPTestCase extends \Codeception\Test\Unit
 	 * a test forgets to unregister a taxonomy on its own, or fails before
 	 * it has a chance to do so.
 	 */
-	protected function reset_taxonomies()
-	{
+	protected function reset_taxonomies() {
 		foreach (get_taxonomies() as $tax) {
 			_unregister_taxonomy($tax);
 		}
@@ -290,11 +293,17 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Unregister non-built-in post statuses.
 	 */
-	protected function reset_post_statuses()
-	{
+	protected function reset_post_statuses() {
 		foreach (get_post_stati(array('_builtin' => false)) as $post_status) {
 			_unregister_post_status($post_status);
 		}
+	}
+
+	/**
+	 * Reset `$_SERVER` variables
+	 */
+	protected function reset__SERVER() {
+		tests_reset__SERVER();
 	}
 
 	/**
@@ -302,12 +311,11 @@ class WPTestCase extends \Codeception\Test\Unit
 	 *
 	 * @since 4.4.0
 	 *
-	 * @global \WP_Rewrite $wp_rewrite
+	 * @global WP_Rewrite $wp_rewrite
 	 *
-	 * @param string $structure Optional. Permalink structure to set. Default empty.
+	 * @param string      $structure Optional. Permalink structure to set. Default empty.
 	 */
-	public function set_permalink_structure($structure = '')
-	{
+	public function set_permalink_structure($structure = '') {
 		global $wp_rewrite;
 
 		$wp_rewrite->init();
@@ -315,8 +323,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		$wp_rewrite->flush_rules();
 	}
 
-	function start_transaction()
-	{
+	function start_transaction() {
 		global $wpdb;
 		$wpdb->query('SET autocommit = 0;');
 		$wpdb->query('START TRANSACTION;');
@@ -324,8 +331,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		add_filter('query', array($this, '_drop_temporary_tables'));
 	}
 
-	function expectDeprecated()
-	{
+	function expectDeprecated() {
 		$annotations = $this->getAnnotations();
 		foreach (array('class', 'method') as $depth) {
 			if (!empty($annotations[$depth]['expectedDeprecated'])) {
@@ -339,24 +345,45 @@ class WPTestCase extends \Codeception\Test\Unit
 		}
 		add_action('deprecated_function_run', array($this, 'deprecated_function_run'));
 		add_action('deprecated_argument_run', array($this, 'deprecated_function_run'));
+		add_action('deprecated_hook_run', array($this, 'deprecated_function_run'));
 		add_action('doing_it_wrong_run', array($this, 'doing_it_wrong_run'));
 		add_action('deprecated_function_trigger_error', '__return_false');
 		add_action('deprecated_argument_trigger_error', '__return_false');
+		add_action('deprecated_hook_trigger_error', '__return_false');
 		add_action('doing_it_wrong_trigger_error', '__return_false');
 	}
 
-	function tearDown()
-	{
-		global $wpdb, $wp_query, $wp, $post;
+	/**
+	 * After a test method runs, reset any state in WordPress the test method might have changed.
+	 */
+	function tearDown() {
+		global $wpdb, $wp_query, $wp;
 		$wpdb->query('ROLLBACK');
 		if (is_multisite()) {
 			while (ms_is_switched()) {
 				restore_current_blog();
 			}
 		}
-		$wp_query = new \WP_Query();
-		$wp = new \WP();
-		$post = null;
+		$wp_query = new WP_Query();
+		$wp = new WP();
+
+		// Reset globals related to the post loop and `setup_postdata()`.
+		$post_globals = array(
+			'post',
+			'id',
+			'authordata',
+			'currentday',
+			'currentmonth',
+			'page',
+			'pages',
+			'multipage',
+			'more',
+			'numpages'
+		);
+		foreach ($post_globals as $global) {
+			$GLOBALS[$global] = null;
+		}
+
 		remove_theme_support('html5');
 		remove_filter('query', array($this, '_create_temporary_tables'));
 		remove_filter('query', array($this, '_drop_temporary_tables'));
@@ -377,40 +404,45 @@ class WPTestCase extends \Codeception\Test\Unit
 	 * @global array $wp_filter
 	 * @return void
 	 */
-	protected function _restore_hooks()
-	{
-		$globals = array('merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter');
+	protected function _restore_hooks() {
+		$globals = array('wp_actions', 'wp_current_filter');
 		foreach ($globals as $key) {
 			if (isset(self::$hooks_saved[$key])) {
 				$GLOBALS[$key] = self::$hooks_saved[$key];
 			}
 		}
+		if (isset(self::$hooks_saved['wp_filter'])) {
+			$GLOBALS['wp_filter'] = array();
+			foreach (self::$hooks_saved['wp_filter'] as $hook_name => $hook_object) {
+				$GLOBALS['wp_filter'][$hook_name] = clone $hook_object;
+			}
+		}
 	}
 
-	function _create_temporary_tables($query)
-	{
+	function _create_temporary_tables($query) {
 		if ('CREATE TABLE' === substr(trim($query), 0, 12)) {
 			return substr_replace(trim($query), 'CREATE TEMPORARY TABLE', 0, 12);
 		}
 		return $query;
 	}
 
-	function _drop_temporary_tables($query)
-	{
+	function _drop_temporary_tables($query) {
 		if ('DROP TABLE' === substr(trim($query), 0, 10)) {
 			return substr_replace(trim($query), 'DROP TEMPORARY TABLE', 0, 10);
 		}
 		return $query;
 	}
 
-	function get_wp_die_handler($handler)
-	{
+	function get_wp_die_handler($handler) {
 		return array($this, 'wp_die_handler');
 	}
 
-	function wp_die_handler($message)
-	{
-		throw new \WPDieException($message);
+	function wp_die_handler($message) {
+		if (!is_scalar($message)) {
+			$message = '0';
+		}
+
+		throw new WPDieException($message);
 	}
 
 	/**
@@ -421,8 +453,7 @@ class WPTestCase extends \Codeception\Test\Unit
 	 * @param string $deprecated Name of the function, method, class, or argument that is deprecated. Must match
 	 *                           first parameter of the `_deprecated_function()` or `_deprecated_argument()` call.
 	 */
-	public function setExpectedDeprecated($deprecated)
-	{
+	public function setExpectedDeprecated($deprecated) {
 		array_push($this->expected_deprecated, $deprecated);
 	}
 
@@ -434,40 +465,34 @@ class WPTestCase extends \Codeception\Test\Unit
 	 * @param string $deprecated Name of the function, method, or class that appears in the first argument of the
 	 *                           source `_doing_it_wrong()` call.
 	 */
-	public function setExpectedIncorrectUsage($doing_it_wrong)
-	{
+	public function setExpectedIncorrectUsage($doing_it_wrong) {
 		array_push($this->expected_doing_it_wrong, $doing_it_wrong);
 	}
 
-	function deprecated_function_run($function)
-	{
+	function deprecated_function_run($function) {
 		if (!in_array($function, $this->caught_deprecated)) {
 			$this->caught_deprecated[] = $function;
 		}
 	}
 
-	function doing_it_wrong_run($function)
-	{
+	function doing_it_wrong_run($function) {
 		if (!in_array($function, $this->caught_doing_it_wrong)) {
 			$this->caught_doing_it_wrong[] = $function;
 		}
 	}
 
-	function assertWPError($actual, $message = '')
-	{
+	function assertWPError($actual, $message = '') {
 		$this->assertInstanceOf('WP_Error', $actual, $message);
 	}
 
-	function assertNotWPError($actual, $message = '')
-	{
+	function assertNotWPError($actual, $message = '') {
 		if (is_wp_error($actual) && '' === $message) {
 			$message = $actual->get_error_message();
 		}
 		$this->assertNotInstanceOf('WP_Error', $actual, $message);
 	}
 
-	function assertEqualFields($object, $fields)
-	{
+	function assertEqualFields($object, $fields) {
 		foreach ($fields as $field_name => $field_value) {
 			if ($object->$field_name != $field_value) {
 				$this->fail();
@@ -475,27 +500,43 @@ class WPTestCase extends \Codeception\Test\Unit
 		}
 	}
 
-	function assertDiscardWhitespace($expected, $actual)
-	{
+	function assertDiscardWhitespace($expected, $actual) {
 		$this->assertEquals(preg_replace('/\s*/', '', $expected), preg_replace('/\s*/', '', $actual));
 	}
 
-	function assertEqualSets($expected, $actual)
-	{
+	function assertEqualSets($expected, $actual) {
 		sort($expected);
 		sort($actual);
 		$this->assertEquals($expected, $actual);
 	}
 
-	function assertEqualSetsWithIndex($expected, $actual)
-	{
+	function assertEqualSetsWithIndex($expected, $actual) {
 		ksort($expected);
 		ksort($actual);
 		$this->assertEquals($expected, $actual);
 	}
 
-	function go_to($url)
-	{
+	/**
+	 * Asserts that the given variable is a multidimensional array, and that all arrays are non-empty.
+	 *
+	 * @param array $array
+	 */
+	function assertNonEmptyMultidimensionalArray($array) {
+		$this->assertTrue(is_array($array));
+		$this->assertNotEmpty($array);
+
+		foreach ($array as $sub_array) {
+			$this->assertTrue(is_array($sub_array));
+			$this->assertNotEmpty($sub_array);
+		}
+	}
+
+	/**
+	 * Modify WordPress's query internals as if a given URL has been requested.
+	 *
+	 * @param string $url The URL for the request.
+	 */
+	function go_to($url) {
 		// note: the WP and WP_Query classes like to silently fetch parameters
 		// from all over the place (globals, GET, etc), which makes it tricky
 		// to run them more than once without very carefully clearing everything
@@ -536,15 +577,15 @@ class WPTestCase extends \Codeception\Test\Unit
 		$_SERVER['REQUEST_URI'] = $req;
 		unset($_SERVER['PATH_INFO']);
 
-		$this->flush_cache();
+		self::flush_cache();
 		unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
-		$GLOBALS['wp_the_query'] = new \WP_Query();
+		$GLOBALS['wp_the_query'] = new WP_Query();
 		$GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
 
 		$public_query_vars = $GLOBALS['wp']->public_query_vars;
 		$private_query_vars = $GLOBALS['wp']->private_query_vars;
 
-		$GLOBALS['wp'] = new \WP();
+		$GLOBALS['wp'] = new WP();
 		$GLOBALS['wp']->public_query_vars = $public_query_vars;
 		$GLOBALS['wp']->private_query_vars = $private_query_vars;
 
@@ -556,18 +597,16 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Define constants after including files.
 	 */
-	function prepareTemplate(\Text_Template $template)
-	{
+	function prepareTemplate(Text_Template $template) {
 		$template->setVar(array('constants' => ''));
-		$template->setVar(array('wp_constants' => \PHPUnit_Util_GlobalState::getConstantsAsString()));
+		$template->setVar(array('wp_constants' => PHPUnit_Util_GlobalState::getConstantsAsString()));
 		parent::prepareTemplate($template);
 	}
 
 	/**
 	 * Returns the name of a temporary file
 	 */
-	function temp_filename()
-	{
+	function temp_filename() {
 		$tmp_dir = '';
 		$dirs = array('TMP', 'TMPDIR', 'TEMP');
 		foreach ($dirs as $dir) {
@@ -592,8 +631,7 @@ class WPTestCase extends \Codeception\Test\Unit
 	 *
 	 * @param string $prop,... Any number of WP_Query properties that are expected to be true for the current request.
 	 */
-	function assertQueryTrue(/* ... */)
-	{
+	function assertQueryTrue(/* ... */) {
 		global $wp_query;
 		$all = array(
 			'is_404',
@@ -603,11 +641,11 @@ class WPTestCase extends \Codeception\Test\Unit
 			'is_author',
 			'is_category',
 			'is_comment_feed',
-			'is_comments_popup',
 			'is_date',
 			'is_day',
 			'is_embed',
 			'is_feed',
+			'is_front_page',
 			'is_home',
 			'is_month',
 			'is_page',
@@ -626,6 +664,10 @@ class WPTestCase extends \Codeception\Test\Unit
 			'is_year',
 		);
 		$true = func_get_args();
+
+		foreach ($true as $true_thing) {
+			$this->assertContains($true_thing, $all, "{$true_thing}() is not handled by assertQueryTrue().");
+		}
 
 		$passed = true;
 		$not_false = $not_true = array(); // properties that were not set to expected values
@@ -656,15 +698,13 @@ class WPTestCase extends \Codeception\Test\Unit
 		$this->assertTrue($passed, $message);
 	}
 
-	function remove_added_uploads()
-	{
+	function remove_added_uploads() {
 		// Remove all uploads.
 		$uploads = wp_upload_dir();
 		$this->rmdir($uploads['basedir']);
 	}
 
-	function rmdir($path)
-	{
+	function rmdir($path) {
 		$files = $this->files_in_dir($path);
 		foreach ($files as $file) {
 			if (!in_array($file, self::$ignore_files)) {
@@ -673,18 +713,17 @@ class WPTestCase extends \Codeception\Test\Unit
 		}
 	}
 
-	function unlink($file)
-	{
+	function unlink($file) {
 		$exists = is_file($file);
 		if ($exists && !in_array($file, self::$ignore_files)) {
+			//error_log( $file );
 			unlink($file);
 		} elseif (!$exists) {
 			$this->fail("Trying to delete a file that doesn't exist: $file");
 		}
 	}
 
-	function delete_folders($path)
-	{
+	function delete_folders($path) {
 		$this->matched_dirs = array();
 		if (!is_dir($path)) {
 			return;
@@ -697,8 +736,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		rmdir($path);
 	}
 
-	function scandir($dir)
-	{
+	function scandir($dir) {
 		foreach (scandir($dir) as $path) {
 			if (0 !== strpos($path, '.') && is_dir($dir . '/' . $path)) {
 				$this->matched_dirs[] = $dir . '/' . $path;
@@ -707,8 +745,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		}
 	}
 
-	function _make_attachment($upload, $parent_post_id = 0)
-	{
+	function _make_attachment($upload, $parent_post_id = 0) {
 		$type = '';
 		if (!empty($upload['type'])) {
 			$type = $upload['type'];
@@ -735,29 +772,17 @@ class WPTestCase extends \Codeception\Test\Unit
 	}
 
 	/**
-	 * Returns the WPQueries module instance.
-	 *
-	 * @return \Codeception\Module\WPQueries
-	 */
-	public function queries()
-	{
-		return $this->getModule('WPQueries');
-	}
-
-	/**
 	 * Detect post-test failure conditions.
 	 *
 	 * We use this method to detect expectedDeprecated and expectedIncorrectUsage annotations.
 	 *
 	 * @since 4.2.0
 	 */
-	protected function assertPostConditions()
-	{
+	protected function assertPostConditions() {
 		$this->expectedDeprecated();
 	}
 
-	function expectedDeprecated()
-	{
+	function expectedDeprecated() {
 		$errors = array();
 
 		$not_caught_deprecated = array_diff($this->expected_deprecated, $this->caught_deprecated);
@@ -785,8 +810,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		}
 	}
 
-	protected function checkRequirements()
-	{
+	protected function checkRequirements() {
 		parent::checkRequirements();
 
 		// Core tests no longer check against open Trac tickets, but others using WP_UnitTestCase may do so.
@@ -797,7 +821,7 @@ class WPTestCase extends \Codeception\Test\Unit
 		if (WP_TESTS_FORCE_KNOWN_BUGS) {
 			return;
 		}
-		$tickets = \PHPUnit_Util_Test::getTickets(get_class($this), $this->getName(false));
+		$tickets = PHPUnit_Util_Test::getTickets(get_class($this), $this->getName(false));
 		foreach ($tickets as $ticket) {
 			if (is_numeric($ticket)) {
 				$this->knownWPBug($ticket);
@@ -818,12 +842,11 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Skips the current test if there is an open WordPress ticket with id $ticket_id
 	 */
-	function knownWPBug($ticket_id)
-	{
+	function knownWPBug($ticket_id) {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array($ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!\TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
+		if (!TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('WordPress Ticket #%d is not fixed', $ticket_id));
 		}
 	}
@@ -831,12 +854,11 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Skips the current test if there is an open unit tests ticket with id $ticket_id
 	 */
-	function knownUTBug($ticket_id)
-	{
+	function knownUTBug($ticket_id) {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('UT' . $ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!\TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
+		if (!TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('Unit Tests Ticket #%d is not fixed', $ticket_id));
 		}
 	}
@@ -844,12 +866,11 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Skips the current test if there is an open plugin ticket with id $ticket_id
 	 */
-	function knownPluginBug($ticket_id)
-	{
+	function knownPluginBug($ticket_id) {
 		if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('Plugin' . $ticket_id, self::$forced_tickets)) {
 			return;
 		}
-		if (!\TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
+		if (!TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
 			$this->markTestSkipped(sprintf('WordPress Plugin Ticket #%d is not fixed', $ticket_id));
 		}
 	}
@@ -857,9 +878,17 @@ class WPTestCase extends \Codeception\Test\Unit
 	/**
 	 * Helper to Convert a microtime string into a float
 	 */
-	protected function _microtime_to_float($microtime)
-	{
+	protected function _microtime_to_float($microtime) {
 		$time_array = explode(' ', $microtime);
 		return array_sum($time_array);
+	}
+
+	/**
+	 * Returns the WPQueries module instance.
+	 *
+	 * @return \Codeception\Module\WPQueries
+	 */
+	public function queries() {
+		return $this->getModule('WPQueries');
 	}
 }

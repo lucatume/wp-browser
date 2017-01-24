@@ -1,4 +1,5 @@
 <?php
+
 namespace Codeception\TestCase;
 
 /**
@@ -16,12 +17,18 @@ namespace Codeception\TestCase;
  * @subpackage UnitTests
  * @since      3.4.0
  */
-abstract class WPAjaxTestCase extends WPTestCase
-{
+abstract class WPAjaxTestCase extends WPTestCase {
+	/**
+	 * Last AJAX response.  This is set via echo -or- wp_die.
+	 *
+	 * @var string
+	 */
+	protected $_last_response = '';
 
 	/**
 	 * List of ajax actions called via POST
-	 * @var type
+	 *
+	 * @var array
 	 */
 	protected static $_core_actions_get = array(
 		'fetch-list',
@@ -33,9 +40,18 @@ abstract class WPAjaxTestCase extends WPTestCase
 		'dashboard-widgets',
 		'logged-in',
 	);
+
+	/**
+	 * Saved error reporting level
+	 *
+	 * @var int
+	 */
+	protected $_error_level = 0;
+
 	/**
 	 * List of ajax actions called via GET
-	 * @var type
+	 *
+	 * @var array
 	 */
 	protected static $_core_actions_post = array(
 		'oembed_cache',
@@ -79,6 +95,7 @@ abstract class WPAjaxTestCase extends WPTestCase
 		'wp-fullscreen-save-post',
 		'wp-remove-post-lock',
 		'dismiss-wp-pointer',
+		'send-attachment-to-editor',
 		'heartbeat',
 		'nopriv_heartbeat',
 		'get-revision-diffs',
@@ -95,20 +112,18 @@ abstract class WPAjaxTestCase extends WPTestCase
 		'press-this-add-category',
 		'crop-image',
 		'generate-password',
+		'save-wporg-username',
+		'delete-plugin',
+		'search-plugins',
+		'search-install-plugins',
+		'activate-plugin',
+		'update-theme',
+		'delete-theme',
+		'install-theme',
+		'get-post-thumbnail-html',
 	);
-	/**
-	 * Last AJAX response.  This is set via echo -or- wp_die.
-	 * @var type
-	 */
-	protected $_last_response = '';
-	/**
-	 * Saved error reporting level
-	 * @var int
-	 */
-	protected $_error_level = 0;
 
-	public static function setUpBeforeClass()
-	{
+	public static function setUpBeforeClass() {
 		if (!defined('DOING_AJAX')) {
 			define('DOING_AJAX', true);
 		}
@@ -131,8 +146,7 @@ abstract class WPAjaxTestCase extends WPTestCase
 	 * Set up the test fixture.
 	 * Override wp_die(), pretend to be ajax, and suppres E_WARNINGs
 	 */
-	public function setUp()
-	{
+	public function setUp() {
 		parent::setUp();
 
 		add_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1, 1);
@@ -154,8 +168,7 @@ abstract class WPAjaxTestCase extends WPTestCase
 	 * Tear down the test fixture.
 	 * Reset $_POST, remove the wp_die() override, restore error reporting
 	 */
-	public function tearDown()
-	{
+	public function tearDown() {
 		parent::tearDown();
 		$_POST = array();
 		$_GET = array();
@@ -170,8 +183,7 @@ abstract class WPAjaxTestCase extends WPTestCase
 	/**
 	 * Clear login cookies, unset the current user
 	 */
-	public function logout()
-	{
+	public function logout() {
 		unset($GLOBALS['current_user']);
 		$cookies = array(AUTH_COOKIE, SECURE_AUTH_COOKIE, LOGGED_IN_COOKIE, USER_COOKIE, PASS_COOKIE);
 		foreach ($cookies as $c) {
@@ -181,10 +193,10 @@ abstract class WPAjaxTestCase extends WPTestCase
 
 	/**
 	 * Return our callback handler
+	 *
 	 * @return callback
 	 */
-	public function getDieHandler()
-	{
+	public function getDieHandler() {
 		return array($this, 'dieHandler');
 	}
 
@@ -196,35 +208,35 @@ abstract class WPAjaxTestCase extends WPTestCase
 	 * <code>
 	 * $this->setExpectedException( 'WPAjaxDieStopException', 'something contained in $message' );
 	 * </code>
-	 * Normal program termination (wp_die called at then end of output) will throw <code>WPAjaxDieContinueException( $message )</code>
-	 * You can test for this with:
+	 * Normal program termination (wp_die called at then end of output) will throw <code>WPAjaxDieContinueException(
+	 * $message )</code> You can test for this with:
 	 * <code>
 	 * $this->setExpectedException( 'WPAjaxDieContinueException', 'something contained in $message' );
 	 * </code>
+	 *
 	 * @param string $message
 	 */
-	public function dieHandler($message)
-	{
+	public function dieHandler($message) {
 		$this->_last_response .= ob_get_clean();
 
 		if ('' === $this->_last_response) {
 			if (is_scalar($message)) {
-				throw new \WPAjaxDieStopException((string)$message);
+				throw new WPAjaxDieStopException((string)$message);
 			} else {
-				throw new \WPAjaxDieStopException('0');
+				throw new WPAjaxDieStopException('0');
 			}
 		} else {
-			throw new \WPAjaxDieContinueException($message);
+			throw new WPAjaxDieContinueException($message);
 		}
 	}
 
 	/**
 	 * Switch between user roles
 	 * E.g. administrator, editor, author, contributor, subscriber
+	 *
 	 * @param string $role
 	 */
-	protected function _setRole($role)
-	{
+	protected function _setRole($role) {
 		$post = $_POST;
 		$user_id = self::factory()->user->create(array('role' => $role));
 		wp_set_current_user($user_id);
@@ -234,11 +246,11 @@ abstract class WPAjaxTestCase extends WPTestCase
 	/**
 	 * Mimic the ajax handling of admin-ajax.php
 	 * Capture the output via output buffering, and if there is any, store
-	 * it in $this->_last_message.
+	 * it in $this->_last_response.
+	 *
 	 * @param string $action
 	 */
-	protected function _handleAjax($action)
-	{
+	protected function _handleAjax($action) {
 
 		// Start output buffering
 		ini_set('implicit_flush', false);
