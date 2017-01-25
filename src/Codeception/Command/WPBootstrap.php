@@ -15,8 +15,7 @@ use tad\WPBrowser\Console\Output\WrappingOutput;
 use tad\WPBrowser\Interactions\ButlerInterface;
 use tad\WPBrowser\Interactions\WPBootsrapButler;
 
-class WPBootstrap extends Bootstrap
-{
+class WPBootstrap extends Bootstrap {
 	/**
 	 * @var array
 	 */
@@ -32,8 +31,7 @@ class WPBootstrap extends Bootstrap
 	 */
 	protected $theme;
 
-	public function __construct($name, ButlerInterface $butler = null)
-	{
+	public function __construct($name, ButlerInterface $butler = null) {
 		parent::__construct($name);
 		$this->butler = $butler ?: new WPBootsrapButler();
 	}
@@ -43,18 +41,15 @@ class WPBootstrap extends Bootstrap
 	 *
 	 * @return array
 	 */
-	public static function getScaffoldedSuitesNames()
-	{
+	public static function getScaffoldedSuitesNames() {
 		return ['acceptance', 'functional', 'integration', 'unit'];
 	}
 
-	public function getDescription()
-	{
+	public function getDescription() {
 		return "Sets up a WordPress CodeCeption testing environment.";
 	}
 
-	public function execute(InputInterface $input, OutputInterface $output)
-	{
+	public function execute(InputInterface $input, OutputInterface $output) {
 		if ($input->getOption('namespace')) {
 			$this->namespace = trim($input->getOption('namespace'), '\\') . '\\';
 		}
@@ -98,7 +93,8 @@ class WPBootstrap extends Bootstrap
 			$output->writeln("\n");
 
 			$this->userConfig = $this->butler->askQuestions($this->getHelper('question'), $input, $output);
-
+		} else {
+			$this->userConfig = $this->fillUserConfigFromArgs($input);
 		}
 
 		$output->writeln(
@@ -145,16 +141,15 @@ class WPBootstrap extends Bootstrap
 
 	/**
 	 * @param OutputInterface $output
+	 *
 	 * @return OutputInterface|WrappingOutput
 	 */
-	protected function decorateOutput(OutputInterface $output)
-	{
+	protected function decorateOutput(OutputInterface $output) {
 		$output = new WrappingOutput($output);
 		return $output;
 	}
 
-	public function createGlobalConfig()
-	{
+	public function createGlobalConfig() {
 		$basicConfig = [
 			'actor' => $this->actorSuffix,
 			'paths' => [
@@ -180,8 +175,7 @@ class WPBootstrap extends Bootstrap
 	/**
 	 * @param OutputInterface $output
 	 */
-	protected function setupSuites(OutputInterface $output)
-	{
+	protected function setupSuites(OutputInterface $output) {
 		$this->createUnitSuite();
 		$output->writeln("tests/unit created                    <- unit tests");
 		$output->writeln("tests/unit.suite.yml written          <- unit tests suite configuration");
@@ -196,8 +190,7 @@ class WPBootstrap extends Bootstrap
 		$output->writeln("tests/acceptance.suite.yml written    <- acceptance tests suite configuration");
 	}
 
-	protected function createIntegrationSuite($actor = 'Integration')
-	{
+	protected function createIntegrationSuite($actor = 'Integration') {
 		$suiteConfig = $this->getIntegrationSuiteConfig($actor);
 
 		$str = "# Codeception Test Suite Configuration\n\n";
@@ -213,8 +206,7 @@ class WPBootstrap extends Bootstrap
 	 *
 	 * @return array
 	 */
-	protected function getIntegrationSuiteConfig($actor)
-	{
+	protected function getIntegrationSuiteConfig($actor) {
 		$className = $actor . $this->actorSuffix;
 		$defaults = [
 			'actor' => $actor,
@@ -240,8 +232,7 @@ class WPBootstrap extends Bootstrap
 		return (new IntegrationSuiteConfig($settings))->produce();
 	}
 
-	protected function getWploaderDefaults()
-	{
+	protected function getWploaderDefaults() {
 		$wploaderDefaults = [
 			'wpRootFolder' => '/var/www/wordpress',
 			'dbName' => 'wordpress-tests',
@@ -261,8 +252,7 @@ class WPBootstrap extends Bootstrap
 		return $wploaderDefaults;
 	}
 
-	protected function createFunctionalSuite($actor = 'Functional')
-	{
+	protected function createFunctionalSuite($actor = 'Functional') {
 		$suiteConfig = $this->getFunctionalSuiteConfig($actor);
 
 		$str = "# Codeception Test Suite Configuration\n\n";
@@ -278,8 +268,7 @@ class WPBootstrap extends Bootstrap
 	 *
 	 * @return array
 	 */
-	protected function getFunctionalSuiteConfig($actor)
-	{
+	protected function getFunctionalSuiteConfig($actor) {
 		$className = $actor . $this->actorSuffix;
 		$defaults = [
 			'actor' => $actor,
@@ -298,8 +287,7 @@ class WPBootstrap extends Bootstrap
 	/**
 	 * @return array
 	 */
-	protected function getWpdbConfigDefaults()
-	{
+	protected function getWpdbConfigDefaults() {
 		$wpdbDefaults = [
 			'dbHost' => 'localhost',
 			'dbName' => 'wordpress-tests',
@@ -314,8 +302,7 @@ class WPBootstrap extends Bootstrap
 	/**
 	 * @return array
 	 */
-	protected function getWordpressConfigDefaults()
-	{
+	protected function getWordpressConfigDefaults() {
 		$wordpressDefaults = [
 			'wpRootFolder' => '/var/www/wordpress',
 			'adminUsername' => 'admin',
@@ -324,8 +311,7 @@ class WPBootstrap extends Bootstrap
 		return $wordpressDefaults;
 	}
 
-	protected function createAcceptanceSuite($actor = 'Acceptance')
-	{
+	protected function createAcceptanceSuite($actor = 'Acceptance') {
 		$suiteConfig = $this->getAcceptanceSuiteConfig($actor);
 
 		$str = "# Codeception Test Suite Configuration\n\n";
@@ -341,8 +327,7 @@ class WPBootstrap extends Bootstrap
 	 *
 	 * @return array
 	 */
-	protected function getAcceptanceSuiteConfig($actor)
-	{
+	protected function getAcceptanceSuiteConfig($actor) {
 		$className = $actor . $this->actorSuffix;
 
 		$defaults = [
@@ -362,8 +347,7 @@ class WPBootstrap extends Bootstrap
 	/**
 	 * @return array
 	 */
-	protected function getWpbrowserDefaults()
-	{
+	protected function getWpbrowserDefaults() {
 		$wpbrowserDefaults = [
 			'url' => 'http://wp.local',
 			'adminUsername' => 'admin',
@@ -373,8 +357,7 @@ class WPBootstrap extends Bootstrap
 		return $wpbrowserDefaults;
 	}
 
-	private function scaffoldBaseTestsAdvice(OutputInterface $output)
-	{
+	private function scaffoldBaseTestsAdvice(OutputInterface $output) {
 		$dumpPath = codecept_data_dir('dump.sql');
 		$wpPath = $this->userConfig['wpRootFolder'];
 
@@ -394,8 +377,7 @@ class WPBootstrap extends Bootstrap
 		$output->writeln("\t<fg=blue>wp export dump $dumpPath --path=$wpPath</>");
 	}
 
-	protected function configure()
-	{
+	protected function configure() {
 		parent::configure();
 		$this->addOption('no-build', null, InputOption::VALUE_NONE, 'Don\'t build after the bootstrap');
 		$this->addOption('interactive', 'i', InputOption::VALUE_NONE, 'Interactive bootstrap');
@@ -404,22 +386,42 @@ class WPBootstrap extends Bootstrap
 		$this->addOption('dbUser', null, InputOption::VALUE_REQUIRED, 'A preset database user', 'root');
 		$this->addOption('dbPassword', null, InputOption::VALUE_REQUIRED, 'A preset database password', '');
 		$this->addOption('tablePrefix', null, InputOption::VALUE_REQUIRED, 'A preset table prefix', 'wp_');
+		$this->addOption('integrationTablePrefix', null, InputOption::VALUE_REQUIRED, 'A preset table prefix for the table used by integration tests', 'int_');
 		$this->addOption('url', null, InputOption::VALUE_REQUIRED, 'A preset site URL', 'http://wp.dev');
-		$this->addOption('wpRootFolder', null, InputOption::VALUE_REQUIRED, 'A preset WordPress root folder',
-			'/var/www/wp');
-		$this->addOption('adminUsername', null, InputOption::VALUE_REQUIRED, 'A preset administrator username',
-			'admin');
-		$this->addOption('adminPassword', null, InputOption::VALUE_REQUIRED, 'A preset administratore password',
-			'password');
-		$this->addOption('adminPath', null, InputOption::VALUE_REQUIRED, 'A preset administration area path',
-			'/wp-admin');
+		$this->addOption('wpRootFolder', null, InputOption::VALUE_REQUIRED, 'A preset WordPress root folder', '/var/www/wp');
+		$this->addOption('adminUsername', null, InputOption::VALUE_REQUIRED, 'A preset administrator username', 'admin');
+		$this->addOption('adminPassword', null, InputOption::VALUE_REQUIRED, 'A preset administratore password', 'password');
+		$this->addOption('adminPath', null, InputOption::VALUE_REQUIRED, 'A preset administration area path', '/wp-admin');
 		$this->addOption('type', null, InputOption::VALUE_REQUIRED,
 			'The type of the component that will be tested ("plugin" or "theme"), def. to "plugin". If set to "theme" the "theme" option is required.',
 			'');
 		$this->addOption('theme', null, InputOption::VALUE_REQUIRED,
-			'The slug of the theme that should be tested, e.g. "my-theme" or "parent-theme,child-theme" to test a child theme.',
-			'');
-		$this->addOption('plugins', null, InputOption::VALUE_REQUIRED,
-			'A preset list of plugins (comma separated slugs list)', '');
+			'The slug of the theme that should be tested, e.g. "my-theme" or "parent-theme,child-theme" to test a child theme.', '');
+		$this->addOption('plugins', null, InputOption::VALUE_REQUIRED, 'A preset list of plugins (comma separated slugs list)', '');
+	}
+
+	protected function fillUserConfigFromArgs(InputInterface $input) {
+		$config = $this->getDefinition()->getOptionDefaults();
+		$legit = [
+			'dbHost',
+			'dbName',
+			'dbUser',
+			'dbPassword',
+			'tablePrefix',
+			'integrationTablePrefix',
+			'url',
+			'wpRootFolder',
+			'adminUsername',
+			'adminPassword',
+			'adminPath',
+			'theme',
+			'plugins',
+		];
+		$config = array_intersect_key($config, array_combine($legit, $legit));
+		array_walk($config, function (&$value, $name) use ($input) {
+			$value = $input->getOption($name);
+		});
+
+		return $config;
 	}
 }

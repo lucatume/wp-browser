@@ -12,8 +12,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Yaml\Yaml;
 use function tad\WPBrowser\Tests\Support\rrmdir;
 
-class WPBootstrapTest extends \Codeception\Test\Unit
-{
+class WPBootstrapTest extends \Codeception\Test\Unit {
 	use QuestionTester;
 
 	protected static $path;
@@ -56,14 +55,12 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	protected $asked = [];
 
 
-	public static function setUpBeforeClass()
-	{
+	public static function setUpBeforeClass() {
 		self::$cwdBackup = getcwd();
 		self::$path = codecept_data_dir('folder-structures/wpbootstrap-test-root');
 	}
 
-	public static function tearDownAfterClass()
-	{
+	public static function tearDownAfterClass() {
 		self::clean();
 		chdir(self::$cwdBackup);
 	}
@@ -72,8 +69,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should scaffold acceptance suite
 	 */
-	public function it_should_scaffold_acceptance_suite()
-	{
+	public function it_should_scaffold_acceptance_suite() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -90,13 +86,11 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	/**
 	 * @param Application $app
 	 */
-	protected function addCommand(Application $app)
-	{
+	protected function addCommand(Application $app) {
 		$app->add(new WPBootstrap('bootstrap'));
 	}
 
-	protected function testDir($relative = '')
-	{
+	protected function testDir($relative = '') {
 		$frag = $relative ? '/' . ltrim($relative, '/') : '';
 		return self::$path . $frag;
 	}
@@ -105,8 +99,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should scaffold functional test suite
 	 */
-	public function it_should_scaffold_functional_test_suite()
-	{
+	public function it_should_scaffold_functional_test_suite() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -124,8 +117,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow user to specify params through questions for functional suite
 	 */
-	public function it_should_allow_user_to_specify_params_through_questions_for_functional_suite()
-	{
+	public function it_should_allow_user_to_specify_params_through_questions_for_functional_suite() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -166,8 +158,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	/**
 	 * @return \org\bovigo\vfs\vfsStreamDirectory
 	 */
-	protected function getWpFolder()
-	{
+	protected function getWpFolder() {
 		$root = vfsStream::setup();
 		$wp = vfsStream::newDirectory('wp', 0777);
 		$wpAdmin = vfsStream::newDirectory('wp-admin', 0777);
@@ -185,8 +176,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @param $command
 	 * @param $questionsAndAnswers
 	 */
-	protected function mockAnswers($command, $questionsAndAnswers)
-	{
+	protected function mockAnswers($command, $questionsAndAnswers) {
 		$this->asked = new stdClass();
 		$this->asked->questions = [];
 		$asked = $this->asked;
@@ -215,10 +205,10 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 
 	/**
 	 * @param $wpFolder
+	 *
 	 * @return array
 	 */
-	protected function getDefaultQuestionsAndAnswers($wpFolder)
-	{
+	protected function getDefaultQuestionsAndAnswers($wpFolder) {
 		$questionsAndAnswers = [
 			'database host' => 'mysql',
 			'database name' => 'wpFuncTests',
@@ -245,8 +235,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow users to specify params through questions for acceptance suite
 	 */
-	public function it_should_allow_users_to_specify_params_through_questions_for_acceptance_suite()
-	{
+	public function it_should_allow_users_to_specify_params_through_questions_for_acceptance_suite() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -289,8 +278,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow the database password to be empty
 	 */
-	public function it_should_allow_the_database_password_to_be_empty()
-	{
+	public function it_should_allow_the_database_password_to_be_empty() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -324,8 +312,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 		$this->assertEquals('', $decoded['modules']['config']['WPDb']['password']);
 	}
 
-	public function differentFormatUrls()
-	{
+	public function differentFormatUrls() {
 		return [
 			['https://some.dev'],
 			['http://localhost'],
@@ -344,8 +331,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * it should allow for different format urls
 	 * @dataProvider differentFormatUrls
 	 */
-	public function it_should_allow_for_different_format_urls($url)
-	{
+	public function it_should_allow_for_different_format_urls($url) {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -379,8 +365,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 		$this->assertEquals($url, $decoded['modules']['config']['WPBrowser']['url']);
 	}
 
-	public function adminPathsFormats()
-	{
+	public function adminPathsFormats() {
 		return [
 			['/wp-admin', '/wp-admin'],
 			['wp-admin', '/wp-admin'],
@@ -394,8 +379,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * it should allow different adminPath formats
 	 * @dataProvider adminPathsFormats
 	 */
-	public function it_should_allow_different_admin_path_formats($adminPath, $expectedAdminPath)
-	{
+	public function it_should_allow_different_admin_path_formats($adminPath, $expectedAdminPath) {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -433,8 +417,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should scaffold the integration suite config file
 	 */
-	public function it_should_scaffold_the_integration_suite_config_file()
-	{
+	public function it_should_scaffold_the_integration_suite_config_file() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -452,8 +435,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow setting integration configuration with user provided params
 	 */
-	public function it_should_allow_setting_integration_configuration_with_user_provided_params()
-	{
+	public function it_should_allow_setting_integration_configuration_with_user_provided_params() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -494,8 +476,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow user to specify plugins
 	 */
-	public function it_should_allow_user_to_specify_plugins()
-	{
+	public function it_should_allow_user_to_specify_plugins() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -538,8 +519,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow using a different database for integration testing
 	 */
-	public function it_should_allow_using_a_different_database_for_integration_testing()
-	{
+	public function it_should_allow_using_a_different_database_for_integration_testing() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -584,8 +564,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should allow to pass the type of the bootstrap with the --type option
 	 */
-	public function it_should_allow_to_pass_the_type_of_the_bootstrap_with_the_type_option()
-	{
+	public function it_should_allow_to_pass_the_type_of_the_bootstrap_with_the_type_option() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -617,8 +596,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should default the bootstrap type to plugin when not specified
 	 */
-	public function it_should_default_the_bootstrap_type_to_plugin_when_not_specified()
-	{
+	public function it_should_default_the_bootstrap_type_to_plugin_when_not_specified() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -649,8 +627,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should require the theme value if the bootstrap type is set to theme
 	 */
-	public function it_should_require_the_theme_value_if_the_bootstrap_type_is_set_to_theme()
-	{
+	public function it_should_require_the_theme_value_if_the_bootstrap_type_is_set_to_theme() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -672,8 +649,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should set the theme slug when passed with option
 	 */
-	public function it_should_set_the_theme_slug_when_passed_with_option()
-	{
+	public function it_should_set_the_theme_slug_when_passed_with_option() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -708,8 +684,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should ask for the type in interactive mode if not passed as an option
 	 */
-	public function it_should_ask_for_the_type_in_interactive_mode_if_not_passed_as_an_option()
-	{
+	public function it_should_ask_for_the_type_in_interactive_mode_if_not_passed_as_an_option() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -727,8 +702,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 		$this->assertQuestionAsked('plugin.*or.*theme');
 	}
 
-	protected function assertQuestionAsked($expected)
-	{
+	protected function assertQuestionAsked($expected) {
 		$this->assertContains($expected, $this->asked->questions, "Question [{$expected}] was never asked.");
 	}
 
@@ -736,8 +710,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should not ask for the type in interactive mode is passed as option
 	 */
-	public function it_should_not_ask_for_the_type_in_interactive_mode_is_passed_as_option()
-	{
+	public function it_should_not_ask_for_the_type_in_interactive_mode_is_passed_as_option() {
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
@@ -757,18 +730,64 @@ class WPBootstrapTest extends \Codeception\Test\Unit
 		$this->assertQuestionNotAsked('plugin or theme');
 	}
 
-	protected function assertQuestionNotAsked($unexpected)
-	{
+	public function cliConfigValues() {
+		return [
+			['integration', 'WPLoader', 'dbHost', 'some-host'],
+			['integration', 'WPLoader', 'dbName', 'some-db'],
+			['integration', 'WPLoader', 'dbUser', 'some-user'],
+			['integration', 'WPLoader', 'dbPassword', 'some-password'],
+			['acceptance', 'WPDb', 'tablePrefix', 'prefix_'],
+			['integration', 'WPLoader', 'integrationTablePrefix', 'prefix_', 'tablePrefix'],
+			['acceptance', 'WPDb', 'url', 'http://example.com'],
+			['integration', 'WPLoader', 'wpRootFolder', $this->testDir('/wordpress')],
+			['acceptance', 'WPBrowser', 'adminUsername', 'foo'],
+			['acceptance', 'WPBrowser', 'adminPassword', 'bar'],
+			['acceptance', 'WPBrowser', 'adminPath', '/sub-folder/wp-admin'],
+			['integration', 'WPLoader', 'theme', 'some-theme'],
+			['integration', 'WPLoader', 'plugins', 'foo/foo.php,bar/bar.php'],
+		];
+	}
+
+	/**
+	 * @test
+	 * it should allow users to pass in options in non interactive mode
+	 * @dataProvider cliConfigValues
+	 */
+	public function it_should_allow_users_to_pass_in_options_in_non_interactive_mode($suite, $module, $option, $value, $optionAlias = null) {
+		$app = new Application();
+		$this->addCommand($app);
+		$command = $app->find('bootstrap');
+		$commandTester = new CommandTester($command);
+
+		$args = [
+			'command' => $command->getName(),
+			'path' => $this->testDir(),
+			'--no-build' => true,
+			'--' . $option . '' => $value,
+		];
+
+		if ($option === 'theme') {
+			$args['--type'] = 'theme';
+		}
+
+		$commandTester->execute($args);
+
+		$suiteConfigFile = $this->testDir('tests/' . $suite . '.suite.yml');
+		$this->assertFileExists($suiteConfigFile);
+		$suiteConfig = Yaml::parse(file_get_contents($suiteConfigFile));
+		$alias = is_null($optionAlias) ? $option : $optionAlias;
+		$this->assertEquals($value, $suiteConfig['modules']['config'][$module][$alias]);
+	}
+
+	protected function assertQuestionNotAsked($unexpected) {
 		$this->assertNotContains($unexpected, $this->asked->questions, "Question [{$unexpected}] was asked.");
 	}
 
-	protected function _before()
-	{
+	protected function _before() {
 		self::clean();
 	}
 
-	protected static function clean()
-	{
+	protected static function clean() {
 		rrmdir(self::$path . '/tests');
 		foreach (glob(self::$path . '/*.*') as $file) {
 			unlink($file);
