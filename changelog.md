@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- output return in `WPCLI` module: will now return the line if the command output is just one line
 
 ##[1.19.7] 2017-01-25
 ### Fixed

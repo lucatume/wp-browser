@@ -106,7 +106,7 @@ class WPCLI extends Module
 
         $this->evaluateStatus($output, $status);
 
-        return $status == 0 ? true : $status;
+        return count($output) === 1 ? reset($output) : $output;
     }
 
     protected function initPaths()
