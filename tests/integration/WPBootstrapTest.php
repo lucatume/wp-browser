@@ -732,19 +732,19 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 
 	public function cliConfigValues() {
 		return [
-			['integration', 'WPLoader', 'dbHost', 'some-host'],
-			['integration', 'WPLoader', 'dbName', 'some-db'],
-			['integration', 'WPLoader', 'dbUser', 'some-user'],
-			['integration', 'WPLoader', 'dbPassword', 'some-password'],
-			['acceptance', 'WPDb', 'tablePrefix', 'prefix_'],
-			['integration', 'WPLoader', 'integrationTablePrefix', 'prefix_', 'tablePrefix'],
-			['acceptance', 'WPDb', 'url', 'http://example.com'],
-			['integration', 'WPLoader', 'wpRootFolder', $this->testDir('/wordpress')],
-			['acceptance', 'WPBrowser', 'adminUsername', 'foo'],
-			['acceptance', 'WPBrowser', 'adminPassword', 'bar'],
-			['acceptance', 'WPBrowser', 'adminPath', '/sub-folder/wp-admin'],
-			['integration', 'WPLoader', 'theme', 'some-theme'],
-			['integration', 'WPLoader', 'plugins', 'foo/foo.php,bar/bar.php'],
+			[['integration', 'integration'], 'WPLoader', 'dbHost', 'some-host'],
+			[['integration', 'integration'], 'WPLoader', 'dbName', 'some-db'],
+			[['integration', 'integration'], 'WPLoader', 'dbUser', 'some-user'],
+			[['integration', 'integration'], 'WPLoader', 'dbPassword', 'some-password'],
+			[['acceptance', 'ui'], 'WPDb', 'tablePrefix', 'prefix_'],
+			[['integration', 'integration'], 'WPLoader', 'integrationTablePrefix', 'prefix_', 'tablePrefix'],
+			[['acceptance', 'ui'], 'WPDb', 'url', 'http://example.com'],
+			[['integration', 'integration'], 'WPLoader', 'wpRootFolder', $this->testDir('/wordpress')],
+			[['acceptance', 'ui'], 'WPBrowser', 'adminUsername', 'foo'],
+			[['acceptance', 'ui'], 'WPBrowser', 'adminPassword', 'bar'],
+			[['acceptance', 'ui'], 'WPBrowser', 'adminPath', '/sub-folder/wp-admin'],
+			[['integration', 'integration'], 'WPLoader', 'theme', 'some-theme'],
+			[['integration', 'integration'], 'WPLoader', 'plugins', 'foo/foo.php,bar/bar.php'],
 		];
 	}
 
@@ -754,6 +754,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 	 * @dataProvider cliConfigValues
 	 */
 	public function it_should_allow_users_to_pass_in_options_in_non_interactive_mode($suite, $module, $option, $value, $optionAlias = null) {
+		$suite = $this instanceof WPBootstrapPyramidTest ? end($suite) : reset($suite);
 		$app = new Application();
 		$this->addCommand($app);
 		$command = $app->find('bootstrap');
