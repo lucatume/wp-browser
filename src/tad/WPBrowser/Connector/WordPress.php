@@ -2,6 +2,7 @@
 
 namespace tad\WPBrowser\Connector;
 
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\Connector\Universal;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
@@ -10,8 +11,7 @@ use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Process\Process;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
-class WordPress extends Universal
-{
+class WordPress extends Universal {
 	/**
 	 * @var bool
 	 */
@@ -53,10 +53,10 @@ class WordPress extends Universal
 
 	/**
 	 * @param Request $request
+	 *
 	 * @return Response
 	 */
-	public function doRequestInProcess($request)
-	{
+	public function doRequestInProcess($request) {
 		if ($this->mockedResponse) {
 			$response = $this->mockedResponse;
 			$this->mockedResponse = null;
@@ -110,7 +110,12 @@ class WordPress extends Universal
 		$process->run();
 		$rawProcessOutput = $process->getOutput();
 
-		$unserializedResponse = unserialize(base64_decode($rawProcessOutput));
+		$unserializedResponse = @unserialize(base64_decode($rawProcessOutput));
+
+		if (false === $unserializedResponse) {
+			$message = 'Server responded with: ' . $rawProcessOutput;
+			throw new ModuleException(\Codeception\Module\WordPress::class, $message);
+		}
 
 		$_SERVER = empty($unserializedResponse['server']) ? [] : $unserializedResponse['server'];
 		$_FILES = empty($unserializedResponse['files']) ? [] : $unserializedResponse['files'];
@@ -126,8 +131,7 @@ class WordPress extends Universal
 		return $response;
 	}
 
-	private function replaceSiteUrlDeep($array, $url)
-	{
+	private function replaceSiteUrlDeep($array, $url) {
 		if (empty($array)) {
 			return [];
 		}
@@ -143,31 +147,26 @@ class WordPress extends Universal
 		return $replaced;
 	}
 
-	public function setUrl($url)
-	{
+	public function setUrl($url) {
 		$this->url = $url;
 	}
 
-	public function setIndexFor($uri)
-	{
+	public function setIndexFor($uri) {
 		$this->index = $this->rootFolder . $this->uriToIndexMapper->getIndexForUri($uri);
 	}
 
-	public function getIndex()
-	{
+	public function getIndex() {
 		return $this->index;
 	}
 
-	public function getRootFolder()
-	{
+	public function getRootFolder() {
 		return $this->rootFolder;
 	}
 
 	/**
 	 * @param string $rootFolder
 	 */
-	public function setRootFolder($rootFolder)
-	{
+	public function setRootFolder($rootFolder) {
 		if (!is_dir($rootFolder)) {
 			throw new \InvalidArgumentException('Root folder [' . $rootFolder . '] is not an existing folder!');
 		}
@@ -175,28 +174,23 @@ class WordPress extends Universal
 		$this->uriToIndexMapper->setRoot($rootFolder);
 	}
 
-	public function getHeaders()
-	{
+	public function getHeaders() {
 		return $this->headers;
 	}
 
-	public function setHeaders(array $headers = [])
-	{
+	public function setHeaders(array $headers = []) {
 		$this->headers = $headers;
 	}
 
-	public function getDomain()
-	{
+	public function getDomain() {
 		return $this->domain;
 	}
 
-	public function setDomain($domain)
-	{
+	public function setDomain($domain) {
 		$this->domain = $domain;
 	}
 
-	public function resetCookies()
-	{
+	public function resetCookies() {
 		$this->cookieJar = new CookieJar();
 	}
 }

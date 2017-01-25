@@ -8,12 +8,12 @@
  * Copy and paste of WordPress original function where headers are but stored
  * before sending to avoid CLI limitations.
  *
- * @param $location
+ * @param     $location
  * @param int $status
+ *
  * @return bool
  */
-function wp_redirect($location, $status = 302)
-{
+function wp_redirect($location, $status = 302) {
 	global $is_IIS;
 
 	/**
@@ -22,7 +22,7 @@ function wp_redirect($location, $status = 302)
 	 * @since 2.1.0
 	 *
 	 * @param string $location The path to redirect to.
-	 * @param int $status Status code to use.
+	 * @param int    $status   Status code to use.
 	 */
 	$location = apply_filters('wp_redirect', $location, $status);
 
@@ -31,7 +31,7 @@ function wp_redirect($location, $status = 302)
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param int $status Status code to use.
+	 * @param int    $status   Status code to use.
 	 * @param string $location The path to redirect to.
 	 */
 	$status = apply_filters('wp_redirect_status', $status, $location);
@@ -58,22 +58,21 @@ function wp_redirect($location, $status = 302)
  * Copy and paste of WordPress original function.
  * Works like the original but cookies will be immediately set on the `$_COOKIE` superglobal too.
  *
- * @param int $user_id User ID
- * @param bool $remember Whether to remember the user
- * @param mixed $secure Whether the admin cookies should only be sent over HTTPS.
+ * @param int    $user_id  User ID
+ * @param bool   $remember Whether to remember the user
+ * @param mixed  $secure   Whether the admin cookies should only be sent over HTTPS.
  *                         Default is_ssl().
- * @param string $token Optional. User's session token to use for this cookie.
+ * @param string $token    Optional. User's session token to use for this cookie.
  */
-function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = '')
-{
+function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = '') {
 	if ($remember) {
 		/**
 		 * Filter the duration of the authentication cookie expiration period.
 		 *
 		 * @since 2.8.0
 		 *
-		 * @param int $length Duration of the expiration period in seconds.
-		 * @param int $user_id User ID.
+		 * @param int  $length   Duration of the expiration period in seconds.
+		 * @param int  $user_id  User ID.
 		 * @param bool $remember Whether to remember the user login. Default false.
 		 */
 		$expiration = time() + apply_filters('auth_cookie_expiration', 14 * DAY_IN_SECONDS, $user_id, $remember);
@@ -101,8 +100,8 @@ function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = 
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param bool $secure Whether the connection is secure.
-	 * @param int $user_id User ID.
+	 * @param bool $secure  Whether the connection is secure.
+	 * @param int  $user_id User ID.
 	 */
 	$secure = apply_filters('secure_auth_cookie', $secure, $user_id);
 
@@ -112,10 +111,11 @@ function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = 
 	 * @since 3.1.0
 	 *
 	 * @param bool $secure_logged_in_cookie Whether to use a secure cookie when logged-in.
-	 * @param int $user_id User ID.
-	 * @param bool $secure Whether the connection is secure.
+	 * @param int  $user_id                 User ID.
+	 * @param bool $secure                  Whether the connection is secure.
 	 */
-	$secure_logged_in_cookie = apply_filters('secure_logged_in_cookie', $secure_logged_in_cookie, $user_id, $secure);
+	$secure_logged_in_cookie = apply_filters('secure_logged_in_cookie', $secure_logged_in_cookie, $user_id,
+		$secure);
 
 	if ($secure) {
 		$auth_cookie_name = SECURE_AUTH_COOKIE;
@@ -139,11 +139,11 @@ function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = 
 	 * @since 2.5.0
 	 *
 	 * @param string $auth_cookie Authentication cookie.
-	 * @param int $expire Login grace period in seconds. Default 43,200 seconds, or 12 hours.
-	 * @param int $expiration Duration in seconds the authentication cookie should be valid.
+	 * @param int    $expire      Login grace period in seconds. Default 43,200 seconds, or 12 hours.
+	 * @param int    $expiration  Duration in seconds the authentication cookie should be valid.
 	 *                            Default 1,209,600 seconds, or 14 days.
-	 * @param int $user_id User ID.
-	 * @param string $scheme Authentication scheme. Values include 'auth', 'secure_auth', or 'logged_in'.
+	 * @param int    $user_id     User ID.
+	 * @param string $scheme      Authentication scheme. Values include 'auth', 'secure_auth', or 'logged_in'.
 	 */
 	do_action('set_auth_cookie', $auth_cookie, $expire, $expiration, $user_id, $scheme);
 
@@ -153,19 +153,21 @@ function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = 
 	 * @since 2.6.0
 	 *
 	 * @param string $logged_in_cookie The logged-in cookie.
-	 * @param int $expire Login grace period in seconds. Default 43,200 seconds, or 12 hours.
-	 * @param int $expiration Duration in seconds the authentication cookie should be valid.
+	 * @param int    $expire           Login grace period in seconds. Default 43,200 seconds, or 12 hours.
+	 * @param int    $expiration       Duration in seconds the authentication cookie should be valid.
 	 *                                 Default 1,209,600 seconds, or 14 days.
-	 * @param int $user_id User ID.
-	 * @param string $scheme Authentication scheme. Default 'logged_in'.
+	 * @param int    $user_id          User ID.
+	 * @param string $scheme           Authentication scheme. Default 'logged_in'.
 	 */
 	do_action('set_logged_in_cookie', $logged_in_cookie, $expire, $expiration, $user_id, 'logged_in');
 
 	setcookie($auth_cookie_name, $auth_cookie, $expire, PLUGINS_COOKIE_PATH, COOKIE_DOMAIN, $secure, true);
 	setcookie($auth_cookie_name, $auth_cookie, $expire, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, $secure, true);
-	setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure_logged_in_cookie, true);
+	setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure_logged_in_cookie,
+		true);
 	if (COOKIEPATH != SITECOOKIEPATH) {
-		setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure_logged_in_cookie,
+		setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN,
+			$secure_logged_in_cookie,
 			true);
 	}
 
@@ -173,3 +175,4 @@ function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = 
 	$_COOKIE[$auth_cookie_name] = $auth_cookie;
 	$_COOKIE[LOGGED_IN_COOKIE] = $logged_in_cookie;
 }
+
