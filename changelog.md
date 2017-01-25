@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.19.6] 2017-01-25
+### Added
+- new REST API controller and post type controller test cases
+- commands to REST API controller and post type controller test cases
+
+### Fixed
+- issue when using `isolatedInstall: false` that would generate an error on `add_filter`
+- removed deprecated blog insertion instruction from same scope installation script that would cause db error output
+
+### Changed
+- refreshed factories, testcases and code from Core suite
+
 ##[1.19.5] 2016-12-07
 ### Fixed
 - `WPLoader` module WordPress 4.7 compatibility issues, [#60](https://github.com/lucatume/wp-browser/issues/60)
@@ -477,7 +489,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.6...HEAD
+[1.19.6]: https://github.com/lucatume/wp-browser/compare/1.19.5...1.19.6
 [1.19.5]: https://github.com/lucatume/wp-browser/compare/1.19.4...1.19.5
 [1.19.4]: https://github.com/lucatume/wp-browser/compare/1.19.3...1.19.4
 [1.19.3]: https://github.com/lucatume/wp-browser/compare/1.19.2...1.19.3
