@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - issue when using `isolatedInstall: false` that would generate an error on `add_filter`
 - removed deprecated blog insertion instruction from same scope installation script that would cause db error output
+- cookie generation issues in the `WordPress` module
 
 ### Changed
 - refreshed factories, testcases and code from Core suite

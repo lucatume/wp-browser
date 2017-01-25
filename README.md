@@ -415,6 +415,71 @@ class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
 }
 ```
 
+#### generate:wprestcontroller
+Generates a test case extending the `\Codeception\TestCase\WPRestControllerTestCase` class using the
+
+```sh
+  wpcept generate:wprest suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPRestControllerTestCase
+{
+    public function setUp()
+    {
+      parent::setUp();
+    }
+
+    public function tearDown()
+    {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+#### generate:wprestposttypecontroller
+Generates a test case extending the `\Codeception\TestCase\WPRestPostTypeControllerTestCase` class using the
+
+```sh
+  wpcept generate:wprest suite SomeClass
+```
+
+The command will generate a skeleton test case like
+
+
+```php
+<?php
+
+class SomeClassTest extends \Codeception\TestCase\WPRestPostTypeControllerTestCase
+{
+    public function setUp()
+    {
+      parent::setUp();
+    }
+
+    public function tearDown()
+    {
+      parent::tearDown();
+    }
+
+    // tests
+    public function testMe()
+    {
+    }
+
+}
+```
+
 #### generate:wpajax
 Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class using the
 
