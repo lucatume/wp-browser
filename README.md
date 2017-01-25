@@ -322,6 +322,23 @@ The command will generate the "Unit", "Integration", "Functional" and "Acceptanc
 * Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
 
+Command line options can be passed to set the suites configurations to override the defaults:
+
+* `--wpRootFolder=<value>` - the local WordPress installation folder, the folder containing the `wp-load.php` file
+* `--dbHost=<value>` to set the database host
+* `--dbName=<value>` - to set the database name
+* `--dbUser=<value>` - to set the database user
+* `--dbPassword=<value>` - to set the database password
+* `--tablePrefix=<value>` - to set the table prefix of the database used for acceptance and functional
+* `--integrationTablePrefix=<value>` - if the same database is used for integration testing too then integration tests will use this table prefix
+* `--url=<value>` - the local installation site URL
+* `--adminUsername=<value>` - the login name of the local installation administrator
+* `--adminPassword=<value>` - the passworf of the local installation administrator
+* `--adminPath=<value>` - the path, **relative to the WordPress installation root folder**, to the admin area
+* `--type=[theme|plugin]` - what WordPress component is being tested in integration tests, defaults to `plugin`
+* `--theme=<value>` - the theme that should be activated in integration tests, requires `type` to be set to `theme`
+* `--plugins=<value>` - a comma separated list of the plugin(s) that should be activated in integration tests
+
 Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
 
 ```sh
@@ -342,6 +359,23 @@ will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care
 * Integration with `WPLoader` and helper modules
 * Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
 * Acceptance with `WPBrowser`, `WPDb` and helper modules
+
+Command line options can be passed to set the suites configurations to override the defaults:
+
+* `--wpRootFolder=<value>` - the local WordPress installation folder, the folder containing the `wp-load.php` file
+* `--dbHost=<value>` to set the database host
+* `--dbName=<value>` - to set the database name
+* `--dbUser=<value>` - to set the database user
+* `--dbPassword=<value>` - to set the database password
+* `--tablePrefix=<value>` - to set the table prefix of the database used for ui and service tests
+* `--integrationTablePrefix=<value>` - if the same database is used for integration testing too then integration tests will use this table prefix
+* `--url=<value>` - the local installation site URL
+* `--adminUsername=<value>` - the login name of the local installation administrator
+* `--adminPassword=<value>` - the passworf of the local installation administrator
+* `--adminPath=<value>` - the path, **relative to the WordPress installation root folder**, to the admin area
+* `--type=[theme|plugin]` - what WordPress component is being tested in integration tests, defaults to `plugin`
+* `--theme=<value>` - the theme that should be activated in integration tests, requires `type` to be set to `theme`
+* `--plugins=<value>` - a comma separated list of the plugin(s) that should be activated in integration tests
 
 Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
 

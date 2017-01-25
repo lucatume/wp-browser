@@ -414,6 +414,7 @@ class WPBootstrap extends Bootstrap {
 			'adminUsername',
 			'adminPassword',
 			'adminPath',
+			'type',
 			'theme',
 			'plugins',
 		];
