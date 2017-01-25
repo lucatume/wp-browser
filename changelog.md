@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.19.7] 2017-01-25
+### Fixed
+- fixed an issue where command line options where ignored during `bootstrap` and `bootstrap:pyramid` commands
+
 ##[1.19.6] 2017-01-25
 ### Added
 - new REST API controller and post type controller test cases
