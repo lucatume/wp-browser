@@ -23,6 +23,8 @@ $app->add(new Codeception\Command\GeneratePhpUnit('generate:phpunit'));
 $app->add(new Codeception\Command\GenerateWPUnit('generate:wpunit'));
 $app->add(new Codeception\Command\GenerateWPAjax('generate:wpajax'));
 $app->add(new Codeception\Command\GenerateWPRestApi('generate:wprest'));
+$app->add(new Codeception\Command\GenerateWPRestApi('generate:wprestcontroller'));
+$app->add(new Codeception\Command\GenerateWPRestApi('generate:wprestposttypecontroller'));
 $app->add(new Codeception\Command\GenerateWPCanonical('generate:wpcanonical'));
 $app->add(new Codeception\Command\GenerateWPXMLRPC('generate:wpxmlrpc'));
 $app->add(new Codeception\Command\GenerateSuite('generate:suite'));
