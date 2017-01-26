@@ -241,7 +241,7 @@ modules:
 * `adminPassword` - the site administrator login name (required)
 * `adminPath` - the path, relative to the WordPress installation folder, to the admin area
 
-### WordPress module configuration
+### WPCLI module configuration
 This module is meant to be used in *functional* and *acceptance* tests to tap into the [wp-cli](http://wp-cli.org/) tool during tests.  
 An embedded wp-cli installation will be used skipping a missing or already defined one, **a working local installation of wp-cli is not required for this module**.  
 Calls to wp-cli are **synchronous** and **isolated**: wp-cli will run in a separate PHP process and will not share the environment with the test code.  
