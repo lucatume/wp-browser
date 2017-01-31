@@ -323,4 +323,13 @@ EOF;
 			str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
 		return parent::getAbsoluteUrlFor($uri);
 	}
+
+	/**
+	 * Returns the absolute path to the WordPress root folder.
+	 *
+	 * @return string
+	 */
+	public function getWpRootFolder() {
+		return $this->config['wpRootFolder'];
+	}
 }
