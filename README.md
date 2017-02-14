@@ -164,7 +164,7 @@ and configure it using the required parameters:
 
  Optional parameters are available to the module to reproduce the original testing suite possibilities as closely as possible:
 
-* `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not.
+* `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not; running the installation in an isolated process is **the reccomended way** and the default one.
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
 * `multisite` - bool, def. `false`, if set to `true` will create a multisite instllation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.
