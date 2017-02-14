@@ -22,6 +22,7 @@ To install simply require the package in the `composer.json` file like
     
 and then use `composer update` to fetch the package.  
 After that  follow the configuration instructions below.
+**Note**: there is no need to require `codeception/codeception` in the `composer.json` file as it is required by `lucatume/wp-browser` itself.
 
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
