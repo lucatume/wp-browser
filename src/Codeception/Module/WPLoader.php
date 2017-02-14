@@ -275,6 +275,10 @@ class WPLoader extends Module
 				define($key, $value);
 			}
 		}
+
+		if ( ! defined( 'WP_PLUGIN_DIR' ) && ! empty( $this->config['pluginsFolder'] ) ) {
+			define( 'WP_PLUGIN_DIR', $this->getPluginsFolder() );
+		}
 	}
 
 	/**
