@@ -168,15 +168,15 @@ and configure it using the required parameters:
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
 * `multisite` - bool, def. `false`, if set to `true` will create a multisite instllation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.
-* `dbCollate` - string, def. ``, the DB_COLLATE global value.
+* `dbCollate` - string, def. '', the DB_COLLATE global value.
 * `tablePrefix` - string, def. `wptests_`, the `WP_TESTS_TABLE_PREFIX` value.
 * `domain` - string, def. `example.org`, the root URL of the site, the `WP_TESTS_DOMAIN` global value.
 * `adminEmail` - string, def. `admin@example.org`, the admin email, the `WP_TEST_EMAIL` global value.
 * `title` - string, def. `Test Blog`, the blog title, the `WP_TESTS_TITLE` global value.
 * `phpBinary` - string, def. `php`, the php bin command, the `WP_PHP_BINARY` global value.
-* `language` - string, def. ` `, the installation language, the `WPLANG` global value.
-* `configFile` - string or array, def. ` `, the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
-* `pluginsFolder` - string, def. ` `, the relative path to the plugins folder from the `wpRootFolder` if different from the `wp-content/plugins` default one
+* `language` - string, def. '', the installation language, the `WPLANG` global value.
+* `configFile` - string or array, def. '', the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
+* `pluginsFolder` - string, def. '', the relative path to the plugins folder from the `wpRootFolder` if different from the default one or the one defined by the `WP_PLUGIN_DIR` constant
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format; when the `multisite` option is set to `true` the plugins will be **network activated** during the installation.
 * `bootstrapActions` - array, def. `['my-first-action', 'my-second-action']`, a list of actions or **static functions** that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
