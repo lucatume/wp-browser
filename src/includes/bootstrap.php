@@ -88,13 +88,16 @@ if ( ! defined( 'WPCEPT_ISOLATED_INSTALL' ) || false === WPCEPT_ISOLATED_INSTALL
 		]
 	];
 
-	// Try to pick up extra WP constants with a fuzzy search
-	foreach ( get_defined_constants() as $key => $value ) {
-		if ( isset( $environment['constants'][ $key ] ) ) {
-			continue;
-		}
-		if ( strpos( $key, 'WP' ) === 0 ) {
-			$environment['constants'][ $key ] = $value;
+	$dirConstants = [
+		'WP_PLUGIN_DIR',
+		'WP_CONTENT_DIR',
+		'WP_TEMP_DIR',
+		'WPMU_PLUGIN_DIR',
+		'WP_LANG_DIR',
+	];
+	foreach ( $dirConstants as $const ) {
+		if ( defined( $const ) ) {
+			$environment['constants'][ $const ] = constant( $const );
 		}
 	}
 
