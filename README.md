@@ -114,7 +114,7 @@ and configure `Db` parameters and the additional ones available to the `WPDb` mo
 
 #### Dump file domain replacement
 The SQL dump file will be loaded by the module during initialization **before** each test following the same limitations about size imposed by [Codeception Db module](http://codeception.com/docs/09-Data#db).  
-The problem with WordPress database dumps is that the website URL address is harcoded in the database itself making dump sharing a serch and replace pain.  
+The problem with WordPress database dumps is that the website URL address is hard-coded in the database itself making dump sharing a search and replace pain.
 The module will try to replace the domain written in the loaded SQL dump file on the fly to match the one specified in the `url` config parameter to allow dumps to work locally with no issues.
 
 ### WPLoader configuration
@@ -165,9 +165,9 @@ and configure it using the required parameters:
 
  Optional parameters are available to the module to reproduce the original testing suite possibilities as closely as possible:
 
-* `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not; running the installation in an isolated process is **the reccomended way** and the default one.
+* `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not; running the installation in an isolated process is **the recommended way** and the default one.
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
-* `multisite` - bool, def. `false`, if set to `true` will create a multisite instllation, the `WP_TESTS_MULTISITE` global value.
+* `multisite` - bool, def. `false`, if set to `true` will create a multisite installation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.
 * `dbCollate` - string, def. '', the DB_COLLATE global value.
 * `tablePrefix` - string, def. `wptests_`, the `WP_TESTS_TABLE_PREFIX` value.
@@ -372,7 +372,7 @@ Command line options can be passed to set the suites configurations to override 
 * `--integrationTablePrefix=<value>` - if the same database is used for integration testing too then integration tests will use this table prefix
 * `--url=<value>` - the local installation site URL
 * `--adminUsername=<value>` - the login name of the local installation administrator
-* `--adminPassword=<value>` - the passworf of the local installation administrator
+* `--adminPassword=<value>` - the password of the local installation administrator
 * `--adminPath=<value>` - the path, **relative to the WordPress installation root folder**, to the admin area
 * `--type=[theme|plugin]` - what WordPress component is being tested in integration tests, defaults to `plugin`
 * `--theme=<value>` - the theme that should be activated in integration tests, requires `type` to be set to `theme`
@@ -682,7 +682,7 @@ The command takes the following arguments and options:
 * `--pass` - this options allows defining the database password; defaults to `root`; optional
 * `--dump-file` - this options allows defining the destination file for the database dump (an absolute path); defaults to `<snapshot>.sql` in Codeception data folder; optional
 * `--dist-dump-file` - this options allows defining the destination file for the distribution database dump (an absolute path); defaults to `<snapshot>.dist.sql` in Codeception data folder; optional
-* `--skip-tables` - this options allows defining any table that shuould not be dumped (a comma separated list); e.g. `wp_posts,wp_users`; defaults to none; optional
+* `--skip-tables` - this options allows defining any table that should not be dumped (a comma separated list); e.g. `wp_posts,wp_users`; defaults to none; optional
 * `--local-url` - this options allows defining the local setup url that is hardcoded in the local version of the database by WordPress; e.g. `http://wp.dev`; defaults to `http://local.dev`; optional but probably needed
 * `--dist-url` - this options allows defining the distribution setup url that will be hardcoded in the distribution version of the database dump; e.g. `http://wptest.dev`; defaults to `http://dist.dev`; optional but probably needed
 
@@ -772,7 +772,7 @@ Included methods are:
   // grab WordPress login cookie
   public function grabWordPressLoginCookie($pattern = null);
 
-  // grab WordPrss auth cookie
+  // grab WordPress auth cookie
   public function grabWordPressAuthCookie($pattern = null);
 ```
 
@@ -1025,7 +1025,7 @@ This means that the `test_queries` test method below will fail as no queries hav
 
 ```php
 class QueriesTest extends Codeception\TestCase\WPTestCase {
-  public fuction test_queries(){
+  public function test_queries(){
     
     $this->factory()->posts->create();
 
@@ -1074,7 +1074,7 @@ The arguments are:
 * `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
 
 ### Copier
-The `tad\WPBrowser\Extension\Copier` extension provides an automation to have specificic files and folders copied to specified destination files and folders before the suites run.
+The `tad\WPBrowser\Extension\Copier` extension provides an automation to have specific files and folders copied to specified destination files and folders before the suites run.
 While WordPress handles symbolic linking pretty well there are some cases, like themes and drop-ins, where there is a need for "real" files to be put in place.
 The extension follows the standard Codeception extension activation and has one configuration parameter only:
 
@@ -1096,7 +1096,7 @@ When copying directories the extension will only create the destination folder a
 
 #### Environments support
 Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  
-Codeception [supports environments](http://codeception.com/docs/07-AdvancedUsage#Environmentshttp://codeception.com/docs/07-AdvancedUsage#Environments) and the extension does as well specifyin a destination for each.  
+Codeception [supports environments](http://codeception.com/docs/07-AdvancedUsage#Environmentshttp://codeception.com/docs/07-AdvancedUsage#Environments) and the extension does as well specifying a destination for each.
 As an example the `acceptance.suite.yml` file might be configured to support `single` and `multisite` environments:
 
 ```yaml
