@@ -35,7 +35,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertments to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it will load WordPress code in the same variable scope as the tests but will make GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
-* WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* testst.
+* WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
