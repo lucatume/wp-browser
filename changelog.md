@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- if the `pluginsFolder` parameter of the `WPLoader` module is defined use it to set the `WP_PLUGIN_DIR` constant
 
 ##[1.19.9] 2017-02-14
 ### Fixed
