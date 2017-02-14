@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.19.10] 2017-02-14
 ### Fixed
 - if the `pluginsFolder` parameter of the `WPLoader` module is defined use it to set the `WP_PLUGIN_DIR` constant
 
@@ -504,7 +506,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.9...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.10...HEAD
+[1.19.10]: https://github.com/lucatume/wp-browser/compare/1.19.9...1.19.10
 [1.19.9]: https://github.com/lucatume/wp-browser/compare/1.19.8...1.19.9
 [1.19.8]: https://github.com/lucatume/wp-browser/compare/1.19.7...1.19.8
 [1.19.7]: https://github.com/lucatume/wp-browser/compare/1.19.6...1.19.7
