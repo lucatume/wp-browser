@@ -188,7 +188,7 @@ and configure it using the required parameters:
         - [MyClass, myStaticMethod]
     ```
 
-* `theme` - string|array, def. ``, the theme that should be activated for the tests; if a string is passed then both `template` and `stylesheet` options will be set to the passed value; if an array is passed then the `template` and `stylesheet` will be set in that order:
+* `theme` - string|array, def. '', the theme that should be activated for the tests; if a string is passed then both `template` and `stylesheet` options will be set to the passed value; if an array is passed then the `template` and `stylesheet` will be set in that order:
 
     ```yaml
     theme: my-theme
