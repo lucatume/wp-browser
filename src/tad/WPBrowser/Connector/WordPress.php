@@ -75,10 +75,11 @@ class WordPress extends Universal {
 
 		$requestRequestArray = $this->remapRequestParameters($request->getParameters());
 
-		$requestServer['REQUEST_METHOD'] = strtoupper($request->getMethod());
+		$requestServer['REQUEST_METHOD'] = strtoupper( $request->getMethod() );
 		$requestServer['REQUEST_URI'] = $uri;
 		$requestServer['HTTP_HOST'] = $this->domain;
 		$requestServer['SERVER_PROTOCOL'] = 'HTTP/1.1';
+		$requestServer['SERVER_NAME'] = $this->domain;
 
 		$this->index = $this->uriToIndexMapper->getIndexForUri($uri);
 

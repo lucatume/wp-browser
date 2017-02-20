@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- missing `$_SERVER['SERVER_NAME']` var in the `WordPress` connector that would trigger notices from WordPress `general-template.php` file
 
 ##[1.19.10] 2017-02-14
 ### Fixed
