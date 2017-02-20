@@ -3,11 +3,13 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.19.11] 2017-02-20
 ### Fixed
 - missing `$_SERVER['SERVER_NAME']` var in the `WordPress` connector that would trigger notices from WordPress `general-template.php` file
 
 ### Changed
-- cleaned the `WordPress` module and connector from unused methods and added missing doc blocks.
+- cleaned the `WordPress` module from duplicated methods and added missind documentation blocks
 
 ##[1.19.10] 2017-02-14
 ### Fixed
@@ -511,7 +513,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.10...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.11...HEAD
+[1.19.11]: https://github.com/lucatume/wp-browser/compare/1.19.10...1.19.11
 [1.19.10]: https://github.com/lucatume/wp-browser/compare/1.19.9...1.19.10
 [1.19.9]: https://github.com/lucatume/wp-browser/compare/1.19.8...1.19.9
 [1.19.8]: https://github.com/lucatume/wp-browser/compare/1.19.7...1.19.8
