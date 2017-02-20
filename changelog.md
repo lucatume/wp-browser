@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - missing `$_SERVER['SERVER_NAME']` var in the `WordPress` connector that would trigger notices from WordPress `general-template.php` file
 
+### Changed
+- cleaned the `WordPress` module and connector from unused methods and added missing doc blocks.
+
 ##[1.19.10] 2017-02-14
 ### Fixed
 - if the `pluginsFolder` parameter of the `WPLoader` module is defined use it to set the `WP_PLUGIN_DIR` constant

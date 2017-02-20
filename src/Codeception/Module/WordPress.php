@@ -82,6 +82,7 @@ EOF;
 	 * WordPress constructor.
 	 * @param ModuleContainer $moduleContainer
 	 * @param array $config
+	 * @param $client WordPressConnector
 	 */
 	public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
 	{
@@ -100,10 +101,9 @@ EOF;
 		}
 	}
 
-	public function _initialize()
-	{
-	}
-
+	/**
+	 * @param TestInterface $test
+	 */
 	public function _before(TestInterface $test)
 	{
 		/** @var WPDb $wpdb */
@@ -123,56 +123,35 @@ EOF;
 		$this->setCookiesFromOptions();
 	}
 
-	public function _cleanup()
-	{
-		parent::_cleanup();
-	}
-
-	public function _beforeSuite($settings = [])
-	{
-		parent::_beforeSuite($settings);
-	}
-
-	public function _afterSuite()
-	{
-		parent::_afterSuite();
-	}
-
-	public function _beforeStep(Step $step)
-	{
-		parent::_beforeStep($step);
-	}
-
-	public function _afterStep(Step $step)
-	{
-		parent::_afterStep($step);
-	}
-
-	public function _failed(TestInterface $test, $fail)
-	{
-		parent::_failed($test, $fail);
-	}
-
-	public function _after(TestInterface $test)
-	{
-		parent::_after($test);
-	}
-
+	/**
+	 * @param $client
+	 */
 	public function _setClient($client)
 	{
 		$this->client = $client;
 	}
 
+	/**
+	 * @param bool $isMockRequest
+	 */
 	public function _isMockRequest($isMockRequest = false)
 	{
 		$this->isMockRequest = $isMockRequest;
 	}
 
+	/**
+	 * Sets the path, relative to WordPress root folder, to the `wp-admin` folder.
+	 *
+	 * @param string $adminPath
+	 */
 	public function setAdminPath($adminPath)
 	{
 		$this->adminPath = $adminPath;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function _lastRequestWasAdmin()
 	{
 		return $this->lastRequestWasAdmin;
@@ -191,16 +170,31 @@ EOF;
 		return ['Codeception\Module\WPDb' => $this->dependencyMessage];
 	}
 
+	/**
+	 * @param WPDb $wpdbModule
+	 */
 	public function _inject(WPDb $wpdbModule)
 	{
 		$this->wpdbModule = $wpdbModule;
 	}
 
+	/**
+	 * Goes to the `admin-ajax.php` page.
+	 *
+	 * @return null|string
+	 */
 	public function amOnAdminAjaxPage()
 	{
 		return $this->amOnAdminPage('admin-ajax.php');
 	}
 
+	/**
+	 * Goes to an admin page on the site.
+	 *
+	 * @param string $page The relative path to an admin page.
+	 *
+	 * @return null|string
+	 */
 	public function amOnAdminPage($page)
 	{
 		$page = $this->preparePage($this->adminPath . '/' . ltrim($page, '/'));
@@ -230,6 +224,8 @@ EOF;
 	}
 
 	/**
+	 * Goes to a page on the site.
+	 *
 	 * @param string $page The relative path to a page.
 	 *
 	 * @return null|string
@@ -273,16 +269,36 @@ EOF;
 		return 0 === strpos($page, $this->adminPath);
 	}
 
+	/**
+	 * Goes to the cron page.
+	 *
+	 * Useful to trigger cron jobs.
+	 *
+	 * @return null|string
+	 */
 	public function amOnCronPage()
 	{
 		return $this->amOnPage('/wp-cron.php');
 	}
 
+	/**
+	 * Logs in as the administrator user specified in the configuration.
+	 *
+	 * Wil NOT redirect from the login page.
+	 */
 	public function loginAsAdmin()
 	{
 		$this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
 	}
 
+	/**
+	 * Logs in as the specified user.
+	 *
+	 * Wil NOT redirect from the login page.
+	 *
+	 * @param string $user The user login name.
+	 * @param string $password The user login password (non hashed)
+	 */
 	public function loginAs($user, $password)
 	{
 		$this->amOnPage('/wp-login.php');
@@ -296,6 +312,11 @@ EOF;
 		$this->submitForm('#loginform', $params);
 	}
 
+	/**
+	 * Goes to the post edit page for the post with the specified post ID.
+	 *
+	 * @param int $id
+	 */
 	public function amEditingPostWithId($id)
 	{
 		if (!is_numeric($id) && intval($id) == $id) {
