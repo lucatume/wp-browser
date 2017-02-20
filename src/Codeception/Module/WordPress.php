@@ -1,7 +1,5 @@
 <?php
 
-// @todo: add a note in docs that _after and _before methods should call the parent!
-
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
