@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+
+##[1.19.12] 2017-03-10
+###Fixed
+- wait for login form elements in `loginAs` and `loginAsAdmin` `WpWebDriver' methods (thanks @TangRufus)
+
 ##[1.19.11] 2017-02-20
 ### Fixed
 - missing `$_SERVER['SERVER_NAME']` var in the `WordPress` connector that would trigger notices from WordPress `general-template.php` file
@@ -513,7 +518,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.11...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.12...HEAD
+[1.19.12]: https://github.com/lucatume/wp-browser/compare/1.19.11...1.19.12
 [1.19.11]: https://github.com/lucatume/wp-browser/compare/1.19.10...1.19.11
 [1.19.10]: https://github.com/lucatume/wp-browser/compare/1.19.9...1.19.10
 [1.19.9]: https://github.com/lucatume/wp-browser/compare/1.19.8...1.19.9
