@@ -60,6 +60,47 @@ class WPWebDriver extends WebDriver
 	}
 
 	/**
+	 * Goes to the login page and logs in as the site admin.
+	 *
+	 * @param int $time
+	 *
+	 * @return array An array of login credentials and auth cookies.
+	 */
+	public function loginAsAdmin($time = 10)
+	{
+		return $this->loginAs($this->config['adminUsername'], $this->config['adminPassword'], $time);
+	}
+
+	/**
+	 * Goes to the login page, wait for the login form and logs in using the given credentials.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param int $time
+	 *
+	 * @return array An array of login credentials and auth cookies.
+	 */
+	public function loginAs($username, $password, $time = 10)
+	{
+		$this->amOnPage($this->loginUrl);
+
+		$this->waitForElement('#user_login', $time);
+		$this->waitForElement('#user_pass', $time);
+		$this->waitForElement('#wp-submit', $time);
+
+		$this->fillField('#user_login', $username);
+		$this->fillField('#user_pass', $password);
+		$this->click('#wp-submit');
+
+		return [
+			'username' => $username,
+			'password' => $password,
+			'authCookie' => $this->grabWordPressAuthCookie(),
+			'loginCookie' => $this->grabWordPressLoginCookie()
+		];
+	}
+
+	/**
 	 * Returns all the cookies whose name matches a regex pattern.
 	 *
 	 * @param string $cookiePattern
