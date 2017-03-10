@@ -8,6 +8,13 @@ notifications:
 php:
   - '5.6'
   - '7.0'
+  - '7.1'
+  - nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
 
 services:
   - mysql
@@ -55,7 +62,7 @@ before_script:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
   # set up Apache virtual host
-  - sudo env "PATH=$PATH" apache-setup --host="127.0.0.1" --url="$wpUrl" --dir="/tmp/wordpress" 
+  - sudo env "PATH=$PATH" apache-setup --host="127.0.0.1" --url="$wpUrl" --dir="/tmp/wordpress"
 
   # set the path to the phantomjs bin in Phantoman
   - sed -i "s_phantomjsbin_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
