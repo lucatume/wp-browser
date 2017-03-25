@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.19.13] 2017-03-25
+### Changed
+- updated `wp-cli` version requirement to `1.1` (thanks @TangRufus)
 
 ##[1.19.12] 2017-03-10
 ###Fixed
@@ -518,7 +521,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.12...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.13...HEAD
+[1.19.13]: https://github.com/lucatume/wp-browser/compare/1.19.12...1.19.13
 [1.19.12]: https://github.com/lucatume/wp-browser/compare/1.19.11...1.19.12
 [1.19.11]: https://github.com/lucatume/wp-browser/compare/1.19.10...1.19.11
 [1.19.10]: https://github.com/lucatume/wp-browser/compare/1.19.9...1.19.10
