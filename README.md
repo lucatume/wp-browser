@@ -3,9 +3,6 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception.
 
-The package includes a class extending Codeception PhpBrowser module that adds WordPress related assertions for `cest` and `cept` tests, an extension of Codeception own Db module meant to allow for more comfortable WordPress specific database handling and testing and a class taking care of installing and loading a WordPress installation relying on [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/).
-While working on the module I've added some methods to the `Codeception\Module\Db` class to implement CRUDness into it; see below the `ExtendedDb` class.
-
 ![Travis CI master branch build status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)
 
 [Example usage](https://github.com/lucatume/idlikethis).
