@@ -31,7 +31,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 * WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
-* WordPress - to be used in **functional** tests it will load WordPress code in the same variable scope as the tests but will make GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
+* WordPress - to be used in **functional** tests it allows making GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 * WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.
 
 ### WPBrowser configuration
