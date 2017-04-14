@@ -31,7 +31,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 * WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
-* WordPress - to be used in **functional** tests it allows making GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
+* WordPress - to be used in **functional** tests it allows sending GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 * WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.
 
 ### WPBrowser configuration
@@ -69,7 +69,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               url: 'http://example.local'
               browser: phantomjs
               port: 4444
-              window_size: '1024x768'
+              window_size: 1024x768
               adminUsername: 'root'
               adminPassword: 'root'
               adminPath: '/wp-core/wp-admin'
@@ -80,6 +80,8 @@ and configure `WPWebDriver` parameters and the additional ones available to the 
 * `adminUsername` - the site administrator username (required)
 * `adminPassword` - the site administrator login name (required)
 * `adminPath` - the path, relative to the WordPress installation folder, to the admin area
+
+**Note**: when specifying the `window_size` parameter **avoid using quotes** around it.
 
 ### WPDb configuration
 The module extends the `Db` module hence any parameter required and available by the `Db module` is required and available in the `WPDb` module as well.  

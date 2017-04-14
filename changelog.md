@@ -3,13 +3,16 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- wording and example about `window_size` parameter of `WPWebDriver` module in the README (thanks @petemolinero)
+- wording of the `WordPress` module description (thanks @azavisha)
 
 ##[1.19.13] 2017-03-25
 ### Changed
 - updated `wp-cli` version requirement to `1.1` (thanks @TangRufus)
 
 ##[1.19.12] 2017-03-10
-###Fixed
+### Fixed
 - wait for login form elements in `loginAs` and `loginAsAdmin` `WpWebDriver' methods (thanks @TangRufus)
 
 ##[1.19.11] 2017-02-20
