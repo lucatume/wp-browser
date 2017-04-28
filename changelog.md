@@ -2,10 +2,14 @@
 All notable changes after version 1.6.16 to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[unreleased] Unreleased
+##[unreleased] Unreleasedj
 ### Fixed
 - wording and example about `window_size` parameter of `WPWebDriver` module in the README (thanks @petemolinero)
 - wording of the `WordPress` module description (thanks @azavisha)
+- issue where plugin would not be activated when alpha positioned at the bottom of a long list (issue #64)
+
+### Changed
+- allow the `activatePlugin` and `deactivatePlugin` of `WPBrowser` and `WPWebDriver` modules to accept an array of plugin slugs to activate
 
 ##[1.19.13] 2017-03-25
 ### Changed
