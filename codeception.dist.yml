@@ -8,6 +8,9 @@ settings:
     bootstrap: _bootstrap.php
     colors: true
     memory_limit: 1024M
+params:
+    - env
+wpFolder: '%wpFolder%'
 extensions:
     enabled:
         - Codeception\Extension\Phantoman

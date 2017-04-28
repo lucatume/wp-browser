@@ -73,13 +73,21 @@ trait WPBrowserMethods
 	 *
 	 * The method will presume the browser is in the plugin screen already.
 	 *
-	 * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
 	 *
 	 * @return void
 	 */
 	public function activatePlugin($pluginSlug)
 	{
-		$this->click("table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type");
+		$plugins = (array) $pluginSlug;
+		foreach ($plugins as $plugin) {
+			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
+			$this->scrollTo($option);
+			$this->checkOption($option);
+		}
+		$this->scrollTo('select[name="action"]');
+		$this->selectOption('action', 'activate-selected');
+		$this->click("#doaction");
 	}
 
 	/**
@@ -87,13 +95,21 @@ trait WPBrowserMethods
 	 *
 	 * The method will presume the browser is in the plugin screen already.
 	 *
-	 * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
 	 *
 	 * @return void
 	 */
 	public function deactivatePlugin($pluginSlug)
 	{
-		$this->click("table.plugins tr[data-slug='{$pluginSlug}'] span.deactivate > a:first-of-type");
+		$plugins = (array) $pluginSlug;
+		foreach ($plugins as $plugin) {
+			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
+			$this->scrollTo($option);
+			$this->checkOption($option);
+		}
+		$this->scrollTo('select[name="action"]');
+		$this->selectOption('action', 'deactivate-selected');
+		$this->click("#doaction");
 	}
 
 	/**

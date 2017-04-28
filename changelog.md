@@ -3,9 +3,15 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.19.14] 2017-04-28
 ### Fixed
 - wording and example about `window_size` parameter of `WPWebDriver` module in the README (thanks @petemolinero)
 - wording of the `WordPress` module description (thanks @azavisha)
+- issue where plugin would not be activated when alpha positioned at the bottom of a long list (issue #64)
+
+### Changed
+- allow the `activatePlugin` and `deactivatePlugin` of `WPBrowser` and `WPWebDriver` modules to accept an array of plugin slugs to activate
 
 ##[1.19.13] 2017-03-25
 ### Changed
@@ -524,7 +530,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.13...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.14...HEAD
+[1.19.14]: https://github.com/lucatume/wp-browser/compare/1.19.13...1.19.14
 [1.19.13]: https://github.com/lucatume/wp-browser/compare/1.19.12...1.19.13
 [1.19.12]: https://github.com/lucatume/wp-browser/compare/1.19.11...1.19.12
 [1.19.11]: https://github.com/lucatume/wp-browser/compare/1.19.10...1.19.11
