@@ -94,15 +94,18 @@ class WPBrowser extends PhpBrowser
 	 *
 	 * The method will presume the browser is in the plugin screen already.
 	 *
-	 * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
 	 *
 	 * @return void
 	 */
 	public function activatePlugin($pluginSlug)
 	{
-		$this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+		$plugins = (array)$pluginSlug;
+		foreach ($plugins as $plugin) {
+			$this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
+		}
 		$this->selectOption('action', 'activate-selected');
-		$this->click("doaction");
+		$this->click("#doaction");
 	}
 
 	/**
@@ -110,15 +113,17 @@ class WPBrowser extends PhpBrowser
 	 *
 	 * The method will presume the browser is in the plugin screen already.
 	 *
-	 * @param  string $pluginSlug The plugin slug, like "hello-dolly".
+	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
 	 *
 	 * @return void
 	 */
-	public function deactivatePlugin($pluginSlug)
-	{
-		$this->checkOption('//*[@data-slug="' . $pluginSlug . '"]/th/input');
+	public function deactivatePlugin($pluginSlug) {
+		$plugins = (array) $pluginSlug;
+		foreach ($plugins as $plugin) {
+			$this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
+		}
 		$this->selectOption('action', 'deactivate-selected');
-		$this->click("doaction");
+		$this->click("#doaction");
 	}
 
 	protected function validateConfig()

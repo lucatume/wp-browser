@@ -14,7 +14,9 @@ class PluginActivationCest {
 
 	protected function deleteFiles() {
 		foreach ($this->delete as $file) {
-			unlink($file);
+			if (file_exists($file)) {
+				unlink($file);
+			}
 		}
 	}
 
@@ -48,9 +50,23 @@ class PluginActivationCest {
 	 * @test
 	 */
 	public function be_able_to_activate_plugins_in_a_long_list(AcceptanceTester $I) {
+		$this->scaffoldTestPlugins();
+
+		$I->loginAsAdmin();
+		$I->amOnPluginsPage();
+
+		$I->activatePlugin('plugin-z');
+		$I->seePluginActivated('plugin-z');
+
+		$I->deactivatePlugin('plugin-z');
+		$I->seePluginDeactivated('plugin-z');
+	}
+
+	protected function scaffoldTestPlugins() {
 		$config   = (\Codeception\Configuration::config());
 		$wpFolder = $config['wpFolder'];
-		$template = <<< HANDLEBARS
+		$template
+				  = <<< HANDLEBARS
 /*
 Plugin Name: Plugin {{letter}}
 Plugin URI: https://wordpress.org/plugins/{{letter}}/
@@ -69,14 +85,28 @@ HANDLEBARS;
 			file_put_contents($file, $compiled);
 			$this->delete[] = $file;
 		}
+	}
+
+	/**
+	 * It should be able to activate multiple plugins
+	 *
+	 * @test
+	 */
+	public function be_able_to_activate_multiple_plugins(AcceptanceTester $I) {
+		$this->scaffoldTestPlugins();
 
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
 
-		$I->activatePlugin('plugin-z');
-		$I->seePluginActivated('plugin-z');
+		$plugins = ['plugin-a', 'plugin-b', 'plugin-z'];
+		$I->activatePlugin($plugins);
+		foreach ($plugins as $plugin) {
+			$I->seePluginActivated($plugin);
+		}
 
-		$I->deactivatePlugin('plugin-z');
-		$I->seePluginDeactivated('plugin-z');
+		$I->deactivatePlugin($plugins);
+		foreach ($plugins as $plugin) {
+			$I->seePluginDeactivated($plugin);
+		}
 	}
 }
