@@ -79,7 +79,9 @@ trait WPBrowserMethods
 	 */
 	public function activatePlugin($pluginSlug)
 	{
-		$this->click("table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type");
+		$target = "table.plugins tr[data-slug='{$pluginSlug}'] span.activate > a:first-of-type";
+		$this->scrollTo($target);
+		$this->click($target);
 	}
 
 	/**
