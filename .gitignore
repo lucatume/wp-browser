@@ -13,13 +13,5 @@ vendor/
 tests/_output
 
 # local configuration files
-tests/acceptance.suite.yml
-tests/functional.suite.yml
-tests/integration.suite.yml
-tests/unit.suite.yml
-tests/wploadersuite.suite.yml
-tests/muloader.suite.yml
-tests/wpmodule.suite.yml
-tests/phantomjs.suite.yml
-tests/climodule.suite.yml
+tests/*.suite.yml
 codeception.yml
