@@ -8,7 +8,7 @@ class PluginActivationCest {
 	 */
 	protected $delete = [];
 
-	public function _before(AcceptanceTester $I) {
+	public function _before(PhantomjsTester $I) {
 		$this->deleteFiles();
 	}
 
@@ -18,11 +18,11 @@ class PluginActivationCest {
 		}
 	}
 
-	public function _after(AcceptanceTester $I) {
+	public function _after(PhantomjsTester $I) {
 		$this->deleteFiles();
 	}
 
-	public function _failed(AcceptanceTester $I) {
+	public function _failed(PhantomjsTester $I) {
 		$this->deleteFiles();
 	}
 
@@ -31,7 +31,7 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins(AcceptanceTester $I) {
+	public function be_able_to_activate_plugins(PhantomjsTester $I) {
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
 
@@ -47,7 +47,7 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins_in_a_long_list(AcceptanceTester $I) {
+	public function be_able_to_activate_plugins_in_a_long_list(PhantomjsTester $I) {
 		$config   = (\Codeception\Configuration::config());
 		$wpFolder = $config['wpFolder'];
 		$template = <<< HANDLEBARS
