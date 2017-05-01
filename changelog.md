@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.19.15] 2017-05-01
+### Changed
+- added Y offset to the plugin activation functions to avoid overlap with the admin bar
+
 ##[1.19.14] 2017-04-28
 ### Fixed
 - wording and example about `window_size` parameter of `WPWebDriver` module in the README (thanks @petemolinero)
@@ -530,7 +534,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.14...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.15...HEAD
+[1.19.15]: https://github.com/lucatume/wp-browser/compare/1.19.14...1.19.15
 [1.19.14]: https://github.com/lucatume/wp-browser/compare/1.19.13...1.19.14
 [1.19.13]: https://github.com/lucatume/wp-browser/compare/1.19.12...1.19.13
 [1.19.12]: https://github.com/lucatume/wp-browser/compare/1.19.11...1.19.12
