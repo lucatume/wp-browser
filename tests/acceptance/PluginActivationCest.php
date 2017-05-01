@@ -49,7 +49,9 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins_in_a_long_list(AcceptanceTester $I) {
+	public function be_able_to_activate_plugins_in_a_long_list(
+		AcceptanceTester $I
+	) {
 		$this->scaffoldTestPlugins();
 
 		$I->loginAsAdmin();
@@ -63,10 +65,10 @@ class PluginActivationCest {
 	}
 
 	protected function scaffoldTestPlugins() {
-		$config   = (\Codeception\Configuration::config());
+		$config = (\Codeception\Configuration::config());
 		$wpFolder = $config['wpFolder'];
 		$template
-				  = <<< HANDLEBARS
+			= <<< HANDLEBARS
 /*
 Plugin Name: Plugin {{letter}}
 Plugin URI: https://wordpress.org/plugins/{{letter}}/
@@ -98,7 +100,8 @@ HANDLEBARS;
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
 
-		$plugins = ['plugin-a', 'plugin-b', 'plugin-z'];
+		$plugins = ['plugin-a', 'plugin-b', 'plugin-i', 'plugin-o', 'plugin-z'];
+
 		$I->activatePlugin($plugins);
 		foreach ($plugins as $plugin) {
 			$I->seePluginActivated($plugin);

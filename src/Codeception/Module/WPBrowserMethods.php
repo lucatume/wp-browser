@@ -82,10 +82,10 @@ trait WPBrowserMethods
 		$plugins = (array) $pluginSlug;
 		foreach ($plugins as $plugin) {
 			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
-			$this->scrollTo($option);
+			$this->scrollTo($option, 0, -40);
 			$this->checkOption($option);
 		}
-		$this->scrollTo('select[name="action"]');
+		$this->scrollTo('select[name="action"]', 0, -40);
 		$this->selectOption('action', 'activate-selected');
 		$this->click("#doaction");
 	}
@@ -104,10 +104,10 @@ trait WPBrowserMethods
 		$plugins = (array) $pluginSlug;
 		foreach ($plugins as $plugin) {
 			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
-			$this->scrollTo($option);
+			$this->scrollTo($option, 0, -40);
 			$this->checkOption($option);
 		}
-		$this->scrollTo('select[name="action"]');
+		$this->scrollTo('select[name="action"]', 0, -40);
 		$this->selectOption('action', 'deactivate-selected');
 		$this->click("#doaction");
 	}
