@@ -155,7 +155,8 @@ In the suite `.yml` configuration file add the module among the loaded ones
 
 and configure it using the required parameters:
 
- * `multisite` - if set to `true` the WordPress installation will be a multisite one, the WP_TESTS_MULTISITE global value.
+ * `loadOnly` - if set to `true` the module will just load WordPress without installing it; useful to access WordPress code outside of unit and integration tests.
+ * `multisite` - if set to `true` the WordPress installation will be a multisite one, the `WP_TESTS_MULTISITE` global value.
  * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
  * `dbNAme` - the name of the database to use for the tests, will be trashed during tests so take care, will be the `DB_NAME` global.
  * `dbHost` - the host the database can be found at, will be the `DB_HOST` global.
