@@ -50,6 +50,7 @@ class WPLoader extends Module
 	 * All of the fields have a correspondant in the standard `wp-tests-config.php`
 	 * file found in [WordPress automated testing suite.](http://make.wordpress.org/core/handbook/automated-testing/)
 	 *
+	 * loadOnly - bool, def. `false`, whether the module should load WordPress and install it (`false`) or just only load it (`true`)
 	 * isolatedInstall - bool, def. `true`, whether the WP installation should happen in an isolated process(core like) or not (previous wp-browser method).
 	 * wpDebug - bool, def. `true`, the WP_DEBUG global value.
 	 * multisite - bool, def. `false`, if set to `true` will create a multisite installation, the WP_TESTS_MULTISITE global value.
@@ -81,6 +82,7 @@ class WPLoader extends Module
 	 * @var array
 	 */
 	protected $config = [
+		'loadOnly' => false,
 		'isolatedInstall' => true,
 		'wpDebug' => true,
 		'multisite' => false,
@@ -141,8 +143,10 @@ class WPLoader extends Module
 
 	protected function initialize()
 	{
-		// let's make sure *Db Module is either not running or properly configured
-		$this->ensureDbModuleCompat();
+		if ( empty( $this->config['loadOnly'] ) ) {
+			// let's make sure *Db Module is either not running or properly configured if we have to run alongside it
+			$this->ensureDbModuleCompat();
+		}
 
 		$this->ensureWPRoot($this->getWpRootFolder());
 
@@ -151,7 +155,7 @@ class WPLoader extends Module
 		$this->loadWordPress();
 	}
 
-	public function ensureDbModuleCompat()
+	protected function ensureDbModuleCompat()
 	{
 		$interference_candidates = ['Db', 'WPDb'];
 		$allModules = $this->moduleContainer->all();
@@ -171,8 +175,10 @@ class WPLoader extends Module
 
 	/**
 	 * @param string $wpRootFolder
+	 *
+	 * @throws \Codeception\Exception\ModuleConfigException If the specified WordPress root folder is not found or not valid.
 	 */
-	private function ensureWPRoot($wpRootFolder)
+	protected function ensureWPRoot($wpRootFolder)
 	{
 		if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
 			throw new ModuleConfigException(__CLASS__,
@@ -216,21 +222,10 @@ class WPLoader extends Module
 
 		require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
 
-		$this->setActivePlugins();
-		$this->_setActiveTheme();
-
-		if (!$this->requiresIsolatedInstallation()) {
-			tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-			tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
-			tests_add_filter('wp_install', [$this, 'bootstrapActions'], 101);
-			tests_add_filter('plugins_loaded', [$this, '_switch_theme']);
-		}
-
-		require_once $this->wpBootstrapFile;
-
-		if ($this->requiresIsolatedInstallation()) {
-			$this->bootstrapActions();
-			$this->_switch_theme();
+		if (!empty($this->config['loadOnly'])) {
+			$this->bootstrapWP();
+		} else {
+			$this->installAndBootstrapInstallation();
 		}
 	}
 
@@ -435,5 +430,29 @@ class WPLoader extends Module
 		}
 
 		return $this->pluginsFolder;
+	}
+
+	protected function installAndBootstrapInstallation() {
+		$this->setActivePlugins();
+		$this->_setActiveTheme();
+
+		if (!$this->requiresIsolatedInstallation()) {
+			tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
+			tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+			tests_add_filter('wp_install', [$this, 'bootstrapActions'],
+				101);
+			tests_add_filter('plugins_loaded', [$this, '_switch_theme']);
+		}
+
+		require_once $this->wpBootstrapFile;
+
+		if ($this->requiresIsolatedInstallation()) {
+			$this->bootstrapActions();
+			$this->_switch_theme();
+		}
+	}
+
+	protected function bootstrapWP() {
+		include_once $this->wpRootFolder . '/wp-load.php';
 	}
 }
