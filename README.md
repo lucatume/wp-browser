@@ -28,7 +28,7 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPBrowser - a PHP based, JavaScript-less and headless browser for **acceptance testing not requiring JavaScript support**
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
-* WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
+* WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/); alternatively it cane be used to bootstrap the WordPress installation under test in the test variable scope.
 * WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it allows sending GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
@@ -117,7 +117,20 @@ The problem with WordPress database dumps is that the website URL address is har
 The module will try to replace the domain written in the loaded SQL dump file on the fly to match the one specified in the `url` config parameter to allow dumps to work locally with no issues.
 
 ### WPLoader configuration
-The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes.
+The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes or the simple bootstrapping of the WordPress configuration.  
+This table list the differences between the two modes supported by the `WPLoader` module depending on the value of the `loadOnly` parameter:
+
+|Functionality|`loadOnly = false`|`loadOnly = true`|  
+|-------|-------|-------|  
+|Works like the [Core automated suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) |Yes|No|  
+|Offers a clean WordPress installation before the tests|Yes|No|  
+|Activates and loads specified WordPress plugins before the tests|Yes|No|  
+|Works in a transaction|Yes|No|  
+|Preserves the database state during and after the tests|No|Yes|  
+|Cleans up before and after the tests|Yes|No|  
+|Works in test cases extending `WPTestCase`|Yes|No|  
+|Works in test cases not extending `WPTestCase`|No|Yes|  
+
 An adaptation of [WordPress automated testing suite](http://make.wordpress.org/core/handbook/automated-testing/) the module exposes the suite hard-coded value as configuration parameters.  
 Since this module takes charge of setting up and cleaning the database used for the tests point it to a database that does not contain sensible data!  
 Also note that this module cannot be used together with WPDb or DB modules with the `cleanup` settings set to `true`.  
@@ -155,17 +168,17 @@ In the suite `.yml` configuration file add the module among the loaded ones
 
 and configure it using the required parameters:
 
- * `loadOnly` - if set to `true` the module will just load WordPress without installing it; useful to access WordPress code outside of unit and integration tests.
- * `multisite` - if set to `true` the WordPress installation will be a multisite one, the `WP_TESTS_MULTISITE` global value.
- * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
- * `dbNAme` - the name of the database to use for the tests, will be trashed during tests so take care, will be the `DB_NAME` global.
- * `dbHost` - the host the database can be found at, will be the `DB_HOST` global.
- * `dbUser` - the database privileged user, should `GRANT ALL` on the database, will be the `DB_USER` global.
- * `dbPassword` - the password for the user, will be the `DB_PASSWORD` global.
+* `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
+* `dbNAme` - the name of the database to use for the tests, will be trashed during tests so take care, will be the `DB_NAME` global.
+* `dbHost` - the host the database can be found at, will be the `DB_HOST` global.
+* `dbUser` - the database privileged user, should `GRANT ALL` on the database, will be the `DB_USER` global.
+* `dbPassword` - the password for the user, will be the `DB_PASSWORD` global.
 
  Optional parameters are available to the module to reproduce the original testing suite possibilities as closely as possible:
 
+* `loadOnly` - if set to `true` the module will just load WordPress without installing it; useful to access WordPress code outside of unit and integration tests; read the paragraph "WPLoader to bootstrap WordPress"; setting this parameter to `true` makes all the ones below superfluous.
 * `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not; running the installation in an isolated process is **the recommended way** and the default one.
+* `multisite` - if set to `true` the WordPress installation will be a multisite one, the `WP_TESTS_MULTISITE` global value.
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
 * `multisite` - bool, def. `false`, if set to `true` will create a multisite installation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.
@@ -204,6 +217,27 @@ and configure it using the required parameters:
     The `template` will be set to `parent`, the `stylesheet` will be set to `child`.
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
+
+#### WPLoader to only bootstrap WordPress
+If the need is to just bootstrap the WordPress installation in the context of the tests variable scope then the `WPLoader` module `loadOnly` parameter should be set to `true`; this could be the case for functional tests in need to access WordPress provided methods, functions and values.  
+An example configuration for the module in this mode is this one:
+
+```yaml
+  modules:
+      enabled:
+          - WPLoader
+      config:
+          WPLoader:
+          	  loadOnly: true
+              wpRootFolder: "/Users/User/www/wordpress"
+              dbName: "wpress-tests"
+              dbHost: "localhost"
+              dbUser: "root"
+              dbPassword: "root"
+```
+
+With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
+The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand.
 
 ### WPBootstrapper configuration
 The module will bootstrap a WordPress installation loading its `wp-load.php` file.   
