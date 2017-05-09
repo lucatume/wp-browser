@@ -6,12 +6,18 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Framework;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Step;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 
-class WordPress extends Framework implements DependsOnModule
-{
+class WordPress extends Framework implements DependsOnModule {
+
+	use WPBrowserMethods;
+
+	/**
+	 * @var string
+	 */
+	protected $assertionClass = '';
+
 	/**
 	 * @var \tad\WPBrowser\Connector\WordPress
 	 */
@@ -31,20 +37,22 @@ class WordPress extends Framework implements DependsOnModule
 	 * @var string
 	 */
 	protected $adminPath;
-	/**
-	 * @var bool
-	 */
 
-	protected $isMockRequest = false;
 	/**
 	 * @var bool
 	 */
-	protected $lastRequestWasAdmin = false;
+	protected $isMockRequest = FALSE;
+
+	/**
+	 * @var bool
+	 */
+	protected $lastRequestWasAdmin = FALSE;
 
 	/**
 	 * @var string
 	 */
-	protected $dependencyMessage = <<< EOF
+	protected $dependencyMessage
+		= <<< EOF
 Example configuring WPDb
 --
 modules
@@ -72,26 +80,37 @@ EOF;
 	protected $wpdbModule;
 
 	/**
-	 * @var string
+	 * @var string The site URL.
 	 */
 	protected $siteUrl;
 
 	/**
-	 * WordPress constructor.
-	 * @param ModuleContainer $moduleContainer
-	 * @param array $config
-	 * @param $client WordPressConnector
+	 * @var string
 	 */
-	public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
-	{
+	protected  $loginUrl = '';
+
+	/**
+	 * @var string The string that will hold the response content after each request handling.
+	 */
+	public $response = '';
+
+	/**
+	 * WordPress constructor.
+	 *
+	 * @param ModuleContainer $moduleContainer
+	 * @param array           $config
+	 * @param                 $client WordPressConnector
+	 */
+	public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = NULL) {
 		parent::__construct($moduleContainer, $config);
 		$this->ensureWpRoot();
 		$this->adminPath = $this->config['adminPath'];
-		$this->client = $client;
+		$this->client    = $client;
+		$this->assertionClass = class_exists('\\PHPunit\\Framework\\TestCase') ?
+			\PHPunit\Framework\Assert::class : \PHPUnit_Framework_Assert::class;
 	}
 
-	private function ensureWpRoot()
-	{
+	private function ensureWpRoot() {
 		$wpRootFolder = $this->config['wpRootFolder'];
 		if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
 			throw new ModuleConfigException(__CLASS__,
@@ -102,21 +121,20 @@ EOF;
 	/**
 	 * @param TestInterface $test
 	 */
-	public function _before(TestInterface $test)
-	{
+	public function _before(TestInterface $test) {
 		/** @var WPDb $wpdb */
-		$wpdb = $this->getModule('WPDb');
+		$wpdb          = $this->getModule('WPDb');
 		$this->siteUrl = $wpdb->grabSiteUrl();
+		$this->loginUrl = '/wp-login.php';
 		$this->setupClient($wpdb->getSiteDomain());
 	}
 
-	private function setupClient($siteDomain)
-	{
+	private function setupClient($siteDomain) {
 		$this->client = $this->client ? $this->client : new WordPressConnector();
 		$this->client->setUrl($this->siteUrl);
 		$this->client->setDomain($siteDomain);
 		$this->client->setRootFolder($this->config['wpRootFolder']);
-		$this->client->followRedirects(true);
+		$this->client->followRedirects(TRUE);
 		$this->client->resetCookies();
 		$this->setCookiesFromOptions();
 	}
@@ -124,34 +142,21 @@ EOF;
 	/**
 	 * @param $client
 	 */
-	public function _setClient($client)
-	{
+	public function _setClient($client) {
 		$this->client = $client;
 	}
 
 	/**
 	 * @param bool $isMockRequest
 	 */
-	public function _isMockRequest($isMockRequest = false)
-	{
+	public function _isMockRequest($isMockRequest = FALSE) {
 		$this->isMockRequest = $isMockRequest;
-	}
-
-	/**
-	 * Sets the path, relative to WordPress root folder, to the `wp-admin` folder.
-	 *
-	 * @param string $adminPath
-	 */
-	public function setAdminPath($adminPath)
-	{
-		$this->adminPath = $adminPath;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function _lastRequestWasAdmin()
-	{
+	public function _lastRequestWasAdmin() {
 		return $this->lastRequestWasAdmin;
 	}
 
@@ -163,27 +168,15 @@ EOF;
 	 *
 	 * @return array
 	 */
-	public function _depends()
-	{
+	public function _depends() {
 		return ['Codeception\Module\WPDb' => $this->dependencyMessage];
 	}
 
 	/**
 	 * @param WPDb $wpdbModule
 	 */
-	public function _inject(WPDb $wpdbModule)
-	{
+	public function _inject(WPDb $wpdbModule) {
 		$this->wpdbModule = $wpdbModule;
-	}
-
-	/**
-	 * Goes to the `admin-ajax.php` page.
-	 *
-	 * @return null|string
-	 */
-	public function amOnAdminAjaxPage()
-	{
-		return $this->amOnAdminPage('admin-ajax.php');
 	}
 
 	/**
@@ -193,18 +186,17 @@ EOF;
 	 *
 	 * @return null|string
 	 */
-	public function amOnAdminPage($page)
-	{
+	public function amOnAdminPage($page) {
 		$page = $this->preparePage($this->adminPath . '/' . ltrim($page, '/'));
 		return $this->amOnPage($page);
 	}
 
 	/**
 	 * @param $page
+	 *
 	 * @return string
 	 */
-	private function preparePage($page)
-	{
+	private function preparePage($page) {
 		$page = $this->untrailslashIt($page);
 		$page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
 
@@ -213,10 +205,10 @@ EOF;
 
 	/**
 	 * @param $path
+	 *
 	 * @return mixed
 	 */
-	private function untrailslashIt($path)
-	{
+	private function untrailslashIt($path) {
 		$path = preg_replace('~\\/?$~', '', $path);
 		return $path;
 	}
@@ -228,11 +220,10 @@ EOF;
 	 *
 	 * @return null|string
 	 */
-	public function amOnPage($page)
-	{
+	public function amOnPage($page) {
 		$this->setRequestType($page);
 
-		$parts = parse_url($page);
+		$parts      = parse_url($page);
 		$parameters = [];
 		if (!empty($parts['query'])) {
 			parse_str($parts['query'], $parameters);
@@ -247,81 +238,22 @@ EOF;
 		$this->setCookie('wordpress_test_cookie', 'WP Cookie check');
 		$this->_loadPage('GET', $page, $parameters);
 
-		return null;
+		return NULL;
 	}
 
 	/**
 	 * @param $page
 	 */
-	private function setRequestType($page)
-	{
+	private function setRequestType($page) {
 		if ($this->isAdminPageRequest($page)) {
-			$this->lastRequestWasAdmin = true;
+			$this->lastRequestWasAdmin = TRUE;
 		} else {
-			$this->lastRequestWasAdmin = false;
+			$this->lastRequestWasAdmin = FALSE;
 		}
 	}
 
-	private function isAdminPageRequest($page)
-	{
+	private function isAdminPageRequest($page) {
 		return 0 === strpos($page, $this->adminPath);
-	}
-
-	/**
-	 * Goes to the cron page.
-	 *
-	 * Useful to trigger cron jobs.
-	 *
-	 * @return null|string
-	 */
-	public function amOnCronPage()
-	{
-		return $this->amOnPage('/wp-cron.php');
-	}
-
-	/**
-	 * Logs in as the administrator user specified in the configuration.
-	 *
-	 * Wil NOT redirect from the login page.
-	 */
-	public function loginAsAdmin()
-	{
-		$this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
-	}
-
-	/**
-	 * Logs in as the specified user.
-	 *
-	 * Wil NOT redirect from the login page.
-	 *
-	 * @param string $user The user login name.
-	 * @param string $password The user login password (non hashed)
-	 */
-	public function loginAs($user, $password)
-	{
-		$this->amOnPage('/wp-login.php');
-		$params = [
-			'log' => $user,
-			'pwd' => $password,
-			'rememberme' => 'forever',
-			'redirect_to' => '/',
-			'testcookie' => '1'
-		];
-		$this->submitForm('#loginform', $params);
-	}
-
-	/**
-	 * Goes to the post edit page for the post with the specified post ID.
-	 *
-	 * @param int $id
-	 */
-	public function amEditingPostWithId($id)
-	{
-		if (!is_numeric($id) && intval($id) == $id) {
-			throw new \InvalidArgumentException('ID must be an int value');
-		}
-
-		$this->amOnAdminPage('/post.php?post=' . $id . '&action=edit');
 	}
 
 	/**
@@ -329,18 +261,10 @@ EOF;
 	 *
 	 * @return array
 	 */
-	public function getInternalDomains()
-	{
-		$internalDomains = [];
+	public function getInternalDomains() {
+		$internalDomains   = [];
 		$internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST)) . '$/';
 		return $internalDomains;
-	}
-
-	protected function getAbsoluteUrlFor($uri)
-	{
-		$uri = str_replace($this->siteUrl, 'http://localhost',
-			str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
-		return parent::getAbsoluteUrlFor($uri);
 	}
 
 	/**
@@ -350,5 +274,44 @@ EOF;
 	 */
 	public function getWpRootFolder() {
 		return $this->config['wpRootFolder'];
+	}
+
+	/**
+	 * Returns the raw response content.
+	 *
+	 * @return string
+	 */
+	public function getResponseContent() {
+		return $this->_getResponseContent();
+	}
+
+	protected function getAbsoluteUrlFor($uri) {
+		$uri = str_replace($this->siteUrl, 'http://localhost',
+			str_replace(urlencode($this->siteUrl), urlencode('http://localhost'), $uri));
+		return parent::getAbsoluteUrlFor($uri);
+	}
+
+	/**
+	 * Gets a cookie value and sets it on the current $_COOKIE array.
+	 *
+	 * @param string $cookie The cookie name
+	 * @param array  $params Parameter to filter the cookie value
+	 */
+	public function extractCookie($cookie, array $params = []) {
+		$cookieValue      = $this->grabCookie($cookie, $params);
+		$_COOKIE[$cookie] = $cookieValue;
+	}
+
+	/**
+	 * Logs in as the specified user.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 */
+	public function loginAs($username, $password) {
+		$this->amOnPage('/wp-login.php');
+		$this->fillField('#user_login', $username);
+		$this->fillField('#user_pass', $password);
+		$this->click('#wp-submit');
 	}
 }
