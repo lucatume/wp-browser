@@ -40,7 +40,6 @@ class WPDbThemeCest
 	/**
 	 * @test
 	 * it should default the theme name to title version of stylesheet
-	 * @dataProvider stylesheets
 	 */
 	public function it_should_default_the_theme_name_to_title_version_of_stylesheet(FunctionalTester $I)
 	{

@@ -24,3 +24,4 @@ extensions:
             files:
                'tests/_data/themes/dummy': '/tmp/wordpress/wp-content/themes/dummy'
                'tests/_data/plugins/mu-plugin-1': '/tmp/wordpress/wp-content/plugins/mu-plugin-1'
+               'tests/_data/plugins/test': '/tmp/wordpress/wp-content/plugins/test'

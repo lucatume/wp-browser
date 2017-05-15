@@ -1,0 +1,31 @@
+class_name: WpfunctionalTester
+modules:
+    enabled:
+        - \Helper\Wpfunctional
+        - WPDb
+        - WordPress
+        - WPLoader
+        - Asserts
+    config:
+      WPDb:
+        dsn: 'mysql:host=127.0.0.1;dbname=test'
+        user: 'root'
+        password: ''
+        dump: 'tests/_data/dump.sql'
+        populate: true
+        cleanup: true
+        reconnect: false
+        url: 'http://wordpress.dev'
+        tablePrefix: 'wp_'
+      WordPress:
+        depends: WPDb
+        wpRootFolder: "/tmp/wordpress"
+        adminUsername: 'admin'
+        adminPassword: 'admin'
+      WPLoader:
+        loadOnly: true
+        wpRootFolder: "/tmp/wordpress"
+        dbName: "wploader"
+        dbHost: "localhost"
+        dbUser: root
+        dbPassword: ''

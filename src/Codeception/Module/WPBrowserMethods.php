@@ -258,8 +258,49 @@ trait WPBrowserMethods
 		return $this->grabCookie($pattern);
 	}
 
+	/**
+	 * Goes to a page relative to the admin URL.
+	 *
+	 * @param string $path
+	 */
 	public function amOnAdminPage($path)
 	{
 		$this->amOnPage($this->adminPath . '/' . ltrim($path, '/'));
+	}
+
+	/**
+	 * Goes to the `admin-ajax.php` page.
+	 *
+	 * @return null|string
+	 */
+	public function amOnAdminAjaxPage()
+	{
+		return $this->amOnAdminPage('admin-ajax.php');
+	}
+
+	/**
+	 * Goes to the cron page.
+	 *
+	 * Useful to trigger cron jobs.
+	 *
+	 * @return null|string
+	 */
+	public function amOnCronPage()
+	{
+		return $this->amOnPage('/wp-cron.php');
+	}
+
+	/**
+	 * Goes to the post edit page for the post with the specified post ID.
+	 *
+	 * @param int $id
+	 */
+	public function amEditingPostWithId($id)
+	{
+		if (!is_numeric($id) && intval($id) == $id) {
+			throw new \InvalidArgumentException('ID must be an int value');
+		}
+
+		$this->amOnAdminPage('/post.php?post=' . $id . '&action=edit');
 	}
 }
