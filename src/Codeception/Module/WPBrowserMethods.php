@@ -275,7 +275,7 @@ trait WPBrowserMethods
 	 */
 	public function amOnAdminAjaxPage()
 	{
-		$this->amOnAdminPage('admin-ajax.php');
+		return $this->amOnAdminPage('admin-ajax.php');
 	}
 
 	/**
