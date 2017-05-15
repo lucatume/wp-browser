@@ -118,6 +118,17 @@ The module will try to replace the domain written in the loaded SQL dump file on
 
 ### WPLoader configuration
 The module wraps the configuration, installation and loading of a working headless WordPress site for testing purposes or the simple bootstrapping of the WordPress configuration.  
+Due to WordPress reliance on globally defined variables and constants each suite using the WPLoader module should be run independently of the others; if the `suitea` and `suiteb`  suites use the `WPLoader` module with different configuration parameters avoid running all suites at the same time like this:
+```shell
+codecept run
+```
+Instead run each suite by itself like this:
+
+```shell
+codecept run suitea
+codecept run suiteb
+```
+
 This table list the differences between the two modes supported by the `WPLoader` module depending on the value of the `loadOnly` parameter:
 
 |Functionality|`loadOnly = false`|`loadOnly = true`|  
