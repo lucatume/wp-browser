@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.20.0] 2017-05-15
 ### Added
 - added support for "just loading WordPress" to the WPLoader module using the `loadOnly` parameter
 
@@ -536,7 +538,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.19.15...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.20.0...HEAD
+[1.20.0]: https://github.com/lucatume/wp-browser/compare/1.19.15...1.20.0
 [1.19.15]: https://github.com/lucatume/wp-browser/compare/1.19.14...1.19.15
 [1.19.14]: https://github.com/lucatume/wp-browser/compare/1.19.13...1.19.14
 [1.19.13]: https://github.com/lucatume/wp-browser/compare/1.19.12...1.19.13
