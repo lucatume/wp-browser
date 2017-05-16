@@ -239,7 +239,7 @@ An example configuration for the module in this mode is this one:
           - WPLoader
       config:
           WPLoader:
-	      loadOnly: true
+              loadOnly: true 
               wpRootFolder: "/Users/User/www/wordpress"
               dbName: "wpress-tests"
               dbHost: "localhost"
