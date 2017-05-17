@@ -22,7 +22,8 @@
     "lucatume/codeception-setup-local": "~1.0",
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": "~2.1",
-    "antecedent/patchwork": "^2.0"
+    "antecedent/patchwork": "^2.0",
+    "codeception/codeception": "~2.2",
   },
   "autoload": {
     "psr-4": {
@@ -34,7 +35,6 @@
     ]
   },
   "require-dev": {
-    "codeception/codeception": "~2.2",
     "mikey179/vfsStream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1"
