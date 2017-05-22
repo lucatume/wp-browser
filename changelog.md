@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Changed
 - moved the `codeception/codeception` requirement to the `require` section
+- updated the code of `dontHaveInDatabase` methods of `WPDb` to remove meta of handled objects by default
 
 ##[1.20.0] 2017-05-15
 ### Added
