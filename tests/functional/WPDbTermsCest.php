@@ -3,15 +3,6 @@ use BaconStringUtils\Slugifier;
 
 class WPDbTermsCest
 {
-
-	public function _before(FunctionalTester $I)
-	{
-	}
-
-	public function _after(FunctionalTester $I)
-	{
-	}
-
 	/**
 	 * @test
 	 * it should allow having a term in the database

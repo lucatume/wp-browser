@@ -1388,8 +1388,18 @@ class WPDb extends ExtendedDb
 	{
 		$termRelationshipsKeys = ['term_taxonomy_id'];
 
+		$termTableCriteria = array_intersect_key($criteria, array_flip($this->termKeys));
+		$termTaxonomyTableCriteria = array_intersect_key($criteria, array_flip($this->termTaxonomyKeys));
+
 		if ($purgeMeta) {
-			$ids = $this->grabAllFromDatabase($this->grabTermsTableName(), 'term_id', $criteria);
+			$ids = false;
+
+			if ( ! empty($termTableCriteria)) {
+				$ids = $this->grabAllFromDatabase($this->grabTermsTableName(), 'term_id', $criteria);
+			} elseif ( ! empty($termTaxonomyTableCriteria)) {
+				$ids = $this->grabAllFromDatabase($this->grabTermTaxonomyTableName(), 'term_id', $criteria);
+			}
+
 			if ( ! empty($ids)) {
 				foreach ($ids as $id) {
 					$this->dontHaveTermMetaInDatabase($id);
@@ -1397,10 +1407,8 @@ class WPDb extends ExtendedDb
 			}
 		}
 
-		$this->dontHaveInDatabase($this->grabTermsTableName(),
-			array_intersect_key($criteria, array_flip($this->termKeys)));
-		$this->dontHaveInDatabase($this->grabTermTaxonomyTableName(),
-			array_intersect_key($criteria, array_flip($this->termTaxonomyKeys)));
+		$this->dontHaveInDatabase($this->grabTermsTableName(), $termTableCriteria);
+		$this->dontHaveInDatabase($this->grabTermTaxonomyTableName(), $termTaxonomyTableCriteria);
 		$this->dontHaveInDatabase($this->grabTermRelationshipsTableName(),
 			array_intersect_key($criteria, array_flip($termRelationshipsKeys)));
 	}
