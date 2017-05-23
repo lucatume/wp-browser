@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9f5d52391a359456b23fdbd57bfa91ee",
+    "content-hash": "9876264bac5cf9f78a57077817969fa1",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -161,16 +161,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "2.2.12",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "c3003da1369b556c9f99ee517de56b10429ec449"
+                "reference": "b54eaf4007484f36145c1dc8c64da1874adbc340"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/c3003da1369b556c9f99ee517de56b10429ec449",
-                "reference": "c3003da1369b556c9f99ee517de56b10429ec449",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/b54eaf4007484f36145c1dc8c64da1874adbc340",
+                "reference": "b54eaf4007484f36145c1dc8c64da1874adbc340",
                 "shasum": ""
             },
             "require": {
@@ -251,7 +251,7 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2017-05-22T22:49:03+00:00"
+            "time": "2017-05-22T23:47:35+00:00"
         },
         {
             "name": "composer/ca-bundle",

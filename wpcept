@@ -19,7 +19,10 @@ $app->add(new Codeception\Command\WPBootstrapPyramid('bootstrap:pyramid'));
 $app->add(new Codeception\Command\GenerateCept('generate:cept'));
 $app->add(new Codeception\Command\GenerateCest('generate:cest'));
 $app->add(new Codeception\Command\GenerateTest('generate:test'));
-$app->add(new Codeception\Command\GeneratePhpUnit('generate:phpunit'));
+if (class_exists('Codeception\Command\GeneratePhpUnit')) {
+	/** @noinspection PhpParamsInspection */
+	$app->add(new Codeception\Command\GeneratePhpUnit('generate:phpunit'));
+}
 $app->add(new Codeception\Command\GenerateWPUnit('generate:wpunit'));
 $app->add(new Codeception\Command\GenerateWPAjax('generate:wpajax'));
 $app->add(new Codeception\Command\GenerateWPRestApi('generate:wprest'));
