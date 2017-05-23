@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Console\Output\WrappingOutput;
 use tad\WPBrowser\Interactions\ButlerInterface;
-use tad\WPBrowser\Interactions\WPBootsrapButler;
+use tad\WPBrowser\Interactions\WPBootstrapButler;
 
 class WPBootstrap extends Bootstrap {
 	/**
@@ -22,7 +22,7 @@ class WPBootstrap extends Bootstrap {
 	public $userConfig = [];
 
 	/**
-	 * @var WPBootsrapButler
+	 * @var WPBootstrapButler
 	 */
 	protected $butler;
 
@@ -33,7 +33,7 @@ class WPBootstrap extends Bootstrap {
 
 	public function __construct($name, ButlerInterface $butler = null) {
 		parent::__construct($name);
-		$this->butler = $butler ?: new WPBootsrapButler();
+		$this->butler = $butler ?: new WPBootstrapButler();
 	}
 
 	/**

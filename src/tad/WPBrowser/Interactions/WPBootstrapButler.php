@@ -10,7 +10,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
-class WPBootsrapButler extends BaseButler implements ButlerInterface
+class WPBootstrapButler extends BaseButler implements ButlerInterface
 {
 
 	/**
