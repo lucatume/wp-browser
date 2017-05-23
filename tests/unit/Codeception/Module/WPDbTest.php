@@ -1,11 +1,13 @@
 <?php
+
 namespace Codeception\Module;
 
-
+use Codeception\Lib\Driver\ExtendedMySql;
 use Codeception\Lib\ModuleContainer;
+use org\bovigo\vfs\vfsStream;
 
-class WPDbTest extends \Codeception\Test\Unit
-{
+class WPDbTest extends \Codeception\Test\Unit {
+
 	protected $backupGlobals = false;
 	/**
 	 * @var \UnitTester
@@ -26,8 +28,7 @@ class WPDbTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should be instantiatable
 	 */
-	public function it_should_be_instantiatable()
-	{
+	public function it_should_be_instantiatable() {
 		$sut = $this->make_instance();
 
 		$this->assertInstanceOf(WPDb::class, $sut);
@@ -36,8 +37,7 @@ class WPDbTest extends \Codeception\Test\Unit
 	/**
 	 * @return WPDb
 	 */
-	private function make_instance()
-	{
+	private function make_instance() {
 		return new WPDb($this->moduleContainer->reveal(), $this->config);
 	}
 
@@ -45,8 +45,7 @@ class WPDbTest extends \Codeception\Test\Unit
 	 * @test
 	 * it should not replace the site domain if home is not set in dump
 	 */
-	public function it_should_not_replace_the_site_domain_if_home_is_not_set_in_dump()
-	{
+	public function it_should_not_replace_the_site_domain_if_home_is_not_set_in_dump() {
 		$sut = $this->make_instance();
 
 		$sql = <<< SQL
@@ -66,8 +65,7 @@ SQL;
 	 * @test
 	 * it should not replace the site domain if site domain is same
 	 */
-	public function it_should_not_replace_the_site_domain_if_site_domain_is_same()
-	{
+	public function it_should_not_replace_the_site_domain_if_site_domain_is_same() {
 		$this->config['url'] = 'http://original.dev';
 		$sut = $this->make_instance();
 
@@ -88,8 +86,7 @@ SQL;
 	 * @test
 	 * it should replace the site domain in dump
 	 */
-	public function it_should_replace_the_site_domain_in_dump()
-	{
+	public function it_should_replace_the_site_domain_in_dump() {
 		$sut = $this->make_instance();
 
 		$sql = <<< SQL
@@ -109,8 +106,7 @@ SQL;
 	 * @test
 	 * it should replace https scheam with http
 	 */
-	public function it_should_replace_https_schema_with_http()
-	{
+	public function it_should_replace_https_schema_with_http() {
 		$sut = $this->make_instance();
 
 		$sql = <<< SQL
@@ -130,8 +126,7 @@ SQL;
 	 * @test
 	 * it should replace http schema with https
 	 */
-	public function it_should_replace_http_schema_with_https()
-	{
+	public function it_should_replace_http_schema_with_https() {
 		$this->config['url'] = 'https://some-wp.dev';
 		$sut = $this->make_instance();
 
@@ -152,8 +147,7 @@ SQL;
 	 * @test
 	 * it should not replace domain in sites and blogs table if domain is same
 	 */
-	public function it_should_not_replace_domain_in_sites_and_blogs_table_if_domain_is_same()
-	{
+	public function it_should_not_replace_domain_in_sites_and_blogs_table_if_domain_is_same() {
 		$this->config['url'] = 'https://original.dev/wp';
 		$sut = $this->make_instance();
 
@@ -184,8 +178,7 @@ SQL;
 	 * @test
 	 * it should replace domain in sites and blogs table if domain is not same
 	 */
-	public function it_should_replace_domain_in_sites_and_blogs_table_if_domain_is_not_same()
-	{
+	public function it_should_replace_domain_in_sites_and_blogs_table_if_domain_is_not_same() {
 		$this->config['url'] = 'https://some-wp.dev';
 		$sut = $this->make_instance();
 
@@ -213,19 +206,74 @@ SQL;
 		$this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
 	}
 
-	protected function _before()
-	{
-		$this->moduleContainer = $this->prophesize(ModuleContainer::class);
-		$this->config = [
-			'dsn' => 'some-dsn',
-			'user' => 'some-user',
-			'password' => 'some-password',
-			'url' => 'http://some-wp.dev',
-			'tablePrefix' => 'wp_'
-		];
+	/**
+	 * It should allow specifying a dump file to import
+	 *
+	 * @test
+	 */
+	public function it_should_allow_specifying_a_dump_file_to_import() {
+		$root = vfsStream::setup('root');
+		$dumpFle = vfsStream::newFile('foo.sql', 0777);
+		$root->addChild($dumpFle);
+		$path = $root->url() . '/foo.sql';
+
+		$driver = $this->prophesize(ExtendedMySql::class);
+		$driver->load($path)->shouldBeCalled();
+
+		$sut = $this->make_instance();
+		$sut->_setDriver($driver->reveal());
+		$sut->importSqlDumpFile($path);
 	}
 
-	protected function _after()
-	{
+	/**
+	 * It should throw if specified dump file does not exist
+	 *
+	 * @test
+	 */
+	public function it_should_throw_if_specified_dump_file_does_not_exist() {
+		$path = __DIR__ . '/foo.sql';
+
+		$driver = $this->prophesize(ExtendedMySql::class);
+		$driver->load($path)->shouldNotBeCalled();
+
+		$this->expectException(\InvalidArgumentException::class);
+
+		$sut = $this->make_instance();
+		$sut->_setDriver($driver->reveal());
+
+		$sut->importSqlDumpFile($path);
+	}
+
+	/**
+	 * It should throw is specified dump file is not readable
+	 *
+	 * @test
+	 */
+	public function it_should_throw_is_specified_dump_file_is_not_readable() {
+		$root = vfsStream::setup('root');
+		$dumpFle = vfsStream::newFile('foo.sql', 0000);
+		$root->addChild($dumpFle);
+		$path = $root->url() . '/foo.sql';
+
+		$driver = $this->prophesize(ExtendedMySql::class);
+		$driver->load($path)->shouldNotBeCalled();
+
+		$this->expectException(\InvalidArgumentException::class);
+
+		$sut = $this->make_instance();
+		$sut->_setDriver($driver->reveal());
+
+		$sut->importSqlDumpFile($path);
+	}
+
+	protected function _before() {
+		$this->moduleContainer = $this->prophesize(ModuleContainer::class);
+		$this->config = [
+			'dsn'         => 'some-dsn',
+			'user'        => 'some-user',
+			'password'    => 'some-password',
+			'url'         => 'http://some-wp.dev',
+			'tablePrefix' => 'wp_',
+		];
 	}
 }
