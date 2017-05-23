@@ -251,7 +251,10 @@ class WPDb extends ExtendedDb
 		}
 	}
 
-	private function importSqlDumpFile()
+	/**
+	 * Import the SQL dump file if populate is enabled.
+	 */
+	public function importSqlDumpFile()
 	{
 		if ($this->config['populate']) {
 			$this->cleanup();
