@@ -268,10 +268,10 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 		$this->assertEquals('notRootPass', $decoded['modules']['config']['WPDb']['password']);
 		$this->assertEquals('wordpress_', $decoded['modules']['config']['WPDb']['tablePrefix']);
 		$this->assertEquals('http://some.dev', $decoded['modules']['config']['WPDb']['url']);
-		$this->assertEquals('http://some.dev', $decoded['modules']['config']['WPBrowser']['url']);
-		$this->assertEquals('luca', $decoded['modules']['config']['WPBrowser']['adminUsername']);
-		$this->assertEquals('dadada', $decoded['modules']['config']['WPBrowser']['adminPassword']);
-		$this->assertEquals('/wp-admin', $decoded['modules']['config']['WPBrowser']['adminPath']);
+		$this->assertEquals('http://some.dev', $decoded['modules']['config']['WPBrowserBootstrap']['url']);
+		$this->assertEquals('luca', $decoded['modules']['config']['WPBrowserBootstrap']['adminUsername']);
+		$this->assertEquals('dadada', $decoded['modules']['config']['WPBrowserBootstrap']['adminPassword']);
+		$this->assertEquals('/wp-admin', $decoded['modules']['config']['WPBrowserBootstrap']['adminPath']);
 	}
 
 	/**
@@ -362,7 +362,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 
 		$decoded = Yaml::parse($fileContents);
 
-		$this->assertEquals($url, $decoded['modules']['config']['WPBrowser']['url']);
+		$this->assertEquals($url, $decoded['modules']['config']['WPBrowserBootstrap']['url']);
 	}
 
 	public function adminPathsFormats() {
@@ -410,7 +410,7 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 
 		$decoded = Yaml::parse($fileContents);
 
-		$this->assertEquals($expectedAdminPath, $decoded['modules']['config']['WPBrowser']['adminPath']);
+		$this->assertEquals($expectedAdminPath, $decoded['modules']['config']['WPBrowserBootstrap']['adminPath']);
 	}
 
 	/**
@@ -740,9 +740,9 @@ class WPBootstrapTest extends \Codeception\Test\Unit {
 			[['integration', 'integration'], 'WPLoader', 'integrationTablePrefix', 'prefix_', 'tablePrefix'],
 			[['acceptance', 'ui'], 'WPDb', 'url', 'http://example.com'],
 			[['integration', 'integration'], 'WPLoader', 'wpRootFolder', $this->testDir('/wordpress')],
-			[['acceptance', 'ui'], 'WPBrowser', 'adminUsername', 'foo'],
-			[['acceptance', 'ui'], 'WPBrowser', 'adminPassword', 'bar'],
-			[['acceptance', 'ui'], 'WPBrowser', 'adminPath', '/sub-folder/wp-admin'],
+			[['acceptance', 'ui'], 'WPBrowserBootstrap', 'adminUsername', 'foo'],
+			[['acceptance', 'ui'], 'WPBrowserBootstrap', 'adminPassword', 'bar'],
+			[['acceptance', 'ui'], 'WPBrowserBootstrap', 'adminPath', '/sub-folder/wp-admin'],
 			[['integration', 'integration'], 'WPLoader', 'theme', 'some-theme'],
 			[['integration', 'integration'], 'WPLoader', 'plugins', 'foo/foo.php,bar/bar.php'],
 		];
