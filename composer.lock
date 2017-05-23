@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "82a22ba2e522eb0f468bfe730b633f53",
+    "content-hash": "9f5d52391a359456b23fdbd57bfa91ee",
     "packages": [
         {
             "name": "antecedent/patchwork",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/antecedent/patchwork.git",
-                "reference": "efac55cfecdfc8cb297981b57cfd83eb967bcdf6"
+                "reference": "248daac9af59644ebf25ad1925f8780a7a5e4882"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antecedent/patchwork/zipball/efac55cfecdfc8cb297981b57cfd83eb967bcdf6",
-                "reference": "efac55cfecdfc8cb297981b57cfd83eb967bcdf6",
+                "url": "https://api.github.com/repos/antecedent/patchwork/zipball/248daac9af59644ebf25ad1925f8780a7a5e4882",
+                "reference": "248daac9af59644ebf25ad1925f8780a7a5e4882",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 "runkit",
                 "testing"
             ],
-            "time": "2017-05-22T17:30:42+00:00"
+            "time": "2017-05-23T05:41:30+00:00"
         },
         {
             "name": "bacon/bacon-string-utils",
@@ -161,16 +161,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "2.2.11",
+            "version": "2.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "a8681b416921ae282ccca2c485d75a3ed6756080"
+                "reference": "c3003da1369b556c9f99ee517de56b10429ec449"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/a8681b416921ae282ccca2c485d75a3ed6756080",
-                "reference": "a8681b416921ae282ccca2c485d75a3ed6756080",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/c3003da1369b556c9f99ee517de56b10429ec449",
+                "reference": "c3003da1369b556c9f99ee517de56b10429ec449",
                 "shasum": ""
             },
             "require": {
@@ -251,7 +251,7 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2017-05-11T21:07:05+00:00"
+            "time": "2017-05-22T22:49:03+00:00"
         },
         {
             "name": "composer/ca-bundle",

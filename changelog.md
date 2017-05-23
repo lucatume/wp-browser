@@ -6,9 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[1.20.1] 2017-05-23
 ### Changed
+- locked `codeception/codeception` version at `~2.2.0` while support for version `2.3` is developed
 - moved the `codeception/codeception` requirement to the `require` section
 - updated the code of `dontHaveInDatabase` type methods of `WPDb` to remove meta of handled objects by default
-
+ 
 ##[1.20.0] 2017-05-15
 ### Added
 - added support for "just loading WordPress" to the WPLoader module using the `loadOnly` parameter
