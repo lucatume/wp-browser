@@ -174,7 +174,6 @@ In the suite `.yml` configuration file add the module among the loaded ones
               plugins: ['hello.php', 'my-plugin/my-plugin.php']
               activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
               booststrapActions: ['my-first-action', 'my-second-action']
-              theme: 'my-theme'
 ```
 
 and configure it using the required parameters:
