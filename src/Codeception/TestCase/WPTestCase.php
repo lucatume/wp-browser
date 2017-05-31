@@ -433,7 +433,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 		return $query;
 	}
 
-	function get_wp_die_handler($handler) {
+	function get_wp_die_handler() {
 		return array($this, 'wp_die_handler');
 	}
 
@@ -807,35 +807,6 @@ class WPTestCase extends \Codeception\Test\Unit {
 
 		if (!empty($errors)) {
 			$this->fail(implode("\n", $errors));
-		}
-	}
-
-	protected function checkRequirements() {
-		parent::checkRequirements();
-
-		// Core tests no longer check against open Trac tickets, but others using WP_UnitTestCase may do so.
-		if (defined('WP_RUN_CORE_TESTS') && WP_RUN_CORE_TESTS) {
-			return;
-		}
-
-		if (WP_TESTS_FORCE_KNOWN_BUGS) {
-			return;
-		}
-		$tickets = \PHPUnit_Util_Test::getTickets(get_class($this), $this->getName(false));
-		foreach ($tickets as $ticket) {
-			if (is_numeric($ticket)) {
-				$this->knownWPBug($ticket);
-			} elseif ('UT' == substr($ticket, 0, 2)) {
-				$ticket = substr($ticket, 2);
-				if ($ticket && is_numeric($ticket)) {
-					$this->knownUTBug($ticket);
-				}
-			} elseif ('Plugin' == substr($ticket, 0, 6)) {
-				$ticket = substr($ticket, 6);
-				if ($ticket && is_numeric($ticket)) {
-					$this->knownPluginBug($ticket);
-				}
-			}
 		}
 	}
 

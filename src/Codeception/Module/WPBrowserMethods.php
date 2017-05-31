@@ -199,7 +199,7 @@ trait WPBrowserMethods
 	 *
 	 * Allows for class-based error checking to decouple from internationalization.
 	 *
-	 * @param array $classes A list of classes the error notice should have.
+	 * @param array|string $classes A list of classes the error notice should have.
 	 *
 	 * @return void
 	 */
@@ -229,7 +229,7 @@ trait WPBrowserMethods
 	 *
 	 * Allows for class-based error checking to decouple from internationalization.
 	 *
-	 * @param array $classes A list of classes the message should have.
+	 * @param array|string $classes A list of classes the message should have.
 	 *
 	 * @return void
 	 */
@@ -275,7 +275,7 @@ trait WPBrowserMethods
 	 */
 	public function amOnAdminAjaxPage()
 	{
-		return $this->amOnAdminPage('admin-ajax.php');
+		$this->amOnAdminPage('admin-ajax.php');
 	}
 
 	/**

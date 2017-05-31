@@ -92,7 +92,8 @@ class WPBootstrapper extends Module
 
 	public function bootstrapWp()
 	{
-		include_once($this->wpLoadPath);
+        /** @noinspection PhpIncludeInspection */
+        include_once($this->wpLoadPath);
 		if ($this->config['backupGlobals']) {
 			if ($this->globalStateSnapshot === false) {
 				$this->setupSuperglobalArrays();

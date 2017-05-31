@@ -66,7 +66,7 @@ class WPCLI extends Module
      * @param null|array $config
      * @param Executor|null $executor
      *
-     * @throws ModuleConfigException If specifiec path is not a folder.
+     * @throws ModuleConfigException If specified path is not a folder.
      */
     public function __construct(ModuleContainer $moduleContainer, $config, Executor $executor = null)
     {
@@ -88,10 +88,10 @@ class WPCLI extends Module
      * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
      *                            e.g. a terminal call like `wp core version` becomes `core version`
      *                            omitting the call to wp-cli script.
+     * @param array  $output If provided the array will be filled with the command output lines.
+     *
      * @return int wp-cli exit value for the command
      *
-     * @throws ModuleException if the `throw` option is enabled in the config and
-     *          wp-cli return status is not 0.
      */
     public function cli($userCommand = 'core version', &$output = [])
     {
@@ -106,7 +106,7 @@ class WPCLI extends Module
 
         $this->evaluateStatus($output, $status);
 
-        return count($output) === 1 ? reset($output) : $output;
+        return $status;
     }
 
     protected function initPaths()
@@ -199,7 +199,7 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array.
      *
-     * This method should be used in conjuction with wp-cli commands that will return lists.
+     * This method should be used in conjunction with wp-cli commands that will return lists.
      * E.g.
      *
      *      $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
@@ -211,9 +211,12 @@ class WPCLI extends Module
      * No check will be made on the command the user inserted for coherency with a split-able
      * output.
      *
-     * @param string $userCommand
+     * @param string        $userCommand
+     * @param callable|null $splitCallback A optional callback function in charge of splitting the results array.
      *
      * @return array An array containing the output of wp-cli split into single elements.
+     *
+     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
      */
     public function cliToArray($userCommand = 'post list --format=ids', callable  $splitCallback = null)
     {

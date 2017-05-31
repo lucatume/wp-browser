@@ -8,6 +8,7 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use Handlebars\Handlebars;
 use PDO;
+use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Links;
 use tad\WPBrowser\Generators\Post;
@@ -270,8 +271,8 @@ class WPDb extends ExtendedDb
 		}
 
 		if ($this->config['populate']) {
-			$this->cleanup();
-			$this->loadDump();
+			$this->_cleanup();
+			$this->_loadDump();
 			$this->populated = true;
 		}
 	}
@@ -454,6 +455,8 @@ class WPDb extends ExtendedDb
 	 * Inserts a page in the database.
 	 *
 	 * @param array $overrides An array of values to override the default ones.
+     *
+     * @return int The inserted page post ID.
 	 */
 	public function havePageInDatabase(array $overrides = [])
 	{
@@ -598,6 +601,8 @@ class WPDb extends ExtendedDb
 	 * Looks up the prefixed `terms` table, e.g. `wp_terms`.
 	 *
 	 * @param array $criteria An array of search criteria.
+     *
+     * @return int The matching term `term_id`
 	 */
 	public function grabTermIdFromDatabase(array $criteria)
 	{
@@ -710,6 +715,8 @@ class WPDb extends ExtendedDb
 	 * Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
 	 *
 	 * @param array $criteria An array of search criteria.
+     *
+     * @return int The matching term `term_taxonomy_id`
 	 */
 	public function grabTermTaxonomyIdFromDatabase(array $criteria)
 	{
@@ -1044,7 +1051,7 @@ class WPDb extends ExtendedDb
 	 * @param  mixed  $option_value
 	 * @param string  $autoload
 	 *
-	 * @return int The inserted `option_id`
+	 * @return int The inserted option `option_id`
 	 */
 	public function haveOptionInDatabase($option_name, $option_value, $autoload = 'yes')
 	{
@@ -1077,7 +1084,7 @@ class WPDb extends ExtendedDb
 	 * @param      $key
 	 * @param null $value
 	 *
-	 * @return int The removed option `option_id`.
+	 * @return void
 	 */
 	public function dontHaveOptionInDatabase($key, $value = null)
 	{
@@ -1086,6 +1093,7 @@ class WPDb extends ExtendedDb
 		if ( ! empty($value)) {
 			$criteria['option_value'] = $value;
 		}
+
 		$this->dontHaveInDatabase($tableName, $criteria);
 	}
 
@@ -1151,6 +1159,8 @@ class WPDb extends ExtendedDb
 	 *
 	 * @param $key
 	 * @param $value
+     *
+     * @return int The inserted transient `option_id`
 	 */
 	public function haveSiteTransientInDatabase($key, $value)
 	{
@@ -2009,7 +2019,7 @@ class WPDb extends ExtendedDb
 	 */
 	public function haveBlogInDatabase($domainOrPath, array $overrides = [])
 	{
-		$defaults = \tad\WPBrowser\Generators\Blog::makeDefaults($this->isSubdomainMultisiteInstall);
+		$defaults = Blog::makeDefaults($this->isSubdomainMultisiteInstall);
 		if ($this->isSubdomainMultisiteInstall) {
 			if (empty($overrides['domain'])) {
 				$defaults['domain'] = sprintf('%s.%s', $domainOrPath, $this->getSiteDomain());

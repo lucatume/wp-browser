@@ -10,7 +10,7 @@ class ExtendedDb extends Db
 	 * Deletes a database entry.
 	 *
 	 * @param  string $table The table name.
-	 * @param  array $data An associative array of the column names and values to use as deletion criteria.
+	 * @param  array $criteria An associative array of the column names and values to use as deletion criteria.
 	 *
 	 * @return void
 	 */

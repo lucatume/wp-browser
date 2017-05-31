@@ -516,32 +516,6 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 		$GLOBALS['wp']->main($parts['query']);
 	}
 
-	protected function checkRequirements() {
-		parent::checkRequirements();
-
-		// Core tests no longer check against open Trac tickets, but others using WP_UnitTestCase may do so.
-		if ( defined( 'WP_RUN_CORE_TESTS' ) && WP_RUN_CORE_TESTS ) {
-			return;
-		}
-
-		if ( WP_TESTS_FORCE_KNOWN_BUGS )
-			return;
-		$tickets = PHPUnit_Util_Test::getTickets( get_class( $this ), $this->getName( false ) );
-		foreach ( $tickets as $ticket ) {
-			if ( is_numeric( $ticket ) ) {
-				$this->knownWPBug( $ticket );
-			} elseif ( 'UT' == substr( $ticket, 0, 2 ) ) {
-				$ticket = substr( $ticket, 2 );
-				if ( $ticket && is_numeric( $ticket ) )
-					$this->knownUTBug( $ticket );
-			} elseif ( 'Plugin' == substr( $ticket, 0, 6 ) ) {
-				$ticket = substr( $ticket, 6 );
-				if ( $ticket && is_numeric( $ticket ) )
-					$this->knownPluginBug( $ticket );
-			}
-		}
-	}
-
 	/**
 	 * Skips the current test if there is an open WordPress ticket with id $ticket_id
 	 */

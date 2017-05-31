@@ -106,7 +106,8 @@ EOF;
 		$this->ensureWpRoot();
 		$this->adminPath = $this->config['adminPath'];
 		$this->client    = $client;
-		$this->assertionClass = class_exists('\\PHPunit\\Framework\\TestCase') ?
+        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+        $this->assertionClass = class_exists('\\PHPunit\\Framework\\Assert') ?
 			\PHPunit\Framework\Assert::class : \PHPUnit_Framework_Assert::class;
 	}
 

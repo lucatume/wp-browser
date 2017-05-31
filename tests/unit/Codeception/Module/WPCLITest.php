@@ -250,7 +250,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->expectException(ModuleException::class);
-        $ids = $sut->cliToArray('post list --format=ids', $splitCallback);
+        $sut->cliToArray('post list --format=ids', $splitCallback);
     }
 
     protected function _before()
