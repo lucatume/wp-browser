@@ -15,6 +15,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
+    - env: wpVersion=nightly
 
 services:
   - mysql
@@ -25,8 +26,8 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - wpVersion=latest wpFolder=/tmp/wordpress wpDbName=test wpLoaderDbName=wploader wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
-  - wpVersion=nightly wpFolder=/tmp/wordpress wpDbName=test wpLoaderDbName=wploader wpDbPrefix=wp_ wpUrl=wordpress.dev wpAdminUsername=admin wpAdminPassword=admin wpSubdomain1=test1 wpSubdomain1Title="Test Subdomain 1" wpSubdomain2=test2 wpSubdomain2Title="Test Subdomain 2"
+  - wpVersion=latest
+  - wpVersion=nightly
 
 before_install:
   - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
@@ -36,6 +37,19 @@ install:
   - composer update --prefer-dist
 
 before_script:
+  # export variables
+  - export wpFolder=/tmp/wordpress
+  - export wpDbName=test
+  - export wpLoaderDbName=wploader
+  - export wpDbPrefix=wp_
+  - export wpUrl=wordpress.dev
+  - export wpAdminUsername=admin
+  - export wpAdminPassword=admin
+  - export wpSubdomain1=test1
+  - export wpSubdomain1Title="Test Subdomain 1"
+  - export wpSubdomain2=test2
+  - export wpSubdomain2Title="Test Subdomain 2"
+
   # set up folders
   - mkdir -p $HOME/tools /tmp/wordpress
 
