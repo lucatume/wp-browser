@@ -26,10 +26,6 @@ class WPQueries extends Module
 {
 
     /**
-     * @var string The PHPUnit assertion class available
-     */
-    protected $assertionClass;
-    /**
 	 * @var array
 	 */
 	protected $filteredQueries = [];
@@ -59,8 +55,6 @@ class WPQueries extends Module
 	 */
 	public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null, $wpdb = null)
 	{
-        $this->assertionClass = class_exists('\\PHPunit\\Framework\\Assert') ?
-            \PHPunit\Framework\Assert::class : \PHPUnit_Framework_Assert::class;
 		$this->constants = $constants ? $constants : new Constants();
 		$this->wpdb = $wpdb;
 		parent::__construct($moduleContainer, $config);
@@ -110,7 +104,7 @@ class WPQueries extends Module
 	{
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that queries were made.';
-        $this->assertionClass::assertNotEmpty($this->filteredQueries, $message);
+        \PHPUnit_Framework_Assert::assertNotEmpty($this->filteredQueries, $message);
 	}
 
 	private function readQueries()
@@ -154,7 +148,7 @@ class WPQueries extends Module
 	{
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that no queries were made.';
-        $this->assertionClass::assertEmpty($this->filteredQueries, $message);
+        \PHPUnit_Framework_Assert::assertEmpty($this->filteredQueries, $message);
 	}
 
 	/**
@@ -167,7 +161,7 @@ class WPQueries extends Module
 	{
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made.';
-		$this->assertionClass::assertCount($n, $this->filteredQueries, $message);
+		\PHPUnit_Framework_Assert::assertCount($n, $this->filteredQueries, $message);
 	}
 
 	/**
@@ -184,7 +178,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
 		$statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -202,7 +196,7 @@ class WPQueries extends Module
 		$class = ltrim($class, '\\');
 		$message = $message ? $message : 'Failed asserting that queries were made by method [' . $class . '::' . $method . ']';
 		$statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -235,7 +229,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries beginning with statement [' . $statement . '] were made.';
 		$statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
-		$this->assertionClass::assertCount($n, iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -269,7 +263,7 @@ class WPQueries extends Module
 		$class = ltrim($class, '\\');
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $class . '::' . $method . ']';
 		$statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
-		$this->assertionClass::assertCount($n, iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -285,7 +279,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that queries were made by function [' . $function . ']';
 		$statementIterator = new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries), $function);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -316,7 +310,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by function [' . $function . ']';
 		$statementIterator = new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries), $function);
-		$this->assertionClass::assertCount($n, iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -336,7 +330,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that queries were made by method [' . $class . '::' . $method . '] containing statement [' . $statement . ']';
 		$statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$class, $method), $statement);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -374,7 +368,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $class . '::' . $method . '] containing statement [' . $statement . ']';
 		$statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$class, $method), $statement);
-		$this->assertionClass::assertCount($n, iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -393,7 +387,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that queries were made by function [' . $function . '] containing statement [' . $statement . ']';
 		$statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$function), $statement);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -429,7 +423,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $function . '] containing statement [' . $statement . ']';
 		$statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$function), $statement);
-		$this->assertionClass::assertCount($n, iterator_to_array($statementIterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($statementIterator), $message);
 	}
 
 	/**
@@ -445,7 +439,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that queries were triggered by action [' . $action . ']';
 		$iterator = new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries), $action);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -476,7 +470,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']';
 		$iterator = new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries), $action);
-		$this->assertionClass::assertCount($n, iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -495,7 +489,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that queries were triggered by action  [' . $action . '] containing statement [' . $statement . ']';
 		$iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$action), $statement);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -531,7 +525,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by action  [' . $action . '] containing statement [' . $statement . ']';
 		$iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$action), $statement);
-		$this->assertionClass::assertCount($n, iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -547,7 +541,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that queries were triggered by filter [' . $filter . ']';
 		$iterator = new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -578,7 +572,7 @@ class WPQueries extends Module
 		$this->readQueries();
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']';
 		$iterator = new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter);
-		$this->assertionClass::assertCount($n, iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -597,7 +591,7 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
 		$iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$filter), $statement);
-		$this->assertionClass::assertNotEmpty(iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertNotEmpty(iterator_to_array($iterator), $message);
 	}
 
 	/**
@@ -633,6 +627,6 @@ class WPQueries extends Module
 		$message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
 		$iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries),
 			$filter), $statement);
-		$this->assertionClass::assertCount($n, iterator_to_array($iterator), $message);
+		\PHPUnit_Framework_Assert::assertCount($n, iterator_to_array($iterator), $message);
 	}
 }

@@ -14,11 +14,6 @@ class WordPress extends Framework implements DependsOnModule {
 	use WPBrowserMethods;
 
 	/**
-	 * @var string
-	 */
-	protected $assertionClass = '';
-
-	/**
 	 * @var \tad\WPBrowser\Connector\WordPress
 	 */
 	public $client;
@@ -106,9 +101,6 @@ EOF;
 		$this->ensureWpRoot();
 		$this->adminPath = $this->config['adminPath'];
 		$this->client    = $client;
-        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-        $this->assertionClass = class_exists('\\PHPunit\\Framework\\Assert') ?
-			\PHPunit\Framework\Assert::class : \PHPUnit_Framework_Assert::class;
 	}
 
 	private function ensureWpRoot() {
