@@ -3,12 +3,7 @@
 namespace {
 
     // PHPUnit 6 compat
-    $shims = [
-        'PHPUnit_Util_Getopt' => 'PHPUnit\Util\Getopt',
-    ];
-    foreach ($shims as $original => $alias) {
-        if ( ! class_exists($alias) && class_exists($original)) {
-            class_alias($original, $alias);
-        }
+    if (class_exists('PHPUnit\Framework\TestCase')) {
+        class_alias('PHPUnit\Util\Getopt', 'PHPUnit_Util_Getopt');
     }
 }
