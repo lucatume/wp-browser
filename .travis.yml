@@ -57,6 +57,9 @@ before_script:
   - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
   - wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
 
+  # flush rewrite rules
+  - wp rewrite structure '/%postname%/'
+
   # export a dump of the just installed database to the _data folder
   - cd /tmp/wordpress
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql

@@ -272,9 +272,10 @@ class WPDb extends ExtendedDb
 		}
 
 		if ($this->config['populate']) {
-			$this->_cleanup();
-			$this->_loadDump();
-			$this->populated = true;
+            $this->_cleanup();
+            $this->_loadDump();
+            $this->haveOptionInDatabase('cron', false);
+            $this->populated = true;
 		}
 	}
 
