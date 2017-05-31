@@ -76,11 +76,12 @@ class WPDb extends ExtendedDb
 	 * @var array
 	 */
 	protected $config = [
-		'tablePrefix' => 'wp_',
-		'populate'    => true,
-		'cleanup'     => true,
-		'reconnect'   => false,
-		'dump'        => null,
+        'tablePrefix' => 'wp_',
+        'populate'    => true,
+        'cleanup'     => true,
+        'reconnect'   => false,
+        'dump'        => null,
+        'populator'   => null,
 	];
 	/**
 	 * The table prefix to use.
