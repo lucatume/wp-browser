@@ -31,8 +31,7 @@
       "tad\\": "src\\tad"
     },
     "files": [
-      "src/tad/WPBrowser/functions.php",
-      "shim.php"
+      "src/tad/WPBrowser/functions.php"
     ]
   },
   "require-dev": {
