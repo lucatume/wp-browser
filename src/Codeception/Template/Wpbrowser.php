@@ -2,6 +2,7 @@
 
 namespace Codeception\Template;
 
+use Codeception\Exception\ModuleConfigException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
 
@@ -20,7 +21,7 @@ class Wpbrowser extends Bootstrap {
         }
 
         $this->say(
-            "<fg=white;bg=magenta> Bootstrapping wp-browser on top of Codeception </fg=white;bg=magenta>\n"
+            "<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n"
         );
 
         $this->createGlobalConfig();
@@ -32,41 +33,57 @@ class Wpbrowser extends Bootstrap {
             return;
         }
 
-        $interactive = $this->ask('wp-browser can set up the suites for you provided some information, would you like to set the suites up now?', 'yes');
+        $this->say();
+        $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
+        $this->say(" --- ");
+        $this->say();
 
         if (preg_match('/^(n|N).*/', $interactive)) {
             $installationData = [];
+            $interactive = false;
         } else {
             $installationData = $this->askForInstallationData();
         }
 
-        $this->createUnitSuite();
-        $this->say("tests/unit created                 <- unit tests");
-        $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
-        $this->createWpUnitSuite('Wpunit', $installationData);
-        $this->say("tests/wpunit created               <- WordPress unit and integration tests");
-        $this->say("tests/wpunit.suite.yml written     <- WordPress unit and integration tests suite configuration");
-        $this->createFunctionalSuite('Functional', $installationData);
-        $this->say("tests/functional created           <- functional tests");
-        $this->say("tests/functional.suite.yml written <- functional tests suite configuration");
-        $this->createAcceptanceSuite('Acceptance', $installationData);
-        $this->say("tests/acceptance created           <- acceptance tests");
-        $this->say("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+        try {
+            $this->createUnitSuite();
+            $this->say("tests/unit created                 <- unit tests");
+            $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
+            $this->createWpUnitSuite('Wpunit', $installationData);
+            $this->say("tests/wpunit created               <- WordPress unit and integration tests");
+            $this->say("tests/wpunit.suite.yml written     <- WordPress unit and integration tests suite configuration");
+            $this->createFunctionalSuite('Functional', $installationData);
+            $this->say("tests/functional created           <- functional tests");
+            $this->say("tests/functional.suite.yml written <- functional tests suite configuration");
+            $this->createAcceptanceSuite('Acceptance', $installationData);
+            $this->say("tests/acceptance created           <- acceptance tests");
+            $this->say("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+        } catch (ModuleConfigException $e) {
+            $this->sayWarning('Something is not ok in the modules configurations: check your answers and try the initialization again.');
+
+            return;
+        }
 
         $this->say(" --- ");
         $this->say();
-        $this->saySuccess('WPBrowser is installed for acceptance, functional, WordPress unit and unit testing');
+        if ($interactive) {
+            $this->saySuccess('Codeception is installed for acceptance, functional, and WordPress unit testing');
+        } else {
+            $this->saySuccess('Codeception has created the files for the acceptance, functional, WordPress unit and unit suites but the modules are not activated');
+        }
+
         $this->say();
 
         $this->say("<bold>Next steps:</bold>");
         $this->say('0. <bold>Create the databases</bold> used by the modules: wp-browser will not do it for you!');
         $this->say('1. <bold>Install and configure WordPress</bold> activating the theme and plugins you need to create a database dump in <comment>tests/_data/dump.sql</comment>');
-        $this->say('2. Edit <bold>tests/acceptance.suite.yml</bold> to configure WPDb and WPBrowser to match your local setup; change WPBrowser to WPWebDriver to enable browser testing');
-        $this->say("3. Edit <bold>tests/functional.suite.yml</bold> to configure WordPress and WPDb to match your local setup");
-        $this->say("4. Edit <bold>tests/wpunit.suite.yml</bold> to configure WPLoader to match your local setup");
-        $this->say("5. Create your first acceptance tests using <comment>codecept g:cest acceptance First</comment>");
-        $this->say("6. Write first test in <bold>tests/acceptance/FirstCest.php</bold>");
+        $this->say('2. Edit <bold>tests/acceptance.suite.yml</bold> to make sure WPDb and WPBrowser configurations match your local setup; change WPBrowser to WPWebDriver to enable browser testing');
+        $this->say("3. Edit <bold>tests/functional.suite.yml</bold> to make sure WordPress and WPDb configurations match your local setup");
+        $this->say("4. Edit <bold>tests/wpunit.suite.yml</bold> to make sure WPLoader configuation matches your local setup");
+        $this->say("5. Create your first acceptance tests using <comment>codecept g:cest acceptance WPFirst</comment>");
+        $this->say("6. Write first test in <bold>tests/acceptance/WPFirstCest.php</bold>");
         $this->say("7. Run tests using: <comment>codecept run acceptance</comment>");
+        $this->say(" --- ");
         $this->say();
         $this->sayWarning("Please note: due to WordPress extended use of globals and constants avoid running all the tests at the same time.");
         $this->say("Run each suite separately, like this: <comment>codecept run unit && codecept run integration</comment>, to avoid problems.");
@@ -111,10 +128,18 @@ class Wpbrowser extends Bootstrap {
     }
 
     protected function askForInstallationData() {
-        $installationData = [];
+        $installationData = [
+            'activeModules' => [
+                'WPDb',
+                'WPBrowser',
+                'WordPress',
+                'WPLoader',
+            ],
+        ];
         $this->say('WPLoader and WordPress modules need to access the WordPress files to work');
         $installationData['wpRootFolder'] = $this->ask("Where is WordPress installed?", '/var/www/wp');
         $installationData['wpAdminPath'] = $this->ask('What is the path, relative to WordPress root folder, of the admin area?', '/wp-admin');
+        $installationData['wpAdminPath'] = '/' . trim($installationData['wpAdminPath'], '/');
         $this->say('The WPDb module needs the database details to access the database used by WordPress');
         $installationData['dbName'] = $this->ask("What's the name of the database used by the WordPress installation?", 'wp');
         $installationData['dbHost'] = $this->ask("What's the host of the database used by the WordPress installation?", 'localhost');
@@ -122,20 +147,22 @@ class Wpbrowser extends Bootstrap {
         $installationData['dbPassword'] = $this->ask("What's the password of the database used by the WordPress installation?", '');
         $installationData['tablePrefix'] = $this->ask("What's the table prefix of the database used by the WordPress installation?", 'wp_');
         $this->say('WPLoader will reinstall a fresh WordPress installation before the tests; as such it needs the details you would typically provide when installing WordPress from scratch');
+        $this->say();
         $this->sayWarning('WPLoader should be configured to run on a dedicated database!');
+        $this->say();
         $installationData['wploaderDbName'] = $this->ask("What's the name of the database WPLoader should use?", 'wpTests');
         $installationData['wploaderDbHost'] = $this->ask("What's the host of the database WPLoader should use?", 'localhost');
         $installationData['wploaderDbUser'] = $this->ask("What's the user of the database WPLoader should use?", 'root');
         $installationData['wploaderDbPassword'] = $this->ask("What's the password of the database WPLoader should use?", '');
         $installationData['wplodaerTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?", 'wp_');
-
-        $installationData['domain'] = $this->ask("What's the domain of  the WordPress installation?", 'wp.localhost');
-        $url = parse_url($installationData['domain']);
-        $url['host'] = empty($url['host']) ? 'example.com' : $url['host'];
-        $url['port'] = empty($url['port']) ? '' : ':' . $url['port'];
-        $url['path'] = empty($url['path']) ? '' : $url['path'];
-        $adminEmailCandidate = "admin@{$url['host']}";
-        $this->say('WordPress will use the administrator email to send notifications during the tests: you should use a mail address managed by a service like <bold>MailCatcher</bold>');
+        $installationData['url'] = $this->ask("What's the URL the WordPress installation?", 'http://wp.localhost');
+        $installationData['url'] = rtrim($installationData['url'], '/');
+        $url = parse_url($installationData['url']);
+        $installationData['urlScheme'] = empty($url['scheme']) ? 'http' : $url['scheme'];
+        $installationData['urlHost'] = empty($url['host']) ? 'example.com' : $url['host'];
+        $installationData['urlPort'] = empty($url['port']) ? '' : ':' . $url['port'];
+        $installationData['urlPath'] = empty($url['path']) ? '' : $url['path'];
+        $adminEmailCandidate = "admin@{$installationData['urlHost']}";
         $installationData['adminEmail'] = $this->ask("What's the email of the WordPress site administrator?", $adminEmailCandidate);
         $installationData['title'] = $this->ask("What's the title of the WordPress site?", 'Test');
         //			plugins: ['hello.php', 'my-plugin/my-plugin.php']
@@ -170,6 +197,7 @@ class Wpbrowser extends Bootstrap {
 
     protected function createWpUnitSuite($actor = 'Wpunit', array $installationData = []) {
         $installationData = new Data($installationData);
+        $WPLoader = ! empty($installationData['activeModules']['WPLoader']) ? 'WPLoader' : '# - WPLoader';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -178,7 +206,7 @@ class Wpbrowser extends Bootstrap {
 actor: $actor{$this->actorSuffix}
 modules:
     enabled:
-        - WPLoader
+        {$WPLoader}
         - \\{$this->namespace}Helper\Wpunit
     config:
         WPLoader:
@@ -188,7 +216,7 @@ modules:
             dbUser: "{$installationData['wploaderDbUser']}"
             dbPassword: "{$installationData['wploaderDbPassword']}"
             tablePrefix: "{$installationData['wploaderTablePrefix']}"
-            domain: "{$installationData['domain']}"
+            domain: "{$installationData['urlDomain']}{$installationData['urlPort']}"
             adminEmail: "{$installationData['adminEmail']}"
             title: "{$installationData['title']}"
 EOF;
@@ -216,6 +244,8 @@ EOF;
 
     protected function createFunctionalSuite($actor = 'Functional', array $installationData = []) {
         $installationData = new Data($installationData);
+        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? 'WPDb' : '# - WPDb';
+        $WordPress = ! empty($installationData['activeModules']['WordPress']) ? 'WordPress' : '# - WordPress';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -225,8 +255,8 @@ EOF;
 actor: $actor{$this->actorSuffix}
 modules:
     enabled:
-        - WPDb
-        - WordPress
+        {$WPDb}
+        {$WordPress}
         - Asserts
         - \\{$this->namespace}Helper\Functional
     config:
@@ -237,7 +267,7 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
-            url: 'http://{$installationData['domain']}'
+            url: '{$installationData['url']}]'
             urlReplacement: true
             tablePrefix: '{$installationData['tablePrefix']}'
         WordPress:
@@ -252,6 +282,8 @@ EOF;
 
     protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = null) {
         $installationData = new Data($installationData);
+        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? 'WPDb' : '# - WPDb';
+        $WPBrowser = ! empty($installationData['activeModules']['WPBrowser']) ? 'WPBrowser' : '# - WPBrowser';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -263,8 +295,8 @@ EOF;
 actor: $actor{$this->actorSuffix}
 modules:
     enabled:
-        - WPDb
-        - WPBrowser
+        {$WPDb}
+        {$WPBrowser}
         - \\{$this->namespace}Helper\Acceptance
     config:
         WPDb:
@@ -274,11 +306,11 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true #import the dump before the tests
             cleanup: true #import the dump between tests
-            url: 'http://{$installationData['domain']}'
+            url: '{$installationData['url']}'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '{$installationData['tablePrefix']}'
         WPBrowser:
-            url: 'http://{$installationData['domain']}'
+            url: '{$installationData['url']}'
             adminUsername: '{$installationData['adminUsername']}'
             adminPassword: '{$installationData['adminPassword']}'
             adminPath: '{$installationData['wpAdminPath']}'
