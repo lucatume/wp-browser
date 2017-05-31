@@ -1,57 +1,15 @@
 #!/usr/bin/env php
 <?php
 /**
- * WPBrowser CLI
- * Modified to include WPBrowser specific commands;
- * will otherwise act like `codecept` original command
+ * WPBrowser CLI - deprecated
+ * Use the `codecept` original command
  */
+include_once 'vendor/autoload.php';
 
-use Codeception\Application;
+$console = new Symfony\Component\Console\Output\ConsoleOutput();
+$console->writeln("<error>The 'wpcept' command has been deprecated with the release of Codeception 2.3 and will soon be removed.</error>");
+$console->writeln("<info>Use the 'codecept' command instead.\n\n</info>");
 
-require_once __DIR__ . '/autoload.php';
+$codecept = file_exists(__DIR__ . '/codecept') ? __DIR__ . '/codecept' : __DIR__ . '/vendor/bin/codecept';
 
-$app = new Application('Codeception', Codeception\Codecept::VERSION);
-$app->add(new Codeception\Command\Build('build'));
-$app->add(new Codeception\Command\Run('run'));
-$app->add(new Codeception\Command\Console('console'));
-$app->add(new Codeception\Command\WPBootstrap('bootstrap'));
-$app->add(new Codeception\Command\WPBootstrapPyramid('bootstrap:pyramid'));
-$app->add(new Codeception\Command\GenerateCept('generate:cept'));
-$app->add(new Codeception\Command\GenerateCest('generate:cest'));
-$app->add(new Codeception\Command\GenerateTest('generate:test'));
-if (class_exists('Codeception\Command\GeneratePhpUnit')) {
-	/** @noinspection PhpParamsInspection */
-	$app->add(new Codeception\Command\GeneratePhpUnit('generate:phpunit'));
-}
-$app->add(new Codeception\Command\GenerateWPUnit('generate:wpunit'));
-$app->add(new Codeception\Command\GenerateWPAjax('generate:wpajax'));
-$app->add(new Codeception\Command\GenerateWPRestApi('generate:wprest'));
-$app->add(new Codeception\Command\GenerateWPRestApi('generate:wprestcontroller'));
-$app->add(new Codeception\Command\GenerateWPRestApi('generate:wprestposttypecontroller'));
-$app->add(new Codeception\Command\GenerateWPCanonical('generate:wpcanonical'));
-$app->add(new Codeception\Command\GenerateWPXMLRPC('generate:wpxmlrpc'));
-$app->add(new Codeception\Command\GenerateSuite('generate:suite'));
-$app->add(new Codeception\Command\GenerateHelper('generate:helper'));
-$app->add(new Codeception\Command\GenerateScenarios('generate:scenarios'));
-$app->add(new Codeception\Command\Clean('clean'));
-$app->add(new Codeception\Command\GenerateGroup('generate:groupobject'));
-$app->add(new Codeception\Command\GeneratePageObject('generate:pageobject'));
-$app->add(new Codeception\Command\GenerateStepObject('generate:stepobject'));
-$app->add(new Codeception\Command\GenerateEnvironment('generate:environment'));
-$app->add(new Codeception\Command\GenerateFeature('generate:feature'));
-$app->add(new Codeception\Command\GherkinSnippets('gherkin:snippets'));
-$app->add(new Codeception\Command\GherkinSteps('gherkin:steps'));
-$app->add(new Codeception\Command\DryRun('dry-run'));
-$app->add(new Codeception\Command\GeneratePhpunitBootstrap('generate:phpunitBootstrap'));
-
-// Additional commands shimming
-$app->add(new tad\Codeception\Command\SearchReplace('search-replace'));
-$app->add(new tad\Codeception\Command\Setup('setup'));
-$app->add(new tad\Codeception\Command\SetupScaffold('setup:scaffold'));
-
-// wpcept specific commands
-$app->add(new Codeception\Command\DbSnapshot('db:snapshot'));
-
-$app->registerCustomCommands();
-
-$app->run();
+include $codecept;

@@ -123,6 +123,9 @@ class Wpbrowser extends Bootstrap {
             'Codeception\\Command\\GenerateWPRestPostTypeController',
             'Codeception\\Command\\GenerateWPUnit',
             'Codeception\\Command\\GenerateWPXMLRPC',
+            'tad\\Codeception\\Command\\SearchReplace',
+            'tad\\Codeception\\Command\\Setup',
+            'tad\\Codeception\\Command\\SetupScaffold',
         ];
     }
 
