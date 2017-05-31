@@ -47,13 +47,13 @@ class Wpbrowser extends Bootstrap {
             $this->createUnitSuite();
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createWpUnitSuite('Wpunit', $installationData);
+            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $installationData);
             $this->say("tests/wpunit created               <- WordPress unit and integration tests");
             $this->say("tests/wpunit.suite.yml written     <- WordPress unit and integration tests suite configuration");
-            $this->createFunctionalSuite('Functional', $installationData);
+            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $installationData);
             $this->say("tests/functional created           <- functional tests");
             $this->say("tests/functional.suite.yml written <- functional tests suite configuration");
-            $this->createAcceptanceSuite('Acceptance', $installationData);
+            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $installationData);
             $this->say("tests/acceptance created           <- acceptance tests");
             $this->say("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
         } catch (ModuleConfigException $e) {
@@ -124,8 +124,6 @@ class Wpbrowser extends Bootstrap {
             'Codeception\\Command\\GenerateWPUnit',
             'Codeception\\Command\\GenerateWPXMLRPC',
             'tad\\Codeception\\Command\\SearchReplace',
-            'tad\\Codeception\\Command\\Setup',
-            'tad\\Codeception\\Command\\SetupScaffold',
         ];
     }
 
@@ -136,7 +134,11 @@ class Wpbrowser extends Bootstrap {
      */
     protected function getInstallationData($interactive): array {
         if ( ! $interactive) {
-            $installationData = [];
+            $installationData = [
+                'acceptanceSuite' => 'acceptance',
+                'functionalSuite' => 'functional',
+                'wpunitSuite'     => 'wpunit',
+            ];
         } else {
             $installationData = $this->askForInstallationData();
         }
@@ -153,6 +155,13 @@ class Wpbrowser extends Bootstrap {
                 'WPLoader',
             ],
         ];
+
+        $installationData['acceptanceSuite'] = $this->ask('How would you like the acceptance suite to be called?', 'acceptance');
+        $installationData['functionalSuite'] = $this->ask('How would you like the functional suite to be called?', 'functional');
+        $installationData['wpunitSuite'] = $this->ask('How would you like the WordPress unit and integration suite to be called?', 'wpunit');
+        $this->say('---');
+        $this->say();
+
         $this->say('WPLoader and WordPress modules need to access the WordPress files to work');
         $installationData['wpRootFolder'] = $this->ask("Where is WordPress installed?", '/var/www/wp');
         $installationData['wpAdminPath'] = $this->ask('What is the path, relative to WordPress root folder, of the admin area?', '/wp-admin');
