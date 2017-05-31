@@ -21,6 +21,15 @@ and then use `composer update` to fetch the package.
 After that  follow the configuration instructions below.
 **Note**: there is no need to require `codeception/codeception` in the `composer.json` file as it is required by `lucatume/wp-browser` itself.
 
+## Setup and usage
+The fastest way to get up and running with Codeception and wp-browser is running the initialization command:
+
+```shell
+codecept init wpbrowser
+```
+
+After answering a bunch of questions the suites will be set up for you; wp-browser will not take care of setting up the required databases and WordPress installations for you though so do your homework.
+
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
 Not every module will make sense or work in any suite or type of test case but here's an high level view:
@@ -349,84 +358,6 @@ $I->cli('wp post create --post_title=Foo --post_content=Foo --post_excerpt=Foo -
 #### Configuration files
 Global and local [configuration files](http://wp-cli.org/config/#config-file) will be ignored; any additional parameter should be specified inline.  
 This prevents tests from running commands that would impact the WordPress installation in a way that would not be reversible (e.g. create or modify the `.htaccess` file); as a general guideline the wrapper is meant to be used to perform database reversible operations.
-
-### The `wpcept` command
-The package will create a link to the `bin/wpcept` script file; that's an extension of Codeception own `codecept` CLI application to allow for a WordPress specific setup.
-
-#### bootstrap
-The CLI application adds the `bootstrap` command argument to allow for a quick WordPress testing environment setup replacing the default bootstrap configuration created by Codeception.
-
-```sh
-wpcept bootstrap
-```
-
-The command will generate the "Unit", "Integration", "Functional" and "Acceptance" suites following the same pattern used by Codeception but with WordPress specific modules:
-
-* Unit with `Asserts` and helper modules
-* Integration with `WPLoader` and helper modules
-* Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
-* Acceptance with `WPBrowser`, `WPDb` and helper modules
-
-Command line options can be passed to set the suites configurations to override the defaults:
-
-* `--wpRootFolder=<value>` - the local WordPress installation folder, the folder containing the `wp-load.php` file
-* `--dbHost=<value>` to set the database host
-* `--dbName=<value>` - to set the database name
-* `--dbUser=<value>` - to set the database user
-* `--dbPassword=<value>` - to set the database password
-* `--tablePrefix=<value>` - to set the table prefix of the database used for acceptance and functional
-* `--integrationTablePrefix=<value>` - if the same database is used for integration testing too then integration tests will use this table prefix
-* `--url=<value>` - the local installation site URL
-* `--adminUsername=<value>` - the login name of the local installation administrator
-* `--adminPassword=<value>` - the passworf of the local installation administrator
-* `--adminPath=<value>` - the path, **relative to the WordPress installation root folder**, to the admin area
-* `--type=[theme|plugin]` - what WordPress component is being tested in integration tests, defaults to `plugin`
-* `--theme=<value>` - the theme that should be activated in integration tests, requires `type` to be set to `theme`
-* `--plugins=<value>` - a comma separated list of the plugin(s) that should be activated in integration tests
-
-Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
-
-```sh
-wpcept bootstrap --interactive
-```
-
-#### bootstrap:pyramid
-The `bootstrap:pyramid` command argument allows for a quick WordPress testing environment setup following the [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) suite organization.  
-The command
-
-```sh
-wpcept bootstrap:pyramid
-```
-
-will generate the "UI", "Service", "Wpunit" and "Unit" suites and will take care of setting up default modules and their settings for each like:
-
-* Unit with `Asserts` and `UnitHelper` modules
-* Integration with `WPLoader` and helper modules
-* Functional with `Filesystem`, `WPDb`, `WordPress` and helper modules
-* Acceptance with `WPBrowser`, `WPDb` and helper modules
-
-Command line options can be passed to set the suites configurations to override the defaults:
-
-* `--wpRootFolder=<value>` - the local WordPress installation folder, the folder containing the `wp-load.php` file
-* `--dbHost=<value>` to set the database host
-* `--dbName=<value>` - to set the database name
-* `--dbUser=<value>` - to set the database user
-* `--dbPassword=<value>` - to set the database password
-* `--tablePrefix=<value>` - to set the table prefix of the database used for ui and service tests
-* `--integrationTablePrefix=<value>` - if the same database is used for integration testing too then integration tests will use this table prefix
-* `--url=<value>` - the local installation site URL
-* `--adminUsername=<value>` - the login name of the local installation administrator
-* `--adminPassword=<value>` - the password of the local installation administrator
-* `--adminPath=<value>` - the path, **relative to the WordPress installation root folder**, to the admin area
-* `--type=[theme|plugin]` - what WordPress component is being tested in integration tests, defaults to `plugin`
-* `--theme=<value>` - the theme that should be activated in integration tests, requires `type` to be set to `theme`
-* `--plugins=<value>` - a comma separated list of the plugin(s) that should be activated in integration tests
-
-Please note that default Codeception suite bootstrapping is available using the `codecept bootstrap` command; use the `--interactive` option to scaffold the test suites configuration using a guided process.
-
-```sh
-wpcept bootstrap --interactive
-```
 
 #### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
