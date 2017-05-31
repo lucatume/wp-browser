@@ -4,7 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Added
+- support for Codeception `2.3`
+- experimental support for PHPUnit `6.0`
 - support for user-land SQL dump file import in `WPDb` module (thanks @sc0ttkclark)
+
+### Changed
+- the `wpcept` command is now deprecated in favour of a template based solution
 
 ##[1.20.1] 2017-05-23
 ### Changed
