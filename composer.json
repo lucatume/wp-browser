@@ -23,7 +23,7 @@
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": "~2.1",
     "antecedent/patchwork": "^2.0",
-    "codeception/codeception": "^2.0"
+    "codeception/codeception": "^2.3"
   },
   "autoload": {
     "psr-4": {
