@@ -251,8 +251,24 @@ class WPDb extends ExtendedDb
 		}
 	}
 
-	private function importSqlDumpFile()
+	/**
+	 * Import the SQL dump file if populate is enabled.
+	 *
+	 * Specifying a dump file that file will be imported.
+	 *
+	 * @param null|string $dumpFile The dump file that should be imported in place of the default one.
+	 */
+	public function importSqlDumpFile($dumpFile =null)
 	{
+		if ($dumpFile !== null) {
+			if ( ! file_exists($dumpFile) || ! is_readable($dumpFile)) {
+				throw new \InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
+			}
+			$this->driver->load($dumpFile);
+
+			return;
+		}
+
 		if ($this->config['populate']) {
 			$this->cleanup();
 			$this->loadDump();
@@ -2170,6 +2186,13 @@ class WPDb extends ExtendedDb
 	public function seeTermRelationshipInDatabase(array $criteria)
 	{
 		$this->seeInDatabase($this->grabPrefixedTableNameFor('term_relationships'), $criteria);
+	}
+
+	/**
+	 * @param Db|MsSql|ExtendedMySql|Oracle|PostgreSql|Sqlite $driver
+	 */
+	public function _setDriver($driver) {
+		$this->driver = $driver;
 	}
 
 	/**
