@@ -8,7 +8,7 @@ use tad\WPBrowser\Template\Data;
 
 class Wpbrowser extends Bootstrap {
 
-    public function setup() {
+    public function setup($interactive = null) {
         $this->checkInstalled($this->workDir);
 
         $input = $this->input;
@@ -33,17 +33,15 @@ class Wpbrowser extends Bootstrap {
             return;
         }
 
-        $this->say();
-        $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
-        $this->say(" --- ");
-        $this->say();
-
-        if (preg_match('/^(n|N).*/', $interactive)) {
-            $installationData = [];
-            $interactive = false;
-        } else {
-            $installationData = $this->askForInstallationData();
+        if ($interactive === null) {
+            $this->say();
+            $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
+            $this->say(" --- ");
+            $this->say();
+            $interactive = preg_match('/^(n|N)/', $interactive) ? false : true;
         }
+
+        $installationData = $this->getInstallationData($interactive);
 
         try {
             $this->createUnitSuite();
@@ -71,7 +69,8 @@ class Wpbrowser extends Bootstrap {
         } else {
             $this->saySuccess('Codeception has created the files for the acceptance, functional, WordPress unit and unit suites but the modules are not activated');
         }
-
+        $this->say('Some commands have been added in he Codeception configuration file: check them out using <comment>codecept --help</comment>');
+        $this->say(" --- ");
         $this->say();
 
         $this->say("<bold>Next steps:</bold>");
@@ -85,7 +84,7 @@ class Wpbrowser extends Bootstrap {
         $this->say("7. Run tests using: <comment>codecept run acceptance</comment>");
         $this->say(" --- ");
         $this->say();
-        $this->sayWarning("Please note: due to WordPress extended use of globals and constants avoid running all the tests at the same time.");
+        $this->sayWarning("Please note: due to WordPress extended use of globals and constants you should avoid running all the suites at the same time.");
         $this->say("Run each suite separately, like this: <comment>codecept run unit && codecept run integration</comment>, to avoid problems.");
     }
 
@@ -125,6 +124,21 @@ class Wpbrowser extends Bootstrap {
             'Codeception\\Command\\GenerateWPUnit',
             'Codeception\\Command\\GenerateWPXMLRPC',
         ];
+    }
+
+    /**
+     * @param $interactive
+     *
+     * @return array
+     */
+    protected function getInstallationData($interactive): array {
+        if ( ! $interactive) {
+            $installationData = [];
+        } else {
+            $installationData = $this->askForInstallationData();
+        }
+
+        return $installationData;
     }
 
     protected function askForInstallationData() {
