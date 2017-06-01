@@ -114,15 +114,14 @@ class Wpbrowser extends Bootstrap {
 
     protected function getAddtionalCommands() {
         return [
-            'Codeception\\Command\\DbSnapshot',
-            'Codeception\\Command\\GeneratePhpunitBootstrap',
-            'Codeception\\Command\\GenerateWPAjax',
-            'Codeception\\Command\\GenerateWPCanonical',
+            'Codeception\\Command\\GenerateWPUnit',
             'Codeception\\Command\\GenerateWPRestApi',
             'Codeception\\Command\\GenerateWPRestController',
             'Codeception\\Command\\GenerateWPRestPostTypeController',
-            'Codeception\\Command\\GenerateWPUnit',
+            'Codeception\\Command\\GenerateWPAjax',
+            'Codeception\\Command\\GenerateWPCanonical',
             'Codeception\\Command\\GenerateWPXMLRPC',
+            'Codeception\\Command\\DbSnapshot',
             'tad\\Codeception\\Command\\SearchReplace',
         ];
     }
