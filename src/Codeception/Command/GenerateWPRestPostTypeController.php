@@ -3,14 +3,13 @@
 namespace Codeception\Command;
 
 
+use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 
-class GenerateWPRestPostTypeController extends GenerateWPUnit
+class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomCommandInterface
 {
 	use Shared\FileSystem;
 	use Shared\Config;
-
-	const SLUG = 'generate:wprestposttypecontroller';
 
 	public function getDescription()
 	{
@@ -21,4 +20,13 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit
 	{
 		return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestPostTypeControllerTestCase');
 	}
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName() {
+        return 'generate:wprestposttypecontroller';
+    }
 }

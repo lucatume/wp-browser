@@ -3,12 +3,11 @@
 namespace Codeception\Command;
 
 
+use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 
-class GenerateWPAjax extends GenerateWPUnit
+class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
 {
-
-	const SLUG = 'generate:wpajax';
 
 	public function getDescription()
 	{
@@ -19,4 +18,14 @@ class GenerateWPAjax extends GenerateWPUnit
 	{
 		return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPAjaxTestCase');
 	}
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName() {
+
+        return 'generate:wpajax';
+    }
 }

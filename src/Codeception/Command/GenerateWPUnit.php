@@ -2,6 +2,7 @@
 
 namespace Codeception\Command;
 
+use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
 use Symfony\Component\Console\Command\Command;
@@ -19,12 +20,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  * * `wpcept g:wpunit unit "App\User`
  *
  */
-class GenerateWPUnit extends Command
+class GenerateWPUnit extends Command implements CustomCommandInterface
 {
 	use Shared\FileSystem;
 	use Shared\Config;
-
-	const SLUG = "generate:wpunit";
 
 	public function getDescription()
 	{
@@ -76,5 +75,13 @@ class GenerateWPUnit extends Command
 		parent::configure();
 	}
 
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName() {
+        return "generate:wpunit";
+    }
 }
 

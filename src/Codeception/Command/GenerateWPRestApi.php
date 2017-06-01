@@ -3,14 +3,13 @@
 namespace Codeception\Command;
 
 
+use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 
-class GenerateWPRestApi extends GenerateWPUnit
+class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
 {
 	use Shared\FileSystem;
 	use Shared\Config;
-
-	const SLUG = 'generate:wprest';
 
 	public function getDescription()
 	{
@@ -21,4 +20,13 @@ class GenerateWPRestApi extends GenerateWPUnit
 	{
 		return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestApiTestCase');
 	}
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName() {
+        return 'generate:wprest';
+    }
 }

@@ -3,22 +3,23 @@
 namespace Codeception\Command;
 
 
+use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 
-class GenerateWPXMLRPC extends GenerateWPUnit
-{
-	use Shared\FileSystem;
-	use Shared\Config;
+class GenerateWPXMLRPC extends GenerateWPUnit implements CustomCommandInterface {
 
-	const SLUG = 'generate:wpxmlrpc';
+    use Shared\FileSystem;
+    use Shared\Config;
 
-	public function getDescription()
-	{
-		return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase extension with Codeception additions.';
-	}
+    public static function getCommandName() {
+        return 'generate:wpxmlrpc';
+    }
 
-	protected function getGenerator($config, $class)
-	{
-		return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPXMLRPCTestCase');
-	}
+    public function getDescription() {
+        return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase extension with Codeception additions.';
+    }
+
+    protected function getGenerator($config, $class) {
+        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPXMLRPCTestCase');
+    }
 }

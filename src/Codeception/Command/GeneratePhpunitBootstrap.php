@@ -3,6 +3,7 @@
 namespace Codeception\Command;
 
 
+use Codeception\CustomCommandInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Filesystem\Utils;
 
-class GeneratePhpunitBootstrap extends Command
+class GeneratePhpunitBootstrap extends Command implements CustomCommandInterface
 {
 
 	public function getDescription()
@@ -248,4 +249,13 @@ PHP;
 
 		return $this->compileTemplate($args, $template);
 	}
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName() {
+        return 'generate:phpunitbootstrap';
+    }
 }
