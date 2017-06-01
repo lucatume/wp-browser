@@ -17,7 +17,6 @@ class CodeceptionCommand extends \CliTester {
         }
         $parsed['extensions']['commands'] = [
             'Codeception\Command\DbSnapshot',
-            'Codeception\Command\GeneratePhpunitBootstrap',
             'Codeception\Command\GenerateWPAjax',
             'Codeception\Command\GenerateWPCanonical',
             'Codeception\Command\GenerateWPRestApi',
