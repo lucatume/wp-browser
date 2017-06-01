@@ -96,3 +96,4 @@ script:
   - codecept run wpmodule
   - codecept run wploadersuite
   - codecept run muloader
+  - codecept run cli
