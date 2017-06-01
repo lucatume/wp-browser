@@ -363,7 +363,7 @@ This prevents tests from running commands that would impact the WordPress instal
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
 
 ```sh
-  wpcept generate:wpunit suite SomeClass
+  codecept generate:wpunit suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -396,7 +396,7 @@ class SomeClassTest extends \Codeception\TestCase\WPTestCase
 Generates a test case extending the `\Codeception\TestCase\WPRestApiTestCase` class using the
 
 ```sh
-  wpcept generate:wprest suite SomeClass
+  codecept generate:wprest suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -429,7 +429,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
 Generates a test case extending the `\Codeception\TestCase\WPRestControllerTestCase` class using the
 
 ```sh
-  wpcept generate:wprest suite SomeClass
+  codecept generate:wprest suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -461,7 +461,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestControllerTestCase
 Generates a test case extending the `\Codeception\TestCase\WPRestPostTypeControllerTestCase` class using the
 
 ```sh
-  wpcept generate:wprest suite SomeClass
+  codecept generate:wprest suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -494,7 +494,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestPostTypeControllerTestCa
 Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class using the
 
 ```sh
-  wpcept generate:wpajax suite SomeClass
+  codecept generate:wpajax suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -527,7 +527,7 @@ class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
 Generates a test case extending the `\Codeception\TestCase\WPXMLRPCTestCase` class using the
 
 ```sh
-  wpcept generate:wpxmlrpc suite SomeClass
+  codecept generate:wpxmlrpc suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -560,7 +560,7 @@ class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
 Generates a test case extending the `\Codeception\TestCase\WPCanonicalTestCase` class using the
 
 ```sh
-  wpcept generate:wpcanonical suite SomeClass
+  codecept generate:wpcanonical suite SomeClass
 ```
 
 The command will generate a skeleton test case like
@@ -597,7 +597,7 @@ All the commands share the `--save-config` option: when used in flag mode any **
 As an example running:
 
 ```bash
-wpcept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev --host=192.54.0.1 --user=db --pass=db --save-config
+codecept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev --host=192.54.0.1 --user=db --pass=db --save-config
 ```
 
 will generate a  `command-config.yml` file like this:
@@ -618,14 +618,14 @@ db:snapshot:
 that will allow to shorten the next invocation of the command considerably on the next run:
 
 ```bash
-wpcept db:snapshot issue44566 wp-tests 
+codecept db:snapshot issue44566 wp-tests 
 ```
 
 Multiple commands can and will write their own configuration in the `command-config.yml` file.  
 It is possible to override saved configuration values specifying the option in the command:
 
 ```bash
-wpcept db:snapshot issue22444 wp-tests --user=root --host=localhost
+codecept db:snapshot issue22444 wp-tests --user=root --host=localhost
 ```
 
 #### search-replace
@@ -655,12 +655,12 @@ A typical flow using the command would be:
 * the developer creates a local (to be used in local tests) and distribution (to be shared with other team members) dump of his/her local database using:
 
   ```bash
-  wpcept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev
+  codecept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev
   ```
 * any other developer on the team can use the `search-replace` command to localize the distribution version of the database dump to suite his/her setup:
   
   ```bash
-  wpcept search-replace http://acme.tests.dev http://local.dev ./tests/_data/issue3344.dist.sql ./tests/_data/issue3344.sql
+  codecept search-replace http://acme.tests.dev http://local.dev ./tests/_data/issue3344.dist.sql ./tests/_data/issue3344.sql
   ```
 
 ### ExtendedDb configuration
