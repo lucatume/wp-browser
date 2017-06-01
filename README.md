@@ -565,7 +565,6 @@ Generates a test case extending the `\Codeception\TestCase\WPCanonicalTestCase` 
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
@@ -590,17 +589,6 @@ class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
 ```
 
 Any other `codecept` option remains intact and available. 
-
-#### generate:phpunitBootstrap
-This command will generate the files required to run functional tests defined in test case classes extending the `WP_UnitTestCase` class.  
-The method will read the `codeception.yml` file to point PHPUnit `phpunit.xml` file to the tests folder and set up a `phpunit-bootstrap.php` file in the tests folder.  
-The command has the following arguments
-
-`suites` - a comma separated list of suites the tests should run, def. `functional`
-`suffix` - the suffix of test classes PHPUnit should run, def. `Test`
-`vendor` - the path, relative to the project root folder, to the vendor folder, def. `vendor`
-
-Each call to the command will re-generate the `phpunit.xml` and `tests/phpunit-bootstrap.php` files, changes made to the `phpunit` element attributes in the `phpunit.xml` file will be preserved across regenerations.
 
 ### Management commands
 The package comes with some commands meant to make the management and sharing of a shared repository easier.

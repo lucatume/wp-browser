@@ -11,6 +11,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - the `wpcept` command is now deprecated in favour of a template based solution
 
+### Removed
+- the `generate:phpunitbootstrap` command
+
 ##[1.20.1] 2017-05-23
 ### Changed
 - locked `codeception/codeception` version at `~2.2.0` while support for version `2.3` is developed
