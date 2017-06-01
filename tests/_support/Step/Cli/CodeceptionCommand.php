@@ -39,7 +39,7 @@ class CodeceptionCommand extends \CliTester {
     public function runCodecept($subCommand, $path = '') {
         $codecept = wpbrowser_vendor_path('bin/codecept');
 
-        $command = "{$codecept} {$subCommand} {$path}";
+        $command = trim("{$codecept} {$subCommand} {$path}");
 
         $this->runShellCommand($command, true);
     }
