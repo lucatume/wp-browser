@@ -10,7 +10,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
 {
 	public function getDescription()
 	{
-		return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase extension with Codeception additions.';
+		return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase extension with Codeception super-powers.';
 	}
 
 	protected function getGenerator($config, $class)

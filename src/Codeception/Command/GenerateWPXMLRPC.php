@@ -16,7 +16,7 @@ class GenerateWPXMLRPC extends GenerateWPUnit implements CustomCommandInterface 
     }
 
     public function getDescription() {
-        return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase extension with Codeception additions.';
+        return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase extension with Codeception super-powers.';
     }
 
     protected function getGenerator($config, $class) {

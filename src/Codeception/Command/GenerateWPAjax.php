@@ -11,7 +11,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
 
 	public function getDescription()
 	{
-		return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase extension with Codeception additions.';
+		return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase extension with Codeception super-powers.';
 	}
 
 	protected function getGenerator($config, $class)
