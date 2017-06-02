@@ -43,6 +43,14 @@ class CodeceptionCommand extends \CliTester {
         $this->runShellCommand($command, true);
     }
 
+    public function runWpcept($subCommand, $path = '') {
+        $wpcept = codecept_root_dir('wpcept');
+
+        $command = trim("{$wpcept} {$subCommand} {$path}");
+
+        $this->runShellCommand($command, true);
+    }
+
     public function amInSandbox() {
         $this->amInPath($this->sandboxPath());
     }

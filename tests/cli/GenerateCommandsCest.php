@@ -1,18 +1,10 @@
 <?php
 
+namespace cli\Test;
+
 use Step\Cli\CodeceptionCommand as CliTester;
 
-class GenerateCommandsCest {
-
-    public function _before(CliTester $I) {
-        $I->deleteSandbox();
-        $I->createSandbox();
-        $I->amInSandbox();
-    }
-
-    public function _after(CliTester $I) {
-        $I->deleteSandbox();
-    }
+class GenerateCommandsCest extends BaseCommandCest {
 
     /**
      * It should scaffold wpunit-like tests

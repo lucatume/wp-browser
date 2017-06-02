@@ -48,14 +48,14 @@ class Wpbrowser extends Bootstrap {
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
             $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $installationData);
-            $this->say("tests/wpunit created               <- WordPress unit and integration tests");
-            $this->say("tests/wpunit.suite.yml written     <- WordPress unit and integration tests suite configuration");
+            $this->say("tests/{$installationData['wpunitSuiteSlug']} created               <- WordPress unit and integration tests");
+            $this->say("tests/{$installationData['wpunitSuiteSlug']}.suite.yml written     <- WordPress unit and integration tests suite configuration");
             $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $installationData);
-            $this->say("tests/functional created           <- functional tests");
-            $this->say("tests/functional.suite.yml written <- functional tests suite configuration");
+            $this->say("tests/{$installationData['functionalSuiteSlug']} created           <- {$installationData['functionalSuiteSlug']} tests");
+            $this->say("tests/{$installationData['functionalSuiteSlug']}.suite.yml written <- {$installationData['functionalSuiteSlug']} tests suite configuration");
             $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $installationData);
-            $this->say("tests/acceptance created           <- acceptance tests");
-            $this->say("tests/acceptance.suite.yml written <- acceptance tests suite configuration");
+            $this->say("tests/{$installationData['acceptanceSuiteSlug']} created           <- {$installationData['acceptanceSuiteSlug']} tests");
+            $this->say("tests/{$installationData['acceptanceSuiteSlug']}.suite.yml written <- {$installationData['acceptanceSuiteSlug']} tests suite configuration");
         } catch (ModuleConfigException $e) {
             $this->sayWarning('Something is not ok in the modules configurations: check your answers and try the initialization again.');
 
@@ -65,27 +65,27 @@ class Wpbrowser extends Bootstrap {
         $this->say(" --- ");
         $this->say();
         if ($interactive) {
-            $this->saySuccess('Codeception is installed for acceptance, functional, and WordPress unit testing');
+            $this->saySuccess("Codeception is installed for {$installationData['acceptanceSuiteSlug']}, {$installationData['functionalSuiteSlug']}, and WordPress unit testing");
         } else {
-            $this->saySuccess('Codeception has created the files for the acceptance, functional, WordPress unit and unit suites but the modules are not activated');
+            $this->saySuccess("Codeception has created the files for the {$installationData['acceptanceSuiteSlug']}, {$installationData['functionalSuiteSlug']}, WordPress unit and unit suites but the modules are not activated");
         }
         $this->say('Some commands have been added in he Codeception configuration file: check them out using <comment>codecept --help</comment>');
         $this->say(" --- ");
         $this->say();
 
         $this->say("<bold>Next steps:</bold>");
-        $this->say('0. <bold>Create the databases</bold> used by the modules: wp-browser will not do it for you!');
+        $this->say('0. <bold>Create the databases used by the modules</bold>; wp-browser will not do it for you!');
         $this->say('1. <bold>Install and configure WordPress</bold> activating the theme and plugins you need to create a database dump in <comment>tests/_data/dump.sql</comment>');
-        $this->say('2. Edit <bold>tests/acceptance.suite.yml</bold> to make sure WPDb and WPBrowser configurations match your local setup; change WPBrowser to WPWebDriver to enable browser testing');
-        $this->say("3. Edit <bold>tests/functional.suite.yml</bold> to make sure WordPress and WPDb configurations match your local setup");
-        $this->say("4. Edit <bold>tests/wpunit.suite.yml</bold> to make sure WPLoader configuation matches your local setup");
-        $this->say("5. Create your first acceptance tests using <comment>codecept g:cest acceptance WPFirst</comment>");
-        $this->say("6. Write first test in <bold>tests/acceptance/WPFirstCest.php</bold>");
-        $this->say("7. Run tests using: <comment>codecept run acceptance</comment>");
+        $this->say("2. Edit <bold>tests/{$installationData['acceptanceSuiteSlug']}.suite.yml</bold> to make sure WPDb and WPBrowser configurations match your local setup; change WPBrowser to WPWebDriver to enable browser testing");
+        $this->say("3. Edit <bold>tests/{$installationData['functionalSuiteSlug']}.suite.yml</bold> to make sure WordPress and WPDb configurations match your local setup");
+        $this->say("4. Edit <bold>tests/{$installationData['wpunitSuiteSlug']}.suite.yml</bold> to make sure WPLoader configuration matches your local setup");
+        $this->say("5. Create your first {$installationData['acceptanceSuiteSlug']} tests using <comment>codecept g:cest {$installationData['acceptanceSuiteSlug']} WPFirst</comment>");
+        $this->say("6. Write first test in <bold>tests/{$installationData['acceptanceSuiteSlug']}/WPFirstCest.php</bold>");
+        $this->say("7. Run tests using: <comment>codecept run {$installationData['acceptanceSuiteSlug']}</comment>");
         $this->say(" --- ");
         $this->say();
         $this->sayWarning("Please note: due to WordPress extended use of globals and constants you should avoid running all the suites at the same time.");
-        $this->say("Run each suite separately, like this: <comment>codecept run unit && codecept run integration</comment>, to avoid problems.");
+        $this->say("Run each suite separately, like this: <comment>codecept run unit && codecept run {$installationData['wpunitSuiteSlug']}</comment>, to avoid problems.");
     }
 
     public function createGlobalConfig() {
@@ -158,6 +158,11 @@ class Wpbrowser extends Bootstrap {
         $installationData['acceptanceSuite'] = $this->ask('How would you like the acceptance suite to be called?', 'acceptance');
         $installationData['functionalSuite'] = $this->ask('How would you like the functional suite to be called?', 'functional');
         $installationData['wpunitSuite'] = $this->ask('How would you like the WordPress unit and integration suite to be called?', 'wpunit');
+
+        $installationData['acceptanceSuiteSlug'] = strtolower($installationData['acceptanceSuite']);
+        $installationData['functionalSuiteSlug'] = strtolower($installationData['functionalSuite']);
+        $installationData['wpunitSuiteSlug'] = strtolower($installationData['wpunitSuite']);
+
         $this->say('---');
         $this->say();
 
@@ -232,7 +237,7 @@ actor: $actor{$this->actorSuffix}
 modules:
     enabled:
         {$WPLoader}
-        - \\{$this->namespace}Helper\Wpunit
+        - \\{$this->namespace}Helper\\$actor
     config:
         WPLoader:
             wpRootFolder: "{$installationData['wpRootFolder']}"
@@ -274,7 +279,7 @@ EOF;
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
-# Suite for functional tests
+# Suite for {$installationData['functionalSuiteSlug']} tests
 # Emulate web requests and make WordPress process them
 
 actor: $actor{$this->actorSuffix}
@@ -283,7 +288,7 @@ modules:
         {$WPDb}
         {$WordPress}
         - Asserts
-        - \\{$this->namespace}Helper\Functional
+        - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
             dsn: 'mysql:host={$installationData['dbHost']};dbname={$installationData['dbName']}'
@@ -312,7 +317,7 @@ EOF;
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
-# Suite for acceptance tests.
+# Suite for {$installationData['acceptanceSuiteSlug']} tests.
 # Perform tests in browser using the WPWebDriver or WPBrowser.
 # Use WPDb to set up your initial database fixture.
 # If you need both WPWebDriver and WPBrowser tests - create a separate suite.
@@ -322,7 +327,7 @@ modules:
     enabled:
         {$WPDb}
         {$WPBrowser}
-        - \\{$this->namespace}Helper\Acceptance
+        - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
             dsn: 'mysql:host={$installationData['dbHost']};dbname={$installationData['dbName']}'
