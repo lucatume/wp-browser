@@ -8,12 +8,12 @@ A WordPress specific set of extensions for Codeception.
 [Example usage](https://github.com/lucatume/idlikethis).
 
 ## Installation
-To install simply require the package in the `composer.json` file like
+To install simply require the package in the `composer.json` file like this:
 
 ```json
   "require-dev":
     {
-      "lucatume/wp-browser": "~1.19"
+      "lucatume/wp-browser": "~1.21"
     }
 ```
     
