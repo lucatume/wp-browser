@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.1] 2017-06-05
+### Fixed
+- PHP7 syntax issue
+
 ##[1.21.0] 2017-06-05
 ### Added
 - support for Codeception `2.3`
