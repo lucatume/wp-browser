@@ -30,6 +30,26 @@ codecept init wpbrowser
 
 After answering a bunch of questions the suites will be set up for you; wp-browser will not take care of setting up the required databases and WordPress installations for you though so do your homework.
 
+### Updating existing projects
+If a project was set up before the latest version of the package there are two steps to take:
+
+1. stop using the `wpcept` command to generate and run tests, use `codecept` (Codeception default binary) instead.
+2. to have wp-browser specific commands aliased on the `codecept` binary [follow Codeception guide to add custom commands](http://codeception.com/docs/08-Customization#Custom-Commands); in the `codecepion.yml` file add:
+
+```yaml
+extensions:
+	commands:
+        'Codeception\Command\GenerateWPUnit',
+        'Codeception\Command\GenerateWPRestApi',
+        'Codeception\Command\GenerateWPRestController',
+        'Codeception\Command\GenerateWPRestPostTypeController',
+        'Codeception\Command\GenerateWPAjax',
+        'Codeception\Command\GenerateWPCanonical',
+        'Codeception\Command\GenerateWPXMLRPC',
+        'Codeception\Command\DbSnapshot',
+        'tad\Codeception\Command\SearchReplace',
+```
+
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
 Not every module will make sense or work in any suite or type of test case but here's an high level view:
