@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.0] 2017-06-05
 ### Added
 - support for Codeception `2.3`
 - experimental support for PHPUnit `6.0`
@@ -554,7 +556,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.20.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.0...HEAD
+[1.21.0]: https://github.com/lucatume/wp-browser/compare/1.20.1...1.21.0
 [1.20.1]: https://github.com/lucatume/wp-browser/compare/1.20.0...1.20.1
 [1.20.0]: https://github.com/lucatume/wp-browser/compare/1.19.15...1.20.0
 [1.19.15]: https://github.com/lucatume/wp-browser/compare/1.19.14...1.19.15
