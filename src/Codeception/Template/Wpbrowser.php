@@ -131,7 +131,7 @@ class Wpbrowser extends Bootstrap {
      *
      * @return array
      */
-    protected function getInstallationData($interactive): array {
+    protected function getInstallationData($interactive) {
         if ( ! $interactive) {
             $installationData = [
                 'acceptanceSuite' => 'acceptance',
