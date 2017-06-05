@@ -30,6 +30,8 @@ codecept init wpbrowser
 
 After answering a bunch of questions the suites will be set up for you; wp-browser will not take care of setting up the required databases and WordPress installations for you though so do your homework.
 
+![codecept init wpbrowser](/docs/images/codecept-init-wpbrowser.png?raw=true "codecept init wpbrowser")
+
 ### Updating existing projects
 If a project was set up before the latest version of the package there are two steps to take:
 
