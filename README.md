@@ -38,7 +38,7 @@ If a project was set up before the latest version of the package there are two s
 
 ```yaml
 extensions:
-	commands:
+    commands:
         'Codeception\Command\GenerateWPUnit',
         'Codeception\Command\GenerateWPRestApi',
         'Codeception\Command\GenerateWPRestController',
