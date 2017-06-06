@@ -148,10 +148,10 @@ class Wpbrowser extends Bootstrap {
     protected function askForInstallationData() {
         $installationData = [
             'activeModules' => [
-                'WPDb',
-                'WPBrowser',
-                'WordPress',
-                'WPLoader',
+                'WPDb' => true,
+                'WPBrowser' => true,
+                'WordPress' => true,
+                'WPLoader' => true,
             ],
         ];
 
