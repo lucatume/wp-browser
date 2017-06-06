@@ -229,7 +229,7 @@ class Wpbrowser extends Bootstrap {
 
     protected function createWpUnitSuite($actor = 'Wpunit', array $installationData = []) {
         $installationData = new Data($installationData);
-        $WPLoader = ! empty($installationData['activeModules']['WPLoader']) ? 'WPLoader' : '# - WPLoader';
+        $WPLoader = ! empty($installationData['activeModules']['WPLoader']) ? '- WPLoader' : '# - WPLoader';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -276,8 +276,8 @@ EOF;
 
     protected function createFunctionalSuite($actor = 'Functional', array $installationData = []) {
         $installationData = new Data($installationData);
-        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? 'WPDb' : '# - WPDb';
-        $WordPress = ! empty($installationData['activeModules']['WordPress']) ? 'WordPress' : '# - WordPress';
+        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
+        $WordPress = ! empty($installationData['activeModules']['WordPress']) ? '- WordPress' : '# - WordPress';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -314,8 +314,8 @@ EOF;
 
     protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = null) {
         $installationData = new Data($installationData);
-        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? 'WPDb' : '# - WPDb';
-        $WPBrowser = ! empty($installationData['activeModules']['WPBrowser']) ? 'WPBrowser' : '# - WPBrowser';
+        $WPDb = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
+        $WPBrowser = ! empty($installationData['activeModules']['WPBrowser']) ? '- WPBrowser' : '# - WPBrowser';
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
