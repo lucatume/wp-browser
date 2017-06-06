@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.2] 2017-06-06
+### Fixed
+- added missing vars to bootstrap template
+
 ##[1.21.1] 2017-06-05
 ### Fixed
 - PHP7 syntax issue
@@ -560,7 +564,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.2...HEAD
+[1.21.2]: https://github.com/lucatume/wp-browser/compare/1.21.1...1.21.2
+[1.21.1]: https://github.com/lucatume/wp-browser/compare/1.21.0...1.21.1
 [1.21.0]: https://github.com/lucatume/wp-browser/compare/1.20.1...1.21.0
 [1.20.1]: https://github.com/lucatume/wp-browser/compare/1.20.0...1.20.1
 [1.20.0]: https://github.com/lucatume/wp-browser/compare/1.19.15...1.20.0
