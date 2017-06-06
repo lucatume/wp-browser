@@ -184,7 +184,7 @@ class Wpbrowser extends Bootstrap {
         $installationData['wploaderDbHost'] = $this->ask("What's the host of the database WPLoader should use?", 'localhost');
         $installationData['wploaderDbUser'] = $this->ask("What's the user of the database WPLoader should use?", 'root');
         $installationData['wploaderDbPassword'] = $this->ask("What's the password of the database WPLoader should use?", '');
-        $installationData['wplodaerTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?", 'wp_');
+        $installationData['wploaderTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?", 'wp_');
         $installationData['url'] = $this->ask("What's the URL the WordPress installation?", 'http://wp.localhost');
         $installationData['url'] = rtrim($installationData['url'], '/');
         $url = parse_url($installationData['url']);
@@ -195,6 +195,8 @@ class Wpbrowser extends Bootstrap {
         $adminEmailCandidate = "admin@{$installationData['urlHost']}";
         $installationData['adminEmail'] = $this->ask("What's the email of the WordPress site administrator?", $adminEmailCandidate);
         $installationData['title'] = $this->ask("What's the title of the WordPress site?", 'Test');
+        $installationData['adminUsername'] = $this->ask('What is the login of the administrator user?', 'admin');
+        $installationData['adminPassword'] = $this->ask('What is the password of the administrator user?', 'password');
         //			plugins: ['hello.php', 'my-plugin/my-plugin.php']
         $sut = $this->ask("Are you testing a plugin or a theme?", 'plugin');
         $installationData['plugins'] = [];
@@ -246,7 +248,7 @@ modules:
             dbUser: "{$installationData['wploaderDbUser']}"
             dbPassword: "{$installationData['wploaderDbPassword']}"
             tablePrefix: "{$installationData['wploaderTablePrefix']}"
-            domain: "{$installationData['urlDomain']}{$installationData['urlPort']}"
+            domain: "{$installationData['urlHost']}{$installationData['urlPort']}"
             adminEmail: "{$installationData['adminEmail']}"
             title: "{$installationData['title']}"
 EOF;
