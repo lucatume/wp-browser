@@ -19,7 +19,7 @@ class FactoryStore {
 	/**
 	 * @var \WP_UnitTest_Factory_For_Attachment
 	 */
-	public $attachment;
+	protected $attachment;
 
 	/**
 	 * @var \WP_UnitTest_Factory_For_User
@@ -52,7 +52,6 @@ class FactoryStore {
 	public function setupFactories() {
 		require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
 
-		$this->factoryStore = new \StdClass;
 		$this->post         = new \WP_UnitTest_Factory_For_Post();
 		$this->bookmark     = new \WP_UnitTest_Factory_For_Bookmark();
 		$this->attachment   = new \WP_UnitTest_Factory_For_Attachment();
@@ -61,5 +60,13 @@ class FactoryStore {
 		$this->blog         = new \WP_UnitTest_Factory_For_Blog();
 		$this->network      = new \WP_UnitTest_Factory_For_Network();
 		$this->term         = new \WP_UnitTest_Factory_For_Term();
+	}
+
+	public function __get($name) {
+		if($name==='attachment'){
+			require_once(ABSPATH . 'wp-admin/includes/image.php');
+		}
+
+		return $this->{$name};
 	}
 }
