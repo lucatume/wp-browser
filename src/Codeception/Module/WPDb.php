@@ -166,12 +166,19 @@ class WPDb extends ExtendedDb
 	/**
 	 * Replaces the WordPress domains in a SQL dump string.
 	 *
-	 * @param string $sql The input SQL dump string.
+	 * @param string|array $sql The input SQL dump string.
 	 *
 	 * @return string The modified SQL string.
 	 */
 	public function replaceSiteDomainInSql($sql)
 	{
+		$originalSql = $sql;
+		$sep = "\n#" . uniqid(rand(1,999)) . "\n";
+
+		if(is_array($sql)) {
+			$sql = implode($sep, $sql);
+		}
+
 		$optionsTable = $this->config['tablePrefix'] . 'options';
 
 		$matches = [];
@@ -188,7 +195,7 @@ class WPDb extends ExtendedDb
 		if (empty($dumpSiteUrl)) {
 			codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
 
-			return $sql;
+			return $originalSql;
 		}
 
 		$thisSiteUrl = $this->config['url'];
@@ -196,18 +203,29 @@ class WPDb extends ExtendedDb
 		if ($dumpSiteUrl === $thisSiteUrl) {
 			codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
 
-			return $sql;
+			return $originalSql;
 		}
 
 		codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . ']');
 
-		return str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+		$sql = str_replace( $dumpSiteUrl, $thisSiteUrl, $sql );
+
+		return is_array($originalSql) ? explode($sep,$sql) : $sql;
 	}
 
+	/**
+	 * Replaces the site domain in the multisite tables of a SQL dump.
+	 *
+	 * @param string|array $sql
+	 * @return array|mixed|string
+	 */
 	public function replaceSiteDomainInMultisiteSql($sql)
 	{
-		if(is_array($sql)){
-			$sql = implode("\\n",$sql);
+		$originalSql = $sql;
+		$sep = "\n#" . uniqid(rand(1,999)) . "\n";
+
+		if(is_array($sql)) {
+			$sql = implode($sep, $sql);
 		}
 
 		$tables = [
@@ -245,7 +263,7 @@ class WPDb extends ExtendedDb
 			$sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
 		}
 
-		return $sql;
+		return is_array($originalSql) ? explode($sep,$sql) : $sql;
 	}
 
 	protected function initialize_driver()
@@ -2247,7 +2265,11 @@ class WPDb extends ExtendedDb
 			$this->debugSection('WPDb', 'No SQL loaded, loading dump skipped');
 			return;
 		}
-		$this->driver->load($this->replaceSiteDomainInMultisiteSql($this->sql));
+
+		$sql =$this->replaceSiteDomainInSql($this->sql);
+		$sql = $this->replaceSiteDomainInMultisiteSql( $sql );
+
+		$this->driver->load( $sql );
 		$this->populated = true;
 	}
 }
