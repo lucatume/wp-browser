@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[1.21.3] 2017-06-07
 ### Fixed
 - load file required by `attachment` factory before accessing it (`WPLoader` module in `loadOnly` configuration)
+- domain replacement in SQL dump file in `WPDb` module
 
 ##[1.21.2] 2017-06-06
 ### Fixed
