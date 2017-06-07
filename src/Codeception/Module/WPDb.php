@@ -206,6 +206,10 @@ class WPDb extends ExtendedDb
 
 	public function replaceSiteDomainInMultisiteSql($sql)
 	{
+		if(is_array($sql)){
+			$sql = implode("\\n",$sql);
+		}
+
 		$tables = [
 			'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
 			'site'  => "VALUES\\s+\\(\\d+,\\s*'(.*)',/uiU",
