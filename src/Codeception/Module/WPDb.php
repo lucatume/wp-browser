@@ -2236,4 +2236,14 @@ class WPDb extends ExtendedDb
 
 		return $subfolder;
 	}
+
+	protected function loadDumpUsingDriver()
+	{
+		if (!$this->sql) {
+			$this->debugSection('WPDb', 'No SQL loaded, loading dump skipped');
+			return;
+		}
+		$this->driver->load($this->replaceSiteDomainInMultisiteSql($this->sql));
+		$this->populated = true;
+	}
 }
