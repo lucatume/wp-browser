@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- load file required by `attachment` factory before accessing it (`WPLoader` module in `loadOnly` configuration)
 
 ##[1.21.2] 2017-06-06
 ### Fixed
