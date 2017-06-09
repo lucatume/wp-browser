@@ -41,15 +41,15 @@ If a project was set up before the latest version of the package there are two s
 ```yaml
 extensions:
     commands:
-        'Codeception\Command\GenerateWPUnit',
-        'Codeception\Command\GenerateWPRestApi',
-        'Codeception\Command\GenerateWPRestController',
-        'Codeception\Command\GenerateWPRestPostTypeController',
-        'Codeception\Command\GenerateWPAjax',
-        'Codeception\Command\GenerateWPCanonical',
-        'Codeception\Command\GenerateWPXMLRPC',
-        'Codeception\Command\DbSnapshot',
-        'tad\Codeception\Command\SearchReplace',
+        - 'Codeception\Command\GenerateWPUnit'
+        - 'Codeception\Command\GenerateWPRestApi'
+        - 'Codeception\Command\GenerateWPRestController'
+        - 'Codeception\Command\GenerateWPRestPostTypeController'
+        - 'Codeception\Command\GenerateWPAjax'
+        - 'Codeception\Command\GenerateWPCanonical'
+        - 'Codeception\Command\GenerateWPXMLRPC'
+        - 'Codeception\Command\DbSnapshot'
+        - 'tad\Codeception\Command\SearchReplace'
 ```
 
 ## Modules
