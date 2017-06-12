@@ -5,7 +5,7 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
-use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit_Framework_AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\Tests\Support\rrmdir;
 
@@ -292,7 +292,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeUploadedFileFound(str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads) . '/file.txt');
         $sut->dontSeeUploadedFileFound('file.txt');
 
-        $this->expectException(AssertionFailedError::class);
+        $this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
         $sut->seeUploadedFileFound('some-other-file.txt');
         $sut->dontSeeUploadedFileFound('some-other-file.txt');
@@ -313,7 +313,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeUploadedFileFound('file.txt', time());
         $sut->dontSeeUploadedFileFound('file.txt', 'somewhere/else');
 
-        $this->expectException(AssertionFailedError::class);
+        $this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
         $sut->seeUploadedFileFound('some-other-file.txt', 'now');
         $sut->dontSeeUploadedFileFound('some-other-file.txt', 'somewhere/else');
@@ -333,7 +333,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeInUploadedFile($dateFrag . '/file.txt', 'foo bar');
         $sut->dontSeeInUploadedFile($dateFrag . '/file.txt', 'nope');
 
-        $this->expectException(AssertionFailedError::class);
+        $this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
         $sut->seeInUploadedFile('some-other-file.txt', 'foo');
         $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo');
@@ -352,7 +352,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeInUploadedFile('file.txt', 'foo bar', 'now');
         $sut->dontSeeInUploadedFile('file.txt', 'nope', 'now');
 
-        $this->expectException(AssertionFailedError::class);
+        $this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
         $sut->seeInUploadedFile('some-other-file.txt', 'foo', 'now');
         $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo', 'now');
