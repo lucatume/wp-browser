@@ -93,7 +93,7 @@ script:
   - codecept run phantomjs
   - codecept run functional
   - codecept run climodule
-  - codecept run wpmodule
+  - codecept run wpmodule -vvv
   - codecept run wploadersuite
   - codecept run muloader
   - codecept run cli
