@@ -5,6 +5,7 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
+use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\Tests\Support\rrmdir;
 
@@ -17,6 +18,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
     protected $config;
     protected $sandbox;
     protected $backupGlobals = false;
+    protected $nowUploads;
+
     /**
      * @var \UnitTester
      */
@@ -68,7 +71,9 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         mkdir($this->sandbox . $muPlugins, 0777, true);
         $Y = date('Y');
         $m = date('m');
-        mkdir($this->sandbox . "{$uploads}/{$Y}/{$m}", 0777, true);
+        $nowUploads = $this->sandbox . "{$uploads}/{$Y}/{$m}";
+        $this->nowUploads = $nowUploads;
+        mkdir($nowUploads, 0777, true);
 
         return [
             'wpRootFolder' => $this->sandbox,
@@ -187,10 +192,562 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $this->assertEquals($path, $sut->_getConfig($parameter));
     }
 
+    /**
+     * It should allow being in the uploads path
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_the_uploads_path() {
+        $sut = $this->make_instance();
+
+        $sut->amInUploadsPath();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        $this->assertEquals($uploadsPath, getcwd());
+    }
+
+    /**
+     * It should allow being in an uploads subfolder
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_an_uploads_subfolder() {
+        $sut = $this->make_instance();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        mkdir($uploadsPath . '/foo', 0777, true);
+        mkdir($uploadsPath . '/2017/04', 0777, true);
+
+        $sut->amInUploadsPath('foo');
+
+        $this->assertEquals($uploadsPath . '/foo', getcwd());
+
+        $sut->amInUploadsPath('2017/04');
+
+        $this->assertEquals($uploadsPath . '/2017/04', getcwd());
+    }
+
+    /**
+     * It should allow being in an uploads path year/month subfolder from date
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_an_uploads_path_year_month_subfolder_from_date() {
+        $sut = $this->make_instance();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        $Y = date('Y');
+        $m = date('m');
+        $expected = $uploadsPath . "/{$Y}/{$m}";
+        $nextMonthY = date('Y', strtotime('next month'));
+        $nextMonthM = date('m', strtotime('next month'));
+        $nextMonth = $uploadsPath . "/{$nextMonthY}/{$nextMonthM}";
+
+        mkdir($nextMonth, 0777, true);
+
+        $sut->amInUploadsPath('now');
+
+        $this->assertEquals($expected, getcwd());
+
+        $sut->amInUploadsPath('next month');
+
+        $this->assertEquals($nextMonth, getcwd());
+    }
+
+    /**
+     * It should being in time based uploads folder with Unix timestamp
+     *
+     * @test
+     */
+    public function it_should_being_in_time_based_uploads_folder_with_unix_timestamp() {
+        $sut = $this->make_instance();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        $time = strtotime('next month');
+        $Y = date('Y', $time);
+        $m = date('m', $time);
+        $expected = $uploadsPath . "/{$Y}/{$m}";
+
+        mkdir($expected, 0777, true);
+
+        $sut->amInUploadsPath($time);
+
+        $this->assertEquals($expected, getcwd());
+    }
+
+    /**
+     * It should allow seeing uploaded files
+     *
+     * @test
+     */
+    public function it_should_allow_seeing_uploaded_files() {
+        $sut = $this->make_instance();
+
+        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+
+        $sut->seeUploadedFileFound(str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads) . '/file.txt');
+        $sut->dontSeeUploadedFileFound('file.txt');
+
+        $this->expectException(AssertionFailedError::class);
+
+        $sut->seeUploadedFileFound('some-other-file.txt');
+        $sut->dontSeeUploadedFileFound('some-other-file.txt');
+    }
+
+    /**
+     * It should allow to see a file in the uploads folder based on the date
+     *
+     * @test
+     */
+    public function it_should_allow_to_see_a_file_in_the_uploads_folder_based_on_the_date() {
+        $sut = $this->make_instance();
+
+        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+
+        $dateFrag = str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads);
+
+        $sut->seeUploadedFileFound('file.txt', time());
+        $sut->dontSeeUploadedFileFound('file.txt', 'somewhere/else');
+
+        $this->expectException(AssertionFailedError::class);
+
+        $sut->seeUploadedFileFound('some-other-file.txt', 'now');
+        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'somewhere/else');
+    }
+
+    /**
+     * It should allow to see in an uploaded file contents
+     *
+     * @test
+     */
+    public function it_should_allow_to_see_in_an_uploaded_file_contents() {
+        $sut = $this->make_instance();
+
+        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+
+        $dateFrag = str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads);
+        $sut->seeInUploadedFile($dateFrag . '/file.txt', 'foo bar');
+        $sut->dontSeeInUploadedFile($dateFrag . '/file.txt', 'nope');
+
+        $this->expectException(AssertionFailedError::class);
+
+        $sut->seeInUploadedFile('some-other-file.txt', 'foo');
+        $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo');
+    }
+
+    /**
+     * It should allow to see an uploaded file content based on the date
+     *
+     * @test
+     */
+    public function it_should_allow_to_see_an_uploaded_file_content_based_on_the_date() {
+        $sut = $this->make_instance();
+
+        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+
+        $sut->seeInUploadedFile('file.txt', 'foo bar', 'now');
+        $sut->dontSeeInUploadedFile('file.txt', 'nope', 'now');
+
+        $this->expectException(AssertionFailedError::class);
+
+        $sut->seeInUploadedFile('some-other-file.txt', 'foo', 'now');
+        $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo', 'now');
+    }
+
+    /**
+     * It should allow to delete uploads dirs
+     *
+     * @test
+     */
+    public function it_should_allow_to_delete_uploads_dirs() {
+        $sut = $this->make_instance();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        mkdir($uploadsPath . '/folder1', 0777, true);
+
+        $sut->seeUploadedFileFound('folder1');
+
+        $sut->deleteUploadedDir('folder1');
+
+        $sut->dontSeeUploadedFileFound('folder1');
+    }
+
+    /**
+     * It should allow to delete upload dir using date
+     *
+     * @test
+     */
+    public function it_should_allow_to_delete_upload_dir_using_date() {
+        $sut = $this->make_instance();
+
+        mkdir($this->nowUploads . '/folder1', 0777, true);
+
+        $sut->seeUploadedFileFound('folder1', 'now');
+
+        $sut->deleteUploadedDir('folder1', 'now');
+
+        $sut->dontSeeUploadedFileFound('folder1', 'now');
+    }
+
+    /**
+     * It should allow to delete upload files
+     *
+     * @test
+     */
+    public function it_should_allow_to_delete_upload_files() {
+        $sut = $this->make_instance();
+
+        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+
+        file_put_contents($uploadsPath . '/file.txt', 'foo');
+
+        $sut->seeUploadedFileFound('file.txt');
+
+        $sut->deleteUploadedFile('file.txt');
+
+        $sut->dontSeeUploadedFileFound('file.txt');
+        $this->assertFileNotExists($uploadsPath . '/file.txt');
+    }
+
+    /**
+     * It should allow to delete upload file using date
+     *
+     * @test
+     */
+    public function it_should_allow_to_delete_upload_file_using_date() {
+        $sut = $this->make_instance();
+
+        file_put_contents($this->nowUploads . '/file.txt', 'foo');
+
+        $sut->seeUploadedFileFound('file.txt', 'now');
+
+        $sut->deleteUploadedFile('file.txt', 'now');
+
+        $sut->dontSeeUploadedFileFound('file.txt', 'now');
+        $this->assertFileNotExists($this->nowUploads . '/file.txt');
+    }
+
+    /**
+     * It should allow cleaning the uploads dir
+     *
+     * @test
+     */
+    public function it_should_allow_cleaning_the_uploads_dir() {
+        $sut = $this->make_instance();
+
+        $folder = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder1';
+        $file = $folder . '/file.txt';
+        mkdir($folder, 0777, true);
+        file_put_contents($file, 'foo');
+
+        $this->assertFileExists($folder);
+        $this->assertFileExists($file);
+
+        $sut->cleanUploadsDir('folder1');
+
+        $this->assertFileExists($folder);
+        $this->assertFileNotExists($file);
+
+        $sut->cleanUploadsDir();
+
+        $this->assertFileNotExists($folder);
+    }
+
+    /**
+     * It should allow cleaning upload dirs by date
+     *
+     * @test
+     */
+    public function it_should_allow_cleaning_upload_dirs_by_date() {
+        $sut = $this->make_instance();
+
+        $folder = $this->nowUploads . '/folder1';
+        $file = $folder . '/file.txt';
+        mkdir($folder, 0777, true);
+        file_put_contents($file, 'foo');
+
+        $this->assertFileExists($folder);
+        $this->assertFileExists($file);
+
+        $sut->cleanUploadsDir('folder1', 'now');
+
+        $this->assertFileExists($folder);
+        $this->assertFileNotExists($file);
+
+        $sut->cleanUploadsDir();
+
+        $this->assertFileNotExists($folder);
+    }
+
+    /**
+     * It should allow copying dirs to the uploads dir
+     *
+     * @test
+     */
+    public function it_should_allow_copying_dirs_to_the_uploads_dir() {
+        $sut = $this->make_instance();
+
+        $src = codecept_data_dir('folder-structures/folder1');
+        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder2';
+
+        $this->assertFileExists($src);
+        $this->assertFileNotExists($dest);
+
+        $sut->copyDirToUploads($src, 'folder2');
+
+        $this->assertFileExists($src);
+        $this->assertFileExists($dest);
+    }
+
+    /**
+     * It should allow copying dirs to the uploads dir by date
+     *
+     * @test
+     */
+    public function it_should_allow_copying_dirs_to_the_uploads_dir_by_date() {
+        $sut = $this->make_instance();
+
+        $src = codecept_data_dir('folder-structures/folder1');
+        $dest = $this->nowUploads . '/folder2';
+
+        $this->assertFileExists($src);
+        $this->assertFileNotExists($dest);
+
+        $sut->copyDirToUploads($src, 'folder2', 'today');
+
+        $this->assertFileExists($src);
+        $this->assertFileExists($dest);
+    }
+
+    /**
+     * It should allow writing to uploads file
+     *
+     * @test
+     */
+    public function it_should_allow_writing_to_uploads_file() {
+        $sut = $this->make_instance();
+
+        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
+
+        $this->assertFileNotExists($dest);
+
+        $sut->writeToUploadedFile('some-file.txt', 'foo');
+
+        $this->assertFileExists($dest);
+        $this->assertStringEqualsFile($dest, 'foo');
+    }
+
+    /**
+     * It should allow writing to uploads file by date
+     *
+     * @test
+     */
+    public function it_should_allow_writing_to_uploads_file_by_date() {
+        $sut = $this->make_instance();
+
+        $dest = $this->nowUploads . '/some-file.txt';
+
+        $this->assertFileNotExists($dest);
+
+        $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
+
+        $this->assertFileExists($dest);
+        $this->assertStringEqualsFile($dest, 'foo');
+    }
+
+    /**
+     * It should allow opening an uploaded file
+     *
+     * @test
+     */
+    public function it_should_allow_opening_an_uploaded_file() {
+        $sut = $this->make_instance();
+
+        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
+
+        $this->assertFileNotExists($dest);
+
+        $sut->writeToUploadedFile('some-file.txt', 'foo');
+        $sut->openUploadedFile('some-file.txt');
+
+        $this->assertFileExists($dest);
+        $sut->seeInThisFile('foo');
+    }
+
+    /**
+     * It should allow opening an uploaded file by date
+     *
+     * @test
+     */
+    public function it_should_allow_opening_an_uploaded_file_by_date() {
+        $sut = $this->make_instance();
+
+        $dest = $this->nowUploads . '/some-file.txt';
+
+        $this->assertFileNotExists($dest);
+
+        $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
+        $sut->openUploadedFile('some-file.txt', 'today');
+
+        $this->assertFileExists($dest);
+        $sut->seeInThisFile('foo');
+    }
+
+    /**
+     * It should allow being in a plugin path
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_a_plugin_path() {
+        $sut = $this->make_instance();
+
+        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/plugin1';
+        mkdir($pluginFolder, 0777, true);
+        mkdir($pluginFolder . '/sub/folder', 0777, true);
+
+        $sut->amInPluginPath('plugin1');
+
+        $this->assertEquals($pluginFolder, getcwd());
+
+        $sut->amInPluginPath('plugin1/sub');
+
+        $this->assertEquals($pluginFolder . '/sub', getcwd());
+
+        $sut->amInPluginPath('plugin1/sub/folder');
+
+        $this->assertEquals($pluginFolder . '/sub/folder', getcwd());
+
+        $sut->amInPluginPath('plugin1');
+        $sut->writeToFile('some-file.txt', 'foo');
+
+        $this->assertFileExists($pluginFolder . '/some-file.txt');
+
+        $sut->deletePluginFile('plugin1/some-file.txt');
+
+        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+        $sut->dontSeePluginFileFound('plugin1/some-file.txt');
+
+        $sut->copyDirToPlugin(codecept_data_dir('folder-structures/folder1'), 'plugin1/folder1');
+
+        $this->assertFileExists($pluginFolder . '/folder1');
+
+        $sut->writeToPluginFile('plugin1/some-file.txt', 'bar');
+
+        $sut->seePluginFileFound('plugin1/some-file.txt');
+        $sut->seeInPluginFile('plugin1/some-file.txt', 'bar');
+        $sut->dontSeeInPluginFile('plugin1/some-file.txt', 'woo');
+
+        $sut->cleanPluginDir('plugin1');
+
+        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+    }
+
+    /**
+     * It should allow being in a themes path
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_a_themes_path() {
+        $sut = $this->make_instance();
+
+        $themeFolder = $this->config['wpRootFolder'] . $this->config['themes'] . '/theme1';
+        mkdir($themeFolder, 0777, true);
+        mkdir($themeFolder . '/sub/folder', 0777, true);
+
+        $sut->amInThemePath('theme1');
+
+        $this->assertEquals($themeFolder, getcwd());
+
+        $sut->amInThemePath('theme1/sub');
+
+        $this->assertEquals($themeFolder . '/sub', getcwd());
+
+        $sut->amInThemePath('theme1/sub/folder');
+
+        $this->assertEquals($themeFolder . '/sub/folder', getcwd());
+
+        $sut->amInThemePath('theme1');
+        $sut->writeToFile('some-file.txt', 'foo');
+
+        $this->assertFileExists($themeFolder . '/some-file.txt');
+
+        $sut->deleteThemeFile('theme1/some-file.txt');
+
+        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+        $sut->dontSeeThemeFileFound('theme1/some-file.txt');
+
+        $sut->copyDirToTheme(codecept_data_dir('folder-structures/folder1'), 'theme1/folder1');
+
+        $this->assertFileExists($themeFolder . '/folder1');
+
+        $sut->writeToThemeFile('theme1/some-file.txt', 'bar');
+
+        $sut->seeThemeFileFound('theme1/some-file.txt');
+        $sut->seeInThemeFile('theme1/some-file.txt', 'bar');
+        $sut->dontSeeInThemeFile('theme1/some-file.txt', 'woo');
+
+        $sut->cleanThemeDir('theme1');
+
+        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+    }
+
+    /**
+     * It should allow being in a mu-plugin path
+     *
+     * @test
+     */
+    public function it_should_allow_being_in_a_mu_plugin_path() {
+        $sut = $this->make_instance();
+
+        $mupluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'] . '/muplugin1';
+        mkdir($mupluginFolder, 0777, true);
+        mkdir($mupluginFolder . '/sub/folder', 0777, true);
+
+        $sut->amInMuPluginPath('muplugin1');
+
+        $this->assertEquals($mupluginFolder, getcwd());
+
+        $sut->amInMuPluginPath('muplugin1/sub');
+
+        $this->assertEquals($mupluginFolder . '/sub', getcwd());
+
+        $sut->amInMuPluginPath('muplugin1/sub/folder');
+
+        $this->assertEquals($mupluginFolder . '/sub/folder', getcwd());
+
+        $sut->amInMuPluginPath('muplugin1');
+        $sut->writeToFile('some-file.txt', 'foo');
+
+        $this->assertFileExists($mupluginFolder . '/some-file.txt');
+
+        $sut->deleteMuPluginFile('muplugin1/some-file.txt');
+
+        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+        $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
+
+        $sut->copyDirToMuPlugin(codecept_data_dir('folder-structures/folder1'), 'muplugin1/folder1');
+
+        $this->assertFileExists($mupluginFolder . '/folder1');
+
+        $sut->writeToMuPluginFile('muplugin1/some-file.txt', 'bar');
+
+        $sut->seeMuPluginFileFound('muplugin1/some-file.txt');
+        $sut->seeInMuPluginFile('muplugin1/some-file.txt', 'bar');
+        $sut->dontSeeInMuPluginFile('muplugin1/some-file.txt', 'woo');
+
+        $sut->cleanMuPluginDir('muplugin1');
+
+        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+    }
+
     protected function _after() {
         if ( ! empty($this->sandbox) && file_exists($this->sandbox)) {
             rrmdir($this->sandbox);
         }
     }
-
 }
