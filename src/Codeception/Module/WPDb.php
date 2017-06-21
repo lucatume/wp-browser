@@ -167,41 +167,48 @@ class WPDb extends ExtendedDb
 	 * Replaces the WordPress domains in a SQL dump string.
 	 *
 	 * @param string $sql The input SQL dump string.
+   * @param bool $debug Whether a debug message should be printed or not.
 	 *
 	 * @return string The modified SQL string.
 	 */
-	public function replaceSiteDomainInSqlString($sql)
+	public function replaceSiteDomainInSqlString($sql, $debug = true)
 	{
 		$optionsTable = $this->config['tablePrefix'] . 'options';
 
 		$matches = [];
 		preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
 
-		if (empty($matches) || empty($matches[1])) {
-			codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
+    if (empty($matches) || empty($matches[1])) {
+      if ($debug) {
+        codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
+      }
+
+      return $sql;
+    }
+
+    $dumpSiteUrl = $matches[1];
+
+    if (empty($dumpSiteUrl)) {
+      if ($debug) {
+        codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
+      }
+
+      return $sql;
+    }
+
+    $thisSiteUrl = $this->config['url'];
+
+    if ($dumpSiteUrl === $thisSiteUrl) {
+      if ($debug) {
+        codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
+      }
 
 			return $sql;
 		}
 
-		$dumpSiteUrl = $matches[1];
-
-		if (empty($dumpSiteUrl)) {
-			codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
-
-			return $originalSql;
-		}
-
-		$thisSiteUrl = $this->config['url'];
-
-		if ($dumpSiteUrl === $thisSiteUrl) {
-			codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
-
-			return $originalSql;
-		}
+    $sql = str_replace( $dumpSiteUrl, $thisSiteUrl, $sql );
 
 		codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . ']');
-
-		$sql = str_replace( $dumpSiteUrl, $thisSiteUrl, $sql );
 
 		return $sql;
 	}
