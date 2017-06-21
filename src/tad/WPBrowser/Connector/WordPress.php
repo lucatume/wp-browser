@@ -80,6 +80,7 @@ class WordPress extends Universal {
 		$requestServer['HTTP_HOST'] = $this->domain;
 		$requestServer['SERVER_PROTOCOL'] = 'HTTP/1.1';
 		$requestServer['SERVER_NAME'] = $this->domain;
+		$requestServerp['HTTP_CLIENT_IP'] = '127.0.0.1';
 
 		$this->index = $this->uriToIndexMapper->getIndexForUri($uri);
 
