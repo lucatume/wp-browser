@@ -306,9 +306,12 @@ EOF;
 	 * @param string $password
 	 */
 	public function loginAs($username, $password) {
-		$this->amOnPage('/wp-login.php');
-		$this->fillField('#user_login', $username);
-		$this->fillField('#user_pass', $password);
-		$this->click('#wp-submit');
+    $this->amOnPage($this->loginUrl);
+    $this->submitForm('#loginform', [
+      'log' =>$username,
+      'pwd' => $password ,
+      'testcookie' => '1',
+      'redirect_to' => ''
+    ], '#wp-submit');
 	}
 }
