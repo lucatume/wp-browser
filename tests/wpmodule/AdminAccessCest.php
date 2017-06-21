@@ -23,8 +23,6 @@ class AdminAccessCest
   {
     $I->loginAsAdmin();
     $I->amOnAdminPage('/');
-    $pageData = $I->getResponseContent();
-    codecept_debug($pageData);
     $I->seeElement('body.index-php.wp-admin');
   }
 }
