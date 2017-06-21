@@ -123,7 +123,7 @@ class WordPressTest extends \Codeception\Test\Unit
 		$sut->_isMockRequest(true);
 		$page = $sut->amOnAdminPage('/');
 
-		$this->assertEquals('/wp-admin', $page);
+		$this->assertEquals('/wp-admin/index.php', $page);
 	}
 
 	/**
