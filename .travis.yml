@@ -88,4 +88,4 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - codecept run wpmodule -vvv
+  - wp core update-db --network && codecept run wpmodule -vvv

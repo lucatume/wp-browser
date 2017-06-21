@@ -22,7 +22,7 @@ class AdminAccessCest
 	public function it_should_be_able_to_log_in_and_access_the_admin_area(WpmoduleTester $I)
 	{
 		$I->loginAsAdmin();
-		$I->amOnPage('/wp-admin');
+		$I->amOnAdminPage('/');
 		$I->seeElement('body.wp-admin');
 	}
 }
