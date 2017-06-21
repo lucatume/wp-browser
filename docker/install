@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-# check that required commands exist
 function wpcliCheck(){
 	command -v wp >/dev/null 2>&1 || { echo >&2 "wp (wp-cli) is required for the installation to complete.  Aborting."; exit 1; }
 }
 
-function dockerCheck(){
-	command -v docker >/dev/null 2>&1 || { echo >&2 "docker (no sudo) is required for the installation to complete.  Aborting."; exit 1; }
+function dockerComposeCheck(){
+	command -v docker-compose >/dev/null 2>&1 || { echo >&2 "docker (no sudo) is required for the installation to complete.  Aborting."; exit 1; }
 }
-
 
 # create the www directory if it does not exist
 if [[ ! -d ./www  ]]; then
@@ -33,7 +31,12 @@ if [[ ! -f ./www/wp-config.php ]]; then
 		--dbpass=wp \
 		--dbhost=mysql
 fi
-	
+
+dockerComposeCheck
+
+# spin up the circus
+docker-compose up
+
 wpcliCheck
 
 # Install wordpress
