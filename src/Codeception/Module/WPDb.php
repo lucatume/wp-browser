@@ -155,8 +155,8 @@ class WPDb extends ExtendedDb
 			$sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
 
 			if (empty($this->config['urlReplacement'])) {
-				$sql = $this->replaceSiteDomainInSql($sql);
-				$sql = $this->replaceSiteDomainInMultisiteSql($sql);
+				$sql = $this->replaceSiteDomainInSqlString($sql);
+				$sql = $this->replaceSiteDomainInMultisiteSqlString($sql);
 			}
 
 			$this->sql = explode("\n", $sql);
@@ -166,19 +166,12 @@ class WPDb extends ExtendedDb
 	/**
 	 * Replaces the WordPress domains in a SQL dump string.
 	 *
-	 * @param string|array $sql The input SQL dump string.
+	 * @param string $sql The input SQL dump string.
 	 *
 	 * @return string The modified SQL string.
 	 */
-	public function replaceSiteDomainInSql($sql)
+	public function replaceSiteDomainInSqlString($sql)
 	{
-		$originalSql = $sql;
-		$sep = "\n#" . uniqid(rand(1,999)) . "\n";
-
-		if(is_array($sql)) {
-			$sql = implode($sep, $sql);
-		}
-
 		$optionsTable = $this->config['tablePrefix'] . 'options';
 
 		$matches = [];
@@ -210,24 +203,18 @@ class WPDb extends ExtendedDb
 
 		$sql = str_replace( $dumpSiteUrl, $thisSiteUrl, $sql );
 
-		return is_array($originalSql) ? explode($sep,$sql) : $sql;
+		return $sql;
 	}
 
 	/**
 	 * Replaces the site domain in the multisite tables of a SQL dump.
 	 *
-	 * @param string|array $sql
-	 * @return array|mixed|string
+	 * @param string $sql
+   *
+	 * @return string
 	 */
-	public function replaceSiteDomainInMultisiteSql($sql)
+	public function replaceSiteDomainInMultisiteSqlString($sql)
 	{
-		$originalSql = $sql;
-		$sep = "\n#" . uniqid(rand(1,999)) . "\n";
-
-		if(is_array($sql)) {
-			$sql = implode($sep, $sql);
-		}
-
 		$tables = [
 			'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
 			'site'  => "VALUES\\s+\\(\\d+,\\s*'(.*)',/uiU",
@@ -263,7 +250,7 @@ class WPDb extends ExtendedDb
 			$sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
 		}
 
-		return is_array($originalSql) ? explode($sep,$sql) : $sql;
+		return $sql;
 	}
 
 	protected function initialize_driver()
@@ -2266,10 +2253,40 @@ class WPDb extends ExtendedDb
 			return;
 		}
 
-		$sql =$this->replaceSiteDomainInSql($this->sql);
-		$sql = $this->replaceSiteDomainInMultisiteSql( $sql );
+		$sql =$this->replaceSiteDomainInSqlArray($this->sql);
+		$sql = $this->replaceSiteDomainInMultisiteSqlArray( $sql );
 
 		$this->driver->load( $sql );
 		$this->populated = true;
+	}
+
+  /**
+   * Replaces the WordPress domains in an array of SQL dump string.
+   *
+   * @param array $sql The input SQL dump array.
+   *
+   * @return array The modified SQL array.
+   */
+  public function replaceSiteDomainInSqlArray(array $sql) {
+    if (empty($sql)) {
+      return [];
+    }
+
+    return array_map([$this, 'replaceSiteDomainInSqlString'], $sql);
+  }
+
+  /**
+   * Replaces the site domain in the multisite tables of an array of SQL dump strings.
+   *
+   * @param array $sql The input SQL dump array.
+   *
+   * @return array The modified SQL array.
+   */
+	public function replaceSiteDomainInMultisiteSqlArray( array $sql ) {
+    if (empty($sql)) {
+      return [];
+    }
+
+    return array_map([$this, 'replaceSiteDomainInMultisiteSqlString'], $sql);
 	}
 }
