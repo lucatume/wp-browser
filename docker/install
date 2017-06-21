@@ -4,10 +4,6 @@ function wpcliCheck(){
 	command -v wp >/dev/null 2>&1 || { echo >&2 "wp (wp-cli) is required for the installation to complete.  Aborting."; exit 1; }
 }
 
-function dockerComposeCheck(){
-	command -v docker-compose >/dev/null 2>&1 || { echo >&2 "docker (no sudo) is required for the installation to complete.  Aborting."; exit 1; }
-}
-
 # create the www directory if it does not exist
 if [[ ! -d ./www  ]]; then
 	echo "Creating www folder"
@@ -31,11 +27,6 @@ if [[ ! -f ./www/wp-config.php ]]; then
 		--dbpass=wp \
 		--dbhost=mysql
 fi
-
-dockerComposeCheck
-
-# spin up the circus
-docker-compose up
 
 wpcliCheck
 
@@ -62,3 +53,12 @@ wp plugin delete akismet hello
 
 # remove all themes but twentyseventeen
 wp theme delete twentyfifteen twentysixteen
+
+# clear all sites on the network
+wp site list --field=url | xargs -n1 -I % wp --url=% site empty --yes
+
+# clear all transients on all sites
+wp site list --field=url | xargs -n1 -I % wp --url=% transient delete-all
+
+# create a new dump
+wp db export ./../tests/_data/dump.sql
