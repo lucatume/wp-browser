@@ -180,7 +180,11 @@ EOF;
 	 * @return null|string
 	 */
 	public function amOnAdminPage($page) {
-    $page = $this->adminPath . '/' . $this->preparePage(ltrim($page, '/'));
+    $preparedPage = $this->preparePage(ltrim($page, '/'));
+    if ($preparedPage === '/') {
+      $preparedPage = 'index.php';
+    }
+    $page         = $this->adminPath . '/' . $preparedPage;
 		return $this->amOnPage($page);
 	}
 
