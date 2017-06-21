@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# check that required commands exist
+function wpcliCheck(){
+	command -v wp >/dev/null 2>&1 || { echo >&2 "wp (wp-cli) is required for the installation to complete.  Aborting."; exit 1; }
+}
+
+function dockerCheck(){
+	command -v docker >/dev/null 2>&1 || { echo >&2 "docker (no sudo) is required for the installation to complete.  Aborting."; exit 1; }
+}
+
+
+# create the www directory if it does not exist
+if [[ ! -d ./www  ]]; then
+	echo "Creating www folder"
+	mkdir www
+fi
+
+# download WordPress if the not available in the www folder
+if [[ ! -f ./www/wp-load.php ]]; then
+	wpcliCheck
+	echo "WordPress not found in the www folder. Downloading..."
+	wp core download
+fi
+
+# configure WordPress if not already configured
+if [[ ! -f ./www/wp-config.php ]]; then
+	wpcliCheck
+	echo "WordPress is not configured. Configuring..."
+	wp config create \
+		--dbname=wp \
+		--dbuser=wp \
+		--dbpass=wp \
+		--dbhost=mysql
+fi
+	
+wpcliCheck
+
+# Install wordpress
+if [[ ! $(wp core is-installed --network) ]]; then
+	echo "Installing WordPress"
+	wp core multisite-install \
+		--url=http://wp.localhost \
+		--base=/ \
+		--subdomains \
+		--title=WP \
+		--admin_user=admin \
+		--admin_password=admin \
+		--admin_email=admin@wp.localhost \
+		--skip-email
+	wp site create --slug=test1
+	wp site create --slug=test2
+	wp site create --slug=test3
+	wp rewrite structure '%postname%' && wp rewrite flush
+fi
+
+# remove default plugins
+wp plugin delete akismet hello
+
+# remove all themes but twentyseventeen
+wp theme delete twentyfifteen twentysixteen
