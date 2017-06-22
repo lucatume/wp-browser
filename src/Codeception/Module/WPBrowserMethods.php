@@ -26,9 +26,7 @@ trait WPBrowserMethods
 	public function loginAs($username, $password)
 	{
 		$this->amOnPage($this->loginUrl);
-		$this->fillField('#user_login', $username);
-		$this->fillField('#user_pass', $password);
-		$this->click('#wp-submit');
+		$this->submitForm('#loginform', ['log' =>$username,'pwd' => $password ,'testcookie' => '1', 'redirect_to' => ''], '#wp-submit');
 
 		return [
 			'username' => $username,

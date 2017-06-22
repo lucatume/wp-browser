@@ -84,6 +84,9 @@ before_script:
   # set the path to the phantomjs bin in Phantoman
   - sed -i "s_phantomjsbin_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
 
+  # update WordPress database to avoid prompts
+  - wp core update-db --network
+
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
 

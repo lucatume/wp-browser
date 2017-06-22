@@ -1,0 +1,36 @@
+version: "2"
+
+services:
+    nginx-proxy:
+        image: jwilder/nginx-proxy
+        container_name: nginx-proxy
+        ports:
+          - "80:80"
+        volumes:
+          - /var/run/docker.sock:/tmp/docker.sock:ro
+    mysql:
+        image: mariadb
+        environment:
+            - VIRTUAL_HOST=mysql.wp.localhost
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=wp
+            - MYSQL_USER=wp
+            - MYSQL_PASSWORD=wp
+        volumes:
+            - ./database:/var/lib/mysql
+        ports:
+            - "3306:3306"
+    php:
+        build: ./build/php
+        links:
+            - mysql:mysql
+        volumes:
+            - ./www:/var/www/html
+    nginx:
+        build: ./build/nginx
+        environment:
+            - VIRTUAL_HOST=wp.localhost,*.wp.localhost
+        volumes:
+            - ./www:/var/www/html
+        links:
+            - php

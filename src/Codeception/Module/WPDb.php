@@ -155,8 +155,8 @@ class WPDb extends ExtendedDb
 			$sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
 
 			if (empty($this->config['urlReplacement'])) {
-				$sql = $this->replaceSiteDomainInSql($sql);
-				$sql = $this->replaceSiteDomainInMultisiteSql($sql);
+				$sql = $this->replaceSiteDomainInSqlString($sql, true);
+				$sql = $this->replaceSiteDomainInMultisiteSqlString($sql, true);
 			}
 
 			$this->sql = explode("\n", $sql);
@@ -167,44 +167,60 @@ class WPDb extends ExtendedDb
 	 * Replaces the WordPress domains in a SQL dump string.
 	 *
 	 * @param string $sql The input SQL dump string.
+   * @param bool $debug Whether a debug message should be printed or not.
 	 *
 	 * @return string The modified SQL string.
 	 */
-	public function replaceSiteDomainInSql($sql)
+	public function replaceSiteDomainInSqlString($sql, $debug = false)
 	{
 		$optionsTable = $this->config['tablePrefix'] . 'options';
 
 		$matches = [];
 		preg_match("/INSERT\\s+INTO\\s+`{$optionsTable}`.*'home'\\s*,\\s*'(.*)',/uiU", $sql, $matches);
 
-		if (empty($matches) || empty($matches[1])) {
-			codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
+    if (empty($matches) || empty($matches[1])) {
+      if ($debug) {
+        codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
+      }
+
+      return $sql;
+    }
+
+    $dumpSiteUrl = $matches[1];
+
+    if (empty($dumpSiteUrl)) {
+      if ($debug) {
+        codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
+      }
+
+      return $sql;
+    }
+
+    $thisSiteUrl = $this->config['url'];
+
+    if ($dumpSiteUrl === $thisSiteUrl) {
+      if ($debug) {
+        codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
+      }
 
 			return $sql;
 		}
 
-		$dumpSiteUrl = $matches[1];
-
-		if (empty($dumpSiteUrl)) {
-			codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
-
-			return $sql;
-		}
-
-		$thisSiteUrl = $this->config['url'];
-
-		if ($dumpSiteUrl === $thisSiteUrl) {
-			codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration.');
-
-			return $sql;
-		}
+    $sql = str_replace( $dumpSiteUrl, $thisSiteUrl, $sql );
 
 		codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . ']');
 
-		return str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+		return $sql;
 	}
 
-	public function replaceSiteDomainInMultisiteSql($sql)
+	/**
+	 * Replaces the site domain in the multisite tables of a SQL dump.
+	 *
+	 * @param string $sql
+   *
+	 * @return string
+	 */
+	public function replaceSiteDomainInMultisiteSqlString($sql, $debug = false)
 	{
 		$tables = [
 			'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
@@ -219,24 +235,32 @@ class WPDb extends ExtendedDb
 			preg_match("/INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}", $sql, $matches);
 
 			if (empty($matches) || empty($matches[1])) {
-				codecept_debug('Tried to replace WordPress site domain but dump file does not contain a table INSERT instruction for table ['
-				               . $table . '].');
+        if ($debug) {
+          codecept_debug('Tried to replace WordPress site domain but dump file does not contain a table INSERT instruction for table ['
+                         . $table . '].');
+        }
 				continue;
 			}
 
 			$dumpSiteUrl = $matches[1];
 			if (empty($dumpSiteUrl)) {
-				codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of [domain] option.');
+        if ($debug) {
+          codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of [domain] option.');
+        }
 				continue;
 			}
 
 			if ($dumpSiteUrl === $thisSiteUrl) {
-				codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration ['
-				               . $dumpSiteUrl . '].');
+        if ($debug) {
+          codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration ['
+                         . $dumpSiteUrl . '].');
+        }
 				continue;
 			}
 
-			codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
+      if ($debug) {
+        codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
+      }
 
 			$sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
 		}
@@ -2235,5 +2259,49 @@ class WPDb extends ExtendedDb
 		$subfolder = ltrim(end($frags), '/');
 
 		return $subfolder;
+	}
+
+	protected function loadDumpUsingDriver()
+	{
+		if (!$this->sql) {
+			$this->debugSection('WPDb', 'No SQL loaded, loading dump skipped');
+			return;
+		}
+
+		$sql =$this->replaceSiteDomainInSqlArray($this->sql);
+		$sql = $this->replaceSiteDomainInMultisiteSqlArray( $sql );
+
+		$this->driver->load( $sql );
+		$this->populated = true;
+	}
+
+  /**
+   * Replaces the WordPress domains in an array of SQL dump string.
+   *
+   * @param array $sql The input SQL dump array.
+   *
+   * @return array The modified SQL array.
+   */
+  public function replaceSiteDomainInSqlArray(array $sql) {
+    if (empty($sql)) {
+      return [];
+    }
+
+    return array_map([$this, 'replaceSiteDomainInSqlString'], $sql);
+  }
+
+  /**
+   * Replaces the site domain in the multisite tables of an array of SQL dump strings.
+   *
+   * @param array $sql The input SQL dump array.
+   *
+   * @return array The modified SQL array.
+   */
+	public function replaceSiteDomainInMultisiteSqlArray(array $sql) {
+    if (empty($sql)) {
+      return [];
+    }
+
+    return array_map([$this, 'replaceSiteDomainInMultisiteSqlString'], $sql);
 	}
 }
