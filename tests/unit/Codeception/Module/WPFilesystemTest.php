@@ -5,6 +5,7 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
+use Codeception\TestInterface;
 use PHPUnit_Framework_AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\Tests\Support\rrmdir;
@@ -749,5 +750,155 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         if ( ! empty($this->sandbox) && file_exists($this->sandbox)) {
             rrmdir($this->sandbox);
         }
+    }
+
+    /**
+     * It should allow having a plugin with code
+     * @test
+     */
+    public function it_should_allow_having_a_plugin_with_code() {
+        $sut = $this->make_instance();
+
+        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/test';
+        $pluginFile   = $pluginFolder . '/test-plugin.php';
+
+        $code = "echo 'Hello world';";
+        $sut->havePlugin('test/test-plugin.php', $code);
+
+        $this->assertFileExists($pluginFolder);
+        $this->assertFileExists($pluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: Test plugin 1
+Description: Test plugin 1
+*/
+
+echo 'Hello world';
+PHP;
+        $this->assertStringEqualsFile($pluginFile, $expected);
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($pluginFile);
+        $this->assertFileNotExists($pluginFolder);
+    }
+
+
+    /**
+     * It should allow having a mu-plugin with code
+     * @test
+     */
+    public function it_should_allow_having_a_mu_plugin_with_code() {
+        $sut = $this->make_instance();
+
+        $muPluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
+        $muPluginFile   = $muPluginFolder . '/test-mu-plugin.php';
+
+        $code = "echo 'Hello world';";
+        $sut->haveMuPlugin('test-mu-plugin.php', $code);
+
+        $this->assertFileExists($muPluginFolder);
+        $this->assertFileExists($muPluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: Test mu-plugin 1
+Description: Test mu-plugin 1
+*/
+
+echo 'Hello world';
+PHP;
+        $this->assertStringEqualsFile($muPluginFile, $expected);
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($muPluginFile);
+        $this->assertFileNotExists($muPluginFolder);
+    }
+
+    /**
+     * It should allow having a theme with code
+     * @test
+     */
+    public function it_should_allow_having_a_theme_with_code() {
+        $sut = $this->make_instance();
+
+        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
+        $themeIndexFile = $themeFolder . '/test/index.php';
+        $themeStyleFile = $themeFolder . '/test/style.css';
+
+        $code = "echo 'Hello world';";
+        $sut->haveTheme('test', $code);
+
+        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themeIndexFile);
+        $this->assertFileExists($themeStyleFile);
+
+        $expectedCss = <<<CSS
+/*
+Theme Name: Test Theme 1
+Author: wp-browser
+Description: Test Theme 1 
+Version: 1.0
+*/
+CSS;
+
+        $expectedIndex = <<< PHP
+<?php echo 'Hello world';
+PHP;
+
+        $this->assertStringEqualsFile($themeStyleFile, $expectedCss);
+        $this->assertStringEqualsFile($themeIndexFile, $expectedIndex);
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($themeStyleFile);
+        $this->assertFileNotExists($themeIndexFile);
+    }
+
+    /**
+     * It should allow having a theme with code and functions file
+     * @test
+     */
+    public function it_should_allow_having_a_theme_with_code_and_functions_file() {
+        $sut = $this->make_instance();
+
+        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
+        $themeIndexFile = $themeFolder . '/test/index.php';
+        $themeStyleFile = $themeFolder . '/test/style.css';
+        $themeFunctionsFile = $themeFolder . '/test/functions.php';
+
+        $code = "echo 'Hello world';";
+        $sut->haveTheme('test', $code, $code);
+
+        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themeIndexFile);
+        $this->assertFileExists($themeStyleFile);
+
+        $expectedCss = <<<CSS
+/*
+Theme Name: Test Theme 1
+Author: wp-browser
+Description: Test Theme 1 
+Version: 1.0
+*/
+CSS;
+
+        $expectedIndex = <<< PHP
+<?php echo 'Hello world';
+PHP;
+
+        $this->assertStringEqualsFile($themeStyleFile, $expectedCss);
+        $this->assertStringEqualsFile($themeIndexFile, $expectedIndex);
+        $this->assertStringEqualsFile($themeFunctionsFile, $expectedIndex);
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($themeStyleFile);
+        $this->assertFileNotExists($themeIndexFile);
+        $this->assertFileNotExists($themeFunctionsFile);
     }
 }
