@@ -63,7 +63,8 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it allows sending GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
-* WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.
+* WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.  
+* WPFilesystem - an extension of the default Filesystem module providing methods specific to WordPress projects.  
 
 ### WPBrowser configuration
 WPBrowser extends `PHPBrowser` module hence any parameter required and available to that module is required and available in `WPBrowser` as well.  
@@ -380,6 +381,52 @@ $I->cli('wp post create --post_title=Foo --post_content=Foo --post_excerpt=Foo -
 #### Configuration files
 Global and local [configuration files](http://wp-cli.org/config/#config-file) will be ignored; any additional parameter should be specified inline.  
 This prevents tests from running commands that would impact the WordPress installation in a way that would not be reversible (e.g. create or modify the `.htaccess` file); as a general guideline the wrapper is meant to be used to perform database reversible operations.
+
+### WPFilesystem module configuration
+This module can be used in any level of testing and provides methods to navigate and manipulate the WordPress file and folder structure.  
+At a minimum the module requires specifying the WordPress installation root folder:
+
+```yaml
+modules:
+    enabled:
+        WPFilesystem:
+            wpRootFolder: "/var/www/wordpress"
+```
+
+* `wpRootFolder` - string, required; the path to the WordPress installation root folder; the folder that contains the `wp-load.php` file
+* `themes` - string, optional; the path, relative to the WordPress root folder or an absolute path, to the themes folder
+* `plugins` - string, optional; the path, relative to the WordPress root folder or an absolute path, to the plugins folder.
+* `mu-plugins` - string, optional; the path, relative to the WordPress root folder or an absolute path, to the must-use plugins folder
+* `uploads` - string, optional; the path, relative to the WordPress root folder or an absolute path, to the uploads folder
+
+If any one of the optional configuration paths (`plugins`, `mu-plugins`, `themes`, `uploads`) is not specified it will default to the WordPress standard file structure:
+
+```
+wpRootfolder
+  \
+    wp-content
+      \
+        themes
+        plugins
+        mu-plugins
+        uploads
+```
+
+To override the default structure specify the optional paths:
+
+
+```yaml
+modules:
+    enabled:
+        WPFilesystem:
+            wpRootFolder: "/var/www/wp"
+            plugins: "/app/plugins" 
+            mu-plugins: "/app/mu-plugins" 
+            themes: "/themes" 
+            uploads: "/content" 
+```
+
+### Additional commands
 
 #### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
