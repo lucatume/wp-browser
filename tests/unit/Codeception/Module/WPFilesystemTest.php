@@ -816,7 +816,7 @@ PHP;
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
         $this->assertFileNotExists($muPluginFile);
-        $this->assertFileNotExists($muPluginFolder);
+        $this->assertFileExists($muPluginFolder);
     }
 
     /**
