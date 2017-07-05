@@ -8,29 +8,34 @@ function dockerComposeCheck(){
 	command -v docker-compose >/dev/null 2>&1 || { echo >&2 "docker-compose is required for the installation to complete.  Aborting."; exit 1; }
 }
 
-echo "Building images..."
+dockerComposeCheck
+
+echo "\nStopping containers...\n"
+docker-compose down -v
+
+echo "\nBuilding images...\n"
 docker-compose build
 
-echo "Starting containers..."
+echo "\nStarting containers...\n"
 docker-compose up -d
 
 # create the www directory if it does not exist
 if [[ ! -d ./www  ]]; then
-	echo "Creating www folder..."
+	echo "\nCreating www folder..n"
 	mkdir www
 fi
 
 # download WordPress if the not available in the www folder
 if [[ ! -f ./www/wp-load.php ]]; then
 	wpcliCheck
-	echo "WordPress not found in the www folder. Downloading..."
+	echo "\nWordPress not found in the www folder. Downloading...\n"
 	wp core download
 fi
 
 # configure WordPress if not already configured
 if [[ ! -f ./www/wp-config.php ]]; then
 	wpcliCheck
-	echo "WordPress is not configured. Configuring..."
+	echo "\nWordPress is not configured. Configuring...\n"
 	wp config create \
 		--dbname=wp \
 		--dbuser=wp \
@@ -42,7 +47,7 @@ wpcliCheck
 
 # Install wordpress
 if [[ ! $(wp core is-installed --network) ]]; then
-	echo "Installing WordPress..."
+	echo "\nInstalling WordPress...\n"
 	wp core multisite-install \
 		--url=http://wp.localhost \
 		--base=/ \
@@ -58,15 +63,9 @@ if [[ ! $(wp core is-installed --network) ]]; then
 	wp rewrite structure '%postname%' && wp rewrite flush
 fi
 
-echo "Removing default plugins..."
 wp plugin delete akismet hello
-
-echo "Removing default themes..."
+mkdir -p www/wp-content/mu-plugins
 wp theme delete twentyfifteen twentysixteen
-
-echo "Clearing all sites..."
 wp site list --field=url | xargs -n1 -I % wp --url=% site empty --yes
-
 wp site list --field=url | xargs -n1 -I % wp --url=% transient delete-all
-
 wp db export ./../tests/_data/dump.sql
