@@ -11,7 +11,7 @@ services:
     mysql:
         image: mariadb
         environment:
-            - VIRTUAL_HOST=mysql.wp.localhost
+            - VIRTUAL_HOST=mysql.localhost
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=wp
             - MYSQL_USER=wp
@@ -23,7 +23,7 @@ services:
     php:
         build: ./build/php
         links:
-            - mysql:mysql
+            - "mysql:mysql.localhost"
         volumes:
             - ./www:/var/www/html
     nginx:

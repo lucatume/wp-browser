@@ -4,9 +4,19 @@ function wpcliCheck(){
 	command -v wp >/dev/null 2>&1 || { echo >&2 "wp (wp-cli) is required for the installation to complete.  Aborting."; exit 1; }
 }
 
+function dockerComposeCheck(){
+	command -v docker-compose >/dev/null 2>&1 || { echo >&2 "docker-compose is required for the installation to complete.  Aborting."; exit 1; }
+}
+
+echo "Building images..."
+docker-compose build
+
+echo "Starting containers..."
+docker-compose up -d
+
 # create the www directory if it does not exist
 if [[ ! -d ./www  ]]; then
-	echo "Creating www folder"
+	echo "Creating www folder..."
 	mkdir www
 fi
 
@@ -25,14 +35,14 @@ if [[ ! -f ./www/wp-config.php ]]; then
 		--dbname=wp \
 		--dbuser=wp \
 		--dbpass=wp \
-		--dbhost=mysql
+		--dbhost=mysql.localhost
 fi
 
 wpcliCheck
 
 # Install wordpress
 if [[ ! $(wp core is-installed --network) ]]; then
-	echo "Installing WordPress"
+	echo "Installing WordPress..."
 	wp core multisite-install \
 		--url=http://wp.localhost \
 		--base=/ \
@@ -48,17 +58,15 @@ if [[ ! $(wp core is-installed --network) ]]; then
 	wp rewrite structure '%postname%' && wp rewrite flush
 fi
 
-# remove default plugins
+echo "Removing default plugins..."
 wp plugin delete akismet hello
 
-# remove all themes but twentyseventeen
+echo "Removing default themes..."
 wp theme delete twentyfifteen twentysixteen
 
-# clear all sites on the network
+echo "Clearing all sites..."
 wp site list --field=url | xargs -n1 -I % wp --url=% site empty --yes
 
-# clear all transients on all sites
 wp site list --field=url | xargs -n1 -I % wp --url=% transient delete-all
 
-# create a new dump
 wp db export ./../tests/_data/dump.sql
