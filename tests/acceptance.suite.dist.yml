@@ -10,20 +10,26 @@ modules:
         - WPBrowser
         - WPDb
         - AcceptanceHelper
+        - WPFilesystem
     config:
         WPBrowser:
-              url: '%WP_URL%'
-              adminUsername: 'admin'
-              adminPassword: 'admin'
-              adminPath: '/wp-admin'
+            url: '%WP_URL%'
+            adminUsername: 'admin'
+            adminPassword: 'admin'
+            adminPath: '/wp-admin'
         WPDb:
-              dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
-              user: %DB_USER%
-              password: %DB_PASSWORD%
-              dump: 'tests/_data/dump.sql'
-              populate: true
-              cleanup: true
-              reconnect: false
-              url: '%WP_URL%'
-              tablePrefix: 'wp_'
-
+            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+            user: %DB_USER%
+            password: %DB_PASSWORD%
+            dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: '%WP_URL%'
+            tablePrefix: 'wp_'
+        WPFilesystem:
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            themes: '/wp-content/themes'
+            plugins: '/wp-content/plugins'
+            mu-plugins: '/wp-content/mu-plugins'
+            uploads: '/wp-content/uploads'
