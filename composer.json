@@ -37,7 +37,8 @@
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
-    "site5/phantoman": "^1.1"
+    "site5/phantoman": "^1.1",
+    "vlucas/phpdotenv": "^2.4"
   },
   "bin": [
     "wpcept"

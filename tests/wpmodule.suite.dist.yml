@@ -4,16 +4,16 @@ modules:
         - \Helper\Wpmodule
         - WPDb:
             dsn: 'mysql:host=localhost;dbname=test'
-            user: 'root'
-            password: ''
+            user: %DB_USER%
+            password: %DB_PASSWORD%
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
             reconnect: false
-            url: 'http://wordpress.dev'
-            tablePrefix: 'wp_'
+            url: '%WP_URL%'
+            tablePrefix: wp_
         - WordPress:
             depends: WPDb
-            wpRootFolder: "/tmp/wordpress"
-            adminUsername: 'admin'
-            adminPassword: 'admin'
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            adminUsername: admin
+            adminPassword: admin

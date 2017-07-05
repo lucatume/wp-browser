@@ -15,3 +15,4 @@ tests/_output
 # local configuration files
 tests/*.suite.yml
 codeception.yml
+.env.local
