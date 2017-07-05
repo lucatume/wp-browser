@@ -3,6 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- switch to `.env` based configuration for tests
+
+##[1.21.5] 2017-06-30
+### Fixed
+- issue with `WPDb::haveOrUpdateInDatabase` method
 
 ##[1.21.4] 2017-06-21
 ### Fixed
@@ -574,7 +580,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.5...HEAD
+[1.21.5]: https://github.com/lucatume/wp-browser/compare/1.21.4...1.21.5
 [1.21.4]: https://github.com/lucatume/wp-browser/compare/1.21.2...1.21.4
 [1.21.3]: https://github.com/lucatume/wp-browser/compare/1.21.2...1.21.3
 [1.21.2]: https://github.com/lucatume/wp-browser/compare/1.21.1...1.21.2

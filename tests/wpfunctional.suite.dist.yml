@@ -8,24 +8,24 @@ modules:
         - Asserts
     config:
       WPDb:
-        dsn: 'mysql:host=127.0.0.1;dbname=test'
-        user: 'root'
-        password: ''
+        dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+        user: %DB_USER%
+        password: %DB_PASSWORD%
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
         reconnect: false
-        url: 'http://wordpress.dev'
-        tablePrefix: 'wp_'
+        url: '%WP_URL%'
+        tablePrefix: wp_
       WordPress:
         depends: WPDb
-        wpRootFolder: "/tmp/wordpress"
-        adminUsername: 'admin'
-        adminPassword: 'admin'
+        wpRootFolder: '%WP_ROOT_FOLDER%'
+        adminUsername: admin
+        adminPassword: admin
       WPLoader:
         loadOnly: true
-        wpRootFolder: "/tmp/wordpress"
-        dbName: "wploader"
-        dbHost: "localhost"
-        dbUser: root
-        dbPassword: ''
+        wpRootFolder: %WP_ROOT_FOLDER%'
+        dbName: %TEST_DB_NAME%
+        dbHost: %DB_HOST%
+        dbUser: %DB_USER%
+        dbPassword: %DB_PASSWORD%

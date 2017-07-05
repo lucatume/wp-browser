@@ -12,12 +12,12 @@ modules:
       - Asserts
     config:
       WPDb:
-        dsn: 'mysql:host=127.0.0.1;dbname=test'
-        user: 'root'
-        password: ''
+        dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+        user: %DB_USER%
+        password: %DB_PASSWORD%
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
         reconnect: false
-        url: 'http://wordpress.dev'
+        url: '%WP_URL%'
         tablePrefix: 'wp_'

@@ -9,8 +9,8 @@ settings:
     colors: true
     memory_limit: 1024M
 params:
-    - env
-wpFolder: '%wpFolder%'
+    - .env
+wpFolder: '%WP_ROOT_FOLDER%'
 extensions:
     enabled:
         - Codeception\Extension\Phantoman

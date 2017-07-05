@@ -6,21 +6,16 @@ modules:
     config:
         WPLoader:
             multisite: true
-            wpRootFolder: "/tmp/wordpress"
-            dbName: "wploader"
-            dbHost: "localhost"
-            dbUser: root
-            dbPassword: ''
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            dbName: %TEST_DB_NAME%
+            dbHost: '%DB_HOST%'
+            dbUser: %DB_USER%
+            dbPassword: %DB_PASSWORD%
             wpDebug: true
-            dbCharset: "utf8"
-            dbCollate: ""
-            tablePrefix: "wp_"
-            domain: "wordpress.dev"
-            adminEmail: "admin@wordpress.dev"
-            title: "Test"
-            phpBinary: "php"
-            language: ""
-            configFile: ""
+            tablePrefix: wp_
+            domain: '%WP_DOMAIN%'
+            adminEmail: 'admin@%WP_DOMAIN%'
+            title: 'Test'
             theme: dummy
             plugins: ['mu-plugin-1/plugin.php']
             activatePlugins: ['mu-plugin-1/plugin.php']
