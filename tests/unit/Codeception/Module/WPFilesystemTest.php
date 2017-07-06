@@ -137,26 +137,6 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
     }
 
     /**
-     * It should throw if optional parameter is specified but not existing
-     *
-     * @test
-     * @dataProvider optionalRequiredPathParameters
-     */
-    public function it_should_throw_if_optional_parameter_is_specified_but_not_existing($parameter) {
-        $config = $this->getDefaultConfig();
-
-        $this->config = [
-            'wpRootFolder' => $config['wpRootFolder'],
-            $parameter     => __DIR__ . '/foo',
-        ];
-
-        $this->expectException(ModuleConfigException::class);
-
-        $sut = $this->make_instance();
-        $sut->_initialize();
-    }
-
-    /**
      * It should allow specifying wpRootFolder as relative path to the project root
      *
      * @test
@@ -759,11 +739,11 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
     public function it_should_allow_having_a_plugin_with_code() {
         $sut = $this->make_instance();
 
-        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/test';
-        $pluginFile   = $pluginFolder . '/test-plugin.php';
+        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/foo';
+        $pluginFile   = $pluginFolder . '/plugin.php';
 
         $code = "echo 'Hello world';";
-        $sut->havePlugin('test/test-plugin.php', $code);
+        $sut->havePlugin('foo/plugin.php', $code);
 
         $this->assertFileExists($pluginFolder);
         $this->assertFileExists($pluginFile);
@@ -771,8 +751,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $expected = <<<PHP
 <?php
 /*
-Plugin Name: Test plugin 1
-Description: Test plugin 1
+Plugin Name: foo
+Description: foo
 */
 
 echo 'Hello world';

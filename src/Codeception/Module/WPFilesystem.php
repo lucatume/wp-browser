@@ -21,7 +21,7 @@ use function tad\WPBrowser\Tests\Support\rrmdir;
 class WPFilesystem extends Filesystem {
 
 	public function _before(TestInterface $test) {
-		$this->ensureOptionalPaths();
+		$this->ensureOptionalPaths(FALSE);
 	}
 
 	/**
@@ -51,6 +51,7 @@ class WPFilesystem extends Filesystem {
 
 	public function _initialize() {
 		$this->ensureWpRootFolder();
+		$this->ensureOptionalPaths();
 	}
 
 	protected function ensureWpRootFolder() {
@@ -93,7 +94,7 @@ class WPFilesystem extends Filesystem {
 		}
 	}
 
-	protected function ensureOptionalPaths() {
+	protected function ensureOptionalPaths($check = TRUE) {
 		$optionalPaths = [
 			'themes'     => [
 				'mustExist' => TRUE,
@@ -127,13 +128,17 @@ class WPFilesystem extends Filesystem {
 			else {
 				$absolutePath = $path;
 			}
-			$mustExistAndIsNotDir = $info['mustExist'] && !is_dir($absolutePath);
-			if ($mustExistAndIsNotDir) {
-				throw new ModuleConfigException(
-					__CLASS__,
-					"The {$configKey} config path [{$path}] does not exist."
-				);
+
+			if ($check) {
+				$mustExistAndIsNotDir = $info['mustExist'] && !is_dir($absolutePath);
+				if ($mustExistAndIsNotDir) {
+					throw new ModuleConfigException(
+						__CLASS__,
+						"The {$configKey} config path [{$path}] does not exist."
+					);
+				}
 			}
+
 			$this->config[$configKey] = Utils::untrailslashit($absolutePath) . DIRECTORY_SEPARATOR;
 		}
 	}
