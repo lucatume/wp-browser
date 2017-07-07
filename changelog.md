@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.7] 2017-07-07
+### Fixed
+- removed excessive bracket in `WPBrowser` template
+
 ##[1.21.6] 2017-07-06
 ### Changed
 - switch to `.env` based configuration for tests
@@ -583,7 +587,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.6...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.7...HEAD
+[1.21.7]: https://github.com/lucatume/wp-browser/compare/1.21.6...1.21.7
 [1.21.6]: https://github.com/lucatume/wp-browser/compare/1.21.5...1.21.6
 [1.21.5]: https://github.com/lucatume/wp-browser/compare/1.21.4...1.21.5
 [1.21.4]: https://github.com/lucatume/wp-browser/compare/1.21.2...1.21.4
