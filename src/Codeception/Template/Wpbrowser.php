@@ -299,7 +299,7 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
-            url: '{$installationData['url']}]'
+            url: '{$installationData['url']}'
             urlReplacement: true
             tablePrefix: '{$installationData['tablePrefix']}'
         WordPress:

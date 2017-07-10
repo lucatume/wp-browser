@@ -25,14 +25,15 @@ use tad\WPBrowser\Module\WPLoader\FactoryStore;
  */
 class WPLoader extends Module {
 
-	public static $includeInheritedActions = TRUE;
+	public static $includeInheritedActions = true;
 
 	public static $onlyActions = [];
 
 	public static $excludeActions = [];
 
 	/**
-	 * The fields the user will have to set to legit values for the module to run.
+	 * The fields the user will have to set to legit values for the module to
+	 * run.
 	 *
 	 * wpRootFolder - the absolute path to the root folder of the WordPress
 	 * installation to use for testing, the ABSPATH global value.
@@ -46,43 +47,62 @@ class WPLoader extends Module {
 	 *
 	 * @var array
 	 */
-	protected $requiredFields = ['wpRootFolder', 'dbName', 'dbHost', 'dbUser', 'dbPassword',];
+	protected $requiredFields = [
+		'wpRootFolder',
+		'dbName',
+		'dbHost',
+		'dbUser',
+		'dbPassword',
+	];
 
 	/**
 	 * The fields the user will be able to override while running tests.
 	 *
-	 * All of the fields have a correspondant in the standard `wp-tests-config.php`
-	 * file found in [WordPress automated testing suite.](http://make.wordpress.org/core/handbook/automated-testing/)
+	 * All of the fields have a correspondant in the standard
+	 * `wp-tests-config.php` file found in [WordPress automated testing
+	 * suite.](http://make.wordpress.org/core/handbook/automated-testing/)
 	 *
-	 * loadOnly - bool, def. `false`, whether the module should load WordPress and install it (`false`) or just only load it
-	 * (`true`) isolatedInstall - bool, def. `true`, whether the WP installation should happen in an isolated process(core like)
-	 * or not (previous wp-browser method). wpDebug - bool, def. `true`, the WP_DEBUG global value. multisite - bool, def.
-	 * `false`, if set to `true` will create a multisite installation, the WP_TESTS_MULTISITE global value. dbCharset - string,
-	 * def. `utf8`, the DB_CHARSET global value. dbCollate - string, def. ``, the DB_COLLATE global value. tablePrefix - string,
-	 * def. `wptests_`, the WP_TESTS_TABLE_PREFIX value. domain - string, def. `example.org`, the root URL of the site, the
-	 * WP_TESTS_DOMAIN global value. adminEmail - string, def. `admin@example.org`, the admin email, the WP_TEST_EMAIL global
-	 * value. title - string, def. `Test Blog`, the blog title, the WP_TESTS_TITLE global value. phpBinary - string, def. `php`,
-	 * the php bin command, the WP_PHP_BINARY global value. language - string, def. ``, the installation language, the WPLANG
-	 * global value. configFile - string or array, def. ``, the path, or an array of paths, to custom config file(s) relative to
-	 * the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
-	 * pluginsFolder - string, def. ``, the relative path to the plugins folder in respect to the WP root folder plugins - array,
-	 * def. `[]`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these
-	 * should be defined in the
+	 * loadOnly - bool, def. `false`, whether the module should load WordPress
+	 * and install it (`false`) or just only load it
+	 * (`true`) isolatedInstall - bool, def. `true`, whether the WP
+	 * installation should happen in an isolated process(core like) or not
+	 * (previous wp-browser method). wpDebug - bool, def. `true`, the WP_DEBUG
+	 * global value. multisite - bool, def.
+	 * `false`, if set to `true` will create a multisite installation, the
+	 * WP_TESTS_MULTISITE global value. dbCharset - string, def. `utf8`, the
+	 * DB_CHARSET global value. dbCollate - string, def. ``, the DB_COLLATE
+	 * global value. tablePrefix - string, def. `wptests_`, the
+	 * WP_TESTS_TABLE_PREFIX value. domain - string, def. `example.org`, the
+	 * root URL of the site, the WP_TESTS_DOMAIN global value. adminEmail -
+	 * string, def. `admin@example.org`, the admin email, the WP_TEST_EMAIL
+	 * global value. title - string, def. `Test Blog`, the blog title, the
+	 * WP_TESTS_TITLE global value. phpBinary - string, def. `php`, the php bin
+	 * command, the WP_PHP_BINARY global value. language - string, def. ``, the
+	 * installation language, the WPLANG global value. configFile - string or
+	 * array, def. ``, the path, or an array of paths, to custom config file(s)
+	 * relative to the `wpRootFolder` folder, no leading slash needed; this is
+	 * the place where custom `wp_tests_options` could be set. pluginsFolder -
+	 * string, def. ``, the relative path to the plugins folder in respect to
+	 * the WP root folder plugins - array, def. `[]`, a list of plugins that
+	 * should be loaded before any test case runs and after mu-plugins have
+	 * been loaded; these should be defined in the
 	 * `folder/plugin-file.php` format.
-	 * activatePlugins - array, def. `[]`, a list of plugins that should be activated calling the `activate_{$plugin}`
-	 * before any test case runs and after mu-plugins have been loaded; these should be defined in the
+	 * activatePlugins - array, def. `[]`, a list of plugins that should be
+	 * activated calling the `activate_{$plugin}` before any test case runs and
+	 * after mu-plugins have been loaded; these should be defined in the
 	 * `folder/plugin-file.php` format.
-	 * bootstrapActions - array, def. `[]`, a list of actions that should be called after before any test case runs.
+	 * bootstrapActions - array, def. `[]`, a list of actions that should be
+	 * called after before any test case runs.
 	 *
 	 *
 	 * @var array
 	 */
 	protected $config
 		= [
-			'loadOnly'         => FALSE,
-			'isolatedInstall'  => TRUE,
-			'wpDebug'          => TRUE,
-			'multisite'        => FALSE,
+			'loadOnly'         => false,
+			'isolatedInstall'  => true,
+			'wpDebug'          => true,
+			'multisite'        => false,
 			'dbCharset'        => 'utf8',
 			'dbCollate'        => '',
 			'tablePrefix'      => 'wptests_',
@@ -126,7 +146,11 @@ class WPLoader extends Module {
 	 */
 	private $wp;
 
-	public function __construct(ModuleContainer $moduleContainer, $config, WP $wp = NULL) {
+	public function __construct(
+		ModuleContainer $moduleContainer,
+		$config,
+		WP $wp = null
+	) {
 		parent::__construct($moduleContainer, $config);
 		$this->wp = $wp ? $wp : new WP();
 	}
@@ -178,7 +202,10 @@ class WPLoader extends Module {
 	/**
 	 * @param string $wpRootFolder
 	 *
-	 * @throws \Codeception\Exception\ModuleConfigException If the specified WordPress root folder is not found or not valid.
+	 * @throws \Codeception\Exception\ModuleConfigException If the specified
+	 *                                                      WordPress root
+	 *                                                      folder is not found
+	 *                                                      or not valid.
 	 */
 	protected function ensureWPRoot($wpRootFolder) {
 		if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
@@ -198,6 +225,7 @@ class WPLoader extends Module {
 			// maybe the user is using the `~` symbol for home?
 			$this->wpRootFolder = Utils::homeify($wpRootFolder);
 		}
+
 		return $this->wpRootFolder;
 	}
 
@@ -215,7 +243,8 @@ class WPLoader extends Module {
 
 		if ($this->config['multisite']) {
 			$this->debug('Running as multisite');
-		} else {
+		}
+		else {
 			$this->debug('Running as single site');
 		}
 
@@ -223,7 +252,8 @@ class WPLoader extends Module {
 
 		if (!empty($this->config['loadOnly'])) {
 			$this->bootstrapWP();
-		} else {
+		}
+		else {
 			$this->installAndBootstrapInstallation();
 		}
 	}
@@ -275,11 +305,12 @@ class WPLoader extends Module {
 	}
 
 	/**
-	 * @param string $folder = null The absolute path to the WordPress root installation folder.
+	 * @param string $folder = null The absolute path to the WordPress root
+	 *                       installation folder.
 	 *
 	 * @throws ModuleConfigException
 	 */
-	protected function loadConfigFile($folder = NULL) {
+	protected function loadConfigFile($folder = null) {
 		$folder = $folder ?: codecept_root_dir();
 		$frags  = $this->config['configFile'];
 		$frags  = is_array($frags) ?: [$frags];
@@ -299,7 +330,7 @@ class WPLoader extends Module {
 	 * @return bool|mixed
 	 */
 	protected function requiresIsolatedInstallation() {
-		return isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : TRUE;
+		return isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true;
 	}
 
 	/**
@@ -312,7 +343,8 @@ class WPLoader extends Module {
 				: realpath($this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']));
 
 			if (!file_exists($path)) {
-				throw new ModuleConfigException(__CLASS__, "The path to the plugins folder ('{$path}') doesn't exist.");
+				throw new ModuleConfigException(__CLASS__,
+					"The path to the plugins folder ('{$path}') doesn't exist.");
 			}
 
 			$this->pluginsFolder = Utils::untrailslashit($path);
@@ -322,14 +354,18 @@ class WPLoader extends Module {
 	}
 
 	protected function bootstrapWP() {
+		$this->ensureServerVars();
+
 		include_once $this->wpRootFolder . '/wp-load.php';
+
 		$this->setupCurrentSite();
 		$this->factoryStore = new FactoryStore();
 		$this->factoryStore->setupFactories();
 	}
 
 	/**
-	 * Sets up the `current_site` global handling multisite and single site installation cases.
+	 * Sets up the `current_site` global handling multisite and single site
+	 * installation cases.
 	 */
 	protected function setupCurrentSite() {
 		/** @var wpdb $wpdb */
@@ -342,14 +378,16 @@ class WPLoader extends Module {
 			$current_site->domain    = $data->domain;
 			$current_site->path      = $data->path;
 			$current_site->site_name = ucfirst($data->domain);
-		} else {
+		}
+		else {
 			$site_url = $wpdb->get_var("SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'");
 			if (!empty($site_url)) {
 				$current_site->domain = parse_url($site_url, PHP_URL_HOST);
 				if ($port = parse_url($site_url, PHP_URL_PORT)) {
 					$current_site->domain .= ":{$port}";
 				}
-			} else {
+			}
+			else {
 				$current_site->domain = $this->config['domain'];
 			}
 			$current_site->path = '/';
@@ -386,13 +424,15 @@ class WPLoader extends Module {
 		if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
 			$GLOBALS['wp_tests_options']['active_plugins'] = array_merge($GLOBALS['wp_tests_options']['active_plugins'],
 				$this->config['plugins']);
-		} else {
+		}
+		else {
 			$GLOBALS['wp_tests_options']['active_plugins'] = $this->config['plugins'];
 		}
 	}
 
 	/**
-	 * Sets the active template and stylesheet according to the `theme` configuration parameter.
+	 * Sets the active template and stylesheet according to the `theme`
+	 * configuration parameter.
 	 */
 	public function _setActiveTheme() {
 		if (empty($this->config['theme'])) {
@@ -402,7 +442,8 @@ class WPLoader extends Module {
 		if (!is_array($this->config['theme'])) {
 			$template   = $this->config['theme'];
 			$stylesheet = $this->config['theme'];
-		} else {
+		}
+		else {
 			$template   = reset($this->config['theme']);
 			$stylesheet = end($this->config['theme']);
 		}
@@ -424,7 +465,8 @@ class WPLoader extends Module {
 		foreach ($this->config['bootstrapActions'] as $action) {
 			if (!is_callable($action)) {
 				do_action($action);
-			} else {
+			}
+			else {
 				call_user_func($action);
 			}
 		}
@@ -453,7 +495,8 @@ class WPLoader extends Module {
 
 		foreach ($this->config['activatePlugins'] as $plugin) {
 			activate_plugin($plugin);
-			update_option('active_plugins', array_merge(get_option('active_plugins', []), [$plugin]));
+			update_option('active_plugins',
+				array_merge(get_option('active_plugins', []), [$plugin]));
 		}
 
 		wp_set_current_user($currentUserIdBackup);
@@ -490,5 +533,18 @@ class WPLoader extends Module {
 	 */
 	public function factory() {
 		return $this->factoryStore;
+	}
+
+	protected function ensureServerVars() {
+		$serverDefaults = [
+			'SERVER_PROTOCOL' => 'HTTP/1.1',
+			'HTTP_HOST'       => getenv('WP_DOMAIN') ? getenv('WP_DOMAIN') : $this->config['domain'],
+		];
+
+		foreach ($serverDefaults as $key => $value) {
+			if (empty($_SERVER[$key])) {
+				$_SERVER[$key] = $value;
+			}
+		}
 	}
 }
