@@ -28,6 +28,11 @@ RUN buildDeps=" \
 # set the PHP user, (www-data), to the UID 1000 to allow it to rwx on the folders
 RUN usermod -u 1000 www-data
 
+COPY entrypoint /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint
+
 # Configure extensions
 COPY conf/xdebug.ini /usr/local/etc/php/conf.d/xdebug-conf.ini
 COPY conf/opcache.ini /usr/local/etc/php/conf.d/opcache-conf.ini
+
+ENTRYPOINT ["entrypoint"]

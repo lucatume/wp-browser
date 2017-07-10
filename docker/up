@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+detectTheSystem(){
+    local system=$1
+    local os=''
+
+    if [ "Darwin" == $(uname -s) ]; then
+        # MacOs
+        os="macos"
+    elif grep -q Microsoft /proc/version; then
+        # bash on ubuntu on Windows
+        os="windows"
+    else
+        # Linux
+        os="linux"
+    fi
+
+    echo $os
+}
+
+getIPAddress(){
+    if [ $system == "macos" ]; then
+        ipAddress=$(ipconfig getifaddr en0)
+        if [ ! $ipAddress ]; then
+            ipAddress=$(ipconfig getifaddr en1)
+        fi
+    else
+        ipAddress=$(ip route get 8.8.8.8 | awk '/8.8.8.8/ {print $NF}')
+    fi
+
+    if [[ $ipAddress == "" ]]; then
+        ipAddress=127.0.0.1
+    fi
+
+    echo $ipAddress
+}
+
+system=$(detectTheSystem)
+address=$(getIPAddress)
+
+echo "System is $system"
+echo "Address is $address"
+
+XDEBUG_REMOTE_HOST=$address docker-compose up

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# replace the remote_host in Xdebug configuration
+xdebugConfig="/usr/local/etc/php/conf.d/xdebug-conf.ini"
+
+remoteHost="127.0.0.1"
+
+if [[ $XDEBUG_REMOTE_HOST != "" ]]; then
+   echo "XDebug remote_host will be set to $XDEBUG_REMOTE_HOST"
+   remoteHost="$XDEBUG_REMOTE_HOST"
+else
+   echo "XDebug remote_host will be set to $remoteHost"
+fi
+
+sed -i'' "s/<<remoteHost>>/$remoteHost/g" $xdebugConfig
+
+php-fpm

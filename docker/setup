@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+echo "What is the domain (e.g. 'app') of the project? Type it and press Enter.\n"
+
+read domain
+
+if [ ""  == $domain ]; then
+	echo "Aborting: empty domains are not a thing."
+	return -1
+fi
+
+for file in .env wp-cli.local.yml; do
+	echo "Replacing in $file..."
+    sed -i '' "s/{{domain}}/$domain/g" $(pwd)/$file
+done
+
+echo "Replacing in www..."
+find $(pwd)/www -type f -exec \
+    sed -i '' "s/{{domain}}/$domain/g" {} +
+
+echo "Replacing in build..."
+find $(pwd)/build -type f -exec \
+    sed -i '' "s/{{domain}}/$domain/g" {} +
+
+echo "Building images..."
+
+docker-compose build

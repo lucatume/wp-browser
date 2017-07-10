@@ -1,4 +1,5 @@
 .idea
+.DS_Store
 
 ### Composer template
 composer.phar

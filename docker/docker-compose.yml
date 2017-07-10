@@ -9,27 +9,35 @@ services:
         volumes:
           - /var/run/docker.sock:/tmp/docker.sock:ro
     mysql:
-        image: mariadb
+        image: mysql 
         environment:
-            - VIRTUAL_HOST=mysql.localhost
+            - VIRTUAL_HOST=db.localhost
             - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_DATABASE=wp
-            - MYSQL_USER=wp
-            - MYSQL_PASSWORD=wp
+            - MYSQL_DATABASE=${DOMAIN}
+            - MYSQL_USER=${DOMAIN}
+            - MYSQL_PASSWORD=${DOMAIN}
         volumes:
             - ./database:/var/lib/mysql
         ports:
             - "3306:3306"
+        user: "1000"
+    memcached:
+        image: memcached:alpine
     php:
+        environment:
+            - XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST}
         build: ./build/php
         links:
-            - "mysql:mysql.localhost"
+            - memcached
+            - "mysql:db.localhost"
+            - "nginx-proxy:${DOMAIN}.localhost"
+
         volumes:
             - ./www:/var/www/html
     nginx:
         build: ./build/nginx
         environment:
-            - VIRTUAL_HOST=wp.localhost,*.wp.localhost
+            - VIRTUAL_HOST=${DOMAIN}.localhost,*.${DOMAIN}.localhost
         volumes:
             - ./www:/var/www/html
         links:

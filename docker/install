@@ -10,32 +10,32 @@ function dockerComposeCheck(){
 
 dockerComposeCheck
 
-echo "\nStopping containers...\n"
+echo "Stopping containers..."
 docker-compose down -v
 
-echo "\nBuilding images...\n"
+echo "Building images..."
 docker-compose build
 
-echo "\nStarting containers...\n"
+echo "Starting containers..."
 docker-compose up -d
 
 # create the www directory if it does not exist
 if [[ ! -d ./www  ]]; then
-	echo "\nCreating www folder..n"
+	echo "Creating www folder..n"
 	mkdir www
 fi
 
 # download WordPress if the not available in the www folder
 if [[ ! -f ./www/wp-load.php ]]; then
 	wpcliCheck
-	echo "\nWordPress not found in the www folder. Downloading...\n"
+	echo "WordPress not found in the www folder. Downloading..."
 	wp core download
 fi
 
 # configure WordPress if not already configured
 if [[ ! -f ./www/wp-config.php ]]; then
 	wpcliCheck
-	echo "\nWordPress is not configured. Configuring...\n"
+	echo "WordPress is not configured. Configuring..."
 	wp config create \
 		--dbname=wp \
 		--dbuser=wp \
@@ -47,7 +47,7 @@ wpcliCheck
 
 # Install wordpress
 if [[ ! $(wp core is-installed --network) ]]; then
-	echo "\nInstalling WordPress...\n"
+	echo "Installing WordPress..."
 	wp core multisite-install \
 		--url=http://wp.localhost \
 		--base=/ \
