@@ -64,7 +64,9 @@ PHP;
 	 *
 	 * @test
 	 */
-	public function should_allow_creating_a_theme_with_functions_files(AcceptanceTester $I) {
+	public function should_allow_creating_a_theme_with_functions_files(
+		AcceptanceTester $I
+	) {
 		$indexCode = <<< PHP
 echo baz_say_hi();
 PHP;
@@ -88,7 +90,8 @@ PHP;
 	 *
 	 * @test
 	 */
-	public function should_remove_temp_files_after_each_test(AcceptanceTester $I) {
+	public function should_remove_temp_files_after_each_test(AcceptanceTester $I
+	) {
 		$I->dontSeePluginFileFound('foo');
 		$I->dontSeeMuPluginFileFound('bar');
 		$I->dontSeeThemeFileFound('baz');

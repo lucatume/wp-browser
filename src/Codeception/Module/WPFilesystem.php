@@ -21,7 +21,7 @@ use function tad\WPBrowser\Tests\Support\rrmdir;
 class WPFilesystem extends Filesystem {
 
 	public function _before(TestInterface $test) {
-		$this->ensureOptionalPaths(FALSE);
+		$this->ensureOptionalPaths(false);
 	}
 
 	/**
@@ -94,22 +94,22 @@ class WPFilesystem extends Filesystem {
 		}
 	}
 
-	protected function ensureOptionalPaths($check = TRUE) {
+	protected function ensureOptionalPaths($check = true) {
 		$optionalPaths = [
 			'themes'     => [
-				'mustExist' => TRUE,
+				'mustExist' => true,
 				'default'   => '/wp-content/themes',
 			],
 			'plugins'    => [
-				'mustExist' => TRUE,
+				'mustExist' => true,
 				'default'   => '/wp-content/plugins',
 			],
 			'mu-plugins' => [
-				'mustExist' => FALSE,
+				'mustExist' => false,
 				'default'   => '/wp-content/mu-plugins',
 			],
 			'uploads'    => [
-				'mustExist' => TRUE,
+				'mustExist' => true,
 				'default'   => '/wp-content/uploads',
 			],
 		];
@@ -148,7 +148,7 @@ class WPFilesystem extends Filesystem {
 	 *
 	 * @param string $path
 	 */
-	public function amInUploadsPath($path = NULL) {
+	public function amInUploadsPath($path = null) {
 		if (empty($path)) {
 			$path = $this->config['uploads'];
 		}
@@ -191,14 +191,14 @@ class WPFilesystem extends Filesystem {
 	 * @param string $filename
 	 * @param string $date
 	 */
-	public function seeUploadedFileFound($filename, $date = NULL) {
+	public function seeUploadedFileFound($filename, $date = null) {
 		$path = $this->getUploadsPath($filename, $date);
 		\PHPUnit_Framework_Assert::assertFileExists($path);
 	}
 
-	protected function getUploadsPath($file, $date = NULL) {
+	protected function getUploadsPath($file, $date = null) {
 		$dateFrag = '';
-		if (NULL !== $date) {
+		if (null !== $date) {
 			$timestamp = is_numeric($date) ? $date : strtotime($date);
 			$Y         = date('Y', $timestamp);
 			$m         = date('m', $timestamp);
@@ -228,7 +228,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $filename
 	 * @param string $date
 	 */
-	public function dontSeeUploadedFileFound($file, $date = NULL) {
+	public function dontSeeUploadedFileFound($file, $date = null) {
 		$path = $this->getUploadsPath($file, $date);
 		\PHPUnit_Framework_Assert::assertFileNotExists($path);
 	}
@@ -251,7 +251,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $contents
 	 * @param string $date
 	 */
-	public function seeInUploadedFile($file, $contents, $date = NULL) {
+	public function seeInUploadedFile($file, $contents, $date = null) {
 		\PHPUnit_Framework_Assert::assertStringEqualsFile(
 			$this->getUploadsPath(
 				$file,
@@ -278,7 +278,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $contents
 	 * @param string $date
 	 */
-	public function dontSeeInUploadedFile($file, $contents, $date = NULL) {
+	public function dontSeeInUploadedFile($file, $contents, $date = null) {
 		\PHPUnit_Framework_Assert::assertStringNotEqualsFile(
 			$this->getUploadsPath(
 				$file,
@@ -304,7 +304,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $dir
 	 * @param  string $date
 	 */
-	public function deleteUploadedDir($dir, $date = NULL) {
+	public function deleteUploadedDir($dir, $date = null) {
 		$dir = $this->getUploadsPath($dir, $date);
 		$this->deleteDir($dir);
 	}
@@ -325,7 +325,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $file
 	 * @param  string $date
 	 */
-	public function deleteUploadedFile($file, $date = NULL) {
+	public function deleteUploadedFile($file, $date = null) {
 		$file = $this->getUploadsPath($file, $date);
 		$this->deleteFile($file);
 	}
@@ -346,7 +346,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $dir
 	 * @param  string $date
 	 */
-	public function cleanUploadsDir($dir = NULL, $date = NULL) {
+	public function cleanUploadsDir($dir = null, $date = null) {
 		$dir = empty($dir) ? $this->config['uploads'] : $this->getUploadsPath(
 			$dir,
 			$date
@@ -371,7 +371,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $dst
 	 * @param  string $date
 	 */
-	public function copyDirToUploads($src, $dst, $date = NULL) {
+	public function copyDirToUploads($src, $dst, $date = null) {
 		$this->copyDir($src, $this->getUploadsPath($dst, $date));
 	}
 
@@ -392,7 +392,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $data
 	 * @param  string $date
 	 */
-	public function writeToUploadedFile($filename, $data, $date = NULL) {
+	public function writeToUploadedFile($filename, $data, $date = null) {
 		$filename = $this->getUploadsPath($filename, $date);
 		file_put_contents($filename, $data);
 	}
@@ -413,7 +413,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $filename
 	 * @param  string $date
 	 */
-	public function openUploadedFile($filename, $date = NULL) {
+	public function openUploadedFile($filename, $date = null) {
 		$this->openFile($this->getUploadsPath($filename, $date));
 	}
 
@@ -894,7 +894,7 @@ class WPFilesystem extends Filesystem {
 	public function havePlugin($path, $code) {
 		$fullPath = $this->config['plugins'] . Utils::unleadslashit($path);
 		$dir      = dirname($fullPath);
-		$mkdir    = mkdir($dir, 0777, TRUE);
+		$mkdir    = mkdir($dir, 0777, true);
 		if (!$mkdir) {
 			throw new ModuleException(__CLASS__,
 				"Could not create [{$dir}] plugin folder.");
@@ -946,7 +946,7 @@ PHP;
 		$dir      = dirname($fullPath);
 
 		if (!file_exists($dir)) {
-			$mkdir = mkdir($dir, 0777, TRUE);
+			$mkdir = mkdir($dir, 0777, true);
 
 			if (!$mkdir) {
 				throw new ModuleException(__CLASS__,
@@ -1005,20 +1005,20 @@ PHP;
 	public function haveTheme(
 		$folder,
 		$indexFileCode,
-		$functionsFileCode = NULL
+		$functionsFileCode = null
 	) {
 		$dir           = $this->config['themes'] . Utils::untrailslashit(Utils::unleadslashit($folder));
 		$styleFile     = $dir . DIRECTORY_SEPARATOR . 'style.css';
 		$indexFile     = $dir . DIRECTORY_SEPARATOR . 'index.php';
 		$functionsFile = $dir . DIRECTORY_SEPARATOR . 'functions.php';
 
-		$mkdir = mkdir($dir, 0777, TRUE);
+		$mkdir = mkdir($dir, 0777, true);
 		if (!$mkdir) {
 			throw new ModuleException(__CLASS__,
 				"Could not create [{$dir}] theme folder.");
 		}
 
-		$name     = 'Test Theme ' . ++$this->testPluginCount;
+		$name     = $folder;
 		$style    = <<<CSS
 /*
 Theme Name: $name

@@ -20,19 +20,15 @@ detectTheSystem(){
 
 getIPAddress(){
     if [ $system == "macos" ]; then
-        ipAddress=$(ipconfig getifaddr en0)
-        if [ ! $ipAddress ]; then
-            ipAddress=$(ipconfig getifaddr en1)
+        thisAddress=$(ipconfig getifaddr en0)
+        if [ ! $thisAddress ]; then
+            thisAddress=$(ipconfig getifaddr en1)
         fi
     else
-        ipAddress=$(ip route get 8.8.8.8 | awk '/8.8.8.8/ {print $NF}')
+        thisAddress=$(ip route get 8.8.8.8 | awk '/8.8.8.8/ {print $NF}')
     fi
 
-    if [[ $ipAddress == "" ]]; then
-        ipAddress=127.0.0.1
-    fi
-
-    echo $ipAddress
+    echo $thisAddress
 }
 
 system=$(detectTheSystem)
@@ -41,4 +37,8 @@ address=$(getIPAddress)
 echo "System is $system"
 echo "Address is $address"
 
+echo "Stopping running Docker containers..."
+docker stop $(docker ps -aq) > /dev/null
+
+echo "Starting local containers..."
 XDEBUG_REMOTE_HOST=$address docker-compose up
