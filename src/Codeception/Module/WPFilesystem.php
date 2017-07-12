@@ -149,7 +149,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $path
 	 */
 	public function amInUploadsPath($path = null) {
-		if (empty($path)) {
+		if (null === $path) {
 			$path = $this->config['uploads'];
 		}
 		else {
@@ -225,7 +225,7 @@ class WPFilesystem extends Filesystem {
 	 * ?>
 	 * ```
 	 *
-	 * @param string $filename
+	 * @param string $file
 	 * @param string $date
 	 */
 	public function dontSeeUploadedFileFound($file, $date = null) {
@@ -247,7 +247,7 @@ class WPFilesystem extends Filesystem {
 	 * ?>
 	 * ```
 	 *
-	 * @param string $filename
+	 * @param string $file
 	 * @param string $contents
 	 * @param string $date
 	 */
@@ -274,7 +274,7 @@ class WPFilesystem extends Filesystem {
 	 * ?>
 	 * ```
 	 *
-	 * @param string $filename
+	 * @param string $file
 	 * @param string $contents
 	 * @param string $date
 	 */
@@ -347,7 +347,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $date
 	 */
 	public function cleanUploadsDir($dir = null, $date = null) {
-		$dir = empty($dir) ? $this->config['uploads'] : $this->getUploadsPath(
+		$dir = null === $dir ? $this->config['uploads'] : $this->getUploadsPath(
 			$dir,
 			$date
 		);
@@ -894,8 +894,7 @@ class WPFilesystem extends Filesystem {
 	public function havePlugin($path, $code) {
 		$fullPath = $this->config['plugins'] . Utils::unleadslashit($path);
 		$dir      = dirname($fullPath);
-		$mkdir    = mkdir($dir, 0777, true);
-		if (!$mkdir) {
+		if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
 			throw new ModuleException(__CLASS__,
 				"Could not create [{$dir}] plugin folder.");
 		}
@@ -934,7 +933,7 @@ PHP;
 	 * ?>
 	 * ```
 	 *
-	 * @param string $path The path, relative to the plugins folder, of the
+	 * @param string $filename The path, relative to the plugins folder, of the
 	 *                     plugin file to create.
 	 * @param string $code The content of the plugin file without the opening
 	 *                     php tag.
@@ -946,9 +945,7 @@ PHP;
 		$dir      = dirname($fullPath);
 
 		if (!file_exists($dir)) {
-			$mkdir = mkdir($dir, 0777, true);
-
-			if (!$mkdir) {
+			if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
 				throw new ModuleException(__CLASS__,
 					"Could not create [{$dir}] mu-plugin folder.");
 			}
@@ -992,7 +989,7 @@ PHP;
 	 * ?>
 	 * ```
 	 *
-	 * @param string $path              The path, relative to the themes
+	 * @param string $folder              The path, relative to the themes
 	 *                                  folder, of the plugin directory to
 	 *                                  create.
 	 * @param string $indexFileCode     The content of the theme index.php file
@@ -1012,8 +1009,7 @@ PHP;
 		$indexFile     = $dir . DIRECTORY_SEPARATOR . 'index.php';
 		$functionsFile = $dir . DIRECTORY_SEPARATOR . 'functions.php';
 
-		$mkdir = mkdir($dir, 0777, true);
-		if (!$mkdir) {
+		if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
 			throw new ModuleException(__CLASS__,
 				"Could not create [{$dir}] theme folder.");
 		}
@@ -1045,7 +1041,7 @@ CSS;
 				"Could not create [{$indexFile}] theme file.");
 		}
 
-		if (!empty($functionsFileCode)) {
+		if (null !== $functionsFileCode) {
 			$functions = '<?php ' . $functionsFileCode;
 
 			$functionsPut = file_put_contents($functionsFile, $functions);
