@@ -819,9 +819,9 @@ PHP;
 
         $expectedCss = <<<CSS
 /*
-Theme Name: Test Theme 1
+Theme Name: test
 Author: wp-browser
-Description: Test Theme 1 
+Description: test 
 Version: 1.0
 */
 CSS;
@@ -860,9 +860,9 @@ PHP;
 
         $expectedCss = <<<CSS
 /*
-Theme Name: Test Theme 1
+Theme Name: test
 Author: wp-browser
-Description: Test Theme 1 
+Description: test 
 Version: 1.0
 */
 CSS;
