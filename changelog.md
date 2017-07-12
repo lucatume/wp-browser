@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+##[1.21.8] 2017-07-12
+### Added
+- first version of the `WPFilesystem` module
 
 ##[1.21.7] 2017-07-07
 ### Fixed
