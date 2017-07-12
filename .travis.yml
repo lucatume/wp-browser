@@ -70,6 +70,7 @@ before_script:
   - cd /tmp/wordpress
   - wp site create --slug=$wpSubdomain1 --title="$wpSubdomain1Title"
   - wp site create --slug=$wpSubdomain2 --title="$wpSubdomain2Title"
+  - mkdir -p /tmp/wordpress/wp-content/mu-plugins
 
   # flush rewrite rules
   - wp rewrite structure '/%postname%/'
