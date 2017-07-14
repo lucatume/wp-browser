@@ -39,6 +39,7 @@ echo "Address is $address"
 
 echo "Stopping running Docker containers..."
 docker stop $(docker ps -aq) > /dev/null
+docker rm $(docker ps -aq) > /dev/null
 
 echo "Starting local containers..."
 XDEBUG_REMOTE_HOST=$address docker-compose up
