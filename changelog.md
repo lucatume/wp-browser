@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.9] 2017-07-14
+### Fixed
+- issue where users table would be set to `wp_users` in `WPDb::grabUserIdFromDatabase()` method (thanks @gundamew)
+
 ##[1.21.8] 2017-07-12
 ### Added
 - first version of the `WPFilesystem` module
@@ -590,7 +595,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.8...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.7...HEAD
+[1.21.9]: https://github.com/lucatume/wp-browser/compare/1.21.8...1.21.9
 [1.21.8]: https://github.com/lucatume/wp-browser/compare/1.21.7...1.21.8
 [1.21.7]: https://github.com/lucatume/wp-browser/compare/1.21.6...1.21.7
 [1.21.6]: https://github.com/lucatume/wp-browser/compare/1.21.5...1.21.6
