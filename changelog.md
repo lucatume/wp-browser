@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.10] 2017-07-14
+### Added
+- support for environments in the `rootFolder` parameter of the Symlinker extension
+
 ##[1.21.9] 2017-07-14
 ### Fixed
 - issue where users table would be set to `wp_users` in `WPDb::grabUserIdFromDatabase()` method (thanks @gundamew)
@@ -595,7 +599,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.7...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.10...HEAD
+[1.21.10]: https://github.com/lucatume/wp-browser/compare/1.21.9...1.21.10
 [1.21.9]: https://github.com/lucatume/wp-browser/compare/1.21.8...1.21.9
 [1.21.8]: https://github.com/lucatume/wp-browser/compare/1.21.7...1.21.8
 [1.21.7]: https://github.com/lucatume/wp-browser/compare/1.21.6...1.21.7
