@@ -1102,7 +1102,7 @@ extensions:
 The arguments are:
 
 * `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
-* `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the neverending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
+* `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the never ending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
 * `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
 
 ### Copier
@@ -1175,7 +1175,35 @@ extensions:
                 multisite: /var/www/mu/wp-content/plugins
 ```
 When running a suite specifying more than one environment like
+
 ```bash
 codecept run acceptance --env foo,baz,multisite
 ```
-Then the extension will use the first matched one, in the case above the `multisite` destination will be used.
+Then the extension will use the first matched one, in the case above the `multisite` destination will be used.  
+The `rootFolder` parameter too can be set to be environment-aware and it will follow the same logic as the destination:
+
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Symlinker
+    config:
+        tad\WPBrowser\Extension\Symlinker:
+            mode: plugin
+            rootFolder:
+                dev: /
+                dist: /dist
+                default: /
+            destination:
+                default: /var/www/dev/wp-content/plugins
+                dev: /var/www/dev/wp-content/plugins
+                dist: /var/www/dist/wp-content/plugins
+```
+
+Whenrunning a suite specifying more than one environment like
+
+```bash
+codecept run acceptance --env dist
+```
+
+Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
+
