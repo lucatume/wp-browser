@@ -1009,7 +1009,7 @@ class WPDb extends ExtendedDb
 	 */
 	public function grabUserIdFromDatabase($userLogin)
 	{
-		return $this->grabFromDatabase('wp_users', 'ID', ['user_login' => $userLogin]);
+		return $this->grabFromDatabase($this->getUsersTableName(), 'ID', ['user_login' => $userLogin]);
 	}
 
 	/**
