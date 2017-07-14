@@ -38,7 +38,7 @@ class Symlinker extends Extension
 
 	public function symlink(\Codeception\Event\SuiteEvent $e)
 	{
-		$rootFolder = $this->getRootFolder();
+		$rootFolder = $this->getRootFolder($e->getSettings());
 		$destination = $this->getDestination($rootFolder, $e->getSettings());
 
 		try {
@@ -55,10 +55,19 @@ class Symlinker extends Extension
 	/**
 	 * @return string
 	 */
-	protected function getRootFolder()
+	protected function getRootFolder(array $settings = null)
 	{
-		return isset($this->config['rootFolder']) ? $this->config['rootFolder'] : rtrim(codecept_root_dir(),
-			DIRECTORY_SEPARATOR);
+		$rootFolder = isset($this->config['rootFolder']) ? $this->config['rootFolder'] : rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+
+		if (is_array($rootFolder)) {
+			$currentEnvs = $this->getCurrentEnvsFromSettings($settings);
+			$fallbackRootFolder = isset($rootFolder['default']) ? $rootFolder['default'] : reset($rootFolder);
+			$supportedEnvs      = array_intersect(array_keys($rootFolder), $currentEnvs);
+			$firstSupported     = reset($supportedEnvs);
+			$rootFolder         = isset($rootFolder[$firstSupported]) ? $rootFolder[$firstSupported] : $fallbackRootFolder;
+		}
+
+		return $rootFolder;
 	}
 
 	/**
@@ -68,24 +77,23 @@ class Symlinker extends Extension
 	 */
 	protected function getDestination($rootFolder, array $settings = null)
 	{
-		$rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
-		$currentEnvs = preg_split('/\\s*,\\s*/', $rawCurrentEnvs);
-
 		$destination = $this->config['destination'];
 
 		if (is_array($destination)) {
+			$currentEnvs = $this->getCurrentEnvsFromSettings($settings);
 			$fallbackDestination = isset($destination['default']) ? $destination['default'] : reset($destination);
 			$supportedEnvs = array_intersect(array_keys($destination), $currentEnvs);
 			$firstSupported = reset($supportedEnvs);
 			$destination = isset($destination[$firstSupported]) ? $destination[$firstSupported] : $fallbackDestination;
 		}
 		$destination = rtrim($destination, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
+
 		return $destination;
 	}
 
 	public function unlink(\Codeception\Event\SuiteEvent $e)
 	{
-		$rootFolder = $this->getRootFolder();
+		$rootFolder = $this->getRootFolder($e->getSettings());
 		$destination = $this->getDestination($rootFolder, $e->getSettings());
 
 		if ($this->filesystem->file_exists($destination)) {
@@ -121,13 +129,19 @@ class Symlinker extends Extension
 		$destination = $this->config['destination'];
 
 		if (is_array($destination)) {
-			array_walk($destination, [$this, 'checkSingleDestination']);
+			array_walk($destination, [$this, 'checkDestination']);
 		} else {
-			$this->checkSingleDestination($destination);
+			$this->checkDestination($destination);
 		}
 
 		if (isset($this->config['rootFolder'])) {
-			$this->checkRootFolder($this->config['rootFolder']);
+			$rootFolder = $this->config['rootFolder'];
+			if (is_array($rootFolder)) {
+				array_walk($rootFolder, [$this, 'checkRootFolder']);
+			}
+			else {
+				$this->checkRootFolder($rootFolder);
+			}
 		}
 	}
 
@@ -135,7 +149,7 @@ class Symlinker extends Extension
 	 * @param $destination
 	 * @throws ExtensionException
 	 */
-	protected function checkSingleDestination($destination)
+	protected function checkDestination($destination)
 	{
 		if (!($this->filesystem->is_dir($destination) && $this->filesystem->is_writeable($destination))) {
 			throw new ExtensionException(__CLASS__,
@@ -143,11 +157,22 @@ class Symlinker extends Extension
 		}
 	}
 
-	private function checkRootFolder($rootFolder)
+	protected function checkRootFolder($rootFolder)
 	{
 		if (!($this->filesystem->is_dir($rootFolder) && $this->filesystem->is_readable($rootFolder))) {
 			throw new ExtensionException(__CLASS__,
 				'[rootFolder] parameter [' . $rootFolder . '] is not an existing and readable directory.');
 		}
+	}
+
+	/**
+	 * @param array $settings
+	 *
+	 * @return array
+	 */
+	protected function getCurrentEnvsFromSettings(array $settings) {
+		$rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
+
+		return preg_split('/\\s*,\\s*/', $rawCurrentEnvs);
 	}
 }
