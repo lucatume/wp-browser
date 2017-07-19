@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.11] 2017-07-19
 ### Fixed
 - an issue preventing writes in the `WPFilesystem::writeToUploadedFile` method
 
@@ -604,7 +606,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.10...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.11...HEAD
+[1.21.11]: https://github.com/lucatume/wp-browser/compare/1.21.10...1.21.11
 [1.21.10]: https://github.com/lucatume/wp-browser/compare/1.21.9...1.21.10
 [1.21.9]: https://github.com/lucatume/wp-browser/compare/1.21.8...1.21.9
 [1.21.8]: https://github.com/lucatume/wp-browser/compare/1.21.7...1.21.8
