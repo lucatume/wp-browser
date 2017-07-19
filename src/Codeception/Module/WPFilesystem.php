@@ -196,7 +196,18 @@ class WPFilesystem extends Filesystem {
 		\PHPUnit_Framework_Assert::assertFileExists($path);
 	}
 
-	protected function getUploadsPath($file, $date = null) {
+	/**
+	 * Returns the path to the specified uploads file of folder.
+	 *
+	 * Not providing a value for `$file` and `$date` will return the uploads folder path.
+	 *
+	 * @param string $file The file path, relative to the uploads folder.
+	 * @param null $date The date that should be used to build the uploads sub-folders in the year/month format;
+	 *                   a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.
+	 *
+	 * @return string The absolute path to an uploaded file.
+	 */
+	public function getUploadsPath($file = '', $date = null) {
 		$dateFrag = '';
 		if (null !== $date) {
 			$timestamp = is_numeric($date) ? $date : strtotime($date);
@@ -204,10 +215,11 @@ class WPFilesystem extends Filesystem {
 			$m         = date('m', $timestamp);
 			$dateFrag  = $Y . DIRECTORY_SEPARATOR . $m;
 		}
-		$path = implode(
-			DIRECTORY_SEPARATOR,
-			[$this->config['uploads'], $dateFrag, Utils::unleadslashit($file)]
-		);
+		$path = implode(DIRECTORY_SEPARATOR, array_filter([
+			Utils::untrailslashit($this->config['uploads']),
+			$dateFrag,
+			Utils::unleadslashit($file),
+		]));
 
 		return $path;
 	}
@@ -391,10 +403,27 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $filename
 	 * @param  string $data
 	 * @param  string $date
+	 *
+	 * @return string The absolute path to the destination file.
+	 *
+	 * @throws \Codeception\Exception\ModuleException If the destination folder could not be created or the destination file could not be written.
 	 */
 	public function writeToUploadedFile($filename, $data, $date = null) {
 		$filename = $this->getUploadsPath($filename, $date);
-		file_put_contents($filename, $data);
+		$dir      = dirname($filename);
+
+		if (!is_dir($dir)) {
+			if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
+				throw new ModuleException(__CLASS__, "Could not create the [{$dir}] folder.");
+			}
+			$this->toClean[] = $dir;
+		}
+
+		if (file_put_contents($filename, $data) === false) {
+			throw new ModuleException(__CLASS__, "Could not write data to file[{$filename}].");
+		}
+
+		return $filename;
 	}
 
 	/**
@@ -1051,5 +1080,14 @@ CSS;
 					"Could not create [{$indexFile}] theme file.");
 			}
 		}
+	}
+
+	/**
+	 * Returns the absolute path to WordPress root folder without trailing slash.
+	 *
+	 * @return string
+	 */
+	public function getWpRootFolder() {
+		return Utils::untrailslashit($this->config['wpRootFolder']);
 	}
 }

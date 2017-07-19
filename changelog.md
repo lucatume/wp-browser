@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- an issue preventing writes in the `WPFilesystem::writeToUploadedFile` method
+
+### Added
+- `attachment` post type methods to the `WPDb` module
 
 ##[1.21.10] 2017-07-14
 ### Added

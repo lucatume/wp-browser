@@ -10,6 +10,7 @@ modules:
       - FunctionalHelper
       - WPDb
       - Asserts
+      - WPFilesystem
     config:
       WPDb:
         dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
@@ -21,3 +22,5 @@ modules:
         reconnect: false
         url: '%WP_URL%'
         tablePrefix: 'wp_'
+      WPFilesystem:
+        wpRootFolder: %WP_ROOT_FOLDER%
