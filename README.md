@@ -921,6 +921,10 @@ The module is meant to be a WordPress specific extension of the `Db` module and 
 * haveMenuInDatabase
 * haveMenuItemInDatabase
 * seeTermRelationshipInDatabase
+* haveAttachmentInDatabase (requires `WPFilesystem` module)
+* dontHaveAttachmentOnDatabase
+* seeAttachmentInDatabase
+* dontSeeAttachmentInDatabase
 
 See source code for more detail.
 
