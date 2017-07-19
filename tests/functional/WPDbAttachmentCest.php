@@ -276,13 +276,13 @@ class WPDbAttachmentCest {
 					'height'    => 200,
 					'mime-type' => 'image/jpeg',
 				],
-				'medium'    => [
+				'normal'    => [
 					'file'      => 'kitten-500x333.jpeg',
 					'width'     => 500,
 					'height'    => 333,
 					'mime-type' => 'image/jpeg',
 				],
-				'large'     => [
+				'foo'     => [
 					'file'      => 'kitten-450x130.jpeg',
 					'width'     => 450,
 					'height'    => 130,
