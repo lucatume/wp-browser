@@ -3,11 +3,10 @@
 namespace Codeception\Module;
 
 use BaconStringUtils\Slugifier;
-use Codeception\Configuration as Configuration;
+use Codeception\Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
-use Codeception\Module\WPFilesystem;
 use Eventviva\ImageResize;
 use Eventviva\ImageResizeException;
 use Handlebars\Handlebars;
@@ -2340,5 +2339,33 @@ class WPDb extends ExtendedDb {
 		$this->havePostmetaInDatabase($id, '_wp_attachment_metadata', $metadata);
 
 		return $id;
+	}
+
+	/**
+	 * Checks for an attachment in the database.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function seeAttachmentInDatabase(array $criteria) {
+		$this->seePostInDatabase(array_merge($criteria, ['post_type' => 'attachment']));
+	}
+
+	/**
+	 * Checks that an attachment is not in the database.
+	 *
+	 * @param  array $criteria An array of search criteria.
+	 */
+	public function dontSeeAttachmentInDatabase(array $criteria) {
+		$this->dontSeePostInDatabase(array_merge($criteria, ['post_type' => 'attachment']));
+	}
+
+	/**
+	 * Removes an attachment from the posts table.
+	 *
+	 * @param  array $criteria  An array of search criteria.
+	 * @param bool   $purgeMeta If set to `true` then the meta for the attachment will be purged too.
+	 */
+	public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true) {
+		$this->dontHavePostInDatabase(array_merge($criteria, ['post_type' => 'attachment']), $purgeMeta);
 	}
 }
