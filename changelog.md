@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.12] 2017-07-26
+### Fixed
+- support for `--quiet` and `--no-interaction` options in `WPBrowser` template (issue #95)
+
 ##[1.21.11] 2017-07-19
 ### Fixed
 - an issue preventing writes in the `WPFilesystem::writeToUploadedFile` method
