@@ -26,7 +26,7 @@ class Wpbrowser extends Bootstrap {
 		$this->quiet         = $this->input->getOption('quiet');
 		$this->noInteraction = $this->input->getOption('no-interaction');
 
-		if ($this->noInteraction) {
+		if ($this->noInteraction || $this->quiet) {
 			$interactive = false;
 		}
 
