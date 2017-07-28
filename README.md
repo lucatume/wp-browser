@@ -52,6 +52,21 @@ extensions:
         - 'tad\Codeception\Command\SearchReplace'
 ```
 
+## A word of caution
+Due to WordPress dependency on globals and constants the suites should not be ran at the same time; this means that in place of this:
+
+```bash
+codecept run
+```
+
+This is probably a better idea:
+
+```bash
+codecept run acceptance && codecept run functional && codecept run ...
+```
+
+Doing otherwise will result in fatal errors due to constants, globals and/or classes and methods attempted redefinition.
+
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
 Not every module will make sense or work in any suite or type of test case but here's an high level view:

@@ -38,9 +38,7 @@ class Wpbrowser extends Bootstrap {
 			$this->actorSuffix = $input->getOption('actor');
 		}
 
-		$this->say(
-			"<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n"
-		);
+		$this->say("<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n");
 
 		$this->createGlobalConfig();
 		$this->say("File codeception.yml created       <- global configuration");
@@ -184,7 +182,7 @@ class Wpbrowser extends Bootstrap {
 				'adminEmail'          => 'admin@wp.localhost',
 				'title'               => 'WP Test',
 				// deactivate all modules that could trigger exceptions when initialized with sudo values
-				'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
+				'activeModules'       => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
 			];
 		} else {
 			$installationData = $this->askForInstallationData();
