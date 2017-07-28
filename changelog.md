@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.13] 2017-07-28
 ### Fixed
 - more sane support for `--quiet` and `--no-interaction` options in `WPBrowser` template (issue #95 cont.)
 
@@ -612,7 +614,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.12...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.13...HEAD
+[1.21.13]: https://github.com/lucatume/wp-browser/compare/1.21.12...1.21.13
 [1.21.12]: https://github.com/lucatume/wp-browser/compare/1.21.11...1.21.12
 [1.21.11]: https://github.com/lucatume/wp-browser/compare/1.21.10...1.21.11
 [1.21.10]: https://github.com/lucatume/wp-browser/compare/1.21.9...1.21.10
