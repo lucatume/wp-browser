@@ -76,8 +76,12 @@ $wpdb->select( DB_NAME, $wpdb->dbh );
  * additional tables that should be dropped.
  **/
 foreach ( $activePlugins as $activePlugin ) {
-	printf( "Including plugin [%s] files\n", $activePlugin );
-	include_once WP_PLUGIN_DIR . '/' . $activePlugin;
+	printf("Including plugin [%s] files\n", $activePlugin);
+	$path = realpath(WP_PLUGIN_DIR . '/' . $activePlugin);
+	if (!file_exists($path)) {
+		$path = dirname($configuration['root']) . '/' . $activePlugin;
+	}
+	include_once $path;
 }
 
 echo "\nThe following tables will be dropped: ", "\n\t- ", implode( "\n\t- ", $wpdb->tables ), "\n";

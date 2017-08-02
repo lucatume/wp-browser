@@ -71,6 +71,7 @@ if ( ! defined( 'WPCEPT_ISOLATED_INSTALL' ) || false === WPCEPT_ISOLATED_INSTALL
 	require 'same-scope-install.php';
 } else {
 	$environment = [
+		'root' => codecept_root_dir(),
 		'autoload'  => wpbrowser_vendor_path( 'autoload.php' ),
 		'constants' => [
 			'ABSPATH'               => ABSPATH,
