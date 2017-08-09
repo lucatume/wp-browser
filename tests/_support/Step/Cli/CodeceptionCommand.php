@@ -3,7 +3,6 @@
 namespace Step\Cli;
 
 use Symfony\Component\Yaml\Yaml;
-use function tad\WPBrowser\Tests\Support\rrmdir;
 
 class CodeceptionCommand extends \CliTester {
 

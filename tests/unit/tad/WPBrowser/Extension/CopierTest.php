@@ -150,7 +150,7 @@ class CopierTest extends \Codeception\Test\Unit
 
 		$sut = $this->make_instance();
 
-		$sut->copyFiles($this->suiteEvent->reveal());
+		$sut->copyFiles();
 
 		$this->assertFileExists($destinationFile);
 		$this->assertEquals('foo bar', file_get_contents($destinationFile));
@@ -185,7 +185,7 @@ class CopierTest extends \Codeception\Test\Unit
 
 		$sut = $this->make_instance();
 
-		$sut->copyFiles($this->suiteEvent->reveal());
+		$sut->copyFiles();
 
 		$this->assertFileExists($destination);
 		$this->assertFileExists($destination . '/some-file');
@@ -242,7 +242,7 @@ class CopierTest extends \Codeception\Test\Unit
 
 		$sut = $this->make_instance();
 
-		$sut->copyFiles($this->suiteEvent->reveal());
+		$sut->copyFiles();
 
 		$this->assertFileExists($destinationTwo);
 		$this->assertEquals('file 2 content', file_get_contents($destinationTwo));
@@ -279,7 +279,7 @@ class CopierTest extends \Codeception\Test\Unit
 	public function it_should_allow_for_relative_path_in_source_in_respect_to_cwd()
 	{
 		$root = vfsStream::setup('root', 0777, ['destination' => []]);
-		$destination = $root->url('') . '/destination';
+		$destination = $root->url() . '/destination';
 		$this->config = [
 			'files' => [
 				'tests/_data/some-file' => $destination . '/some-file',
@@ -289,7 +289,7 @@ class CopierTest extends \Codeception\Test\Unit
 
 		$sut = $this->make_instance();
 
-		$sut->copyFiles($this->suiteEvent->reveal());
+		$sut->copyFiles();
 
 		$this->assertFileExists($destination . '/some-file');
 		$this->assertFileExists($destination . '/some-folder');
@@ -313,7 +313,7 @@ class CopierTest extends \Codeception\Test\Unit
 
 		$sut = $this->make_instance();
 
-		$sut->copyFiles($this->suiteEvent->reveal());
+		$sut->copyFiles();
 
 		$destination = codecept_data_dir('destination');
 		$this->assertFileExists($destination . '/some-file');
@@ -321,16 +321,11 @@ class CopierTest extends \Codeception\Test\Unit
 		$this->assertFileExists($destination . '/some-folder/some-file');
 	}
 
-	protected function _before()
-	{
-		$this->suiteEvent = $this->prophesize(SuiteEvent::class);
-	}
-
 	protected function _after()
 	{
 		$destination = codecept_data_dir('destination');
 		if (file_exists($destination)) {
-			\tad\WPBrowser\Tests\Support\rrmdir($destination);
+			rrmdir($destination);
 		}
 	}
 }

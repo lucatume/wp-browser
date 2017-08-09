@@ -8,7 +8,6 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit_Framework_AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
-use function tad\WPBrowser\Tests\Support\rrmdir;
 
 class WPFilesystemTest extends \Codeception\Test\Unit {
 
@@ -288,8 +287,6 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
-
-        $dateFrag = str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads);
 
         $sut->seeUploadedFileFound('file.txt', time());
         $sut->dontSeeUploadedFileFound('file.txt', 'somewhere/else');

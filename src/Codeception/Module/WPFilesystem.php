@@ -7,9 +7,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\TestInterface;
-use SebastianBergmann\CodeCoverage\Node\Directory;
 use tad\WPBrowser\Filesystem\Utils;
-use function tad\WPBrowser\Tests\Support\rrmdir;
 
 /**
  * Class WPFilesystem

@@ -1,8 +1,6 @@
 <?php
 
 
-use GuzzleHttp\Promise\FulfilledPromise;
-
 class WPDbAttachmentCest {
 
 	protected $dirs = [];
@@ -18,7 +16,7 @@ class WPDbAttachmentCest {
 	protected function removeDirs() {
 		foreach ($this->dirs as $dir) {
 			if (is_dir($dir)) {
-				\tad\WPBrowser\Tests\Support\rrmdir($dir);
+				rrmdir($dir);
 			}
 		}
 	}
