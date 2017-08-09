@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.15] 2017-08-09
+### Fixed and changed
+- moved the `rrmdir` function to wp-browser `functions.php` file and removed it from the `tests/_support/functions.php` file
+
 ##[1.21.14] 2017-08-02
 ### Fixed
 - an issue with symbolic linking of the root dir
@@ -618,7 +622,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.14...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.15...HEAD
+[1.21.15]: https://github.com/lucatume/wp-browser/compare/1.21.14...1.21.15
 [1.21.14]: https://github.com/lucatume/wp-browser/compare/1.21.13...1.21.14
 [1.21.13]: https://github.com/lucatume/wp-browser/compare/1.21.12...1.21.13
 [1.21.12]: https://github.com/lucatume/wp-browser/compare/1.21.11...1.21.12
