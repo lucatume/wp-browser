@@ -119,7 +119,7 @@ class WPFilesystem extends Filesystem {
 			else {
 				$path = $this->config[$configKey];
 			}
-			if (!is_dir($path)) {
+			if (!is_dir($path) || ($configKey === 'mu-plugins' && !is_dir(dirname($path)))) {
 				$path         = Utils::unleadslashit($path);
 				$absolutePath = $wpRoot . DIRECTORY_SEPARATOR . $path;
 			}
