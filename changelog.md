@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.16] 2017-08-12
 ### Fixed
 - an issue in the `WPFilesystem` module that would not allow scaffolding mu-plugins
 
@@ -624,7 +626,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.15...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.16...HEAD
+[1.21.16]: https://github.com/lucatume/wp-browser/compare/1.21.15...1.21.16
 [1.21.15]: https://github.com/lucatume/wp-browser/compare/1.21.14...1.21.15
 [1.21.14]: https://github.com/lucatume/wp-browser/compare/1.21.13...1.21.14
 [1.21.13]: https://github.com/lucatume/wp-browser/compare/1.21.12...1.21.13
