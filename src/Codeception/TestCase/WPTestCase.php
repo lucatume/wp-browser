@@ -220,6 +220,10 @@ class WPTestCase extends \Codeception\Test\Unit {
 	function files_in_dir($dir) {
 		$files = array();
 
+		if (!file_exists($dir)) {
+			return array();
+		}
+
 		$iterator = new \RecursiveDirectoryIterator($dir);
 		$objects = new \RecursiveIteratorIterator($iterator);
 		foreach ($objects as $name => $object) {
