@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.17] 2017-08-21
+### Fixed
+- an issue where some checks could be made by the `WPTestCase` class on non-existing folders
+
 ##[1.21.16] 2017-08-12
 ### Fixed
 - an issue in the `WPFilesystem` module that would not allow scaffolding mu-plugins
@@ -626,7 +630,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.16...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.17...HEAD
+[1.21.17]: https://github.com/lucatume/wp-browser/compare/1.21.16...1.21.17
 [1.21.16]: https://github.com/lucatume/wp-browser/compare/1.21.15...1.21.16
 [1.21.15]: https://github.com/lucatume/wp-browser/compare/1.21.14...1.21.15
 [1.21.14]: https://github.com/lucatume/wp-browser/compare/1.21.13...1.21.14
