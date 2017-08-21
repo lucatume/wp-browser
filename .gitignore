@@ -17,3 +17,4 @@ tests/_output
 tests/*.suite.yml
 codeception.yml
 .env.local
+src/Codeception/Module/patchwork.json
