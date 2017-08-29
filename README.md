@@ -235,7 +235,6 @@ and configure it using the required parameters:
 
 * `loadOnly` - if set to `true` the module will just load WordPress without installing it; useful to access WordPress code outside of unit and integration tests; read the paragraph "WPLoader to bootstrap WordPress"; setting this parameter to `true` makes all the ones below superfluous.
 * `isolatedInstall` - bool, def. `true`, whether the WordPress installation should happen in a separate process from the tests or not; running the installation in an isolated process is **the recommended way** and the default one.
-* `multisite` - if set to `true` the WordPress installation will be a multisite one, the `WP_TESTS_MULTISITE` global value.
 * `wpDebug` - bool, def. `true`, the `WP_DEBUG` global value.
 * `multisite` - bool, def. `false`, if set to `true` will create a multisite installation, the `WP_TESTS_MULTISITE` global value.
 * `dbCharset` - string, def. `utf8`, the DB_CHARSET global value.
