@@ -1973,7 +1973,38 @@ class WPDb extends ExtendedDb {
 
 		$blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
 
+		$this->scaffoldBlogTables($blogId, $domainOrPath);
+
 		return $blogId;
+	}
+
+	/**
+	 * Scaffolds the database tables needed to create a new blog (site) in a multisite network.
+	 *
+	 * @param      int $blogId    The new blog (site) ID.
+	 * @param string   $subdomain The site subdomain if any
+	 */
+	protected function scaffoldBlogTables($blogId, $subdomain = null) {
+		$stylesheet = $this->grabOptionFromDatabase('stylesheet');
+		$data       = [
+			'subdomain'  => $subdomain,
+			'domain'     => $this->getSiteDomain(),
+			'subfolder'  => $this->getSiteSubfolder(),
+			'stylesheet' => $stylesheet,
+		];
+		$dbh        = $this->driver->getDbh();
+
+		$dropQuery = $this->tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
+		$sth       = $dbh->prepare($dropQuery);
+		$this->debugSection('Query', $sth->queryString);
+		$sth->execute();
+
+		$scaffoldQuery = $this->tables->getBlogScaffoldQuery($this->config['tablePrefix'], $blogId, $data);
+		$sth           = $dbh->prepare($scaffoldQuery);
+		$this->debugSection('Query', $sth->queryString);
+		$sth->execute();
+
+		$this->scaffoldedBlogIds[] = $blogId;
 	}
 
 	/**
