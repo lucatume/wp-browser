@@ -91,6 +91,9 @@ before_script:
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
 
+  # build Codeception modules
+  - codecept build
+
 script:
   - codecept run unit
   - codecept run acceptance
