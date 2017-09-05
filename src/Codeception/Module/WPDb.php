@@ -116,11 +116,6 @@ class WPDb extends ExtendedDb {
 	protected $tables;
 
 	/**
-	 * @var bool
-	 */
-	protected $isSubdomainMultisiteInstall = false;
-
-	/**
 	 * @var array
 	 */
 	protected $templateData;
@@ -1936,14 +1931,16 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param int   $count
 	 * @param array $overrides
+	 * @param bool  $subdomain          Whether the new blogs should be created as a subdomain (`true`)
+	 *                                  or subfolder (`true`)
 	 *
 	 * @return array An array of inserted blogs `blog_id`s.
 	 */
-	public function haveManyBlogsInDatabase($count, array $overrides = []) {
+	public function haveManyBlogsInDatabase($count, array $overrides = [], $subdomain = true) {
 		$blogIds   = [];
 		$overrides = $this->setTemplateData($overrides);
 		for ($i = 0; $i < $count; $i++) {
-			$blogIds[] = $this->haveBlogInDatabase('blog' . $i, $this->replaceNumbersInArray($overrides, $i));
+			$blogIds[] = $this->haveBlogInDatabase('blog' . $i, $this->replaceNumbersInArray($overrides, $i), $subdomain);
 		}
 
 		return $blogIds;
@@ -1952,14 +1949,16 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Inserts a blog in the `blogs` table.
 	 *
-	 * @param  string $domainOrPath The subdomain or the path to the be used for the blog.
-	 * @param array   $overrides    An array of values to override the defaults.
+	 * @param  string $domainOrPath     The subdomain or the path to the be used for the blog.
+	 * @param array   $overrides        An array of values to override the defaults.
+	 * @param bool    $subdomain        Whether the new blog should be created as a subdomain (`true`)
+	 *                                  or subfolder (`true`)
 	 *
 	 * @return int The inserted blog `blog_id`.
 	 */
-	public function haveBlogInDatabase($domainOrPath, array $overrides = []) {
-		$defaults = Blog::makeDefaults($this->isSubdomainMultisiteInstall);
-		if ($this->isSubdomainMultisiteInstall) {
+	public function haveBlogInDatabase($domainOrPath, array $overrides = [], $subdomain = true) {
+		$defaults = Blog::makeDefaults($subdomain);
+		if ($subdomain) {
 			if (empty($overrides['domain'])) {
 				$defaults['domain'] = sprintf('%s.%s', $domainOrPath, $this->getSiteDomain());
 			}

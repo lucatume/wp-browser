@@ -1,6 +1,6 @@
 <?php
 
-class WPDbSubdomainMultisiteCest {
+class WPDbMultisiteSubdomainCest {
 
 	/**
 	 * @test
