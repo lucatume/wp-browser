@@ -164,7 +164,9 @@ class WPDb extends ExtendedDb {
                     Please, check path for sql file: " . $this->config['dump']);
 			}
 			$sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
-			$sql = preg_replace('%/\*(?!!\d+)(?:(?!\*/).)*\*/%s', "", $sql);
+
+			// Remove C-style comments (except MySQL directives).
+			$sql = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $sql);
 
 			if (empty($this->config['urlReplacement'])) {
 				$sql = $this->replaceSiteDomainInSqlString($sql, true);
