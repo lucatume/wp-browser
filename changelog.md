@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- `WPDb`: a more efficient regex to parse the dump (thanks @slaFFik)
+- `WPDb`: avoid running the dump through URL replacement functions if `urlReplacement` has been deactivated in config
 
 ##[1.21.17] 2017-08-21
 ### Fixed
