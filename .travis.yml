@@ -31,7 +31,7 @@ env:
     - wpDbName="test"
     - wpLoaderDbName="wploader"
     - wpDbPrefix="wp_"
-    - wpUrl="http://localhost"
+    - wpUrl="http://127.0.0.1"
     - wpAdminUsername="admin"
     - wpAdminPassword="admin"
     - wpSubdomain1="test1"
