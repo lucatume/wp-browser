@@ -31,7 +31,7 @@ env:
     - wpDbName=test
     - wpLoaderDbName=wploader
     - wpDbPrefix=wp_
-    - wpUrl="127.0.0.1"
+    - wpUrl="127.0.0.1:8888"
     - wpAdminUsername=admin
     - wpAdminPassword=admin
     - wpSubdomain1=test1
@@ -85,22 +85,22 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
   # set up Apache virtual host
-  - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
-  # enable php-fpm
-  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sudo a2enmod rewrite actions fastcgi alias
-  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-  # configure apache virtual hosts
-  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
-  - sudo service apache2 restart
+#  - sudo apt-get update
+#  - sudo apt-get install apache2 libapache2-mod-fastcgi
+#  # enable php-fpm
+#  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+#  - sudo a2enmod rewrite actions fastcgi alias
+#  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+#  # configure apache virtual hosts
+#  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
+#  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+#  - sudo service apache2 restart
 
   # set the path to the phantomjs bin in Phantoman
   - sed -i "s_%PHANTOMJS%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
 
-  # print Apache configuration for debug reasons
+  - php -S 127.0.0.1:8888 -t /tmp/wordpress >/dev/null 2>&1 &
   - curl 127.0.0.1 | grep body
 
 script:
