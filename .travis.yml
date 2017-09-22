@@ -101,7 +101,7 @@ before_script:
   - sed -i "s_%PHANTOMJS%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
 
   - php -S 127.0.0.1:8888 -t /tmp/wordpress >/dev/null 2>&1 &
-  - curl 127.0.0.1 | grep body
+  - curl 127.0.0.1:8888 | grep body
 
 script:
 #  - codecept run unit
