@@ -271,7 +271,7 @@ SQL;
 	}
 
 	protected function make_instance() {
-		$dbOperations = new dbDump($this->url, 'wp_');
+		$dbOperations = new DbDump($this->url, 'wp_');
 		return $dbOperations;
 
 	}

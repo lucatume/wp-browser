@@ -19,7 +19,7 @@ use tad\WPBrowser\Generators\Post;
 use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
-use tad\WPBrowser\Module\Support\dbDump;
+use tad\WPBrowser\Module\Support\DbDump;
 
 /**
  * An extension of Codeception Db class to add WordPress database specific
@@ -28,7 +28,7 @@ use tad\WPBrowser\Module\Support\dbDump;
 class WPDb extends ExtendedDb {
 
 	/**
-	 * @var \tad\WPBrowser\Module\Support\dbDump
+	 * @var \tad\WPBrowser\Module\Support\DbDump
 	 */
 	protected $dbDump;
 
@@ -37,11 +37,11 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param \Codeception\Lib\ModuleContainer          $moduleContainer
 	 * @param null                                      $config
-	 * @param \tad\WPBrowser\Module\Support\dbDump|null $dbDump
+	 * @param \tad\WPBrowser\Module\Support\DbDump|null $dbDump
 	 */
-	public function __construct(\Codeception\Lib\ModuleContainer $moduleContainer, $config = null, dbDump $dbDump = null) {
+	public function __construct(\Codeception\Lib\ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null) {
 		parent::__construct($moduleContainer, $config);
-		$this->dbDump = $dbDump !== null ? $dbDump : new dbDump();
+		$this->dbDump = $dbDump !== null ? $dbDump : new DbDump();
 	}
 
 	/**
@@ -2093,7 +2093,7 @@ class WPDb extends ExtendedDb {
 		}
 
 		if ($this->config['urlReplacement'] === true) {
-			$this->_replaceUrlInDump($this->sql);
+			$sql = $this->_replaceUrlInDump($this->sql);
 		}
 
 		$this->driver->load($sql);
@@ -2263,8 +2263,13 @@ class WPDb extends ExtendedDb {
 		if (true === $this->config['urlReplacement']) {
 			$this->dbDump->setTablePrefix($this->config['tablePrefix']);
 			$this->dbDump->setUrl($this->config['url']);
-			$sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
-			$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
+			if(is_array($sql)){
+				$sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
+				$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
+			} else {
+				$sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
+				$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
+			}
 		}
 		return $sql;
 	}

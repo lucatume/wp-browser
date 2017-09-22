@@ -7,7 +7,7 @@ use Codeception\Lib\Driver\ExtendedMySql;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
-use tad\WPBrowser\Module\Support\dbDump;
+use tad\WPBrowser\Module\Support\DbDump;
 
 class WPDbTest extends \Codeception\Test\Unit {
 

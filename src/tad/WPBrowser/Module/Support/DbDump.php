@@ -3,7 +3,7 @@
 namespace tad\WPBrowser\Module\Support;
 
 
-class dbDump {
+class DbDump {
 
 	/**
 	 * @var string
@@ -149,7 +149,7 @@ class dbDump {
 	}
 
 	/**
-	 * dbDump constructor.
+	 * DbDump constructor.
 	 *
 	 * @param null $url
 	 * @param null $tablePrefix
