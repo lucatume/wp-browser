@@ -78,6 +78,8 @@ before_script:
   # export a dump of the just installed database to the _data folder
   - cd /tmp/wordpress
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
+  # update WordPress database to avoid prompts
+  - wp core update-db --network
 
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
@@ -97,9 +99,6 @@ before_script:
 
   # set the path to the phantomjs bin in Phantoman
   - sed -i "s_%PHANTOMJS%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/codeception.dist.yml
-
-  # update WordPress database to avoid prompts
-  - wp core update-db --network
 
   # print Apache configuration for debug reasons
   - curl 127.0.0.1 | grep body
