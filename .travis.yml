@@ -79,6 +79,9 @@ before_script:
   - cd /tmp/wordpress
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
 
+  # Get back to Travis build dir
+  - cd $TRAVIS_BUILD_DIR
+
   # set up Apache virtual host
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi
@@ -97,9 +100,6 @@ before_script:
 
   # update WordPress database to avoid prompts
   - wp core update-db --network
-
-  # Get back to Travis build dir
-  - cd $TRAVIS_BUILD_DIR
 
   # print Apache configuration for debug reasons
   - curl 127.0.0.1 | grep body
