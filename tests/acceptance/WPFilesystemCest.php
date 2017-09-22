@@ -10,9 +10,10 @@ class WPFilesystemCest {
 	 */
 	public function should_allow_creating_a_plugin(AcceptanceTester $I) {
 		$code = <<< PHP
-add_action('admin_notices',function(){
+function my_test_function(){
 	echo '<div class="notice">A test notice!</div>';
-});
+}
+add_action('admin_notices','my_test_function');
 PHP;
 
 		$I->havePlugin('foo/foo.php', $code);
@@ -30,9 +31,10 @@ PHP;
 	 */
 	public function should_allow_creating_a_mu_plugin(AcceptanceTester $I) {
 		$code = <<< PHP
-add_action('admin_notices',function(){
+function my_test_function(){
 	echo '<div class="notice">A test notice!</div>';
-});
+}
+add_action('admin_notices','my_test_function');
 PHP;
 
 		$I->haveMuPlugin('bar.php', $code);
