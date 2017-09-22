@@ -92,12 +92,12 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - codecept run unit
-  - codecept run acceptance
-  - codecept run phantomjs
-  - codecept run functional
-  - codecept run climodule
-  - codecept run wpmodule
-  - codecept run wploadersuite
-  - codecept run muloader
-  - codecept run cli
+#  - codecept run unit
+  - codecept run acceptance -vvv
+  - codecept run phantomjs -vvv
+#  - codecept run functional
+#  - codecept run climodule
+#  - codecept run wpmodule
+#  - codecept run wploadersuite
+#  - codecept run muloader
+#  - codecept run cli
