@@ -93,6 +93,7 @@ before_script:
 
   # print Apache configuration for debug reasons
   - cat /etc/apache2/sites-available/default
+  - curl http://wordpress.dev | grep body
 
 script:
 #  - codecept run unit
