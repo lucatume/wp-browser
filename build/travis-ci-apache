@@ -1,5 +1,4 @@
 <VirtualHost *:80>
-
   DocumentRoot %TRAVIS_BUILD_DIR%
 
   <Directory "%TRAVIS_BUILD_DIR%">
@@ -16,5 +15,19 @@
     Alias /php5-fcgi /usr/lib/cgi-bin/php5-fcgi
     FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -host 127.0.0.1:9000 -pass-header Authorization
   </IfModule>
+
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.php$ - [L]
+
+  # add a trailing slash to /wp-admin
+  RewriteRule ^wp-admin$ wp-admin/ [R=301,L]
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  RewriteRule ^(wp-(content|admin|includes).*) $1 [L]
+  RewriteRule ^(.*\.php)$ wp/$1 [L]
+  RewriteRule . index.php [L]
 
 </VirtualHost>
