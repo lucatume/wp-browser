@@ -4,6 +4,7 @@ modules:
         - \Helper\Phantomjs
         - WPWebDriver
         - WPDb
+        - WPFilesystem
     config:
         WPWebDriver:
             url: '%WP_URL%'
@@ -24,4 +25,9 @@ modules:
             reconnect: false
             url: '%WP_URL%'
             tablePrefix: 'wp_'
-
+        WPFilesystem:
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            themes: '/wp-content/themes'
+            plugins: '/wp-content/plugins'
+            mu-plugins: '/wp-content/mu-plugins'
+            uploads: '/wp-content/uploads'

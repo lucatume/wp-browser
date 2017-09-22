@@ -49,10 +49,8 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins_in_a_long_list(
-		PhantomjsTester $I
-	) {
-		$this->scaffoldTestPlugins();
+	public function be_able_to_activate_plugins_in_a_long_list(PhantomjsTester $I) {
+		$this->scaffoldTestPlugins($I);
 
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
@@ -64,9 +62,7 @@ class PluginActivationCest {
 		$I->seePluginDeactivated('plugin-z');
 	}
 
-	protected function scaffoldTestPlugins() {
-		$config = (\Codeception\Configuration::config());
-		$wpFolder = $config['wpFolder'];
+	protected function scaffoldTestPlugins(PhantomjsTester $I) {
 		$template
 			= <<< HANDLEBARS
 /*
@@ -83,9 +79,7 @@ HANDLEBARS;
 
 		foreach (range('A', 'Z') as $letter) {
 			$compiled = str_replace('{{letter}}', $letter, $template);
-			$file     = $wpFolder . "/wp-content/plugins/{$letter}.php";
-			file_put_contents($file, $compiled);
-			$this->delete[] = $file;
+			$I->havePlugin("plugin-{$letter}/plugin-{$letter}.php", $compiled);
 		}
 	}
 
@@ -95,7 +89,7 @@ HANDLEBARS;
 	 * @test
 	 */
 	public function be_able_to_activate_multiple_plugins(PhantomjsTester $I) {
-		$this->scaffoldTestPlugins();
+		$this->scaffoldTestPlugins($I);
 
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
