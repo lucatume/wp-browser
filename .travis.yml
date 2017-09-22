@@ -62,21 +62,8 @@ install:
   # install WordPress in the `wordpress` folder
   - cd wordpress
   - wp core download
-  - wp config create \
-    --dbname="$wpDbName" \
-    --dbuser="root" \
-    --dbpass="" \
-    --dbhost="127.0.0.1" \
-    --dbprefix="$wpDbPrefix"
-  - wp core multisite-install \
-    --url="$wpUrl" \
-    --base="/" \
-    --subdomains \
-    --title="Test" \
-    --admin_user="$wpAdminUsername" \
-    --admin_password="$wpAdminPassword" \
-    --admin_email="admin@wp.localhost" \
-    --skip-email
+  - wp config create --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbhost="127.0.0.1" --dbprefix="$wpDbPrefix"
+  - wp core multisite-install --url="$wpUrl" --base="/" --subdomains --title="Test" --admin_user="$wpAdminUsername" --admin_password="$wpAdminPassword" --admin_email="admin@wp.localhost" --skip-email
   - wp rewrite structure '/%postname%/' --hard
   - wp site create --slug="$wpSubdomain1" --title="$wpSubdomain1Title"
   - wp site create --slug="$wpSubdomain2" --title="$wpSubdomain2Title"
