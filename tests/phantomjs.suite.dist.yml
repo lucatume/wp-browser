@@ -14,7 +14,7 @@ modules:
             adminUsername: 'admin'
             adminPassword: 'admin'
             adminPath: '/wp-admin'
-            wait: 2
+            wait: 10
         WPDb:
             dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
             user: %DB_USER%
