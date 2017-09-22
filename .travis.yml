@@ -91,6 +91,9 @@ before_script:
   # Get back to Travis build dir
   - cd $TRAVIS_BUILD_DIR
 
+  # print Apache configuration for debug reasons
+  - cat /etc/apache2/sites-available/default
+
 script:
 #  - codecept run unit
   - codecept run acceptance -vvv
