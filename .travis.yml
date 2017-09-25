@@ -21,17 +21,18 @@ services:
   - mysql
 
 cache:
+  apt: true
   directories:
     - vendor
-    - $HOME/.composer/cache
+    - $HOME/.composer/cache/files
 
 env:
   global:
-    - wpFolder="$TRAVIS_BUILD_DIR/wordpress"
+    - wpFolder="/tmp/wordpress"
     - wpDbName="test"
     - wpLoaderDbName="wploader"
     - wpDbPrefix="wp_"
-    - wpUrl="http://127.0.0.1"
+    - wpUrl="http://wp.dev:8080"
     - wpAdminUsername="admin"
     - wpAdminPassword="admin"
     - wpSubdomain1="test1"
@@ -47,11 +48,13 @@ before_install:
   - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
   - mysql -e "create database IF NOT EXISTS $wpLoaderDbName;" -uroot
   # set up folders
-  - mkdir wordpress
+  - mkdir -p $wpFolder
   - mkdir tools
   # install wp-cli in the `tools` folder
   - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $(pwd)/tools/
   - chmod +x tools/wp-cli.phar && mv tools/wp-cli.phar tools/wp
+  # install Tang Rufus package
+  - composer global require -n --prefer-dist "typisttech/travis-nginx-wordpress:^1.0.0"
   # append the `tools` folder to the PATH
   - export PATH=$PATH:$(pwd)/tools
   # prepend the `vendor/bin` folder the PATH
@@ -60,10 +63,10 @@ before_install:
 install:
   - composer update --prefer-dist
   # install WordPress in the `wordpress` folder
-  - cd wordpress
+  - cd $wpFolder
   - wp core download
   - wp config create --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbhost="127.0.0.1" --dbprefix="$wpDbPrefix"
-  - wp core multisite-install --url="$wpUrl" --base="/" --subdomains --title="Test" --admin_user="$wpAdminUsername" --admin_password="$wpAdminPassword" --admin_email="admin@wp.localhost" --skip-email
+  - wp core multisite-install --url="$wpUrl" --base="/" --subdomains --title="Test" --admin_user="$wpAdminUsername" --admin_password="$wpAdminPassword" --admin_email="admin@wp.dev" --skip-email
   - wp rewrite structure '/%postname%/' --hard
   - wp site create --slug="$wpSubdomain1" --title="$wpSubdomain1Title"
   - wp site create --slug="$wpSubdomain2" --title="$wpSubdomain2Title"
@@ -73,19 +76,10 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
+  # install Nginx to serve WordPress on `http://wp.dev:8080` from `/tmp/wordpress`
+  - tnw-install-nginx
 
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
-  # enable php-fpm
-  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sudo a2enmod rewrite actions fastcgi alias
-  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-  # configure apache virtual hosts
-  - sudo cp -f $TRAVIS_BUILD_DIR/build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
-  - sudo service apache2 restart
 
 script:
 #  - codecept run unit
