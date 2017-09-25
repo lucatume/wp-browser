@@ -45,6 +45,7 @@ env:
     - wpSubdomain1Title="Test Subdomain 1"
     - wpSubdomain2="test2"
     - wpSubdomain2Title="Test Subdomain 2"
+    - WP_PORT="80"
   matrix:
     - wpVersion=latest
     - wpVersion=nightly
@@ -78,6 +79,9 @@ install:
   - wp rewrite structure '/%postname%/' --hard
   - wp site create --slug="$wpSubdomain1" --title="$wpSubdomain1Title"
   - wp site create --slug="$wpSubdomain2" --title="$wpSubdomain2Title"
+  # replace the incorrect subdomain string in the site
+  - wp search-replace $wpSubdomain1.wp.dev8080 $wpSubdomain1.wp.dev:8080 --network --recurse-objects
+  - wp search-replace $wpSubdomain2.wp.dev8080 $wpSubdomain2.wp.dev:8080 --network --recurse-objects
   # update WordPress database to avoid prompts
   - wp core update-db --network
   # export a dump of the just installed database to the _data folder
