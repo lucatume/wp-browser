@@ -65,6 +65,8 @@ before_install:
   - export PATH=$PATH:$(pwd)/tools
   # prepend the `vendor/bin` folder the PATH
   - export PATH=vendor/bin:$PATH
+  # prepend the global `vendor/bin` folder the PATH
+  - export PATH=$(composer config home)/vendor/bin:$PATH
 
 install:
   - composer update --prefer-dist
@@ -80,12 +82,12 @@ install:
   - wp core update-db --network
   # export a dump of the just installed database to the _data folder
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
-  # get back to the build folder
-  - cd $TRAVIS_BUILD_DIR
-
-before_script:
   # install Nginx to serve WordPress on `http://wp.dev:8080` from `/tmp/wordpress`
   - tnw-install-nginx
+
+before_script:
+  # get back to the build folder
+  - cd $TRAVIS_BUILD_DIR
 
 script:
 #  - codecept run unit
