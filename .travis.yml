@@ -76,10 +76,10 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
-  # install Nginx to serve WordPress on `http://wp.dev:8080` from `/tmp/wordpress`
-  - tnw-install-nginx
 
 before_script:
+  # install Nginx to serve WordPress on `http://wp.dev:8080` from `/tmp/wordpress`
+  - tnw-install-nginx
 
 script:
 #  - codecept run unit
