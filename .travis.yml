@@ -45,7 +45,6 @@ env:
     - wpSubdomain1Title="Test Subdomain 1"
     - wpSubdomain2="test2"
     - wpSubdomain2Title="Test Subdomain 2"
-    - WP_PORT="80"
   matrix:
     - wpVersion=latest
     - wpVersion=nightly
