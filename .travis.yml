@@ -15,7 +15,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
-    - env: wpVersion=nightly
+    - env: WP_VERSION=nightly
 
 services:
   - mysql
@@ -34,63 +34,74 @@ addons:
 
 env:
   global:
-    - wpFolder="/tmp/wordpress"
-    - wpDbName="test"
-    - wpLoaderDbName="wploader"
-    - wpDbPrefix="wp_"
-    - wpUrl="http://wp.dev:8080"
-    - wpAdminUsername="admin"
-    - wpAdminPassword="admin"
-    - wpSubdomain1="test1"
-    - wpSubdomain1Title="Test Subdomain 1"
-    - wpSubdomain2="test2"
-    - wpSubdomain2Title="Test Subdomain 2"
+    - WP_FOLDER="/tmp/wordpress"
+    - DB_NAME="test"
+    - TEST_DB_NAME="wploader"
+    - WP_TABLE_PREFIX="wp_"
+    - WP_URL="http://wp.dev"
+    - WP_ADMIN_USERNAME="admin"
+    - WP_ADMIN_PASSWORD="admin"
+    - WP_SUBDOMAIN_1="test1"
+    - WP_SUBDOMAIN_1_TITLE="Test Subdomain 1"
+    - WP_SUBDOMAIN_2="test2"
+    - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
+    - VHOST_FILE="build/travis-host"
+    - VHOST_CONF="wp.conf"
+    - VHOST_URL="wp.dev"
   matrix:
-    - wpVersion=latest
-    - wpVersion=nightly
+    - WP_VERSION=latest
+    - WP_VERSION=nightly
 
 before_install:
   # create the databases that will be used in the tests
-  - mysql -e "create database IF NOT EXISTS $wpDbName;" -uroot
-  - mysql -e "create database IF NOT EXISTS $wpLoaderDbName;" -uroot
+  - mysql -e "create database IF NOT EXISTS $DB_NAME;" -uroot
+  - mysql -e "create database IF NOT EXISTS $TEST_DB_NAME;" -uroot
   # set up folders
-  - mkdir -p $wpFolder
+  - mkdir -p $WP_FOLDER
   - mkdir tools
   # install wp-cli in the `tools` folder
   - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $(pwd)/tools/
   - chmod +x tools/wp-cli.phar && mv tools/wp-cli.phar tools/wp
-  # install Tang Rufus package
-  - composer global require -n --prefer-dist "typisttech/travis-nginx-wordpress:^1.0.0"
   # append the `tools` folder to the PATH
   - export PATH=$PATH:$(pwd)/tools
   # prepend the `vendor/bin` folder the PATH
   - export PATH=vendor/bin:$PATH
-  # prepend the global `vendor/bin` folder the PATH
-  - export PATH=$(composer config home)/vendor/bin:$PATH
 
 install:
   - composer update --prefer-dist
   # install WordPress in the `wordpress` folder
-  - cd $wpFolder
-  - wp core download
-  - wp config create --dbname="$wpDbName" --dbuser="root" --dbpass="" --dbhost="127.0.0.1" --dbprefix="$wpDbPrefix"
-  - wp core multisite-install --url="$wpUrl" --base="/" --subdomains --title="Test" --admin_user="$wpAdminUsername" --admin_password="$wpAdminPassword" --admin_email="admin@wp.dev" --skip-email
+  - cd $WP_FOLDER
+  - wp core download --version=$WP_VERSION
+  - wp config create --dbname="$DB_NAME" --dbuser="root" --dbpass="" --dbhost="127.0.0.1" --dbprefix="$WP_TABLE_PREFIX"
+  - wp core multisite-install --url="$WP_URL" --base="/" --subdomains --title="Test" --admin_user="$WP_ADMIN_USERNAME" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="admin@$WP_URL" --skip-email
   - wp rewrite structure '/%postname%/' --hard
-  - wp site create --slug="$wpSubdomain1" --title="$wpSubdomain1Title"
-  - wp site create --slug="$wpSubdomain2" --title="$wpSubdomain2Title"
-  # replace the incorrect subdomain string in the site
-#  - wp search-replace $wpSubdomain1.wp.dev8080 $wpSubdomain1.wp.dev:8080 --network --recurse-objects
-#  - wp search-replace $wpSubdomain2.wp.dev8080 $wpSubdomain2.wp.dev:8080 --network --recurse-objects
+  - wp site create --slug="$WP_SUBDOMAIN_1" --title="$WP_SUBDOMAIN_1_TITLE"
+  - wp site create --slug="$WP_SUBDOMAIN_2" --title="$WP_SUBDOMAIN_2_TITLE"
   # update WordPress database to avoid prompts
   - wp core update-db --network
   # export a dump of the just installed database to the _data folder
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
-  # install Nginx to serve WordPress on `http://wp.dev:8080` from `/tmp/wordpress`
-  - tnw-install-nginx
-
-before_script:
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
+
+before_script:
+  # Install Apache web server and FastCGI module ...
+  - sudo apt-get install apache2 libapache2-mod-fastcgi > /dev/null
+  # Enable PHP-FPM and FastCGI ...
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # Disable Xdebug ...
+  - phpenv config-rm xdebug.ini
+  # Configure application's virtual host ...
+  - sudo cp -f $VHOST_FILE /etc/apache2/sites-available/$VHOST_CONF
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
+  - sudo sed -e "s?%VHOST_URL%?$VHOST_URL?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
+  - echo "127.0.0.1       $VHOST_URL" | sudo tee -a /etc/hosts
+  - sudo a2enmod rewrite
+  - sudo a2ensite $VHOST_CONF
+  - sudo service apache2 restart
 
 script:
 #  - codecept run unit
