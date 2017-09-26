@@ -38,7 +38,7 @@ env:
     - DB_NAME="test"
     - TEST_DB_NAME="wploader"
     - WP_TABLE_PREFIX="wp_"
-    - WP_URL="http://wp.dev"
+    - WP_URL="http://wp.localhost"
     - WP_ADMIN_USERNAME="admin"
     - WP_ADMIN_PASSWORD="admin"
     - WP_SUBDOMAIN_1="test1"
@@ -48,7 +48,7 @@ env:
     - WP_HTACCESS=build/travis-htaccess
     - VHOST_FILE="build/travis-host"
     - VHOST_CONF="wp.conf"
-    - VHOST_URL="wp.dev"
+    - VHOST_URL="wp.localhost"
   matrix:
     - WP_VERSION=latest
     - WP_VERSION=nightly
@@ -98,7 +98,7 @@ install:
   - sudo cp -f $VHOST_FILE /etc/apache2/sites-available/$VHOST_CONF
   - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
   - sudo sed -e "s?%VHOST_URL%?$VHOST_URL?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
-  - echo "127.0.0.1       $VHOST_URL" | sudo tee -a /etc/hosts
+  - echo "\n127.0.0.1       $VHOST_URL" | sudo tee -a /etc/hosts
   - sudo a2enmod rewrite
   - sudo a2ensite $VHOST_CONF
 
