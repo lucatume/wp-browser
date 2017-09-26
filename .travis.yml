@@ -45,6 +45,7 @@ env:
     - WP_SUBDOMAIN_1_TITLE="Test Subdomain 1"
     - WP_SUBDOMAIN_2="test2"
     - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
+    - WP_HTACCESS=build/travis-htaccess
     - VHOST_FILE="build/travis-host"
     - VHOST_CONF="wp.conf"
     - VHOST_URL="wp.dev"
@@ -81,6 +82,7 @@ install:
   - wp core update-db --network
   # export a dump of the just installed database to the _data folder
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
+  - cp build/travis-htaccess $WP_FOLDER/.htaccess
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
 
