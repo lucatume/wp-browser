@@ -3,9 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.18] 2017-09-26
 ### Fixed
 - `WPDb`: a more efficient regex to parse the dump (thanks @slaFFik)
-- `WPDb`: avoid running the dump through URL replacement functions if `urlReplacement` has been deactivated in config
+- `WPDb`: avoid running the dump through URL replacement functions if `urlReplacement` has been deactivated in config (thanks @slaFFik)
+- `WPDb`: avoid running the dump through white space removal, thus loading it in memory, if `populator` is being used (thanks @slaFFik)
 
 ##[1.21.17] 2017-08-21
 ### Fixed
@@ -633,7 +636,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.17...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.18...HEAD
+[1.21.18]: https://github.com/lucatume/wp-browser/compare/1.21.17...1.21.18
 [1.21.17]: https://github.com/lucatume/wp-browser/compare/1.21.16...1.21.17
 [1.21.16]: https://github.com/lucatume/wp-browser/compare/1.21.15...1.21.16
 [1.21.15]: https://github.com/lucatume/wp-browser/compare/1.21.14...1.21.15
