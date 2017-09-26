@@ -85,11 +85,11 @@ install:
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
   # copy the Nginx configuration file to the default site
-  - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
-  - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
-  - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
+  - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/wp.conf
+  - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/wp.conf
+  - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/wp.conf
   # enable the site
-  - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
+  - sudo ln -s /etc/nginx/sites-available/wp.conf /etc/nginx/sites-enabled/
   # Disable Xdebug
   - phpenv config-rm xdebug.ini
 
