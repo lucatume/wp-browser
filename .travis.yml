@@ -35,10 +35,11 @@ addons:
 env:
   global:
     - WP_FOLDER="/tmp/wordpress"
+    - WP_URL="http://wp.localhost"
+    - WP_DOMAIN="wp.localhost"
     - DB_NAME="test"
     - TEST_DB_NAME="wploader"
     - WP_TABLE_PREFIX="wp_"
-    - WP_URL="http://wp.localhost"
     - WP_ADMIN_USERNAME="admin"
     - WP_ADMIN_PASSWORD="admin"
     - WP_SUBDOMAIN_1="test1"
@@ -46,9 +47,6 @@ env:
     - WP_SUBDOMAIN_2="test2"
     - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
     - WP_HTACCESS=build/travis-htaccess
-    - VHOST_FILE="build/travis-host"
-    - VHOST_CONF="wp.conf"
-    - VHOST_URL="wp.localhost"
   matrix:
     - WP_VERSION=latest
     - WP_VERSION=nightly
@@ -84,27 +82,20 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
-  - cp build/travis-htaccess $WP_FOLDER/.htaccess
-  # Install Apache web server and FastCGI module ...
-  - sudo apt-get install apache2 libapache2-mod-fastcgi > /dev/null
-  # Enable PHP-FPM and FastCGI ...
-  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sudo a2enmod rewrite actions fastcgi alias
-  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # copy the Nginx configuration file to the default site
+  - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
+  - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
+  - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
+  # enable the site
+  - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
+  # update the hosts file to resolve locall
+  - sudo echo "127.0.0.1  $WP_DOMAIN" >> /etc/hosts
   # Disable Xdebug ...
   - phpenv config-rm xdebug.ini
-  # Configure application's virtual host ...
-  - sudo cp -f $VHOST_FILE /etc/apache2/sites-available/$VHOST_CONF
-  - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
-  - sudo sed -e "s?%VHOST_URL%?$VHOST_URL?g" --in-place /etc/apache2/sites-available/$VHOST_CONF
-  - echo "\n127.0.0.1       $VHOST_URL" | sudo tee -a /etc/hosts
-  - sudo a2enmod rewrite
-  - sudo a2ensite $VHOST_CONF
 
 before_script:
-  - sudo service nginx stop
-  - sudo service apache2 start
+  # restart Nnginx
+  - sudo service nginx restart
 
 script:
 #  - codecept run unit
