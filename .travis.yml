@@ -89,7 +89,7 @@ install:
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
   # update the hosts file to resolve locall
-  - sudo echo "127.0.0.1  $WP_DOMAIN" >> /etc/hosts
+  - sudo "\n127.0.0.1 $WP_DOMAIN" | sudo tee -a /etc/hosts
   # Disable Xdebug ...
   - phpenv config-rm xdebug.ini
 
