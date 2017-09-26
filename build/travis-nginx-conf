@@ -39,7 +39,7 @@ server {
     #WPMU x-sendfile to avoid php readfile()
     location ^~ /blogs.dir {
         internal;
-        alias /var/www/html/wp-content/blogs.dir;
+        alias %WP_FOLDER%/wp-content/blogs.dir;
         access_log off;
         log_not_found off;
         expires max;
