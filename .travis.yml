@@ -29,8 +29,10 @@ cache:
 addons:
   apt:
     packages:
-      - jq
+      - php5-fpm
       - nginx
+    hosts:
+      - wp.localhost
 
 env:
   global:
@@ -82,8 +84,6 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
-  # install php-fpm
-  - sudo apt-get install php5-fpm
   # copy the Nginx configuration file to the default site
   - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
