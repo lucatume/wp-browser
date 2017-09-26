@@ -186,9 +186,8 @@ class WPDb extends ExtendedDb {
                     Please, check path for sql file: " . $this->config['dump']);
 			}
 
-			$sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
-
 			if (empty($this->config['populator'])) {
+				$sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
 				// Remove C-style comments (except MySQL directives).
 				$sql = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $sql);
 				$sql = $this->_replaceUrlInDump($sql);
