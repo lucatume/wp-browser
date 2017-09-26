@@ -188,12 +188,12 @@ class WPDb extends ExtendedDb {
 
 			$sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
 
-			// Remove C-style comments (except MySQL directives).
-			$sql = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $sql);
-
-			$sql = $this->_replaceUrlInDump($sql);
-
-			$this->sql = explode("\n", $sql);
+			if (empty($this->config['populator'])) {
+				// Remove C-style comments (except MySQL directives).
+				$sql = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $sql);
+				$sql = $this->_replaceUrlInDump($sql);
+				$this->sql = explode("\n", $sql);
+			}
 		}
 	}
 
