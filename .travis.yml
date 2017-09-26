@@ -85,8 +85,6 @@ install:
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
   - cp build/travis-htaccess $WP_FOLDER/.htaccess
-
-before_script:
   # Install Apache web server and FastCGI module ...
   - sudo apt-get install apache2 libapache2-mod-fastcgi > /dev/null
   # Enable PHP-FPM and FastCGI ...
@@ -103,6 +101,8 @@ before_script:
   - echo "127.0.0.1       $VHOST_URL" | sudo tee -a /etc/hosts
   - sudo a2enmod rewrite
   - sudo a2ensite $VHOST_CONF
+
+before_script:
   - sudo service apache2 reload
 
 script:
