@@ -82,19 +82,22 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
+  # install php-fpm
+  - sudo apt-get install php5-fpm
   # copy the Nginx configuration file to the default site
   - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
-  # update the hosts file to resolve locall
+  # update the hosts file to resolve locally
   - sudo "\n127.0.0.1 $WP_DOMAIN" | sudo tee -a /etc/hosts
-  # Disable Xdebug ...
+  # Disable Xdebug
   - phpenv config-rm xdebug.ini
 
 before_script:
   # restart Nnginx
+  - sudo service php5-fpm restart
   - sudo service nginx restart
 
 script:
