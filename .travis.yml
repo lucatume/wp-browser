@@ -8,8 +8,8 @@ notifications:
 php:
   - '5.6'
   - '7.0'
-#  - '7.1'
-#  - nightly
+  - '7.1'
+  - nightly
 
 matrix:
   fast_finish: true
@@ -104,12 +104,12 @@ before_script:
   - sudo service nginx restart
 
 script:
-#  - codecept run unit
-  - codecept run acceptance -vvv
-  - codecept run phantomjs -vvv
-#  - codecept run functional
-#  - codecept run climodule
-#  - codecept run wpmodule
-#  - codecept run wploadersuite
-#  - codecept run muloader
-#  - codecept run cli
+  - codecept run unit
+  - codecept run acceptance
+  - codecept run phantomjs
+  - codecept run functional
+  - codecept run climodule
+  - codecept run wpmodule
+  - codecept run wploadersuite
+  - codecept run muloader
+  - codecept run cli
