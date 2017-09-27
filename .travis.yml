@@ -91,7 +91,7 @@ install:
   # remove the default site
   - sudo rm /etc/nginx/sites-available/default
   # enable the site
-  - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
+  # - sudo ln -s /etc/nginx/sites-available/wp.conf /etc/nginx/sites-enabled/
   # Disable Xdebug
   - phpenv config-rm xdebug.ini
 
