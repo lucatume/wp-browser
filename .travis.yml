@@ -31,8 +31,8 @@ addons:
     packages:
       - php5-fpm
       - nginx
-    hosts:
-      - wp.localhost
+  hosts:
+    - wp.localhost
 
 env:
   global:
@@ -88,13 +88,15 @@ install:
   - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
+  # remove the default site
+  - sudo rm /etc/nginx/sites-available/default
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
   # Disable Xdebug
   - phpenv config-rm xdebug.ini
 
 before_script:
-  # restart Nnginx
+  # restart Nnginx and PHP-FPM services
   - sudo service php5-fpm restart
   - sudo service nginx restart
 
