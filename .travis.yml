@@ -36,6 +36,8 @@ addons:
       - nginx
   hosts:
     - wp.localhost
+    - test1.wp.localhost
+    - test2.wp.localhost
 
 env:
   global:
