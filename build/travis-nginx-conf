@@ -5,8 +5,7 @@ map $http_host $blogid {
 }
 
 server {
-    listen %WP_DOMAIN%
-    listen 80
+    listen 80;
 
     server_name %WP_DOMAIN% *.%WP_DOMAIN%;
 
