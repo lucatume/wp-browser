@@ -95,8 +95,6 @@ install:
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
-  # Disable Xdebug
-  - phpenv config-rm xdebug.ini
 
 before_script:
   # restart Nnginx and PHP-FPM services
