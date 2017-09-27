@@ -2,35 +2,31 @@
 
 use function tad\WPBrowser\Tests\Support\importDump;
 
-class TablePrefixTest extends \Codeception\TestCase\WPTestCase
-{
+class TablePrefixTest extends \Codeception\TestCase\WPTestCase {
 
 	public static $otherInstallationPrefix = 'foo_';
 
-	public static function setUpBeforeClass()
-	{
+	public static function setUpBeforeClass() {
 		self::importOtherPrefixInstallation();
 
 		parent::setUpBeforeClass();
 	}
 
-	protected static function importOtherPrefixInstallation()
-	{
+	protected static function importOtherPrefixInstallation() {
 		$dumpFile = self::getDumpFilePath();
 		list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
 		$output = [];
 		if (!importDump($dumpFile, $dbName, $dbUser, $dbPass, $dbHost)) {
 			throw new PHPUnit_Framework_AssertionFailedError("Test failed as MySQL import failed\nCredentials: " .
-				print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
+															 print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
 		}
 	}
 
 	/**
 	 * @return string
 	 */
-	protected static function getDumpFilePath()
-	{
+	protected static function getDumpFilePath() {
 		$dumpFile = codecept_data_dir('foo-installation.sql');
 		return $dumpFile;
 	}
@@ -38,9 +34,8 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 	/**
 	 * @return array
 	 */
-	protected static function getDbAccessCredentials()
-	{
-		$dbName = getenv('wpLoaderDbName') ?: 'codeception-tests';
+	protected static function getDbAccessCredentials() {
+		$dbName = getenv('TEST_DB_NAME') ?: 'codeception-tests';
 		$dbUser = 'root';
 		$dbPass = getenv('TRAVIS') ? '' : 'root';
 		$dbHost = 'localhost';
@@ -48,16 +43,14 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 		return array($dbName, $dbUser, $dbPass, $dbHost);
 	}
 
-	public function setUp()
-	{
+	public function setUp() {
 		// before
 		parent::setUp();
 
 		// your set up methods here
 	}
 
-	public function tearDown()
-	{
+	public function tearDown() {
 		// your tear down methods here
 
 		// then
@@ -68,8 +61,7 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 	 * @test
 	 * it should not destroy another installation on the same database
 	 */
-	public function it_should_not_destroy_another_installation_on_the_same_database()
-	{
+	public function it_should_not_destroy_another_installation_on_the_same_database() {
 		list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
 		try {
