@@ -235,13 +235,22 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	protected function _backup_hooks() {
-		$globals = array( 'wp_actions', 'wp_current_filter' );
-		foreach ( $globals as $key ) {
-			self::$hooks_saved[ $key ] = $GLOBALS[ $key ];
-		}
-		self::$hooks_saved['wp_filter'] = array();
-		foreach ( $GLOBALS['wp_filter'] as $hook_name => $hook_object ) {
-			self::$hooks_saved['wp_filter'][ $hook_name ] = clone $hook_object;
+		global $wp_version;
+
+		if(version_compare($wp_version, '4.7.0','<')){
+			$globals = array( 'merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter' );
+			foreach ( $globals as $key ) {
+				self::$hooks_saved[ $key ] = $GLOBALS[ $key ];
+			}
+		} else {
+			$globals = array( 'wp_actions', 'wp_current_filter' );
+			foreach ( $globals as $key ) {
+				self::$hooks_saved[ $key ] = $GLOBALS[ $key ];
+			}
+			self::$hooks_saved['wp_filter'] = array();
+			foreach ( $GLOBALS['wp_filter'] as $hook_name => $hook_object ) {
+				self::$hooks_saved['wp_filter'][ $hook_name ] = clone $hook_object;
+			}
 		}
 	}
 
@@ -256,16 +265,27 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	protected function _restore_hooks() {
-		$globals = array( 'wp_actions', 'wp_current_filter' );
-		foreach ( $globals as $key ) {
-			if ( isset( self::$hooks_saved[ $key ] ) ) {
-				$GLOBALS[ $key ] = self::$hooks_saved[ $key ];
+		global $wp_version;
+
+		if(version_compare($wp_version, '4.7.0','<')){
+			$globals = array( 'merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter' );
+			foreach ( $globals as $key ) {
+				if ( isset( self::$hooks_saved[ $key ] ) ) {
+					$GLOBALS[ $key ] = self::$hooks_saved[ $key ];
+				}
 			}
-		}
-		if ( isset( self::$hooks_saved['wp_filter'] ) ) {
-			$GLOBALS['wp_filter'] = array();
-			foreach ( self::$hooks_saved['wp_filter'] as $hook_name => $hook_object ) {
-				$GLOBALS['wp_filter'][ $hook_name ] = clone $hook_object;
+		} else {
+			$globals = array( 'wp_actions', 'wp_current_filter' );
+			foreach ( $globals as $key ) {
+				if ( isset( self::$hooks_saved[ $key ] ) ) {
+					$GLOBALS[ $key ] = self::$hooks_saved[ $key ];
+				}
+			}
+			if ( isset( self::$hooks_saved['wp_filter'] ) ) {
+				$GLOBALS['wp_filter'] = array();
+				foreach ( self::$hooks_saved['wp_filter'] as $hook_name => $hook_object ) {
+					$GLOBALS['wp_filter'][ $hook_name ] = clone $hook_object;
+				}
 			}
 		}
 	}
