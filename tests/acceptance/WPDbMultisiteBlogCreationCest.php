@@ -3,7 +3,7 @@
 use tad\WPBrowser\Generators\Date;
 use tad\WPBrowser\Generators\Tables;
 
-class WPDbMultisiteSubfolderCest {
+class WPDbMultisiteBlogCreationCest {
 
 	/**
 	 * @var Tables
@@ -24,8 +24,8 @@ class WPDbMultisiteSubfolderCest {
 	public function it_should_allow_having_blogs_in_the_database_in_subdomain_multisite_installation(FunctionalTester $I) {
 		$now = time();
 		Date::_injectNow($now);
-		$blog1Id = $I->haveBlogInDatabase('testsite1', [], false);
-		$blog2Id = $I->haveBlogInDatabase('testsite2', [], false);
+		$blog1Id = $I->haveBlogInDatabase('testsite1', [], true);
+		$blog2Id = $I->haveBlogInDatabase('testsite2', [], true);
 
 		$I->seeBlogInDatabase([
 			'blog_id'      => $blog1Id,

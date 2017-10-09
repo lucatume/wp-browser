@@ -16,7 +16,7 @@ class WPDbMultisiteSubdomainCest {
 		foreach ($blogIds as $blogId) {
 			$I->useBlog($blogId);
 			$I->haveManyPostsInDatabase(3, [
-				'post_title'    => 'Blog {{blog}} - Post {{n}}',
+				'post_title'    => 'Blog {{blog}} Post {{n}}',
 				'template_data' => ['blog' => $blogId],
 			]);
 		}
@@ -24,10 +24,11 @@ class WPDbMultisiteSubdomainCest {
 		for ($i = 0; $i < 3; $i++) {
 			$blogId = $blogIds[$i];
 			$I->amOnSubdomain('testblog' . $i);
+			$I->haveOptionInDatabase('posts_per_page', 3);
 			$I->amOnPage('/');
-			$I->see("Blog $blogId - Post 0");
-			$I->see("Blog $blogId - Post 1");
-			$I->see("Blog $blogId - Post 2");
+			$I->see("Blog $blogId Post 0");
+			$I->see("Blog $blogId Post 1");
+			$I->see("Blog $blogId Post 2");
 		}
 	}
 }

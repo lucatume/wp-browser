@@ -1879,7 +1879,10 @@ class WPDb extends ExtendedDb {
 		if ($subdomain) {
 			if (empty($overrides['domain'])) {
 				$defaults['domain'] = sprintf('%s.%s', $domainOrPath, $this->getSiteDomain());
+			} else {
+				$domainOrPath = str_replace(".{$this->getSiteDomain()}", '', $overrides['domain']);
 			}
+			$defaults['domain'] = "{$domainOrPath}.{$this->getSiteDomain()}";
 			$defaults['path'] = '/';
 		}
 		else {
@@ -1914,12 +1917,12 @@ class WPDb extends ExtendedDb {
 		$dropQuery = $this->tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
 		$sth       = $dbh->prepare($dropQuery);
 		$this->debugSection('Query', $sth->queryString);
-		$sth->execute();
+		$dropped = $sth->execute();
 
 		$scaffoldQuery = $this->tables->getBlogScaffoldQuery($this->config['tablePrefix'], $blogId, $data);
 		$sth           = $dbh->prepare($scaffoldQuery);
 		$this->debugSection('Query', $sth->queryString);
-		$sth->execute();
+		$created = $sth->execute();
 
 		$this->scaffoldedBlogIds[] = $blogId;
 	}
