@@ -74,7 +74,7 @@ before_install:
   - export PATH=vendor/bin:$PATH
 
 install:
-  - composer update --prefer-dist
+  - composer update
   # install WordPress in the `wordpress` folder
   - cd $WP_FOLDER
   - wp core download --version=$WP_VERSION
