@@ -43,6 +43,10 @@ class MainStatementQueriesFilter extends \FilterIterator
 
 	private function isRegex($statement)
 	{
-		return @preg_match($statement, null) !== false;
+		try {
+			return preg_match($statement, null) !== false;
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 }
