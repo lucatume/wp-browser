@@ -3,8 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.19] 2017-10-09;
 ### Fixed
 - Travis CI tests
+- restored the creation of blog tables when using `WPDb::haveBlogInDatabase` or `WPDb::haveManyBlogsInDatabase` methods
 
 ##[1.21.18] 2017-09-26
 ### Fixed
@@ -638,7 +641,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.18...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.19...HEAD
+[1.21.19]: https://github.com/lucatume/wp-browser/compare/1.21.18...1.21.19
 [1.21.18]: https://github.com/lucatume/wp-browser/compare/1.21.17...1.21.18
 [1.21.17]: https://github.com/lucatume/wp-browser/compare/1.21.16...1.21.17
 [1.21.16]: https://github.com/lucatume/wp-browser/compare/1.21.15...1.21.16
