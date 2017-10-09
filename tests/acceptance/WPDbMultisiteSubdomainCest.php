@@ -24,6 +24,8 @@ class WPDbMultisiteSubdomainCest {
 		for ($i = 0; $i < 3; $i++) {
 			$blogId = $blogIds[$i];
 			$I->amOnSubdomain('blog' . $i);
+			$I->useBlog($blogId);
+			$I->haveOptionInDatabase('posts_per_page', 10);
 			$I->amOnPage('/');
 			$I->see("Blog $blogId Post 0");
 			$I->see("Blog $blogId Post 1");
