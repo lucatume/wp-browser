@@ -37,6 +37,9 @@ addons:
     - wp.localhost
     - test1.wp.localhost
     - test2.wp.localhost
+    - blog0.wp.localhost
+    - blog1.wp.localhost
+    - blog2.wp.localhost
 
 env:
   global:
