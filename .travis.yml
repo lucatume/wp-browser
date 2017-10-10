@@ -6,7 +6,6 @@ notifications:
   email: false
 
 php:
-  - '5.6'
   - '7.0'
   - '7.1'
   - nightly
@@ -38,6 +37,9 @@ addons:
     - wp.localhost
     - test1.wp.localhost
     - test2.wp.localhost
+    - blog0.wp.localhost
+    - blog1.wp.localhost
+    - blog2.wp.localhost
 
 env:
   global:
@@ -95,21 +97,22 @@ install:
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
-  # Disable Xdebug
-  - phpenv config-rm xdebug.ini
 
 before_script:
   # restart Nnginx and PHP-FPM services
   - sudo service php5-fpm restart
   - sudo service nginx restart
 
+  # build Codeception modules
+  - codecept build
+
 script:
-  - codecept run unit
-  - codecept run acceptance
-  - codecept run phantomjs
-  - codecept run functional
-  - codecept run climodule
-  - codecept run wpmodule
-  - codecept run wploadersuite
-  - codecept run muloader
-  - codecept run cli
+#  - codecept run unit
+  - codecept run acceptance -vvv
+#  - codecept run phantomjs
+#  - codecept run functional
+#  - codecept run climodule
+#  - codecept run wpmodule
+#  - codecept run wploadersuite
+#  - codecept run muloader
+#  - codecept run cli
