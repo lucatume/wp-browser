@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.20] 2017-10-10;
+### Fixed
+- a WordPress 4.6 related issue with hook saving (issue #108)
+
 ##[1.21.19] 2017-10-09;
 ### Fixed
 - Travis CI tests
@@ -641,7 +645,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.19...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.20...HEAD
+[1.21.20]: https://github.com/lucatume/wp-browser/compare/1.21.19...1.21.20
 [1.21.19]: https://github.com/lucatume/wp-browser/compare/1.21.18...1.21.19
 [1.21.18]: https://github.com/lucatume/wp-browser/compare/1.21.17...1.21.18
 [1.21.17]: https://github.com/lucatume/wp-browser/compare/1.21.16...1.21.17
