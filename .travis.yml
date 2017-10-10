@@ -55,7 +55,6 @@ env:
     - WP_SUBDOMAIN_1_TITLE="Test Subdomain 1"
     - WP_SUBDOMAIN_2="test2"
     - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
-    - WP_HTACCESS=build/travis-htaccess
   matrix:
     - WP_VERSION=latest
     - WP_VERSION=nightly
@@ -91,7 +90,7 @@ install:
   - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
   # get back to the build folder
   - cd $TRAVIS_BUILD_DIR
-  # copy the Nginx configuration file to the default site
+  # copy the Nginx configuration file to the available sites
   - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
