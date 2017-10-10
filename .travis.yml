@@ -107,12 +107,12 @@ before_script:
   - codecept build
 
 script:
-#  - codecept run unit
-  - codecept run acceptance -vvv
-#  - codecept run phantomjs
-#  - codecept run functional
-#  - codecept run climodule
-#  - codecept run wpmodule
-#  - codecept run wploadersuite
-#  - codecept run muloader
-#  - codecept run cli
+  - codecept run unit
+  - codecept run acceptance
+  - codecept run phantomjs
+  - codecept run functional
+  - codecept run climodule
+  - codecept run wpmodule
+  - codecept run wploadersuite
+  - codecept run muloader
+  - codecept run cli
