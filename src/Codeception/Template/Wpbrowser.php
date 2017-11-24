@@ -52,7 +52,7 @@ class Wpbrowser extends Bootstrap {
 		if ($interactive === null) {
 			$this->say();
 			$interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
-			$this->say(" --- ");
+			$this->say(' --- ');
 			$this->say();
 			$interactive = preg_match('/^(n|N)/', $interactive) ? false : true;
 		}
