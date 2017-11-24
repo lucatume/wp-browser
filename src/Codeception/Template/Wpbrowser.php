@@ -319,7 +319,7 @@ EOF;
             activatePlugins: [{$plugins}]
 EOF;
 
-		$this->createSuite('wpunit', $actor, $suiteConfig);
+		$this->createSuite($installationData['wpunitSuiteSlug'], $actor, $suiteConfig);
 	}
 
 	protected function createFunctionalSuite($actor = 'Functional', array $installationData = []) {
@@ -357,7 +357,7 @@ modules:
             adminPassword: '{$installationData['adminPassword']}'
             adminPath: '{$installationData['wpAdminPath']}'
 EOF;
-		$this->createSuite('functional', $actor, $suiteConfig);
+		$this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
 	}
 
 	protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = null) {
@@ -395,7 +395,7 @@ modules:
             adminPassword: '{$installationData['adminPassword']}'
             adminPath: '{$installationData['wpAdminPath']}'
 EOF;
-		$this->createSuite('acceptance', $actor, $suiteConfig);
+		$this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
 	}
 
 	protected function getDefaultInstallationData() {
