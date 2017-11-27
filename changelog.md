@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.22] 2017-11-27;
+### Fixed
+- serialization issue in WP-Loader module (thanks @johnnyhuy)
+
 ##[1.21.21] 2017-11-24;
 ### Fixed
 - user defined suite names are now respected during `init wpbrowser` based scaffolding process
@@ -650,6 +654,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Reference to ModuleConfigException class in WPLoader class.
 
 [unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.21...HEAD
+[1.21.22]: https://github.com/lucatume/wp-browser/compare/1.21.21...1.21.22
 [1.21.21]: https://github.com/lucatume/wp-browser/compare/1.21.20...1.21.21
 [1.21.20]: https://github.com/lucatume/wp-browser/compare/1.21.19...1.21.20
 [1.21.19]: https://github.com/lucatume/wp-browser/compare/1.21.18...1.21.19
