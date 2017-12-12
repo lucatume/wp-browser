@@ -4,16 +4,50 @@
  *
  */
 
+/**
+ * Writes, or overwrites, the Patchwork configuration file if needed.
+ *
+ * @throws \Codeception\Exception\ModuleException
+ */
+function wpbrowser_write_patchwork_config(array $configuration) {
+	$patchworkConfig = json_encode([
+		// exclude the whole WordPress folder
+		'blacklist' => [rtrim($configuration['constants']['ABSPATH'], '/')],
+		// but include the `wp-includes/load.php` file that defines the function we need to redefine
+		'whitelist' => [$configuration['constants']['ABSPATH'] . 'wp-includes/load.php'],
+	]);
+
+	$patchwordConfigFile                 = __DIR__ . '/patchwork.json';
+	$existingPatchworkFileConfigContents = '';
+	$configExists                        = file_exists($patchwordConfigFile);
+
+	if ($configExists) {
+		if (!is_readable($patchwordConfigFile)) {
+			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchwordConfigFile] exists but is not readable.");
+		}
+		$existingPatchworkFileConfigContents = file_get_contents($patchwordConfigFile);
+	}
+
+	if (!$configExists || $existingPatchworkFileConfigContents !== $patchworkConfig) {
+		if (!is_writable(dirname($patchwordConfigFile))) {
+			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchwordConfigFile] cannot be written.");
+		}
+		file_put_contents($patchwordConfigFile, json_encode($patchworkConfig));
+	}
+}
+
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $configuration = unserialize(base64_decode($argv[1]));
 
 $multisite = !empty($argv[2]) ? $argv[2] : false;
 
+
 // require_once 'vendor/autoload.php';
 require_once $configuration['autoload'];
 
 if (!empty($multisite)) {
+	wpbrowser_write_patchwork_config($configuration);
 	wpbrowser_include_patchwork();
 
 	Patchwork\redefine('is_multisite', function () {

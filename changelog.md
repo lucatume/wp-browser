@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Fixed
 - better handling of user input and error in `wpbrowser` template
+- fixed an issue where files with `declare` type instructions would trigger fatal errors when using `WPLoader` module in `multisite` mode
 
 ##[1.21.22] 2017-11-27; ### Fixed
 - serialization issue in WP-Loader module (thanks @johnnyhuy)

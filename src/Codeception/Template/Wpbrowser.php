@@ -94,7 +94,7 @@ class Wpbrowser extends Bootstrap {
 		} else {
 			$this->saySuccess("Codeception has created the files for the {$installationData['acceptanceSuiteSlug']}, {$installationData['functionalSuiteSlug']}, WordPress unit and unit suites but the modules are not activated");
 		}
-		$this->say('Some commands have been added in he Codeception configuration file: check them out using <comment>codecept --help</comment>');
+		$this->say('Some commands have been added in the Codeception configuration file: check them out using <comment>codecept --help</comment>');
 		$this->say(" --- ");
 		$this->say();
 
