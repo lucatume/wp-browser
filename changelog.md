@@ -3,9 +3,10 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
-
-##[1.21.22] 2017-11-27;
 ### Fixed
+- better handling of user input and error in `wpbrowser` template
+
+##[1.21.22] 2017-11-27; ### Fixed
 - serialization issue in WP-Loader module (thanks @johnnyhuy)
 
 ##[1.21.21] 2017-11-24;

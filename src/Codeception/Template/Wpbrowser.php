@@ -18,7 +18,14 @@ class Wpbrowser extends Bootstrap {
 	 */
 	protected $noInteraction = false;
 
+	/**
+	 * @param bool $interactive
+	 *
+	 * @return mixed|void
+	 * @throws \Exception
+	 */
 	public function setup($interactive = true) {
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->checkInstalled($this->workDir);
 
 		$input = $this->input;
@@ -73,7 +80,9 @@ class Wpbrowser extends Bootstrap {
 			$this->say("tests/{$installationData['acceptanceSuiteSlug']} created           <- {$installationData['acceptanceSuiteSlug']} tests");
 			$this->say("tests/{$installationData['acceptanceSuiteSlug']}.suite.yml written <- {$installationData['acceptanceSuiteSlug']} tests suite configuration");
 		} catch (ModuleConfigException $e) {
-			$this->sayWarning('Something is not ok in the modules configurations: check your answers and try the initialization again.');
+			$this->removeCreatedFiles();
+			$this->say('<error>Something is not ok in the modules configurations: check your answers and try the initialization again.</error>');
+			$this->sayInfo('All files and folders created by the initialization attempt have been removed.');
 
 			return;
 		}
@@ -224,7 +233,7 @@ class Wpbrowser extends Bootstrap {
 		$installationData['tablePrefix'] = $this->ask("What's the table prefix of the database used by the WordPress installation?", 'wp_');
 		$this->say('WPLoader will reinstall a fresh WordPress installation before the tests; as such it needs the details you would typically provide when installing WordPress from scratch');
 		$this->say();
-		$this->sayWarning('WPLoader should be configured to run on a dedicated database!');
+		$this->sayInfo('WPLoader should be configured to run on a dedicated database!');
 		$this->say();
 		$installationData['wploaderDbName']      = $this->ask("What's the name of the database WPLoader should use?", 'wpTests');
 		$installationData['wploaderDbHost']      = $this->ask("What's the host of the database WPLoader should use?", 'localhost');
@@ -400,5 +409,14 @@ EOF;
 
 	protected function getDefaultInstallationData() {
 		return [];
+	}
+
+	protected function removeCreatedFiles() {
+		if (file_exists(getcwd() . '/codeception.yml')) {
+			unlink(getcwd() . '/codeception.yml');
+		}
+		if (file_exists(getcwd() . '/tests')) {
+			rrmdir(getcwd() . '/tests');
+		}
 	}
 }

@@ -8,6 +8,7 @@ use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
+use tad\WPBrowser\Filesystem\Utils;
 
 class WordPress extends Framework implements DependsOnModule {
 
@@ -17,6 +18,11 @@ class WordPress extends Framework implements DependsOnModule {
 	 * @var \tad\WPBrowser\Connector\WordPress
 	 */
 	public $client;
+
+	/**
+	 * @var string
+	 */
+	public $wpRootFolder;
 
 	/**
 	 * @var array
@@ -104,8 +110,8 @@ EOF;
 	}
 
 	private function ensureWpRoot() {
-		$wpRootFolder = $this->config['wpRootFolder'];
-		if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+		$wpRootFolder = $this->getWpRootFolder();
+		if (!file_exists($wpRootFolder . '/wp-settings.php')) {
 			throw new ModuleConfigException(__CLASS__,
 				"\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder.");
 		}
@@ -260,7 +266,7 @@ EOF;
 	 */
 	public function getInternalDomains() {
 		$internalDomains   = [];
-		$internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST)) . '$/';
+		$internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST), '/') . '$/';
 		return $internalDomains;
 	}
 
@@ -270,7 +276,18 @@ EOF;
 	 * @return string
 	 */
 	public function getWpRootFolder() {
-		return $this->config['wpRootFolder'];
+		if (empty($this->wpRootFolder)) {
+			// allow me not to bother with trailing slashes
+			$wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
+
+			// maybe the user is using the `~` symbol for home?
+			$this->wpRootFolder = Utils::homeify($wpRootFolder);
+
+			// remove `\ ` spaces in folder paths
+			$this->wpRootFolder = str_replace('\ ', ' ', $this->wpRootFolder);
+		}
+
+		return $this->wpRootFolder;
 	}
 
 	/**

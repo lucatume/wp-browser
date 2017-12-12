@@ -219,11 +219,14 @@ class WPLoader extends Module {
 	 */
 	protected function getWpRootFolder() {
 		if (empty($this->wpRootFolder)) {
-			// allow me not to bother with traling slashes
+			// allow me not to bother with trailing slashes
 			$wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
 
 			// maybe the user is using the `~` symbol for home?
 			$this->wpRootFolder = Utils::homeify($wpRootFolder);
+
+			// remove `\ ` spaces in folder paths
+			$this->wpRootFolder = str_replace('\ ', ' ', $this->wpRootFolder);
 		}
 
 		return $this->wpRootFolder;
