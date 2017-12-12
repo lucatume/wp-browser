@@ -21,3 +21,4 @@ src/Codeception/Module/patchwork.json
 
 # Patchwork cache folder
 cache/*
+src/includes/patchwork.json
