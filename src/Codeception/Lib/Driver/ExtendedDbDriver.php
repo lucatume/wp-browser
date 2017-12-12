@@ -2,7 +2,7 @@
 
 namespace Codeception\Lib\Driver;
 
-include_once dirname(__FILE__) . '/ExtendedMySql.php';
+include_once __DIR__ . '/ExtendedMySql.php';
 
 /**
  * Extends Codeception default Db driver to return an extended version of MySql driver.
@@ -11,37 +11,39 @@ class ExtendedDbDriver extends Db
 {
 
 	/**
-	 * Identical to original method except but will return a modified version of MySql driver.
+	 * Identical to the original method but changing the MySQL driver.
 	 *
 	 * @static
 	 *
 	 * @param $dsn
 	 * @param $user
 	 * @param $password
+	 * @param [optional] $options
 	 *
-	 * @return Db|MsSql|ExtendedMySql|Oracle|PostgreSql|Sqlite
+	 * @see   http://php.net/manual/en/pdo.construct.php
+	 * @see   http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
+	 *
+	 * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
 	 */
-	public static function create($dsn, $user, $password)
+	public static function create($dsn, $user, $password, $options = null)
 	{
 		$provider = self::getProvider($dsn);
 
 		switch ($provider) {
 			case 'sqlite':
-				return new Sqlite($dsn, $user, $password);
+				return new Sqlite($dsn, $user, $password, $options);
 			case 'mysql':
-				return new ExtendedMySql($dsn, $user, $password);
+				return new ExtendedMySql($dsn, $user, $password, $options);
 			case 'pgsql':
-				return new PostgreSql($dsn, $user, $password);
+				return new PostgreSql($dsn, $user, $password, $options);
 			case 'mssql':
-				return new MsSql($dsn, $user, $password);
-			case 'oracle':
-				return new Oracle($dsn, $user, $password);
+			case 'dblib':
 			case 'sqlsrv':
-				return new SqlSrv($dsn, $user, $password);
+				return new SqlSrv($dsn, $user, $password, $options);
 			case 'oci':
-				return new Oci($dsn, $user, $password);
+				return new Oci($dsn, $user, $password, $options);
 			default:
-				return new Db($dsn, $user, $password);
+				return new Db($dsn, $user, $password, $options);
 		}
 	}
 }
