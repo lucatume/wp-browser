@@ -106,7 +106,7 @@ before_script:
   - codecept build
 
    # set the correct path to phantomjs bin
-  - sed -i "s/%%phantomjs%%/$(which phantomjs)/" $TRAVIS_BUILD_DIR/.env
+  - sed -i "s_%%phantomjs%%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/.env
 
 script:
   - codecept run unit
