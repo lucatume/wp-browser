@@ -10,12 +10,24 @@
  * @throws \Codeception\Exception\ModuleException
  */
 function wpbrowser_write_patchwork_config(array $configuration) {
-	$patchworkConfig = json_encode([
-		// exclude the whole WordPress folder
-		'blacklist' => [rtrim($configuration['constants']['ABSPATH'], '/')],
+	$patchworkConfig = [
+		'blacklist' => [
+			// exclude the whole WordPress folder by default
+			rtrim($configuration['constants']['ABSPATH'], '/'),
+			// exclude the project root folder too
+			rtrim($configuration['root'], '/'),
+		],
 		// but include the `wp-includes/load.php` file that defines the function we need to redefine
 		'whitelist' => [$configuration['constants']['ABSPATH'] . 'wp-includes/load.php'],
-	]);
+	];
+
+	foreach (['WP_PLUGIN_DIR', 'WP_CONTENT_DIR', 'WPMU_PLUGIN_DIR', 'WP_TEMP_DIR'] as $const) {
+		if (isset($configuration['constants'][$const]) && file_exists($configuration['constants'][$const])) {
+			$patchworkConfig['blacklist'][] = rtrim($configuration['constants'][$const], '/');
+		}
+	}
+
+	$patchworkConfig = json_encode($patchworkConfig);
 
 	$patchwordConfigFile                 = __DIR__ . '/patchwork.json';
 	$existingPatchworkFileConfigContents = '';
