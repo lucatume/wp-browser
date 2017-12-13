@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Fixed
+- fixed an `ExtendedDbDriver` signature issue (thanks @kouratoras)
 - better handling of user input and error in `wpbrowser` template
 - fixed an issue where files with `declare` type instructions would trigger fatal errors when using `WPLoader` module in `multisite` mode (thanks @jbrinley)
 
