@@ -18,10 +18,11 @@ class ExtendedDbDriver extends Db
 	 * @param $dsn
 	 * @param $user
 	 * @param $password
+	 * @param [optional] $options
 	 *
 	 * @return Db|MsSql|ExtendedMySql|Oracle|PostgreSql|Sqlite
 	 */
-	public static function create($dsn, $user, $password)
+	public static function create($dsn, $user, $password, $options = null)
 	{
 		$provider = self::getProvider($dsn);
 
