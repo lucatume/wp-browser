@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Changed
+- version constraints for `symfony/process` package to `^3.0`
 
 ##[1.21.23] 2017-12-13;
 ### Fixed
