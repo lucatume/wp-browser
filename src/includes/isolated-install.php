@@ -48,6 +48,30 @@ function wpbrowser_write_patchwork_config(array $configuration) {
 	}
 }
 
+/**
+ * Requires the file defining the `wpdb` class.
+ *
+ * A clone of the `require_wp_db` function found in the `load.php` file.
+ *
+ * @return wpdb
+ */
+function wpbrowser_wpdb(){
+	global $wpdb;
+
+	require_once(ABSPATH . WPINC . '/wp-db.php');
+	if (file_exists(WP_CONTENT_DIR . '/db.php')) {
+		require_once(WP_CONTENT_DIR . '/db.php');
+	}
+
+	if (isset($wpdb)) {
+		return $wpdb;
+	}
+
+	$wpdb = new wpdb(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
+
+	return $wpdb;
+}
+
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $configuration = unserialize(base64_decode($argv[1]));
@@ -97,8 +121,16 @@ tests_reset__SERVER();
 
 $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 
-require_once ABSPATH . '/wp-settings.php';
+echo "\nDropping default tables if present...";
 
+$_db = wpbrowser_wpdb();
+
+foreach ($_db->tables() as $table => $prefixed_table) {
+	echo "\nDropping table {$prefixed_table} before installation...";
+	$_db->query("DROP TABLE IF EXISTS $prefixed_table");
+}
+
+require_once ABSPATH . '/wp-settings.php';
 require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 require_once ABSPATH . '/wp-includes/wp-db.php';
 
