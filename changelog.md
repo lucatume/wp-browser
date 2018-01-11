@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.24] 2018-01-11;
 ### Changed
 - broader version constraints for `symfony/process` package
 - move the `eventviva/php-image-resize` dependency to `require` in place of `require-dev`
@@ -662,7 +664,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.22...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.24...HEAD
+[1.21.24]: https://github.com/lucatume/wp-browser/compare/1.21.23...1.21.24
 [1.21.23]: https://github.com/lucatume/wp-browser/compare/1.21.22...1.21.23
 [1.21.22]: https://github.com/lucatume/wp-browser/compare/1.21.21...1.21.22
 [1.21.21]: https://github.com/lucatume/wp-browser/compare/1.21.20...1.21.21
