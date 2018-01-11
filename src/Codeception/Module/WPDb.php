@@ -2198,6 +2198,8 @@ class WPDb extends ExtendedDb {
 			];
 		}
 
+		$extension = $pathInfo['extension'];
+
 		$createdImages = [];
 		foreach ($imageSizes as $size => $thisSizes) {
 			$thisSizes = (array) $thisSizes;
@@ -2234,9 +2236,9 @@ class WPDb extends ExtendedDb {
 			'width'      => $imageWidth,
 			'height'     => $imageHeight,
 			'file'       => $uploadLocation,
-			'sizes'      => array_combine(array_keys($createdImages), array_map(function ($sizes) use ($slug, $mimeType) {
+			'sizes'      => array_combine(array_keys($createdImages), array_map(function ($sizes) use ($slug, $mimeType, $extension) {
 				return [
-					'file'      => "{$slug}-{$sizes->width}x{$sizes->height}.jpeg",
+					'file'      => "{$slug}-{$sizes->width}x{$sizes->height}.{$extension}",
 					'width'     => $sizes->width,
 					'height'    => $sizes->height,
 					'mime-type' => $mimeType,
