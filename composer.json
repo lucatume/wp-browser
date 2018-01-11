@@ -23,7 +23,8 @@
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": "^3.0",
     "antecedent/patchwork": "^2.0",
-    "codeception/codeception": "^2.3"
+    "codeception/codeception": "^2.3",
+    "eventviva/php-image-resize": "^1.6"
   },
   "autoload": {
     "psr-4": {
@@ -39,7 +40,6 @@
     "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1",
     "vlucas/phpdotenv": "^2.4",
-    "eventviva/php-image-resize": "^1.6"
   },
   "bin": [
     "wpcept"
