@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- an issue that was preventing `WPDb::haveAttachmentInDatabase` method from working correctly
 
 ##[1.21.24] 2018-01-11;
 ### Changed
