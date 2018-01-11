@@ -21,7 +21,7 @@
     "lucatume/wp-browser-commons": "^1.2.5",
     "lucatume/codeception-setup-local": "~1.0",
     "wp-cli/wp-cli": "^1.1",
-    "symfony/process": "^2.0",
+    "symfony/process": ">=2.7 <5.0",
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.3",
     "eventviva/php-image-resize": "^1.6"
