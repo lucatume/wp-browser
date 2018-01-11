@@ -4,7 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Changed
-- version constraints for `symfony/process` package to `^3.0`
+- broader version constraints for `symfony/process` package
+- move the `eventviva/php-image-resize` dependency to `require` in place of `require-dev`
 
 ##[1.21.23] 2017-12-13;
 ### Fixed
