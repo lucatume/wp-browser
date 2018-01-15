@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.21.26] 2018-01-15;
+### Fixed
+- a variable reference issue in the `WPDb` module (thanks @jcabot)
+
 ##[1.21.25] 2018-01-11;
 ### Fixed
 - an issue that was preventing `WPDb::haveAttachmentInDatabase` method from working correctly
@@ -668,7 +672,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.25...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.26...HEAD
+[1.21.26]: https://github.com/lucatume/wp-browser/compare/1.21.25...1.21.26
 [1.21.25]: https://github.com/lucatume/wp-browser/compare/1.21.24...1.21.25
 [1.21.24]: https://github.com/lucatume/wp-browser/compare/1.21.23...1.21.24
 [1.21.23]: https://github.com/lucatume/wp-browser/compare/1.21.22...1.21.23
