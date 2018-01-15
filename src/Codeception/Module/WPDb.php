@@ -2125,10 +2125,10 @@ class WPDb extends ExtendedDb {
 		}
 
 		if ($this->config['urlReplacement'] === true) {
-			$sql = $this->_replaceUrlInDump($this->sql);
+			$this->sql = $this->_replaceUrlInDump($this->sql);
 		}
 
-		$this->driver->load($sql);
+		$this->driver->load($this->sql);
 		$this->populated = true;
 	}
 
