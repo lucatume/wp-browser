@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- added wait operation to `WPBrowserMethods` to try and tackle the missing login form issue () 
 
 ##[1.21.26] 2018-01-15;
 ### Fixed
