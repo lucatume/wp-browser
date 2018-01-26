@@ -1225,3 +1225,43 @@ codecept run acceptance --env dist
 
 Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
 
+## Bonus tracks
+
+### Snapshot testing WordPress code output
+Snapshot testing comes very handy when testing the HTML output of some WordPress generated and managed code.  
+In such instances WordPress will often generate time-dependent values, like nonces, and full URLs, like image sources.  
+Those environment and time related differences might break a snapshot for the wrong reasons; e.g. the snapshot was generated on one machine (say locally) and ran on another machine where WordPress might be served at another URL and the test will surely run at a different time (say CI).  
+To smoothly compare the two HTML outputs install the `spatie/phpunit-snapshot-assertions` package:
+
+```shell
+composer require --dev spatie/phpunit-snapshot-assertions
+```
+
+And then use the `WPHtmlOutputDriver`  driver in your snapshot tests:
+
+```php
+use Spatie\Snapshots\MatchesSnapshots;
+
+class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
+
+	use MatchesSnapshots;
+
+	/**
+	 * Test snapshot for render
+	 */
+	public function test_snapshot_render() {
+	    // from some environment variable
+        $currentWpUrl = getenv('WP_URL');
+        $driver = new WPOutput($currentWpUrl);
+        
+		$sut = new MyPluginHTMLRenderingClass();
+
+		$renderedHtml = $sut->renderHtml( );
+
+		$this->assertMatchesSnapshot($renderedHtml, $driver);
+	}
+}
+```
+
+By default the driver will lok for time-dependent fields with an `id`, `name` or `class` from a default list (e.g. `_wpnonce`); you might want to add or modify that list using the `WPHtmlOutputDriver::setTimeDependentKeys` method.  
+On the same note, the driver will look for some attributes when looking to replace the snapshot URL with the current URL; you can modify those using the `WPHtmlOutputDriver::setUrlAttributes` method.
