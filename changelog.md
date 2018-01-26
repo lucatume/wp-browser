@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.22.1] 2018-01-26;
 ### Fixed
 - add the `electrolinux/phpquery` dependency as non dev one
 
@@ -680,8 +682,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.0...HEAD
-[1.22.0]: https://github.com/lucatume/wp-browser/compare/1.21.26...1.22.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.1...HEAD
+[1.22.0]: https://github.com/lucatume/wp-browser/compare/1.22.0...1.22.1
 [1.21.25]: https://github.com/lucatume/wp-browser/compare/1.21.24...1.21.25
 [1.21.24]: https://github.com/lucatume/wp-browser/compare/1.21.23...1.21.24
 [1.21.23]: https://github.com/lucatume/wp-browser/compare/1.21.22...1.21.23
