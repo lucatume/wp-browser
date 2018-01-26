@@ -88,7 +88,6 @@ foreach ($configuration['constants'] as $key => $value) {
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 
-
 define('WP_INSTALLING', true);
 //require_once $config_file_path;
 require_once dirname(__FILE__) . '/functions.php';

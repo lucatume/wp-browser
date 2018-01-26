@@ -26,6 +26,11 @@ trait WPBrowserMethods
 	public function loginAs($username, $password)
 	{
 		$this->amOnPage($this->loginUrl);
+
+		if (method_exists($this, 'waitForElementVisible')) {
+			$this->waitForElementVisible('#loginform');
+		}
+
 		$this->submitForm('#loginform', ['log' =>$username,'pwd' => $password ,'testcookie' => '1', 'redirect_to' => ''], '#wp-submit');
 
 		return [
