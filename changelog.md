@@ -3,8 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.21.27] 2018-01-26;
 ### Fixed
 - added wait operation to `WPBrowserMethods` to try and tackle the missing login form issue () 
+- replace `eventviva/php-image-resize` dependency with `gumlet/php-image-resize`
 
 ##[1.21.26] 2018-01-15;
 ### Fixed
@@ -674,8 +677,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.26...HEAD
-[1.21.26]: https://github.com/lucatume/wp-browser/compare/1.21.25...1.21.26
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.21.27...HEAD
+[1.21.27]: https://github.com/lucatume/wp-browser/compare/1.21.26...1.21.27
 [1.21.25]: https://github.com/lucatume/wp-browser/compare/1.21.24...1.21.25
 [1.21.24]: https://github.com/lucatume/wp-browser/compare/1.21.23...1.21.24
 [1.21.23]: https://github.com/lucatume/wp-browser/compare/1.21.22...1.21.23
