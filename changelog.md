@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - added wait operation to `WPBrowserMethods` to try and tackle the missing login form issue () 
 - replace `eventviva/php-image-resize` dependency with `gumlet/php-image-resize`
+- added the `WPHtmlOutputDriver` class to allow comparison of WordPress specific HTML output using the `spatie/phpunit-snapshot-assertions` library
 
 ##[1.21.26] 2018-01-15;
 ### Fixed
