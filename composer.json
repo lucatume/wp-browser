@@ -40,7 +40,8 @@
     "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1",
     "vlucas/phpdotenv": "^2.4",
-    "spatie/phpunit-snapshot-assertions": "^1.2"
+    "spatie/phpunit-snapshot-assertions": "^1.2",
+    "electrolinux/phpquery": "^0.9.6"
   },
   "bin": [
     "wpcept"
