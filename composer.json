@@ -24,7 +24,8 @@
     "symfony/process": ">=2.7 <5.0",
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.3",
-    "gumlet/php-image-resize": "^1.6"
+    "gumlet/php-image-resize": "^1.6",
+    "electrolinux/phpquery": "^0.9.6"
   },
   "autoload": {
     "psr-4": {
@@ -40,8 +41,7 @@
     "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1",
     "vlucas/phpdotenv": "^2.4",
-    "spatie/phpunit-snapshot-assertions": "^1.2",
-    "electrolinux/phpquery": "^0.9.6"
+    "spatie/phpunit-snapshot-assertions": "^1.2"
   },
   "bin": [
     "wpcept"
