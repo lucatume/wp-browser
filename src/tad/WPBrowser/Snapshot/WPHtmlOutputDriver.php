@@ -49,8 +49,11 @@ class WPHtmlOutputDriver extends VarDriver {
 	/**
 	 * WPHtmlOutputDriver constructor.
 	 *
-	 * @param string $currentUrl The current WordPress full URL,
-	 *                           e.g. `http://example.com`
+	 * @param string      $currentUrl The current WordPress full URL,
+	 *                                e.g. `http://example.com`
+	 * @param string|null $snapshotUrl The WordPress URL used in the snapshot file; this
+	 *                                 will narrow down the replacement to WordPress generated
+	 *                                 URLs only.
 	 */
 	public function __construct(string $currentUrl = '', string $snapshotUrl = null) {
 		$this->currentUrl  = $currentUrl;

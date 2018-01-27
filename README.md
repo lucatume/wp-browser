@@ -1252,7 +1252,9 @@ class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
 	public function test_snapshot_render() {
 	    // from some environment variable
         $currentWpUrl = getenv('WP_URL');
-        $driver = new WPOutput($currentWpUrl);
+        $snapshotUrl = 'http://wp.localhost';
+        
+        $driver = new WPOutput($currentWpUrl, $snapshotUrl);
         
 		$sut = new MyPluginHTMLRenderingClass();
 
