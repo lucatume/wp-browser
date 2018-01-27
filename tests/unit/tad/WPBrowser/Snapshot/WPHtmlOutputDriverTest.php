@@ -146,4 +146,25 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 
 		$driver->match($one, $driver->evalCode($two));
 	}
+
+	/**
+	 * It should allow defining the snapshot URL to only replace that
+	 *
+	 * @test
+	 */
+	public function should_allow_defining_the_snapshot_url_to_only_replace_that() {
+		$template = $this->getSourceFileContents('html-5');
+
+		$currentUrl  = 'https://www.theaveragedev.com:8080/some/path';
+		$snapshotUrl = 'http://example.com';
+		$expected    = $this->replaceUrlInTemplate($snapshotUrl, $template);
+		$actual    = $this->replaceUrlInTemplate($currentUrl,$template);
+		$driver      = new Driver($currentUrl, $snapshotUrl);
+
+		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	protected function replaceUrlInTemplate($replacementUrl, $template): string {
+		return str_replace('{{url}}', $replacementUrl, $template);
+	}
 }

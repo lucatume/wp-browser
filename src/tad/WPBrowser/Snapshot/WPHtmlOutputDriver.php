@@ -42,13 +42,19 @@ class WPHtmlOutputDriver extends VarDriver {
 	protected $currentUrl;
 
 	/**
+	 * @var string
+	 */
+	protected $snapshotUrl;
+
+	/**
 	 * WPHtmlOutputDriver constructor.
 	 *
 	 * @param string $currentUrl The current WordPress full URL,
 	 *                           e.g. `http://example.com`
 	 */
-	public function __construct(string $currentUrl = '') {
-		$this->currentUrl = $currentUrl;
+	public function __construct(string $currentUrl = '', string $snapshotUrl = null) {
+		$this->currentUrl  = $currentUrl;
+		$this->snapshotUrl = $snapshotUrl;
 	}
 
 	/**
@@ -103,7 +109,10 @@ class WPHtmlOutputDriver extends VarDriver {
 		$doc = \phpQuery::newDocument($input);
 
 		foreach ($this->urlAttributes as $name) {
-			$doc->find("*[{$name}]")->each(function (\DOMElement $t) use ($name) {
+			$selector = empty($this->snapshotUrl) ?
+				"*[{$name}]"
+				: "*[{$name}^='{$this->snapshotUrl}']";
+			$doc->find($selector)->each(function (\DOMElement $t) use ($name) {
 				$current     = $t->getAttribute($name);
 				$snapshotUrl = sprintf('%s://%s',
 					parse_url($current, PHP_URL_SCHEME),
