@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.22.3] 2018-01-30;
 ### Fixed
 - removed the faulty `output` parameter from the `WPCLI::cli` method
 - fixed issues witht `WPCLI` module arguments escaping
@@ -689,7 +691,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.2...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.3...HEAD
+[1.22.2]: https://github.com/lucatume/wp-browser/compare/1.22.2...1.22.3
 [1.22.2]: https://github.com/lucatume/wp-browser/compare/1.22.1...1.22.2
 [1.22.1]: https://github.com/lucatume/wp-browser/compare/1.22.0...1.22.1
 [1.22.0]: https://github.com/lucatume/wp-browser/compare/1.21.26...1.22.0
