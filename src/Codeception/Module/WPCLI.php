@@ -170,10 +170,13 @@ class WPCLI extends Module
         }
 
         foreach ($commonOptions as $key => $value) {
-            $lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
-        }
+			$key           = escapeshellarg($key);
+			$value         = escapeshellarg($value);
+			$lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
 
-        return $userCommand . ' ' . implode(' ', $lineOptions);
+
+			return $userCommand . ' ' . implode(' ', $lineOptions);
+		}
     }
 
     /**
