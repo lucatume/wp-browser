@@ -78,7 +78,7 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_call_the_executor_with_proper_parameters()
     {
-        $this->executor->exec(Argument::containingString('--path=' . $this->root->url() . '/wp'), Argument::any(),
+        $this->executor->exec(Argument::containingString('--path=' . escapeshellarg($this->root->url() . '/wp')), Argument::any(),
             Argument::any())->shouldBeCalled();
         $this->executor->exec(Argument::containingString('core version'), Argument::any(),
             Argument::any())->shouldBeCalled();
@@ -110,7 +110,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_allow_setting_additional_wp_cli_options_in_the_config_file($option, $optionValue)
     {
         $this->config[$option] = $optionValue;
-        $this->executor->exec(Argument::containingString('--' . $option . '=' . $optionValue), Argument::any(),
+        $this->executor->exec(Argument::containingString('--' . $option . '=' . escapeshellarg($optionValue)), Argument::any(),
             Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
@@ -136,7 +136,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_skip_some_options_by_default($option)
     {
         $this->config[$option] = true;
-        $this->executor->exec(Argument::not(Argument::containingString('--' . $option)), Argument::any(),
+        $this->executor->exec(Argument::not(Argument::containingString('--' . escapeshellarg($option))), Argument::any(),
             Argument::any())->shouldBeCalled();
 
         $sut = $this->make_instance();
