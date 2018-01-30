@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Fixed
 - removed the faulty `output` parameter from the `WPCLI::cli` method
+- fixed issues witht `WPCLI` module arguments escaping
 
 ##[1.22.2] 2018-01-27;
 ### Changed
