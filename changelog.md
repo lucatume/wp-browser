@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- removed the faulty `output` parameter from the `WPCLI::cli` method
+
 ##[1.22.2] 2018-01-27;
 ### Changed
 - updated the `WPHtmlOutputDriver` class to support the optional `snapshotUrl` argument to focus the URL replacement
