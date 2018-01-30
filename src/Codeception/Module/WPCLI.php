@@ -79,29 +79,30 @@ class WPCLI extends Module
 		$this->executor = $executor ?: new Executor();
     }
 
-    /**
-     * Executes a wp-cli command.
-     *
-     * The method is a wrapper around isolated calls to the wp-cli tool.
-     * The library will use its own wp-cli version to run the commands.
-     *
-     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                            e.g. a terminal call like `wp core version` becomes `core version`
-     *                            omitting the call to wp-cli script.
-     *
-     * @return int wp-cli exit value for the command
-     *
-     */
+	/**
+	 * Executes a wp-cli command.
+	 *
+	 * The method is a wrapper around isolated calls to the wp-cli tool.
+	 * The library will use its own wp-cli version to run the commands.
+	 *
+	 * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
+	 *                            e.g. a terminal call like `wp core version` becomes `core version`
+	 *                            omitting the call to wp-cli script.
+	 *
+	 * @return int wp-cli exit value for the command
+	 *
+	 * @throws \Codeception\Exception\ModuleException If the status evaluates to nonzero.
+	 */
 	public function cli($userCommand = 'core version')
     {
         $this->initPaths();
 
         $command = $this->buildCommand($userCommand);
 
-		$output = '';
+		$output = [];
         $this->debugSection('command', $command);
         $status = $this->executor->exec($command, $output);
-        $this->debugSection('output', $output);
+		$this->debugSection('output', implode("\n", $output));
 
         $this->evaluateStatus($output, $status);
 
@@ -111,16 +112,19 @@ class WPCLI extends Module
     protected function initPaths()
     {
         if (empty($this->wpCliRoot)) {
-            $this->initWpCliPaths();
-        }
+			$this->initWpCliPaths();
+		}
     }
 
-    /**
-     * Initializes the wp-cli root location.
-     *
-     * The way the location works is an ugly hack that assumes the folder structure
-     * of the code to climb the tree and find the root folder.
-     */
+	/**
+	 * Initializes the wp-cli root location.
+	 *
+	 * The way the location works is an ugly hack that assumes the folder structure
+	 * of the code to climb the tree and find the root folder.
+	 *
+	 * @throws \Codeception\Exception\ModuleException If the embedded WPCLI Configurator class file
+	 *                                                could not be found.
+	 */
     protected function initWpCliPaths()
     {
 		try {
@@ -140,7 +144,7 @@ class WPCLI extends Module
     {
         $mergedCommand = $this->mergeCommandOptions($userCommand);
 
-		return implode(' ', [PHP_BINARY, $this->bootPath, $mergedCommand]);
+		return implode(' ', [escapeshellarg(PHP_BINARY), escapeshellarg($this->bootPath), $mergedCommand]);
     }
 
     /**
@@ -150,7 +154,7 @@ class WPCLI extends Module
     protected function mergeCommandOptions($userCommand)
     {
         $commonOptions = [
-            'path' => $this->config['path'],
+			'path' => escapeshellarg($this->config['path']),
         ];
 
         $lineOptions = [];
@@ -165,18 +169,15 @@ class WPCLI extends Module
 
         foreach ($nonOverriddenOptions as $key) {
             if (isset($this->config[$key])) {
-                $commonOptions[$key] = $this->config[$key];
+				$commonOptions[$key] = escapeshellarg($this->config[$key]);
             }
         }
 
         foreach ($commonOptions as $key => $value) {
-			$key           = escapeshellarg($key);
-			$value         = escapeshellarg($value);
 			$lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
-
-
-			return $userCommand . ' ' . implode(' ', $lineOptions);
 		}
+
+		return $userCommand . ' ' . implode(' ', $lineOptions);
     }
 
     /**
