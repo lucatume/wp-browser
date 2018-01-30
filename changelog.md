@@ -692,7 +692,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Reference to ModuleConfigException class in WPLoader class.
 
 [unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.3...HEAD
-[1.22.2]: https://github.com/lucatume/wp-browser/compare/1.22.2...1.22.3
+[1.22.3]: https://github.com/lucatume/wp-browser/compare/1.22.2...1.22.3
 [1.22.2]: https://github.com/lucatume/wp-browser/compare/1.22.1...1.22.2
 [1.22.1]: https://github.com/lucatume/wp-browser/compare/1.22.0...1.22.1
 [1.22.0]: https://github.com/lucatume/wp-browser/compare/1.21.26...1.22.0
