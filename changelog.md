@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - PHP 7.2 tests (thanks @tangrufus)
 
 ### Fixed
-- replaced call to deprecated `each` in file (thanks  @tangrufus)
+- replaced call to deprecated `each` in file (thanks @tangrufus)
 
 ##[1.22.3] 2018-01-30;
 ### Fixed
