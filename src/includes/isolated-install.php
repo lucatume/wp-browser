@@ -54,6 +54,10 @@ $configuration = unserialize(base64_decode($argv[1]));
 
 $multisite = !empty($argv[2]) ? $argv[2] : false;
 
+
+// require_once 'vendor/autoload.php';
+require_once $configuration['autoload'];
+
 if (!empty($multisite)) {
 	wpbrowser_write_patchwork_config($configuration);
 	wpbrowser_include_patchwork();
