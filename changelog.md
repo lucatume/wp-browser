@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.22.5] 2018-02-12;
+### Fixed
+- remove duplicate require of the `autoload.php` file in `WPLoader` isolated install script
+
 ##[1.22.4] 2018-02-09;
 ### Added
 - PHP 7.2 tests (thanks @tangrufus)
@@ -698,7 +702,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.5...HEAD
+[1.22.5]: https://github.com/lucatume/wp-browser/compare/1.22.4...1.22.5
 [1.22.4]: https://github.com/lucatume/wp-browser/compare/1.22.3...1.22.4
 [1.22.3]: https://github.com/lucatume/wp-browser/compare/1.22.2...1.22.3
 [1.22.2]: https://github.com/lucatume/wp-browser/compare/1.22.1...1.22.2
