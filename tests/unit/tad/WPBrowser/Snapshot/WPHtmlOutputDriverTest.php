@@ -158,7 +158,7 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$currentUrl  = 'https://www.theaveragedev.com:8080/some/path';
 		$snapshotUrl = 'http://example.com';
 		$expected    = $this->replaceUrlInTemplate($snapshotUrl, $template);
-		$actual    = $this->replaceUrlInTemplate($currentUrl,$template);
+		$actual      = $this->replaceUrlInTemplate($currentUrl, $template);
 		$driver      = new Driver($currentUrl, $snapshotUrl);
 
 		$driver->match($expected, $driver->evalCode($actual));
@@ -166,5 +166,81 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 
 	protected function replaceUrlInTemplate($replacementUrl, $template): string {
 		return str_replace('{{url}}', $replacementUrl, $template);
+	}
+
+	/**
+	 * It should allow setting tolerable differences
+	 *
+	 * @test
+	 */
+	public function should_allow_setting_tolerable_differences() {
+		$template = $this->getSourceFileContents('html-6');
+
+		$driver = new Driver();
+
+		$actual   = str_replace(['{{one}}', '{{two}}'], ['23', '89'], $template);
+		$expected = str_replace(['{{one}}', '{{two}}'], ['foo', 'bar'], $template);
+
+		$driver->setTolerableDifferences(['23', '89']);
+
+		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	/**
+	 * It should allow setting prefixes for tolerable differences
+	 *
+	 * @test
+	 */
+	public function should_allow_setting_prefixes_for_tolerable_differences() {
+		$template = $this->getSourceFileContents('html-7');
+
+		$driver = new Driver();
+
+		$actual   = str_replace(['{{one}}', '{{two}}'], ['23', '89'], $template);
+		$expected = str_replace(['{{one}}', '{{two}}'], ['foo', 'bar'], $template);
+
+		$driver->setTolerableDifferences(['23', '89']);
+		$driver->setTolerableDifferencesPostfixes(['prefix-', 'another_prefix-']);
+
+		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	/**
+	 * It should allow setting postfixes for tolerable differences
+	 *
+	 * @test
+	 */
+	public function should_allow_setting_postfixes_for_tolerable_differences() {
+		$template = $this->getSourceFileContents('html-8');
+
+		$driver = new Driver();
+
+		$actual   = str_replace(['{{one}}', '{{two}}'], ['23', '89'], $template);
+		$expected = str_replace(['{{one}}', '{{two}}'], ['foo', 'bar'], $template);
+
+		$driver->setTolerableDifferences(['23', '89']);
+		$driver->setTolerableDifferencesPostfixes(['-postfix', '-another_postfix']);
+
+		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	/**
+	 * It should allow setting prefixes and postfixes for tolerable differences
+	 *
+	 * @test
+	 */
+	public function should_allow_setting_prefixes_and_postfixes_for_tolerable_differences() {
+		$template = $this->getSourceFileContents('html-9');
+
+		$driver = new Driver();
+
+		$actual   = str_replace(['{{one}}', '{{two}}'], ['23', '89'], $template);
+		$expected = str_replace(['{{one}}', '{{two}}'], ['foo', 'bar'], $template);
+
+		$driver->setTolerableDifferences(['23', '89']);
+		$driver->setTolerableDifferencesPostfixes(['prefix-', 'another_prefix-']);
+		$driver->setTolerableDifferencesPostfixes(['-postfix', '-another_postfix']);
+
+		$driver->match($expected, $driver->evalCode($actual));
 	}
 }

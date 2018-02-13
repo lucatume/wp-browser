@@ -15,13 +15,29 @@ use Spatie\Snapshots\Drivers\VarDriver;
  *
  *    $currentOutput = $objectRenderingHtmlUsingWp->renderHtml();
  *    $currentUrl = getenv('WP_URL');
- *    $this->assertMatchesSnapshot( $currentOutput, new WPOutput($currentUrl) );
+ *    $snapshotUrl = 'http://wp.dev';
+ *    $this->assertMatchesSnapshot( $currentOutput, new WPOutput($currentUrl, $snapshotUrl) );
  *
  * @package tad\WPBrowser\Snapshot
  * @see     https://github.com/spatie/phpunit-snapshot-assertions
  * @see     https://packagist.org/packages/spatie/phpunit-snapshot-assertions
  */
 class WPHtmlOutputDriver extends VarDriver {
+
+	/**
+	 * @var array An array of strings that will be considered tolerable differences.
+	 */
+	protected $tolerableDifferences = [];
+
+	/**
+	 * @var array The list of prefixes that should be used to find and replace tolerable differences.
+	 */
+	protected $prefixes = [];
+
+	/**
+	 * @var array The list of postfixes that should be used to find and replace tolerable differences.
+	 */
+	protected $postfixes = [];
 
 	/**
 	 * @var array An array of attributes that will contain full URLs in the
@@ -49,8 +65,8 @@ class WPHtmlOutputDriver extends VarDriver {
 	/**
 	 * WPHtmlOutputDriver constructor.
 	 *
-	 * @param string      $currentUrl The current WordPress full URL,
-	 *                                e.g. `http://example.com`
+	 * @param string      $currentUrl  The current WordPress full URL,
+	 *                                 e.g. `http://example.com`
 	 * @param string|null $snapshotUrl The WordPress URL used in the snapshot file; this
 	 *                                 will narrow down the replacement to WordPress generated
 	 *                                 URLs only.
@@ -73,10 +89,14 @@ class WPHtmlOutputDriver extends VarDriver {
 	public function match($expected, $actual) {
 		$evaluated = $this->evalCode($expected);
 
-		Assert::assertEquals(
-			$this->normalizeHtml($this->removeTimeValues($this->replaceUrls($evaluated))),
-			$this->normalizeHtml($this->removeTimeValues($actual))
-		);
+		$normalizedExpected = $this->normalizeHtml($this->removeTimeValues($this->replaceUrls($evaluated)));
+		$normalizedActual   = $this->normalizeHtml($this->removeTimeValues($actual));
+
+		if (!empty($this->tolerableDifferences)) {
+			$normalizedActual = $this->applyTolerableDifferences($normalizedExpected, $normalizedActual);
+		}
+
+		Assert::assertEquals($normalizedExpected, $normalizedActual);
 	}
 
 	/**
@@ -135,6 +155,53 @@ class WPHtmlOutputDriver extends VarDriver {
 		return $this->normalizeHtml($html);
 	}
 
+	protected function applyTolerableDifferences(string $expected, string $actual): string {
+		$expectedDelims = array_unique(preg_split('/[A-Za-z0-9]/', $expected));
+		$actualDelims = array_unique(preg_split('/[A-Za-z0-9]/', $actual));
+
+		$expectedNoDelims = preg_replace('/[^A-Za-z0-9]/', ' ', str_replace($expectedDelims, ' ', $expected));
+		$actualNoDelims = preg_replace('/[^A-Za-z0-9]/', ' ', str_replace($actualDelims, ' ', $actual));
+
+		$expectedFrags = array_map('trim', array_filter(explode(' ', $expectedNoDelims)));
+		$actualFrags   = array_map('trim', array_filter(explode(' ', $actualNoDelims)));
+
+		$tolerated = [];
+		foreach ($actualFrags as $i => $value) {
+			if (!isset($expectedFrags[$i])) {
+				continue;
+			}
+			if ($actualFrags[$i] == $expectedFrags[$i]) {
+				continue;
+			}
+
+			if (in_array($actualFrags[$i], $this->tolerableDifferences)) {
+				$tolerated[$actualFrags[$i]] = $expectedFrags[$i];
+			}
+		}
+
+		foreach ($tolerated as $find => $replace) {
+			$prefixes = array_map(function ($pre) {
+				return preg_quote($pre, '/');
+			}, $this->prefixes);
+
+			$postfixes = array_map(function ($post) {
+				return preg_quote($post, '/');
+			}, $this->postfixes);
+
+			$findPattern = '(' . implode('|', $prefixes) . ')*'
+						   . preg_quote($find, '/')
+						   . '(' . implode('|', $postfixes) . ')*';
+
+			$pattern = '/(?<![\\w\\d])' . $findPattern . '(?![\\w\\d])/';
+
+			$replacement = '${1}' . $replace . '${2}';
+
+			$actual = preg_replace($pattern, $replacement, $actual);
+		}
+
+		return $actual;
+	}
+
 	/**
 	 * Returns an array that the driver will use to identify and void
 	 * by `id`, `class` and`name` attributes time-dependent values like
@@ -175,5 +242,62 @@ class WPHtmlOutputDriver extends VarDriver {
 	 */
 	public function setUrlAttributes(array $urlAttributes) {
 		$this->urlAttributes = $urlAttributes;
+	}
+
+	/**
+	 * Sets the current list of strings that are considered as tolerable differences.
+	 *
+	 * @return array
+	 */
+	public function getTolerableDifferences(): array {
+		return $this->tolerableDifferences;
+	}
+
+	/**
+	 * Returns the current list of strings that are considered as tolerable differences.
+	 *
+	 * @param array $tolerableDifferences
+	 */
+	public function setTolerableDifferences(array $tolerableDifferences) {
+		$this->tolerableDifferences = $tolerableDifferences;
+	}
+
+	/**
+	 * Returns the list of prefixes that should be used to find and replace tolerable differences.
+	 *
+	 * @return array
+	 */
+	public function getTolerableDifferencesPrefixes(): array {
+		return $this->prefixes;
+	}
+
+	/**
+	 * Sets the list of prefixes that should be used to find and replace tolerable differences.
+	 *
+	 * @param array $prefixes
+	 */
+	public function setTolerableDifferencesPrefixes(array $prefixes) {
+		$this->prefixes = $prefixes;
+	}
+
+	/**
+	 * Returns the list of postfixes that should be used to find and replace tolerable differences.
+	 *
+	 * @return array
+	 */
+	public function getTolerableDifferencesPostfixes(): array {
+		return $this->postfixes;
+	}
+
+	/**
+	 * Sets the list of postfixes that should be used to find and replace tolerable differences.
+	 *
+	 * @param array $postfixes
+	 */
+	public function setTolerableDifferencesPostfixes(array $postfixes) {
+		$this->postfixes = $postfixes;
+	}
+
+	public function check($actual, $evalCode) {
 	}
 }
