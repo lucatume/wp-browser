@@ -297,7 +297,4 @@ class WPHtmlOutputDriver extends VarDriver {
 	public function setTolerableDifferencesPostfixes(array $postfixes) {
 		$this->postfixes = $postfixes;
 	}
-
-	public function check($actual, $evalCode) {
-	}
 }
