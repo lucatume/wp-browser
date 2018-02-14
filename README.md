@@ -1241,31 +1241,32 @@ And then use the `WPHtmlOutputDriver`  driver in your snapshot tests:
 
 ```php
 use Spatie\Snapshots\MatchesSnapshots;
+use tad\WPBrowser\Snapshot\WPHtmlOutputDriver;
 
 class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
-
 	use MatchesSnapshots;
 
 	/**
-	 * Test snapshot for render
-	 */
+	* Test snapshot for render
+	*/
 	public function test_snapshot_render() {
-	    // from some environment variable
-      $currentWpUrl = getenv('WP_URL');
-      $snapshotUrl = 'http://wp.localhost';
-      
-      $driver = new WPHtmlOutputDriver($currentWpUrl, $snapshotUrl);
-      
-  		$sut = new MyPluginHTMLRenderingClass();
-      // create a random post and return its post ID
-      $postId= $this->factory->post->create();
-  
-  		$renderedHtml = $sut->renderHtmlFor($postId);
-      
-      $driver->setTolerableDifferences([$postId]);
-      $driver->setTolerableDifferencesPrefixes(['post_', 'post-']);
-      $driver->setTolerableDifferencesPostfixes(['-single', '-another-postfix']);
-  		$this->assertMatchesSnapshot($renderedHtml, $driver);
+		// from some environment variable
+		$currentWpUrl = getenv('WP_URL');
+		$snapshotUrl = 'http://wp.localhost';
+		
+		$driver = new WPHtmlOutputDriver($currentWpUrl, $snapshotUrl);
+		
+		$sut = new MyPluginHTMLRenderingClass();
+		
+		// create a random post and return its post ID
+		$postId= $this->factory->post->create();
+		
+		$renderedHtml = $sut->renderHtmlFor($postId);
+      		$driver->setTolerableDifferences([$postId]);
+		$driver->setTolerableDifferencesPrefixes(['post_', 'post-']);
+		$driver->setTolerableDifferencesPostfixes(['-single', '-another-postfix']);
+		
+		$this->assertMatchesSnapshot($renderedHtml, $driver);
 	}
 }
 ```
