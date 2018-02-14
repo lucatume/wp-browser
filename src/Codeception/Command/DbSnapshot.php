@@ -13,8 +13,8 @@ use tad\WPBrowser\Filesystem\Filesystem;
 use tad\WPBrowser\Services\Db\MySQLDumpFactory;
 use tad\WPBrowser\Services\Db\MySQLDumpFactoryInterface;
 
-class DbSnapshot extends BaseCommand implements CustomCommandInterface {
-
+class DbSnapshot extends BaseCommand implements CustomCommandInterface
+{
     /**
      * @var MySQLDumpFactoryInterface
      */
@@ -40,11 +40,12 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
     }
 
     /**
-     * returns the name of the command
+     * returns the name of the command.
      *
      * @return string
      */
-    public static function getCommandName() {
+    public static function getCommandName()
+    {
         return 'db:snapshot';
     }
 
@@ -55,11 +56,13 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
      *
      * @return array
      */
-    public function _getDumpTables() {
+    public function _getDumpTables()
+    {
         return empty($this->dump) ? [] : $this->dump->tables;
     }
 
-    protected function configure() {
+    protected function configure()
+    {
         $this->setName('db:snapshot')
              ->setDescription('Takes a snapshot of a database to be shared as a fixture.')
              ->addArgument('snapshot', InputArgument::REQUIRED,
@@ -87,7 +90,8 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
         parent::configure();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $host = $input->getOption('host');
         $user = $input->getOption('user');
         $pass = $input->getOption('pass');
@@ -96,7 +100,7 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
         try {
             $this->dump = $this->pdoFactory->makeDump($host, $user, $pass, $dbName);
         } catch (\PDOException $e) {
-            throw new RuntimeException('Error while connecting to database [' . $dbName . ']: ' . $e->getMessage());
+            throw new RuntimeException('Error while connecting to database ['.$dbName.']: '.$e->getMessage());
         }
 
         if (false === $this->dump) {
@@ -107,24 +111,24 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
 
         \Codeception\Configuration::config();
 
-        if ( ! empty($input->getOption('dump-file'))) {
+        if (!empty($input->getOption('dump-file'))) {
             $dumpFile = $input->getOption('dump-file');
         } else {
-            $dumpFile = codecept_data_dir($input->getArgument('snapshot') . '.sql');
+            $dumpFile = codecept_data_dir($input->getArgument('snapshot').'.sql');
         }
 
-        $output->writeln('<info>Dump file will be written to [' . $dumpFile . ']</info>');
+        $output->writeln('<info>Dump file will be written to ['.$dumpFile.']</info>');
 
-        if ( ! empty($input->getOption('dist-dump-file'))) {
+        if (!empty($input->getOption('dist-dump-file'))) {
             $distDumpFile = $input->getOption('dist-dump-file');
         } else {
-            $distDumpFile = codecept_data_dir($input->getArgument('snapshot') . '.dist.sql');
+            $distDumpFile = codecept_data_dir($input->getArgument('snapshot').'.dist.sql');
         }
 
-        $output->writeln('<info>Distribution version of dump file will be written to [' . $distDumpFile . ']</info>');
+        $output->writeln('<info>Distribution version of dump file will be written to ['.$distDumpFile.']</info>');
 
         $skipTables = $input->getOption('skip-tables');
-        if ( ! empty($skipTables)) {
+        if (!empty($skipTables)) {
             $tables = explode(',', $skipTables);
             foreach ($tables as $table) {
                 $this->dump->tables[$table] = \MySQLDump::NONE;
@@ -138,13 +142,13 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
         rewind($memory);
         $dumpContents = stream_get_contents($memory);
 
-        if ( ! $this->filesystem->file_put_contents($dumpFile, $dumpContents)) {
-            $output->writeln('<error>Could not write dump to [' . $dumpFile . ']</error>');
+        if (!$this->filesystem->file_put_contents($dumpFile, $dumpContents)) {
+            $output->writeln('<error>Could not write dump to ['.$dumpFile.']</error>');
 
             return false;
         }
 
-        $output->writeln('<info>Dump file written to [' . $dumpFile . ']</info>');
+        $output->writeln('<info>Dump file written to ['.$dumpFile.']</info>');
 
         $localUrl = $input->getOption('local-url');
         $distUrl = $input->getOption('dist-url');
@@ -152,14 +156,14 @@ class DbSnapshot extends BaseCommand implements CustomCommandInterface {
         $distDomain = rtrim(preg_replace('~http(s)*:\\/\\/(www\\.)*~', '', $distUrl), '/');
         $distDumpContents = str_replace($localDomain, $distDomain, $dumpContents);
 
-        if ( ! $this->filesystem->file_put_contents($distDumpFile, $distDumpContents)) {
-            $output->writeln('<error>Could not write dist dump to [' . $distDumpFile . ']</error>');
+        if (!$this->filesystem->file_put_contents($distDumpFile, $distDumpContents)) {
+            $output->writeln('<error>Could not write dist dump to ['.$distDumpFile.']</error>');
 
             return false;
         }
 
-        $output->writeln('<info>Distribution version of dump file written to [' . $distDumpFile . ']</info>');
-        $output->writeln('<comment>Any occurrence of [' . $localDomain . '] in it was replaced with [' . $distDomain . ']</comment>');
+        $output->writeln('<info>Distribution version of dump file written to ['.$distDumpFile.']</info>');
+        $output->writeln('<comment>Any occurrence of ['.$localDomain.'] in it was replaced with ['.$distDomain.']</comment>');
 
         parent::execute($input, $output);
 

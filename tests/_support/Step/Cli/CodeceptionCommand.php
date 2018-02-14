@@ -4,14 +4,15 @@ namespace Step\Cli;
 
 use Symfony\Component\Yaml\Yaml;
 
-class CodeceptionCommand extends \CliTester {
-
-    public function createSandbox() {
+class CodeceptionCommand extends \CliTester
+{
+    public function createSandbox()
+    {
         mkdir($this->sandboxPath(), 0777, true);
         $this->runCodecept('bootstrap', $this->sandboxPath());
         $config = $this->sandboxPath('codeception.yml');
         $parsed = Yaml::parse(file_get_contents($config));
-        if ( ! isset($parsed['extensions'])) {
+        if (!isset($parsed['extensions'])) {
             $parsed['extensions'] = [];
         }
         $parsed['extensions']['commands'] = [
@@ -28,13 +29,15 @@ class CodeceptionCommand extends \CliTester {
         file_put_contents($config, Yaml::dump($parsed));
     }
 
-    public function sandboxPath($path = '') {
+    public function sandboxPath($path = '')
+    {
         $sandboxPath = codecept_output_dir('sandbox');
 
-        return empty($path) ? $sandboxPath : $sandboxPath . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return empty($path) ? $sandboxPath : $sandboxPath.DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
     }
 
-    public function runCodecept($subCommand, $path = '') {
+    public function runCodecept($subCommand, $path = '')
+    {
         $codecept = wpbrowser_vendor_path('bin/codecept');
 
         $command = trim("{$codecept} {$subCommand} {$path}");
@@ -42,7 +45,8 @@ class CodeceptionCommand extends \CliTester {
         $this->runShellCommand($command, true);
     }
 
-    public function runWpcept($subCommand, $path = '') {
+    public function runWpcept($subCommand, $path = '')
+    {
         $wpcept = codecept_root_dir('wpcept');
 
         $command = trim("{$wpcept} {$subCommand} {$path}");
@@ -50,11 +54,13 @@ class CodeceptionCommand extends \CliTester {
         $this->runShellCommand($command, true);
     }
 
-    public function amInSandbox() {
+    public function amInSandbox()
+    {
         $this->amInPath($this->sandboxPath());
     }
 
-    public function deleteSandbox() {
+    public function deleteSandbox()
+    {
         rrmdir($this->sandboxPath());
     }
 }

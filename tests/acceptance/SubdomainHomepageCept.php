@@ -1,4 +1,5 @@
 <?php
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('access the homepage of a subdomain site');
 $I->amOnSubdomain(getenv('wpSubdomain1') ?: 'test1');

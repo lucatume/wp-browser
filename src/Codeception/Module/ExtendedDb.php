@@ -7,12 +7,11 @@ use Codeception\Lib\Driver\ExtendedMySql;
 
 class ExtendedDb extends Db
 {
-
     /**
      * Deletes a database entry.
      *
-     * @param  string $table The table name.
-     * @param  array $criteria An associative array of the column names and values to use as deletion criteria.
+     * @param string $table    The table name.
+     * @param array  $criteria An associative array of the column names and values to use as deletion criteria.
      *
      * @return void
      */
@@ -24,8 +23,8 @@ class ExtendedDb extends Db
     /**
      * Inserts or updates a database entry on duplicate key.
      *
-     * @param  string $table The table name.
-     * @param  array $data An associative array of the column names and values to insert.
+     * @param string $table The table name.
+     * @param array  $data  An associative array of the column names and values to insert.
      *
      * @return void
      */
@@ -59,13 +58,13 @@ class ExtendedDb extends Db
             } catch (\PDOException $e) {
                 $message = $e->getMessage();
                 if ($message === 'could not find driver') {
-                    list ($missingDriver,) = explode(':', $this->config['dsn'], 2);
+                    list($missingDriver) = explode(':', $this->config['dsn'], 2);
                     $message = "could not find $missingDriver driver";
                 }
 
-                throw new ModuleException(__CLASS__, $message . ' while creating PDO connection');
+                throw new ModuleException(__CLASS__, $message.' while creating PDO connection');
             }
-            $this->debugSection('WPDb', 'Connected to ' . $this->driver->getDb());
+            $this->debugSection('WPDb', 'Connected to '.$this->driver->getDb());
             $this->dbh = $this->driver->getDbh();
         }
     }

@@ -2,7 +2,8 @@
 
 
 /**
- * Inherited Methods
+ * Inherited Methods.
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -18,9 +19,9 @@
  */
 class ClimoduleTester extends \Codeception\Actor
 {
-	use _generated\ClimoduleTesterActions;
+    use _generated\ClimoduleTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /*
+     * Define custom actions here
+     */
 }

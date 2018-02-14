@@ -2,34 +2,38 @@
 
 namespace Codeception\TestCase;
 
-include_once(ABSPATH . 'wp-admin/includes/admin.php');
-include_once(ABSPATH . WPINC . '/class-IXR.php');
-include_once(ABSPATH . WPINC . '/class-wp-xmlrpc-server.php');
+include_once ABSPATH.'wp-admin/includes/admin.php';
+include_once ABSPATH.WPINC.'/class-IXR.php';
+include_once ABSPATH.WPINC.'/class-wp-xmlrpc-server.php';
 
-class WPXMLRPCTestCase extends WPTestCase {
-	protected $myxmlrpcserver;
+class WPXMLRPCTestCase extends WPTestCase
+{
+    protected $myxmlrpcserver;
 
-	function setUp() {
-		parent::setUp();
+    public function setUp()
+    {
+        parent::setUp();
 
-		add_filter('pre_option_enable_xmlrpc', '__return_true');
+        add_filter('pre_option_enable_xmlrpc', '__return_true');
 
-		$this->myxmlrpcserver = new \wp_xmlrpc_server();
-	}
+        $this->myxmlrpcserver = new \wp_xmlrpc_server();
+    }
 
-	function tearDown() {
-		remove_filter('pre_option_enable_xmlrpc', '__return_true');
+    public function tearDown()
+    {
+        remove_filter('pre_option_enable_xmlrpc', '__return_true');
 
-		$this->remove_added_uploads();
+        $this->remove_added_uploads();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	protected function make_user_by_role($role) {
-		return self::factory()->user->create(array(
-			'user_login' => $role,
-			'user_pass' => $role,
-			'role' => $role
-		));
-	}
+    protected function make_user_by_role($role)
+    {
+        return self::factory()->user->create([
+            'user_login' => $role,
+            'user_pass'  => $role,
+            'role'       => $role,
+        ]);
+    }
 }

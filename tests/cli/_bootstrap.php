@@ -1,2 +1,3 @@
 <?php
-\Codeception\Util\Autoload::addNamespace('cli\\Test',__DIR__);
+
+\Codeception\Util\Autoload::addNamespace('cli\\Test', __DIR__);

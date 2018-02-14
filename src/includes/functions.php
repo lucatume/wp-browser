@@ -1,130 +1,142 @@
 <?php
 
-require_once dirname( __FILE__ ) . '/class-basic-object.php';
-require_once dirname( __FILE__ ) . '/class-basic-subclass.php';
+require_once dirname(__FILE__).'/class-basic-object.php';
+require_once dirname(__FILE__).'/class-basic-subclass.php';
 
 /**
  * Resets various `$_SERVER` variables that can get altered during tests.
  */
-function tests_reset__SERVER() {
-	$_SERVER['HTTP_HOST']       = WP_TESTS_DOMAIN;
-	$_SERVER['REMOTE_ADDR']     = '127.0.0.1';
-	$_SERVER['REQUEST_METHOD']  = 'GET';
-	$_SERVER['REQUEST_URI']     = '';
-	$_SERVER['SERVER_NAME']     = WP_TESTS_DOMAIN;
-	$_SERVER['SERVER_PORT']     = '80';
-	$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+function tests_reset__SERVER()
+{
+    $_SERVER['HTTP_HOST'] = WP_TESTS_DOMAIN;
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    $_SERVER['REQUEST_METHOD'] = 'GET';
+    $_SERVER['REQUEST_URI'] = '';
+    $_SERVER['SERVER_NAME'] = WP_TESTS_DOMAIN;
+    $_SERVER['SERVER_PORT'] = '80';
+    $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
 
-	unset( $_SERVER['HTTP_REFERER'] );
-	unset( $_SERVER['HTTPS'] );
+    unset($_SERVER['HTTP_REFERER']);
+    unset($_SERVER['HTTPS']);
 }
 
 // For adding hooks before loading WP
-function tests_add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
-	global $wp_filter;
+function tests_add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+{
+    global $wp_filter;
 
-	if ( function_exists( 'add_filter' ) ) {
-		add_filter( $tag, $function_to_add, $priority, $accepted_args );
-	} else {
-		$idx = _test_filter_build_unique_id($tag, $function_to_add, $priority);
-		$wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
-	}
-	return true;
+    if (function_exists('add_filter')) {
+        add_filter($tag, $function_to_add, $priority, $accepted_args);
+    } else {
+        $idx = _test_filter_build_unique_id($tag, $function_to_add, $priority);
+        $wp_filter[$tag][$priority][$idx] = ['function' => $function_to_add, 'accepted_args' => $accepted_args];
+    }
+
+    return true;
 }
 
-function _test_filter_build_unique_id($tag, $function, $priority) {
-	if ( is_string($function) )
-		return $function;
+function _test_filter_build_unique_id($tag, $function, $priority)
+{
+    if (is_string($function)) {
+        return $function;
+    }
 
-	if ( is_object($function) ) {
-		// Closures are currently implemented as objects
-		$function = array( $function, '' );
-	} else {
-		$function = (array) $function;
-	}
+    if (is_object($function)) {
+        // Closures are currently implemented as objects
+        $function = [$function, ''];
+    } else {
+        $function = (array) $function;
+    }
 
-	if (is_object($function[0]) ) {
-		return spl_object_hash($function[0]) . $function[1];
-	} else if ( is_string($function[0]) ) {
-		// Static Calling
-		return $function[0].$function[1];
-	}
+    if (is_object($function[0])) {
+        return spl_object_hash($function[0]).$function[1];
+    } elseif (is_string($function[0])) {
+        // Static Calling
+        return $function[0].$function[1];
+    }
 }
 
-function _delete_all_data() {
-	global $wpdb;
+function _delete_all_data()
+{
+    global $wpdb;
 
-	foreach ( array(
-		$wpdb->posts,
-		$wpdb->postmeta,
-		$wpdb->comments,
-		$wpdb->commentmeta,
-		$wpdb->term_relationships,
-		$wpdb->termmeta
-	) as $table ) {
-		$wpdb->query( "DELETE FROM {$table}" );
-	}
+    foreach ([
+        $wpdb->posts,
+        $wpdb->postmeta,
+        $wpdb->comments,
+        $wpdb->commentmeta,
+        $wpdb->term_relationships,
+        $wpdb->termmeta,
+    ] as $table) {
+        $wpdb->query("DELETE FROM {$table}");
+    }
 
-	foreach ( array(
-		$wpdb->terms,
-		$wpdb->term_taxonomy
-	) as $table ) {
-		$wpdb->query( "DELETE FROM {$table} WHERE term_id != 1" );
-	}
+    foreach ([
+        $wpdb->terms,
+        $wpdb->term_taxonomy,
+    ] as $table) {
+        $wpdb->query("DELETE FROM {$table} WHERE term_id != 1");
+    }
 
-	$wpdb->query( "UPDATE {$wpdb->term_taxonomy} SET count = 0" );
+    $wpdb->query("UPDATE {$wpdb->term_taxonomy} SET count = 0");
 
-	$wpdb->query( "DELETE FROM {$wpdb->users} WHERE ID != 1" );
-	$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE user_id != 1" );
+    $wpdb->query("DELETE FROM {$wpdb->users} WHERE ID != 1");
+    $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE user_id != 1");
 }
 
-function _delete_all_posts() {
-	global $wpdb;
+function _delete_all_posts()
+{
+    global $wpdb;
 
-	$all_posts = $wpdb->get_results( "SELECT ID, post_type from {$wpdb->posts}", ARRAY_A );
-	if ( ! $all_posts ) {
-		return;
-	}
+    $all_posts = $wpdb->get_results("SELECT ID, post_type from {$wpdb->posts}", ARRAY_A);
+    if (!$all_posts) {
+        return;
+    }
 
-	foreach ( $all_posts as $data ) {
-		if ( 'attachment' === $data['post_type'] ) {
-			wp_delete_attachment( $data['ID'], true );
-		} else {
-			wp_delete_post( $data['ID'], true );
-		}
-	}
+    foreach ($all_posts as $data) {
+        if ('attachment' === $data['post_type']) {
+            wp_delete_attachment($data['ID'], true);
+        } else {
+            wp_delete_post($data['ID'], true);
+        }
+    }
 }
 
-function _wp_die_handler( $message, $title = '', $args = array() ) {
-	if ( !$GLOBALS['_wp_die_disabled'] ) {
-		_wp_die_handler_txt( $message, $title, $args);
-	} else {
-		//Ignore at our peril
-	}
+function _wp_die_handler($message, $title = '', $args = [])
+{
+    if (!$GLOBALS['_wp_die_disabled']) {
+        _wp_die_handler_txt($message, $title, $args);
+    } else {
+        //Ignore at our peril
+    }
 }
 
-function _disable_wp_die() {
-	$GLOBALS['_wp_die_disabled'] = true;
+function _disable_wp_die()
+{
+    $GLOBALS['_wp_die_disabled'] = true;
 }
 
-function _enable_wp_die() {
-	$GLOBALS['_wp_die_disabled'] = false;
+function _enable_wp_die()
+{
+    $GLOBALS['_wp_die_disabled'] = false;
 }
 
-function _wp_die_handler_filter() {
-	return '_wp_die_handler';
+function _wp_die_handler_filter()
+{
+    return '_wp_die_handler';
 }
 
-function _wp_die_handler_txt( $message, $title, $args ) {
-	echo "\nwp_die called\n";
-	echo "Message : $message\n";
-	echo "Title : $title\n";
-	if ( ! empty( $args ) ) {
-		echo "Args: \n";
-		foreach( $args as $k => $v ){
-			echo "\t $k : $v\n";
-		}
-	}
+function _wp_die_handler_txt($message, $title, $args)
+{
+    echo "\nwp_die called\n";
+    echo "Message : $message\n";
+    echo "Title : $title\n";
+    if (!empty($args)) {
+        echo "Args: \n";
+        foreach ($args as $k => $v) {
+            echo "\t $k : $v\n";
+        }
+    }
 }
 
 /**
@@ -135,50 +147,55 @@ function _wp_die_handler_txt( $message, $title, $args ) {
  *
  * @since 4.2.0
  */
-function _set_default_permalink_structure_for_tests() {
-	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+function _set_default_permalink_structure_for_tests()
+{
+    update_option('permalink_structure', '/%year%/%monthnum%/%day%/%postname%/');
 }
 
 /**
  * Helper used with the `upload_dir` filter to remove the /year/month sub directories from the uploads path and URL.
  */
-function _upload_dir_no_subdir( $uploads ) {
-	$subdir = $uploads['subdir'];
+function _upload_dir_no_subdir($uploads)
+{
+    $subdir = $uploads['subdir'];
 
-	$uploads['subdir'] = '';
-	$uploads['path'] = str_replace( $subdir, '', $uploads['path'] );
-	$uploads['url'] = str_replace( $subdir, '', $uploads['url'] );
+    $uploads['subdir'] = '';
+    $uploads['path'] = str_replace($subdir, '', $uploads['path']);
+    $uploads['url'] = str_replace($subdir, '', $uploads['url']);
 
-	return $uploads;
+    return $uploads;
 }
 
 /**
  * Helper used with the `upload_dir` filter to set https upload URL.
  */
-function _upload_dir_https( $uploads ) {
-	$uploads['url'] = str_replace( 'http://', 'https://', $uploads['url'] );
-	$uploads['baseurl'] = str_replace( 'http://', 'https://', $uploads['baseurl'] );
+function _upload_dir_https($uploads)
+{
+    $uploads['url'] = str_replace('http://', 'https://', $uploads['url']);
+    $uploads['baseurl'] = str_replace('http://', 'https://', $uploads['baseurl']);
 
-	return $uploads;
+    return $uploads;
 }
 
 // Skip `setcookie` calls in auth_cookie functions due to warning:
 // Cannot modify header information - headers already sent by ...
 
-function wp_set_auth_cookie( $user_id, $remember = false, $secure = '', $token = '' ) {
-	$auth_cookie = null;
-	$expire = null;
-	$expiration = null;
-	$user_id = null;
-	$scheme = null;
-	/** This action is documented in wp-inclues/pluggable.php */
-	do_action( 'set_auth_cookie', $auth_cookie, $expire, $expiration, $user_id, $scheme );
-	$logged_in_cookie = null;
-	/** This action is documented in wp-inclues/pluggable.php */
-	do_action( 'set_logged_in_cookie', $logged_in_cookie, $expire, $expiration, $user_id, 'logged_in' );
+function wp_set_auth_cookie($user_id, $remember = false, $secure = '', $token = '')
+{
+    $auth_cookie = null;
+    $expire = null;
+    $expiration = null;
+    $user_id = null;
+    $scheme = null;
+    /* This action is documented in wp-inclues/pluggable.php */
+    do_action('set_auth_cookie', $auth_cookie, $expire, $expiration, $user_id, $scheme);
+    $logged_in_cookie = null;
+    /* This action is documented in wp-inclues/pluggable.php */
+    do_action('set_logged_in_cookie', $logged_in_cookie, $expire, $expiration, $user_id, 'logged_in');
 }
 
-function wp_clear_auth_cookie() {
-	/** This action is documented in wp-inclues/pluggable.php */
-	do_action( 'clear_auth_cookie' );
+function wp_clear_auth_cookie()
+{
+    /* This action is documented in wp-inclues/pluggable.php */
+    do_action('clear_auth_cookie');
 }
