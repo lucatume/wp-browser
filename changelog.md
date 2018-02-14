@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.22.6] 2018-02-14;
 ### Added
 - support for "tolerable differences" in the `WPHtmlOutputDriver` class
 
@@ -704,7 +706,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.6...HEAD
+[1.22.6]: https://github.com/lucatume/wp-browser/compare/1.22.5...1.22.6
 [1.22.5]: https://github.com/lucatume/wp-browser/compare/1.22.4...1.22.5
 [1.22.4]: https://github.com/lucatume/wp-browser/compare/1.22.3...1.22.4
 [1.22.3]: https://github.com/lucatume/wp-browser/compare/1.22.2...1.22.3
