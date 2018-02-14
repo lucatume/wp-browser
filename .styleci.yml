@@ -1,9 +1,9 @@
-preset: symfony
+preset: recommended
 
 risky: false
 
-#enabled:
-#  - long_array_syntax
+enabled:
+  - single_line_class_definition
 #  - strict
 #  - unalign_double_arrow
 
