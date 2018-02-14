@@ -1,0 +1,19 @@
+preset: recommended
+
+risky: false
+
+enabled:
+  - single_line_class_definition
+#  - strict
+#  - unalign_double_arrow
+
+#disabled:
+#  - align_double_arrow
+#  - short_array_syntax
+
+finder:
+  exclude:
+    - "src/includes"
+    - "src/data"
+  name:
+    - "*.php"
