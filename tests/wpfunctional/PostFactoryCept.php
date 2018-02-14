@@ -1,4 +1,5 @@
 <?php
+
 $I = new WpfunctionalTester($scenario);
 $I->wantTo('use the post factory to create posts');
 
@@ -10,4 +11,3 @@ $I->amOnPage('/');
 $I->see('Post 1');
 $I->see('Post 2');
 $I->see('Post 3');
-

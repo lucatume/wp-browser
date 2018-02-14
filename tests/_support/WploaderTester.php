@@ -2,7 +2,8 @@
 
 
 /**
- * Inherited Methods
+ * Inherited Methods.
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -18,9 +19,9 @@
  */
 class WploaderTester extends \Codeception\Actor
 {
-	use _generated\WploaderTesterActions;
+    use _generated\WploaderTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /*
+     * Define custom actions here
+     */
 }

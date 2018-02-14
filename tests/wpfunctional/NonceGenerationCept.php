@@ -1,4 +1,5 @@
 <?php
+
 $I = new WpfunctionalTester($scenario);
 $I->wantTo('use the wp_create_nonce function to generate a valid function');
 

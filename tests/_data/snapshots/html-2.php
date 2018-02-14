@@ -7,8 +7,8 @@
 </head>
 <body>
 
-<input type="hidden" name="_wpnonce" value="' . uniqid('nonce', true) . '">
-<input type="hidden" id="_wpnonce" value="' . uniqid('nonce', true) . '">
+<input type="hidden" name="_wpnonce" value="'.uniqid('nonce', true).'">
+<input type="hidden" id="_wpnonce" value="'.uniqid('nonce', true).'">
 
 </body>
 </html>';

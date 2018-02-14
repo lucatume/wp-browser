@@ -2,16 +2,15 @@
 
 namespace Codeception\Lib\Generator;
 
-
 class IntegrationSuiteThemeConfig extends AbstractGenerator implements GeneratorInterface
 {
-	public static $requiredSettings = ['className', 'namespace', 'actor'];
+    public static $requiredSettings = ['className', 'namespace', 'actor'];
 
-	protected $template = <<< YAML
+    protected $template = <<< 'YAML'
 class_name: {{className}}
 modules:
     enabled:
-        - \\{{namespace}}Helper\\{{actor}}
+        - \{{namespace}}Helper\{{actor}}
         - WPLoader
     config:
         WPLoader:
