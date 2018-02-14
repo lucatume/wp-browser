@@ -1,0 +1,19 @@
+preset: symfony
+
+risky: false
+
+#enabled:
+#  - long_array_syntax
+#  - strict
+#  - unalign_double_arrow
+
+#disabled:
+#  - align_double_arrow
+#  - short_array_syntax
+
+finder:
+  exclude:
+    - "src/includes"
+    - "src/data"
+  name:
+    - "*.php"
