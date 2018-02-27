@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.22.7] 2018-02-27;
+### Added
+- more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framwork_` classes
+
 ##[1.22.6.1] 2018-02-14;
 ### Fixed
 - remove unused `check` method from `WPHtmlOutputDriver` class
