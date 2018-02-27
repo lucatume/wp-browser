@@ -4,13 +4,14 @@ namespace Codeception\Command\Tests\Unit;
 
 
 use Codeception\Command\DbSnapshot;
+use Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamFile;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class DbSnapshotTest extends \PHPUnit_Framework_TestCase {
+class DbSnapshotTest extends TestCase {
 
 	protected $backupGlobals = false;
 

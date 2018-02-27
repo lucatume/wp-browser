@@ -7,6 +7,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\TestInterface;
+use PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
 
 /**
@@ -191,7 +192,7 @@ class WPFilesystem extends Filesystem {
 	 */
 	public function seeUploadedFileFound($filename, $date = null) {
 		$path = $this->getUploadsPath($filename, $date);
-		\PHPUnit_Framework_Assert::assertFileExists($path);
+		Assert::assertFileExists($path);
 	}
 
 	/**
