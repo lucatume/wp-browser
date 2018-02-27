@@ -2,11 +2,10 @@
 
 namespace Codeception\Command\Tests\Unit;
 
-
 use Codeception\Command\DbSnapshot;
-use Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamFile;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
