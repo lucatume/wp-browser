@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\AssertionFailedError;
 use function tad\WPBrowser\Tests\Support\importDump;
 
 class TablePrefixTest extends \Codeception\TestCase\WPTestCase {
@@ -16,10 +17,9 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase {
 		$dumpFile = self::getDumpFilePath();
 		list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
 
-		$output = [];
 		if (!importDump($dumpFile, $dbName, $dbUser, $dbPass, $dbHost)) {
-			throw new PHPUnit_Framework_AssertionFailedError("Test failed as MySQL import failed\nCredentials: " .
-															 print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
+			throw new AssertionFailedError("Test failed as MySQL import failed\nCredentials: " .
+										   print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
 		}
 	}
 
@@ -68,7 +68,7 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase {
 			$db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
 			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
-			throw new PHPUnit_Framework_AssertionFailedError('Test failed as MySQL connection failed');
+			throw new AssertionFailedError('Test failed as MySQL connection failed');
 		}
 
 		$tables = $db->query("show tables like 'foo_posts'");
@@ -79,5 +79,4 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertNotEmpty($posts->fetch());
 	}
-
 }
