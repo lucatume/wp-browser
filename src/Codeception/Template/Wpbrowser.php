@@ -222,9 +222,9 @@ class Wpbrowser extends Bootstrap {
 		$this->say();
 
 		$this->say('WPLoader and WordPress modules need to access the WordPress files to work');
-		$installationData['wpRootFolder'] = $this->ask("Where is WordPress installed?", '/var/www/wp');
+		$installationData['wpRootFolder'] = $this->normalizePath($this->ask("Where is WordPress installed?", '/var/www/wp'));
 		$installationData['wpAdminPath']  = $this->ask('What is the path, relative to WordPress root folder, of the admin area?', '/wp-admin');
-		$installationData['wpAdminPath']  = '/' . trim($installationData['wpAdminPath'], '/');
+		$installationData['wpAdminPath'] = '/' . trim($this->normalizePath($installationData['wpAdminPath']), '/');
 		$this->say('The WPDb module needs the database details to access the database used by WordPress');
 		$installationData['dbName']      = $this->ask("What's the name of the database used by the WordPress installation?", 'wp');
 		$installationData['dbHost']      = $this->ask("What's the host of the database used by the WordPress installation?", 'localhost');
@@ -418,5 +418,10 @@ EOF;
 		if (file_exists(getcwd() . '/tests')) {
 			rrmdir(getcwd() . '/tests');
 		}
+	}
+
+	protected function normalizePath($path) {
+		$pathFrags = preg_split('/(\\/|\\\\)/u', $path);
+		return implode('/', $pathFrags);
 	}
 }
