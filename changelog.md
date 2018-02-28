@@ -3,8 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+##[1.22.8] 2018-02-28;
+### Fixed
+- an issue with Windows directory separators in the `Wpbrowser` template (thanks @zdenekca)
 
-##[1.22.7] 2018-02-28;
+##[1.22.7.1] 2018-02-28;
 ### Fixed
 - PHPUnit version to use <7 for incompatibility issues
 
@@ -718,7 +721,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.7.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.8...HEAD
+[1.22.8]: https://github.com/lucatume/wp-browser/compare/1.22.7.1...1.22.8
 [1.22.7.1]: https://github.com/lucatume/wp-browser/compare/1.22.7...1.22.7.1
 [1.22.7]: https://github.com/lucatume/wp-browser/compare/1.22.6.1...1.22.7
 [1.22.6.1]: https://github.com/lucatume/wp-browser/compare/1.22.6...1.22.6.1
