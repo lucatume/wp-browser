@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.22.7] 2018-02-28;
+### Fixed
+- PHPUnit version to use <7 for incompatibility issues
+
 ##[1.22.7] 2018-02-27;
 ### Added
 - more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framwork_` classes
@@ -714,7 +718,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.7...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.7.1...HEAD
+[1.22.7.1]: https://github.com/lucatume/wp-browser/compare/1.22.7...1.22.7.1
 [1.22.7]: https://github.com/lucatume/wp-browser/compare/1.22.6.1...1.22.7
 [1.22.6.1]: https://github.com/lucatume/wp-browser/compare/1.22.6...1.22.6.1
 [1.22.6]: https://github.com/lucatume/wp-browser/compare/1.22.5...1.22.6
