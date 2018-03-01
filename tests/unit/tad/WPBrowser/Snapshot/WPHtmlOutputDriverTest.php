@@ -6,6 +6,11 @@ use tad\WPBrowser\Snapshot\WPHtmlOutputDriver as Driver;
 
 class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 
+	protected function setUp() {
+		parent::setUp();
+		$this->maybeSkip();
+	}
+
 	public $currentUrl = 'http://example.com';
 
 	public $examplesUrl = 'http://example.com';
@@ -20,6 +25,7 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 	 * it should be instantiatable
 	 */
 	public function it_should_be_instantiatable() {
+
 		$sut = $this->make_instance();
 
 		$this->assertInstanceOf(Driver::class, $sut);
@@ -242,5 +248,11 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$driver->setTolerableDifferencesPostfixes(['-postfix', '-another_postfix']);
 
 		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	protected function maybeSkip() {
+		if (!class_exists('Spatie\\Snapshots\\Drivers\\VarDriver')) {
+			$this->markTestSkipped('Only run on PHP 7.0+');
+		}
 	}
 }
