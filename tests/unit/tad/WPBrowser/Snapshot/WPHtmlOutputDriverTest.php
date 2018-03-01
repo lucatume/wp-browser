@@ -6,11 +6,6 @@ use tad\WPBrowser\Snapshot\WPHtmlOutputDriver as Driver;
 
 class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 
-	protected function setUp() {
-		parent::setUp();
-		$this->maybeSkip();
-	}
-
 	public $currentUrl = 'http://example.com';
 
 	public $examplesUrl = 'http://example.com';
@@ -52,7 +47,7 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$driver->match($one, $driver->evalCode($two));
 	}
 
-	protected function getSourceFileContents(string $file): string {
+	protected function getSourceFileContents($file) {
 		return file_get_contents(codecept_data_dir('snapshots/' . $file . '.php'));
 	}
 
@@ -85,7 +80,7 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$driver->match($one, $driver->evalCode($two));
 	}
 
-	protected function replaceExampleUrlIn(string $input): string {
+	protected function replaceExampleUrlIn($input) {
 		return str_replace($this->examplesUrl, $this->currentUrl, $input);
 	}
 
@@ -170,7 +165,7 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$driver->match($expected, $driver->evalCode($actual));
 	}
 
-	protected function replaceUrlInTemplate($replacementUrl, $template): string {
+	protected function replaceUrlInTemplate($replacementUrl, $template) {
 		return str_replace('{{url}}', $replacementUrl, $template);
 	}
 
@@ -248,6 +243,10 @@ class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 		$driver->setTolerableDifferencesPostfixes(['-postfix', '-another_postfix']);
 
 		$driver->match($expected, $driver->evalCode($actual));
+	}
+
+	protected function setUp() {
+		return parent::setUp();
 	}
 
 	protected function maybeSkip() {
