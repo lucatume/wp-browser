@@ -6,6 +6,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use PHPUnit\Framework\Assert;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Iterators\Filters\ActionsQueriesFilter;
 use tad\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter;
