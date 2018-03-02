@@ -3,6 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Removed
+- support for PHP 5.6 to be handled in branch `php-56-compat`
+
+### Changed
+- require PHP 7.0
+
 ##[1.22.8] 2018-02-28;
 ### Fixed
 - an issue with Windows directory separators in the `Wpbrowser` template (thanks @zdenekca)
