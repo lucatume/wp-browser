@@ -13,15 +13,15 @@ namespace {
 				class_alias($original, $alias);
 			}
 		}
+	}
 
-		$inverseAliases = [
-			'PHPUnit_Runner_Version' => 'PHPUnit\Runner\Version',
-			'PHPUnit_Framework_TestResult' => 'PHPUnit\Framework\TestResult',
-			'PHPUnit_Framework_Test' => 'PHPUnit\Framework\Test',
-		];
+	$inverseAliases = [
+		'PHPUnit_Runner_Version' => 'PHPUnit\Runner\Version',
+		'PHPUnit_Framework_TestResult' => 'PHPUnit\Framework\TestResult',
+		'PHPUnit_Framework_Test' => 'PHPUnit\Framework\Test',
+	];
 
-		foreach ($inverseAliases as $original => $alias) {
-			class_alias($original, $alias);
-		}
+	foreach ($inverseAliases as $original => $alias) {
+		class_alias($original, $alias);
 	}
 }
