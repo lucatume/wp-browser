@@ -11,6 +11,7 @@ namespace {
 			// inverse aliases
 			'PHPUnit_Runner_Version' => 'PHPUnit\Runner\Version',
 			'PHPUnit_Framework_TestResult' => 'PHPUnit\Framework\TestResult',
+			'PHPUnit_Framework_Test' => 'PHPUnit\Framework\Test',
 		];
 
 		foreach ($aliases as $new => $old) {
