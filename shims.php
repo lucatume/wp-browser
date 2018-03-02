@@ -11,7 +11,7 @@ namespace {
 
 		foreach ($aliases as $new => $old) {
 			if (!class_exists($old) && class_exists($new)) {
-				class_alias($new, $old);
+				class_alias($new, $old, false);
 			}
 		}
 	}
@@ -27,6 +27,6 @@ namespace {
 	];
 
 	foreach ($testcaseAliases as $old => $new) {
-		class_alias($new, $old);
+		class_alias($new, $old, false);
 	}
 }
