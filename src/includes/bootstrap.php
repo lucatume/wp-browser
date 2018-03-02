@@ -162,7 +162,7 @@ require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
 // Delete any default posts & related data
 _without_filters('_delete_all_posts');
 
-require dirname(__FILE__) . '/testcase.php';
+// Do not load these files as mirrored by the WPTestCase et al.
 require dirname(__FILE__) . '/testcase-rest-api.php';
 require dirname(__FILE__) . '/testcase-xmlrpc.php';
 require dirname(__FILE__) . '/testcase-ajax.php';

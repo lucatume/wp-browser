@@ -2,35 +2,26 @@
 
 namespace {
 
-	// PHPUnit 6 compat
 	if (class_exists('PHPUnit\Framework\TestCase')) {
 		$aliases = [
-			//			'PHPUnit\Framework\Test'                       => 'PHPUnit_Framework_Test',
-			//			'PHPUnit\Framework\TestSuite'                  => 'PHPUnit_Framework_TestSuite',
-			//			'PHPUnit\Framework\TestCase'                   => 'PHPUnit_Framework_TestCase',
+			// PHPUnit 6+ compat
 			'PHPUnit\Framework\Assert' => 'PHPUnit_Framework_Assert',
-			//			'PHPUnit\Framework\Exception'                  => 'PHPUnit_Framework_Exception',
-			//			'PHPUnit\Framework\ExpectationFailedException' => 'PHPUnit_Framework_ExpectationFailedException',
-			//			'PHPUnit\Framework\Warning'                    => 'PHPUnit_Framework_Warning',
-			//			'PHPUnit\Framework\Error\Notice'               => 'PHPUnit_Framework_Error_Notice',
-			//			'PHPUnit\Framework\Error\Warning'              => 'PHPUnit_Framework_Error_Warning',
-			//			'PHPUnit\Framework\TestListener'               => 'PHPUnit_Framework_TestListener',
-			//			'PHPUnit\Framework\AssertionFailedError'       => 'PHPUnit_Framework_AssertionFailedError',
-			'PHPUnit\Util\Getopt'      => 'PHPUnit_Util_Getopt',
-			//			'PHPUnit\Util\GlobalState'                     => 'PHPUnit_Util_GlobalState',
+			'PHPUnit\Util\Getopt' => 'PHPUnit_Util_Getopt',
+
+			// Core test case classes
+			'Codeception\TestCase\WpTestCase' => 'WP_UnitTestCase',
+			'Codeception\TestCase\WPRestApiTestCase' => 'WP_Test_REST_TestCase',
+			'Codeception\TestCase\WPXMLRPCTestCase' => 'WP_XMLRPC_UnitTestCase',
+			'Codeception\TestCase\WPAjaxTestCase' => 'WP_Ajax_UnitTestCase',
+			'Codeception\TestCase\WPCanonicalTestCase' => 'WP_Canonical_UnitTestCase',
+			'Codeception\TestCase\WPRestControllerTestCase' => 'WP_Test_REST_Controller_Testcase',
+			'Codeception\TestCase\WPRestPostTypeControllerTestCase' => 'WP_Test_REST_Post_Type_Controller_Testcase',
 		];
 
 		foreach ($aliases as $new => $old) {
 			if (!class_exists($old) && class_exists($new)) {
 				class_alias($new, $old);
 			}
-			// PHPUnit 6 compat
-			if (class_exists('PHPUnit\Framework\TestCase')) {
-				if (!class_exists('PHPUnit_Util_Getopt') && class_exists('PHPUnit\Util\Getopt')) {
-					class_alias('PHPUnit\Util\Getopt', 'PHPUnit_Util_Getopt');
-				}
-			}
 		}
 	}
 }
-

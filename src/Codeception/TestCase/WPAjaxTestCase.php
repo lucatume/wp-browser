@@ -3,14 +3,6 @@
 namespace Codeception\TestCase;
 
 /**
- * Ajax test cases
- *
- * @package    WordPress
- * @subpackage UnitTests
- * @since      3.4.0
- */
-
-/**
  * Ajax test case class
  *
  * @package    WordPress
