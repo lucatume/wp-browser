@@ -2,6 +2,8 @@
 
 namespace Codeception\TestCase;
 
+use PHPUnit\Framework\AssertionFailedError;
+
 if (!class_exists('WP_UnitTest_Factory')) {
 	require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
 }
@@ -134,7 +136,7 @@ class WPTestCase extends \Codeception\Test\Unit {
 	 * @param bool $condition
 	 * @param string $message
 	 *
-	 * @throws \PHPUnit_Framework_AssertionFailedError
+	 * @throws AssertionFailedError
 	 */
 	public static function assertNotFalse($condition, $message = '') {
 		self::assertThat($condition, self::logicalNot(self::isFalse()), $message);

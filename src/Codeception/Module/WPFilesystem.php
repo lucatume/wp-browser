@@ -241,7 +241,7 @@ class WPFilesystem extends Filesystem {
 	 */
 	public function dontSeeUploadedFileFound($file, $date = null) {
 		$path = $this->getUploadsPath($file, $date);
-		\PHPUnit_Framework_Assert::assertFileNotExists($path);
+		Assert::assertFileNotExists($path);
 	}
 
 
@@ -263,7 +263,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $date
 	 */
 	public function seeInUploadedFile($file, $contents, $date = null) {
-		\PHPUnit_Framework_Assert::assertStringEqualsFile(
+		Assert::assertStringEqualsFile(
 			$this->getUploadsPath(
 				$file,
 				$date
@@ -290,7 +290,7 @@ class WPFilesystem extends Filesystem {
 	 * @param string $date
 	 */
 	public function dontSeeInUploadedFile($file, $contents, $date = null) {
-		\PHPUnit_Framework_Assert::assertStringNotEqualsFile(
+		Assert::assertStringNotEqualsFile(
 			$this->getUploadsPath(
 				$file,
 				$date
@@ -556,7 +556,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function seeInPluginFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringEqualsFile(
+		Assert::assertStringEqualsFile(
 			$this->config['plugins'] . Utils::unleadslashit($file),
 			$contents
 		);
@@ -575,7 +575,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function dontSeeInPluginFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringNotEqualsFile(
+		Assert::assertStringNotEqualsFile(
 			$this->config['plugins'] . Utils::unleadslashit($file),
 			$contents
 		);
@@ -707,7 +707,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function seeInThemeFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringEqualsFile(
+		Assert::assertStringEqualsFile(
 			$this->config['themes'] . Utils::unleadslashit($file),
 			$contents
 		);
@@ -726,7 +726,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function dontSeeInThemeFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringNotEqualsFile(
+		Assert::assertStringNotEqualsFile(
 			$this->config['themes'] . Utils::unleadslashit($file),
 			$contents
 		);
@@ -858,7 +858,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function seeInMuPluginFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringEqualsFile(
+		Assert::assertStringEqualsFile(
 			$this->config['mu-plugins'] . Utils::unleadslashit($file),
 			$contents
 		);
@@ -877,7 +877,7 @@ class WPFilesystem extends Filesystem {
 	 * @param  string $contents
 	 */
 	public function dontSeeInMuPluginFile($file, $contents) {
-		\PHPUnit_Framework_Assert::assertStringNotEqualsFile(
+		Assert::assertStringNotEqualsFile(
 			$this->config['mu-plugins'] . Utils::unleadslashit($file),
 			$contents
 		);

@@ -203,7 +203,7 @@ class WP_PHPUnit_Util_Getopt extends PHPUnit_Util_Getopt {
 				if (strlen($arg) > 1 && $arg[0] === '-' && $arg[1] === '-') {
 					PHPUnit_Util_Getopt::parseLongOption(substr($arg, 2), $this->longOptions, $options, $argv);
 				}
-			} catch (PHPUnit_Framework_Exception $e) {
+			} catch (PHPUnit\Framework\Exception $e) {
 				// Enforcing recognized arguments or correctly formed arguments is
 				// not really the concern here.
 				continue;
