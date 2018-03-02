@@ -130,18 +130,6 @@ class WPTestCase extends \Codeception\Test\Unit {
 		wp_cache_add_non_persistent_groups(array('comment', 'counts', 'plugins'));
 	}
 
-	/**
-	 * Asserts that a condition is not false.
-	 *
-	 * @param bool $condition
-	 * @param string $message
-	 *
-	 * @throws AssertionFailedError
-	 */
-	public static function assertNotFalse($condition, $message = '') {
-		self::assertThat($condition, self::logicalNot(self::isFalse()), $message);
-	}
-
 	public static function forceTicket($ticket) {
 		self::$forced_tickets[] = $ticket;
 	}
