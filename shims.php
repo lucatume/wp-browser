@@ -15,18 +15,4 @@ namespace {
 			}
 		}
 	}
-
-	$testcaseAliases = [
-		'Codeception\TestCase\WpTestCase' => 'WP_UnitTestCase',
-		'Codeception\TestCase\WPRestApiTestCase' => 'WP_Test_REST_TestCase',
-		'Codeception\TestCase\WPXMLRPCTestCase' => 'WP_XMLRPC_UnitTestCase',
-		'Codeception\TestCase\WPAjaxTestCase' => 'WP_Ajax_UnitTestCase',
-		'Codeception\TestCase\WPCanonicalTestCase' => 'WP_Canonical_UnitTestCase',
-		'Codeception\TestCase\WPRestControllerTestCase' => 'WP_Test_REST_Controller_Testcase',
-		'Codeception\TestCase\WPRestPostTypeControllerTestCase' => 'WP_Test_REST_Post_Type_Controller_Testcase',
-	];
-
-	foreach ($testcaseAliases as $old => $new) {
-		class_alias($new, $old, false);
-	}
 }
