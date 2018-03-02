@@ -81,6 +81,7 @@ install:
   - export CC_OPTIONS=''
   # if the PHP version is 5.6 then use the modified composer configuration file and skip PHP 7 tests
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then mv build/php-56-composer.json composer.json && export CC_OPTIONS="$CC_OPTIONS --skip-group php7"; fi
+  - cat composer.json
   - composer update
   # install WordPress in the `wordpress` folder
   - cd $WP_FOLDER
@@ -102,6 +103,7 @@ install:
   - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
   # enable the site
   - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
+  - echo $CC_OPTIONS
 
 before_script:
   # restart Nnginx and PHP-FPM services
