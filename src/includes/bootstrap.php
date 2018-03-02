@@ -162,13 +162,6 @@ require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
 // Delete any default posts & related data
 _without_filters('_delete_all_posts');
 
-require dirname(__FILE__) . '/testcase.php';
-require dirname(__FILE__) . '/testcase-rest-api.php';
-require dirname(__FILE__) . '/testcase-xmlrpc.php';
-require dirname(__FILE__) . '/testcase-ajax.php';
-require dirname(__FILE__) . '/testcase-canonical.php';
-require dirname(__FILE__) . '/exceptions.php';
-require dirname(__FILE__) . '/utils.php';
 // let's make sure we are using a version of WordPress that integrates the WP_REST_Server class
 if (class_exists('WP_REST_Server')) {
 	require dirname(__FILE__) . '/spy-rest-server.php';
