@@ -3,6 +3,8 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception.
 
+> Please note this is branch will not support PHP 5.6; use the `php-56-compat` branch if you need to use PHP 5.6 in your tests.
+
 ![Travis CI master branch build status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)
 
 [Example usage](https://github.com/lucatume/idlikethis).
