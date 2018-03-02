@@ -2,7 +2,7 @@
 namespace Codeception\Module;
 
 use Codeception\Lib\ModuleContainer;
-use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit_Framework_AssertionFailedError;
 use tad\WPBrowser\Environment\Constants;
 
 class WPQueriesTest extends \Codeception\TestCase\Test
@@ -169,7 +169,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 			],
 		];
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
 		$sut = $this->make_instance();
 		$sut->assertQueries();
@@ -227,7 +227,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 			],
 		];
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
 		$sut = $this->make_instance();
 		$sut->assertNotQueries();
@@ -318,7 +318,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 			],
 		];
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 
 		$sut = $this->make_instance();
 		$sut->assertCountQueries(1);
@@ -358,20 +358,20 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesByStatement('SELECT');
 		$sut->assertQueriesCountByStatement(2, 'SELECT');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByStatement('DELETE');
 		$sut->assertNotQueriesByStatement('DELETE');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatement(1, 'SELECT');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatement(3, 'SELECT');
 
 		$sut->assertQueriesByStatement('UPDATE');
 		$sut->assertQueriesCountByStatement(1, 'UPDATE');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatement(2, 'UPDATE');
 	}
 
@@ -411,16 +411,16 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByMethod(2, 'Acme\MyPlugin', 'methodTwo');
 		$sut->assertNotQueriesByMethod('Acme\MyPlugin', 'someMethod');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByMethod('Acme\MyPlugin', 'methodFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByMethod('\Acme\MyPlugin', 'methodFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByMethod(3, 'Acme\MyPlugin', 'methodTwo');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByMethod('Acme\MyPlugin', 'methodTwo');
 	}
 
@@ -459,16 +459,16 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByFunction(2, 'functionTwo');
 		$sut->assertNotQueriesByFunction('someFunction');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByFunction('functionFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByFunction('functionFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByFunction(3, 'functionTwo');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByFunction('functionTwo');
 	}
 
@@ -507,13 +507,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByStatementAndMethod(2, 'SELECT', 'Acme\MyPlugin', 'methodTwo');
 		$sut->assertNotQueriesByStatementAndMethod('UPDATE', 'Acme\MyPlugin', 'methodOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByStatementAndMethod('UPDATE', 'Acme\MyPlugin', 'methodOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatementAndMethod(3, 'UPDATE', 'Acme\MyPlugin', 'methodThree');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByStatementAndMethod('SELECT', 'Acme\MyPlugin', 'methodOne');
 	}
 
@@ -552,13 +552,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByStatementAndFunction(2, 'SELECT', 'functionTwo');
 		$sut->assertNotQueriesByStatementAndFunction('UPDATE', 'functionOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByStatementAndFunction('UPDATE', 'functionOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatementAndFunction(3, 'UPDATE', 'functionThree');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByStatementAndFunction('SELECT', 'functionOne');
 	}
 
@@ -597,13 +597,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByAction(2, 'actionTwo');
 		$sut->assertNotQueriesByAction('someAction');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByAction('actionFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByAction(3, 'actionTwo');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByAction('actionTwo');
 	}
 
@@ -642,13 +642,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByStatementAndAction(2, 'SELECT', 'actionTwo');
 		$sut->assertNotQueriesByStatementAndAction('UPDATE', 'actionOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByStatementAndAction('UPDATE', 'actionOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatementAndAction(3, 'UPDATE', 'actionThree');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByStatementAndAction('SELECT', 'actionOne');
 	}
 
@@ -687,13 +687,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByFilter(2, 'filterTwo');
 		$sut->assertNotQueriesByFilter('someFilter');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByFilter('filterFour');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByFilter(3, 'filterTwo');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByFilter('filterTwo');
 	}
 
@@ -732,13 +732,13 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 		$sut->assertQueriesCountByStatementAndFilter(2, 'SELECT', 'filterTwo');
 		$sut->assertNotQueriesByStatementAndFilter('UPDATE', 'filterOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesByStatementAndFilter('UPDATE', 'filterOne');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertQueriesCountByStatementAndFilter(3, 'UPDATE', 'filterThree');
 
-		$this->expectException(AssertionFailedError::class);
+		$this->expectException(PHPUnit_Framework_AssertionFailedError::class);
 		$sut->assertNotQueriesByStatementAndFilter('SELECT', 'filterOne');
 	}
 
