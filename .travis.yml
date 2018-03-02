@@ -6,6 +6,7 @@ notifications:
   email: false
 
 php:
+  - '5.6'
   - '7.0'
   - '7.1'
   - '7.2'
@@ -76,7 +77,11 @@ before_install:
   - export PATH=vendor/bin:$PATH
 
 install:
-  - composer install --prefer-dist
+  # export a var storing the `codecept run` command options
+  - export CC_OPTIONS=''
+  # if the PHP version is 5.6 then use the modified composer configuration file and skip PHP 7 tests
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then mv build/php-56-composer.json composer.json && export CC_OPTIONS="$CC_OPTIONS --skip-group php7"; fi
+  - composer update
   # install WordPress in the `wordpress` folder
   - cd $WP_FOLDER
   - wp core download --version=$WP_VERSION
@@ -102,20 +107,18 @@ before_script:
   # restart Nnginx and PHP-FPM services
   - sudo service php5-fpm restart
   - sudo service nginx restart
-
   # build Codeception modules
   - codecept build
-
    # set the correct path to phantomjs bin
   - sed -i "s_%%phantomjs%%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/.env
 
 script:
-  - codecept run unit
-  - codecept run acceptance
-  - codecept run phantomjs
-  - codecept run functional
-  - codecept run climodule
-  - codecept run wpmodule
-  - codecept run wploadersuite
-  - codecept run muloader
-  - codecept run cli
+  - codecept run unit $CC_OPTIONS
+  - codecept run acceptance $CC_OPTIONS
+  - codecept run phantomjs $CC_OPTIONS
+  - codecept run functional $CC_OPTIONS
+  - codecept run climodule $CC_OPTIONS
+  - codecept run wpmodule $CC_OPTIONS
+  - codecept run wploadersuite $CC_OPTIONS
+  - codecept run muloader $CC_OPTIONS
+  - codecept run cli $CC_OPTIONS

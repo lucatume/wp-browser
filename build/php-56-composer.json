@@ -1,0 +1,50 @@
+{
+  "name": "lucatume/wp-browser",
+  "type": "library",
+  "description": "WordPress extension of the PhpBrowser class.",
+  "keywords": [
+    "wordpress",
+    "codeception"
+  ],
+  "homepage": "http://github.com/lucatume/wp-browser",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "theAverageDev (Luca Tumedei)",
+      "email": "luca@theaveragedev.com",
+      "homepage": "http://theaveragedev.com",
+      "role": "Developer"
+    }
+  ],
+  "prefer-stable": true,
+  "require": {
+    "lucatume/wp-browser-commons": "^1.2.5",
+    "lucatume/codeception-setup-local": "~1.0",
+    "wp-cli/wp-cli": "^1.1",
+    "symfony/process": ">=2.7 <5.0",
+    "antecedent/patchwork": "^2.0",
+    "codeception/codeception": "^2.3",
+    "gumlet/php-image-resize": "^1.6",
+    "electrolinux/phpquery": "^0.9.6",
+    "phpunit/phpunit": "<7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Codeception\\": "src\\Codeception",
+      "tad\\": "src\\tad"
+    },
+    "files": [
+      "src/tad/WPBrowser/functions.php",
+      "shims.php"
+    ]
+  },
+  "require-dev": {
+    "mikey179/vfsStream": "^1.6",
+    "ofbeaton/console-tester": "^1.1",
+    "site5/phantoman": "^1.1",
+    "vlucas/phpdotenv": "^2.4"
+  },
+  "bin": [
+    "wpcept"
+  ]
+}
