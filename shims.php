@@ -7,6 +7,9 @@ namespace {
 		$aliases = [
 			'PHPUnit\Framework\Assert' => 'PHPUnit_Framework_Assert',
 			'PHPUnit\Util\Getopt' => 'PHPUnit_Util_Getopt',
+
+			// inverse aliases
+			'PHPUnit_Runner_Version' => 'PHPUnit\Runner\Version',
 		];
 
 		foreach ($aliases as $new => $old) {
