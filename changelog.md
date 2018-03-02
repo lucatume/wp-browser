@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - support for PHP 5.6 to be handled in branch `php-56-compat`
 
-### Changed
+### Added
 - require PHP 7.0
 
 ##[1.22.8] 2018-02-28;
