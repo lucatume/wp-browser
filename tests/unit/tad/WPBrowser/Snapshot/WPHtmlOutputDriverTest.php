@@ -4,6 +4,9 @@ namespace tad\WPBrowser\Snapshot;
 
 use tad\WPBrowser\Snapshot\WPHtmlOutputDriver as Driver;
 
+/**
+ * @group php7
+ */
 class WPHtmlOutputDriverTest extends \Codeception\Test\Unit {
 
 	public $currentUrl = 'http://example.com';
