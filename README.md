@@ -9,6 +9,10 @@ A WordPress specific set of extensions for Codeception.
 
 [Example usage](https://github.com/lucatume/idlikethis).
 
+## Upgrade from v1.0 to 2.0 of wp-browser
+* use PHP 7.0 or higher
+* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framweork\TestCase`)
+
 ## Installation
 To install simply require the package in the `composer.json` file like this:
 
