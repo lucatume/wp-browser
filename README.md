@@ -3,7 +3,7 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception (PHP 5.6 compatibility branch).
 
-> **Please note this is a branch dedicated to supporting PHP version 5.6; to use the latest version of wp-browser and Codeception run the tests on PHP 7.0+**
+> **Please note this is a branch dedicated to supporting PHP version 5.6; to use the latest version of wp-browser and Codeception run the tests on PHP 7.0+ and require `lucatume/wp-browser:~2.0` in your `composer.json` file.**
 
 ![Travis CI master branch build status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)
 
@@ -15,7 +15,7 @@ To install simply require the package in the `composer.json` file like this:
 ```json
   "require-dev":
     {
-      "lucatume/wp-browser": "~1.21"
+      "lucatume/wp-browser": "~1.22.6.1"
     }
 ```
     
