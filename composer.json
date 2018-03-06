@@ -25,8 +25,7 @@
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.3",
     "gumlet/php-image-resize": "^1.6",
-    "electrolinux/phpquery": "^0.9.6",
-    "codeception/codeception": "2.3.9"
+    "electrolinux/phpquery": "^0.9.6"
   },
   "autoload": {
     "psr-4": {
