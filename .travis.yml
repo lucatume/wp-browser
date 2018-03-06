@@ -23,7 +23,6 @@ services:
 cache:
   apt: true
   directories:
-    - vendor
     - $HOME/.composer/cache/files
 
 addons:
