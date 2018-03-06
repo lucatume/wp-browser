@@ -162,6 +162,7 @@ require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
 // Delete any default posts & related data
 _without_filters('_delete_all_posts');
 
+require __DIR__ . '/utils.php';
 // let's make sure we are using a version of WordPress that integrates the WP_REST_Server class
 if (class_exists('WP_REST_Server')) {
 	require dirname(__FILE__) . '/spy-rest-server.php';
