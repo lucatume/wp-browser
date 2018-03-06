@@ -3,6 +3,14 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+##[1.23.1] 2018-03-06;
+### Fixed
+- restore loading of the `utils` file in the `WPLoader` module, was erroneously removed in `1.22.8`
+
+##[1.23] 2018-03-03;
+### Changed
+- moved support for PHP 5.6 of the package into this branch (`php-56-compat`)
+
 ##[1.22.8] 2018-02-28;
 ### Fixed
 - an issue with Windows directory separators in the `Wpbrowser` template (thanks @zdenekca)
@@ -721,7 +729,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.22.8...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.23.1...HEAD
+[1.23.1]: https://github.com/lucatume/wp-browser/compare/1.23...1.23.1
+[1.23]: https://github.com/lucatume/wp-browser/compare/1.22.8...1.23
 [1.22.8]: https://github.com/lucatume/wp-browser/compare/1.22.7.1...1.22.8
 [1.22.7.1]: https://github.com/lucatume/wp-browser/compare/1.22.7...1.22.7.1
 [1.22.7]: https://github.com/lucatume/wp-browser/compare/1.22.6.1...1.22.7
