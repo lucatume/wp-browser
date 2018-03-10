@@ -25,8 +25,7 @@
     "symfony/process": ">=2.7 <5.0",
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.3",
-    "gumlet/php-image-resize": "^1.6",
-    "electrolinux/phpquery": "^0.9.6"
+    "gumlet/php-image-resize": "^1.6"
   },
   "autoload": {
     "psr-4": {
