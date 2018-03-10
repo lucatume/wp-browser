@@ -1237,17 +1237,17 @@ Then the extension will symlink the files from `/dist` into the `/var/www/dist/w
 Snapshot testing comes very handy when testing the HTML output of some WordPress generated and managed code.  
 In such instances WordPress will often generate time-dependent values, like nonces, and full URLs, like image sources.  
 Those environment and time related differences might break a snapshot for the wrong reasons; e.g. the snapshot was generated on one machine (say locally) and ran on another machine where WordPress might be served at another URL and the test will surely run at a different time (say CI).  
-To smoothly compare the two HTML outputs install the `spatie/phpunit-snapshot-assertions` package:
+To smoothly compare the two HTML outputs install the `lucatume/wp-snapshot-assertions` package:
 
 ```shell
-composer require --dev spatie/phpunit-snapshot-assertions
+composer require --dev lucatume/wp-snapshot-assertions
 ```
 
 And then use the `WPHtmlOutputDriver`  driver in your snapshot tests:
 
 ```php
 use Spatie\Snapshots\MatchesSnapshots;
-use tad\WPBrowser\Snapshot\WPHtmlOutputDriver;
+use tad\WP\Snapshots\WPHtmlOutputDriver;
 
 class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
 	use MatchesSnapshots;
