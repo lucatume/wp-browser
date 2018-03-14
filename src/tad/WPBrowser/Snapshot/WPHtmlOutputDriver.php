@@ -19,7 +19,7 @@ namespace tad\WPBrowser\Snapshot;
  *
  * @see     https://github.com/spatie/phpunit-snapshot-assertions
  * @see     https://packagist.org/packages/spatie/phpunit-snapshot-assertions
- * @see     https://github.com/spatie/wp-snapshot-assertions
+ * @see     https://github.com/lucatume/wp-snapshot-assertions
  * @see     https://packagist.org/packages/lucatume/wp-snapshot-assertions
  */
 class WPHtmlOutputDriver extends \tad\WP\Snapshots\WPHtmlOutputDriver {}
