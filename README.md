@@ -11,7 +11,7 @@ A WordPress specific set of extensions for Codeception.
 
 ## Upgrade from version 1.0 to 2.0 of wp-browser
 * use PHP 7.0 or higher
-* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framweork\TestCase`)
+* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framework\TestCase`)
 
 ## Installation
 To install simply require the package in the `composer.json` file like this:
