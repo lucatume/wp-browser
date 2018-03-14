@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[2.0.3] 2018-03-14;
+### Fixed
+- reference to the `WPHtmlOutputDriver` class from the `wp-snapshot-assertions` package
+
 ##[2.0.2] 2018-03-10;
 ### Changed
 - moved the snapshot assertions related code from this package to the `lucatume/wp-snapshot-assertions` one
@@ -738,8 +742,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.2...HEAD
-[2.0.2]: https://github.com/lucatume/wp-browser/compare/2.0...2.0.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.3...HEAD
+[2.0.3]: https://github.com/lucatume/wp-browser/compare/2.0.2...2.0.3
+[2.0.2]: https://github.com/lucatume/wp-browser/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/lucatume/wp-browser/compare/2.0...2.0.1
 [2.0]: https://github.com/lucatume/wp-browser/compare/1.22.8...2.0
 [1.22.8]: https://github.com/lucatume/wp-browser/compare/1.22.7.1...1.22.8
