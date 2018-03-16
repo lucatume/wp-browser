@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[2.0.4] 2018-03-16;
 ### Fix
 - restore the loading of utility files in `WPLoader` module bootstrap file
 
@@ -744,7 +746,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.4...HEAD
+[2.0.4]: https://github.com/lucatume/wp-browser/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/lucatume/wp-browser/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/lucatume/wp-browser/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/lucatume/wp-browser/compare/2.0...2.0.1
