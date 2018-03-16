@@ -160,7 +160,12 @@ require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
 // Delete any default posts & related data
 _without_filters('_delete_all_posts');
 
-require __DIR__ . '/utils.php';
+include_once __DIR__ . '/factory.php';
+include_once __DIR__ . '/trac.php';
+include_once(ABSPATH . 'wp-admin/includes/admin.php');
+include_once(ABSPATH . WPINC . '/class-IXR.php');
+include_once(ABSPATH . WPINC . '/class-wp-xmlrpc-server.php');
+include_once __DIR__ . '/utils.php';
 
 // let's make sure we are using a version of WordPress that integrates the WP_REST_Server class
 if (class_exists('WP_REST_Server')) {

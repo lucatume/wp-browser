@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Fixed
+- restore load of utility files in `WPLoader` bootstrap file
+
 ##[1.23.1] 2018-03-06;
 ### Fixed
 - restore loading of the `utils` file in the `WPLoader` module, was erroneously removed in `1.22.8`
