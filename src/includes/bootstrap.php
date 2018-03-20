@@ -1,5 +1,5 @@
 <?php
-include_once dirname(__FILE__, 3) . '/shims.php';
+include_once dirname(dirname(__DIR__)) . '/shims.php';
 
 /**
  * Installs WordPress for running the tests and loads WordPress and the test libraries
@@ -54,7 +54,7 @@ if ("1" == getenv('WP_MULTISITE') ||
 }
 
 // Override the PHPMailer
-require_once dirname(__FILE__) . '/mock-mailer.php';
+require_once __DIR__ . '/mock-mailer.php';
 $phpmailer = new MockPHPMailer();
 
 if (!defined('WP_DEFAULT_THEME')) {
