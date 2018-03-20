@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+### Added
+- support for installation filters, via the `$wploaderInstallationFilters` global, in the `WPLoader` module
 
 ##[2.0.4] 2018-03-16;
 ### Fix
