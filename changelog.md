@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.23.3.2] 2018-03-20;
+### Fixed
+- missing use of the installation filters when using `WPLoader`  isolated install
+
 ##[1.23.3.1] 2018-03-20;
 ### Fixed
 - some calls to `dirname` made using PHP 7.0 syntax
@@ -742,7 +746,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.23.3.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.23.3.2...HEAD
+[1.23.3.1]: https://github.com/lucatume/wp-browser/compare/1.23.3.1...1.23.3.2
 [1.23.3.1]: https://github.com/lucatume/wp-browser/compare/1.23.3...1.23.3.1
 [1.23.3]: https://github.com/lucatume/wp-browser/compare/1.23.2...1.23.3
 [1.23.2]: https://github.com/lucatume/wp-browser/compare/1.23.1...1.23.2
