@@ -70,7 +70,7 @@ class Filters {
 	 *
 	 * @throws ModuleException If the filters information is not complete or not coherent.
 	 */
-	protected function normalizeFilter(array $filter): array {
+	protected function normalizeFilter(array $filter) {
 		if (count($filter) < 2) {
 			throw new ModuleException(__CLASS__,
 				'Callback ' . json_encode($filter) . ' does not specify enough data for a filter: required at least tag and callback.');
