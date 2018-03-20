@@ -5,7 +5,7 @@ A WordPress specific set of extensions for Codeception (PHP 5.6 compatibility br
 
 > **Please note this is a branch dedicated to supporting PHP version 5.6; to use the latest version of wp-browser and Codeception run the tests on PHP 7.0+ and require `lucatume/wp-browser:~2.0` in your `composer.json` file.**
 
-![Travis CI master branch build status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)
+[![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=php-56-compat)](https://travis-ci.org/lucatume/wp-browser)
 
 [Example usage](https://github.com/lucatume/idlikethis).
 
