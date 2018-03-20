@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 ### Added
-- support for installation filters, via the `$wploaderInstallationFilters` global, in the `WPLoader` module
+- support for installation filters, via the `$wp_tests_options['installation_filters']` global, in the `WPLoader` module
 
 ##[2.0.4] 2018-03-16;
 ### Fix
