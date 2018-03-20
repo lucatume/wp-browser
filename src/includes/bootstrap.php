@@ -78,6 +78,7 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
 	$environment = [
 		'root' => codecept_root_dir(),
 		'autoload' => wpbrowser_vendor_path('autoload.php'),
+		'installationFilters' => $wploaderInstallationFilters,
 		'constants' => [
 			'ABSPATH' => ABSPATH,
 			'WP_DEBUG' => true,

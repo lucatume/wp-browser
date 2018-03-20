@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[2.0.5.1] 2018-03-20;
+### Fixed
+- missing use of the installation filters when using `WPLoader`  isolated install
+
 ##[2.0.5] 2018-03-20;
 ### Added
 - support for installation filters, via the `$wp_tests_options['installation_filters']` global, in the `WPLoader` module
@@ -750,7 +754,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.0.5.1..HEAD
+[2.0.5.1]: https://github.com/lucatume/wp-browser/compare/2.0.5...2.0.5.1
 [2.0.5]: https://github.com/lucatume/wp-browser/compare/2.0.4...2.0.5
 [2.0.4]: https://github.com/lucatume/wp-browser/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/lucatume/wp-browser/compare/2.0.2...2.0.3
