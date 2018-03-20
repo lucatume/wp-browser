@@ -151,7 +151,15 @@ foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
 add_action('populate_options', '_set_default_permalink_structure_for_tests');
 
+$installFilters = new tad\WPBrowser\Module\WPLoader\Filters( $configuration['installationFilters'] );
+
+$installFilters->toRemove()->remove();
+$installFilters->toAdd()->add();
+
 wp_install(WP_TESTS_TITLE, 'admin', WP_TESTS_EMAIL, true, null, 'password');
+
+$installFilters->toAdd()->remove();
+$installFilters->toRemove()->add();
 
 // Delete dummy permalink structure, as prefilled above.
 if (!is_multisite()) {
