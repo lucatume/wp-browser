@@ -70,6 +70,11 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
 	codecept_debug('Installing WordPress in same process...');
 	require 'same-scope-install.php';
 } else {
+	global $wp_tests_options;
+	$wploaderInstallationFilters = empty($wp_tests_options['installation_filters'])
+		? []
+		: $wp_tests_options['installation_filters'];
+
 	$environment = [
 		'root' => codecept_root_dir(),
 		'autoload' => wpbrowser_vendor_path('autoload.php'),

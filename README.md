@@ -253,6 +253,18 @@ and configure it using the required parameters:
 * `language` - string, def. '', the installation language, the `WPLANG` global value.
 * `configFile` - string or array, def. '', the path, or an array of paths, to custom config file(s) relative to the `wpRootFolder` folder, no leading slash needed; this is the place where custom `wp_tests_options` could be set.
     This configuration file will be loaded **before** WordPress is bootstrapped; as such functions defined by WordPress itself will **not** be available when this is loaded.
+    This file is the place where filters, and actions, that should be removed/added **only during the installation phase** should be configured; e.g. 
+    ```php
+    global $wp_tests_options;
+    $wp_tests_options['installation_filters'] =  [
+    	'remove' => [
+    		[ 'user_register', 'my_plugin_on_user_register', 20, 2 ],
+    	],
+    	'add' => [
+    		[ 'user_register', 'on_user_register_installation', 12, 2 ],
+    	]
+    ];
+    ```
 * `pluginsFolder` - string, def. '', the relative path to the plugins folder from the `wpRootFolder` if different from the default one or the one defined by the `WP_PLUGIN_DIR` constant; if the `WP_PLUGIN_DIR` constant is defined in a config file (see the `configFile` parameter) this will be ignored.
 * `plugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `activatePlugins` - array, def. `['hello.php', 'my-plugin/my-plugin.php']`, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format; when the `multisite` option is set to `true` the plugins will be **network activated** during the installation.
