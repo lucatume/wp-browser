@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ##[unreleased] Unreleased
 ### Fixed
 - typos in the readme (thanks @mboldt)
+- restore the inclusion of some `WPLoader` required files in the `src/includes/bootstrap.php` file; those were erroneously removed in `2.0` (thanks )
+
+### Added
+- the `wpbrowser_includes_dir` function to provide a way to get the path to the `src/includes` folder or files in it
 
 ##[2.0.5.1] 2018-03-20;
 ### Fixed
