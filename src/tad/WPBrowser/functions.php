@@ -60,3 +60,18 @@ if(!function_exists('rrmdir')){
 	}
 
 }
+
+if(!function_exists('wpbrowser_includes_dir')){
+	/**
+	 * Returns the absolute path to a file or folder in the `src/includes` folder or the path to it.
+	 * 
+	 * @param  string $path An optional path fragment to a file or folder from the the `src/includes` path
+	 * 
+	 * @return string The absolute path to a file or folder in the `src/includes` folder.
+	 */
+	function wpbrowser_includes_dir($path = ''){
+		$root = dirname(__DIR__, 2). '/includes/';
+
+		return !empty($path) ? $root . ltrim($path, '/') : $root;
+	}
+}
