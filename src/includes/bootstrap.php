@@ -1,6 +1,4 @@
 <?php
-include_once dirname(__FILE__, 3) . '/shims.php';
-
 /**
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */
