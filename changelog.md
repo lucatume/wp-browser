@@ -3,8 +3,14 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
+
+##[1.23.3.3] 2018-04-05;
 ### Fixed
 - typos in the readme (thanks @mboldt)
+- restore the inclusion of some `WPLoader` required files in the `src/includes/bootstrap.php` file; those were erroneously removed in previous version (thanks @rahularyan) 
+ 
+### Added 
+- the `wpbrowser_includes_dir` function to provide a way to get the path to the `src/includes` folder or files in it 
 
 ##[1.23.3.2] 2018-03-20;
 ### Fixed
@@ -748,8 +754,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.23.3.2...HEAD
-[1.23.3.1]: https://github.com/lucatume/wp-browser/compare/1.23.3.1...1.23.3.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.23.3.3...HEAD
+[1.23.3.3]: https://github.com/lucatume/wp-browser/compare/1.23.3.2...1.23.3.3
+[1.23.3.2]: https://github.com/lucatume/wp-browser/compare/1.23.3.1...1.23.3.2
 [1.23.3.1]: https://github.com/lucatume/wp-browser/compare/1.23.3...1.23.3.1
 [1.23.3]: https://github.com/lucatume/wp-browser/compare/1.23.2...1.23.3
 [1.23.2]: https://github.com/lucatume/wp-browser/compare/1.23.1...1.23.2
