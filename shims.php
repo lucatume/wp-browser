@@ -3,7 +3,7 @@
 namespace {
 
     // PHPUnit 6 compat
-    if (class_exists('PHPUnit\Framework\TestCase')) {
+	if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner\Version::id(), '6.0', '>=' ) ) {
 		$aliases = [
 			'PHPUnit\Framework\Test'                       => 'PHPUnit_Framework_Test',
 			'PHPUnit\Framework\TestSuite'                  => 'PHPUnit_Framework_TestSuite',
