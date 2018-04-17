@@ -3,6 +3,8 @@
 namespace Codeception\Template;
 
 use Codeception\Exception\ModuleConfigException;
+use Dotenv\Dotenv;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
 
@@ -67,6 +69,8 @@ class Wpbrowser extends Bootstrap {
 		$installationData = $this->getInstallationData($interactive);
 
 		try {
+			$this->creatEnvFile($installationData);
+			$this->loadEnvFile();
 			$this->createUnitSuite();
 			$this->say("tests/unit created                 <- unit tests");
 			$this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
@@ -82,6 +86,7 @@ class Wpbrowser extends Bootstrap {
 		} catch (ModuleConfigException $e) {
 			$this->removeCreatedFiles();
 			$this->say('<error>Something is not ok in the modules configurations: check your answers and try the initialization again.</error>');
+			$this->say('<error>' . $e->getMessage() . '</error>');
 			$this->sayInfo('All files and folders created by the initialization attempt have been removed.');
 
 			return;
@@ -134,6 +139,9 @@ class Wpbrowser extends Bootstrap {
 				'enabled'  => ['Codeception\Extension\RunFailed'],
 				'commands' => $this->getAddtionalCommands(),
 			],
+			'params' => [
+				'.env'
+			]
 		];
 
 		$str = Yaml::dump($basicConfig, 4);
@@ -166,32 +174,32 @@ class Wpbrowser extends Bootstrap {
 	protected function getInstallationData($interactive) {
 		if (!$interactive) {
 			$installationData = [
-				'acceptanceSuite'     => 'acceptance',
-				'functionalSuite'     => 'functional',
-				'wpunitSuite'         => 'wpunit',
+				'acceptanceSuite' => 'acceptance',
+				'functionalSuite' => 'functional',
+				'wpunitSuite' => 'wpunit',
 				'acceptanceSuiteSlug' => 'acceptance',
 				'functionalSuiteSlug' => 'functional',
-				'wpunitSuiteSlug'     => 'wpunit',
-				'dbHost'              => 'localhost',
-				'dbName'              => 'wp',
-				'dbUser'              => 'root',
-				'dbPassword'          => '',
-				'tablePrefix'         => 'wp_',
-				'url'                 => 'http://wp.localhost',
-				'adminUsername'       => 'admin',
-				'adminPassword'       => 'password',
-				'wpAdminPath'         => '/wp-admin',
-				'wpRootFolder'        => '/var/www/html',
-				'wploaderDbName'      => 'wpTests',
-				'wploaderDbHost'      => 'localhost',
-				'wploaderDbUser'      => 'root',
-				'wploaderDbPassword'  => '',
-				'wploaderTablePrefix' => 'wp_',
-				'urlHost'             => 'wp.localhost',
-				'adminEmail'          => 'admin@wp.localhost',
-				'title'               => 'WP Test',
+				'wpunitSuiteSlug' => 'wpunit',
+				'dbHost' => 'localhost',
+				'dbName' => 'wp',
+				'dbUser' => 'root',
+				'dbPassword' => '',
+				'tablePrefix' => 'wp_',
+				'wpUrl' => 'http://wp.localhost',
+				'wpDomain' => 'wp.localhost',
+				'adminUsername' => 'admin',
+				'adminPassword' => 'password',
+				'adminEmail' => 'admin@wp.localhost',
+				'wpAdminPath' => '/wp-admin',
+				'wpRootFolder' => '/var/www/html',
+				'testDbName' => 'wpTests',
+				'testDbHost' => 'localhost',
+				'testDbUser' => 'root',
+				'testDbPassword' => '',
+				'testTablePrefix' => 'wp_',
+				'title' => 'WP Test',
 				// deactivate all modules that could trigger exceptions when initialized with sudo values
-				'activeModules'       => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
+				'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
 			];
 		} else {
 			$installationData = $this->askForInstallationData();
@@ -235,19 +243,19 @@ class Wpbrowser extends Bootstrap {
 		$this->say();
 		$this->sayInfo('WPLoader should be configured to run on a dedicated database!');
 		$this->say();
-		$installationData['wploaderDbName']      = $this->ask("What's the name of the database WPLoader should use?", 'wpTests');
-		$installationData['wploaderDbHost']      = $this->ask("What's the host of the database WPLoader should use?", 'localhost');
-		$installationData['wploaderDbUser']      = $this->ask("What's the user of the database WPLoader should use?", 'root');
-		$installationData['wploaderDbPassword']  = $this->ask("What's the password of the database WPLoader should use?", '');
-		$installationData['wploaderTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?", 'wp_');
-		$installationData['url']                 = $this->ask("What's the URL the WordPress installation?", 'http://wp.localhost');
-		$installationData['url']                 = rtrim($installationData['url'], '/');
-		$url                                     = parse_url($installationData['url']);
+		$installationData['testDbName']      = $this->ask("What's the name of the database WPLoader should use?", 'wpTests');
+		$installationData['testDbHost']      = $this->ask("What's the host of the database WPLoader should use?", 'localhost');
+		$installationData['testDbUser']      = $this->ask("What's the user of the database WPLoader should use?", 'root');
+		$installationData['testDbPassword']  = $this->ask("What's the password of the database WPLoader should use?", '');
+		$installationData['testTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?", 'wp_');
+		$installationData['wpUrl']                 = $this->ask("What's the URL the WordPress installation?", 'http://wp.localhost');
+		$installationData['wpUrl']                 = rtrim($installationData['wpUrl'], '/');
+		$url                                     = parse_url($installationData['wpUrl']);
 		$installationData['urlScheme']           = empty($url['scheme']) ? 'http' : $url['scheme'];
-		$installationData['urlHost']             = empty($url['host']) ? 'example.com' : $url['host'];
+		$installationData['wpDomain']             = empty($url['host']) ? 'example.com' : $url['host'];
 		$installationData['urlPort']             = empty($url['port']) ? '' : ':' . $url['port'];
 		$installationData['urlPath']             = empty($url['path']) ? '' : $url['path'];
-		$adminEmailCandidate                     = "admin@{$installationData['urlHost']}";
+		$adminEmailCandidate                     = "admin@{$installationData['wpDomain']}";
 		$installationData['adminEmail']          = $this->ask("What's the email of the WordPress site administrator?", $adminEmailCandidate);
 		$installationData['title']               = $this->ask("What's the title of the WordPress site?", 'Test');
 		$installationData['adminUsername']       = $this->ask('What is the login of the administrator user?', 'admin');
@@ -299,14 +307,14 @@ modules:
         - \\{$this->namespace}Helper\\$actor
     config:
         WPLoader:
-            wpRootFolder: "{$installationData['wpRootFolder']}"
-            dbName: "{$installationData['wploaderDbName']}"
-            dbHost: "{$installationData['wploaderDbHost']}"
-            dbUser: "{$installationData['wploaderDbUser']}"
-            dbPassword: "{$installationData['wploaderDbPassword']}"
-            tablePrefix: "{$installationData['wploaderTablePrefix']}"
-            domain: "{$installationData['urlHost']}{$installationData['urlPort']}"
-            adminEmail: "{$installationData['adminEmail']}"
+            wpRootFolder: "%WP_ROOT_FOLDER%"
+            dbName: "%TEST_DB_NAME%"
+            dbHost: "%TEST_DB_HOST%"
+            dbUser: "%TEST_DB_USER%"
+            dbPassword: "%TEST_DB_PASSWORD%"
+            tablePrefix: "%TEST_TABLE_PREFIX%"
+            domain: "%WP_DOMAIN%"
+            adminEmail: "%ADMIN_EMAIL%"
             title: "{$installationData['title']}"
 EOF;
 
@@ -320,8 +328,7 @@ EOF;
 EOF;
 		}
 
-		$plugins     = $installationData['plugins'];
-		$plugins     = "'" . implode("', '", (array) $plugins) . "'";
+		$plugins     = $installationData['plugins']; $plugins     = "'" . implode("', '", (array) $plugins) . "'";
 		$suiteConfig .= <<< EOF
         
             plugins: [{$plugins}]
@@ -334,7 +341,8 @@ EOF;
 	protected function createFunctionalSuite($actor = 'Functional', array $installationData = []) {
 		$installationData = new Data($installationData);
 		$WPDb             = !empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
-		$WordPress        = !empty($installationData['activeModules']['WordPress']) ? '- WordPress' : '# - WordPress';
+		$WPBrowser        = !empty($installationData['activeModules']['WPBrowser']) ? '- WPBrowser' : '# - WPBrowser';
+		$WPFilesystem        = !empty($installationData['activeModules']['WPFilesystem']) ? '- WPFilesystem' : '# - WPFilesystem';
 		$suiteConfig      = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -345,26 +353,32 @@ actor: $actor{$this->actorSuffix}
 modules:
     enabled:
         {$WPDb}
-        {$WordPress}
+        {$WPBrowser}
+        {$WPFilesystem}
         - Asserts
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host={$installationData['dbHost']};dbname={$installationData['dbName']}'
-            user: '{$installationData['dbUser']}'
-            password: '{$installationData['dbPassword']}'
+            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+            user: '%DB_USER%'
+            password: '%DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
-            url: '{$installationData['url']}'
+            url: '%WP_URL%'
             urlReplacement: true
-            tablePrefix: '{$installationData['tablePrefix']}'
-        WordPress:
-            depends: WPDb
-            wpRootFolder: '{$installationData['wpRootFolder']}'
-            adminUsername: '{$installationData['adminUsername']}'
-            adminPassword: '{$installationData['adminPassword']}'
-            adminPath: '{$installationData['wpAdminPath']}'
+            tablePrefix: '%TABLE_PREFIX%'
+        WPBrowser:
+            url: '%WP_URL%'
+            adminUsername: '%ADMIN_USERNAME%'
+            adminPassword: '%ADMIN_PASSWORD%'
+            adminPath: '%WP_ADMIN_PATH%'
+        WPFilesystem:
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            plugins: '/wp-content/plugins'
+            mu-plugins: '/wp-content/mu-plugins'
+            themes: '/wp-content/themes'
+            uploads: '/wp-content/uploads'
 EOF;
 		$this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
 	}
@@ -389,20 +403,20 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host={$installationData['dbHost']};dbname={$installationData['dbName']}'
-            user: '{$installationData['dbUser']}'
-            password: '{$installationData['dbPassword']}'
+            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+            user: '%DB_USER%'
+            password: '%DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             populate: true #import the dump before the tests
             cleanup: true #import the dump between tests
-            url: '{$installationData['url']}'
+            url: '%WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
-            tablePrefix: '{$installationData['tablePrefix']}'
+            tablePrefix: '%TABLE_PREFIX%'
         WPBrowser:
-            url: '{$installationData['url']}'
-            adminUsername: '{$installationData['adminUsername']}'
-            adminPassword: '{$installationData['adminPassword']}'
-            adminPath: '{$installationData['wpAdminPath']}'
+            url: '%WP_URL%'
+            adminUsername: '%ADMIN_USERNAME%'
+            adminPassword: '%ADMIN_PASSWORD%'
+            adminPath: '%WP_ADMIN_PATH%'
 EOF;
 		$this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
 	}
@@ -412,16 +426,71 @@ EOF;
 	}
 
 	protected function removeCreatedFiles() {
-		if (file_exists(getcwd() . '/codeception.yml')) {
-			unlink(getcwd() . '/codeception.yml');
+		$files = ['codeception.yml', '.env'];
+		$dirs = ['tests'];
+		foreach ($files as $file) {
+			if (file_exists(getcwd() . '/' . $file)) {
+				unlink(getcwd() . '/' . $file);
+			}
 		}
-		if (file_exists(getcwd() . '/tests')) {
-			rrmdir(getcwd() . '/tests');
+		foreach ($dirs as $dir) {
+			if (file_exists(getcwd() . '/' . $dir)) {
+				rrmdir(getcwd() . '/' . $dir);
+			}
 		}
 	}
 
 	protected function normalizePath($path) {
 		$pathFrags = preg_split('/(\\/|\\\\)/u', $path);
 		return implode('/', $pathFrags);
+	}
+
+	protected function creatEnvFile(array $installationData = []) {
+		$envKeys = [
+			'dbHost',
+			'dbName',
+			'dbUser',
+			'dbPassword',
+			'tablePrefix',
+			'wpUrl',
+			'adminUsername',
+			'adminPassword',
+			'wpAdminPath',
+			'wpRootFolder',
+			'testDbName',
+			'testDbHost',
+			'testDbUser',
+			'testDbPassword',
+			'testTablePrefix',
+			'wpDomain',
+			'adminEmail',
+		];
+
+		$envEntries = array_intersect_key($installationData, array_combine($envKeys, $envKeys));
+
+		$envFileLines = [];
+
+		foreach ($envEntries as $key => $value) {
+			$key = strtoupper(preg_replace('/([A-Z])/u', '_$1', $key));
+			if (is_bool($value)) {
+				$value ? 'true' : 'false';
+			} elseif (null === $value) {
+				$value = 'null';
+			} else {
+				$value = '"' . trim($value) . '"';
+			}
+			$envFileLines[] = "{$key}={$value}";
+		}
+		$envFileContents = implode("\n", $envFileLines);
+		$written = file_put_contents($this->workDir . DIRECTORY_SEPARATOR . '.env', $envFileContents);
+		if (!$written) {
+			$this->removeCreatedFiles();
+			throw new RuntimeException('Could not write .env file!');
+		}
+	}
+
+	protected function loadEnvFile() {
+		$dotEnv = new Dotenv($this->workDir);
+		$dotEnv->load();
 	}
 }
