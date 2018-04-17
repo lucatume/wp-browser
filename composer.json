@@ -25,7 +25,7 @@
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.3",
     "gumlet/php-image-resize": "^1.6",
-    "electrolinux/phpquery": "^0.9.6"
+    "vlucas/phpdotenv": "^2.4"
   },
   "autoload": {
     "psr-4": {
@@ -40,8 +40,7 @@
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
-    "site5/phantoman": "^1.1",
-    "vlucas/phpdotenv": "^2.4"
+    "site5/phantoman": "^1.1"
   },
   "bin": [
     "wpcept"
