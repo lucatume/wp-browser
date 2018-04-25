@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.24.1] 2018-04-25;
+### Changed 
+- make the `codecept init wpbrowser` command scaffold the `codeception.dist.yml` file 
+
 ##[1.24] 2018-04-17;
 ### Added 
 - `.env` file based variable setup in the `codecept init wpbrowser` command 
@@ -758,7 +762,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24.1...HEAD
+[1.24.1]: https://github.com/lucatume/wp-browser/compare/1.24...1.24.1
 [1.24]: https://github.com/lucatume/wp-browser/compare/1.23.3.3...1.24
 [1.23.3.3]: https://github.com/lucatume/wp-browser/compare/1.23.3.2...1.23.3.3
 [1.23.3.2]: https://github.com/lucatume/wp-browser/compare/1.23.3.1...1.23.3.2
