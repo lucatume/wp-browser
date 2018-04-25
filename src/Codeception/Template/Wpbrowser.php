@@ -149,7 +149,7 @@ class Wpbrowser extends Bootstrap {
 			$namespace = rtrim($this->namespace, '\\');
 			$str       = "namespace: $namespace\n" . $str;
 		}
-		$this->createFile('codeception.yml', $str);
+		$this->createFile('codeception.dist.yml', $str);
 	}
 
 	protected function getAddtionalCommands() {
