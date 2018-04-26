@@ -2313,13 +2313,22 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param string $userEmail
 	 * @param bool   $purgeMeta Whether the user meta should be purged alongside the user or not.
+	 *
+	 * @return array An array of the deleted user(s) ID(s)
 	 */
-	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true) {
-		$ids = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
+	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true): array {
+		$data = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
+		if (!(is_array($data) && !empty($data))) {
+			return [];
+		}
+
+		$ids = array_column($data, 'ID');
 
 		foreach ($ids as $id) {
 			$this->dontHaveUserInDatabase($id, $purgeMeta);
 		}
+
+		return $ids;
 	}
 
 	/**
