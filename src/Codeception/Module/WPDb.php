@@ -2307,4 +2307,36 @@ class WPDb extends ExtendedDb {
 		}
 		return $sql;
 	}
+
+	/**
+	 * Removes a user(s) from the database using the user email address.
+	 *
+	 * @param string $userEmail
+	 * @param bool   $purgeMeta Whether the user meta should be purged alongside the user or not.
+	 *
+	 * @return array An array of the deleted user(s) ID(s)
+	 */
+	public function dontHaveUserInDatabaseWithEmail($userEmail, $purgeMeta = true) {
+		$data = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
+		if (!(is_array($data) && !empty($data))) {
+			return [];
+		}
+
+		$ids = array_column($data, 'ID');
+
+		foreach ($ids as $id) {
+			$this->dontHaveUserInDatabase($id, $purgeMeta);
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Gets the users table name.
+	 *
+	 * @return string The prefixed table name, e.g. `wp_users`
+	 */
+	public function grabUsersTableName() {
+		return $this->grabTablePrefix() . 'users';
+	}
 }

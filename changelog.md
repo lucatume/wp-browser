@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[1.24.2] 2018-04-26;
+
 ##[1.24.1] 2018-04-25;
 ### Changed 
 - make the `codecept init wpbrowser` command scaffold the `codeception.dist.yml` file 
