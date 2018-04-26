@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ##[unreleased] Unreleased
 
+##[2.1.2] 2018-04-26;
+### Added
+- the `WPDb::grabUsersTableName` method to the `WPdb` module
+- the `WPDb::dontHaveUserInDatabaseWithEmail` method to the `WPDb` module
+
 ##[2.1.1] 2018-04-25;
 ### Changed
 - make the `codecept init wpbrowser` command scaffold the `codeception.dist.yml` file
@@ -770,7 +775,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.2...HEAD
+[2.1.2]: https://github.com/lucatume/wp-browser/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/lucatume/wp-browser/compare/2.1...2.1.1
 [2.1]: https://github.com/lucatume/wp-browser/compare/2.0.5.2...2.1
 [2.0.5.2]: https://github.com/lucatume/wp-browser/compare/2.0.5.1...2.0.5.2
