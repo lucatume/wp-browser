@@ -423,4 +423,17 @@ class WPDbUserCest
 		}
 	}
 
+	/**
+	 * It should allow deleting a user by email
+	 *
+	 * @test
+	 */
+	public function should_allow_deleting_a_user_by_email(FunctionalTester $I) {
+		$I->haveManyUsersInDatabase(3, 'Luca', 'editor', ['user_email' => 'luca@theaveragedev.com']);
+		$I->assertCount(3, $I->grabAllFromDatabase($I->grabUsersTableName(), 'ID', ['user_email' => 'luca@theaveragedev.com']));
+
+		$I->dontHaveUserInDatabaseWithEmail('luca@theaveragedev.com');
+
+		$I->assertCount(0, $I->grabAllFromDatabase($I->grabUsersTableName(), 'ID', ['user_email' => 'luca@theaveragedev.com']));
+	}
 }
