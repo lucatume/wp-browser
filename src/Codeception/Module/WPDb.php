@@ -1438,7 +1438,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return int
 	 */
-	public function countInDatabase($table, array $criteria = []) {
+	public function countRowsInDatabase($table, array $criteria = []) {
 		return parent::countInDatabase($table, $criteria);
 	}
 

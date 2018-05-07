@@ -303,7 +303,7 @@ class WPDbCommentCest
 		}
 		$I->assertEquals(
 			$expectedCount,
-			$I->countInDatabase($I->grabCommentsTableName(), ['comment_post_id' => $postId, 'comment_approved' => '1'])
+			$I->countRowsInDatabase($I->grabCommentsTableName(), ['comment_post_id' => $postId, 'comment_approved' => '1'])
 		);
 	}
 }
