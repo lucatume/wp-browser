@@ -1431,6 +1431,18 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
+	 * Count rows in the database
+	 *
+	 * @param string $table    Table name
+	 * @param array  $criteria Search criteria [Optional]
+	 *
+	 * @return int
+	 */
+	public function countInDatabase($table, array $criteria = []) {
+		return parent::countInDatabase($table, $criteria);
+	}
+
+	/**
 	 * Inserts a comment meta field in the database.
 	 *
 	 * Array and object meta values will be serialized.
