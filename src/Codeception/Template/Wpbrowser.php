@@ -21,6 +21,11 @@ class Wpbrowser extends Bootstrap {
 	protected $noInteraction = false;
 
 	/**
+	 * @var
+	 */
+	protected $envFileName = '';
+
+	/**
 	 * @param bool $interactive
 	 *
 	 * @return mixed|void
@@ -201,6 +206,7 @@ class Wpbrowser extends Bootstrap {
 				// deactivate all modules that could trigger exceptions when initialized with sudo values
 				'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
 			];
+			$this->envFileName = '.env';
 		} else {
 			$installationData = $this->askForInstallationData();
 		}
@@ -228,6 +234,12 @@ class Wpbrowser extends Bootstrap {
 
 		$this->say('---');
 		$this->say();
+
+		while (strpos($this->envFileName, '.env') !== 0) {
+			$this->envFileName = $this->ask('How would you like to call the env configuration file? (Should start with ".env")', '.env');
+		}
+
+		$this->checkEnvFileExistence();
 
 		$this->say('WPLoader and WordPress modules need to access the WordPress files to work');
 		$installationData['wpRootFolder'] = $this->normalizePath($this->ask("Where is WordPress installed?", '/var/www/wp'));
@@ -446,6 +458,8 @@ EOF;
 	}
 
 	protected function creatEnvFile(array $installationData = []) {
+		$filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
+
 		$envKeys = [
 			'dbHost',
 			'dbName',
@@ -482,7 +496,7 @@ EOF;
 			$envFileLines[] = "{$key}={$value}";
 		}
 		$envFileContents = implode("\n", $envFileLines);
-		$written = file_put_contents($this->workDir . DIRECTORY_SEPARATOR . '.env', $envFileContents);
+		$written = file_put_contents($filename, $envFileContents);
 		if (!$written) {
 			$this->removeCreatedFiles();
 			throw new RuntimeException('Could not write .env file!');
@@ -490,7 +504,24 @@ EOF;
 	}
 
 	protected function loadEnvFile() {
-		$dotEnv = new Dotenv($this->workDir);
+		$dotEnv = new Dotenv($this->workDir, $this->envFileName);
 		$dotEnv->load();
+	}
+
+	protected function parseEnvName() {
+		$envFileName = trim($this->envFileName);
+
+		if (strpos($envFileName, '.env') !== 0) {
+			throw new RuntimeException('Please specify an env file name starting with ".env", e.g. ".env.ci" or ".env.local"');
+		}
+	}
+
+	protected function checkEnvFileExistence() {
+		$filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
+
+		if (file_exists($filename)) {
+			$basename = basename($filename);
+			throw new RuntimeException("Found a previous {$basename} file.\nRemove the existing {$basename} file or specify a different name for the env file.");
+		}
 	}
 }
