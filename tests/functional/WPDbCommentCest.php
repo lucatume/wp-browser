@@ -295,7 +295,7 @@ class WPDbCommentCest
 
 		$commentId = $I->haveCommentInDatabase($postId, ['comment_approved' => $approved]);
 
-		$I->seeInDatabase($I->grabPostsTableName(), ['ID' => $postId, 'comments_count' => $expectedCount]);
+		$I->seeInDatabase($I->grabPostsTableName(), ['ID' => $postId, 'comment_count' => $expectedCount]);
 		if ($approved) {
 			$I->seeInDatabase($I->grabCommentsTableName(), ['comment_ID' => $commentId, 'comment_approved' => '1']);
 		} else {
