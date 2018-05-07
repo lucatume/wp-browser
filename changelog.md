@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.1.3] 2018-05-07;
+### Fixed
+- check for an existing `.env` file when initializing and ask for the `.env` file name in the init command
+
 ## [2.1.2] 2018-04-26;
 ### Added
 - the `WPDb::grabUsersTableName` method to the `WPdb` module
@@ -775,7 +779,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.2...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.3...HEAD
+[2.1.3]: https://github.com/lucatume/wp-browser/compare/2.1.2...2.1.3
 [2.1.2]: https://github.com/lucatume/wp-browser/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/lucatume/wp-browser/compare/2.1...2.1.1
 [2.1]: https://github.com/lucatume/wp-browser/compare/2.0.5.2...2.1
