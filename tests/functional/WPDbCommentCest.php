@@ -1,17 +1,9 @@
 <?php
+
 use tad\WPBrowser\Generators\Date;
 
 class WPDbCommentCest
 {
-
-	public function _before(FunctionalTester $I)
-	{
-	}
-
-	public function _after(FunctionalTester $I)
-	{
-	}
-
 	/**
 	 * @test
 	 * it should allow having a comment in the database
@@ -273,5 +265,45 @@ class WPDbCommentCest
 		$I->dontHaveCommentInDatabase(['comment_ID' => $commentId]);
 
 		$I->dontSeeCommentInDatabase(['comment_ID' => $commentId]);
+	}
+
+	protected function commentCountAndApproval() {
+		return [
+			'0-and-approved' => ['starting' => 0, 'approved' => '1', 'expected' => 1],
+			'1-and-approved' => ['starting' => 1, 'approved' => '1', 'expected' => 2],
+			'2-and-approved' => ['starting' => 1, 'approved' => '1', 'expected' => 2],
+			'0-and-not-approved' => ['starting' => 0, 'approved' => '0', 'expected' => 0],
+			'1-and-not-approved' => ['starting' => 1, 'approved' => '0', 'expected' => 1],
+			'2-and-not-approved' => ['starting' => 2, 'approved' => '0', 'expected' => 2],
+		];
+	}
+
+	/**
+	 * It should update the comment count when approved
+	 *
+	 * @test
+	 *
+	 * @dataProvider commentCountAndApproval
+	 */
+	public function should_update_the_comment_count_when_approved(FunctionalTester $I, \Codeception\Example $example) {
+		$startingCount = $example['starting'];
+		$approved = $example['approved'];
+		$expectedCount = $example['expected'];
+		$postId = $I->havePostInDatabase(['comment_count' => $startingCount]);
+		$approved = $approved ? '1' : '0';
+		$I->haveManyCommentsInDatabase($startingCount, $postId, ['comment_approved' => '1']);
+
+		$commentId = $I->haveCommentInDatabase($postId, ['comment_approved' => $approved]);
+
+		$I->seeInDatabase($I->grabPostsTableName(), ['ID' => $postId, 'comment_count' => $expectedCount]);
+		if ($approved) {
+			$I->seeInDatabase($I->grabCommentsTableName(), ['comment_ID' => $commentId, 'comment_approved' => '1']);
+		} else {
+			$I->seeInDatabase($I->grabCommentsTableName(), ['comment_ID' => $commentId, 'comment_approved' => '0']);
+		}
+		$I->assertEquals(
+			$expectedCount,
+			$I->countRowsInDatabase($I->grabCommentsTableName(), ['comment_post_ID' => $postId, 'comment_approved' => '1'])
+		);
 	}
 }
