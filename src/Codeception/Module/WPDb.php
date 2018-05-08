@@ -1401,13 +1401,30 @@ class WPDb extends ExtendedDb {
 
 		$comment = Comment::makeComment($comment_post_ID, $data);
 
-		$tableName = $this->grabPrefixedTableNameFor('comments');
-		$commentId = $this->haveInDatabase($tableName, $comment);
+		$commentsTableName = $this->grabPrefixedTableNameFor('comments');
+		$commentId = $this->haveInDatabase($commentsTableName, $comment);
 
 		if ($has_meta) {
 			foreach ($meta as $key => $value) {
 				$this->haveCommentMetaInDatabase($commentId, $key, $value);
 			}
+		}
+
+		if ($comment['comment_approved']) {
+			$commentCount = $this->countInDatabase(
+				$commentsTableName,
+				[
+					'comment_approved' => '1',
+					'comment_post_ID'  => $comment_post_ID
+				]
+			);
+
+			$postsTableName = $this->grabPostsTableName();
+			$this->updateInDatabase(
+				$postsTableName,
+				['comment_count' => $commentCount],
+				['ID' => $comment_post_ID]
+			);
 		}
 
 		return $commentId;
