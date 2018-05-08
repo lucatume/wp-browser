@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [1.24.4] 2018-05-07;
+### Fixed
+- the `comment_count` of posts to which comments were added using `WPDb::haveCommentInDatabase` (thanks @ptrkcsk)
+
+### Added
+- the `WPDb::countRowsInDatabase` method
+
 ## [1.24.3] 2018-05-07;
 ### Fixed
 - check for an existing `.env` file when initializing and ask for the `.env` file name in the init command
@@ -771,7 +778,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24.4...HEAD
+[1.24.4]: https://github.com/lucatume/wp-browser/compare/1.24.3...1.24.4
 [1.24.3]: https://github.com/lucatume/wp-browser/compare/1.24.2...1.24.3
 [1.24.2]: https://github.com/lucatume/wp-browser/compare/1.24.1...1.24.2
 [1.24.1]: https://github.com/lucatume/wp-browser/compare/1.24...1.24.1
