@@ -3,6 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+- the `comment_count` of posts to which comments were added using `WPDb::haveCommentInDatabase` (thanks @ptrkcsk)
+
+### Added
+- the `WPDb::countRowsInDatabase` method
 
 ## [2.1.3] 2018-05-07;
 ### Fixed
