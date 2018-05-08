@@ -269,12 +269,12 @@ class WPDbCommentCest
 
 	protected function commentCountAndApproval() {
 		return [
-			'0-and-approved' => ['starting'=>0, 'approved'=>'1', 'expected'=>1],
-			'1-and-approved' => ['starting'=>1, 'approved'=>'1', 'expected'=>2],
-			'2-and-approved' => ['starting'=>1, 'approved'=>'1', 'expected'=>2],
-			'0-and-not-approved' => ['starting'=>0, 'approved'=>'0', 'expected'=>0],
-			'1-and-not-approved' => ['starting'=>1, 'approved'=>'0', 'expected'=>1],
-			'2-and-not-approved' => ['starting'=>2, 'approved'=>'0', 'expected'=>2],
+			'0-and-approved' => ['starting' => 0, 'approved' => '1', 'expected' => 1],
+			'1-and-approved' => ['starting' => 1, 'approved' => '1', 'expected' => 2],
+			'2-and-approved' => ['starting' => 1, 'approved' => '1', 'expected' => 2],
+			'0-and-not-approved' => ['starting' => 0, 'approved' => '0', 'expected' => 0],
+			'1-and-not-approved' => ['starting' => 1, 'approved' => '0', 'expected' => 1],
+			'2-and-not-approved' => ['starting' => 2, 'approved' => '0', 'expected' => 2],
 		];
 	}
 
@@ -291,7 +291,7 @@ class WPDbCommentCest
 		$expectedCount = $example['expected'];
 		$postId = $I->havePostInDatabase(['comment_count' => $startingCount]);
 		$approved = $approved ? '1' : '0';
-		$I->haveManyCommentsInDatabase($startingCount, $postId, ['comment_approved' => $approved]);
+		$I->haveManyCommentsInDatabase($startingCount, $postId, ['comment_approved' => '1']);
 
 		$commentId = $I->haveCommentInDatabase($postId, ['comment_approved' => $approved]);
 
@@ -303,7 +303,7 @@ class WPDbCommentCest
 		}
 		$I->assertEquals(
 			$expectedCount,
-			$I->countRowsInDatabase($I->grabCommentsTableName(), ['comment_post_id' => $postId, 'comment_approved' => '1'])
+			$I->countRowsInDatabase($I->grabCommentsTableName(), ['comment_post_ID' => $postId, 'comment_approved' => '1'])
 		);
 	}
 }
