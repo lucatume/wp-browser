@@ -1020,7 +1020,7 @@ The module is an extension of the `Codeception\Module\Db` class implementing som
 ```
 
 ### WPBootstrapper
-The module adds some *sugar* methods, beside allowing for the call of any WordPress defined function or class method, to speed up teh writing of test methods:
+The module adds some *sugar* methods, beside allowing for the call of any WordPress defined function or class method, to speed up the writing of test methods:
 
 * `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
 * `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
@@ -1089,7 +1089,7 @@ The module defines the following assertion methods, see code doc blocks document
 * assertNotQueriesByStatementAndFilter
 * assertQueriesCountByStatementAndFilter
 
-**Note**: when used in a `WPTestCase` exending class the assertion methods will exclude queries made during `WPTestCase::setUp`, `WPTestCase::tearDown` and factory methods!  
+**Note**: when used in a `WPTestCase` extending class the assertion methods will exclude queries made during `WPTestCase::setUp`, `WPTestCase::tearDown` and factory methods!  
 This means that the `test_queries` test method below will fail as no queries have been made by methods or that are not part of `setUp`, `tearDown` or factories:
 
 ```php
@@ -1290,7 +1290,7 @@ class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
 }
 ```
 
-By default the driver will lok for time-dependent fields with an `id`, `name` or `class` from a default list (e.g. `_wpnonce`); you might want to add or modify that list using the `WPHtmlOutputDriver::setTimeDependentKeys` method.  
+By default the driver will look for time-dependent fields with an `id`, `name` or `class` from a default list (e.g. `_wpnonce`); you might want to add or modify that list using the `WPHtmlOutputDriver::setTimeDependentKeys` method.  
 On the same note, the driver will look for some attributes when looking to replace the snapshot URL with the current URL; you can modify those using the `WPHtmlOutputDriver::setUrlAttributes` method.  
 Very often WordPress HTML will contain attributes and strings that will inline post IDs, titles and other fields; in general the comparison of the snapshots should not fail because the random post ID used when the snapshot was generated was `23` but it's, in another test run, `89`.  
 To avoid that use the `WPHtmlOutputDriver::setTolerableDifferences` method to define what values defined in the current test run should not trigger a failure (see example above); furthermore run-dependent variables could be used to construct `id`, `class`, `data` and other attributes: if you know that the rendered HTML will contain something like this (where `23` is the post ID):
