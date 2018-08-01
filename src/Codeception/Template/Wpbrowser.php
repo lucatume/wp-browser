@@ -377,6 +377,7 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
+            waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true
             tablePrefix: '%TABLE_PREFIX%'
@@ -421,6 +422,7 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true #import the dump before the tests
             cleanup: true #import the dump between tests
+            waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%TABLE_PREFIX%'
