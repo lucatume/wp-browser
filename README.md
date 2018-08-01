@@ -149,6 +149,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               populate: true
               cleanup: true
               reconnect: true
+              waitlock: 0
               url: 'http://example.local'
               urlReplacement: true
               tablePrefix: 'wp_'
@@ -777,6 +778,7 @@ In the suite `.yml` configuration file add the module among the loaded ones
               dump: 'tests/_data/dump.sql'
               populate: true
               cleanup: true
+              waitlock: 0
 ```
 
 and configure `Db` parameters as usual.
