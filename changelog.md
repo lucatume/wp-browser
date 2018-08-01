@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.1.5] 2018-08-01;
+### Fixed
+- add the `waitlock` parameter to the `WPDb` template configuration
+- make sure the `waitlock` parameter is set in `WPDb` module configuration
+
 ## [2.1.4] 2018-05-08;
 ### Fixed
 - the `comment_count` of posts to which comments were added using `WPDb::haveCommentInDatabase` (thanks @ptrkcsk)
@@ -786,7 +791,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.5...HEAD
+[2.1.5]: https://github.com/lucatume/wp-browser/compare/2.1.4...2.1.5
 [2.1.4]: https://github.com/lucatume/wp-browser/compare/2.1.3...2.1.4
 [2.1.3]: https://github.com/lucatume/wp-browser/compare/2.1.2...2.1.3
 [2.1.2]: https://github.com/lucatume/wp-browser/compare/2.1.1...2.1.2

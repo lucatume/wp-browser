@@ -98,6 +98,7 @@ class WPDb extends ExtendedDb {
 		'dump' => null,
 		'populator' => null,
 		'urlReplacement' => true,
+		'waitlock' => 0,
 	];
 
 	/**
