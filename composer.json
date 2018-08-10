@@ -18,13 +18,11 @@
   ],
   "prefer-stable": false,
 
-
-
+  
   "repositories": [{
     "type": "vcs",
     "url": "https://github.com/42antoine/wp-browser-commons"
   }],
-
 
 
   "require": {
