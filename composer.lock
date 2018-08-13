@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6b703aab33cc1eadedd56970dbaebf7",
+    "content-hash": "4abe7e811ab3d34fbfdfb6281c827ba4",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -1376,7 +1376,7 @@
         },
         {
             "name": "lucatume/wp-browser-commons",
-            "version": "1.2.8.3",
+            "version": "dev-update-symfony-filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/42antoine/wp-browser-commons.git",
@@ -6336,9 +6336,18 @@
             "time": "2016-09-15T14:35:04+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "1.2.8.3",
+            "alias_normalized": "1.2.8.3",
+            "version": "dev-update-symfony-filesystem",
+            "package": "lucatume/wp-browser-commons"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "lucatume/wp-browser-commons": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
