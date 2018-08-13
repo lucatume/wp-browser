@@ -53,5 +53,10 @@
   },
   "bin": [
     "wpcept"
-  ]
+  ],
+  "config": {
+    "github-oauth": {
+      "github.com": "7195050e5830b41c3231026d0a6acae732ba236b"
+    }
+  }
 }
