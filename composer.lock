@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4392b090db0a1328565d06de6f610c48",
+    "content-hash": "db51268375964aa8a1f6e0d6d68c596e",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -6337,7 +6337,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.0"

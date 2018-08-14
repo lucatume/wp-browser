@@ -16,7 +16,7 @@
       "role": "Developer"
     }
   ],
-  "prefer-stable": false,
+  "prefer-stable": true,
   "require": {
     "php": "^7.0",
     "lucatume/wp-browser-commons": "1.2.9",
