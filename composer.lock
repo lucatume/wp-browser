@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4abe7e811ab3d34fbfdfb6281c827ba4",
+    "content-hash": "4392b090db0a1328565d06de6f610c48",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -1376,16 +1376,16 @@
         },
         {
             "name": "lucatume/wp-browser-commons",
-            "version": "dev-update-symfony-filesystem",
+            "version": "1.2.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/42antoine/wp-browser-commons.git",
-                "reference": "35e65264c40b371a18c9fbe6b7917e0e876e9029"
+                "url": "https://github.com/lucatume/wp-browser-commons.git",
+                "reference": "ab4f65a7e5c37322bdd9cdad1892821e630712fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/42antoine/wp-browser-commons/zipball/35e65264c40b371a18c9fbe6b7917e0e876e9029",
-                "reference": "35e65264c40b371a18c9fbe6b7917e0e876e9029",
+                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/ab4f65a7e5c37322bdd9cdad1892821e630712fb",
+                "reference": "ab4f65a7e5c37322bdd9cdad1892821e630712fb",
                 "shasum": ""
             },
             "require": {
@@ -1406,6 +1406,7 @@
                     "tad\\": "src\\tad"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0"
             ],
@@ -1416,10 +1417,7 @@
                 }
             ],
             "description": "Common libraries of the WP-Browser package.",
-            "support": {
-                "source": "https://github.com/42antoine/wp-browser-commons/tree/update-symfony-filesystem"
-            },
-            "time": "2018-06-21T16:13:01+00:00"
+            "time": "2018-08-14T06:48:23+00:00"
         },
         {
             "name": "lucatume/wp-snaphot-assertions",
@@ -6336,18 +6334,9 @@
             "time": "2016-09-15T14:35:04+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "1.2.8.3",
-            "alias_normalized": "1.2.8.3",
-            "version": "dev-update-symfony-filesystem",
-            "package": "lucatume/wp-browser-commons"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "lucatume/wp-browser-commons": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

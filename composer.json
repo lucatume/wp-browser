@@ -17,17 +17,9 @@
     }
   ],
   "prefer-stable": false,
-
-
-  "repositories": [{
-    "type": "vcs",
-    "url": "https://github.com/42antoine/wp-browser-commons"
-  }],
-
-
   "require": {
     "php": "^7.0",
-    "lucatume/wp-browser-commons": "dev-update-symfony-filesystem as 1.2.8.3",
+    "lucatume/wp-browser-commons": "1.2.9",
     "lucatume/codeception-setup-local": "~1.0",
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": ">=2.7 <5.0",
@@ -53,10 +45,5 @@
   },
   "bin": [
     "wpcept"
-  ],
-  "config": {
-    "github-oauth": {
-      "github.com": "7195050e5830b41c3231026d0a6acae732ba236b"
-    }
-  }
+  ]
 }
