@@ -233,8 +233,8 @@ class WPDb extends ExtendedDb {
 		}
 	}
 
-	public function _cleanup() {
-		parent::_cleanup();
+	public function _cleanup($databaseKey = null, $databaseConfig = null) {
+		parent::_cleanup($databaseKey, $databaseConfig);
 
 		$this->blogId = 0;
 	}
@@ -932,7 +932,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @param $transient
 	 *
-	 * @return int The removed option `option_id`.
+	 * @return void
 	 */
 	public function dontHaveTransientInDatabase($transient) {
 		return $this->dontHaveOptionInDatabase('_transient_' . $transient);
@@ -2349,18 +2349,11 @@ class WPDb extends ExtendedDb {
 		}
 	}
 
-	protected function loadDumpUsingDriver() {
-		if (!$this->sql) {
-			$this->debugSection('WPDb', 'No SQL loaded, loading dump skipped');
-
-			return;
-		}
-
+	protected function loadDumpUsingDriver($databaseKey) {
 		if ($this->config['urlReplacement'] === true) {
-			$this->sql = $this->_replaceUrlInDump($this->sql);
+			$this->databasesSql[$databaseKey] = $this->_replaceUrlInDump($this->databasesSql[$databaseKey]);
 		}
 
-		$this->driver->load($this->sql);
-		$this->populated = true;
+		parent::loadDumpUsingDriver($databaseKey);
 	}
 }

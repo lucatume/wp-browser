@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "5e8e74340ff98517ad70d0c4465a2f70",
@@ -161,22 +161,23 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "2.4.5",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "5fee32d5c82791548931cbc34806b4de6aa1abfc"
+                "reference": "dee493561daf644134c95cf176fd2c25aff59ea9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/5fee32d5c82791548931cbc34806b4de6aa1abfc",
-                "reference": "5fee32d5c82791548931cbc34806b4de6aa1abfc",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/dee493561daf644134c95cf176fd2c25aff59ea9",
+                "reference": "dee493561daf644134c95cf176fd2c25aff59ea9",
                 "shasum": ""
             },
             "require": {
                 "behat/gherkin": "^4.4.0",
                 "codeception/phpunit-wrapper": "^6.0.9|^7.0.6",
                 "codeception/stub": "^2.0",
+                "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "facebook/webdriver": ">=1.1.3 <2.0",
@@ -224,7 +225,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Codeception\\": "src\\Codeception",
+                    "Codeception\\": "src/Codeception",
                     "Codeception\\Extension\\": "ext"
                 }
             },
@@ -248,25 +249,25 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2018-08-01T07:21:49+00:00"
+            "time": "2018-09-24T09:33:01+00:00"
         },
         {
             "name": "codeception/phpunit-wrapper",
-            "version": "7.2.0",
+            "version": "7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/phpunit-wrapper.git",
-                "reference": "e12834e076632262f1f85da41f53c06bb1fd28fb"
+                "reference": "a4990126a20bbaa67ca34088ff91960c209a664b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/e12834e076632262f1f85da41f53c06bb1fd28fb",
-                "reference": "e12834e076632262f1f85da41f53c06bb1fd28fb",
+                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/a4990126a20bbaa67ca34088ff91960c209a664b",
+                "reference": "a4990126a20bbaa67ca34088ff91960c209a664b",
                 "shasum": ""
             },
             "require": {
                 "phpunit/php-code-coverage": "^6.0",
-                "phpunit/phpunit": "~7.1.0|~7.2.0",
+                "phpunit/phpunit": "~7.1.0|~7.2.0|~7.3.0",
                 "sebastian/comparator": "^3.0",
                 "sebastian/diff": "^3.0"
             },
@@ -291,7 +292,7 @@
                 }
             ],
             "description": "PHPUnit classes used by Codeception",
-            "time": "2018-08-01T08:17:04+00:00"
+            "time": "2018-08-28T23:24:24+00:00"
         },
         {
             "name": "codeception/stub",
@@ -325,16 +326,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "d2c0a83b7533d6912e8d516756ebd34f893e9169"
+                "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/d2c0a83b7533d6912e8d516756ebd34f893e9169",
-                "reference": "d2c0a83b7533d6912e8d516756ebd34f893e9169",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/46afded9720f40b9dc63542af4e3e43a1177acb0",
+                "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0",
                 "shasum": ""
             },
             "require": {
@@ -377,30 +378,30 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2018-03-29T19:57:20+00:00"
+            "time": "2018-08-08T08:57:40+00:00"
         },
         {
             "name": "composer/composer",
-            "version": "1.6.5",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "b184a92419cc9a9c4c6a09db555a94d441cb11c9"
+                "reference": "576aab9b5abb2ed11a1c52353a759363216a4ad2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/b184a92419cc9a9c4c6a09db555a94d441cb11c9",
-                "reference": "b184a92419cc9a9c4c6a09db555a94d441cb11c9",
+                "url": "https://api.github.com/repos/composer/composer/zipball/576aab9b5abb2ed11a1c52353a759363216a4ad2",
+                "reference": "576aab9b5abb2ed11a1c52353a759363216a4ad2",
                 "shasum": ""
             },
             "require": {
                 "composer/ca-bundle": "^1.0",
                 "composer/semver": "^1.0",
                 "composer/spdx-licenses": "^1.2",
+                "composer/xdebug-handler": "^1.1",
                 "justinrainbow/json-schema": "^3.0 || ^4.0 || ^5.0",
                 "php": "^5.3.2 || ^7.0",
                 "psr/log": "^1.0",
-                "seld/cli-prompt": "^1.0",
                 "seld/jsonlint": "^1.4",
                 "seld/phar-utils": "^1.0",
                 "symfony/console": "^2.7 || ^3.0 || ^4.0",
@@ -426,7 +427,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6-dev"
+                    "dev-master": "1.7-dev"
                 }
             },
             "autoload": {
@@ -457,7 +458,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2018-05-04T09:44:59+00:00"
+            "time": "2018-08-16T14:57:12+00:00"
         },
         {
             "name": "composer/semver",
@@ -581,6 +582,50 @@
                 "validator"
             ],
             "time": "2018-04-30T10:33:04+00:00"
+        },
+        {
+            "name": "composer/xdebug-handler",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/xdebug-handler.git",
+                "reference": "b8e9745fb9b06ea6664d8872c4505fb16df4611c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/xdebug-handler/zipball/b8e9745fb9b06ea6664d8872c4505fb16df4611c",
+                "reference": "b8e9745fb9b06ea6664d8872c4505fb16df4611c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.2 || ^7.0",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Composer\\XdebugHandler\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Stevenson",
+                    "email": "john-stevenson@blueyonder.co.uk"
+                }
+            ],
+            "description": "Restarts a process without xdebug.",
+            "keywords": [
+                "Xdebug",
+                "performance"
+            ],
+            "time": "2018-08-31T19:07:57+00:00"
         },
         {
             "name": "dg/mysql-dump",
@@ -1122,27 +1167,27 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v5.6.29",
+            "version": "v5.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "3dc639feabe0f302f574157a782ede323881a944"
+                "reference": "2daf3c078610f744e2a4dc2f44fb5060cce9835b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/3dc639feabe0f302f574157a782ede323881a944",
-                "reference": "3dc639feabe0f302f574157a782ede323881a944",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/2daf3c078610f744e2a4dc2f44fb5060cce9835b",
+                "reference": "2daf3c078610f744e2a4dc2f44fb5060cce9835b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1.3",
-                "psr/container": "~1.0",
-                "psr/simple-cache": "~1.0"
+                "psr/container": "^1.0",
+                "psr/simple-cache": "^1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.6-dev"
+                    "dev-master": "5.7-dev"
                 }
             },
             "autoload": {
@@ -1162,42 +1207,43 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2018-05-11T23:38:58+00:00"
+            "time": "2018-09-18T12:50:05+00:00"
         },
         {
             "name": "illuminate/support",
-            "version": "v5.6.29",
+            "version": "v5.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "c684cb5e77e213020f7a4ed213d94b2b384c2951"
+                "reference": "f7c68e8c8aab200cc8ad84f974d5511cda58a742"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/c684cb5e77e213020f7a4ed213d94b2b384c2951",
-                "reference": "c684cb5e77e213020f7a4ed213d94b2b384c2951",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/f7c68e8c8aab200cc8ad84f974d5511cda58a742",
+                "reference": "f7c68e8c8aab200cc8ad84f974d5511cda58a742",
                 "shasum": ""
             },
             "require": {
-                "doctrine/inflector": "~1.1",
+                "doctrine/inflector": "^1.1",
                 "ext-mbstring": "*",
-                "illuminate/contracts": "5.6.*",
-                "nesbot/carbon": "^1.24.1",
+                "illuminate/contracts": "5.7.*",
+                "nesbot/carbon": "^1.26.3",
                 "php": "^7.1.3"
             },
             "conflict": {
                 "tightenco/collect": "<5.5.33"
             },
             "suggest": {
-                "illuminate/filesystem": "Required to use the composer class (5.6.*).",
+                "illuminate/filesystem": "Required to use the composer class (5.7.*).",
+                "moontoast/math": "Required to use ordered UUIDs (^1.1).",
                 "ramsey/uuid": "Required to use Str::uuid() (^3.7).",
-                "symfony/process": "Required to use the composer class (~4.0).",
-                "symfony/var-dumper": "Required to use the dd function (~4.0)."
+                "symfony/process": "Required to use the composer class (^4.1).",
+                "symfony/var-dumper": "Required to use the dd function (^4.1)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.6-dev"
+                    "dev-master": "5.7-dev"
                 }
             },
             "autoload": {
@@ -1220,7 +1266,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2018-07-26T15:32:11+00:00"
+            "time": "2018-09-19T18:36:57+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -1332,16 +1378,16 @@
         },
         {
             "name": "lucatume/wp-browser-commons",
-            "version": "1.2.8.2",
+            "version": "1.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser-commons.git",
-                "reference": "bc979467dfa6945032c73ab39143aa5a331d298e"
+                "reference": "ab4f65a7e5c37322bdd9cdad1892821e630712fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/bc979467dfa6945032c73ab39143aa5a331d298e",
-                "reference": "bc979467dfa6945032c73ab39143aa5a331d298e",
+                "url": "https://api.github.com/repos/lucatume/wp-browser-commons/zipball/ab4f65a7e5c37322bdd9cdad1892821e630712fb",
+                "reference": "ab4f65a7e5c37322bdd9cdad1892821e630712fb",
                 "shasum": ""
             },
             "require": {
@@ -1350,7 +1396,7 @@
                 "dg/mysql-dump": "^1.3",
                 "mikemclin/laravel-wp-password": "~2.0.0",
                 "php": ">=5.4.0",
-                "symfony/filesystem": "^2.7",
+                "symfony/filesystem": "^3.0",
                 "xamin/handlebars.php": "~0.10"
             },
             "require-dev": {
@@ -1364,7 +1410,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL v2.0"
+                "GPL-2.0"
             ],
             "authors": [
                 {
@@ -1373,7 +1419,7 @@
                 }
             ],
             "description": "Common libraries of the WP-Browser package.",
-            "time": "2017-01-25T18:09:43+00:00"
+            "time": "2018-08-14T06:48:23+00:00"
         },
         {
             "name": "lucatume/wp-snaphot-assertions",
@@ -1620,16 +1666,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.32.0",
+            "version": "1.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "64563e2b9f69e4db1b82a60e81efa327a30ff343"
+                "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/64563e2b9f69e4db1b82a60e81efa327a30ff343",
-                "reference": "64563e2b9f69e4db1b82a60e81efa327a30ff343",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
+                "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
                 "shasum": ""
             },
             "require": {
@@ -1671,7 +1717,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-07-05T06:59:26+00:00"
+            "time": "2018-09-20T19:36:25+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1929,16 +1975,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.7.6",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712"
+                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
-                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
+                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
                 "shasum": ""
             },
             "require": {
@@ -1950,12 +1996,12 @@
             },
             "require-dev": {
                 "phpspec/phpspec": "^2.5|^3.2",
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5"
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7.x-dev"
+                    "dev-master": "1.8.x-dev"
                 }
             },
             "autoload": {
@@ -1988,7 +2034,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-04-18T13:57:24+00:00"
+            "time": "2018-08-05T17:53:17+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2055,20 +2101,23 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c"
+                "reference": "050bedf145a257b1ff02746c31894800e5122946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/cecbc684605bb0cc288828eb5d65d93d5c676d3c",
-                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/050bedf145a257b1ff02746c31894800e5122946",
+                "reference": "050bedf145a257b1ff02746c31894800e5122946",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.1"
             },
             "type": "library",
             "extra": {
@@ -2098,7 +2147,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2018-06-11T11:44:00+00:00"
+            "time": "2018-09-13T20:33:42+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -2241,16 +2290,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.2.7",
+            "version": "7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "8e878aff7917ef66e702e03d1359b16eee254e2c"
+                "reference": "7b331efabbb628c518c408fdfcaf571156775de2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/8e878aff7917ef66e702e03d1359b16eee254e2c",
-                "reference": "8e878aff7917ef66e702e03d1359b16eee254e2c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7b331efabbb628c518c408fdfcaf571156775de2",
+                "reference": "7b331efabbb628c518c408fdfcaf571156775de2",
                 "shasum": ""
             },
             "require": {
@@ -2295,7 +2344,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.2-dev"
+                    "dev-master": "7.3-dev"
                 }
             },
             "autoload": {
@@ -2321,7 +2370,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-07-15T05:20:50+00:00"
+            "time": "2018-09-08T15:14:29+00:00"
         },
         {
             "name": "psr/container",
@@ -3175,54 +3224,6 @@
             "time": "2016-10-03T07:35:21+00:00"
         },
         {
-            "name": "seld/cli-prompt",
-            "version": "1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Seldaek/cli-prompt.git",
-                "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/cli-prompt/zipball/a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
-                "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Seld\\CliPrompt\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be"
-                }
-            ],
-            "description": "Allows you to prompt for user input on the command line, and optionally hide the characters they type",
-            "keywords": [
-                "cli",
-                "console",
-                "hidden",
-                "input",
-                "prompt"
-            ],
-            "time": "2017-03-18T11:32:45+00:00"
-        },
-        {
             "name": "seld/jsonlint",
             "version": "1.7.1",
             "source": {
@@ -3365,16 +3366,16 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v4.1.2",
+            "version": "v4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
-                "reference": "ff9ac5d5808a530b2e7f6abcf3a2412d4f9bcd62"
+                "reference": "c55fe9257003b2d95c0211b3f6941e8dfd26dffd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/ff9ac5d5808a530b2e7f6abcf3a2412d4f9bcd62",
-                "reference": "ff9ac5d5808a530b2e7f6abcf3a2412d4f9bcd62",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/c55fe9257003b2d95c0211b3f6941e8dfd26dffd",
+                "reference": "c55fe9257003b2d95c0211b3f6941e8dfd26dffd",
                 "shasum": ""
             },
             "require": {
@@ -3418,20 +3419,20 @@
             ],
             "description": "Symfony BrowserKit Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-04T17:31:56+00:00"
+            "time": "2018-07-26T09:10:45+00:00"
         },
         {
             "name": "symfony/config",
-            "version": "v3.4.13",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "1fffdeb349ff36a25184e5564c25289b1dbfc402"
+                "reference": "7b08223b7f6abd859651c56bcabf900d1627d085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/1fffdeb349ff36a25184e5564c25289b1dbfc402",
-                "reference": "1fffdeb349ff36a25184e5564c25289b1dbfc402",
+                "url": "https://api.github.com/repos/symfony/config/zipball/7b08223b7f6abd859651c56bcabf900d1627d085",
+                "reference": "7b08223b7f6abd859651c56bcabf900d1627d085",
                 "shasum": ""
             },
             "require": {
@@ -3482,7 +3483,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-19T14:02:58+00:00"
+            "time": "2018-07-26T11:19:56+00:00"
         },
         {
             "name": "symfony/console",
@@ -3546,16 +3547,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v4.1.2",
+            "version": "v4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "03ac71606ecb0b0ce792faa17d74cc32c2949ef4"
+                "reference": "2a4df7618f869b456f9096781e78c57b509d76c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/03ac71606ecb0b0ce792faa17d74cc32c2949ef4",
-                "reference": "03ac71606ecb0b0ce792faa17d74cc32c2949ef4",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/2a4df7618f869b456f9096781e78c57b509d76c7",
+                "reference": "2a4df7618f869b456f9096781e78c57b509d76c7",
                 "shasum": ""
             },
             "require": {
@@ -3595,20 +3596,20 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-30T07:26:09+00:00"
+            "time": "2018-07-26T09:10:45+00:00"
         },
         {
             "name": "symfony/debug",
-            "version": "v3.4.13",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "0e3ca9cbde90fffec8038f4d4e16fd4046bbd018"
+                "reference": "c4625e75341e4fb309ce0c049cbf7fb84b8897cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/0e3ca9cbde90fffec8038f4d4e16fd4046bbd018",
-                "reference": "0e3ca9cbde90fffec8038f4d4e16fd4046bbd018",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/c4625e75341e4fb309ce0c049cbf7fb84b8897cd",
+                "reference": "c4625e75341e4fb309ce0c049cbf7fb84b8897cd",
                 "shasum": ""
             },
             "require": {
@@ -3651,7 +3652,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-26T08:45:54+00:00"
+            "time": "2018-08-03T10:42:44+00:00"
         },
         {
             "name": "symfony/dependency-injection",
@@ -3725,16 +3726,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v4.1.2",
+            "version": "v4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "eb501fa8aab8c8e2db790d8d0f945697769f6c41"
+                "reference": "1c4519d257e652404c3aa550207ccd8ada66b38e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/eb501fa8aab8c8e2db790d8d0f945697769f6c41",
-                "reference": "eb501fa8aab8c8e2db790d8d0f945697769f6c41",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/1c4519d257e652404c3aa550207ccd8ada66b38e",
+                "reference": "1c4519d257e652404c3aa550207ccd8ada66b38e",
                 "shasum": ""
             },
             "require": {
@@ -3778,20 +3779,20 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2018-07-05T11:54:23+00:00"
+            "time": "2018-07-26T11:00:49+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.4.13",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "fdd5abcebd1061ec647089c6c41a07ed60af09f8"
+                "reference": "b2e1f19280c09a42dc64c0b72b80fe44dd6e88fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/fdd5abcebd1061ec647089c6c41a07ed60af09f8",
-                "reference": "fdd5abcebd1061ec647089c6c41a07ed60af09f8",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/b2e1f19280c09a42dc64c0b72b80fe44dd6e88fb",
+                "reference": "b2e1f19280c09a42dc64c0b72b80fe44dd6e88fb",
                 "shasum": ""
             },
             "require": {
@@ -3841,30 +3842,30 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-04-06T07:35:25+00:00"
+            "time": "2018-07-26T09:06:28+00:00"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.8.43",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "5cfc856c5b665ef5de0df796e98c54bef0fe595b"
+                "reference": "285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/5cfc856c5b665ef5de0df796e98c54bef0fe595b",
-                "reference": "5cfc856c5b665ef5de0df796e98c54bef0fe595b",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c",
+                "reference": "285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9",
+                "php": "^5.5.9|>=7.0.8",
                 "symfony/polyfill-ctype": "~1.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -3891,20 +3892,20 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2018-07-09T13:24:25+00:00"
+            "time": "2018-08-10T07:29:05+00:00"
         },
         {
             "name": "symfony/finder",
-            "version": "v3.4.13",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394"
+                "reference": "8a84fcb207451df0013b2c74cbbf1b62d47b999a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394",
-                "reference": "3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/8a84fcb207451df0013b2c74cbbf1b62d47b999a",
+                "reference": "8a84fcb207451df0013b2c74cbbf1b62d47b999a",
                 "shasum": ""
             },
             "require": {
@@ -3940,29 +3941,32 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-19T20:52:10+00:00"
+            "time": "2018-07-26T11:19:56+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.8.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae"
+                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
-                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/e3d826245268269cd66f8326bd8bc066687b4a19",
+                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "suggest": {
+                "ext-ctype": "For best performance"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8-dev"
+                    "dev-master": "1.9-dev"
                 }
             },
             "autoload": {
@@ -3995,20 +3999,20 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-04-30T19:57:29+00:00"
+            "time": "2018-08-06T14:22:27+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.8.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "3296adf6a6454a050679cde90f95350ad604b171"
+                "reference": "d0cd638f4634c16d8df4508e847f14e9e43168b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/3296adf6a6454a050679cde90f95350ad604b171",
-                "reference": "3296adf6a6454a050679cde90f95350ad604b171",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d0cd638f4634c16d8df4508e847f14e9e43168b8",
+                "reference": "d0cd638f4634c16d8df4508e847f14e9e43168b8",
                 "shasum": ""
             },
             "require": {
@@ -4020,7 +4024,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8-dev"
+                    "dev-master": "1.9-dev"
                 }
             },
             "autoload": {
@@ -4054,20 +4058,20 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-04-26T10:06:28+00:00"
+            "time": "2018-08-06T14:22:27+00:00"
         },
         {
             "name": "symfony/process",
-            "version": "v3.4.13",
+            "version": "v3.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "f741672edfcfe3a2ea77569d419006f23281d909"
+                "reference": "4d6b125d5293cbceedc2aa10f2c71617e76262e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/f741672edfcfe3a2ea77569d419006f23281d909",
-                "reference": "f741672edfcfe3a2ea77569d419006f23281d909",
+                "url": "https://api.github.com/repos/symfony/process/zipball/4d6b125d5293cbceedc2aa10f2c71617e76262e7",
+                "reference": "4d6b125d5293cbceedc2aa10f2c71617e76262e7",
                 "shasum": ""
             },
             "require": {
@@ -4103,7 +4107,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2018-07-09T09:01:07+00:00"
+            "time": "2018-08-03T10:42:44+00:00"
         },
         {
             "name": "symfony/translation",
@@ -5495,16 +5499,16 @@
         },
         {
             "name": "wp-cli/php-cli-tools",
-            "version": "v0.11.9",
+            "version": "v0.11.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/php-cli-tools.git",
-                "reference": "766653b45f99c817edb2b05dc23f7ee9a893768d"
+                "reference": "f99308f92487efe18b5aac2057240fe5bb542374"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/php-cli-tools/zipball/766653b45f99c817edb2b05dc23f7ee9a893768d",
-                "reference": "766653b45f99c817edb2b05dc23f7ee9a893768d",
+                "url": "https://api.github.com/repos/wp-cli/php-cli-tools/zipball/f99308f92487efe18b5aac2057240fe5bb542374",
+                "reference": "f99308f92487efe18b5aac2057240fe5bb542374",
                 "shasum": ""
             },
             "require": {
@@ -5541,7 +5545,7 @@
                 "cli",
                 "console"
             ],
-            "time": "2018-04-20T08:11:30+00:00"
+            "time": "2018-08-22T10:11:06+00:00"
         },
         {
             "name": "wp-cli/rewrite-command",
