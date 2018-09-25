@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [1.24.6] 2018-09-25;
+### Fixed
+- set an upper version bound for Codeception of `2.4.5` to avoid incompatibility issues between `WPDb` and `Db` modules
+
 ## [1.24.5] 2018-08-01;
 ### Fixed
 - add the `waitlock` parameter to the `WPDb` template configuration
@@ -783,7 +787,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/1.24.6...HEAD
+[1.24.6]: https://github.com/lucatume/wp-browser/compare/1.24.5...1.24.6
 [1.24.5]: https://github.com/lucatume/wp-browser/compare/1.24.4...1.24.5
 [1.24.4]: https://github.com/lucatume/wp-browser/compare/1.24.3...1.24.4
 [1.24.3]: https://github.com/lucatume/wp-browser/compare/1.24.2...1.24.3
