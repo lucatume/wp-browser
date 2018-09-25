@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.1.6] 2018-09-25;
+### Fixed
+- set an upper version bound for Codeception of `2.4.5` to avoid incompatibility issues between `WPDb` and `Db` modules
+
 ## [2.1.5] 2018-08-01;
 ### Fixed
 - add the `waitlock` parameter to the `WPDb` template configuration
