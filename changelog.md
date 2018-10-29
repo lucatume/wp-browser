@@ -3,6 +3,18 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Removed
+- the `haveOrUpdateInDatabase` method from `WPDb` module
+- the `ExtendedDb` class
+- the requirement of the `lucatume/wp-snaphot-assertions` package
+- the `\tad\WPBrowser\Snapshot\WPHtmlOutputDriver` class
+- the `wpcept` binaries
+### Fixed
+- compatibility with Codeception `2.5.0` updating the `WPDb` class
+### Changed
+- PHP requirement lowered to PHP 5.6
+- removed the limit to Codeception version
+- the Docker CI stack
 
 ## [2.1.6] 2018-09-25;
 ### Fixed

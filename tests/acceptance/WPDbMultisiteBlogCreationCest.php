@@ -24,14 +24,14 @@ class WPDbMultisiteBlogCreationCest {
 	public function it_should_allow_having_blogs_in_the_database_in_subdomain_multisite_installation(FunctionalTester $I) {
 		$now = time();
 		Date::_injectNow($now);
-		$blog1Id = $I->haveBlogInDatabase('testsite1', [], true);
-		$blog2Id = $I->haveBlogInDatabase('testsite2', [], true);
+		$blog1Id = $I->haveBlogInDatabase('testsite1', [], false);
+		$blog2Id = $I->haveBlogInDatabase('testsite2', [], false);
 
 		$I->seeBlogInDatabase([
 			'blog_id'      => $blog1Id,
 			'site_id'      => 1,
-			'domain'       => 'testsite1.' . $I->getSiteDomain(),
-			'path'         => '/',
+			'domain'       => $I->getSiteDomain(),
+			'path'         => '/testsite1/',
 			'registered'   => date(Date::DATE_FORMAT, $now),
 			'last_updated' => date(Date::DATE_FORMAT, $now),
 			'public'       => 1,
@@ -44,8 +44,8 @@ class WPDbMultisiteBlogCreationCest {
 		$I->seeBlogInDatabase([
 			'blog_id'      => $blog2Id,
 			'site_id'      => 1,
-			'domain'       => 'testsite2.' . $I->getSiteDomain(),
-			'path'         => '/',
+			'domain'       => $I->getSiteDomain(),
+			'path'         => '/testsite2/',
 			'registered'   => date(Date::DATE_FORMAT, $now),
 			'last_updated' => date(Date::DATE_FORMAT, $now),
 			'public'       => 1,

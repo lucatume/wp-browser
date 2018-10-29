@@ -8,7 +8,7 @@ class PluginActivationCest {
 	 */
 	protected $delete = [];
 
-	public function _before(PhantomjsTester $I) {
+	public function _before(WebDriverTester $I) {
 		$this->deleteFiles();
 	}
 
@@ -20,11 +20,11 @@ class PluginActivationCest {
 		}
 	}
 
-	public function _after(PhantomjsTester $I) {
+	public function _after(WebDriverTester $I) {
 		$this->deleteFiles();
 	}
 
-	public function _failed(PhantomjsTester $I) {
+	public function _failed(WebDriverTester $I) {
 		$this->deleteFiles();
 	}
 
@@ -33,7 +33,7 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins(PhantomjsTester $I) {
+	public function be_able_to_activate_plugins(WebDriverTester $I) {
 		$I->loginAsAdmin();
 		$I->amOnPluginsPage();
 
@@ -49,7 +49,7 @@ class PluginActivationCest {
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_plugins_in_a_long_list(PhantomjsTester $I) {
+	public function be_able_to_activate_plugins_in_a_long_list(WebDriverTester $I) {
 		$this->scaffoldTestPlugins($I);
 
 		$I->loginAsAdmin();
@@ -62,7 +62,7 @@ class PluginActivationCest {
 		$I->seePluginDeactivated('plugin-z');
 	}
 
-	protected function scaffoldTestPlugins(PhantomjsTester $I) {
+	protected function scaffoldTestPlugins(WebDriverTester $I) {
 		$template
 			= <<< HANDLEBARS
 /*
@@ -88,7 +88,7 @@ HANDLEBARS;
 	 *
 	 * @test
 	 */
-	public function be_able_to_activate_multiple_plugins(PhantomjsTester $I) {
+	public function be_able_to_activate_multiple_plugins(WebDriverTester $I) {
 		$this->scaffoldTestPlugins($I);
 
 		$I->loginAsAdmin();

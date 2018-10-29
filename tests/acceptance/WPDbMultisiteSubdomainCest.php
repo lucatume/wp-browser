@@ -7,10 +7,10 @@ class WPDbMultisiteSubdomainCest {
 	 * it should allow seing posts from different blogs
 	 */
 	public function it_should_allow_seing_posts_from_different_blogs(AcceptanceTester $I) {
-		$blogIds = $I->haveManyBlogsInDatabase(3, ['domain' => 'blog{{n}}.' . $I->getSiteDomain()]);
+		$blogIds = $I->haveManyBlogsInDatabase(3, ['domain' => $I->getSiteDomain().'/blog{{n}}/'],false);
 
 		for ($i = 0; $i < 3; $i++) {
-			$I->seeBlogInDatabase(['domain' => 'blog' . $i . '.' . $I->getSiteDomain()]);
+			$I->seeBlogInDatabase(['path' => "/blog{$i}/"]);
 		}
 
 		foreach ($blogIds as $blogId) {
@@ -21,12 +21,10 @@ class WPDbMultisiteSubdomainCest {
 			]);
 		}
 
-		for ($i = 0; $i < 3; $i++) {
-			$blogId = $blogIds[$i];
-			$I->amOnSubdomain('blog' . $i);
+		foreach ($blogIds as $i => $blogId) {
 			$I->useBlog($blogId);
 			$I->haveOptionInDatabase('posts_per_page', 10);
-			$I->amOnPage('/');
+			$I->amOnPage("/blog{$i}");
 			$I->see("Blog $blogId Post 0");
 			$I->see("Blog $blogId Post 1");
 			$I->see("Blog $blogId Post 2");

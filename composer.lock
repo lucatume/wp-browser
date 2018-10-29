@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e8e74340ff98517ad70d0c4465a2f70",
+    "content-hash": "f850928eb93431681d6e8b23add49a11",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -786,46 +786,6 @@
             "time": "2017-07-22T11:58:36+00:00"
         },
         {
-            "name": "electrolinux/phpquery",
-            "version": "0.9.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/electrolinux/phpquery.git",
-                "reference": "6cb8afcfe8cd4ce45f2f8c27d561383037c27a3a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/electrolinux/phpquery/zipball/6cb8afcfe8cd4ce45f2f8c27d561383037c27a3a",
-                "reference": "6cb8afcfe8cd4ce45f2f8c27d561383037c27a3a",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "phpQuery/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tobiasz Cudnik",
-                    "email": "tobiasz.cudnik@gmail.com",
-                    "homepage": "https://github.com/TobiaszCudnik",
-                    "role": "Developer"
-                },
-                {
-                    "name": "didier Belot",
-                    "role": "Packager"
-                }
-            ],
-            "description": "phpQuery is a server-side, chainable, CSS3 selector driven Document Object Model (DOM) API based on jQuery JavaScript Library",
-            "homepage": "http://code.google.com/p/phpquery/",
-            "time": "2013-03-21T12:39:33+00:00"
-        },
-        {
             "name": "facebook/webdriver",
             "version": "1.6.0",
             "source": {
@@ -1422,50 +1382,6 @@
             "time": "2018-08-14T06:48:23+00:00"
         },
         {
-            "name": "lucatume/wp-snaphot-assertions",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lucatume/wp-snapshot-assertions.git",
-                "reference": "b44c9716cf497f969f04dd0663bbe85917443512"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-snapshot-assertions/zipball/b44c9716cf497f969f04dd0663bbe85917443512",
-                "reference": "b44c9716cf497f969f04dd0663bbe85917443512",
-                "shasum": ""
-            },
-            "require": {
-                "electrolinux/phpquery": "^0.9.6",
-                "php": ">=7.0",
-                "spatie/phpunit-snapshot-assertions": "^1.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "tad\\WP\\Snapshots\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "theAverageDev (Luca Tumedei)",
-                    "email": "luca@theaveragedev.com"
-                }
-            ],
-            "description": "A set of utilities to support snapshot testing of WordPress code.",
-            "homepage": "https://github.com/lucatume/wp-snaphot-assertions",
-            "keywords": [
-                "snapshot",
-                "testing",
-                "wordpress"
-            ],
-            "time": "2018-03-10T13:04:35+00:00"
-        },
-        {
             "name": "mikemclin/laravel-wp-password",
             "version": "2.0.1",
             "source": {
@@ -2038,16 +1954,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.0.7",
+            "version": "6.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "865662550c384bc1db7e51d29aeda1c2c161d69a"
+                "reference": "4d3ae9b21a7d7e440bd0cf65565533117976859f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/865662550c384bc1db7e51d29aeda1c2c161d69a",
-                "reference": "865662550c384bc1db7e51d29aeda1c2c161d69a",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4d3ae9b21a7d7e440bd0cf65565533117976859f",
+                "reference": "4d3ae9b21a7d7e440bd0cf65565533117976859f",
                 "shasum": ""
             },
             "require": {
@@ -2058,7 +1974,7 @@
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-token-stream": "^3.0",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
-                "sebastian/environment": "^3.1",
+                "sebastian/environment": "^3.1 || ^4.0",
                 "sebastian/version": "^2.0.1",
                 "theseer/tokenizer": "^1.1"
             },
@@ -2071,7 +1987,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
@@ -2097,7 +2013,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-06-01T07:51:50+00:00"
+            "time": "2018-10-23T05:59:32+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3315,54 +3231,6 @@
                 "phra"
             ],
             "time": "2015-10-13T18:44:15+00:00"
-        },
-        {
-            "name": "spatie/phpunit-snapshot-assertions",
-            "version": "1.3.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/phpunit-snapshot-assertions.git",
-                "reference": "ee2ce2e8bfd9683defb54a2c5154008157240dcc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/phpunit-snapshot-assertions/zipball/ee2ce2e8bfd9683defb54a2c5154008157240dcc",
-                "reference": "ee2ce2e8bfd9683defb54a2c5154008157240dcc",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0",
-                "phpunit/phpunit": "^6.0.5|^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\Snapshots\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian De Deyne",
-                    "email": "sebastian@spatie.be",
-                    "homepage": "https://spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Snapshot testing with PHPUnit",
-            "homepage": "https://github.com/spatie/phpunit-snapshot-assertions",
-            "keywords": [
-                "assert",
-                "phpunit",
-                "phpunit-snapshot-assertions",
-                "snapshot",
-                "spatie",
-                "testing"
-            ],
-            "time": "2018-06-08T22:20:36+00:00"
         },
         {
             "name": "symfony/browser-kit",
@@ -6100,16 +5968,16 @@
         },
         {
             "name": "wp-cli/wp-config-transformer",
-            "version": "v1.2.1",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-config-transformer.git",
-                "reference": "6ce0a9fae09d53145c9c9c79486a69684598488d"
+                "reference": "c469771d29279e5d7a8a2065f6be809ae66a47cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-config-transformer/zipball/6ce0a9fae09d53145c9c9c79486a69684598488d",
-                "reference": "6ce0a9fae09d53145c9c9c79486a69684598488d",
+                "url": "https://api.github.com/repos/wp-cli/wp-config-transformer/zipball/c469771d29279e5d7a8a2065f6be809ae66a47cc",
+                "reference": "c469771d29279e5d7a8a2065f6be809ae66a47cc",
                 "shasum": ""
             },
             "require": {
@@ -6137,7 +6005,7 @@
                 }
             ],
             "description": "Programmatically edit a wp-config.php file.",
-            "time": "2018-03-20T16:19:27+00:00"
+            "time": "2018-10-03T10:40:09+00:00"
         },
         {
             "name": "xamin/handlebars.php",
@@ -6292,60 +6160,27 @@
             "time": "2015-05-22T20:27:42+00:00"
         },
         {
-            "name": "site5/phantoman",
-            "version": "v1.1.7",
+            "name": "wordpress/wordpress",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/grantlucas/phantoman.git",
-                "reference": "f65d26d3311e44380692cb0255b95181743f69f2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/grantlucas/phantoman/zipball/f65d26d3311e44380692cb0255b95181743f69f2",
-                "reference": "f65d26d3311e44380692cb0255b95181743f69f2",
-                "shasum": ""
-            },
-            "require": {
-                "codeception/codeception": "^2.1",
-                "php": ">=5.4.0"
-            },
-            "suggest": {
-                "jakoch/phantomjs-installer": "Automatically installs PhantomJS locally to your project."
+                "url": "https://github.com/WordPress/WordPress.git",
+                "reference": "master"
             },
             "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Codeception\\Extension\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Grant Lucas",
-                    "email": "contact@grantlucas.com"
-                }
-            ],
-            "description": "The Codeception extension for automatically starting and stopping PhantomJS when running tests.",
-            "homepage": "https://github.com/grantlucas/phantoman",
-            "keywords": [
-                "codeception",
-                "extension",
-                "headless",
-                "phantomjs"
-            ],
-            "time": "2016-09-15T14:35:04+00:00"
+            "time": "2018-10-05T20:43:25+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "wordpress/wordpress": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.0"
+        "php": ">=5.6.0",
+        "ext-pdo": "*"
     },
     "platform-dev": []
 }

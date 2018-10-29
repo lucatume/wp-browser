@@ -1,0 +1,73 @@
+version: '3.3'
+
+services:
+    chromedriver:
+        container_name: wpbrowser_chromedriver
+        links:
+            # from this container the `wordpress` container will be at `wpbrowser.local`
+            # it's convenient to use an URL-like alias for acceptance tests
+            - wordpress:wpbrowser.local
+        image: blueimp/chromedriver:latest
+        ports:
+          - "${CHROMEDRIVER_PORT:-4444}:4444"
+
+    mailhog:
+        container_name: wpbrowser_mailhog
+        image: mailhog/mailhog
+        ports:
+          - "${MH_PORT:-9026}:8025"
+
+    db:
+        container_name: wpbrowser_db
+        image: mariadb:latest
+        volumes:
+            - db_data:/var/lib/mysql
+        ports:
+            - "${DB_PORT:-4407}:3306"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: wordpress
+            MYSQL_USER: wordpress
+            MYSQL_PASSWORD: wordpress
+
+    wordpress:
+        container_name: wpbrowser_wp
+        depends_on:
+            - db
+            - mailhog
+        build:
+            context: ./wordpress
+        ports:
+            - "${WP_PORT:-8081}:80"
+        restart: always
+        environment:
+            WORDPRESS_DB_HOST: db:3306
+            WORDPRESS_DB_USER: root
+            WORDPRESS_DB_PASSWORD: root
+            # publish them to the container to have the landing page updated
+            WP_PORT: ${WP_PORT:-8081}
+            DB_PORT: ${DB_PORT:-4407}
+            MH_PORT: ${MH_PORT:-9026}
+            ADMINER_PORT: ${ADMINER_PORT:-8091}
+            COMPOSER_UPDATE: ${COMPOSER_UPDATE:-1}
+            CHROMEDRIVER_PORT: ${CHROMEDRIVER_PORT:-4444}
+        volumes:
+            # bind WordPress over from the vendor folder in the /var/www/html folder
+            - ./../vendor/wordpress/wordpress:/var/www/html
+            # bind the project files in the plugins folder
+            - ./..:/project
+            # bind over in the container the PHP configuration overrides
+            - ./wordpress/99-php-overrides.ini:/usr/local/etc/php/conf.d/99-php-overrides.ini
+        entrypoint: entrypoint.sh ci
+
+    adminer:
+        container_name: wpbrowser_adminer
+        image: adminer:latest
+        links:
+          - db
+        ports:
+          - "${ADMINER_PORT:-8091}:8080"
+
+volumes:
+    db_data:

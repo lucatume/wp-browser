@@ -1,0 +1,14 @@
+#!/bin/bash
+# Echoes the IP of the host machine running the container stack.
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "$SCRIPTDIR";
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	echo `docker run busybox ping -c 1 docker.for.mac.localhost | awk 'FNR==2 {print $4}' | sed s'/.$//'`
+elif [[ $(which docker.exe) ]]; then
+	# this seems to be the correct IP of the DockerNAT on Windows machines.
+	echo "host.docker.internal"
+else
+	echo `hostname -I | awk '{print $1}'`
+fi;

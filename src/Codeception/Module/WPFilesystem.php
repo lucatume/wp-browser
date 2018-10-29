@@ -130,11 +130,14 @@ class WPFilesystem extends Filesystem {
 
 			if ($check) {
 				$mustExistAndIsNotDir = $info['mustExist'] && !is_dir($absolutePath);
+
 				if ($mustExistAndIsNotDir) {
-					throw new ModuleConfigException(
-						__CLASS__,
-						"The {$configKey} config path [{$path}] does not exist."
-					);
+					if (!mkdir($absolutePath, 0777, true) && !is_dir($absolutePath)) {
+						throw new ModuleConfigException(
+							__CLASS__,
+							"The {$configKey} config path [{$path}] does not exist."
+						);
+					}
 				}
 			}
 

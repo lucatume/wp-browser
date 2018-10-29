@@ -3,10 +3,8 @@
 namespace Codeception\Module;
 
 use BaconStringUtils\Slugifier;
-use Codeception\Configuration;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
-use Codeception\Lib\Driver\ExtendedDbDriver as Driver;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use Handlebars\Handlebars;
@@ -25,7 +23,7 @@ use tad\WPBrowser\Module\Support\DbDump;
  * An extension of Codeception Db class to add WordPress database specific
  * methods.
  */
-class WPDb extends ExtendedDb {
+class WPDb extends Db {
 
 	/**
 	 * @var \tad\WPBrowser\Module\Support\DbDump
@@ -129,6 +127,18 @@ class WPDb extends ExtendedDb {
 	protected $templateData;
 
 	/**
+	 * @var array Stores the keys of the databases the dump of which was
+	 *            already replaced.
+	 */
+	protected $urlReplacedDumpsDatabaseKeys = [];
+
+	/**
+	 * @var int[] An array containing the blog IDs of the sites scaffolded
+	 *            by the module.
+	 */
+	protected $scaffoldedBlogIds;
+
+	/**
 	 * WPDb constructor.
 	 *
 	 * @param \Codeception\Lib\ModuleContainer          $moduleContainer
@@ -151,62 +161,48 @@ class WPDb extends ExtendedDb {
 	 * @throws \Codeception\Exception\ModuleException
 	 */
 	public function _initialize(Handlebars $handlebars = null, Tables $table = null) {
-		$this->prepareSqlDumpFile();
-
-		$this->initialize_driver();
-
-		$this->dbh = $this->driver->getDbh();
-
-		// starting with loading dump
-		$this->importSqlDumpFile();
-
+		parent::_initialize();
 		$this->tablePrefix = $this->config['tablePrefix'];
 		$this->handlebars = $handlebars ?: new Handlebars();
 		$this->tables = $table ?: new Tables();
+
+		// @todo where to move this?
+ //		$this->prepareSqlDumpFile();
+		// @todo where to move this?
+//		$this->importSqlDumpFile();
 	}
 
 	/**
-	 * @throws \Codeception\Exception\ModuleConfigException
+	 * Prepares a database dump to be loaded by cleaning it and replacing
+	 * URLs in it if required.
+	 *
+	 * @param string|array $dump The dump string or array of lines.
+	 *
+	 * @return string|array The ready SQL dump.
 	 */
-	protected function prepareSqlDumpFile() {
-		if ($this->config['dump'] && ($this->config['cleanup'] or ($this->config['populate']))) {
-
-			if (!file_exists(Configuration::projectDir() . $this->config['dump'])) {
-				throw new ModuleConfigException(__CLASS__, "\nFile with dump doesn't exist.
-                    Please, check path for sql file: " . $this->config['dump']);
-			}
-
-			if (empty($this->config['populator'])) {
-				$sql = file_get_contents(Configuration::projectDir() . $this->config['dump']);
-				// Remove C-style comments (except MySQL directives).
-				$sql = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $sql);
-				$sql = $this->_replaceUrlInDump($sql);
-				$this->sql = explode("\n", $sql);
-			}
-		}
+	protected function prepareSqlDump($dump) {
+		// Remove C-style comments (except MySQL directives).
+		$prepared = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $dump);
+		return $this->_replaceUrlInDump($prepared);
 	}
 
 	public function _replaceUrlInDump($sql) {
-		if (true === $this->config['urlReplacement']) {
-			$this->dbDump->setTablePrefix($this->config['tablePrefix']);
-			$this->dbDump->setUrl($this->config['url']);
-			if (is_array($sql)) {
-				$sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
-				$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
-			} else {
-				$sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
-				$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
-			}
+		if($this->config['urlReplacement'] === false){
+			return $sql;
 		}
-		return $sql;
-	}
 
-	protected function initialize_driver() {
-		try {
-			$this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
-		} catch (\PDOException $e) {
-			throw new ModuleConfigException(__CLASS__, $e->getMessage() . ' while creating PDO connection');
+		$this->dbDump->setTablePrefix($this->config['tablePrefix']);
+		$this->dbDump->setUrl($this->config['url']);
+
+		if (\is_array($sql)) {
+			$sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
+			$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
+		} else {
+			$sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
+			$sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
 		}
+
+		return $sql;
 	}
 
 	/**
@@ -236,6 +232,10 @@ class WPDb extends ExtendedDb {
 	public function _cleanup($databaseKey = null, $databaseConfig = null) {
 		parent::_cleanup($databaseKey, $databaseConfig);
 
+=======
+	public function _cleanup($databaseKey = null, $databaseConfig = null) {
+		parent::_cleanup($databaseKey, $databaseConfig);
+>>>>>>> Stashed changes
 		$this->blogId = 0;
 	}
 
@@ -499,7 +499,7 @@ class WPDb extends ExtendedDb {
 	 * @return mixed
 	 */
 	public function grabLatestEntryByFromDatabase($tableName, $idColumn = 'ID') {
-		$dbh = $this->driver->getDbh();
+		$dbh = $this->_getDbh();
 		$sth = $dbh->prepare("SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1");
 		$this->debugSection('Query', $sth->queryString);
 		$sth->execute();
@@ -693,7 +693,7 @@ class WPDb extends ExtendedDb {
 		$updateQuery =
 			"UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
 
-		return $this->driver->executeQuery($updateQuery, []);
+		return $this->_getDriver()->executeQuery($updateQuery, []);
 	}
 
 	/**
@@ -883,9 +883,9 @@ class WPDb extends ExtendedDb {
 	 * @throws \Exception
 	 */
 	public function grabAllFromDatabase($table, $column, $criteria) {
-		$query = $this->driver->select($column, $table, $criteria);
+		$query = $this->_getDriver()->select($column, $table, $criteria);
 
-		$sth = $this->driver->executeQuery($query, array_values($criteria));
+		$sth = $this->_getDriver()->executeQuery($query, array_values($criteria));
 
 		return $sth->fetchAll(PDO::FETCH_ASSOC);
 	}
@@ -1744,7 +1744,7 @@ class WPDb extends ExtendedDb {
 	 * @return int
 	 */
 	protected function _seeTableInDatabase($table) {
-		$dbh = $this->driver->getDbh();
+		$dbh = $this->_getDbh();
 		$sth = $dbh->prepare('SHOW TABLES LIKE :table');
 		$this->debugSection('Query', $sth->queryString);
 		$sth->execute(['table' => $table]);
@@ -1858,13 +1858,16 @@ class WPDb extends ExtendedDb {
 			$defaults['path'] = '/';
 		} else {
 			$defaults['domain'] = $this->getSiteDomain();
-			$defaults['path'] = sprintf('/%s/', $domainOrPath);
+			$defaults['path'] = '/' . trim($domainOrPath,'/') . '/';
 		}
+
+		unset($overrides['path'],$overrides['domain']);
+
 		$data = array_merge($defaults, array_intersect_key($overrides, $defaults));
 
 		$blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
 
-		$this->scaffoldBlogTables($blogId, $domainOrPath);
+		$this->scaffoldBlogTables($blogId, $domainOrPath, (bool) $subdomain);
 
 		return $blogId;
 	}
@@ -1883,18 +1886,26 @@ class WPDb extends ExtendedDb {
 	/**
 	 * Scaffolds the database tables needed to create a new blog (site) in a multisite network.
 	 *
-	 * @param      int $blogId    The new blog (site) ID.
-	 * @param string   $subdomain The site subdomain if any
+	 * @param int    $blogId       The new blog (site) ID.
+	 * @param string $domainOrPath The subdomain or sub-path of the site.
+	 * @param bool   $subdomain    The site subdomain if any
 	 */
-	protected function scaffoldBlogTables($blogId, $subdomain = null) {
+	protected function scaffoldBlogTables($blogId, $domainOrPath, $isSubdomain = true) {
 		$stylesheet = $this->grabOptionFromDatabase('stylesheet');
+		$subdomain = $isSubdomain ?
+			trim($domainOrPath, '.')
+			: '';
+		$subFolder = !$isSubdomain ?
+			trim($domainOrPath, '/')
+			: '';
+
 		$data = [
 			'subdomain' => $subdomain,
 			'domain' => $this->getSiteDomain(),
-			'subfolder' => $this->getSiteSubfolder(),
+			'subfolder' => $subFolder,
 			'stylesheet' => $stylesheet,
 		];
-		$dbh = $this->driver->getDbh();
+		$dbh = $this->_getDbh();
 
 		$dropQuery = $this->tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
 		$sth = $dbh->prepare($dropQuery);
@@ -2054,7 +2065,9 @@ class WPDb extends ExtendedDb {
 	}
 
 	/**
-	 * @param Db|MsSql|ExtendedMySql|Oracle|PostgreSql|Sqlite $driver
+	 * Sets the database driver of this object.
+	 *
+	 * @param mixed $driver
 	 */
 	public function _setDriver($driver) {
 		$this->driver = $driver;
@@ -2272,7 +2285,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of the deleted user(s) ID(s)
 	 */
-	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true): array {
+	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true) {
 		$data = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
 		if (!(is_array($data) && !empty($data))) {
 			return [];
@@ -2292,7 +2305,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed table name, e.g. `wp_users`
 	 */
-	public function grabUsersTableName(): string {
+	public function grabUsersTableName() {
 		return $this->grabTablePrefix() . 'users';
 	}
 
@@ -2328,6 +2341,22 @@ class WPDb extends ExtendedDb {
 	 */
 	public function grabUserIdFromDatabase($userLogin) {
 		return $this->grabFromDatabase($this->getUsersTableName(), 'ID', ['user_login' => $userLogin]);
+	}
+
+	/**
+	 * Deletes a database entry.
+	 *
+	 * @param  string $table The table name.
+	 * @param  array $criteria An associative array of the column names and values to use as deletion criteria.
+	 *
+	 * @return void
+	 */
+	public function dontHaveInDatabase($table, array $criteria) {
+		try {
+			$this->_getDriver()->deleteQueryByCriteria($table, $criteria);
+		} catch (\Exception $e) {
+			$this->debug("Couldn't delete record(s) from {$table} with criteria " . json_encode($criteria));
+		}
 	}
 
 	/**

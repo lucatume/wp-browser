@@ -1,0 +1,7 @@
+url: http://localhost:$WP_PORT
+path: /var/www/html
+user: admin
+color: true
+allow-root: true
+apache_modules:
+  - mod_rewrite

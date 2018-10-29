@@ -17,33 +17,44 @@
     }
   ],
   "prefer-stable": true,
+  "repositories": {
+    "wordpress": {
+      "type": "package",
+      "package": {
+        "name": "wordpress/wordpress",
+        "version":  "dev-master",
+        "source": {
+          "type": "git",
+          "reference": "master",
+          "url":  "https://github.com/WordPress/WordPress.git"
+        }
+      }
+    }
+  },
   "require": {
-    "php": "^7.0",
+    "php": ">=5.6.0",
+    "ext-pdo": "*",
     "lucatume/wp-browser-commons": "^1.2.5",
     "lucatume/codeception-setup-local": "~1.0",
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": ">=2.7 <5.0",
     "antecedent/patchwork": "^2.0",
-    "codeception/codeception": ">=2.3 <=2.4.5",
+    "codeception/codeception": "~2.5.0",
     "gumlet/php-image-resize": "^1.6",
-    "lucatume/wp-snaphot-assertions": "~1.0",
     "vlucas/phpdotenv": "^2.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "Codeception\\": "src\\Codeception",
-      "tad\\": "src\\tad"
-    },
-    "files": [
-      "src/tad/WPBrowser/functions.php"
-    ]
   },
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
-    "site5/phantoman": "^1.1"
+    "wordpress/wordpress":  "dev-master"
   },
-  "bin": [
-    "wpcept"
-  ]
+  "autoload": {
+    "psr-4": {
+      "Codeception\\": "src/Codeception",
+      "tad\\": "src/tad"
+    },
+    "files": [
+      "src/tad/WPBrowser/functions.php"
+    ]
+  }
 }
