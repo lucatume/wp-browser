@@ -3,6 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Changed
+- lowered the PHP required version from 7.0 to 5.6
+- removed `lucatume/wp-snapshot-assertions` from the required packages
+- removed the `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class, require the `lucatume/wp-snapshot-assertions` package if you need it
+- removed the `wpcept` and `wpcept.bat` deprecated binaries
+- add a `.gitattributes` file to stop littering people's vendor library (sorry, my bad)
 
 ## [2.1.6] 2018-09-25;
 ### Fixed
