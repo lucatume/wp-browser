@@ -2272,7 +2272,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return array An array of the deleted user(s) ID(s)
 	 */
-	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true): array {
+	public function dontHaveUserInDatabaseWithEmail($userEmail, $purgeMeta = true) {
 		$data = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
 		if (!(is_array($data) && !empty($data))) {
 			return [];
@@ -2292,7 +2292,7 @@ class WPDb extends ExtendedDb {
 	 *
 	 * @return string The prefixed table name, e.g. `wp_users`
 	 */
-	public function grabUsersTableName(): string {
+	public function grabUsersTableName() {
 		return $this->grabTablePrefix() . 'users';
 	}
 
