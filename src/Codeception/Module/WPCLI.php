@@ -132,7 +132,7 @@ class WPCLI extends Module
 		} catch (\ReflectionException $e) {
 			throw new ModuleException(__CLASS__, 'could not find the path to embedded WPCLI Configurator class');
 		}
-		$this->wpCliRoot = dirname(dirname(dirname($ref->getFileName())));
+		$this->wpCliRoot = dirname($ref->getFileName()) . '/../../';
 		$this->bootPath  = $this->wpCliRoot . '/php/boot-fs.php';
     }
 
