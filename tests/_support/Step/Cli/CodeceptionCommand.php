@@ -15,7 +15,6 @@ class CodeceptionCommand extends \CliTester {
             $parsed['extensions'] = [];
         }
         $parsed['extensions']['commands'] = [
-            'Codeception\Command\DbSnapshot',
             'Codeception\Command\GenerateWPAjax',
             'Codeception\Command\GenerateWPCanonical',
             'Codeception\Command\GenerateWPRestApi',
@@ -23,7 +22,6 @@ class CodeceptionCommand extends \CliTester {
             'Codeception\Command\GenerateWPRestPostTypeController',
             'Codeception\Command\GenerateWPUnit',
             'Codeception\Command\GenerateWPXMLRPC',
-            'tad\Codeception\Command\SearchReplace',
         ];
         file_put_contents($config, Yaml::dump($parsed));
     }
