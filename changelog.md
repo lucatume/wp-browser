@@ -3,11 +3,18 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Removed
+- removed `lucatume/wp-snapshot-assertions` from the required packages
+- removed the `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class and  the `lucatume/wp-snapshot-assertions` dependency
+- removed the `wpcept` and `wpcept.bat` deprecated binaries
+- removed the `Codeception\Command\DbSnapshot` command
+- removed the `tad\Codeception\Command\SearchReplace` command from the template
+- removed the `lucatume/codeception-setup-local` dependency
+
 ### Changed
 - lowered the PHP required version from 7.0 to 5.6
-- removed `lucatume/wp-snapshot-assertions` from the required packages
-- removed the `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class, require the `lucatume/wp-snapshot-assertions` package if you need it
-- removed the `wpcept` and `wpcept.bat` deprecated binaries
+
+### Added
 - add a `.gitattributes` file to stop littering people's vendor library (sorry, my bad)
 
 ## [2.1.6] 2018-09-25;
