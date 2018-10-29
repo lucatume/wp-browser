@@ -3,15 +3,61 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception.
 
-> **Please note this is branch will only support PHP 7.0+; use the `php-56-compat` branch if you need to use PHP 5.6 in your tests requiring `lucatume/wp-browser:~1.0` in your `composer.json` file.**
-
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
 [Example usage](https://github.com/lucatume/idlikethis).
 
-## Upgrade from version 1.0 to 2.0 of wp-browser
-* use PHP 7.0 or higher
-* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framework\TestCase`)
+* [Upgrading from version 1.0 to 2.0 of wp-browser](#upgrading-from-version-10-to-20-of-wp-browser)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+  * [Setup and usage](#setup-and-usage)
+     * [Updating existing projects](#updating-existing-projects)
+     * [Do not run all the suites at the same time!](#do-not-run-all-the-suites-at-the-same-time)
+  * [Modules](#modules)
+     * [WPBrowser configuration](#wpbrowser-configuration)
+     * [WPWebDriver configuration](#wpwebdriver-configuration)
+     * [WPDb configuration](#wpdb-configuration)
+        * [Dump file domain replacement](#dump-file-domain-replacement)
+     * [WPLoader configuration](#wploader-configuration)
+        * [WPLoader to only bootstrap WordPress](#wploader-to-only-bootstrap-wordpress)
+     * [WPBootstrapper configuration](#wpbootstrapper-configuration)
+     * [WPQueries configuration](#wpqueries-configuration)
+     * [WordPress module configuration](#wordpress-module-configuration)
+     * [WPCLI module configuration](#wpcli-module-configuration)
+          * [Option overrides](#option-overrides)
+        * [Configuration files](#configuration-files)
+     * [WPFilesystem module configuration](#wpfilesystem-module-configuration)
+     * [Additional commands](#additional-commands)
+        * [generate:wpunit](#generatewpunit)
+        * [generate:wprest](#generatewprest)
+        * [generate:wprestcontroller](#generatewprestcontroller)
+        * [generate:wprestposttypecontroller](#generatewprestposttypecontroller)
+        * [generate:wpajax](#generatewpajax)
+        * [generate:wpxmlrpc](#generatewpxmlrpc)
+        * [generate:wpcanonical](#generatewpcanonical)
+     * [Management commands](#management-commands)
+        * [search-replace](#search-replace)
+        * [setup](#setup)
+        * [db:snapshot](#dbsnapshot)
+     * [ExtendedDb configuration](#extendeddb-configuration)
+  * [Methods](#methods)
+     * [WPBrowser module](#wpbrowser-module)
+     * [WPDb module](#wpdb-module)
+        * [Handlebar templates while having many](#handlebar-templates-while-having-many)
+     * [ExtendedDb module](#extendeddb-module)
+     * [WPBootstrapper](#wpbootstrapper)
+     * [WPQueries](#wpqueries)
+  * [Extensions](#extensions)
+     * [Symlinker](#symlinker)
+     * [Copier](#copier)
+        * [Environments support](#environments-support)
+
+## Upgrading from version 1.0 to 2.0 of wp-browser
+* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `P
+HPUnit\Framework\TestCase`)
+
+## Requirements
+This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
 
 ## Installation
 To install simply require the package in the `composer.json` file like this:
@@ -19,7 +65,7 @@ To install simply require the package in the `composer.json` file like this:
 ```json
   "require-dev":
     {
-      "lucatume/wp-browser": "~1.21"
+      "lucatume/wp-browser": "~2.0"
     }
 ```
     
@@ -54,28 +100,25 @@ extensions:
         - 'Codeception\Command\GenerateWPAjax'
         - 'Codeception\Command\GenerateWPCanonical'
         - 'Codeception\Command\GenerateWPXMLRPC'
-        - 'Codeception\Command\DbSnapshot'
-        - 'tad\Codeception\Command\SearchReplace'
 ```
 
-## A word of caution
-Due to WordPress dependency on globals and constants the suites should not be ran at the same time; this means that in place of this:
+### Do not run all the suites at the same time!
+Due to WordPress dependency on globals and constants the suites should not be ran at the same time.  
+Running this command has the potential of runnign into a number of issues:
 
 ```bash
 codecept run
 ```
 
-This is probably a better idea:
+Run the suites one by one:
 
 ```bash
 codecept run acceptance && codecept run functional && codecept run ...
 ```
 
-Doing otherwise will result in fatal errors due to constants, globals and/or classes and methods attempted redefinition.
-
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
-Not every module will make sense or work in any suite or type of test case but here's an high level view:
+Not every module will make sense or work in any suite or type of test case but here's an high level view of what module should be used in which context:
 
 * WPBrowser - a PHP based, JavaScript-less and headless browser for **acceptance testing not requiring JavaScript support**
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
@@ -382,10 +425,13 @@ modules:
 The module defines two methods wrapping calls to the wp-cli tool:
 
 * `cli(string $userCommand)` - executes `$userCommand` and returns **the command exit status**; `0` (shell equivalent of OK) will be cast to `true`.
+
     ```php
     $deleted = $I->cli('user delete user001');
     ```
-    Test wp-cli exit stati as many commands raising warnings will return a `0` status, e.g:
+
+    wp-cli behaviour is not changed so it might return success exit status while raising warnings, e.g:
+
     ```php
     $activated = $I->cli('plugin activate existing-plugin');
     $activated = $I->cli('plugin activate non-existing-plugin');
@@ -393,13 +439,17 @@ The module defines two methods wrapping calls to the wp-cli tool:
     The `$activated` var will have a value of `true` in both cases as the exit status, even if the `non-existing-plugin` does not exist, will be `0`.
     
 * `cliToArray(string $userCommand)` - executes `$userCommand` and returns the command output cast to array; the command will try to guess if the output should be split by newlines or spaces.
+
     ```php
-    $inactiveThemes = $I->cliToArray('theme list --status=active --field=name');
+    $activeThemes = $I->cliToArray('theme list --status=active --field=name');
     ```
+
     Should the default guessing prove wrong the optional `$splitCallback` argument can be used; the callback function will be passed 3 arguments:
-    
+
     ```php
-    function splitCallback(string $output, string $userCommand, WPCLI $wpcli)
+    $activeThemes = $I->cliToArray('theme list --status=active --field=name', function(string $output, string $userCommand, WPCLI $wpcli){
+      // do something with the output.
+    });
     ```
    
    and is expected to return an array output.
@@ -1245,69 +1295,3 @@ codecept run acceptance --env dist
 ```
 
 Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
-
-## Bonus tracks
-
-### Snapshot testing WordPress code output
-Snapshot testing comes very handy when testing the HTML output of some WordPress generated and managed code.  
-In such instances WordPress will often generate time-dependent values, like nonces, and full URLs, like image sources.  
-Those environment and time related differences might break a snapshot for the wrong reasons; e.g. the snapshot was generated on one machine (say locally) and ran on another machine where WordPress might be served at another URL and the test will surely run at a different time (say CI).  
-To smoothly compare the two HTML outputs install the `lucatume/wp-snapshot-assertions` package:
-
-```shell
-composer require --dev lucatume/wp-snapshot-assertions
-```
-
-And then use the `WPHtmlOutputDriver`  driver in your snapshot tests:
-
-```php
-use Spatie\Snapshots\MatchesSnapshots;
-use tad\WP\Snapshots\WPHtmlOutputDriver;
-
-class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
-	use MatchesSnapshots;
-
-	/**
-	* Test snapshot for render
-	*/
-	public function test_snapshot_render() {
-		// from some environment variable
-		$currentWpUrl = getenv('WP_URL');
-		$snapshotUrl = 'http://wp.localhost';
-		
-		$driver = new WPHtmlOutputDriver($currentWpUrl, $snapshotUrl);
-		
-		$sut = new MyPluginHTMLRenderingClass();
-		
-		// create a random post and return its post ID
-		$postId= $this->factory->post->create();
-		
-		$renderedHtml = $sut->renderHtmlFor($postId);
-      		$driver->setTolerableDifferences([$postId]);
-		$driver->setTolerableDifferencesPrefixes(['post_', 'post-']);
-		$driver->setTolerableDifferencesPostfixes(['-single', '-another-postfix']);
-		
-		$this->assertMatchesSnapshot($renderedHtml, $driver);
-	}
-}
-```
-
-By default the driver will look for time-dependent fields with an `id`, `name` or `class` from a default list (e.g. `_wpnonce`); you might want to add or modify that list using the `WPHtmlOutputDriver::setTimeDependentKeys` method.  
-On the same note, the driver will look for some attributes when looking to replace the snapshot URL with the current URL; you can modify those using the `WPHtmlOutputDriver::setUrlAttributes` method.  
-Very often WordPress HTML will contain attributes and strings that will inline post IDs, titles and other fields; in general the comparison of the snapshots should not fail because the random post ID used when the snapshot was generated was `23` but it's, in another test run, `89`.  
-To avoid that use the `WPHtmlOutputDriver::setTolerableDifferences` method to define what values defined in the current test run should not trigger a failure (see example above); furthermore run-dependent variables could be used to construct `id`, `class`, `data` and other attributes: if you know that the rendered HTML will contain something like this (where `23` is the post ID):
-
-```html
-<div class="post-23" data-one="23-postfix" data-two="prefix-23">
-  <p>Foo</p>
-</div>
-```
-
-You might want to say to the driver that the current post ID is a tolerable difference even when prefixed with `prefix-` or postfixed with `-postfix`:
-
-```php
-$driver->setTolerableDifferences([$currentPostId]);
-$driver->setTolerableDifferencesPrefixes(['prefix-']);
-$driver->setTolerableDifferencesPostfixes(['-postfix']);
-$this->assertMatchesSnapshot($renderedHtml, $driver);
-```
