@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "916e30a45cb55c23c4451ac7a3853cff",
+    "content-hash": "7a9e77dbb33e6a7b98f7d0cbbf51927b",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -5916,6 +5916,53 @@
                 "symfony"
             ],
             "time": "2015-05-22 20:27:42"
+        },
+        {
+            "name": "site5/phantoman",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grantlucas/phantoman.git",
+                "reference": "064806e420c4cbbdf9fddf08e3612edaeb060fac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grantlucas/phantoman/zipball/064806e420c4cbbdf9fddf08e3612edaeb060fac",
+                "reference": "064806e420c4cbbdf9fddf08e3612edaeb060fac",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "^2.2.7",
+                "php": ">=5.4.0"
+            },
+            "suggest": {
+                "jakoch/phantomjs-installer": "Automatically installs PhantomJS locally to your project."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codeception\\Extension\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grant Lucas",
+                    "email": "contact@grantlucas.com"
+                }
+            ],
+            "description": "The Codeception extension for automatically starting and stopping PhantomJS when running tests.",
+            "homepage": "https://github.com/grantlucas/phantoman",
+            "keywords": [
+                "codeception",
+                "extension",
+                "headless",
+                "phantomjs"
+            ],
+            "time": "2017-10-27 13:31:22"
         }
     ],
     "aliases": [],
