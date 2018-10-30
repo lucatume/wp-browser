@@ -1842,26 +1842,19 @@ class WPDb extends Db {
 	 * @return int The inserted blog `blog_id`.
 	 */
 	public function haveBlogInDatabase($domainOrPath, array $overrides = [], $subdomain = true) {
-		$defaults = Blog::makeDefaults($subdomain);
-		if ($subdomain) {
-			if (empty($overrides['domain'])) {
-				$defaults['domain'] = sprintf('%s.%s', $domainOrPath, $this->getSiteDomain());
-			} else {
-				$domainOrPath = str_replace(".{$this->getSiteDomain()}", '', $overrides['domain']);
-			}
-			$defaults['domain'] = "{$domainOrPath}.{$this->getSiteDomain()}";
-			$defaults['path'] = '/';
+		$base = Blog::makeDefaults($subdomain);
+		if ($subdomain ) {
+			$base['domain'] = false !== strpos($domainOrPath, $this->getSiteDomain())
+				? $domainOrPath
+				: trim($domainOrPath, '/') . '.' . $this->getSiteDomain();
+			$base['path'] = '/';
 		} else {
-			$defaults['domain'] = $this->getSiteDomain();
-			$defaults['path'] = '/' . trim($domainOrPath,'/') . '/';
+			$base['domain'] = $this->getSiteDomain();
+			$base['path'] = '/' . trim($domainOrPath, '/') . '/';
 		}
 
-		unset($overrides['path'],$overrides['domain']);
-
-		$data = array_merge($defaults, array_intersect_key($overrides, $defaults));
-
+		$data = array_merge($base, array_intersect_key($overrides, $base));
 		$blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
-
 		$this->scaffoldBlogTables($blogId, $domainOrPath, (bool) $subdomain);
 
 		return $blogId;

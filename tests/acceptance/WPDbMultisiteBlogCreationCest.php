@@ -118,7 +118,7 @@ class WPDbMultisiteBlogCreationCest {
 			'lang_id'      => 3,
 		];
 
-		$blogId = $I->haveBlogInDatabase('testsite1', $overrides, false);
+		$blogId = $I->haveBlogInDatabase('testsite1', $overrides);
 
 		foreach ($overrides as $key => $value) {
 			$I->seeBlogInDatabase(['blog_id' => $blogId, $key => $value]);
