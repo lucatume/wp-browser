@@ -231,11 +231,6 @@ class WPDb extends Db {
 
 	public function _cleanup($databaseKey = null, $databaseConfig = null) {
 		parent::_cleanup($databaseKey, $databaseConfig);
-
-=======
-	public function _cleanup($databaseKey = null, $databaseConfig = null) {
-		parent::_cleanup($databaseKey, $databaseConfig);
->>>>>>> Stashed changes
 		$this->blogId = 0;
 	}
 
@@ -2285,7 +2280,7 @@ class WPDb extends Db {
 	 *
 	 * @return array An array of the deleted user(s) ID(s)
 	 */
-	public function dontHaveUserInDatabaseWithEmail(string $userEmail, $purgeMeta = true) {
+	public function dontHaveUserInDatabaseWithEmail($userEmail, $purgeMeta = true) {
 		$data = $this->grabAllFromDatabase($this->grabUsersTableName(), 'ID', ['user_email' => $userEmail]);
 		if (!(is_array($data) && !empty($data))) {
 			return [];
