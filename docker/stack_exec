@@ -1,0 +1,53 @@
+#!/bin/bash
+# Logs into a container stack with a shell or executes a command; defaults to the WordPress container.
+
+# Check for positional arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+	-h|--help)
+	echo "Opens a bash shell into a stack container; defaults to the "wordpress" one.
+
+Usage: stack-exec [container] [command]
+
+Example:
+    stack-exec #opens a bash shell into the wordpress container
+    stack-exec adminer #opens a bash shell in the adminer container
+    stack-exec wordpress cd /var/www/html && ls # lists the contents of the site folder
+
+stack 	            Start the local or ci stack.
+container           The container name in the stack, not its label.
+command             An optional command to execute in the container; no need to wrap it in quotes."
+	exit 0
+	;;
+    *) # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "$SCRIPTDIR";
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	COMPOSE="docker-compose"
+elif [[ $(which docker.exe) ]]; then
+	COMPOSE="docker-compose.exe"
+else
+	COMPOSE="docker-compose"
+fi;
+
+CONTAINER=${1:-wordpress}
+
+if [[ -z "$2" ]]; then
+    COMMAND=""
+else
+   COMMAND="-c $2"
+fi
+
+${COMPOSE} -f stack.yml exec ${CONTAINER} bash ${COMMAND}

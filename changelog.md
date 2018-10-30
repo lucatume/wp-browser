@@ -4,15 +4,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 ### Removed
-- removed `lucatume/wp-snapshot-assertions` from the required packages
-- removed the `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class and  the `lucatume/wp-snapshot-assertions` dependency
-- removed the `wpcept` and `wpcept.bat` deprecated binaries
-- removed the `Codeception\Command\DbSnapshot` command
-- removed the `tad\Codeception\Command\SearchReplace` command from the template
-- removed the `lucatume/codeception-setup-local` dependency
+- the `haveOrUpdateInDatabase` method from `WPDb` module
+- the `ExtendedDb` class
+- the requirement of the `lucatume/wp-snaphot-assertions` package
+- the `\tad\WPBrowser\Snapshot\WPHtmlOutputDriver` class
+- the `wpcept` binaries
+- `lucatume/wp-snapshot-assertions` dependency 
+- `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class and  the `lucatume/wp-snapshot-assertions` dependency
+- `wpcept` and `wpcept.bat` deprecated binaries
+- `Codeception\Command\DbSnapshot` command
+- `tad\Codeception\Command\SearchReplace` command from the template
+- `lucatume/codeception-setup-local` dependency
+
+### Fixed
+- compatibility with Codeception `2.5.0` updating the `WPDb` class
 
 ### Changed
 - lowered the PHP required version from 7.0 to 5.6
+- PHP requirement lowered to PHP 5.6
+- removed the limit to Codeception version
+- the Docker CI stack
 
 ### Added
 - add a `.gitattributes` file to stop littering people's vendor library (sorry, my bad)

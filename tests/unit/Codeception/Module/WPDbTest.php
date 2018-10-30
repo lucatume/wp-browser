@@ -23,6 +23,7 @@ class WPDbTest extends \Codeception\Test\Unit {
 	 */
 	protected $moduleContainer;
 
+
 	/**
 	 * @var array
 	 */
@@ -42,6 +43,7 @@ class WPDbTest extends \Codeception\Test\Unit {
 
 		$this->assertInstanceOf(WPDb::class, $sut);
 	}
+
 
 	/**
 	 * @return WPDb
