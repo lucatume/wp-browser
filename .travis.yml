@@ -111,12 +111,12 @@ before_script:
   - sed -i "s_%%phantomjs%%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/.env
 
 script:
-  - codecept -vvv run unit
-  - codecept -vvv run acceptance
-  - codecept -vvv run phantomjs
-  - codecept -vvv run functional
-  - codecept -vvv run climodule
-  - codecept -vvv run wpmodule
-  - codecept -vvv run wploadersuite
-  - codecept -vvv run muloader
-  - codecept -vvv run cli
+  - codecept run unit
+  - codecept run acceptance
+  - codecept run phantomjs
+  - codecept run functional
+  - codecept run climodule
+  - codecept run wpmodule
+  - codecept run wploadersuite
+  - codecept run muloader
+  - codecept run cli
