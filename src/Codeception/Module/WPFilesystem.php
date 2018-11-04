@@ -1047,7 +1047,7 @@ PHP;
 /*
 Theme Name: $name
 Author: wp-browser
-Description: $name 
+Description: $name
 Version: 1.0
 */
 CSS;
