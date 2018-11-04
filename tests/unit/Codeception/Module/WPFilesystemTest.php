@@ -755,7 +755,7 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertStringEqualsFile(normalizeNewLine($pluginFile), normalizeNewLine($expected));
+        $this->assertEquals(normalizeNewLine(file_get_contents($pluginFile)), normalizeNewLine($expected));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -789,7 +789,8 @@ Description: Test mu-plugin 1
 
 echo 'Hello world';
 PHP;
-        $this->assertStringEqualsFile(normalizeNewLine($muPluginFile), normalizeNewLine($expected));
+
+        $this->assertEquals(normalizeNewLine(file_get_contents($muPluginFile)), normalizeNewLine($expected));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -828,8 +829,8 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertStringEqualsFile(normalizeNewLine($themeStyleFile), normalizeNewLine($expectedCss));
-        $this->assertStringEqualsFile(normalizeNewLine($themeIndexFile), normalizeNewLine($expectedIndex));
+        $this->assertEquals(normalizeNewLine(file_get_contents($themeStyleFile)), normalizeNewLine($expectedCss));
+        $this->assertEquals(normalizeNewLine(file_get_contents($themeIndexFile)), normalizeNewLine($expectedIndex));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -869,9 +870,9 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertStringEqualsFile(normalizeNewLine($themeStyleFile), normalizeNewLine($expectedCss));
-        $this->assertStringEqualsFile(normalizeNewLine($themeIndexFile), normalizeNewLine($expectedIndex));
-        $this->assertStringEqualsFile(normalizeNewLine($themeFunctionsFile), normalizeNewLine($expectedIndex));
+        $this->assertEquals(normalizeNewLine(file_get_contents($themeStyleFile)), normalizeNewLine($expectedCss));
+        $this->assertEquals(normalizeNewLine(file_get_contents($themeIndexFile)), normalizeNewLine($expectedIndex));
+        $this->assertEquals(normalizeNewLine(file_get_contents($themeFunctionsFile)), normalizeNewLine($expectedIndex));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
