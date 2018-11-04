@@ -45,5 +45,7 @@ function getMySQLVersion()
 */
 function normalizeNewLine(string $str)
 {
-	return preg_replace('~\R~u', "\r\n", $str);
+	$str = str_replace("\r\n", "\n", $str);
+	$str = str_replace("\r", "\n", $str);
+	return $str;
 }
