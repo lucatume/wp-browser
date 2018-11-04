@@ -45,7 +45,5 @@ function getMySQLVersion()
 */
 function normalizeNewLine(string $str)
 {
-	$str = str_replace("\r\n", "\n", $str);
-	$str = str_replace("\r", "\n", $str);
-	return $str;
+	return preg_replace('~(*BSR_ANYCRLF)\R~', "\r\n", $str);
 }
