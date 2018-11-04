@@ -38,12 +38,12 @@ function getMySQLVersion()
 }
 
 /**
-* Normalizes a string new line bytecode for file comparison asserts
+* Normalizes a string new line bytecode for comparison
 * through Unix and Windows environments.
 *
 * @see https://stackoverflow.com/a/7836692/2056484
 */
 function normalizeNewLine(string $str)
 {
-	return preg_replace('~(*BSR_ANYCRLF)\R~', "\r\n", $str);
+	return preg_replace('~\R~u', "\r\n", $str);
 }
