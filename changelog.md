@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
+- added a clear disclaimer about db wiping in the `init wpbrowser` command
 
 ### Changed
 - lowered the PHP required version from 7.0 to 5.6
