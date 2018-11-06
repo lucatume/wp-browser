@@ -134,11 +134,12 @@ class Wpbrowser extends Bootstrap {
 		$verb = $time === 1 ? 'will be' : 'have been';
 		$warning = [
 			'PLEASE READ CAREFULLY!',
-			'You ' . $verb . ' asked information about your database host, user and password.',
-			'This information will be used by the modules to access your database(s) during tests.',
-			'The tables in the database(s), in the default configuration, will be dropped and ALL YOUR DATA WILL BE LOST.',
+			'You ' . $verb . ' asked information about your test database host, user and password.',
+			'This information will be used by the modules to access your test database(s) during tests.',
+			'The tables in the test database(s), in the default configuration, will be dropped and ALL YOUR DATA WILL BE LOST.',
 			'You should not run any test against a database that contains any information you care about.',
-			'Configure wp-browser and Codeception to use a database and a site dedicated to testing only.',
+			'Create a WordPress installation, and with it a test database, dedicated to tests only.',
+			'Configure wp-browser and Codeception to use that tests database(s) and a site.',
 			'BACKUP ANY DATABASE INFORMATION YOU WANT TO KEEP RIGHT NOW!',
 			'WP-BROWSER WILL NOT BACKUP, OR RESTORE, YOUR DATABASE FOR YOU!',
 		];
@@ -212,17 +213,17 @@ class Wpbrowser extends Bootstrap {
 				'acceptanceSuiteSlug' => 'acceptance',
 				'functionalSuiteSlug' => 'functional',
 				'wpunitSuiteSlug' => 'wpunit',
-				'dbHost' => 'localhost',
-				'dbName' => 'wp',
-				'dbUser' => 'root',
-				'dbPassword' => '',
-				'tablePrefix' => 'wp_',
-				'wpUrl' => 'http://wp.localhost',
-				'wpDomain' => 'wp.localhost',
-				'adminUsername' => 'admin',
-				'adminPassword' => 'password',
-				'adminEmail' => 'admin@wp.localhost',
-				'wpAdminPath' => '/wp-admin',
+				'testSiteDbHost' => 'localhost',
+				'testSiteDbName' => 'wp',
+				'testSiteDbUser' => 'root',
+				'testSiteDbPassword' => '',
+				'testSiteTablePrefix' => 'wp_',
+				'testSiteWpUrl' => 'http://wp.localhost',
+				'testSiteWpDomain' => 'wp.localhost',
+				'testSiteAdminUsername' => 'admin',
+				'testSiteAdminPassword' => 'password',
+				'testSiteAdminEmail' => 'admin@wp.localhost',
+				'testSiteWpAdminPath' => '/wp-admin',
 				'wpRootFolder' => '/var/www/html',
 				'testDbName' => 'wpTests',
 				'testDbHost' => 'localhost',
@@ -278,25 +279,26 @@ class Wpbrowser extends Bootstrap {
 
 		$installationData['wpRootFolder'] = $this->normalizePath($this->ask("Where is WordPress installed?",
 			'/var/www/wp'));
-		$installationData['wpAdminPath'] = $this->ask('What is the path, relative to WordPress root folder, of the admin area?',
+		$installationData['testSiteWpAdminPath'] = $this->ask('What is the path, relative to WordPress root folder, of the admin area of the test site?',
 			'/wp-admin');
-		$installationData['wpAdminPath'] = '/' . trim($this->normalizePath($installationData['wpAdminPath']), '/');
-		$this->sayInfo(PHP_EOL . 'The WPDb module needs the database details to access the database used by WordPress.' . PHP_EOL);
+		$installationData['testSiteWpAdminPath'] = '/' . trim($this->normalizePath($installationData['testSiteWpAdminPath']), '/');
+		echo PHP_EOL;
+		$this->sayInfo('The WPDb module needs the database details to access the test database used by the test site.');
 		echo PHP_EOL;
 		$this->sayWarning(implode(PHP_EOL, [
-			'Again remember these credentials will be used to access the database during tests and replace its content!',
+			'Again remember these credentials will be used to access the test database during tests and replace its content!',
 			'Any database you use for testing should not contain any information you care about.',
 		]));
 		echo PHP_EOL;
-		$installationData['dbName'] = $this->ask("What's the name of the database used by the WordPress installation?",
+		$installationData['testSiteDbName'] = $this->ask('What is the name of the test database used by the test site?',
 			'wp');
-		$installationData['dbHost'] = $this->ask("What's the host of the database used by the WordPress installation?",
+		$installationData['testSiteDbHost'] = $this->ask('What is the host of the test database used by the test site?',
 			'localhost');
-		$installationData['dbUser'] = $this->ask("What's the user of the database used by the WordPress installation?",
+		$installationData['testSiteDbUser'] = $this->ask('What is the user of the test database used by the test site?',
 			'root');
-		$installationData['dbPassword'] = $this->ask("What's the password of the database used by the WordPress installation?",
+		$installationData['testSiteDbPassword'] = $this->ask('What is the password of the test database used by the test site?',
 			'');
-		$installationData['tablePrefix'] = $this->ask("What's the table prefix of the database used by the WordPress installation?",
+		$installationData['testSiteTablePrefix'] = $this->ask('What is the table prefix of the test database used by the test site?',
 			'wp_');
 
 		echo PHP_EOL;
@@ -306,30 +308,34 @@ class Wpbrowser extends Bootstrap {
 		);
 
 		echo PHP_EOL;
-		$this->sayWarning('WPLoader should be configured to run on a dedicated database!');
+		$this->sayWarning(implode(PHP_EOL, [
+				'WPLoader should be configured to run on a dedicated database!',
+				'The data stored on the database used by the WPLoader module will be lost!',
+			]
+		));
 		echo PHP_EOL;
 
-		$installationData['testDbName'] = $this->ask("What's the name of the database WPLoader should use?", 'wpTests');
-		$installationData['testDbHost'] = $this->ask("What's the host of the database WPLoader should use?",
+		$installationData['testDbName'] = $this->ask('What is the name of the test database WPLoader should use?', 'wpTests');
+		$installationData['testDbHost'] = $this->ask('What is the host of the test database WPLoader should use?',
 			'localhost');
-		$installationData['testDbUser'] = $this->ask("What's the user of the database WPLoader should use?", 'root');
-		$installationData['testDbPassword'] = $this->ask("What's the password of the database WPLoader should use?",
+		$installationData['testDbUser'] = $this->ask('What is the user of the test database WPLoader should use?', 'root');
+		$installationData['testDbPassword'] = $this->ask('What is the password of the test database WPLoader should use?',
 			'');
-		$installationData['testTablePrefix'] = $this->ask("What's the table prefix of the database WPLoader should use?",
+		$installationData['testTablePrefix'] = $this->ask('What is the table prefix of the test database WPLoader should use?',
 			'wp_');
-		$installationData['wpUrl'] = $this->ask("What's the URL the WordPress installation?", 'http://wp.localhost');
-		$installationData['wpUrl'] = rtrim($installationData['wpUrl'], '/');
-		$url = parse_url($installationData['wpUrl']);
+		$installationData['testSiteWpUrl'] = $this->ask('What is the URL the test site?', 'http://wp.localhost');
+		$installationData['testSiteWpUrl'] = rtrim($installationData['testSiteWpUrl'], '/');
+		$url = parse_url($installationData['testSiteWpUrl']);
 		$installationData['urlScheme'] = empty($url['scheme']) ? 'http' : $url['scheme'];
-		$installationData['wpDomain'] = empty($url['host']) ? 'example.com' : $url['host'];
+		$installationData['testSiteWpDomain'] = empty($url['host']) ? 'example.com' : $url['host'];
 		$installationData['urlPort'] = empty($url['port']) ? '' : ':' . $url['port'];
 		$installationData['urlPath'] = empty($url['path']) ? '' : $url['path'];
-		$adminEmailCandidate = "admin@{$installationData['wpDomain']}";
-		$installationData['adminEmail'] = $this->ask("What's the email of the WordPress site administrator?",
+		$adminEmailCandidate = "admin@{$installationData['testSiteWpDomain']}";
+		$installationData['testSiteAdminEmail'] = $this->ask('What is the email of the test site WordPress administrator?',
 			$adminEmailCandidate);
-		$installationData['title'] = $this->ask("What's the title of the WordPress site?", 'Test');
-		$installationData['adminUsername'] = $this->ask('What is the login of the administrator user?', 'admin');
-		$installationData['adminPassword'] = $this->ask('What is the password of the administrator user?', 'password');
+		$installationData['title'] = $this->ask('What is the title of the test site?', 'Test');
+		$installationData['testSiteAdminUsername'] = $this->ask('What is the login of the administrator user of the test site?', 'admin');
+		$installationData['testSiteAdminPassword'] = $this->ask('What is the password of the administrator user of the test site?', 'password');
 		//			plugins: ['hello.php', 'my-plugin/my-plugin.php']
 		$sut = $this->ask("Are you testing a plugin or a theme?", 'plugin');
 		$installationData['plugins'] = [];
@@ -382,23 +388,23 @@ class Wpbrowser extends Bootstrap {
 		$filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
 
 		$envKeys = [
-			'dbHost',
-			'dbName',
-			'dbUser',
-			'dbPassword',
-			'tablePrefix',
-			'wpUrl',
-			'adminUsername',
-			'adminPassword',
-			'wpAdminPath',
+			'testSiteDbHost',
+			'testSiteDbName',
+			'testSiteDbUser',
+			'testSiteDbPassword',
+			'testSiteTablePrefix',
+			'testSiteWpUrl',
+			'testSiteAdminUsername',
+			'testSiteAdminPassword',
+			'testSiteWpAdminPath',
 			'wpRootFolder',
 			'testDbName',
 			'testDbHost',
 			'testDbUser',
 			'testDbPassword',
 			'testTablePrefix',
-			'wpDomain',
-			'adminEmail',
+			'testSiteWpDomain',
+			'testSiteAdminEmail',
 		];
 
 		$envEntries = array_intersect_key($installationData, array_combine($envKeys, $envKeys));
@@ -465,8 +471,8 @@ modules:
             dbUser: "%TEST_DB_USER%"
             dbPassword: "%TEST_DB_PASSWORD%"
             tablePrefix: "%TEST_TABLE_PREFIX%"
-            domain: "%WP_DOMAIN%"
-            adminEmail: "%ADMIN_EMAIL%"
+            domain: "%TEST_SITE_WP_DOMAIN%"
+            adminEmail: "%TEST_SITE_ADMIN_EMAIL%"
             title: "{$installationData['title']}"
 EOF;
 
@@ -512,16 +518,16 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
-            user: '%DB_USER%'
-            password: '%DB_PASSWORD%'
+            dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
+            user: '%TEST_SITE_DB_USER%'
+            password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
             waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true
-            tablePrefix: '%TABLE_PREFIX%'
+            tablePrefix: '%TABLE_SITE_PREFIX%'
         WPBrowser:
             url: '%WP_URL%'
             adminUsername: '%ADMIN_USERNAME%'
@@ -557,21 +563,23 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
-            user: '%DB_USER%'
-            password: '%DB_PASSWORD%'
+            dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
+            user: '%TEST_SITE_DB_USER%'
+            password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
-            populate: true #import the dump before the tests
-            cleanup: true #import the dump between tests
+            #import the dump before the tests; this means the test site database will be emptied and refilled before the tests.
+            populate: true 
+            # empty the database and re-import the dump between tests; this means the test site database will be emptied and refilled between the tests.
+            cleanup: true 
             waitlock: 0
-            url: '%WP_URL%'
+            url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
-            tablePrefix: '%TABLE_PREFIX%'
+            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
         WPBrowser:
-            url: '%WP_URL%'
-            adminUsername: '%ADMIN_USERNAME%'
-            adminPassword: '%ADMIN_PASSWORD%'
-            adminPath: '%WP_ADMIN_PATH%'
+            url: '%TEST_SITE_WP_URL%'
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
 EOF;
 		$this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
 	}
