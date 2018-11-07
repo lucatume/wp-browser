@@ -165,11 +165,6 @@ class WPDb extends Db {
 		$this->tablePrefix = $this->config['tablePrefix'];
 		$this->handlebars = $handlebars ?: new Handlebars();
 		$this->tables = $table ?: new Tables();
-
-		// @todo where to move this?
- //		$this->prepareSqlDumpFile();
-		// @todo where to move this?
-//		$this->importSqlDumpFile();
 	}
 
 	/**
