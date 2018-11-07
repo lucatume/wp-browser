@@ -2,6 +2,8 @@
 
 namespace Codeception\Module;
 
+use Codeception\Exception\ModuleException;
+
 /**
  * A Codeception module offering specific WordPress browsing methods.
  */
@@ -35,6 +37,8 @@ class WPWebDriver extends WebDriver
 	 * @var string
 	 */
 	protected $pluginsPath;
+
+	protected $loginAttempt = 0;
 
 	/**
 	 * Initializes the module setting the properties values.
@@ -71,33 +75,58 @@ class WPWebDriver extends WebDriver
 		return $this->loginAs($this->config['adminUsername'], $this->config['adminPassword'], $time);
 	}
 
-	/**
-	 * Goes to the login page, wait for the login form and logs in using the given credentials.
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param int $time
-	 *
-	 * @return array An array of login credentials and auth cookies.
-	 */
-	public function loginAs($username, $password, $time = 10)
-	{
-		$this->amOnPage($this->loginUrl);
+    /**
+     * Goes to the login page, wait for the login form and logs in using the given credentials.
+     *
+     * Depending on the driven browser the login might be "too fast" and the server might have not
+     * replied with valid cookies yet; in that case the method will re-attempt the login to obtain
+     * the cookies.
+     *
+     * @param string $username
+     * @param string $password
+     * @param int    $timeout
+     * @param int    $maxAttempts
+     *
+     * @return array An array of login credentials and auth cookies.
+     *
+     * @throws \Codeception\Exception\ModuleException If all the attempts of obtaining the cookie fail.
+     */
+	public function loginAs($username, $password, $timeout = 10, $maxAttempts = 5) {
+        if ($this->loginAttempt === $maxAttempts) {
+            throw new ModuleException(
+                __CLASS__, "Could not login as [{$username}, {$password}] after {$maxAttempts} attempts."
+            );
+        }
 
-		$this->waitForElement('#user_login', $time);
-		$this->waitForElement('#user_pass', $time);
-		$this->waitForElement('#wp-submit', $time);
+        $this->debug("Trying to login, attempt {$this->loginAttempt}/{$maxAttempts}...");
 
-		$this->fillField('#user_login', $username);
-		$this->fillField('#user_pass', $password);
-		$this->click('#wp-submit');
+        $this->amOnPage($this->loginUrl);
 
-		return [
-			'username' => $username,
-			'password' => $password,
-			'authCookie' => $this->grabWordPressAuthCookie(),
-			'loginCookie' => $this->grabWordPressLoginCookie()
-		];
+        $this->waitForElement('#user_login', $timeout);
+        $this->waitForElement('#user_pass', $timeout);
+        $this->waitForElement('#wp-submit', $timeout);
+
+        $this->fillField('#user_login', $username);
+        $this->fillField('#user_pass', $password);
+        $this->click('#wp-submit');
+
+        $authCookie = $this->grabWordPressAuthCookie();
+        $loginCookie = $this->grabWordPressLoginCookie();
+        $empty_cookies = empty($authCookie) && empty($loginCookie);
+
+        if ($empty_cookies) {
+            $this->loginAttempt++;
+            $this->wait(1);
+            return $this->loginAs($username, $password, $timeout, $maxAttempts);
+        }
+
+        $this->loginAttempt = 0;
+        return [
+            'username' => $username,
+            'password' => $password,
+            'authCookie' => $authCookie,
+            'loginCookie' => $loginCookie,
+        ];
 	}
 
 	/**
