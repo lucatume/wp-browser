@@ -7,13 +7,13 @@ use Codeception\Util\Template;
 
 class WPUnit extends AbstractGenerator implements GeneratorInterface
 {
-	use Classname;
-	use Namespaces;
+    use Classname;
+    use Namespaces;
 
-	protected $settings;
-	protected $name;
-	protected $baseClass;
-	protected $template = <<<EOF
+    protected $settings;
+    protected $name;
+    protected $baseClass;
+    protected $template = <<<EOF
 <?php
 {{namespace}}
 class {{name}}Test extends {{baseClass}}
@@ -43,20 +43,20 @@ class {{name}}Test extends {{baseClass}}
 }
 EOF;
 
-	public function __construct($settings, $name, $baseClass)
-	{
-		$this->settings = $settings;
-		$this->name = $this->removeSuffix($name, 'Test');
-		$this->baseClass = $baseClass;
-	}
+    public function __construct($settings, $name, $baseClass)
+    {
+        $this->settings = $settings;
+        $this->name = $this->removeSuffix($name, 'Test');
+        $this->baseClass = $baseClass;
+    }
 
-	public function produce()
-	{
-		$ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
+    public function produce()
+    {
+        $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-		return (new Template($this->template))->place('namespace', $ns)
-			->place('baseClass', $this->baseClass)
-			->place('name', $this->getShortClassName($this->name))
-			->produce();
-	}
+        return (new Template($this->template))->place('namespace', $ns)
+            ->place('baseClass', $this->baseClass)
+            ->place('name', $this->getShortClassName($this->name))
+            ->produce();
+    }
 }

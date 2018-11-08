@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 /**
  * Generates skeleton for unit test as in classical PHPUnit.
  *
@@ -19,7 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * * `wpcept g:wpunit unit "App\User`
  *
  */
-class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
+class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
+{
 
     use Shared\FileSystem;
     use Shared\Config;
@@ -29,15 +29,18 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
      *
      * @return string
      */
-    public static function getCommandName() {
+    public static function getCommandName()
+    {
         return "generate:wpunit";
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception super-powers.';
     }
 
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
         $suite = $input->getArgument('suite');
         $class = $input->getArgument('class');
 
@@ -49,7 +52,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
 
         $res = $this->createFile($filename, $gen->produce());
 
-        if ( ! $res) {
+        if (! $res) {
             $output->writeln("<error>Test $filename already exists</error>");
             exit;
         }
@@ -57,7 +60,8 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
         $output->writeln("<info>Test was created in $filename</info>");
     }
 
-    protected function buildPath($path, $class) {
+    protected function buildPath($path, $class)
+    {
         $className = $this->getShortClassName($class);
         $path = $this->createDirectoryFor($path, $class);
 
@@ -72,11 +76,13 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
      *
      * @return WPUnitGenerator
      */
-    protected function getGenerator($config, $class) {
+    protected function getGenerator($config, $class)
+    {
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPTestCase');
     }
 
-    protected function configure() {
+    protected function configure()
+    {
         $this->setDefinition([
 
             new InputArgument('suite', InputArgument::REQUIRED, 'suite where tests will be put'),
@@ -86,4 +92,3 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface {
         parent::configure();
     }
 }
-
