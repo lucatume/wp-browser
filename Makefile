@@ -6,7 +6,8 @@ lint:
 	docker run --rm -v ${CURDIR}:/app parallel-lint:5.6 --colors /app/src
 sniff:
 	# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
-	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcs --standard=PSR2 --ignore=data,includes,tad/scripts /scripts
+	docker run --rm -v ${CURDIR}:/scripts/ texthtml/phpcs phpcs \
+		--ignore=data,includes,tad/scripts /scripts/src
 fix:
 	# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf --standard=PSR2 --ignore=data,includes /scripts

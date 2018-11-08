@@ -8,3 +8,4 @@
 /.travis.yml            export-ignore
 /.codeception.dist.yml  export-ignore
 /Makefile               export-ignore
+/phpcs.xml				export-ignore
