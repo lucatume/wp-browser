@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
 - added a clear disclaimer about db wiping in the `init wpbrowser` command
 - an issue where the WpWebDriver module would not login correctly [#121]
+- code style compatibilty with PSR-2 standard
 
 ### Changed
 - lowered the PHP required version from 7.0 to 5.6
