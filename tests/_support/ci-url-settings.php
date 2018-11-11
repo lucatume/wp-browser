@@ -5,10 +5,10 @@
  */
 
 if (filter_has_var(INPUT_SERVER, 'HTTP_HOST')) {
-	if (!defined('WP_HOME')) {
-		define('WP_HOME', 'http://' . \$_SERVER['HTTP_HOST']);
-	}
-	if (!defined('WP_SITEURL')) {
-		define('WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST']);
-	}
+    if (!defined('WP_HOME')) {
+        define('WP_HOME', 'http://' . \$_SERVER['HTTP_HOST']);
+    }
+    if (!defined('WP_SITEURL')) {
+        define('WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST']);
+    }
 }

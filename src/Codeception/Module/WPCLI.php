@@ -196,7 +196,9 @@ class WPCLI extends Module
     {
         if (!empty($this->config['throw']) && $status < 0) {
             $output = !is_array($output) ?: json_encode($output);
-            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
+            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured "
+                       . 'to throw an exception when wp-cli terminates with an error status; '
+                       . 'set the `throw` parameter to `false` to avoid this.';
 
             throw new ModuleException(__CLASS__, $message);
         }

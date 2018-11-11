@@ -31,7 +31,8 @@ trait WPBrowserMethods
             $this->waitForElementVisible('#loginform');
         }
 
-        $this->submitForm('#loginform', ['log' =>$username,'pwd' => $password ,'testcookie' => '1', 'redirect_to' => ''], '#wp-submit');
+        $params = ['log' => $username, 'pwd' => $password, 'testcookie' => '1', 'redirect_to' => ''];
+        $this->submitForm('#loginform', $params, '#wp-submit');
 
         return [
             'username' => $username,

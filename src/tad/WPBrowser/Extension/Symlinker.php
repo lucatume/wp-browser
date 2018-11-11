@@ -59,14 +59,20 @@ class Symlinker extends Extension
      */
     protected function getRootFolder(array $settings = null)
     {
-        $rootFolder = isset($this->config['rootFolder']) ? $this->config['rootFolder'] : rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+        $rootFolder = isset($this->config['rootFolder']) ?
+            $this->config['rootFolder']
+            : rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
 
         if (is_array($rootFolder)) {
             $currentEnvs = $this->getCurrentEnvsFromSettings($settings);
-            $fallbackRootFolder = isset($rootFolder['default']) ? $rootFolder['default'] : reset($rootFolder);
+            $fallbackRootFolder = isset($rootFolder['default']) ?
+                $rootFolder['default']
+                : reset($rootFolder);
             $supportedEnvs      = array_intersect(array_keys($rootFolder), $currentEnvs);
             $firstSupported     = reset($supportedEnvs);
-            $rootFolder         = isset($rootFolder[$firstSupported]) ? $rootFolder[$firstSupported] : $fallbackRootFolder;
+            $rootFolder         = isset($rootFolder[$firstSupported]) ?
+                $rootFolder[$firstSupported] :
+                $fallbackRootFolder;
         }
 
         return $rootFolder;

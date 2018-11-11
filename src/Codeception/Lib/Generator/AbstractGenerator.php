@@ -44,7 +44,8 @@ abstract class AbstractGenerator
 
         foreach (static::$requiredSettings as $requiredSetting) {
             if (!is_string($this->settings[$requiredSetting])) {
-                throw new \BadMethodCallException('Required template setting [{' . $requiredSetting . '}] is not a string.');
+                $message = 'Required template setting [{' . $requiredSetting . '}] is not a string.';
+                throw new \BadMethodCallException($message);
             }
         }
 

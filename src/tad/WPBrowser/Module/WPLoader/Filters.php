@@ -83,7 +83,8 @@ class Filters
         if (count($filter) < 2) {
             throw new ModuleException(
                 __CLASS__,
-                'Callback ' . json_encode($filter) . ' does not specify enough data for a filter: required at least tag and callback.'
+                'Callback ' . json_encode($filter) . ' does not specify enough data for a filter: '
+                . 'required at least tag and callback.'
             );
         }
 
@@ -102,7 +103,8 @@ class Filters
         if (count($filter) > 4) {
             throw new ModuleException(
                 __CLASS__,
-                'Callback ' . json_encode($filter) . ' contains too many arguments; only tag, callback, priority and accepted arguments are supported'
+                'Callback ' . json_encode($filter) . ' contains too many arguments; '
+                .'only tag, callback, priority and accepted arguments are supported'
             );
         }
 
@@ -112,7 +114,8 @@ class Filters
         if (empty($callbackFunc) || !(is_string($callbackFunc) || is_array($callbackFunc))) {
             throw new ModuleException(
                 __CLASS__,
-                'Callback for ' . json_encode($filter) . ' is empty or the wrong type: it should be a string (a function name) or an array of two strings (class name and a static method).'
+                'Callback for ' . json_encode($filter) . ' is empty or the wrong type: '
+                .'it should be a string (a function name) or an array of two strings (class name and a static method).'
             );
         }
 
@@ -122,7 +125,8 @@ class Filters
             ) {
                 throw new ModuleException(
                     __CLASS__,
-                    'Callback for ' . json_encode($filter) . ' is weird: it should be a string (a function name) or an array of two strings (class name and a static method).'
+                    'Callback for ' . json_encode($filter) . ' is weird: '
+                    .'it should be a string (function name) or an array of two strings (class name and static method).'
                 );
             }
         }

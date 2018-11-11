@@ -64,7 +64,7 @@ class DbDump
 
         if (empty($matches) || empty($matches[1])) {
             if ($debug) {
-                codecept_debug('Tried to replace WordPress site domain but dump file does not contain an `options` table INSERT instruction.');
+                codecept_debug('Dump file does not contain an `options` table INSERT instruction, not replacing');
             }
 
             return $sql;
@@ -74,7 +74,7 @@ class DbDump
 
         if (empty($dumpSiteUrl)) {
             if ($debug) {
-                codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of `home` option.');
+                codecept_debug('Dump file does not contain dump of `home` option, not replacing.');
             }
 
             return $sql;
@@ -120,8 +120,8 @@ class DbDump
 
             if (empty($matches) || empty($matches[1])) {
                 if ($debug) {
-                    codecept_debug('Tried to replace WordPress site domain but dump file does not contain a table INSERT instruction for table ['
-                                   . $table . '].');
+                    codecept_debug('Dump file does not contain a table INSERT instruction for table ['.
+                     $table . '], not replacing.');
                 }
                 continue;
             }
@@ -129,15 +129,15 @@ class DbDump
             $dumpSiteUrl = $matches[1];
             if (empty($dumpSiteUrl)) {
                 if ($debug) {
-                    codecept_debug('Tried to replace WordPress site domain but dump file does not contain dump of [domain] option.');
+                    codecept_debug('Dump file does not contain dump of [domain] option, not replacing.');
                 }
                 continue;
             }
 
             if ($dumpSiteUrl === $thisSiteUrl) {
                 if ($debug) {
-                    codecept_debug('Dump file domain not replaced as identical to the one specified in the configuration ['
-                                   . $dumpSiteUrl . '].');
+                    codecept_debug('Dump file domain identical to the one specified in the configuration ['
+                                   . $dumpSiteUrl . ']; not replacing');
                 }
                 continue;
             }

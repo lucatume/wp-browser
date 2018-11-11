@@ -2,8 +2,6 @@
 
 namespace Codeception\Lib\Driver;
 
-include_once __DIR__ . '/ExtendedMySql.php';
-
 /**
  * Extends Codeception default Db driver to return an extended version of MySql driver.
  */

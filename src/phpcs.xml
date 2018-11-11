@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="wp-browser code style"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:nonamespaceschemalocation="../../../phpcs.xsd">
+    <description>
+        A customization of the the PSR-2 coding standard to stick with both Codeception and WordPress coding standards.
+    </description>
+
+    <arg name="tab-width" value="4">
+    </arg>
+
+    <!--Use PSR2 as a base.-->
+    <rule ref="PSR2">
+    </rule>
+
+    <!--Allow for `_methodName` like method names to stick with Codeception standard.-->
+    <rule ref="PSR2">
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore">
+        </exclude>
+    </rule>
+
+    <!--Allow for `method_name` like method names to stick wit WordPress coding standard in test methods.-->
+    <rule ref="PSR1.Methods.CamelCapsMethodName">
+        <exclude-pattern>*/Codeception/TestCase/*</exclude-pattern>
+    </rule>
+
+    <!--Allow for `_property` like property names in the test cases to stick with Core suite standard.-->
+    <rule ref="PSR2.Classes.PropertyDeclaration.Underscore">
+        <exclude-pattern>*/Codeception/TestCase/*</exclude-pattern>
+    </rule>
+
+</ruleset>

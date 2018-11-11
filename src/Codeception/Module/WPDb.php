@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use BaconStringUtils\Slugifier;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
+use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use Handlebars\Handlebars;
@@ -139,14 +140,7 @@ class WPDb extends Db
      */
     protected $scaffoldedBlogIds;
 
-    /**
-     * WPDb constructor.
-     *
-     * @param \Codeception\Lib\ModuleContainer          $moduleContainer
-     * @param null                                      $config
-     * @param \tad\WPBrowser\Module\Support\DbDump|null $dbDump
-     */
-    public function __construct(\Codeception\Lib\ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
+    public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
         $this->dbDump = $dbDump !== null ? $dbDump : new DbDump();
@@ -688,7 +682,7 @@ class WPDb extends Db
     /**
      * Creates a term relationship in the database.
      *
-     * Please mind that no check about the consistency of the insertion is made. E.g. a post could be assigned a term from
+     * No check about the consistency of the insertion is made. E.g. a post could be assigned a term from
      * a taxonomy that's not registered for that post type.
      *
      * @param     int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
@@ -716,8 +710,8 @@ class WPDb extends Db
 
     private function increaseTermCountBy($termTaxonomyId, $by = 1)
     {
-        $updateQuery =
-            "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} WHERE term_taxonomy_id = {$termTaxonomyId}";
+        $updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} 
+          WHERE term_taxonomy_id = {$termTaxonomyId}";
 
         return $this->_getDriver()->executeQuery($updateQuery, []);
     }
@@ -1209,10 +1203,10 @@ class WPDb extends Db
      *                         The same applies to meta values as well.
      *
      * @type array  $meta      An associative array of meta key/values to be set for the post, shorthand for the
-     *       `havePostmetaInDatabase` method. e.g. `['one' => 'foo', 'two' => 'bar']`; to have an array value inserted in a
-     *       single row serialize it e.g.
-     *                    `['serialized_field` => serialize(['one','two','three'])]` otherwise a distinct row will be added for
-     *                    each entry. See `havePostmetaInDatabase` method.
+     *       `havePostmetaInDatabase` method. e.g. `['one' => 'foo', 'two' => 'bar']`; to have an array value inserted
+     *       in a single row serialize it e.g.
+     *                    `['serialized_field` => serialize(['one','two','three'])]` otherwise a distinct row will be
+     *                    added for each entry. See `havePostmetaInDatabase` method.
      * }
      *
      * @return array
@@ -1936,7 +1930,8 @@ class WPDb extends Db
         $blogIds = [];
         $overrides = $this->setTemplateData($overrides);
         for ($i = 0; $i < $count; $i++) {
-            $blogIds[] = $this->haveBlogInDatabase('blog' . $i, $this->replaceNumbersInArray($overrides, $i), $subdomain);
+            $blogOverrides = $this->replaceNumbersInArray($overrides, $i);
+            $blogIds[] = $this->haveBlogInDatabase('blog' . $i, $blogOverrides, $subdomain);
         }
 
         return $blogIds;
@@ -2128,7 +2123,8 @@ class WPDb extends Db
      * @param string     $menuSlug  The menu slug the item should be added to.
      * @param string     $title     The menu item title.
      * @param int|null   $menuOrder An optional menu order, `1` based.
-     * @param array|null $meta      An associative array that will be prefixed with `_menu_item_` for the item post meta.
+     * @param array|null $meta      An associative array that will be prefixed with `_menu_item_` for the item post
+     *                              meta.
      *
      * @return int The menu item post `ID`
      */
@@ -2191,14 +2187,15 @@ class WPDb extends Db
      * Requires the WPFilesystem module.
      *
      * @param string     $file       The absolute path to the attachment file.
-     * @param string|int $date       Either a string supported by the `strtotime` function or a UNIX timestamp that should be used to
-     *                               build the "year/time" uploads sub-folder structure.
+     * @param string|int $date       Either a string supported by the `strtotime` function or a UNIX timestamp that
+     *                               should be used to build the "year/time" uploads sub-folder structure.
      * @param array      $overrides  An associative array of values overriding the default ones.
-     * @param array      $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to override the image sizes created by
-     *                               default.
+     * @param array      $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to override the
+     *                               image sizes created by default.
      *
      * @return int If the WPFilesystem module is not loaded in the suite.
      * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite.
+     * @throws \Gumlet\ImageResizeException If the image resize operation fails while trying to create the image sizes.
      */
     public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
     {
@@ -2207,7 +2204,8 @@ class WPDb extends Db
             $fs = $this->getModule('WPFilesystem');
         } catch (ModuleException $e) {
             $method = __METHOD__;
-            throw new ModuleException(__CLASS__, "the {$method} method requires the WPFilesystem module.");
+            $message = "the {$method} method requires the WPFilesystem module.";
+            throw new ModuleException(__CLASS__, $message);
         }
 
         $pathInfo = pathinfo($file);
@@ -2284,18 +2282,22 @@ class WPDb extends Db
             $createdImages[$size] = (object) ['width' => $width, 'height' => $height];
         }
 
+        $createSizeEntry = function ($sizes) use ($slug, $mimeType, $extension) {
+            return [
+                'file' => "{$slug}-{$sizes->width}x{$sizes->height}.{$extension}",
+                'width' => $sizes->width,
+                'height' => $sizes->height,
+                'mime-type' => $mimeType,
+            ];
+        };
         $metadata = [
             'width' => $imageWidth,
             'height' => $imageHeight,
             'file' => $uploadLocation,
-            'sizes' => array_combine(array_keys($createdImages), array_map(function ($sizes) use ($slug, $mimeType, $extension) {
-                return [
-                    'file' => "{$slug}-{$sizes->width}x{$sizes->height}.{$extension}",
-                    'width' => $sizes->width,
-                    'height' => $sizes->height,
-                    'mime-type' => $mimeType,
-                ];
-            }, $createdImages)),
+            'sizes' => array_combine(
+                array_keys($createdImages),
+                array_map($createSizeEntry, $createdImages)
+            ),
             'image_meta' =>
                 [
                     'aperture' => '0',

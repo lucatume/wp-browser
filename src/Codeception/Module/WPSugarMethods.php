@@ -7,8 +7,9 @@ trait WPSugarMethods
 
     /**
      * Sets the permalink structure to use and flushes the rewrite rules.
-     * j
-     * @param string $permalinkStructure The new permalink structure; if empty then the `permalink_structure` option will be removed.
+     *
+     * @param string $permalinkStructure The new permalink structure; if empty then the `permalink_structure`
+     *                                   option will be removed.
      * @param bool $hardFlush Whether the rewrite rules should be written to the .htaccess file or not.
      */
     public function setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)

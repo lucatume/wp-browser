@@ -12,7 +12,8 @@ class GenerateWPRestController extends GenerateWPUnit implements CustomCommandIn
 
     public function getDescription()
     {
-        return 'Generates a WPRestApiTestCase: a WP_Test_REST_Controller_Testcase extension with Codeception super-powers.';
+        return 'Generates a WPRestApiTestCase: a WP_Test_REST_Controller_Testcase '
+               . 'extension with Codeception super-powers.';
     }
 
     protected function getGenerator($config, $class)

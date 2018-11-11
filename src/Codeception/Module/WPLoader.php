@@ -199,7 +199,9 @@ class WPLoader extends Module
             if (!empty($cleanup_config)) {
                 throw new ModuleConflictException(
                     __CLASS__,
-                    "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere with the WP Loader module."
+                    "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: "
+                    . "the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere "
+                    . "with the WP Loader module."
                 );
             }
         }
@@ -396,7 +398,8 @@ class WPLoader extends Module
         $current_site = new \stdClass;
 
         if (!empty($wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}blogs'"))) {
-            $data                    = $wpdb->get_row("SELECT domain, path  FROM {$wpdb->prefix}blogs WHERE blog_id = 1 AND site_id = 1");
+            $query = "SELECT domain, path  FROM {$wpdb->prefix}blogs WHERE blog_id = 1 AND site_id = 1";
+            $data                    = $wpdb->get_row($query);
             $current_site->domain    = $data->domain;
             $current_site->path      = $data->path;
             $current_site->site_name = ucfirst($data->domain);
@@ -429,14 +432,14 @@ class WPLoader extends Module
                 [$this, 'bootstrapActions'],
                 101
             );
-            tests_add_filter('plugins_loaded', [$this, '_switch_theme']);
+            tests_add_filter('plugins_loaded', [$this, 'switchTheme']);
         }
 
         require_once $this->wpBootstrapFile;
 
         if ($this->requiresIsolatedInstallation()) {
             $this->bootstrapActions();
-            $this->_switch_theme();
+            $this->switchTheme();
         }
     }
 
@@ -498,10 +501,12 @@ class WPLoader extends Module
         }
     }
 
-    public function _switch_theme()
+    public function switchTheme()
     {
         if (!empty($this->config['theme'])) {
-            $stylesheet    = is_array($this->config['theme']) ? end($this->config['theme']) : $this->config['theme'];
+            $stylesheet    = is_array($this->config['theme']) ?
+                end($this->config['theme'])
+                : $this->config['theme'];
             $functionsFile = $this->wp->WP_CONTENT_DIR() . '/themes/' . $stylesheet . '/functions.php';
             if (file_exists($functionsFile)) {
                 require_once($functionsFile);
@@ -547,7 +552,9 @@ class WPLoader extends Module
             if (!file_exists($path)) {
                 throw new ModuleConfigException(
                     __CLASS__,
-                    "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion of one ore more additional config files using the `configFile` setting."
+                    "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; "
+                    . 'this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion '
+                    . 'of one ore more additional config files using the `configFile` setting.'
                 );
                 continue;
             }

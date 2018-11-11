@@ -18,9 +18,9 @@
  */
 class IntegrationTester extends \Codeception\Actor
 {
-	use _generated\IntegrationTesterActions;
+    use _generated\IntegrationTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }

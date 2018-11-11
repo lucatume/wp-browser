@@ -10,4 +10,3 @@ $I->amOnPage('/');
 $I->see('Post 1');
 $I->see('Post 2');
 $I->see('Post 3');
-

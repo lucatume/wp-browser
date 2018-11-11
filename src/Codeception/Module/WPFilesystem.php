@@ -63,7 +63,8 @@ class WPFilesystem extends Filesystem
             $wpRoot = codecept_root_dir(Utils::unleadslashit($wpRoot));
         }
 
-        $message = "[{$wpRoot}] is not a valid WordPress root folder.\n\nThe WordPress root folder is the one that contains the 'wp-load.php' file.";
+        $message = "[{$wpRoot}] is not a valid WordPress root folder.\n\nThe WordPress root folder is the one that "
+                   . "contains the 'wp-load.php' file.";
 
         if (!(is_dir($wpRoot) && is_readable($wpRoot) && is_writable($wpRoot))) {
             throw new ModuleConfigException(__CLASS__, $message);
@@ -419,7 +420,8 @@ class WPFilesystem extends Filesystem
      *
      * @return string The absolute path to the destination file.
      *
-     * @throws \Codeception\Exception\ModuleException If the destination folder could not be created or the destination file could not be written.
+     * @throws \Codeception\Exception\ModuleException If the destination folder could not be created or the destination
+     *                                                file could not be written.
      */
     public function writeToUploadedFile($filename, $data, $date = null)
     {

@@ -178,7 +178,7 @@ class WPQueries extends Module
     public function assertQueriesByStatement($statement, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
+        $message = $message ?: 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
         $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
         Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
     }
@@ -196,7 +196,7 @@ class WPQueries extends Module
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
-        $message = $message ? $message : 'Failed asserting that queries were made by method [' . $class . '::' . $method . ']';
+        $message = $message ?: 'Failed asserting that queries were made by method [' . $class . '::' . $method . ']';
         $statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
         Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
     }
@@ -212,7 +212,8 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByStatement($statement, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries beginning with statement [' . $statement . '] were made.';
+        $message = $message ?: 'Failed asserting that no queries beginning with statement ['
+                               . $statement . '] were made.';
         $this->assertQueriesCountByStatement(0, $statement, $message);
     }
 
@@ -229,7 +230,8 @@ class WPQueries extends Module
     public function assertQueriesCountByStatement($n, $statement, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries beginning with statement [' . $statement . '] were made.';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries beginning with statement ['
+                               . $statement . '] were made.';
         $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
         Assert::assertCount($n, iterator_to_array($statementIterator), $message);
     }
@@ -245,7 +247,7 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByMethod($class, $method, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries were made by method [' . $class . '::' . $method . ']';
+        $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::' . $method . ']';
         $this->assertQueriesCountByMethod(0, $class, $method, $message);
     }
 
@@ -263,7 +265,8 @@ class WPQueries extends Module
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $class . '::' . $method . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
+                               . $class . '::' . $method . ']';
         $statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
         Assert::assertCount($n, iterator_to_array($statementIterator), $message);
     }
@@ -310,7 +313,7 @@ class WPQueries extends Module
     public function assertQueriesCountByFunction($n, $function, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by function [' . $function . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by function [' . $function . ']';
         $statementIterator = new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries), $function);
         Assert::assertCount($n, iterator_to_array($statementIterator), $message);
     }
@@ -329,7 +332,8 @@ class WPQueries extends Module
     public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were made by method [' . $class . '::' . $method . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that queries were made by method ['
+                               . $class . '::' . $method . '] containing statement [' . $statement . ']';
         $statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $class,
@@ -351,7 +355,8 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries were made by method [' . $class . '::' . $method . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::'
+                               . $method . '] containing statement [' . $statement . ']';
         $this->assertQueriesCountByStatementAndMethod(0, $statement, $class, $method, $message);
     }
 
@@ -370,7 +375,8 @@ class WPQueries extends Module
     public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $class . '::' . $method . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
+                               . $class . '::' . $method . '] containing statement [' . $statement . ']';
         $statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $class,
@@ -392,7 +398,8 @@ class WPQueries extends Module
     public function assertQueriesByStatementAndFunction($statement, $function, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were made by function [' . $function . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that queries were made by function ['
+                               . $function . '] containing statement [' . $statement . ']';
         $statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $function
@@ -412,7 +419,8 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByStatementAndFunction($statement, $function, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries were made by function [' . $function . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that no queries were made by function ['
+                               . $function . '] containing statement [' . $statement . ']';
         $this->assertQueriesCountByStatementAndFunction(0, $statement, $function, $message);
     }
 
@@ -430,7 +438,8 @@ class WPQueries extends Module
     public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made by method [' . $function . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
+                               . $function . '] containing statement [' . $statement . ']';
         $statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $function
@@ -480,13 +489,13 @@ class WPQueries extends Module
     public function assertQueriesCountByAction($n, $action, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']';
         $iterator = new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries), $action);
         Assert::assertCount($n, iterator_to_array($iterator), $message);
     }
 
     /**
-     * Asserts that at least one query was made as a consequence of the specified action containing the specified SQL statement.
+     * Asserts that at least one query was made as a consequence of the specified action containing the SQL query.
      *
      * Queries generated by setUp, tearDown and factory methods are excluded by default.
      *
@@ -498,7 +507,8 @@ class WPQueries extends Module
     public function assertQueriesByStatementAndAction($statement, $action, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were triggered by action  [' . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that queries were triggered by action  ['
+                               . $action . '] containing statement [' . $statement . ']';
         $iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $action
@@ -507,7 +517,7 @@ class WPQueries extends Module
     }
 
     /**
-     * Asserts that no queries were made as a consequence of the specified action containing the specified SQL statement.
+     * Asserts that no queries were made as a consequence of the specified action containing the SQL query.
      *
      * Queries generated by setUp, tearDown and factory methods are excluded by default.
      *
@@ -518,7 +528,8 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByStatementAndAction($statement, $action, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries were triggered by action  [' . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that no queries were triggered by action  ['
+                               . $action . '] containing statement [' . $statement . ']';
         $this->assertQueriesCountByStatementAndAction(0, $statement, $action, $message);
     }
 
@@ -536,7 +547,8 @@ class WPQueries extends Module
     public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by action  [' . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action  ['
+                               . $action . '] containing statement [' . $statement . ']';
         $iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $action
@@ -586,13 +598,13 @@ class WPQueries extends Module
     public function assertQueriesCountByFilter($n, $filter, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']';
         $iterator = new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter);
         Assert::assertCount($n, iterator_to_array($iterator), $message);
     }
 
     /**
-     * Asserts that at least one query was made as a consequence of the specified filter containing the specified SQL statement.
+     * Asserts that at least one query was made as a consequence of the specified filter containing the SQL query.
      *
      * Queries generated by setUp, tearDown and factory methods are excluded by default.
      *
@@ -604,7 +616,8 @@ class WPQueries extends Module
     public function assertQueriesByStatementAndFilter($statement, $filter, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that queries were triggered by filter  ['
+                               . $filter . '] containing statement [' . $statement . ']';
         $iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $filter
@@ -613,7 +626,7 @@ class WPQueries extends Module
     }
 
     /**
-     * Asserts that no queries were made as a consequence of the specified filter containing the specified SQL statement.
+     * Asserts that no queries were made as a consequence of the specified filter containing the specified SQL query.
      *
      * Queries generated by setUp, tearDown and factory methods are excluded by default.
      *
@@ -624,7 +637,8 @@ class WPQueries extends Module
      */
     public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = '')
     {
-        $message = $message ? $message : 'Failed asserting that no queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that no queries were triggered by filter  ['
+                               . $filter . '] containing statement [' . $statement . ']';
         $this->assertQueriesCountByStatementAndFilter(0, $statement, $filter, $message);
     }
 
@@ -642,7 +656,8 @@ class WPQueries extends Module
     public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = '')
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were triggered by filter  [' . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter  ['
+                               . $filter . '] containing statement [' . $statement . ']';
         $iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(
             new \ArrayIterator($this->filteredQueries),
             $filter
