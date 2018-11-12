@@ -7,6 +7,7 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
+use function tad\WPBrowser\Tests\Support\normalizeNewLine;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
@@ -789,7 +790,7 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertStringEqualsFile($pluginFile, $expected);
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -824,7 +825,8 @@ Description: Test mu-plugin 1
 
 echo 'Hello world';
 PHP;
-        $this->assertStringEqualsFile($muPluginFile, $expected);
+
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -855,7 +857,7 @@ PHP;
 /*
 Theme Name: test
 Author: wp-browser
-Description: test 
+Description: test
 Version: 1.0
 */
 CSS;
@@ -864,8 +866,8 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertStringEqualsFile($themeStyleFile, $expectedCss);
-        $this->assertStringEqualsFile($themeIndexFile, $expectedIndex);
+        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
@@ -897,7 +899,7 @@ PHP;
 /*
 Theme Name: test
 Author: wp-browser
-Description: test 
+Description: test
 Version: 1.0
 */
 CSS;
@@ -906,9 +908,9 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertStringEqualsFile($themeStyleFile, $expectedCss);
-        $this->assertStringEqualsFile($themeIndexFile, $expectedIndex);
-        $this->assertStringEqualsFile($themeFunctionsFile, $expectedIndex);
+        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
         $sut->_after($this->prophesize(TestInterface::class)->reveal());
 
