@@ -18,9 +18,9 @@
  */
 class WpmoduleTester extends \Codeception\Actor
 {
-	use _generated\WpmoduleTesterActions;
+    use _generated\WpmoduleTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }

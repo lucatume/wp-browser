@@ -18,9 +18,9 @@
  */
 class ClimoduleTester extends \Codeception\Actor
 {
-	use _generated\ClimoduleTesterActions;
+    use _generated\ClimoduleTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }

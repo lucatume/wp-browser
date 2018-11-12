@@ -2,14 +2,14 @@
 
 namespace Codeception\Module;
 
-
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
 
-class WPFilesystemTest extends \Codeception\Test\Unit {
+class WPFilesystemTest extends \Codeception\Test\Unit
+{
 
     /**
      * @var \Codeception\Lib\ModuleContainer
@@ -25,7 +25,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    public function _before() {
+    public function _before()
+    {
         $this->moduleContainer = $this->prophesize(ModuleContainer::class);
     }
 
@@ -34,14 +35,16 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function be_instantiatable() {
+    public function be_instantiatable()
+    {
         $this->assertInstanceOf(WPFilesystem::class, $this->make_instance());
     }
 
     /**
      * @return WPFilesystem
      */
-    protected function make_instance() {
+    protected function make_instance()
+    {
         $this->config = null !== $this->config
             ? $this->config
             : $this->getDefaultConfig();
@@ -51,7 +54,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         return $instance;
     }
 
-    protected function getDefaultConfig(array $overrides = []) {
+    protected function getDefaultConfig(array $overrides = [])
+    {
         $wpFolder = isset($overrides['wp']) ? $overrides['wp'] : '';
 
         $this->sandbox = codecept_output_dir('sandbox' . $wpFolder);
@@ -89,7 +93,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_throw_if_wp_root_folder_param_is_missing() {
+    public function it_should_throw_if_wp_root_folder_param_is_missing()
+    {
         $this->config = [];
 
         $this->expectException(ModuleConfigException::class);
@@ -102,7 +107,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_only_require_the_wp_root_folder_path_parameter_and_default_the_other_parameters() {
+    public function it_should_only_require_the_wp_root_folder_path_parameter_and_default_the_other_parameters()
+    {
         $config = $this->getDefaultConfig();
         $wpRoot = $config['wpRootFolder'];
         $this->config = ['wpRootFolder' => $wpRoot];
@@ -123,10 +129,12 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_passing_optional_parameters_as_relative_paths() {
+    public function it_should_allow_passing_optional_parameters_as_relative_paths()
+    {
     }
 
-    public function optionalRequiredPathParameters() {
+    public function optionalRequiredPathParameters()
+    {
         return [
             ['themes'],
             ['plugins'],
@@ -140,7 +148,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_specifying_wp_root_folder_as_relative_path_to_the_project_root() {
+    public function it_should_allow_specifying_wp_root_folder_as_relative_path_to_the_project_root()
+    {
         $this->config = [
             'wpRootFolder' => '/tests/_output/sandbox',
         ];
@@ -157,7 +166,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      * @test
      * @dataProvider optionalRequiredPathParameters
      */
-    public function it_should_allow_specifying_optional_path_parameters_as_relative_paths($parameter) {
+    public function it_should_allow_specifying_optional_path_parameters_as_relative_paths($parameter)
+    {
         $config = $this->getDefaultConfig();
         $path = $config['wpRootFolder'] . '/foo/';
         mkdir($path, 0777, true);
@@ -177,7 +187,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_the_uploads_path() {
+    public function it_should_allow_being_in_the_uploads_path()
+    {
         $sut = $this->make_instance();
 
         $sut->amInUploadsPath();
@@ -192,7 +203,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_an_uploads_subfolder() {
+    public function it_should_allow_being_in_an_uploads_subfolder()
+    {
         $sut = $this->make_instance();
 
         $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
@@ -214,7 +226,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_an_uploads_path_year_month_subfolder_from_date() {
+    public function it_should_allow_being_in_an_uploads_path_year_month_subfolder_from_date()
+    {
         $sut = $this->make_instance();
 
         $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
@@ -242,7 +255,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_being_in_time_based_uploads_folder_with_unix_timestamp() {
+    public function it_should_being_in_time_based_uploads_folder_with_unix_timestamp()
+    {
         $sut = $this->make_instance();
 
         $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
@@ -264,7 +278,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_seeing_uploaded_files() {
+    public function it_should_allow_seeing_uploaded_files()
+    {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
@@ -272,7 +287,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeUploadedFileFound(str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads) . '/file.txt');
         $sut->dontSeeUploadedFileFound('file.txt');
 
-		$this->expectException(AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
 
         $sut->seeUploadedFileFound('some-other-file.txt');
         $sut->dontSeeUploadedFileFound('some-other-file.txt');
@@ -283,7 +298,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_see_a_file_in_the_uploads_folder_based_on_the_date() {
+    public function it_should_allow_to_see_a_file_in_the_uploads_folder_based_on_the_date()
+    {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
@@ -291,7 +307,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeUploadedFileFound('file.txt', time());
         $sut->dontSeeUploadedFileFound('file.txt', 'somewhere/else');
 
-		$this->expectException(AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
 
         $sut->seeUploadedFileFound('some-other-file.txt', 'now');
         $sut->dontSeeUploadedFileFound('some-other-file.txt', 'somewhere/else');
@@ -302,7 +318,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_see_in_an_uploaded_file_contents() {
+    public function it_should_allow_to_see_in_an_uploaded_file_contents()
+    {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
@@ -311,7 +328,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeInUploadedFile($dateFrag . '/file.txt', 'foo bar');
         $sut->dontSeeInUploadedFile($dateFrag . '/file.txt', 'nope');
 
-		$this->expectException(AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
 
         $sut->seeInUploadedFile('some-other-file.txt', 'foo');
         $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo');
@@ -322,7 +339,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_see_an_uploaded_file_content_based_on_the_date() {
+    public function it_should_allow_to_see_an_uploaded_file_content_based_on_the_date()
+    {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
@@ -330,7 +348,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $sut->seeInUploadedFile('file.txt', 'foo bar', 'now');
         $sut->dontSeeInUploadedFile('file.txt', 'nope', 'now');
 
-		$this->expectException(AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
 
         $sut->seeInUploadedFile('some-other-file.txt', 'foo', 'now');
         $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo', 'now');
@@ -341,7 +359,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_delete_uploads_dirs() {
+    public function it_should_allow_to_delete_uploads_dirs()
+    {
         $sut = $this->make_instance();
 
         $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
@@ -360,7 +379,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_dir_using_date() {
+    public function it_should_allow_to_delete_upload_dir_using_date()
+    {
         $sut = $this->make_instance();
 
         mkdir($this->nowUploads . '/folder1', 0777, true);
@@ -377,7 +397,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_files() {
+    public function it_should_allow_to_delete_upload_files()
+    {
         $sut = $this->make_instance();
 
         $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
@@ -397,7 +418,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_file_using_date() {
+    public function it_should_allow_to_delete_upload_file_using_date()
+    {
         $sut = $this->make_instance();
 
         file_put_contents($this->nowUploads . '/file.txt', 'foo');
@@ -415,7 +437,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_cleaning_the_uploads_dir() {
+    public function it_should_allow_cleaning_the_uploads_dir()
+    {
         $sut = $this->make_instance();
 
         $folder = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder1';
@@ -441,7 +464,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_cleaning_upload_dirs_by_date() {
+    public function it_should_allow_cleaning_upload_dirs_by_date()
+    {
         $sut = $this->make_instance();
 
         $folder = $this->nowUploads . '/folder1';
@@ -467,7 +491,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_copying_dirs_to_the_uploads_dir() {
+    public function it_should_allow_copying_dirs_to_the_uploads_dir()
+    {
         $sut = $this->make_instance();
 
         $src = codecept_data_dir('folder-structures/folder1');
@@ -487,7 +512,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_copying_dirs_to_the_uploads_dir_by_date() {
+    public function it_should_allow_copying_dirs_to_the_uploads_dir_by_date()
+    {
         $sut = $this->make_instance();
 
         $src = codecept_data_dir('folder-structures/folder1');
@@ -507,7 +533,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_writing_to_uploads_file() {
+    public function it_should_allow_writing_to_uploads_file()
+    {
         $sut = $this->make_instance();
 
         $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
@@ -525,7 +552,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_writing_to_uploads_file_by_date() {
+    public function it_should_allow_writing_to_uploads_file_by_date()
+    {
         $sut = $this->make_instance();
 
         $dest = $this->nowUploads . '/some-file.txt';
@@ -543,7 +571,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_opening_an_uploaded_file() {
+    public function it_should_allow_opening_an_uploaded_file()
+    {
         $sut = $this->make_instance();
 
         $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
@@ -562,7 +591,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_opening_an_uploaded_file_by_date() {
+    public function it_should_allow_opening_an_uploaded_file_by_date()
+    {
         $sut = $this->make_instance();
 
         $dest = $this->nowUploads . '/some-file.txt';
@@ -581,7 +611,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_a_plugin_path() {
+    public function it_should_allow_being_in_a_plugin_path()
+    {
         $sut = $this->make_instance();
 
         $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/plugin1';
@@ -630,7 +661,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_a_themes_path() {
+    public function it_should_allow_being_in_a_themes_path()
+    {
         $sut = $this->make_instance();
 
         $themeFolder = $this->config['wpRootFolder'] . $this->config['themes'] . '/theme1';
@@ -679,7 +711,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      *
      * @test
      */
-    public function it_should_allow_being_in_a_mu_plugin_path() {
+    public function it_should_allow_being_in_a_mu_plugin_path()
+    {
         $sut = $this->make_instance();
 
         $mupluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'] . '/muplugin1';
@@ -723,8 +756,9 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
         $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
     }
 
-    protected function _after() {
-        if ( ! empty($this->sandbox) && file_exists($this->sandbox)) {
+    protected function _after()
+    {
+        if (! empty($this->sandbox) && file_exists($this->sandbox)) {
             rrmdir($this->sandbox);
         }
     }
@@ -733,7 +767,8 @@ class WPFilesystemTest extends \Codeception\Test\Unit {
      * It should allow having a plugin with code
      * @test
      */
-    public function it_should_allow_having_a_plugin_with_code() {
+    public function it_should_allow_having_a_plugin_with_code()
+    {
         $sut = $this->make_instance();
 
         $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/foo';
@@ -767,7 +802,8 @@ PHP;
      * It should allow having a mu-plugin with code
      * @test
      */
-    public function it_should_allow_having_a_mu_plugin_with_code() {
+    public function it_should_allow_having_a_mu_plugin_with_code()
+    {
         $sut = $this->make_instance();
 
         $muPluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
@@ -800,7 +836,8 @@ PHP;
      * It should allow having a theme with code
      * @test
      */
-    public function it_should_allow_having_a_theme_with_code() {
+    public function it_should_allow_having_a_theme_with_code()
+    {
         $sut = $this->make_instance();
 
         $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
@@ -840,7 +877,8 @@ PHP;
      * It should allow having a theme with code and functions file
      * @test
      */
-    public function it_should_allow_having_a_theme_with_code_and_functions_file() {
+    public function it_should_allow_having_a_theme_with_code_and_functions_file()
+    {
         $sut = $this->make_instance();
 
         $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];

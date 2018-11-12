@@ -2,7 +2,6 @@
 
 namespace Codeception\Module;
 
-
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
@@ -18,7 +17,6 @@ use WP_CLI\Configurator;
  * @package Codeception\Module
  */
 class WPCLI extends Module
-
 {
     /**
      * @var array {
@@ -76,33 +74,33 @@ class WPCLI extends Module
             throw new ModuleConfigException(__CLASS__, 'Specified path [' . $config['path'] . '] is not a directory.');
         }
 
-		$this->executor = $executor ?: new Executor();
+        $this->executor = $executor ?: new Executor();
     }
 
-	/**
-	 * Executes a wp-cli command.
-	 *
-	 * The method is a wrapper around isolated calls to the wp-cli tool.
-	 * The library will use its own wp-cli version to run the commands.
-	 *
-	 * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
-	 *                            e.g. a terminal call like `wp core version` becomes `core version`
-	 *                            omitting the call to wp-cli script.
-	 *
-	 * @return int wp-cli exit value for the command
-	 *
-	 * @throws \Codeception\Exception\ModuleException If the status evaluates to nonzero.
-	 */
-	public function cli($userCommand = 'core version')
+    /**
+     * Executes a wp-cli command.
+     *
+     * The method is a wrapper around isolated calls to the wp-cli tool.
+     * The library will use its own wp-cli version to run the commands.
+     *
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                            e.g. a terminal call like `wp core version` becomes `core version`
+     *                            omitting the call to wp-cli script.
+     *
+     * @return int wp-cli exit value for the command
+     *
+     * @throws \Codeception\Exception\ModuleException If the status evaluates to nonzero.
+     */
+    public function cli($userCommand = 'core version')
     {
         $this->initPaths();
 
         $command = $this->buildCommand($userCommand);
 
-		$output = [];
+        $output = [];
         $this->debugSection('command', $command);
         $status = $this->executor->exec($command, $output);
-		$this->debugSection('output', implode("\n", $output));
+        $this->debugSection('output', implode("\n", $output));
 
         $this->evaluateStatus($output, $status);
 
@@ -112,28 +110,28 @@ class WPCLI extends Module
     protected function initPaths()
     {
         if (empty($this->wpCliRoot)) {
-			$this->initWpCliPaths();
-		}
+            $this->initWpCliPaths();
+        }
     }
 
-	/**
-	 * Initializes the wp-cli root location.
-	 *
-	 * The way the location works is an ugly hack that assumes the folder structure
-	 * of the code to climb the tree and find the root folder.
-	 *
-	 * @throws \Codeception\Exception\ModuleException If the embedded WPCLI Configurator class file
-	 *                                                could not be found.
-	 */
+    /**
+     * Initializes the wp-cli root location.
+     *
+     * The way the location works is an ugly hack that assumes the folder structure
+     * of the code to climb the tree and find the root folder.
+     *
+     * @throws \Codeception\Exception\ModuleException If the embedded WPCLI Configurator class file
+     *                                                could not be found.
+     */
     protected function initWpCliPaths()
     {
-		try {
-			$ref = new \ReflectionClass(Configurator::class);
-		} catch (\ReflectionException $e) {
-			throw new ModuleException(__CLASS__, 'could not find the path to embedded WPCLI Configurator class');
-		}
-		$this->wpCliRoot = dirname($ref->getFileName()) . '/../../';
-		$this->bootPath  = $this->wpCliRoot . '/php/boot-fs.php';
+        try {
+            $ref = new \ReflectionClass(Configurator::class);
+        } catch (\ReflectionException $e) {
+            throw new ModuleException(__CLASS__, 'could not find the path to embedded WPCLI Configurator class');
+        }
+        $this->wpCliRoot = dirname($ref->getFileName()) . '/../../';
+        $this->bootPath  = $this->wpCliRoot . '/php/boot-fs.php';
     }
 
     /**
@@ -144,7 +142,7 @@ class WPCLI extends Module
     {
         $mergedCommand = $this->mergeCommandOptions($userCommand);
 
-		return implode(' ', [escapeshellarg(PHP_BINARY), escapeshellarg($this->bootPath), $mergedCommand]);
+        return implode(' ', [escapeshellarg(PHP_BINARY), escapeshellarg($this->bootPath), $mergedCommand]);
     }
 
     /**
@@ -154,7 +152,7 @@ class WPCLI extends Module
     protected function mergeCommandOptions($userCommand)
     {
         $commonOptions = [
-			'path' => escapeshellarg($this->config['path']),
+            'path' => escapeshellarg($this->config['path']),
         ];
 
         $lineOptions = [];
@@ -169,15 +167,15 @@ class WPCLI extends Module
 
         foreach ($nonOverriddenOptions as $key) {
             if (isset($this->config[$key])) {
-				$commonOptions[$key] = escapeshellarg($this->config[$key]);
+                $commonOptions[$key] = escapeshellarg($this->config[$key]);
             }
         }
 
         foreach ($commonOptions as $key => $value) {
-			$lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
-		}
+            $lineOptions[] = $value === true ? "--{$key}" : "--{$key}={$value}";
+        }
 
-		return $userCommand . ' ' . implode(' ', $lineOptions);
+        return $userCommand . ' ' . implode(' ', $lineOptions);
     }
 
     /**
@@ -198,7 +196,9 @@ class WPCLI extends Module
     {
         if (!empty($this->config['throw']) && $status < 0) {
             $output = !is_array($output) ?: json_encode($output);
-            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured to throw an exception when wp-cli terminates with an error status; set the `throw` parameter to `false` to avoid this.";
+            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured "
+                       . 'to throw an exception when wp-cli terminates with an error status; '
+                       . 'set the `throw` parameter to `false` to avoid this.';
 
             throw new ModuleException(__CLASS__, $message);
         }
@@ -242,8 +242,8 @@ class WPCLI extends Module
             return [];
         }
 
-		$hasSplitCallback = null !== $splitCallback;
-		$originalOutput   = $output;
+        $hasSplitCallback = null !== $splitCallback;
+        $originalOutput   = $output;
         if (!is_array($output) || (is_array($output) && $hasSplitCallback)) {
             if (is_array($output)) {
                 $output = implode(PHP_EOL, $output);
@@ -260,9 +260,16 @@ class WPCLI extends Module
         }
 
         if (!is_array($output) && $hasSplitCallback) {
-            throw new ModuleException(__CLASS__,
-                "Split callback must return an array, it returned: \n" . print_r($output,
-                    true) . "\nfor original output:\n" . print_r($originalOutput, true));
+            throw new ModuleException(
+                __CLASS__,
+                "Split callback must return an array, it returned: \n" . print_r(
+                    $output,
+                    true
+                ) . "\nfor original output:\n" . print_r(
+                    $originalOutput,
+                    true
+                )
+            );
         }
 
         return empty($output) ? [] : array_map('trim', $output);

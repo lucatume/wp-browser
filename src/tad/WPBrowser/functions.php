@@ -32,46 +32,47 @@ if (!function_exists('wpbrowser_include_patchwork')) {
     }
 }
 
-if(!function_exists('rrmdir')){
-	/**
-	 * Recursively removes a directory and all its content.
-	 *
-	 * @param string $src The absolute path to the directory to remove.
-	 */
-	function rrmdir($src)
-	{
-		if (!file_exists($src)) {
-			return;
-		}
+if (!function_exists('rrmdir')) {
+    /**
+     * Recursively removes a directory and all its content.
+     *
+     * @param string $src The absolute path to the directory to remove.
+     */
+    function rrmdir($src)
+    {
+        if (!file_exists($src)) {
+            return;
+        }
 
-		$dir = opendir($src);
-		while (false !== ($file = readdir($dir))) {
-			if (($file !== '.') && ($file !== '..')) {
-				$full = $src . '/' . $file;
-				if (is_dir($full)) {
-					rrmdir($full);
-				} else {
-					unlink($full);
-				}
-			}
-		}
-		closedir($dir);
-		rmdir($src);
-	}
+        $dir = opendir($src);
+        while (false !== ($file = readdir($dir))) {
+            if (($file !== '.') && ($file !== '..')) {
+                $full = $src . '/' . $file;
+                if (is_dir($full)) {
+                    rrmdir($full);
+                } else {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        rmdir($src);
+    }
 
 }
 
-if(!function_exists('wpbrowser_includes_dir')){
-	/**
-	 * Returns the absolute path to a file or folder in the `src/includes` folder or the path to it.
-	 * 
-	 * @param  string $path An optional path fragment to a file or folder from the the `src/includes` path
-	 * 
-	 * @return string The absolute path to a file or folder in the `src/includes` folder.
-	 */
-	function wpbrowser_includes_dir($path = ''){
-		$root = dirname(__DIR__, 2). '/includes/';
+if (!function_exists('wpbrowser_includes_dir')) {
+    /**
+     * Returns the absolute path to a file or folder in the `src/includes` folder or the path to it.
+     *
+     * @param  string $path An optional path fragment to a file or folder from the the `src/includes` path
+     *
+     * @return string The absolute path to a file or folder in the `src/includes` folder.
+     */
+    function wpbrowser_includes_dir($path = '')
+    {
+        $root = dirname(__DIR__, 2). '/includes/';
 
-		return !empty($path) ? $root . ltrim($path, '/') : $root;
-	}
+        return !empty($path) ? $root . ltrim($path, '/') : $root;
+    }
 }

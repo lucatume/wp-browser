@@ -18,9 +18,9 @@
  */
 class WploaderTester extends \Codeception\Actor
 {
-	use _generated\WploaderTesterActions;
+    use _generated\WploaderTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }
