@@ -43,7 +43,7 @@ function getMySQLVersion()
 *
 * @see https://stackoverflow.com/a/7836692/2056484
 */
-function normalizeNewLine(string $str)
+function normalizeNewLine($str)
 {
 	return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
 }
