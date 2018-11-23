@@ -1,4 +1,4 @@
-TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress-core"
+TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress"
 TRAVIS_WP_URL ?= "http://wp.test"
 TRAVIS_WP_DOMAIN ?= "wp.test"
 TRAVIS_DB_NAME ?= "test_site"
@@ -118,7 +118,6 @@ travis_install:
 		git clone https://github.com/norcross/airplane-mode.git \
 			vendor/wordpress/wordpress/wp-content/plugins/airplane-mode; \
 	fi
-	ls -la vendor/wordpress/wordpress/wp-content/plugins
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp plugin activate airplane-mode
 	# Export a dump of the just installed database to the _data folder of the project.
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
