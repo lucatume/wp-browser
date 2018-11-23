@@ -93,6 +93,9 @@ class WPCLI extends Module
      */
     public function cli($userCommand = 'core version')
     {
+        // Set an environment variable to let client code know the request is coming from the host machine.
+        putenv('WPBROWSER_HOST_REQUEST=1');
+
         $this->initPaths();
 
         $command = $this->buildCommand($userCommand);

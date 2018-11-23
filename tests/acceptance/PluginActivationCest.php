@@ -76,6 +76,7 @@ class PluginActivationCest
         $wpFolder = $config['wpFolder'];
         $template
             = <<< HANDLEBARS
+<?php
 /*
 Plugin Name: Plugin {{letter}}
 Plugin URI: https://wordpress.org/plugins/{{letter}}/
@@ -91,7 +92,7 @@ HANDLEBARS;
         foreach (range('A', 'Z') as $letter) {
             $compiled = str_replace('{{letter}}', $letter, $template);
             $file     = $wpFolder . "/wp-content/plugins/{$letter}.php";
-            file_put_contents($file, $compiled);
+            file_put_contents($file, $compiled, LOCK_EX);
             $this->delete[] = $file;
         }
     }

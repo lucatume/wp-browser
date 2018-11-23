@@ -20,5 +20,4 @@ class MUPlugin1
         }
     }
 }
-
 register_activation_hook(__FILE__, [MUPlugin1::class, 'activate']);

@@ -11,7 +11,6 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
     public static function setUpBeforeClass()
     {
         self::importOtherPrefixInstallation();
-
         parent::setUpBeforeClass();
     }
 
@@ -41,27 +40,11 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
     protected static function getDbAccessCredentials()
     {
         $dbName = getenv('TEST_DB_NAME') ?: 'codeception-tests';
-        $dbUser = 'root';
-        $dbPass = getenv('TRAVIS') ? '' : 'root';
-        $dbHost = 'localhost';
+        $dbUser = getenv('DB_USER') ?: 'root';
+        $dbPass = getenv('DB_PASSWORD') ?: '';
+        $dbHost = getenv('DB_HOST') ?: 'localhost';
 
         return array($dbName, $dbUser, $dbPass, $dbHost);
-    }
-
-    public function setUp()
-    {
-        // before
-        parent::setUp();
-
-        // your set up methods here
-    }
-
-    public function tearDown()
-    {
-        // your tear down methods here
-
-        // then
-        parent::tearDown();
     }
 
     /**
@@ -79,11 +62,11 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
             throw new AssertionFailedError('Test failed as MySQL connection failed');
         }
 
-        $tables = $db->query("show tables like 'foo_posts'");
+        $tables = $db->query("SHOW TABLES LIKE 'foo_posts'");
 
         $this->assertNotEmpty($tables->fetch());
 
-        $posts = $db->query("select post_title from foo_posts where post_title = 'foo'");
+        $posts = $db->query("SELECT post_title FROM foo_posts WHERE post_title = 'foo'");
 
         $this->assertNotEmpty($posts->fetch());
     }

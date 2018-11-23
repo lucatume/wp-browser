@@ -4,6 +4,11 @@ namespace tad\WPBrowser\Tests\Support;
 
 function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
+    if(strpos($dbHost,':') >0){
+        list($dbHost, $dbPort) = explode(':',$dbHost);
+        $dbHost = sprintf('%s -P=%d', $dbHost, $dbPort);
+    }
+
     $commandTemplate = 'mysql --host=%s --user=%s %s %s < %s';
     $dbPassEntry = $dbPass ? '--password=' . $dbPass : '';
 

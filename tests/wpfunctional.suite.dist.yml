@@ -25,7 +25,7 @@ modules:
       WPLoader:
         loadOnly: true
         wpRootFolder: '%WP_ROOT_FOLDER%'
-        dbName: %TEST_DB_NAME%
+        dbName: %DB_NAME%
         dbHost: %DB_HOST%
         dbUser: %DB_USER%
         dbPassword: %DB_PASSWORD%
