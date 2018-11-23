@@ -55,6 +55,7 @@ env:
 before_install:
   # Remove the vendor folder completely just in case.
   - rm -rf vendor
+  - ls -la vendor
   - make travis_before_install
 
 install:
