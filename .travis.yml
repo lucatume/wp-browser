@@ -56,6 +56,8 @@ before_install:
   - make travis_before_install
 
 install:
+  # Update composer using the host machine PHP version.
+  - composer update
   - make travis_install
 
 before_script:
