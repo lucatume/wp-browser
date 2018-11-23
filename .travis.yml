@@ -55,7 +55,7 @@ env:
 before_install:
   # Remove the vendor folder completely just in case.
   - mkdir vendor
-  - sudo chown -R vendor 0777
+  - sudo chmod -R vendor 0777
   - make travis_before_install
 
 install:
