@@ -76,7 +76,9 @@ travis_before_install:
 	ping -c 1 test1.wp.test
 	ping -c 1 test2.wp.test
 
-travis_install: 
+travis_install:
+	# Update composer using the host machine PHP version.
+	composer install
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
