@@ -78,6 +78,7 @@ travis_before_install:
 
 travis_install:
 	whoami
+	mkdir -p vendor
 	ls -la vendor
 	# Update composer using the host machine PHP version.
 	composer install

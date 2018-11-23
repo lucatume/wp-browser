@@ -53,8 +53,6 @@ env:
     - WP_VERSION=nightly
 
 before_install:
-  - whoami
-  - ls -la vendor
   - make travis_before_install
 
 install:
