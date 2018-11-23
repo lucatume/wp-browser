@@ -119,6 +119,8 @@ travis_install:
 			vendor/wordpress/wordpress/wp-content/plugins/airplane-mode; \
 	fi
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp plugin activate airplane-mode
+	# Make sure everyone can write to the tests/_data folder.
+	sudo chmod -R 775 tests/_data
 	# Export a dump of the just installed database to the _data folder of the project.
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
