@@ -53,6 +53,8 @@ env:
     - WP_VERSION=nightly
 
 before_install:
+  # Remove the vendor folder completely just in case.
+  - rm -rf vendor
   - make travis_before_install
 
 install:
