@@ -1,4 +1,4 @@
-TRAVIS_WP_FOLDER ?= "vendor/johnpbloch/wordpress-core"
+TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress-core"
 TRAVIS_WP_URL ?= "http://wp.test"
 TRAVIS_WP_DOMAIN ?= "wp.test"
 TRAVIS_DB_NAME ?= "test_site"
@@ -54,6 +54,8 @@ phpstan: src
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
 travis_before_install:
+	# Clone WordPress in the vendor folder if not there already.
+	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
 	# Give the DB container some time to initialize.
@@ -110,9 +112,9 @@ travis_install:
 	# Empty the main site of all content.
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp site empty --yes
 	# Install the Airplane Mode plugin to speed up the Driver tests.
-	if [ ! -d vendor/johnpbloch/wordpress-core/wp-content/plugins/airplane-mode ]; then \
+	if [ ! -d vendor/wordpress/wordpress-core/wp-content/plugins/airplane-mode ]; then \
 		git clone https://github.com/norcross/airplane-mode.git \
-			vendor/johnpbloch/wordpress-core/wp-content/plugins/airplane-mode; \
+			vendor/wordpress/wordpress-core/wp-content/plugins/airplane-mode; \
 	fi
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp plugin activate airplane-mode
 	# Export a dump of the just installed database to the _data folder of the project.

@@ -30,8 +30,7 @@
   },
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
-    "ofbeaton/console-tester": "^1.1",
-    "johnpbloch/wordpress-core": "dev-master"
+    "ofbeaton/console-tester": "^1.1"
   },
   "autoload": {
     "psr-4": {

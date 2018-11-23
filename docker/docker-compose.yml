@@ -42,6 +42,6 @@ services:
       WORDPRESS_DB_PASSWORD: ""
     volumes:
       # bind the core WordPress folder to the /var/www/html folder
-      - ./../vendor/johnpbloch/wordpress-core:/var/www/html
+      - ./../vendor/wordpress/wordpress-core:/var/www/html
       # bind the root folder to the /project folder
       - ./..:/project
