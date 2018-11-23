@@ -55,6 +55,8 @@ env:
 before_install:
   # Remove the vendor folder completely just in case.
   - make travis_before_install
+  # Make Composer binaries available w/o the vendor/bin prefix.
+  - export PATH=vendor/bin:$PATH
 
 install:
   - make travis_install
