@@ -56,6 +56,8 @@ phpstan: src
 travis_before_install:
 	# Clone WordPress in the vendor folder if not there already.
 	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
+	# Make sure the WordPress folder is write-able.
+	sudo chmod -R 0777 vendor/wordpress
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
 	# Give the DB container some time to initialize.
