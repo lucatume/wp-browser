@@ -134,7 +134,7 @@ travis_script:
 	codecept run cli
 	codecept run climodule
 	codecept run functional
-	codecept run muloader/airplane-mode
+	codecept run muloader
 	codecept run unit
 	codecept run webdriver
 	codecept run wpfunctional
