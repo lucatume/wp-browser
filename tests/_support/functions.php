@@ -6,11 +6,11 @@ function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbH
 {
     if(strpos($dbHost,':') >0){
         list($dbHost, $dbPort) = explode(':',$dbHost);
-        $dbHost = sprintf('%s -P=%d', $dbHost, $dbPort);
+        $dbHost = sprintf('%s -P %d', $dbHost, $dbPort);
     }
 
-    $commandTemplate = 'mysql --host=%s --user=%s %s %s < %s';
-    $dbPassEntry = $dbPass ? '--password=' . $dbPass : '';
+    $commandTemplate = 'mysql -h %s -u %s %s %s < %s';
+    $dbPassEntry = $dbPass ? '-p' . $dbPass : '';
 
     if (version_compare(getMySQLVersion(), '5.5.3', '<')) {
         $sql = file_get_contents($dumpFile);
