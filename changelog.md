@@ -19,9 +19,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
 - added a clear disclaimer about db wiping in the `init wpbrowser` command
-- an issue where the WpWebDriver module would not login correctly [#121]
+- an issue where the WpWebDriver module would not login correctly [#121](https://github.com/lucatume/wp-browser/pull/121)
 - code style compatibilty with PSR-2 standard
 - an issue in the `tad\WPBrowser\Tests\Support\importDump` function that would prevent the function from working if the database host specified a port
+- an issue with end-of-line chars in tests on Windows [#191](https://github.com/lucatume/wp-browser/pull/191) - thanks @Luc45
 
 ### Changed
 - lowered the PHP required version from 7.0 to 5.6

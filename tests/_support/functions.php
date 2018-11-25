@@ -41,3 +41,14 @@ function getMySQLVersion()
     preg_match('@[0-9]+\.[0-9]+\.[0-9]+@', $output, $version);
     return $version[0];
 }
+
+/**
+* Normalizes a string new line bytecode for comparison
+* through Unix and Windows environments.
+*
+* @see https://stackoverflow.com/a/7836692/2056484
+*/
+function normalizeNewLine($str)
+{
+	return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
+}
