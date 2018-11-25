@@ -143,7 +143,7 @@ travis_script:
 
 travis_prepare: travis_before_install travis_install travis_before_script
 
-travis_run: travis_prepare travis_script
+travis_run: lint sniff travis_prepare travis_scriptb
 
 down:
 	# Gracefully stop the Docker containers.
