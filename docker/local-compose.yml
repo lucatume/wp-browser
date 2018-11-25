@@ -1,0 +1,88 @@
+# The composer file is based on the use, locally, of Traefik
+# see https://jtreminio.com/blog/traefik-on-docker-for-web-developers/
+# see https://traefik.io/
+# Below the commented version of the two files, .env and docker-compose.yml, you need in a local folder.
+# Cd into traefik folder **before** upping this stack and up the traefik container.
+
+#  ; traefik/.env
+#    COMPOSE_PROJECT_NAME=traefik
+
+# traefik/docker-compose.yml
+#version: '3.2'
+#
+#services:
+#  proxy:
+#    image: traefik
+#    command: --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
+#    networks:
+#      - webgateway
+#    ports:
+#      - "80:80"
+#      - "8080:8080"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - /dev/null:/traefik.toml
+#
+#networks:
+#  webgateway:
+#    driver: bridge
+
+version: '3.2'
+
+networks:
+    private:
+    public:
+        external:
+            name: traefik_webgateway
+
+services:
+
+  chromedriver:
+    image: blueimp/chromedriver:latest
+    container_name: wpbrowser_chromedriver
+    ports:
+      # listen for connections on port 4445
+      - "4445:4444"
+    links:
+      - wp
+    extra_hosts:
+      - "wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
+      - "test1.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
+      - "test2.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
+
+  db:
+    image: mariadb:latest
+    container_name: wpbrowser_db
+    ports:
+      # listen for external connections on port 3306
+      - "3307:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: test_site
+      MYSQL_USER: wordrpess
+      MYSQL_PASSWORD: wordpress
+
+  wp:
+    image: wordpress:php5.6
+    container_name: wpbrowser_wp
+    labels:
+      - traefik.backend=nginx
+      - traefik.docker.network=traefik_webgateway
+      - traefik.frontend.rule=HostRegexp:wp.test,{subdomain:[a-z0-9]+}.wp.test
+      - traefik.port=80
+    networks:
+        - default
+        - private
+        - public
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_NAME: test_site
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: ""
+    volumes:
+      # bind the core WordPress folder to the /var/www/html folder
+      - ./../vendor/wordpress/wordpress:/var/www/html
+      # bind the root folder to the /project folder
+      - ./..:/project

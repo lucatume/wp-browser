@@ -231,14 +231,17 @@ class WPLoader extends Module
     protected function getWpRootFolder()
     {
         if (empty($this->wpRootFolder)) {
-            // allow me not to bother with trailing slashes
-            $wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
-
-            // maybe the user is using the `~` symbol for home?
-            $this->wpRootFolder = Utils::homeify($wpRootFolder);
-
-            // remove `\ ` spaces in folder paths
-            $this->wpRootFolder = str_replace('\ ', ' ', $this->wpRootFolder);
+            $wpRootFolder = $this->config['wpRootFolder'];
+            // Maybe the user is using the `~` symbol for home?
+            $wpRootFolder = Utils::homeify($wpRootFolder);
+            // Remove `\ ` spaces in folder paths.
+            $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
+            // Resolve to real path if relative or symlinked.
+            if ($realPath = realpath($wpRootFolder)) {
+                $wpRootFolder = $realPath;
+            }
+            // Allow me not to bother with trailing slashes.
+            $this->wpRootFolder = Utils::untrailslashit($wpRootFolder) . DIRECTORY_SEPARATOR;
         }
 
         return $this->wpRootFolder;
@@ -379,7 +382,7 @@ class WPLoader extends Module
     {
         $this->ensureServerVars();
 
-        include_once $this->wpRootFolder . '/wp-load.php';
+        include_once Utils::untrailslashit($this->wpRootFolder) . '/wp-load.php';
 
         $this->setupCurrentSite();
         $this->factoryStore = new FactoryStore();

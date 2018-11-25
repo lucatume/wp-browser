@@ -55,5 +55,8 @@ if (!empty($env['headers'])) {
     }
 }
 
-// disable CRON tasks to avoid parallel processes running on an empty database
+// Disable CRON tasks to avoid parallel processes running on an empty database.
 define('DISABLE_WP_CRON', true);
+
+// Set an environment variable to singnal the context of the request.
+putenv('WPBROWSER_HOST_REQUEST=1');

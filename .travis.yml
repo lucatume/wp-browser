@@ -10,15 +10,15 @@ php:
   - '7.0'
   - '7.1'
   - '7.2'
+  - 'nightly'
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
-    - env: WP_VERSION=nightly
 
 services:
-  - mysql
+  - docker
 
 cache:
   apt: true
@@ -26,28 +26,21 @@ cache:
     - $HOME/.composer/cache/files
 
 addons:
-  apt:
-    packages:
-      - libjpeg-dev
-      - libpng12-dev
-      - php5-fpm
-      - php5-mysql
-      - nginx
   hosts:
-    - wp.localhost
-    - test1.wp.localhost
-    - test2.wp.localhost
-    - blog0.wp.localhost
-    - blog1.wp.localhost
-    - blog2.wp.localhost
+    - wp.test
+    - test1.wp.test
+    - test2.wp.test
+    - blog0.wp.test
+    - blog1.wp.test
+    - blog2.wp.test
 
 env:
   global:
-    - WP_FOLDER="/tmp/wordpress"
-    - WP_URL="http://wp.localhost"
-    - WP_DOMAIN="wp.localhost"
-    - DB_NAME="test"
-    - TEST_DB_NAME="wploader"
+    - WP_FOLDER="vendor/johnpbloch/wordpress-core"
+    - WP_URL="http://wp.test"
+    - WP_DOMAIN="wp.test"
+    - DB_NAME="test_site"
+    - TEST_DB_NAME="test"
     - WP_TABLE_PREFIX="wp_"
     - WP_ADMIN_USERNAME="admin"
     - WP_ADMIN_PASSWORD="admin"
@@ -57,65 +50,18 @@ env:
     - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
   matrix:
     - WP_VERSION=latest
-    - WP_VERSION=nightly
 
 before_install:
-  # create the databases that will be used in the tests
-  - mysql -e "create database IF NOT EXISTS $DB_NAME;" -uroot
-  - mysql -e "create database IF NOT EXISTS $TEST_DB_NAME;" -uroot
-  # set up folders
-  - mkdir -p $WP_FOLDER
-  - mkdir tools
-  # install wp-cli in the `tools` folder
-  - wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -P $(pwd)/tools/
-  - chmod +x tools/wp-cli.phar && mv tools/wp-cli.phar tools/wp
-  # append the `tools` folder to the PATH
-  - export PATH=$PATH:$(pwd)/tools
-  # prepend the `vendor/bin` folder the PATH
+  # Remove the vendor folder completely just in case.
+  - make travis_before_install
+  # Make Composer binaries available w/o the vendor/bin prefix.
   - export PATH=vendor/bin:$PATH
 
 install:
-  - composer update
-  # install WordPress in the `wordpress` folder
-  - cd $WP_FOLDER
-  - wp core download --version=$WP_VERSION
-  - wp config create --dbname="$DB_NAME" --dbuser="root" --dbpass="" --dbhost="127.0.0.1" --dbprefix="$WP_TABLE_PREFIX"
-  - wp core multisite-install --url="$WP_URL" --base="/" --subdomains --title="Test" --admin_user="$WP_ADMIN_USERNAME" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="admin@$WP_DOMAIN" --skip-email
-  - wp rewrite structure '/%postname%/' --hard
-  - wp site create --slug="$WP_SUBDOMAIN_1" --title="$WP_SUBDOMAIN_1_TITLE"
-  - wp site create --slug="$WP_SUBDOMAIN_2" --title="$WP_SUBDOMAIN_2_TITLE"
-  # update WordPress database to avoid prompts
-  - wp core update-db --network
-  # empty all sites of all content
-  - wp site list --field=url | xargs -n1 -I % wp --url=% site empty --yes
-  # export a dump of the just installed database to the _data folder
-  - wp db export $TRAVIS_BUILD_DIR/tests/_data/dump.sql
-  # get back to the build folder
-  - cd $TRAVIS_BUILD_DIR
-  # copy the Nginx configuration file to the available sites
-  - sudo cp build/travis-nginx-conf /etc/nginx/sites-available/$WP_DOMAIN
-  - sudo sed -e "s?%WP_FOLDER%?$WP_FOLDER?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
-  - sudo sed -e "s?%WP_DOMAIN%?$WP_DOMAIN?g" --in-place /etc/nginx/sites-available/$WP_DOMAIN
-  # enable the site
-  - sudo ln -s /etc/nginx/sites-available/$WP_DOMAIN /etc/nginx/sites-enabled/
+  - make travis_install
 
 before_script:
-  # restart Nnginx and PHP-FPM services
-  - sudo service php5-fpm restart
-  - sudo service nginx restart
-
-  # build Codeception modules
-  - codecept build
-
-   # set the correct path to phantomjs bin
-  - sed -i "s_%%phantomjs%%_$(which phantomjs)_" $TRAVIS_BUILD_DIR/.env
+  - make travis_before_script
 
 script:
-  - codecept run unit
-  - codecept run acceptance
-  - codecept run functional
-  - codecept run climodule
-  - codecept run wpmodule
-  - codecept run wploadersuite
-  - codecept run muloader
-  - codecept run cli
+  - make travis_script

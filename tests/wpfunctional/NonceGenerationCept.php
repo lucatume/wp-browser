@@ -1,6 +1,6 @@
 <?php
 $I = new WpfunctionalTester($scenario);
-$I->wantTo('use the wp_create_nonce function to generate a valid function');
+$I->wantTo('use the wp_create_nonce function to generate a valid nonce');
 
 $I->haveOptionInDatabase('active_plugins', ['test/test.php']);
 

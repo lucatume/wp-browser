@@ -3,23 +3,6 @@ namespace tad\WPBrowser\Tests;
 
 class MuPluginActivationTest extends \Codeception\TestCase\WPTestCase
 {
-
-    public function setUp()
-    {
-        // before
-        parent::setUp();
-
-        // your set up methods here
-    }
-
-    public function tearDown()
-    {
-        // your tear down methods here
-
-        // then
-        parent::tearDown();
-    }
-
     /**
      * @test
      * it should network activate network plugins on mu installation

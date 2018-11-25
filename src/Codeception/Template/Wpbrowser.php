@@ -244,11 +244,11 @@ class Wpbrowser extends Bootstrap
                 'testSiteDbUser' => 'root',
                 'testSiteDbPassword' => '',
                 'testSiteTablePrefix' => 'wp_',
-                'testSiteWpUrl' => 'http://wp.localhost',
-                'testSiteWpDomain' => 'wp.localhost',
+                'testSiteWpUrl' => 'http://wp.test',
+                'testSiteWpDomain' => 'wp.test',
                 'testSiteAdminUsername' => 'admin',
                 'testSiteAdminPassword' => 'password',
-                'testSiteAdminEmail' => 'admin@wp.localhost',
+                'testSiteAdminEmail' => 'admin@wp.test',
                 'testSiteWpAdminPath' => '/wp-admin',
                 'wpRootFolder' => '/var/www/html',
                 'testDbName' => 'wpTests',
@@ -386,7 +386,7 @@ class Wpbrowser extends Bootstrap
         );
         $installationData['testSiteWpUrl'] = $this->ask(
             'What is the URL the test site?',
-            'http://wp.localhost'
+            'http://wp.test'
         );
         $installationData['testSiteWpUrl'] = rtrim($installationData['testSiteWpUrl'], '/');
         $url = parse_url($installationData['testSiteWpUrl']);
