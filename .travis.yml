@@ -10,12 +10,12 @@ php:
   - '7.0'
   - '7.1'
   - '7.2'
+  - 'nightly'
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
-    - env: WP_VERSION=nightly
 
 services:
   - docker
@@ -50,7 +50,6 @@ env:
     - WP_SUBDOMAIN_2_TITLE="Test Subdomain 2"
   matrix:
     - WP_VERSION=latest
-    - WP_VERSION=nightly
 
 before_install:
   # Remove the vendor folder completely just in case.
