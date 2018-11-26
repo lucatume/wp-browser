@@ -42,6 +42,9 @@
     "ofbeaton/console-tester": "^1.1",
     "site5/phantoman": "^1.1"
   },
+  "suggest": {
+    "lucatume/wp-browser": "^2.2"
+  },
   "bin": [
     "wpcept"
   ]
