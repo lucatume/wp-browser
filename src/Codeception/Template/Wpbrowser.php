@@ -55,7 +55,7 @@ class Wpbrowser extends Bootstrap
         }
 
         if ($interactive) {
-            $this->warnAboutDbWipe(1);
+            $this->askForAcknowledgment();
         }
 
         $this->say("<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n");
@@ -126,8 +126,6 @@ class Wpbrowser extends Bootstrap
         $this->say(" --- ");
         $this->say();
 
-        $this->warnAboutDbWipe(2);
-
         $this->say("<bold>Next steps:</bold>");
         $this->say('0. <bold>Create the databases used by the modules</bold>; wp-browser will not do it for you!');
         $this->say('1. <bold>Install and configure WordPress</bold> activating the theme and plugins you need to create'
@@ -149,30 +147,6 @@ class Wpbrowser extends Bootstrap
                           . ' all the suites at the same time.');
         $this->say('Run each suite separately, like this: <comment>codecept run unit && codecept run '
                    . "{$installationData['wpunitSuiteSlug']}</comment>, to avoid problems.");
-    }
-
-    protected function warnAboutDbWipe($time = 1)
-    {
-        $verb = $time === 1 ? 'will be' : 'have been';
-        $warning = [
-            'PLEASE READ CAREFULLY!',
-            'You ' . $verb . ' asked information about your test database host, user and password.',
-            'This information will be used by the modules to access your test database(s) during tests.',
-            'The tables in the test database(s) will be dropped and ALL YOUR DATA WILL BE LOST.',
-            'You should not run any test against a database that contains any information you care about.',
-            'Create a WordPress installation, and with it a test database, dedicated to tests only.',
-            'Configure wp-browser and Codeception to use that tests database(s) and a site.',
-            'BACKUP ANY DATABASE INFORMATION YOU WANT TO KEEP RIGHT NOW!',
-            'WP-BROWSER WILL NOT BACKUP, OR RESTORE, YOUR DATABASE FOR YOU!',
-        ];
-
-        if ($time === 2) {
-            $warning = array_merge(['Just to make sure you got this...'], $warning);
-        }
-
-        echo PHP_EOL;
-        $this->sayWarning(implode(PHP_EOL, $warning));
-        echo PHP_EOL;
     }
 
     protected function say($message = '')
@@ -325,14 +299,9 @@ class Wpbrowser extends Bootstrap
         echo PHP_EOL;
         $this->sayInfo('The WPDb module needs the database details to access the test database used by the test site.');
         echo PHP_EOL;
-        $this->sayWarning(implode(PHP_EOL, [
-            'Again remember these credentials will be used to access the database in tests and replace its content!',
-            'Any database you use for testing should not contain any information you care about.',
-        ]));
-        echo PHP_EOL;
         $installationData['testSiteDbName'] = $this->ask(
             'What is the name of the test database used by the test site?',
-            'wp'
+            'wp_test_site'
         );
         $installationData['testSiteDbHost'] = $this->ask(
             'What is the host of the test database used by the test site?',
@@ -366,7 +335,7 @@ class Wpbrowser extends Bootstrap
 
         $installationData['testDbName'] = $this->ask(
             'What is the name of the test database WPLoader should use?',
-            'wpTests'
+            'wp_test_integration'
         );
         $installationData['testDbHost'] = $this->ask(
             'What is the host of the test database WPLoader should use?',
@@ -686,5 +655,26 @@ EOF;
             $message = 'Please specify an env file name starting with ".env", e.g. ".env.ci" or ".env.local"';
             throw new RuntimeException($message);
         }
+    }
+
+    protected function askForAcknowledgment()
+    {
+        $this->say('<info>Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!</info>');
+        $this->say('<info>This command will guide you through the initial setup for your project.</info>');
+        echo PHP_EOL;
+        $this->say('<info>If you are new to wp-browser please take the time to read this guide:</info>');
+        $this->say('<info>https://github.com/lucatume/wp-browser#initial-setup</info>');
+        echo PHP_EOL;
+        $acknowledge = $this->ask('<warning>I acknowledge wp-browser should run on development servers only, that I have made a backup of my files and database contents before proceeding.</warning>',
+            true);
+        echo PHP_EOL;
+        if(!$acknowledge){
+            $this->say('<info>The command did not do anything, nothing changed.</info>');
+            $this->say('<info>Setup a WordPress installation and database dedicated to development and restart this command when ready using `vendor/bin/codecept init wpbrowser`.</info>');
+            echo PHP_EOL;
+            $this->say('<info>See you soon!</info>');
+            exit(0);
+        }
+        echo PHP_EOL;
     }
 }
