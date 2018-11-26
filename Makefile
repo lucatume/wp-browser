@@ -25,7 +25,7 @@ if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
 endef
 
 docker/parallel-lint/id:
-	# Builds the images required by the Docker-based utils like parallel-lint and so on.
+	# Builds the Docker-based parallel-lint util.
 	docker build --iidfile ./docker/parallel-lint/id ./docker/parallel-lint --tag parallel-lint:5.6
 
 lint: docker/parallel-lint/id src
@@ -143,8 +143,16 @@ travis_script:
 
 travis_prepare: travis_before_install travis_install travis_before_script
 
-travis_run: lint sniff travis_prepare travis_scriptb
+travis_run: lint sniff travis_prepare travis_script
 
 down:
 	# Gracefully stop the Docker containers.
 	docker-compose -f docker/docker-compose.yml down
+
+docker/markdown-toc/id:
+	# Builds the Docker-based markdown-toc util.
+	docker build --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag md-toc:latest
+
+toc: docker/markdown-toc/id
+	# Re-builds the Readme ToC.
+	docker run --rm -it -v ${CURDIR}:/project md-toc markdown-toc -i /project/README.md
