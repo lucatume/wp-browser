@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Codeception\Command\DbSnapshot` command
 - `tad\Codeception\Command\SearchReplace` command from the template
 - `lucatume/codeception-setup-local` dependency
+- the `WPBootstrapper` module
 
 ### Fixed
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
