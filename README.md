@@ -5,10 +5,11 @@ A WordPress specific set of extensions for Codeception.
 
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
-[Example usage](https://github.com/lucatume/idlikethis).
+[An example usage](https://github.com/lucatume/idlikethis).
 
 * [Upgrading from version 1.0 to 2.0 of wp-browser](#upgrading-from-version-10-to-20-of-wp-browser)
   * [Requirements](#requirements)
+    * [To PHP 7.0+ and back again](#to-php-7-and-back-again)
   * [Installation](#installation)
   * [Initial Setup](#initial-setup)
      * [Updating existing projects](#updating-existing-projects)
@@ -54,6 +55,14 @@ HPUnit\Framework\TestCase`)
 
 ## Requirements
 This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
+
+## To PHP 7 and back again
+The project was forked to require PHP 7.0+ on the main branch and to maintain back-compatibility with PHP 5.6 in the `php56-compat` branch; that forking and requirement of PHP 7.0+ was undone in version `2.2`.  
+If you are running wp-browser on PHP 7.0+ there is nothing you have to do; if you are running wp-browser on PHP 5.6 then upgrade your `composer.json` file to require version `2.2` or above:
+
+```json
+"lucatume/wp-browser": "^2.2."
+```
 
 ## Installation
 To install simply require the package in the `composer.json` file like this:
