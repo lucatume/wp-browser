@@ -10,7 +10,7 @@ A WordPress specific set of extensions for Codeception.
 * [Upgrading from version 1.0 to 2.0 of wp-browser](#upgrading-from-version-10-to-20-of-wp-browser)
   * [Requirements](#requirements)
   * [Installation](#installation)
-  * [Setup and usage](#setup-and-usage)
+  * [Initial Setup](#initial-setup)
      * [Updating existing projects](#updating-existing-projects)
      * [Do not run all the suites at the same time!](#do-not-run-all-the-suites-at-the-same-time)
   * [Modules](#modules)
@@ -69,16 +69,24 @@ and then use `composer update` to fetch the package.
 After that  follow the configuration instructions below.
 **Note**: there is no need to require `codeception/codeception` in the `composer.json` file as it is required by `lucatume/wp-browser` itself.
 
-## Setup and usage
-The fastest way to get up and running with Codeception and wp-browser is running the initialization command:
+## Initial setup
+Independently of the kind of tests you want to run for your WordPress application wp-browser has some requirements to work.  
+First you need a working installation of WordPress dedicated to development; from the machine that is running the tests, you should be able to access this installation using a URL like `http://wp.test`.  
+The system you use to setup and run this WordPress installation is not relevant: it could be a basic PHP server (`php -S...`), an *AMP (MAMP, XAMP et cetera) managed installation, a [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV) installation or anything else or a remote installation (e.g. on a development server); refer to your solution of choice installation instructions to setup the development WordPress installation.  
+Given a working development WordPress installation the next step is creating a second database dedicated to the integration (or "WordPress unit") tests: use your preferred tool (CLI `mysql` or a GUI) to create this database. You can call this database any way you want but if you're short on inspiration call it `wp_test_integration` to help you remember what that is for.  
+Why is not wp-browser setting up all the things for you? Because covering all the possible combinationso of operative systems, setups, solutions and implementations would be a brittle and dangerous venture; the web is full of easy-to-use solutions for you to explore. Want a suggestion? Go with [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV).  
+Once your development-dedicated WordPress installation is up and running it's time to setup wp-browser, run the initialization command and answer the questions:
 
 ```shell
-codecept init wpbrowser
+vendor/bin/codecept init wpbrowser
 ```
 
-After answering a bunch of questions the suites will be set up for you; wp-browser will not take care of setting up the required databases and WordPress installations for you though so do your homework.
+After answering a series of questions the suites will be set up to match your development environment.  
+The questions answers will be used to setup the wp-browser configuration files, the information you provide should reflect the location of files, and the address of the database, from the machine that will run the tests: keep this in mind when working with virtualization systems.  
+As an example the WordPress root folder might be in `/Users/Luca/Sites/wp` on the machine that is running the tests and in `/var/www/html/public` in the virtual machine that is serving WordPress: in this case I will use `/Users/Luca/Sites/wp` when configuring wp-browser.  
+On the same note the installation database might be accessible at `localhost` in the context of the virtual machine and at `192.168.1.103:3306` from the machine that is running the tests: in this case I will use `192.168.1.103:3306` when configuring wp-browser.  
 
-![codecept init wpbrowser](/docs/images/codecept-init-wpbrowser.png?raw=true "codecept init wpbrowser")
+![codecept init wpbrowser](/docs/images/initial-setup.png?raw=true "codecept init wpbrowser")
 
 ### Updating existing projects
 If a project was set up before the latest version of the package there are two steps to take:
