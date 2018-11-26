@@ -51,21 +51,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     {
         return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal(), $this->wpdb);
     }
-
-    /**
-     * @test
-     * it should throw if WPLoader and WPBootstrapper modules are not loaded in module container
-     */
-    public function it_should_throw_if_wploader_and_wpbootstrapper_modules_are_not_loaded_in_module_container()
-    {
-        $this->expectException('Codeception\Exception\ModuleException');
-
-        $this->moduleContainer->hasModule('WPLoader')->willReturn(false);
-        $this->moduleContainer->hasModule('WPBootstrapper')->willReturn(false);
-
-        $this->make_instance()->_initialize();
-    }
-
     /**
      * @test
      * it should define the SAVEQUERIES constant if not defined already
@@ -783,7 +768,6 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     {
         $this->moduleContainer = $this->prophesize('Codeception\Lib\ModuleContainer');
         $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
-        $this->moduleContainer->hasModule('WPBootstrapper')->willReturn(true);
         $this->constants = $this->prophesize('tad\WPBrowser\Environment\Constants');
         $this->wpdb = (object)['queries' => []];
     }

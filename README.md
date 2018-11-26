@@ -21,7 +21,6 @@ A WordPress specific set of extensions for Codeception.
         * [Dump file domain replacement](#dump-file-domain-replacement)
      * [WPLoader configuration](#wploader-configuration)
         * [WPLoader to only bootstrap WordPress](#wploader-to-only-bootstrap-wordpress)
-     * [WPBootstrapper configuration](#wpbootstrapper-configuration)
      * [WPQueries configuration](#wpqueries-configuration)
      * [WordPress module configuration](#wordpress-module-configuration)
      * [WPCLI module configuration](#wpcli-module-configuration)
@@ -42,7 +41,6 @@ A WordPress specific set of extensions for Codeception.
      * [WPDb module](#wpdb-module)
         * [Handlebar templates while having many](#handlebar-templates-while-having-many)
      * [ExtendedDb module](#extendeddb-module)
-     * [WPBootstrapper](#wpbootstrapper)
      * [WPQueries](#wpqueries)
   * [Extensions](#extensions)
      * [Symlinker](#symlinker)
@@ -137,7 +135,6 @@ Not every module will make sense or work in any suite or type of test case but h
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
 * WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/); alternatively it can be used to bootstrap the WordPress installation under test in the test variable scope.
-* WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it allows sending GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 * WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.  
@@ -370,12 +367,6 @@ An example configuration for the module in this mode is this one:
 
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
 The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand.
-
-### WPBootstrapper configuration
-The module will bootstrap a WordPress installation loading its `wp-load.php` file.   
-The configuration will require one parameter only :
-
- * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
 
 ### WPQueries configuration
 This module requires no configuration.
@@ -1010,13 +1001,6 @@ The module is an extension of the `Codeception\Module\Db` class implementing som
 
   public function haveOrUpdateInDatabase($table, array $data)
 ```
-
-### WPBootstrapper
-The module adds some *sugar* methods, beside allowing for the call of any WordPress defined function or class method, to speed up the writing of test methods:
-
-* `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
-* `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
-  * `plugins` - includes the `wp-admin/includes/plugin.php` file to access functions like `activate_plugin` and `deactivate_plugins`.
 
 ### WPQueries
 The module assertion methods can be accessed including it in the suite configuration file.  
