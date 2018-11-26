@@ -53,6 +53,7 @@ HPUnit\Framework\TestCase`)
 
 ## Requirements
 This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
+Depending on the kind of tests you want to run wp-browser could require a working and controllable fully functional WordPress installation dedicated to the tests or just a running MYSQL database; read more in the [initial setup](#initial-setup) section.
 
 ## To PHP 7 and back again
 The project was forked to require PHP 7.0+ on the main branch and to maintain back-compatibility with PHP 5.6 in the `php56-compat` branch; that forking and requirement of PHP 7.0+ was undone in version `2.2`.  
@@ -77,21 +78,19 @@ After that  follow the configuration instructions below.
 **Note**: there is no need to require `codeception/codeception` in the `composer.json` file as it is required by `lucatume/wp-browser` itself.
 
 ## Initial setup
-Independently of the kind of tests you want to run for your WordPress application wp-browser has some requirements to work.  
-First you need a working installation of WordPress dedicated to development; from the machine that is running the tests, you should be able to access this installation using a URL like `http://wp.test`.  
-The system you use to setup and run this WordPress installation is not relevant: it could be a basic PHP server (`php -S...`), an *AMP (MAMP, XAMP et cetera) managed installation, a [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV) installation or anything else or a remote installation (e.g. on a development server); refer to your solution of choice installation instructions to setup the development WordPress installation.  
+Depending of the kind of tests you want to run wp-browser has some requires some setup to work; assuming you are just setting it up for the first time for the project and plan to run all types of tests this is the preparatory work you'll need to complete.  
+You need a working installation of WordPress dedicated to development; from the machine that is running the tests, you should be able to access this installation using a URL like `http://wp.test` or one like `http://localhost:8080`; mind that the second option will not work with multi-site tests.  
+The system you use to setup and manage this WordPress installation is not relevant: it could be a basic PHP server (`php -S`), an *AMP (MAMP, XAMP et cetera) managed installation, a [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV) installation, a remote installation (e.g. on a development server) or any other kind of solution; refer to your solution of choice installation instructions to setup the development WordPress installation.  
 Given a working development WordPress installation the next step is creating a second database dedicated to the integration (or "WordPress unit") tests: use your preferred tool (CLI `mysql` or a GUI) to create this database. You can call this database any way you want but if you're short on inspiration call it `wp_test_integration` to help you remember what that is for.  
 Why is not wp-browser setting up all the things for you? Because covering all the possible combinationso of operative systems, setups, solutions and implementations would be a brittle and dangerous venture; the web is full of easy-to-use solutions for you to explore. Want a suggestion? Go with [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV).  
-Once your development-dedicated WordPress installation is up and running it's time to setup wp-browser, run the initialization command and answer the questions:
-
+Once your development-dedicated WordPress installation is up and running it's time to setup wp-browser, run the initialization command and answer the questions to have a fully set-up wp-browser environment: 
 ```shell
 vendor/bin/codecept init wpbrowser
 ```
 
-After answering a series of questions the suites will be set up to match your development environment.  
-The questions answers will be used to setup the wp-browser configuration files, the information you provide should reflect the location of files, and the address of the database, from the machine that will run the tests: keep this in mind when working with virtualization systems.  
-As an example the WordPress root folder might be in `/Users/Luca/Sites/wp` on the machine that is running the tests and in `/var/www/html/public` in the virtual machine that is serving WordPress: in this case I will use `/Users/Luca/Sites/wp` when configuring wp-browser.  
-On the same note the installation database might be accessible at `localhost` in the context of the virtual machine and at `192.168.1.103:3306` from the machine that is running the tests: in this case I will use `192.168.1.103:3306` when configuring wp-browser.  
+Your answers will be used to setup the wp-browser configuration files; the information you provide should reflect the location of files, and the address of the database, from the point of view of the machine that will run the tests: keep this in mind when working with virtualization systems.  
+As an example the WordPress root folder might be in `/Users/Luca/Sites/wp` on the machine that is running the tests and in `/var/www/html/public` in the virtual machine that is serving WordPress: in this case I will use `/Users/Luca/Sites/wp` when configuring wp-browser to run from the host machine.
+On the same note the installation database might be accessible at `localhost` in the context of the virtual machine and at `192.168.1.103:3306` from the machine that is running the tests: in this case I will use `192.168.1.103:3306` when configuring wp-browser to run from the host machine.
 
 ![codecept init wpbrowser](/docs/images/initial-setup.png?raw=true "codecept init wpbrowser")
 
