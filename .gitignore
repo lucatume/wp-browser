@@ -15,10 +15,10 @@ tests/_output
 
 # local configuration files
 tests/*.suite.yml
-codeception.yml
 .env.local
 src/Codeception/Module/patchwork.json
 
 # Patchwork cache folder
 cache/*
 src/includes/patchwork.json
+todos.txt
