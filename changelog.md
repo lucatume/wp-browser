@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.0] 2018-11-29;
 ### Removed
 - the `haveOrUpdateInDatabase` method from `WPDb` module
 - the `ExtendedDb` class
@@ -828,7 +830,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.1.6...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/lucatume/wp-browser/compare/2.1.6...2.2.0
 [2.1.6]: https://github.com/lucatume/wp-browser/compare/2.1.5...2.1.6
 [2.1.5]: https://github.com/lucatume/wp-browser/compare/2.1.4...2.1.5
 [2.1.4]: https://github.com/lucatume/wp-browser/compare/2.1.3...2.1.4
