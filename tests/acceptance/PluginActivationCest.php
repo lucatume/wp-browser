@@ -1,74 +1,82 @@
 <?php
 
 
-class PluginActivationCest {
+class PluginActivationCest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $delete = [];
+    /**
+     * @var array
+     */
+    protected $delete = [];
 
-	public function _before(AcceptanceTester $I) {
-		$this->deleteFiles();
-	}
+    public function _before(AcceptanceTester $I)
+    {
+        $this->deleteFiles();
+    }
 
-	protected function deleteFiles() {
-		foreach ($this->delete as $file) {
-			if (file_exists($file)) {
-				unlink($file);
-			}
-		}
-	}
+    protected function deleteFiles()
+    {
+        foreach ($this->delete as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
 
-	public function _after(AcceptanceTester $I) {
-		$this->deleteFiles();
-	}
+    public function _after(AcceptanceTester $I)
+    {
+        $this->deleteFiles();
+    }
 
-	public function _failed(AcceptanceTester $I) {
-		$this->deleteFiles();
-	}
+    public function _failed(AcceptanceTester $I)
+    {
+        $this->deleteFiles();
+    }
 
-	/**
-	 * It should be able to activate plugins
-	 *
-	 * @test
-	 */
-	public function be_able_to_activate_plugins(AcceptanceTester $I) {
-		$I->loginAsAdmin();
-		$I->amOnPluginsPage();
+    /**
+     * It should be able to activate plugins
+     *
+     * @test
+     */
+    public function be_able_to_activate_plugins(AcceptanceTester $I)
+    {
+        $I->loginAsAdmin();
+        $I->amOnPluginsPage();
 
-		$I->activatePlugin('hello-dolly');
-		$I->seePluginActivated('hello-dolly');
+        $I->activatePlugin('hello-dolly');
+        $I->seePluginActivated('hello-dolly');
 
-		$I->deactivatePlugin('hello-dolly');
-		$I->seePluginDeactivated('hello-dolly');
-	}
+        $I->deactivatePlugin('hello-dolly');
+        $I->seePluginDeactivated('hello-dolly');
+    }
 
-	/**
-	 * It should be able to activate plugins in a long list
-	 *
-	 * @test
-	 */
-	public function be_able_to_activate_plugins_in_a_long_list(
-		AcceptanceTester $I
-	) {
-		$this->scaffoldTestPlugins();
+    /**
+     * It should be able to activate plugins in a long list
+     *
+     * @test
+     */
+    public function be_able_to_activate_plugins_in_a_long_list(
+        AcceptanceTester $I
+    ) {
+        $this->scaffoldTestPlugins();
 
-		$I->loginAsAdmin();
-		$I->amOnPluginsPage();
+        $I->loginAsAdmin();
+        $I->amOnPluginsPage();
 
-		$I->activatePlugin('plugin-z');
-		$I->seePluginActivated('plugin-z');
+        $I->activatePlugin('plugin-z');
+        $I->seePluginActivated('plugin-z');
 
-		$I->deactivatePlugin('plugin-z');
-		$I->seePluginDeactivated('plugin-z');
-	}
+        $I->deactivatePlugin('plugin-z');
+        $I->seePluginDeactivated('plugin-z');
+    }
 
-	protected function scaffoldTestPlugins() {
-		$config = (\Codeception\Configuration::config());
-		$wpFolder = $config['wpFolder'];
-		$template
-			= <<< HANDLEBARS
+    protected function scaffoldTestPlugins()
+    {
+        $config = (\Codeception\Configuration::config());
+        $wpFolder = $config['wpFolder'];
+        $template
+            = <<< HANDLEBARS
+<?php
 /*
 Plugin Name: Plugin {{letter}}
 Plugin URI: https://wordpress.org/plugins/{{letter}}/
@@ -81,35 +89,36 @@ Domain Path: /languages
 */
 HANDLEBARS;
 
-		foreach (range('A', 'Z') as $letter) {
-			$compiled = str_replace('{{letter}}', $letter, $template);
-			$file     = $wpFolder . "/wp-content/plugins/{$letter}.php";
-			file_put_contents($file, $compiled);
-			$this->delete[] = $file;
-		}
-	}
+        foreach (range('A', 'Z') as $letter) {
+            $compiled = str_replace('{{letter}}', $letter, $template);
+            $file     = $wpFolder . "/wp-content/plugins/{$letter}.php";
+            file_put_contents($file, $compiled, LOCK_EX);
+            $this->delete[] = $file;
+        }
+    }
 
-	/**
-	 * It should be able to activate multiple plugins
-	 *
-	 * @test
-	 */
-	public function be_able_to_activate_multiple_plugins(AcceptanceTester $I) {
-		$this->scaffoldTestPlugins();
+    /**
+     * It should be able to activate multiple plugins
+     *
+     * @test
+     */
+    public function be_able_to_activate_multiple_plugins(AcceptanceTester $I)
+    {
+        $this->scaffoldTestPlugins();
 
-		$I->loginAsAdmin();
-		$I->amOnPluginsPage();
+        $I->loginAsAdmin();
+        $I->amOnPluginsPage();
 
-		$plugins = ['plugin-a', 'plugin-b', 'plugin-i', 'plugin-o', 'plugin-z'];
+        $plugins = ['plugin-a', 'plugin-b', 'plugin-i', 'plugin-o', 'plugin-z'];
 
-		$I->activatePlugin($plugins);
-		foreach ($plugins as $plugin) {
-			$I->seePluginActivated($plugin);
-		}
+        $I->activatePlugin($plugins);
+        foreach ($plugins as $plugin) {
+            $I->seePluginActivated($plugin);
+        }
 
-		$I->deactivatePlugin($plugins);
-		foreach ($plugins as $plugin) {
-			$I->seePluginDeactivated($plugin);
-		}
-	}
+        $I->deactivatePlugin($plugins);
+        foreach ($plugins as $plugin) {
+            $I->seePluginDeactivated($plugin);
+        }
+    }
 }

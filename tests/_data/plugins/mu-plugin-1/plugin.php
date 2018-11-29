@@ -11,14 +11,13 @@
  */
 class MUPlugin1
 {
-	public static function activate()
-	{
-		if (is_multisite()) {
-			update_network_option(null, 'muplugin1', 'mu-activated');
-		} else {
-			update_option('muplugin1', 'not-mu-activated');
-		}
-	}
+    public static function activate()
+    {
+        if (is_multisite()) {
+            update_network_option(null, 'muplugin1', 'mu-activated');
+        } else {
+            update_option('muplugin1', 'not-mu-activated');
+        }
+    }
 }
-
 register_activation_hook(__FILE__, [MUPlugin1::class, 'activate']);

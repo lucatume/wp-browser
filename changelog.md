@@ -3,6 +3,39 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Removed
+- the `haveOrUpdateInDatabase` method from `WPDb` module
+- the `ExtendedDb` class
+- the requirement of the `lucatume/wp-snaphot-assertions` package
+- the `\tad\WPBrowser\Snapshot\WPHtmlOutputDriver` class
+- the `wpcept` binaries
+- `lucatume/wp-snapshot-assertions` dependency 
+- `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class and  the `lucatume/wp-snapshot-assertions` dependency
+- `wpcept` and `wpcept.bat` deprecated binaries
+- `Codeception\Command\DbSnapshot` command
+- `tad\Codeception\Command\SearchReplace` command from the template
+- `lucatume/codeception-setup-local` dependency
+- the `WPBootstrapper` module
+- the `WPSugarMethods` trait
+
+### Fixed
+- compatibility with Codeception `2.5.0` updating the `WPDb` class
+- added a clear disclaimer about db wiping in the `init wpbrowser` command
+- an issue where the WpWebDriver module would not login correctly [#121](https://github.com/lucatume/wp-browser/pull/121)
+- code style compatibilty with PSR-2 standard
+- an issue in the `tad\WPBrowser\Tests\Support\importDump` function that would prevent the function from working if the database host specified a port
+- an issue with end-of-line chars in tests on Windows [#191](https://github.com/lucatume/wp-browser/pull/191) - thanks @Luc45
+
+### Changed
+- lowered the PHP required version from 7.0 to 5.6
+- PHP requirement lowered to PHP 5.6
+- removed the limit to Codeception version
+- Travis tests run now on a Docker stack
+
+### Added
+- add a `.gitattributes` file to stop littering people's vendor library (sorry, my bad)
+- support for relative paths in the `wpRootFolder` parameter
+- the `WPCLI` and `WordPress` modules will now set the `WPBROWSER_HOST_REQUEST=1` environment variable; this can be used to discern requests coming not only from wp-cli, using the `WP_CLI` constant, but from a wp-cli instance used and managed by the `WPCLI` module.
 
 ## [2.1.6] 2018-09-25;
 ### Fixed

@@ -13,13 +13,8 @@ params:
 wpFolder: '%WP_ROOT_FOLDER%'
 extensions:
     enabled:
-        - Codeception\Extension\Phantoman
         - tad\WPBrowser\Extension\Copier
     config:
-        Codeception\Extension\Phantoman:
-            path: '%PHANTOMJS%'
-            port: 4444
-            suites: ['phantomjs']
         tad\WPBrowser\Extension\Copier:
             files:
                'tests/_data/themes/dummy': '%WP_ROOT_FOLDER%/wp-content/themes/dummy'
