@@ -18,9 +18,9 @@
  */
 class MuloaderTester extends \Codeception\Actor
 {
-	use _generated\MuloaderTesterActions;
+    use _generated\MuloaderTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }

@@ -16,11 +16,11 @@
  *
  * @SuppressWarnings(PHPMD)
  */
-class PhantomjsTester extends \Codeception\Actor
+class WebDriverTester extends \Codeception\Actor
 {
-	use _generated\PhantomjsTesterActions;
+    use _generated\WebDriverTesterActions;
 
-	/**
-	 * Define custom actions here
-	 */
+    /**
+     * Define custom actions here
+     */
 }

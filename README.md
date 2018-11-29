@@ -3,15 +3,69 @@ wp-browser
 
 A WordPress specific set of extensions for Codeception.
 
-> **Please note this is branch will only support PHP 7.0+; use the `php-56-compat` branch if you need to use PHP 5.6 in your tests requiring `lucatume/wp-browser:~1.0` in your `composer.json` file.**
-
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
-[Example usage](https://github.com/lucatume/idlikethis).
+[An example usage](https://github.com/lucatume/idlikethis).
 
-## Upgrade from version 1.0 to 2.0 of wp-browser
-* use PHP 7.0 or higher
-* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framework\TestCase`)
+<!-- toc -->
+
+- [Upgrading from version 1.0 to 2.0 of wp-browser](#upgrading-from-version-10-to-20-of-wp-browser)
+- [Requirements](#requirements)
+- [To PHP 7 and back again](#to-php-7-and-back-again)
+- [Installation](#installation)
+- [Initial setup](#initial-setup)
+  * [Why is not wp-browser setting up all the things for you?](#why-is-not-wp-browser-setting-up-all-the-things-for-you)
+  * [Updating existing projects](#updating-existing-projects)
+  * [Do not run all the suites at the same time!](#do-not-run-all-the-suites-at-the-same-time)
+- [Modules](#modules)
+  * [WPBrowser configuration](#wpbrowser-configuration)
+  * [WPWebDriver configuration](#wpwebdriver-configuration)
+  * [WPDb configuration](#wpdb-configuration)
+    + [Dump file domain replacement](#dump-file-domain-replacement)
+  * [WPLoader configuration](#wploader-configuration)
+    + [WPLoader to only bootstrap WordPress](#wploader-to-only-bootstrap-wordpress)
+  * [WPQueries configuration](#wpqueries-configuration)
+  * [WordPress module configuration](#wordpress-module-configuration)
+  * [WPCLI module configuration](#wpcli-module-configuration)
+      - [Option overrides](#option-overrides)
+    + [Configuration files](#configuration-files)
+  * [WPFilesystem module configuration](#wpfilesystem-module-configuration)
+  * [Additional commands](#additional-commands)
+    + [generate:wpunit](#generatewpunit)
+    + [generate:wprest](#generatewprest)
+    + [generate:wprestcontroller](#generatewprestcontroller)
+    + [generate:wprestposttypecontroller](#generatewprestposttypecontroller)
+    + [generate:wpajax](#generatewpajax)
+    + [generate:wpxmlrpc](#generatewpxmlrpc)
+    + [generate:wpcanonical](#generatewpcanonical)
+  * [ExtendedDb configuration](#extendeddb-configuration)
+- [Methods](#methods)
+  * [WPBrowser module](#wpbrowser-module)
+  * [WPDb module](#wpdb-module)
+    + [Handlebar templates while having many](#handlebar-templates-while-having-many)
+  * [ExtendedDb module](#extendeddb-module)
+  * [WPQueries](#wpqueries)
+- [Extensions](#extensions)
+  * [Symlinker](#symlinker)
+  * [Copier](#copier)
+    + [Environments support](#environments-support)
+
+<!-- tocstop -->
+
+## Upgrading from version 1.0 to 2.0 of wp-browser
+* replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framework\TestCase`).
+
+## Requirements
+This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
+Depending on the kind of tests you want to run wp-browser could require a working and controllable fully functional WordPress installation dedicated to the tests or just a running MYSQL database; read more in the [initial setup](#initial-setup) section.
+
+## To PHP 7 and back again
+The project was forked to require PHP 7.0+ on the main branch and to maintain back-compatibility with PHP 5.6 in the `php56-compat` branch; that forking and requirement of PHP 7.0+ was undone in version `2.2`.  
+If you are running wp-browser on PHP 7.0+ there is nothing you have to do; if you are running wp-browser on PHP 5.6 then upgrade your `composer.json` file to require version `2.2` or above:
+
+```json
+"lucatume/wp-browser": "^2.2."
+```
 
 ## Installation
 To install simply require the package in the `composer.json` file like this:
@@ -19,7 +73,7 @@ To install simply require the package in the `composer.json` file like this:
 ```json
   "require-dev":
     {
-      "lucatume/wp-browser": "~1.21"
+      "lucatume/wp-browser": "~2.0"
     }
 ```
     
@@ -27,16 +81,26 @@ and then use `composer update` to fetch the package.
 After that  follow the configuration instructions below.
 **Note**: there is no need to require `codeception/codeception` in the `composer.json` file as it is required by `lucatume/wp-browser` itself.
 
-## Setup and usage
-The fastest way to get up and running with Codeception and wp-browser is running the initialization command:
+## Initial setup
+Depending of the kind of tests you want to run `wp-browser` has some requires some setup to work.  
+Assuming you are just setting it up for the first time for the project and plan to run all types of tests this is the preparatory work you'll need to complete:
+1. you need a working installation of WordPress **dedicated to development**; from the machine that is running the tests, you should be able to access this installation using a URL like `http://wp.test` or one like `http://localhost:8080` (this second option will not work with multi-site tests though). The system you use to setup and manage this WordPress installation is not relevant: it could be a basic PHP server (`php -S`), an *AMP (MAMP, XAMP et cetera) managed installation, a [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV) installation, a remote installation (e.g. on a development server) or any other kind of solution; refer to your solution of choice installation instructions to setup the development WordPress installation. In the context of this step you should create a database dedicated to this test WordPress installation.  
+2. you need to create a second database dedicated to the integration (or "WordPress unit") tests: use your preferred tool (CLI `mysql` or a GUI) to create this database. You can call this database any way you want but if you're short on inspiration call it `wp_test_integration` to help you remember what that is for.  
 
+### Why is not wp-browser setting up all the things for you?  
+Because covering all the possible combinations of operative systems, setups, solutions and implementations would be a brittle and dangerous venture; the web is full of easy-to-use solutions for you to explore.  
+Want a suggestion? Go with [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV).  
+
+Once your development-dedicated WordPress installation is up and running it's time to setup `wp-browser`; run the initialization command and answer the questions to have a fully set-up wp-browser environment: 
 ```shell
-codecept init wpbrowser
+vendor/bin/codecept init wpbrowser
 ```
 
-After answering a bunch of questions the suites will be set up for you; wp-browser will not take care of setting up the required databases and WordPress installations for you though so do your homework.
+Your answers will be used to setup the wp-browser configuration files; the information you provide should reflect the location of files, and the address of the database, **from the point of view of the machine that will run the tests**: keep this in mind when working with virtualization systems.  
+As an example the WordPress root folder might be in `/Users/Luca/Sites/wp` on the machine that is running the tests and in `/var/www/html/public` in the virtual machine that is serving WordPress: in this case I will use `/Users/Luca/Sites/wp` when configuring wp-browser to run from the host machine.
+On the same note the installation database might be accessible at `localhost` in the context of the virtual machine and at `192.168.1.103:3306` from the machine that is running the tests: in this case I will use `192.168.1.103:3306` when configuring wp-browser to run from the host machine.
 
-![codecept init wpbrowser](/docs/images/codecept-init-wpbrowser.png?raw=true "codecept init wpbrowser")
+![codecept init wpbrowser](/docs/images/initial-setup.png?raw=true "codecept init wpbrowser")
 
 ### Updating existing projects
 If a project was set up before the latest version of the package there are two steps to take:
@@ -54,34 +118,30 @@ extensions:
         - 'Codeception\Command\GenerateWPAjax'
         - 'Codeception\Command\GenerateWPCanonical'
         - 'Codeception\Command\GenerateWPXMLRPC'
-        - 'Codeception\Command\DbSnapshot'
-        - 'tad\Codeception\Command\SearchReplace'
 ```
 
-## A word of caution
-Due to WordPress dependency on globals and constants the suites should not be ran at the same time; this means that in place of this:
+### Do not run all the suites at the same time!
+Due to WordPress dependency on globals and constants the suites should not be ran at the same time.  
+Running this command has the potential of runnign into a number of issues:
 
 ```bash
 codecept run
 ```
 
-This is probably a better idea:
+Run the suites one by one:
 
 ```bash
 codecept run acceptance && codecept run functional && codecept run ...
 ```
 
-Doing otherwise will result in fatal errors due to constants, globals and/or classes and methods attempted redefinition.
-
 ## Modules
 While the package name is the same as the first module added to it ("WPBrowser") the package will add more than one module to [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") to ease WordPress testing.  
-Not every module will make sense or work in any suite or type of test case but here's an high level view:
+Not every module will make sense or work in any suite or type of test case but here's an high level view of what module should be used in which context:
 
 * WPBrowser - a PHP based, JavaScript-less and headless browser for **acceptance testing not requiring JavaScript support**
 * WPWebDriver - a Guzzle based, JavaScript capable web driver; to be used in conjunction with [a Selenium server](http://www.seleniumhq.org/download/), [PhantomJS](http://phantomjs.org/) or any real web browser for **acceptance testing requiring JavaScript support**
 * WPDb - an extension of the default codeception [Db module](http://codeception.com/docs/modules/Db) that will interact with a WordPress database to be used in **functional** and acceptance testing
 * WPLoader - loads and configures a blank WordPress installation to use as a base to set up fixtures and access WordPress defined functions and classes in **integration** tests; a wrapping of the WordPress [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") based [test suite provided in the WordPress repository](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/); alternatively it can be used to bootstrap the WordPress installation under test in the test variable scope.
-* WPBootstrapper - bootstraps an existing WordPress installation in the same variable scope of the calling function to have access to its methods.
 * WPQueries - allows for assertions to be made on WordPress database access in **integration** tests.
 * WordPress - to be used in **functional** tests it allows sending GET, POST, PUT and DELETE requests to the WordPress installation index without requiring a web server.
 * WPCLI - allows accessing the [wp-cli](http://wp-cli.org/) tool in *acceptance* and *functional* tests.  
@@ -315,12 +375,6 @@ An example configuration for the module in this mode is this one:
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
 The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand.
 
-### WPBootstrapper configuration
-The module will bootstrap a WordPress installation loading its `wp-load.php` file.   
-The configuration will require one parameter only :
-
- * `wpRootFolder` - the absolute path to the root folder of the WordPress installation to use for testing, the `ABSPATH` global value.
-
 ### WPQueries configuration
 This module requires no configuration.
 
@@ -382,10 +436,13 @@ modules:
 The module defines two methods wrapping calls to the wp-cli tool:
 
 * `cli(string $userCommand)` - executes `$userCommand` and returns **the command exit status**; `0` (shell equivalent of OK) will be cast to `true`.
+
     ```php
     $deleted = $I->cli('user delete user001');
     ```
-    Test wp-cli exit stati as many commands raising warnings will return a `0` status, e.g:
+
+    wp-cli behaviour is not changed so it might return success exit status while raising warnings, e.g:
+
     ```php
     $activated = $I->cli('plugin activate existing-plugin');
     $activated = $I->cli('plugin activate non-existing-plugin');
@@ -393,13 +450,17 @@ The module defines two methods wrapping calls to the wp-cli tool:
     The `$activated` var will have a value of `true` in both cases as the exit status, even if the `non-existing-plugin` does not exist, will be `0`.
     
 * `cliToArray(string $userCommand)` - executes `$userCommand` and returns the command output cast to array; the command will try to guess if the output should be split by newlines or spaces.
+
     ```php
-    $inactiveThemes = $I->cliToArray('theme list --status=active --field=name');
+    $activeThemes = $I->cliToArray('theme list --status=active --field=name');
     ```
+
     Should the default guessing prove wrong the optional `$splitCallback` argument can be used; the callback function will be passed 3 arguments:
-    
+
     ```php
-    function splitCallback(string $output, string $userCommand, WPCLI $wpcli)
+    $activeThemes = $I->cliToArray('theme list --status=active --field=name', function(string $output, string $userCommand, WPCLI $wpcli){
+      // do something with the output.
+    });
     ```
    
    and is expected to return an array output.
@@ -693,79 +754,6 @@ class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
 
 Any other `codecept` option remains intact and available. 
 
-### Management commands
-The package comes with some commands meant to make the management and sharing of a shared repository easier.
-Some are wrappers around external commands (like `search-replace` and `setup`) or native to the WPBrowser package.  
-All the commands share the `--save-config` option: when used in flag mode any **option** value specified in the command (so **no arguments**) will be saved in a `commands-config.yml` file in the root folder.  
-As an example running:
-
-```bash
-codecept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev --host=192.54.0.1 --user=db --pass=db --save-config
-```
-
-will generate a  `command-config.yml` file like this:
-
-```yaml
-# tad\Codeception\Command configuration file.
-# Each section should be the name of a supported command
-# This file was auto-generated by the use of the `--save-config` option on one or more commands.
-# But you can modify it by hand with some care.
-db:snapshot:
-    local-url: http://wp-tests.dev
-    dist-url: http://acme.tests.dev
-    host: 192.54.0.1
-    user: db
-    pass: db
-```
-
-that will allow to shorten the next invocation of the command considerably on the next run:
-
-```bash
-codecept db:snapshot issue44566 wp-tests 
-```
-
-Multiple commands can and will write their own configuration in the `command-config.yml` file.  
-It is possible to override saved configuration values specifying the option in the command:
-
-```bash
-codecept db:snapshot issue22444 wp-tests --user=root --host=localhost
-```
-
-#### search-replace
-This is merely a shimming of the `search-replace` command defined in [the `lucatume/codeception-setup-local` package](https://github.com/lucatume/codeception-setup-local "lucatume/codeception-setup-local · GitHub"); see package documentation for more information.
-
-#### setup
-This is merely a shimming of the `setup` command defined in [the `lucatume/codeception-setup-local` package](https://github.com/lucatume/codeception-setup-local "lucatume/codeception-setup-local · GitHub"); see package documentation for more information.
-
-#### db:snapshot
-The command allows developers to take a snapshot of a database state to be used to share database-based fixtures in a team.  
-The command takes the following arguments and options:
-
-* `snapshot` - the first argument is the name of the snapshot to be taken; e.g. `issue4455` or `ticket-ab-f00-34`; required
-* `name` - the second argument is the name of the database that should be exported; e.g. `wp` or `test-db`; required
-* `--host` - this options allows defining the database host; defaults to `localhost`; optional
-* `--user` - this options allows defining the database user; defaults to `root`; optional
-* `--pass` - this options allows defining the database password; defaults to `root`; optional
-* `--dump-file` - this options allows defining the destination file for the database dump (an absolute path); defaults to `<snapshot>.sql` in Codeception data folder; optional
-* `--dist-dump-file` - this options allows defining the destination file for the distribution database dump (an absolute path); defaults to `<snapshot>.dist.sql` in Codeception data folder; optional
-* `--skip-tables` - this options allows defining any table that should not be dumped (a comma separated list); e.g. `wp_posts,wp_users`; defaults to none; optional
-* `--local-url` - this options allows defining the local setup url that is hardcoded in the local version of the database by WordPress; e.g. `http://wp.dev`; defaults to `http://local.dev`; optional but probably needed
-* `--dist-url` - this options allows defining the distribution setup url that will be hardcoded in the distribution version of the database dump; e.g. `http://wptest.dev`; defaults to `http://dist.dev`; optional but probably needed
-
-A typical flow using the command would be:
-
-* a developer sets up a local version of a starting database state for a test or a series of tests
-* the developer creates a local (to be used in local tests) and distribution (to be shared with other team members) dump of his/her local database using:
-
-  ```bash
-  codecept db:snapshot issue3344 wp-tests --local-url=http://wp-tests.dev --dist-url=http://acme.tests.dev
-  ```
-* any other developer on the team can use the `search-replace` command to localize the distribution version of the database dump to suite his/her setup:
-  
-  ```bash
-  codecept search-replace http://acme.tests.dev http://local.dev ./tests/_data/issue3344.dist.sql ./tests/_data/issue3344.sql
-  ```
-
 ### ExtendedDb configuration
 The module has the same configuration as the `Db` one and hence will not require any additional parameter beside those required/available to the `Db` module.
 In the suite `.yml` configuration file add the module among the loaded ones
@@ -1021,13 +1009,6 @@ The module is an extension of the `Codeception\Module\Db` class implementing som
   public function haveOrUpdateInDatabase($table, array $data)
 ```
 
-### WPBootstrapper
-The module adds some *sugar* methods, beside allowing for the call of any WordPress defined function or class method, to speed up the writing of test methods:
-
-* `setPermalinkStructureAndFlush($permalinkStructure = '/%postname%/', $hardFlush = true)` - sets the permalink structure to the specified value and flushes the rewrite rules.
-* `loadWpComponent($component)` - includes the file(s) required to access some functions and classes WordPress would not load by default in a bootstrap; currently supported
-  * `plugins` - includes the `wp-admin/includes/plugin.php` file to access functions like `activate_plugin` and `deactivate_plugins`.
-
 ### WPQueries
 The module assertion methods can be accessed including it in the suite configuration file.  
 When writing tests the module can be accessed using the `getModule` method.  
@@ -1245,69 +1226,3 @@ codecept run acceptance --env dist
 ```
 
 Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
-
-## Bonus tracks
-
-### Snapshot testing WordPress code output
-Snapshot testing comes very handy when testing the HTML output of some WordPress generated and managed code.  
-In such instances WordPress will often generate time-dependent values, like nonces, and full URLs, like image sources.  
-Those environment and time related differences might break a snapshot for the wrong reasons; e.g. the snapshot was generated on one machine (say locally) and ran on another machine where WordPress might be served at another URL and the test will surely run at a different time (say CI).  
-To smoothly compare the two HTML outputs install the `lucatume/wp-snapshot-assertions` package:
-
-```shell
-composer require --dev lucatume/wp-snapshot-assertions
-```
-
-And then use the `WPHtmlOutputDriver`  driver in your snapshot tests:
-
-```php
-use Spatie\Snapshots\MatchesSnapshots;
-use tad\WP\Snapshots\WPHtmlOutputDriver;
-
-class MySnapshotTest extends \Codeception\TestCase\WPTestCase {
-	use MatchesSnapshots;
-
-	/**
-	* Test snapshot for render
-	*/
-	public function test_snapshot_render() {
-		// from some environment variable
-		$currentWpUrl = getenv('WP_URL');
-		$snapshotUrl = 'http://wp.localhost';
-		
-		$driver = new WPHtmlOutputDriver($currentWpUrl, $snapshotUrl);
-		
-		$sut = new MyPluginHTMLRenderingClass();
-		
-		// create a random post and return its post ID
-		$postId= $this->factory->post->create();
-		
-		$renderedHtml = $sut->renderHtmlFor($postId);
-      		$driver->setTolerableDifferences([$postId]);
-		$driver->setTolerableDifferencesPrefixes(['post_', 'post-']);
-		$driver->setTolerableDifferencesPostfixes(['-single', '-another-postfix']);
-		
-		$this->assertMatchesSnapshot($renderedHtml, $driver);
-	}
-}
-```
-
-By default the driver will look for time-dependent fields with an `id`, `name` or `class` from a default list (e.g. `_wpnonce`); you might want to add or modify that list using the `WPHtmlOutputDriver::setTimeDependentKeys` method.  
-On the same note, the driver will look for some attributes when looking to replace the snapshot URL with the current URL; you can modify those using the `WPHtmlOutputDriver::setUrlAttributes` method.  
-Very often WordPress HTML will contain attributes and strings that will inline post IDs, titles and other fields; in general the comparison of the snapshots should not fail because the random post ID used when the snapshot was generated was `23` but it's, in another test run, `89`.  
-To avoid that use the `WPHtmlOutputDriver::setTolerableDifferences` method to define what values defined in the current test run should not trigger a failure (see example above); furthermore run-dependent variables could be used to construct `id`, `class`, `data` and other attributes: if you know that the rendered HTML will contain something like this (where `23` is the post ID):
-
-```html
-<div class="post-23" data-one="23-postfix" data-two="prefix-23">
-  <p>Foo</p>
-</div>
-```
-
-You might want to say to the driver that the current post ID is a tolerable difference even when prefixed with `prefix-` or postfixed with `-postfix`:
-
-```php
-$driver->setTolerableDifferences([$currentPostId]);
-$driver->setTolerableDifferencesPrefixes(['prefix-']);
-$driver->setTolerableDifferencesPostfixes(['-postfix']);
-$this->assertMatchesSnapshot($renderedHtml, $driver);
-```
