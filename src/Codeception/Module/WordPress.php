@@ -10,6 +10,12 @@ use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Filesystem\Utils;
 
+/**
+ * A module dedicated to functional testing using acceptance-like methods.
+ * Differently from WPBrowser or WpWebDriver modules WordPress will be loaded in the same scope as the tests.
+ *
+ * @package Codeception\Module
+ */
 class WordPress extends Framework implements DependsOnModule
 {
 
@@ -99,9 +105,11 @@ EOF;
     /**
      * WordPress constructor.
      *
-     * @param ModuleContainer $moduleContainer
-     * @param array           $config
-     * @param                 $client WordPressConnector
+     * @param \Codeception\Lib\ModuleContainer        $moduleContainer
+     * @param array                                   $config
+     * @param \tad\WPBrowser\Connector\WordPress|null $client
+     *
+     * @throws \Codeception\Exception\ModuleConfigException
      */
     public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
     {
@@ -124,6 +132,8 @@ EOF;
 
     /**
      * @param TestInterface $test
+     *
+     * @throws \Codeception\Exception\ModuleException
      */
     public function _before(TestInterface $test)
     {
@@ -191,11 +201,16 @@ EOF;
     }
 
     /**
-     * Goes to an admin page on the site.
+     * Goes to an admin (wp-admin) page on the site.
+     *
+     * @example
+     * ```php
+     * $I->loginAs('user', 'password');
+     * // Go to the plugins management screen.
+     * $I->amOnAdminPage('/plugins.php');
+     * ```
      *
      * @param string $page The relative path to an admin page.
-     *
-     * @return null|string
      */
     public function amOnAdminPage($page)
     {
@@ -207,11 +222,6 @@ EOF;
         return $this->amOnPage($page);
     }
 
-    /**
-     * @param $page
-     *
-     * @return string
-     */
     private function preparePage($page)
     {
         $page = $this->untrailslashIt($page);
@@ -220,11 +230,6 @@ EOF;
         return $page;
     }
 
-    /**
-     * @param $path
-     *
-     * @return mixed
-     */
     private function untrailslashIt($path)
     {
         $path = preg_replace('~\\/?$~', '', $path);
@@ -232,11 +237,17 @@ EOF;
     }
 
     /**
-     * Goes to a page on the site.
+     * Goes to a page on the site, relative to the root URL.
      *
-     * @param string $page The relative path to a page.
+     * @example
+     * // Go to the site homepage.
+     * $I->amOnPage('/');
+     * // Go to post 23 single page.
+     * $I->amOnPage('/?p=23');
+     * // Go to search page for the string "foo".
+     * $I->amOnPage('/?s=foo');
      *
-     * @return null|string
+     * @param string $page The path to the page, relative to the the root URL.
      */
     public function amOnPage($page)
     {
@@ -260,9 +271,6 @@ EOF;
         return null;
     }
 
-    /**
-     * @param $page
-     */
     private function setRequestType($page)
     {
         if ($this->isAdminPageRequest($page)) {
@@ -278,7 +286,7 @@ EOF;
     }
 
     /**
-     * Returns a list of recognized domain names
+     * Returns a list of recognized domain names for the test site.
      *
      * @return array
      */
