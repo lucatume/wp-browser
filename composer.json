@@ -17,6 +17,12 @@
     }
   ],
   "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/lucatume/PHP-Markdown-Documentation-Generator.git"
+    }
+  ],
   "require": {
     "php": ">=5.6.0",
     "ext-pdo": "*",
@@ -30,7 +36,8 @@
   },
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
-    "ofbeaton/console-tester": "^1.1"
+    "ofbeaton/console-tester": "^1.1",
+    "victorjonsson/markdowndocs": "dev-feature/output-formatters"
   },
   "autoload": {
     "psr-4": {
