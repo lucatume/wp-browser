@@ -156,3 +156,22 @@ docker/markdown-toc/id:
 toc: docker/markdown-toc/id
 	# Re-builds the Readme ToC.
 	docker run --rm -it -v ${CURDIR}:/project md-toc markdown-toc -i /project/README.md
+
+module_docs: composer.lock src/Codeception/Module
+	# Produces the Modules documentation in the docs/modules folder.
+	mkdir -p docs/modules
+	for file in ${CURDIR}/src/Codeception/Module/*.php; \
+	do \
+		name=$$(basename "$${file}" | cut -d. -f1); \
+		if	[ $${name} = "WPBrowserMethods" ]; then \
+			continue; \
+		fi; \
+		class="Codeception\\Module\\$${name}"; \
+		echo "Generating documentation for module $${class}..."; \
+		phpdoc-md generate \
+			--visibility=public \
+			--methodRegex="/^[^_]/" \
+			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
+			$${class} > ${CURDIR}/docs/modules/$${name}.md; \
+	done
+

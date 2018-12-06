@@ -8,19 +8,42 @@
 
 namespace tad\WPBrowser\Documentation;
 
-
 use PHPDocsMD\FunctionEntity;
+use PHPDocsMD\ParamEntity;
 
+/**
+ * Class TableGenerator
+ *
+ * @package tad\WPBrowser\Documentation
+ */
 class TableGenerator implements \PHPDocsMD\TableGenerator
 {
 
-    protected $funcs = [];
-
+    /**
+     * Whether the abstract nature of methods should be declared in the method documentaion or not.
+     *
+     * @var bool
+     */
     protected $declareAbstraction;
 
+    /**
+     * The string that will hold the output produced by the class.
+     *
+     * @var string
+     */
     protected $output = '';
 
-    protected $fullClassName;
+    /**
+     * The Markdown parser instance.
+     *
+     * @var \Parsedown
+     */
+    protected $parser;
+
+    public function __construct()
+    {
+        $this->parser = new \Parsedown();
+    }
 
     /**
      * Create a markdown-formatted code view out of an example comment
@@ -54,7 +77,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         $this->output .= '<table style="width: 100%;">
         <thead>
         <tr>
-            <th>Function</th>
+            <th>Method</th>
             <th>Example</th>
         </tr>
         </thead>';
@@ -119,13 +142,26 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         $example = '';
         if ($func->getExample()) {
-            $example = $func->getExample();
-            $example = preg_replace('/^```(php)/', PHP_EOL . '```$1', $example);
-            $example = preg_replace('/```$/', '```', $example);
+            $rawExample = $func->getExample();
+            $example = $this->parser->text($rawExample);
         }
 
         $function = ($func->isStatic() ? 'static ' : '') . $str;
-        $row = '<tr><td>' . $function .  '</td>';
+        $paramDescription = '';
+        if ($func->hasParams()) {
+            $paramHead = '<p><strong>Parameters:</strong><ul>';
+            $paramDescription = $paramHead . implode(PHP_EOL, array_map(function (ParamEntity
+                $param) {
+                    return sprintf('%s <strong>%s</strong>: %s',
+                        $param->getType(),
+                        $param->getName(),
+                        $param->getDescription()
+                    );
+                }, $func->getParams()));
+            $paramDescription .= '</ul></p>';
+        }
+        $function .= $paramDescription;
+        $row = '<tr><td>' . $function . '</td>';
         $row .= '<td>' . $example . '</td></tr>';
 
         $this->output .= PHP_EOL . $row;

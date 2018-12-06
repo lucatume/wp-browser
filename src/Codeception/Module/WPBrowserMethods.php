@@ -75,11 +75,20 @@ trait WPBrowserMethods
     /**
      * In the plugin administration screen activates a plugin clicking the "Activate" link.
      *
-     * The method will presume the browser is in the plugin screen already.
+     * The method will not navigate to the plugins management page.
+     * @example
+     * ```php
+     * // Activate a plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin('hello-dolly');
+     * // Activate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin(['hello-dolly','another-plugin']);
+     * ```
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-     *
-     * @return void
+     * @param  string|array $pluginSlug The plugin slug or a list of plugin slugs.
      */
     public function activatePlugin($pluginSlug)
     {

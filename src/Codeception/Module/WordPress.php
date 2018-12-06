@@ -204,12 +204,16 @@ EOF;
      * Goes to an admin (wp-admin) page on the site.
      *
      * @example
+     * Will this comment show up in the output?
+     * And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
+     * Or **Markdown** tags? *Please...*
+     *
      * ```php
      * $I->loginAs('user', 'password');
      * // Go to the plugins management screen.
      * $I->amOnAdminPage('/plugins.php');
      * ```
-     *
+     *  
      * @param string $page The relative path to an admin page.
      */
     public function amOnAdminPage($page)
@@ -237,15 +241,19 @@ EOF;
     }
 
     /**
-     * Goes to a page on the site, relative to the root URL.
+     * Goes to a page on the site.
      *
      * @example
-     * // Go to the site homepage.
+     * The module will try to reach the page, relative to the URL specified in the module configuration, without
+     * applying any permalink resolution.
+     * ```php
+     * // Go the the homepage.
      * $I->amOnPage('/');
-     * // Go to post 23 single page.
+     * // Go to the single page of post with ID 23.
      * $I->amOnPage('/?p=23');
      * // Go to search page for the string "foo".
      * $I->amOnPage('/?s=foo');
+     * ```
      *
      * @param string $page The path to the page, relative to the the root URL.
      */

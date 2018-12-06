@@ -37,7 +37,8 @@
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
-    "victorjonsson/markdowndocs": "dev-feature/output-formatters"
+    "victorjonsson/markdowndocs": "dev-feature/output-formatters",
+    "erusev/parsedown": "^1.7"
   },
   "autoload": {
     "psr-4": {
