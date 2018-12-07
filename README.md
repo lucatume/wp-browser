@@ -110,7 +110,7 @@ Here's what you can do:
             - 'Codeception\Command\GenerateWPXMLRPC'
     ```
 * if you are using the `tad\Codeception\Command\SearchReplace` command then require the `lucatume/codeception-setup-local` package.
-* if you are using the `Codeception\Command\DbSnapshot` command then modify your scripts to use [wp-cli database commands](https://developer.wordpress.org/cli/commands/db/) or use a MYSQL CLI command like `mysql`; the `Codeception\Command\DbSnapshot` command has been deprecated.
+* if you are using the `Codeception\Command\DbSnapshot` command then modify your scripts to use [wp-cli database commands](https://developer.wordpress.org/cli/commands/db/) or use a MYSQL CLI command like `mysql`.
 
 ## Requirements
 This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
