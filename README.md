@@ -1,7 +1,7 @@
 wp-browser
 ==========
 
-A WordPress specific set of extensions for Codeception.
+Easy acceptance, functional, integration and unit testing for WordPress plugins, themes and sites using Codeception.
 
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
