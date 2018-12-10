@@ -1,7 +1,7 @@
 wp-browser
 ==========
 
-A WordPress specific set of extensions for Codeception.
+Easy acceptance, functional, integration and unit testing for WordPress plugins, themes and sites using Codeception.
 
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
@@ -10,6 +10,7 @@ A WordPress specific set of extensions for Codeception.
 <!-- toc -->
 
 - [Upgrading from version 1.0 to 2.0 of wp-browser](#upgrading-from-version-10-to-20-of-wp-browser)
+- [Upgrading from version 1.0 or 2.0 to 2.2 of wp-browser](#upgrading-from-version-10-or-20-to-22-of-wp-browser)
 - [Requirements](#requirements)
 - [To PHP 7 and back again](#to-php-7-and-back-again)
 - [Installation](#installation)
@@ -54,6 +55,62 @@ A WordPress specific set of extensions for Codeception.
 
 ## Upgrading from version 1.0 to 2.0 of wp-browser
 * replace any use of legacy, non-namespaced, PHPUnit classes (e.g. `PHPUnit_Framweork_TestCase`) with their namespaced counterpart (e.g. `PHPUnit\Framework\TestCase`).
+
+## Upgrading from version 1.0 or 2.0 to 2.2 of wp-browser
+In version `2.2` the `Codeception\Command\DbSnapshot` command and the `lucatume/codeception-setup-local` were removed; since the `codecept init wpbrowser` command from previous versions would add those commands by default you might get a message, when trying to run a testing suite, reading like:
+```shell
+Extension: Command class Codeception\Command\DbSnapshot not found
+```
+Here's what you can do:
+
+* if you are not using the `Codeception\Command\DbSnapshot` and `tad\Codeception\Command\SearchReplace` commands remove them from the `codeception.yml` and `codeception.dist.yml` `extensions.commands` section, before:
+    ```yaml
+    actor: Tester
+    paths:
+        tests: tests
+        log: tests/_output
+        data: tests/_data
+        helpers: tests/_support
+    settings:
+        bootstrap: _bootstrap.php
+        colors: true
+        memory_limit: 1024M
+    extensions:
+        commands:
+            - 'Codeception\Command\GenerateWPUnit'
+            - 'Codeception\Command\GenerateWPRestApi'
+            - 'Codeception\Command\GenerateWPRestController'
+            - 'Codeception\Command\GenerateWPRestPostTypeController'
+            - 'Codeception\Command\GenerateWPAjax'
+            - 'Codeception\Command\GenerateWPCanonical'
+            - 'Codeception\Command\GenerateWPXMLRPC'
+            - 'Codeception\Command\DbSnapshot'
+            - 'tad\Codeception\Command\SearchReplace'
+    ```
+    After:
+    ```yaml
+    actor: Tester
+    paths:
+        tests: tests
+        log: tests/_output
+        data: tests/_data
+        helpers: tests/_support
+    settings:
+        bootstrap: _bootstrap.php
+        colors: true
+        memory_limit: 1024M
+    extensions:
+        commands:
+            - 'Codeception\Command\GenerateWPUnit'
+            - 'Codeception\Command\GenerateWPRestApi'
+            - 'Codeception\Command\GenerateWPRestController'
+            - 'Codeception\Command\GenerateWPRestPostTypeController'
+            - 'Codeception\Command\GenerateWPAjax'
+            - 'Codeception\Command\GenerateWPCanonical'
+            - 'Codeception\Command\GenerateWPXMLRPC'
+    ```
+* if you are using the `tad\Codeception\Command\SearchReplace` command then require the `lucatume/codeception-setup-local` package.
+* if you are using the `Codeception\Command\DbSnapshot` command then modify your scripts to use [wp-cli database commands](https://developer.wordpress.org/cli/commands/db/) or use a MYSQL CLI command like `mysql`.
 
 ## Requirements
 This library requires PHP 5.6 and any [Codeception requirement](https://codeception.com/install).  
