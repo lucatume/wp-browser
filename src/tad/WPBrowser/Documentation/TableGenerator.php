@@ -9,7 +9,6 @@
 namespace tad\WPBrowser\Documentation;
 
 use PHPDocsMD\FunctionEntity;
-use PHPDocsMD\ParamEntity;
 
 /**
  * Class TableGenerator
@@ -74,13 +73,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     function openTable()
     {
-        $this->output .= '<table style="width: 100%;">
-        <thead>
-        <tr>
-            <th>Method</th>
-            <th>Example</th>
-        </tr>
-        </thead>';
+        $this->output .= '<h3>Methods</h3>';
     }
 
     /**
@@ -106,67 +99,49 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     {
         $this->fullClassName = $func->getClass();
 
-        $str = '<strong>';
-
-        if ($this->declareAbstraction && $func->isAbstract()) {
-            $str .= 'abstract ';
-        }
-
-        $str .= $func->getName() . '(';
-
-        if ($func->hasParams()) {
-            $params = [];
-            foreach ($func->getParams() as $param) {
-                $paramStr = '<em>' . $param->getType() . '</em> <strong>' . $param->getName();
-                if ($param->getDefault()) {
-                    $paramStr .= '=' . $param->getDefault();
-                }
-                $paramStr .= '</strong>';
-                $params[] = $paramStr;
+        // Skip the method if it's an @internal one.
+        $methodReflection = new \ReflectionMethod($this->fullClassName, $func->getName());
+        $methodFullDoc = $methodReflection->getDocComment();
+        foreach (explode(PHP_EOL, $methodFullDoc) as $line) {
+            if (strpos($line, ' @internal ') !== false) {
+                return '';
             }
-            $str .= '</strong>' . implode(', ', $params) . ')';
-        } else {
-            $str .= ')';
         }
 
-        $str .= '</strong> : <em>' . $func->getReturnType() . '</em>';
 
-        if ($func->isDeprecated()) {
-            $str = '<strike>' . $str . '</strike>';
-            $str .= '<br /><em>DEPRECATED - ' . $func->getDeprecationMessage() . '</em>';
-        } elseif ($func->getDescription()) {
-            $str .= '<br /><br /><em>' . $func->getDescription() . '</em>';
-        }
+            $str = '<h4>' . $func->getName() . '</h4>' . PHP_EOL . '- - -' . PHP_EOL;
+            $str .= $func->getDescription();
 
-        $str = str_replace(['</strong><strong>', '</strong></strong> '], ['', '</strong>'], trim($str));
-
-        $example = '';
         if ($func->getExample()) {
             $rawExample = $func->getExample();
             $example = $this->parser->text($rawExample);
+            $str .= PHP_EOL . $example;
         }
-
-        $function = ($func->isStatic() ? 'static ' : '') . $str;
-        $paramDescription = '';
         if ($func->hasParams()) {
-            $paramHead = '<p><strong>Parameters:</strong><ul>';
-            $paramDescription = $paramHead . implode(PHP_EOL, array_map(function (ParamEntity
-                $param) {
-                    return sprintf('%s <strong>%s</strong>: %s',
-                        $param->getType(),
-                        $param->getName(),
-                        $param->getDescription()
-                    );
-                }, $func->getParams()));
-            $paramDescription .= '</ul></p>';
+            $str .= PHP_EOL . '<h5>Parameters</h5><ul>';
+            $params = [];
+            foreach ($func->getParams() as $param) {
+                $paramStr = '<li><em>' . $param->getType() . '</em> <strong>' . $param->getName() . '</strong>';
+
+                if ($param->getDefault()) {
+                    $paramStr .= ' = <em>' . $param->getDefault(). '</em>';
+                }
+
+                $description = $param->getDescription();
+
+                if (!empty($description)) {
+                    $paramStr .= ' - ' . $param->getDescription();
+                }
+
+                $paramStr .= '</li>';
+                $params[] = $paramStr;
+            }
+            $str .= PHP_EOL .  implode(PHP_EOL, $params) . '</ul>';
         }
-        $function .= $paramDescription;
-        $row = '<tr><td>' . $function . '</td>';
-        $row .= '<td>' . $example . '</td></tr>';
 
-        $this->output .= PHP_EOL . $row;
+        $this->output .= PHP_EOL . $str;
 
-        return $row;
+        return $str;
     }
 
     /**
@@ -174,6 +149,6 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     function getTable()
     {
-        return trim($this->output) . '</table>';
+        return trim($this->output);
     }
 }
