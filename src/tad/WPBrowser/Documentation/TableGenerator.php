@@ -39,6 +39,13 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     protected $parser;
 
+    /**
+     * An array of functions added to the output.
+     *
+     * @var array
+     */
+    protected $index = [];
+
     public function __construct()
     {
         $this->parser = new \Parsedown();
@@ -73,7 +80,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     function openTable()
     {
-        $this->output .= '<h3>Methods</h3>';
+        $this->output .= '';
     }
 
     /**
@@ -109,8 +116,8 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-            $str = '<h4>' . $func->getName() . '</h4>' . PHP_EOL . '- - -' . PHP_EOL;
-            $str .= $func->getDescription();
+        $str = '<h4 id="' . $func->getName() . '">' . $func->getName() . '</h4>' . PHP_EOL . '- - -' . PHP_EOL;
+        $str .= $func->getDescription();
 
         if ($func->getExample()) {
             $rawExample = $func->getExample();
@@ -124,7 +131,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                 $paramStr = '<li><em>' . $param->getType() . '</em> <strong>' . $param->getName() . '</strong>';
 
                 if ($param->getDefault()) {
-                    $paramStr .= ' = <em>' . $param->getDefault(). '</em>';
+                    $paramStr .= ' = <em>' . $param->getDefault() . '</em>';
                 }
 
                 $description = $param->getDescription();
@@ -136,10 +143,11 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                 $paramStr .= '</li>';
                 $params[] = $paramStr;
             }
-            $str .= PHP_EOL .  implode(PHP_EOL, $params) . '</ul>';
+            $str .= PHP_EOL . implode(PHP_EOL, $params) . '</ul>';
         }
 
         $this->output .= PHP_EOL . $str;
+        $this->index[] = $func->getName();
 
         return $str;
     }
@@ -149,6 +157,24 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     function getTable()
     {
-        return trim($this->output);
+        $output = trim($this->output);
+
+        return '<h3>Methods</h3>' . $this->buildToc() . $output . '</br>';
+    }
+
+    protected function buildToc()
+    {
+        if (empty($this->index)) {
+            return '';
+        }
+
+        $toc = '<nav><ul>';
+        foreach ($this->index as $funcName) {
+            $toc .= '<li><a href="#' . $funcName . '">' . $funcName . '</a></li>';
+        }
+
+        $toc .= '</ul></nav>';
+
+        return $toc;
     }
 }
