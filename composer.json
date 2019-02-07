@@ -26,7 +26,7 @@
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "~2.5.0",
     "gumlet/php-image-resize": "^1.6",
-    "vlucas/phpdotenv": "^2.4"
+    "vlucas/phpdotenv": "^3.0"
   },
   "require-dev": {
     "mikey179/vfsStream": "^1.6",
