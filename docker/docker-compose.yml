@@ -14,6 +14,7 @@ services:
       - "wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test1.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test2.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
+    command: ["chromedriver", "--url-base=/wd/hub", "--port=4444", "--whitelisted-ips="]
 
   db:
     image: mariadb:latest
