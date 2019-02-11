@@ -5,9 +5,6 @@ services:
   chromedriver:
     image: blueimp/chromedriver:latest
     container_name: wpbrowser_chromedriver
-    ports:
-      # listen for connections on port 4445
-      - "4445:4444"
     links:
       - wp
     extra_hosts:
