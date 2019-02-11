@@ -3,7 +3,7 @@ version: '3.2'
 services:
 
   chromedriver:
-    image: blueimp/chromedriver:latest
+    image: selenium/standalone-chrome
     container_name: wpbrowser_chromedriver
     links:
       - wp
@@ -11,7 +11,8 @@ services:
       - "wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test1.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test2.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
-    command: ["--url-base=/wd/hub", "--port=4444", "--whitelisted-ips="]
+    ports:
+      - 4444
 
   db:
     image: mariadb:latest
