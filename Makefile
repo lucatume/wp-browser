@@ -71,10 +71,6 @@ travis_before_install:
 	# Start the Chromedriver container using that information to have the *.wp.test domain bound to the WP container.
 	WP_CONTAINER_IP=`docker inspect -f '{{ .NetworkSettings.Networks.docker_default.IPAddress }}' wpbrowser_wp` \
 	docker-compose -f docker/${COMPOSE_FILE} up -d chromedriver
-	# Make sure the Chromedriver container can ping the WordPress one.
-	docker-compose -f docker/${COMPOSE_FILE} exec chromedriver ping -c 1 wp.test
-	docker-compose -f docker/${COMPOSE_FILE} exec chromedriver ping -c 1 test1.wp.test
-	docker-compose -f docker/${COMPOSE_FILE} exec chromedriver ping -c 1 test2.wp.test
 	# Make sure the host machine can ping the WordPress container
 	ping -c 1 wp.test
 	ping -c 1 test1.wp.test
