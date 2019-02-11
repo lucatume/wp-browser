@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.1] 2019-02-11;
+### Changed
+- updated `vlucas/phpdotenv` library dependency to `^3.0` (thanks @Naktibalda)
+
 ## [2.2.0] 2018-11-29;
 ### Removed
 - the `haveOrUpdateInDatabase` method from `WPDb` module
