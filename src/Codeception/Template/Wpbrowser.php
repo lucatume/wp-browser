@@ -500,7 +500,7 @@ class Wpbrowser extends Bootstrap
 
     protected function loadEnvFile()
     {
-        $dotEnv = new Dotenv($this->workDir, $this->envFileName);
+        $dotEnv = Dotenv::create($this->workDir, $this->envFileName);
         $dotEnv->load();
     }
 

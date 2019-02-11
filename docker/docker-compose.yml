@@ -3,17 +3,16 @@ version: '3.2'
 services:
 
   chromedriver:
-    image: blueimp/chromedriver:latest
+    image: selenium/standalone-chrome
     container_name: wpbrowser_chromedriver
-    ports:
-      # listen for connections on port 4445
-      - "4445:4444"
     links:
       - wp
     extra_hosts:
       - "wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test1.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test2.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
+    ports:
+      - 4444
 
   db:
     image: mariadb:latest
