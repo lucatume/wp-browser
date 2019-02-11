@@ -12,7 +12,7 @@ services:
       - "test1.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
       - "test2.wp.test:${WP_CONTAINER_IP:-127.0.0.1}"
     ports:
-      - 4444
+      - "4445:4444"
 
   db:
     image: mariadb:latest
