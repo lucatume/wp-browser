@@ -132,7 +132,7 @@ travis_script:
 	codecept run functional
 	codecept run muloader
 	codecept run unit
-	codecept run webdriver - deactivate while fixing the Docker-based build
+	# codecept run webdriver - deactivate while fixing the Docker-based build
 	codecept run wpfunctional
 	codecept run wploadersuite
 	codecept run wpmodule
