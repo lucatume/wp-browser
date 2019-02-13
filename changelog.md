@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.1] 2019-02-11;
+### Changed
+- updated `vlucas/phpdotenv` library dependency to `^3.0` (thanks @Naktibalda)
+
 ## [2.2.0] 2018-11-29;
 ### Removed
 - the `haveOrUpdateInDatabase` method from `WPDb` module
@@ -830,7 +834,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.0...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.1...HEAD
+[2.2.1]: https://github.com/lucatume/wp-browser/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/lucatume/wp-browser/compare/2.1.6...2.2.0
 [2.1.6]: https://github.com/lucatume/wp-browser/compare/2.1.5...2.1.6
 [2.1.5]: https://github.com/lucatume/wp-browser/compare/2.1.4...2.1.5
