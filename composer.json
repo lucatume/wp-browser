@@ -35,9 +35,9 @@
     "vlucas/phpdotenv": "^3.0"
   },
   "require-dev": {
-    "mikey179/vfsStream": "^1.6",
+    "mikey179/vfsstream": "^1.6",
     "ofbeaton/console-tester": "^1.1",
-    "victorjonsson/markdowndocs": "dev-feature/output-formatters",
+    "victorjonsson/markdowndocs": "dev-feature/visibility-and-regex",
     "erusev/parsedown": "^1.7"
   },
   "autoload": {

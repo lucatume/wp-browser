@@ -164,13 +164,16 @@ module_docs: composer.lock src/Codeception/Module
 		fi; \
 		class="Codeception\\Module\\$${name}"; \
 		file=${CURDIR}/docs/modules/$${name}.md; \
-		if [ ! -f $${file} ]; then echo "<!--doc--><!--/doc-->" $${file}; fi \
+		if [ ! -f $${file} ]; then \
+			echo "<!--doc--><!--/doc-->" > $${file}; \
+		fi; \
 		echo "Generating documentation for module $${class} in file $${file}..."; \
 		phpdoc-md generate \
 			--visibility=public \
 			--methodRegex="/^[^_]/" \
 			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
-			$${class} > doc; \
-		perl -0777 -i -pe 's/<!--doc-->.*<!--\/doc-->/<!--doc-->$$(cat doc)}<!--\/doc-->/gs' $${file}; \
-	done
+			$${class} > doc.tmp; \
+		echo "${CURDIR}/doc.tmp $${file}" | xargs php ${CURDIR}/docs/bin/update_doc.php; \
+		rm doc.tmp; \
+	done;
 
