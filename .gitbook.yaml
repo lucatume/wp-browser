@@ -2,3 +2,4 @@ root: ./docs/
 
 structure:
   readme: ./welcome.md
+  summary: ./summary.md
