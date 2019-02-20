@@ -198,7 +198,7 @@ There are other mocking engines (e.g [Mockery](http://docs.mockery.io/en/latest/
 
 ### WordPress "unit" tests
 In brief: **test single classes or functions that require WordPress code in as much isolation as possible**.
-This is what most people saying "unit tests" in the context of WordPress is talking about.  
+This is what most people referring to "unit tests" in the context of WordPress is talking about.  
 The purpose of this kind of tests is to test **one** class of a WordPress application, or one function, that **requires a WordPress-defined function or class** with a unit testing approach.  
 In the example below I'm testing the `Acme\Signup\SubmissionHandler` class on a "unit" level making sure it will mark a request as bad if the email is not a valid one. 
 
