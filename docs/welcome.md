@@ -22,10 +22,9 @@ Just because you can doesn't mean you should though: this documentation will ass
 Yes, with some distinctions.  
 In the WordPress echosystem there's a tendency to call **any** kind of test a "unit test". Under that definition will fall tests that are not "unit" tests at all.  
 Without drowning into a long and painful battle for definitions this guide will use the following definitions for different levels of testing.  
-The [next section](testing-jargon.md) will detail the conventions this documentation uses to define different levels of testing in more detail.
-
+The [next section](levels-of-testing.md) will detail the conventions this documentation uses to define different levels of testing in more detail.
 
 ### Isn't WordPress untestable?
 No; it's sometimes **difficult** to test and not as straightforward as other PHP frameworks but it's definitely not untestable.  
-And then: you're writing code that **runs** on WordPress, not the Core code for WordPress so the question should really be: will you write testable code?  
+**You** are writing code that **runs** on WordPress, not the Core code for WordPress so the question should really be: will **you** write testable code?  
 It's up to **you** to decide at what level you want to make your code testable and how much you want to test it.
