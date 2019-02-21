@@ -94,7 +94,8 @@ class WPBrowser extends PhpBrowser
      *
      * The method will presume the browser is in the plugin screen already.
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs, like
+     *                                  `['hello-dolly', 'my-plugin']`.
      *
      * @return void
      */
