@@ -377,14 +377,20 @@ class Wpbrowser extends Bootstrap
             'What is the password of the administrator user of the test site?',
             'password'
         );
-        $sut = $this->ask("Are you testing a plugin or a theme?", 'plugin');
+
+        $sut = '';
+
+        while (!in_array($sut, ['plugin', 'theme', 'both'])) {
+            $sut = $this->ask('Are you testing a plugin, a theme or a combination of both (both)?', 'plugin');
+        }
+
         $installationData['plugins'] = [];
         if ($sut === 'plugin') {
             $installationData['mainPlugin'] = $this->ask(
                 'What is the <comment>folder/plugin.php</comment> name of the plugin?',
                 'my-plugin/my-plugin.php'
             );
-        } else {
+        } elseif ($sut === 'theme') {
             $isChildTheme = $this->ask('Are you developing a child theme?', 'no');
             if (preg_match('/^(y|Y)/', $isChildTheme)) {
                 $installationData['parentTheme'] = $this->ask(
@@ -393,9 +399,19 @@ class Wpbrowser extends Bootstrap
                 );
             }
             $installationData['theme'] = $this->ask('What is the slug of the theme?', 'my-theme');
+        } else {
+            $isChildTheme = $this->ask('Are you using a child theme?', 'no');
+            if (preg_match('/^(y|Y)/', $isChildTheme)) {
+                $installationData['parentTheme'] = $this->ask(
+                    'What is the slug of the parent theme?',
+                    'twentyseventeen'
+                );
+            }
+            $installationData['theme'] = $this->ask('What is the slug of the theme you are using?', 'my-theme');
         }
+
         $activateFurtherPlugins = $this->ask(
-            'Does your plugin or theme needs additional plugins to be activated to work?',
+            'Does your project needs additional plugins to be activated to work?',
             'no'
         );
 
