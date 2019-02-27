@@ -9,4 +9,14 @@
     * [Installation](installation.md)
     * [Setting up a minimum WordPress installation](setting-up-minimum-wordpress-installation.md)
     * [Configuration](configuration.md)
+* Modules
+    * [WPBrowser](modules/WPBrowser.md)
+    * [WPCLI](modules/WPCLI.md)
+    * [WPDb](modules/WPDb.md)
+    * [WPFilesystem](modules/WPFilesystem.md)
+    * [WPLoader](modules/WPLoader.md)
+    * [WPQueries](modules/WPQueries.md)
+    * [WPWebDriver](modules/WPWebDriver.md)
+* Extensions
 * [Changelog](changelog.md)
+   
