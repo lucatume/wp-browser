@@ -287,11 +287,11 @@ class Wpbrowser extends Bootstrap
         echo PHP_EOL;
 
         $installationData['wpRootFolder'] = $this->normalizePath($this->ask(
-            "Where is WordPress installed?",
+            'Where is WordPress installed?',
             '/var/www/wp'
         ));
         $installationData['testSiteWpAdminPath'] = $this->ask(
-            'What is the path, relative to WordPress root folder, of the admin area of the test site?',
+            'What is the path, relative to WordPress root URL, of the admin area of the test site?',
             '/wp-admin'
         );
         $normalizedAdminPath = trim($this->normalizePath($installationData['testSiteWpAdminPath']), '/');

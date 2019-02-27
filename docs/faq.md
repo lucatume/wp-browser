@@ -37,3 +37,12 @@ Yes, although wp-browser, as a development tool, cannot be installed without [Co
 ### Should I use wp-browser to test my production servers?
 No. Unless you know very well what you're doing that's a dangerous idea that might leave you with a broken site and an empty database.  
 As almost any testing tool wp-browser should be used locally on local installations of WordPress that do not contain any valuable information.
+
+### Can I run all my tests with one command?
+Theoretically: yes, in practice: no.  
+When you use `codecept run` Codeception will run all the tests from all the suites.  
+This, done in the context of other frameworks, will generally not create any problem but, in the context of WordPress it will.  
+While handling a single HTTP request WordPress will set, and use, a number of constants and globals and, likewise, will do plugins and themes that follow WordPress standards.  
+This means that the global context (variable scope) will be left "dirty" and contain "left-over" constants and globals from the previous tests.  
+An example is one where a test for the handling of Ajax requests sets the `DOING_AJAX` constant: this will be now set for **any** test after the one that set it thus breaking, or worse altering, all the following ones.
+So, in short, **run each suite separately**.
