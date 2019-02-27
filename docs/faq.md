@@ -46,3 +46,8 @@ While handling a single HTTP request WordPress will set, and use, a number of co
 This means that the global context (variable scope) will be left "dirty" and contain "left-over" constants and globals from the previous tests.  
 An example is one where a test for the handling of Ajax requests sets the `DOING_AJAX` constant: this will be now set for **any** test after the one that set it thus breaking, or worse altering, all the following ones.
 So, in short, **run each suite separately**.
+
+### Can I have more than one suite of one kind?
+Yes, you should.  
+As an example you might have a `frontend` suite running [acceptance tests](levels-of-testing.md#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.  
+Think of suites as a tool to organize your tests: there's a good measure between too organized and not organized at all.
