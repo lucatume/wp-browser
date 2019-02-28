@@ -12,13 +12,20 @@ See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpB
 
 <!--doc-->
 
-### 
 
 <h2>Public API</h2><nav><ul><li><a href="#activatePlugin">activatePlugin</a></li><li><a href="#amEditingPostWithId">amEditingPostWithId</a></li><li><a href="#amOnAdminAjaxPage">amOnAdminAjaxPage</a></li><li><a href="#amOnAdminPage">amOnAdminPage</a></li><li><a href="#amOnCronPage">amOnCronPage</a></li><li><a href="#amOnPagesPage">amOnPagesPage</a></li><li><a href="#amOnPluginsPage">amOnPluginsPage</a></li><li><a href="#deactivatePlugin">deactivatePlugin</a></li><li><a href="#dontSeePluginInstalled">dontSeePluginInstalled</a></li><li><a href="#grabCookiesWithPattern">grabCookiesWithPattern</a></li><li><a href="#grabWordPressTestCookie">grabWordPressTestCookie</a></li><li><a href="#loginAs">loginAs</a></li><li><a href="#loginAsAdmin">loginAsAdmin</a></li><li><a href="#seeErrorMessage">seeErrorMessage</a></li><li><a href="#seeMessage">seeMessage</a></li><li><a href="#seePluginActivated">seePluginActivated</a></li><li><a href="#seePluginDeactivated">seePluginDeactivated</a></li><li><a href="#seePluginInstalled">seePluginInstalled</a></li><li><a href="#seeWpDiePage">seeWpDiePage</a></li></ul></nav><h4 id="activatePlugin">activatePlugin</h4>
 - - -
-In the plugin administration screen activates a plugin clicking the "Activate" link. The method will presume the browser is in the plugin screen already. `['hello-dolly', 'my-plugin']`.
+In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
+<pre><code class="language-php">    // Activate a plugin.
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin('hello-dolly');
+    // Activate a list of plugins.
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly" or a list of plugin slugs, like</li></ul>
+<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly" or a list of plugin slugs.</li></ul>
 <h4 id="amEditingPostWithId">amEditingPostWithId</h4>
 - - -
 Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
@@ -66,7 +73,29 @@ Go to the plugins administration screen. The method will **not** handle authenti
     $I-&gt;activatePlugin('hello-dolly');</code></pre>
 <h4 id="deactivatePlugin">deactivatePlugin</h4>
 - - -
-In the plugin administration screen deactivates a plugin clicking the "Deactivate" link. The method will presume the browser is in the plugin screen already.
+In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
+<pre><code class="language-php">    // Activate a plugin.
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin('hello-dolly');
+    // Activate a list of plugins.
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
+<pre><code>public function activatePlugin($pluginSlug)
+{
+    $plugins = (array)$pluginSlug;
+    foreach ($plugins as $plugin) {
+```php
+// Deactivate one plugin.
+$I-&gt;loginAsAdmin();
+$I-&gt;amOnPluginsPage();
+$I-&gt;deactivatePlugin('hello-dolly');
+// Deactivate a list of plugins.
+$I-&gt;loginAsAdmin();
+$I-&gt;amOnPluginsPage();
+$I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);
+```</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly" or a list of plugin slugs.</li></ul>
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
@@ -80,6 +109,9 @@ Assert a plugin is not installed in the plugins list. The method will **not** na
 <h4 id="grabCookiesWithPattern">grabCookiesWithPattern</h4>
 - - -
 Returns all the cookies whose name matches a regex pattern.
+<pre><code class="language-php">    $I-&gt;loginAs('customer','password');
+    $I-&gt;amOnPage('/shop');
+    $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$cookiePattern</strong></li></ul>
 <h4 id="grabWordPressTestCookie">grabWordPressTestCookie</h4>

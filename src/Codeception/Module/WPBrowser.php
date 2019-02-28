@@ -62,9 +62,16 @@ class WPBrowser extends PhpBrowser
     /**
      * Returns all the cookies whose name matches a regex pattern.
      *
+     * @example
+     * ```php
+     * $I->loginAs('customer','password');
+     * $I->amOnPage('/shop');
+     * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
+     * ```
+     *
      * @param string $cookiePattern
      *
-     * @return Cookie|null
+     * @return array|null
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -92,13 +99,22 @@ class WPBrowser extends PhpBrowser
     /**
      * In the plugin administration screen activates a plugin clicking the "Activate" link.
      *
-     * The method will presume the browser is in the plugin screen already.
+     * The method will **not** handle authentication to the admin area.
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs, like
-     *                                  `['hello-dolly', 'my-plugin']`.
+     * @example
+     * ```php
+     * // Activate a plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin('hello-dolly');
+     * // Activate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin(['hello-dolly','another-plugin']);
+     * ```
      *
-     * @return void
-     */
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+
     public function activatePlugin($pluginSlug)
     {
         $plugins = (array)$pluginSlug;
@@ -110,13 +126,23 @@ class WPBrowser extends PhpBrowser
     }
 
     /**
-     * In the plugin administration screen deactivates a plugin clicking the "Deactivate" link.
+     * On to the plugin administration screen and deactivate a plugin clicking the "Deactivate" link.
      *
-     * The method will presume the browser is in the plugin screen already.
+     * The method will not **handle** authentication to the admin area.
+     *
+     * @example
+     * ```php
+     * // Deactivate one plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin('hello-dolly');
+     * // Deactivate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
+     * ```
      *
      * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-     *
-     * @return void
      */
     public function deactivatePlugin($pluginSlug)
     {

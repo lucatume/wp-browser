@@ -1,6 +1,5 @@
 <!--doc-->
 
-### 
 
 <h2>Public API</h2><nav><ul><li><a href="#activatePlugins">activatePlugins</a></li><li><a href="#bootstrapActions">bootstrapActions</a></li><li><a href="#factory">factory</a></li><li><a href="#loadPlugins">loadPlugins</a></li><li><a href="#switchTheme">switchTheme</a></li></ul></nav><h4 id="activatePlugins">activatePlugins</h4>
 - - -

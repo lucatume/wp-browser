@@ -1,6 +1,5 @@
 <!--doc-->
 
-### 
 
 <h2>Public API</h2><nav><ul><li><a href="#activatePlugin">activatePlugin</a></li><li><a href="#amEditingPostWithId">amEditingPostWithId</a></li><li><a href="#amOnAdminAjaxPage">amOnAdminAjaxPage</a></li><li><a href="#amOnAdminPage">amOnAdminPage</a></li><li><a href="#amOnCronPage">amOnCronPage</a></li><li><a href="#amOnPagesPage">amOnPagesPage</a></li><li><a href="#amOnPluginsPage">amOnPluginsPage</a></li><li><a href="#deactivatePlugin">deactivatePlugin</a></li><li><a href="#dontSeePluginInstalled">dontSeePluginInstalled</a></li><li><a href="#grabCookiesWithPattern">grabCookiesWithPattern</a></li><li><a href="#grabFullUrl">grabFullUrl</a></li><li><a href="#grabWordPressTestCookie">grabWordPressTestCookie</a></li><li><a href="#loginAs">loginAs</a></li><li><a href="#loginAsAdmin">loginAsAdmin</a></li><li><a href="#seeErrorMessage">seeErrorMessage</a></li><li><a href="#seeMessage">seeMessage</a></li><li><a href="#seePluginActivated">seePluginActivated</a></li><li><a href="#seePluginDeactivated">seePluginDeactivated</a></li><li><a href="#seePluginInstalled">seePluginInstalled</a></li><li><a href="#seeWpDiePage">seeWpDiePage</a></li><li><a href="#waitForJqueryAjax">waitForJqueryAjax</a></li></ul></nav><h4 id="activatePlugin">activatePlugin</h4>
 - - -

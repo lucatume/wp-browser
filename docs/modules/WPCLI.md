@@ -1,6 +1,9 @@
+# WPCLI module
+This module should be used in acceptance and functional tests to setup, or verify, tests pre and post conditions.  
+This module allows invoking any supported [WP-CLI](https://wp-cli.org/) command, refer to the official site for more information.  
+The module will use **its own** version of wp-cli, not the one installed in the machine running the tests to grant isolation from local settings.  
 <!--doc-->
 
-### 
 
 <h2>Public API</h2><nav><ul><li><a href="#cli">cli</a></li><li><a href="#cliToArray">cliToArray</a></li></ul></nav><h4 id="cli">cli</h4>
 - - -
