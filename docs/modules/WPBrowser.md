@@ -6,9 +6,9 @@ The module simulates a user interaction with the site **without Javascript suppo
 ## Configuration
 See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for information about the base configuration parameters.  
 
-* `adminUsername` - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
-* `adminPassword` - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
-* `adminPath` - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
+* `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
+* `adminPassword` *required* - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
+* `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
 
 <!--doc-->
 

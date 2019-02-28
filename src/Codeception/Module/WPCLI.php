@@ -78,18 +78,22 @@ class WPCLI extends Module
     }
 
     /**
-     * Executes a wp-cli command.
+     * Executes a wp-cli command targeting the test WordPress installation.
      *
-     * The method is a wrapper around isolated calls to the wp-cli tool.
-     * The library will use its own wp-cli version to run the commands.
+     * @example
+     * ```php
+     * // Activate a plugin via wp-cli in the test WordPress site.
+     * $I->cli('plugin activate my-plugin');
+     * // Change a user password.
+     * $I->cli('user update luca --user_pass=newpassword');
+     * ```
      *
-     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                            e.g. a terminal call like `wp core version` becomes `core version`
-     *                            omitting the call to wp-cli script.
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
      *
-     * @return int wp-cli exit value for the command
+     * @return int The command exit value.
      *
-     * @throws \Codeception\Exception\ModuleException If the status evaluates to nonzero.
+     * @throws \Codeception\Exception\ModuleException If the status evaluates to non-zero and the `throw` configuration
+     *                                                parameter is set to `true`.
      */
     public function cli($userCommand = 'core version')
     {
@@ -210,20 +214,20 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array.
      *
-     * This method should be used in conjunction with wp-cli commands that will return lists.
-     * E.g.
+     * @example
+     * ```php
+     * // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
+     * $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
+     * // Get the list of installed plugins and only keep the ones starting with "foo".
+     * $fooPlugins = $I->cliToArray('plugin list --field=name', function($output){
+     *      return array_filter(explode(PHP_EOL, $output), function($name){
+     *              return strpos(trim($name), 'foo') === 0;
+     *      });
+     * });
+     * ```
      *
-     *      $inactiveThemes = $I->cliToArray('theme list --status=inactive --field=name');
-     *
-     * The above command could return an array like
-     *
-     *      ['twentyfourteen', 'twentyfifteen']
-     *
-     * No check will be made on the command the user inserted for coherency with a split-able
-     * output.
-     *
-     * @param string        $userCommand
-     * @param callable|null $splitCallback A optional callback function in charge of splitting the results array.
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
+     * @param callable $splitCallback An optional callback function in charge of splitting the results array.
      *
      * @return array An array containing the output of wp-cli split into single elements.
      *
