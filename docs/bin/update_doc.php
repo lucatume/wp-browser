@@ -38,6 +38,9 @@ if (!isset($matches['before'], $matches['after'])) {
     exit(1);
 }
 
+// Remove empty header line from the source.
+$src_contents = preg_replace('/^#+\\s+$/um', '', $src_contents);
+
 $updated_dest_contents = $matches['before'] . PHP_EOL . $src_contents . $matches['after'];
 
 $updated = file_put_contents($dest, $updated_dest_contents);
