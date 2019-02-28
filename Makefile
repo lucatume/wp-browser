@@ -168,7 +168,7 @@ module_docs: composer.lock src/Codeception/Module
 			echo "<!--doc--><!--/doc-->" > $${file}; \
 		fi; \
 		echo "Generating documentation for module $${class} in file $${file}..."; \
-		phpdoc-md generate \
+		docs/bin/wpbdocmd generate \
 			--visibility=public \
 			--methodRegex="/^[^_]/" \
 			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \

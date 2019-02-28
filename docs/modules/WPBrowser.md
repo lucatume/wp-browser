@@ -1,10 +1,20 @@
+# WPBrowser module
+This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+This module extends the [PHPBrowser module](https://codeception.com/docs/modules/PhpBrowser) adding WordPress-specific configuration parameters and methods.  
+The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver.md).  
+
+## Configuration
+See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for information about the base configuration parameters.  
+
+* `adminUsername` - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
+* `adminPassword` - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
+* `adminPath` - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
+
 <!--doc-->
 
-### Class: \Codeception\Module\WPBrowser
+### 
 
-> A Codeception module offering specific WordPress browsing methods.
-
-<h3>Methods</h3><nav><ul><li><a href="#activatePlugin">activatePlugin</a></li><li><a href="#amEditingPostWithId">amEditingPostWithId</a></li><li><a href="#amOnAdminAjaxPage">amOnAdminAjaxPage</a></li><li><a href="#amOnAdminPage">amOnAdminPage</a></li><li><a href="#amOnCronPage">amOnCronPage</a></li><li><a href="#amOnPagesPage">amOnPagesPage</a></li><li><a href="#amOnPluginsPage">amOnPluginsPage</a></li><li><a href="#deactivatePlugin">deactivatePlugin</a></li><li><a href="#dontSeePluginInstalled">dontSeePluginInstalled</a></li><li><a href="#grabCookiesWithPattern">grabCookiesWithPattern</a></li><li><a href="#grabWordPressTestCookie">grabWordPressTestCookie</a></li><li><a href="#loginAs">loginAs</a></li><li><a href="#loginAsAdmin">loginAsAdmin</a></li><li><a href="#seeErrorMessage">seeErrorMessage</a></li><li><a href="#seeMessage">seeMessage</a></li><li><a href="#seePluginActivated">seePluginActivated</a></li><li><a href="#seePluginDeactivated">seePluginDeactivated</a></li><li><a href="#seePluginInstalled">seePluginInstalled</a></li><li><a href="#seeWpDiePage">seeWpDiePage</a></li></ul></nav><h4 id="activatePlugin">activatePlugin</h4>
+<h2>Public API</h2><nav><ul><li><a href="#activatePlugin">activatePlugin</a></li><li><a href="#amEditingPostWithId">amEditingPostWithId</a></li><li><a href="#amOnAdminAjaxPage">amOnAdminAjaxPage</a></li><li><a href="#amOnAdminPage">amOnAdminPage</a></li><li><a href="#amOnCronPage">amOnCronPage</a></li><li><a href="#amOnPagesPage">amOnPagesPage</a></li><li><a href="#amOnPluginsPage">amOnPluginsPage</a></li><li><a href="#deactivatePlugin">deactivatePlugin</a></li><li><a href="#dontSeePluginInstalled">dontSeePluginInstalled</a></li><li><a href="#grabCookiesWithPattern">grabCookiesWithPattern</a></li><li><a href="#grabWordPressTestCookie">grabWordPressTestCookie</a></li><li><a href="#loginAs">loginAs</a></li><li><a href="#loginAsAdmin">loginAsAdmin</a></li><li><a href="#seeErrorMessage">seeErrorMessage</a></li><li><a href="#seeMessage">seeMessage</a></li><li><a href="#seePluginActivated">seePluginActivated</a></li><li><a href="#seePluginDeactivated">seePluginDeactivated</a></li><li><a href="#seePluginInstalled">seePluginInstalled</a></li><li><a href="#seeWpDiePage">seeWpDiePage</a></li></ul></nav><h4 id="activatePlugin">activatePlugin</h4>
 - - -
 In the plugin administration screen activates a plugin clicking the "Activate" link. The method will presume the browser is in the plugin screen already. `['hello-dolly', 'my-plugin']`.
 <h5>Parameters</h5><ul>

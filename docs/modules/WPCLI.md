@@ -1,10 +1,8 @@
 <!--doc-->
 
-### Class: \Codeception\Module\WPCLI
+### 
 
-> Class WPCLI Wraps calls to the wp-cli tool.
-
-<h3>Methods</h3><nav><ul><li><a href="#cli">cli</a></li><li><a href="#cliToArray">cliToArray</a></li></ul></nav><h4 id="cli">cli</h4>
+<h2>Public API</h2><nav><ul><li><a href="#cli">cli</a></li><li><a href="#cliToArray">cliToArray</a></li></ul></nav><h4 id="cli">cli</h4>
 - - -
 Executes a wp-cli command. The method is a wrapper around isolated calls to the wp-cli tool. The library will use its own wp-cli version to run the commands. e.g. a terminal call like `wp core version` becomes `core version` omitting the call to wp-cli script.
 <h5>Parameters</h5><ul>

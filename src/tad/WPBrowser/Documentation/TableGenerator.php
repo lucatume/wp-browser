@@ -159,7 +159,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     {
         $output = trim($this->output);
 
-        return '<h3>Methods</h3>' . $this->buildToc() . $output . '</br>';
+        return '<h2>Public API</h2>' . $this->buildToc() . $output . '</br>';
     }
 
     protected function buildToc()
