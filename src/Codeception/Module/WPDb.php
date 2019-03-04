@@ -547,7 +547,7 @@ class WPDb extends Db
      *
      * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
      */
-    public function grabPostMetaTableName()
+    public function grabpostmetatablename()
     {
         return $this->grabPrefixedTableNameFor('postmeta');
     }
@@ -1478,12 +1478,21 @@ class WPDb extends Db
     }
 
     /**
-     * Count rows in the database
+     * Returns the number of table rows matching a criteria.
      *
-     * @param string $table    Table name
-     * @param array  $criteria Search criteria [Optional]
+     * @example
+     * ```php
+     * $I->haveManyPostsInDatabase(3, ['post_status' => 'draft' ]);
+     * $I->haveManyPostsInDatabase(3, ['post_status' => 'private' ]);
+     * // Make sure there are now the expected number of draft posts.
+     * $postsTable = $I->grabPostsTableName();
+     * $I->countRowsInDatabase($postsTable, ['post_status' => 'draft']);
+     * ```
      *
-     * @return int
+     * @param string $table    The table to count the rows in.
+     * @param array  $criteria Search criteria, if empty all table rows will be counted.
+     *
+     * @return int The number of table rows matching the search criteria.
      */
     public function countRowsInDatabase($table, array $criteria = [])
     {
@@ -2030,8 +2039,9 @@ class WPDb extends Db
 
     /**
      * Removes an entry from the `blogs` table.
+     * The blog tables and uploads will not be removed.
      *
-     * @param array $criteria An array of search criteria.
+     * @param array $criteria An array of search criteria to find the blog row in the blogs table.
      */
     public function dontHaveBlogInDatabase(array $criteria)
     {
@@ -2053,6 +2063,7 @@ class WPDb extends Db
      *
      * @param string      $stylesheet The theme stylesheet slug, e.g. `twentysixteen`.
      * @param string|null $template   The theme template slug, e.g. `twentysixteen`, defaults to `$stylesheet`.
+     *
      * @param string|null $themeName  The theme name, e.g. `Twentysixteen`, defaults to title version of `$stylesheet`.
      */
     public function useTheme($stylesheet, $template = null, $themeName = null)
@@ -2359,8 +2370,18 @@ class WPDb extends Db
 
     /**
      * Removes an attachment from the posts table.
+     * The method **will not** remove the file upload.
      *
-     * @param  array $criteria  An array of search criteria.
+     * @example
+     * ```
+     * $postmeta = $I->grabpostmetatablename();
+     * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', $criteria = ['post_id' => $id, 'meta_key'=>'thumbnail_id']);
+     * $I->dontHaveAttachmentInDatabase($thumbnailId);
+     * // Use a WPFilesystem method to remove the file.
+     * $I->deleteUploadedFile('post-thumbnail.png');
+     * ```
+     *
+     * @param  array $criteria  An array of search criteria to find the attachment post in the posts table.
      * @param bool   $purgeMeta If set to `true` then the meta for the attachment will be purged too.
      */
     public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true)
