@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+- an issue in `src/includes/utils.php` (thanks @lots0logs)
 
 ## [2.2.1] 2019-02-11;
 ### Changed
