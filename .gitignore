@@ -14,6 +14,7 @@ vendor/
 tests/_output
 
 # local configuration files
+codeception.yml
 tests/*.suite.yml
 .env.local
 src/Codeception/Module/patchwork.json

@@ -26,6 +26,7 @@
   "require": {
     "php": ">=5.6.0",
     "ext-pdo": "*",
+    "ext-fileinfo": "*",
     "lucatume/wp-browser-commons": "^1.2.5",
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": ">=2.7 <5.0",

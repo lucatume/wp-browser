@@ -1,0 +1,12 @@
+params:
+    - .env.local
+wpFolder: '%WP_ROOT_FOLDER%'
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Copier
+    config:
+        tad\WPBrowser\Extension\Copier:
+            files:
+               'tests/_data/themes/dummy': '%WP_ROOT_FOLDER%/wp-content/themes/dummy'
+               'tests/_data/plugins/mu-plugin-1': '%WP_ROOT_FOLDER%/wp-content/plugins/mu-plugin-1'
+               'tests/_data/plugins/test': '%WP_ROOT_FOLDER%/wp-content/plugins/test'

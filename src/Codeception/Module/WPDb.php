@@ -547,7 +547,7 @@ class WPDb extends Db
      *
      * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
      */
-    public function grabpostmetatablename()
+    public function grabPostmetaTableName()
     {
         return $this->grabPrefixedTableNameFor('postmeta');
     }
@@ -2210,14 +2210,7 @@ class WPDb extends Db
      */
     public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
     {
-        /** @var WPFilesystem $fs */
-        try {
-            $fs = $this->getModule('WPFilesystem');
-        } catch (ModuleException $e) {
-            $method = __METHOD__;
-            $message = "the {$method} method requires the WPFilesystem module.";
-            throw new ModuleException(__CLASS__, $message);
-        }
+        $fs = $this->getWpFilesystemModule();
 
         $pathInfo = pathinfo($file);
         $slug = str_slug($pathInfo['filename']);
@@ -2225,6 +2218,7 @@ class WPDb extends Db
         $uploadedFilePath = $fs->writeToUploadedFile($pathInfo['basename'], file_get_contents($file), $date);
         $uploadUrl = $this->grabSiteUrl(str_replace($fs->getWpRootFolder(), '', $uploadedFilePath));
         $uploadLocation = Utils::unleadslashit(str_replace($fs->getUploadsPath(), '', $uploadedFilePath));
+
 
         $mimeType = mime_content_type($file);
 
@@ -2370,23 +2364,38 @@ class WPDb extends Db
 
     /**
      * Removes an attachment from the posts table.
-     * The method **will not** remove the file upload.
      *
      * @example
      * ```
      * $postmeta = $I->grabpostmetatablename();
-     * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', $criteria = ['post_id' => $id, 'meta_key'=>'thumbnail_id']);
+     * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
+     *      'post_id' => $id,
+     *      'meta_key'=>'thumbnail_id'
+     * ]);
+     * // Remove only the database entry (including postmeta) but not the files.
      * $I->dontHaveAttachmentInDatabase($thumbnailId);
-     * // Use a WPFilesystem method to remove the file.
-     * $I->deleteUploadedFile('post-thumbnail.png');
+     * // Remove the database entry (including postmeta) and the files.
+     * $I->dontHaveAttachmentInDatabase($thumbnailId, true, true);
      * ```
      *
      * @param  array $criteria  An array of search criteria to find the attachment post in the posts table.
      * @param bool   $purgeMeta If set to `true` then the meta for the attachment will be purged too.
+     * @param bool   $removeFiles Remove all files too, requires the `WPFilesystem` module to be loaded in the suite.
+     *
+     * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite
+     *                                                and the `$removeFiles` argument is `true`.
      */
-    public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true)
+    public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true, $removeFiles = false)
     {
-        $this->dontHavePostInDatabase(array_merge($criteria, ['post_type' => 'attachment']), $purgeMeta);
+        $mergedCriteria = array_merge($criteria, ['post_type' => 'attachment']);
+
+        if ((bool)$removeFiles) {
+            $posts = $this->grabPostsTableName();
+            $attachmentIds = $this->grabColumnFromDatabase($posts, 'ID', $mergedCriteria);
+            $this->dontHaveAttachmentFilesInDatabase($attachmentIds);
+        }
+
+        $this->dontHavePostInDatabase($mergedCriteria, $purgeMeta);
     }
 
     /**
@@ -2534,5 +2543,116 @@ class WPDb extends Db
         }
 
         parent::loadDumpUsingDriver($databaseKey);
+    }
+
+    /**
+     * Gets the WPFilesystem module.
+     *
+     * @return \Codeception\Module\WPFilesystem The filesytem module instance if loaded in the suite.
+     *
+     * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite.
+     */
+    protected function getWpFilesystemModule()
+    {
+        try {
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
+            return $this->getModule('WPFilesystem');
+        } catch (ModuleException $e) {
+            $method = __METHOD__;
+            $message = "the {$method} method requires the WPFilesystem module.";
+            throw new ModuleException(__CLASS__, $message);
+        }
+    }
+
+    /**
+     * Removes all the files attached with an attachment post, it will not remove the database entries.
+     * Requires the WPFilesystem module to be loaded in the suite.
+     *
+     * @example
+     * ```php
+     * $posts = $I->grabPostsTableName();
+     * $attachmentIds = $I->grabColumnFromDatabase($posts, 'ID', ['post_type' => 'attachment']);
+     * // This will only remove the files, not the database entries.
+     * $I->dontHaveAttachmentFilesInDatabase($attachmentIds);
+     * ```
+     *
+     * @param array|int $attachmentIds An attachment post ID or an array of attachment post IDs.
+     *
+     * @throws \Codeception\Exception\ModuleException If the `WPFilesystem` module is not loaded in the suite.
+     */
+    public function dontHaveAttachmentFilesInDatabase($attachmentIds)
+    {
+        $postmeta = $this->grabPostmetaTableName();
+
+        foreach ((array)$attachmentIds as $attachmentId) {
+            $attachedFile = $this->grabAttachmentAttachedFile($attachmentId);
+            $attachmentMetadata = $this->grabAttachmentMetadata($attachmentId);
+
+            $fs = $this->getWpFilesystemModule();
+            $filesPath = Utils::untrailslashit($fs->getUploadsPath(dirname($attachedFile)));
+
+            if (!isset($attachmentMetadata['sizes']) && is_array($attachmentMetadata['sizes'])) {
+                continue;
+            }
+
+            foreach ($attachmentMetadata['sizes'] as $size => $sizeData) {
+                $filePath = $filesPath . '/' . $sizeData['file'];
+                $fs->deleteUploadedFile($filePath);
+            }
+            $fs->deleteUploadedFile($attachedFile);
+        }
+    }
+
+    /**
+     * Returns the path, as stored in the database, of an attachment `_wp_attached_file` meta.
+     * The attached file is, usually, an attachment origal file.
+     *
+     * @example
+     * ```php
+     * $file = $I->grabAttachmentAttachedFile($attachmentId);
+     * $fileInfo = new SplFileInfo($file);
+     * $I->assertEquals('jpg', $fileInfo->getExtension());
+     * ```
+     *
+     * @param int $attachmentPostId The attachment post ID.
+     *
+     * @return string The attachment attached file path or an empt string if not set.
+     */
+    public function grabAttachmentAttachedFile($attachmentPostId)
+    {
+        $attachedFile = $this->grabFromDatabase(
+            $this->grabPostmetaTableName(),
+            'meta_value',
+            ['meta_key' => '_wp_attached_file', 'post_id' => $attachmentPostId]
+        );
+
+        return (string)$attachedFile;
+    }
+
+    /**
+     * Returns the metadata array for an attachment post.
+     * This is the value of the `_wp_attachment_metadata` meta.
+     *
+     * @example
+     * ```php
+     * $metadata = $I->grabAttachmentMetadata($attachmentId);
+     * $I->assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);
+     * ```
+     *
+     * @param int $attachmentPostId The attachment post ID.
+     *
+     * @return array The unserialized contents of the attachment `_wp_attachment_metadata` meta or an empty array.
+     */
+    public function grabAttachmentMetadata($attachmentPostId)
+    {
+        $serializedData = $this->grabFromDatabase(
+            $this->grabPostmetaTableName(),
+            'meta_value',
+            ['meta_key' => '_wp_attachment_metadata', 'post_id' => $attachmentPostId]
+        );
+
+        return !empty($serializedData) ?
+            unserialize($serializedData)
+            : [];
     }
 }

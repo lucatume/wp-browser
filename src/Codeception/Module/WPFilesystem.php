@@ -222,11 +222,16 @@ class WPFilesystem extends Filesystem
             $m         = date('m', $timestamp);
             $dateFrag  = $Y . DIRECTORY_SEPARATOR . $m;
         }
-        $path = implode(DIRECTORY_SEPARATOR, array_filter([
-            Utils::untrailslashit($this->config['uploads']),
-            $dateFrag,
-            Utils::unleadslashit($file),
-        ]));
+
+        $uploads = Utils::untrailslashit($this->config['uploads']);
+        $path = $file;
+        if (false === strpos($file, $uploads)) {
+            $path = implode(DIRECTORY_SEPARATOR, array_filter([
+                $uploads,
+                $dateFrag,
+                Utils::unleadslashit($file),
+            ]));
+        }
 
         return $path;
     }
