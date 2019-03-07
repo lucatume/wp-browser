@@ -137,7 +137,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                 $description = $param->getDescription();
 
                 if (!empty($description)) {
-                    $paramStr .= ' - ' . $param->getDescription();
+                    $paramStr .= ' - ' . $this->parser->line($param->getDescription());
                 }
 
                 $paramStr .= '</li>';
