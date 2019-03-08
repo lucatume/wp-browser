@@ -18,7 +18,7 @@ Executes a wp-cli command targeting the test WordPress installation.
     // Change a user password.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus `wp`.</li></ul>
+<li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
 <h4 id="cliToArray">cliToArray</h4>
 - - -
 Returns the output of a wp-cli command as an array.
@@ -31,7 +31,7 @@ Returns the output of a wp-cli command as an array.
          });
     });</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus `wp`.</li>
+<li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
 <li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul></br>
 
 *This class extends \Codeception\Module*

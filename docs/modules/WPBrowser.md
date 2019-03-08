@@ -25,7 +25,7 @@ In the plugin administration screen activates a plugin clicking the "Activate" l
     $I-&gt;amOnPluginsPage();
     $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly" or a list of plugin slugs.</li></ul>
+<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
 <h4 id="amEditingPostWithId">amEditingPostWithId</h4>
 - - -
 Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
@@ -97,7 +97,7 @@ $I-&gt;amOnPluginsPage();
 $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);
 ```</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly" or a list of plugin slugs.</li></ul>
+<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
 - - -
 Assert a plugin is not installed in the plugins list. The method will **not** navigate to the plugin administration screen.
@@ -105,7 +105,7 @@ Assert a plugin is not installed in the plugins list. The method will **not** na
     $I-&gt;amOnPluginsPage();
     $I-&gt;dontSeePluginInstalled('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly".</li></ul>
+<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 <h4 id="grabCookiesWithPattern">grabCookiesWithPattern</h4>
 - - -
 Returns all the cookies whose name matches a regex pattern.
@@ -141,7 +141,7 @@ In an administration screen will look for an error admin notice. Allows for clas
     $I-&gt;amOnAdminPage('/');
     $I-&gt;seeErrorMessage('.my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the error notice should have in addition to the `.notice.notice-error` ones.</li></ul>
+<li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the error notice should have in addition to the <code>.notice.notice-error</code> ones.</li></ul>
 <h4 id="seeMessage">seeMessage</h4>
 - - -
 In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.
@@ -149,7 +149,7 @@ In an administration screen will look for an admin notice. Allows for class-base
     $I-&gt;amOnAdminPage('/');
     $I-&gt;seeMessage('.notice-warning.my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the message should have in addition to the `.notice` one.</li></ul>
+<li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
 <h4 id="seePluginActivated">seePluginActivated</h4>
 - - -
 Assert a plugin is activated in the plugins list. The method will **not** navigate to the plugin administration screen.
@@ -157,7 +157,7 @@ Assert a plugin is activated in the plugins list. The method will **not** naviga
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginActivated('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly".</li></ul>
+<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 <h4 id="seePluginDeactivated">seePluginDeactivated</h4>
 - - -
 Assert a plugin is not activated in the plugins list. The method will **not** navigate to the plugin administration screen.
@@ -165,7 +165,7 @@ Assert a plugin is not activated in the plugins list. The method will **not** na
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginDeactivated('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly".</li></ul>
+<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 <h4 id="seePluginInstalled">seePluginInstalled</h4>
 - - -
 Assert a plugin is installed, no matter its activation status, in the plugins list. The method will **not** navigate to the plugin administration screen.
@@ -173,7 +173,7 @@ Assert a plugin is installed, no matter its activation status, in the plugins li
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginInstalled('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like "hello-dolly".</li></ul>
+<li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 <h4 id="seeWpDiePage">seeWpDiePage</h4>
 - - -
 Checks that the current page is a `wp_die` generated one. The method will try to identify the page based on the default WordPress die page markup.

@@ -6,7 +6,7 @@ The module provides methods to read, write and update the WordPress database **d
 <!--doc-->
 
 
-<h2>Public API</h2><nav><ul><li><a href="#countRowsInDatabase">countRowsInDatabase</a></li><li><a href="#dontHaveAttachmentInDatabase">dontHaveAttachmentInDatabase</a></li><li><a href="#dontHaveBlogInDatabase">dontHaveBlogInDatabase</a></li><li><a href="#dontHaveCommentInDatabase">dontHaveCommentInDatabase</a></li><li><a href="#dontHaveCommentMetaInDatabase">dontHaveCommentMetaInDatabase</a></li><li><a href="#dontHaveInDatabase">dontHaveInDatabase</a></li><li><a href="#dontHaveLinkInDatabase">dontHaveLinkInDatabase</a></li><li><a href="#dontHaveOptionInDatabase">dontHaveOptionInDatabase</a></li><li><a href="#dontHavePostInDatabase">dontHavePostInDatabase</a></li><li><a href="#dontHavePostMetaInDatabase">dontHavePostMetaInDatabase</a></li><li><a href="#dontHaveSiteOptionInDatabase">dontHaveSiteOptionInDatabase</a></li><li><a href="#dontHaveSiteTransientInDatabase">dontHaveSiteTransientInDatabase</a></li><li><a href="#dontHaveTermInDatabase">dontHaveTermInDatabase</a></li><li><a href="#dontHaveTermMetaInDatabase">dontHaveTermMetaInDatabase</a></li><li><a href="#dontHaveTermRelationshipInDatabase">dontHaveTermRelationshipInDatabase</a></li><li><a href="#dontHaveTermTaxonomyInDatabase">dontHaveTermTaxonomyInDatabase</a></li><li><a href="#dontHaveTransientInDatabase">dontHaveTransientInDatabase</a></li><li><a href="#dontHaveUserInDatabase">dontHaveUserInDatabase</a></li><li><a href="#dontHaveUserInDatabaseWithEmail">dontHaveUserInDatabaseWithEmail</a></li><li><a href="#dontHaveUserMetaInDatabase">dontHaveUserMetaInDatabase</a></li><li><a href="#dontSeeAttachmentInDatabase">dontSeeAttachmentInDatabase</a></li><li><a href="#dontSeeBlogInDatabase">dontSeeBlogInDatabase</a></li><li><a href="#dontSeeCommentInDatabase">dontSeeCommentInDatabase</a></li><li><a href="#dontSeeCommentMetaInDatabase">dontSeeCommentMetaInDatabase</a></li><li><a href="#dontSeeLinkInDatabase">dontSeeLinkInDatabase</a></li><li><a href="#dontSeeOptionInDatabase">dontSeeOptionInDatabase</a></li><li><a href="#dontSeePageInDatabase">dontSeePageInDatabase</a></li><li><a href="#dontSeePostInDatabase">dontSeePostInDatabase</a></li><li><a href="#dontSeePostMetaInDatabase">dontSeePostMetaInDatabase</a></li><li><a href="#dontSeeTermInDatabase">dontSeeTermInDatabase</a></li><li><a href="#dontSeeTermMetaInDatabase">dontSeeTermMetaInDatabase</a></li><li><a href="#dontSeeTermTaxonomyInDatabase">dontSeeTermTaxonomyInDatabase</a></li><li><a href="#dontSeeUserInDatabase">dontSeeUserInDatabase</a></li><li><a href="#dontSeeUserMetaInDatabase">dontSeeUserMetaInDatabase</a></li><li><a href="#getSiteDomain">getSiteDomain</a></li><li><a href="#grabAllFromDatabase">grabAllFromDatabase</a></li><li><a href="#grabBlogVersionsTableName">grabBlogVersionsTableName</a></li><li><a href="#grabBlogsTableName">grabBlogsTableName</a></li><li><a href="#grabCommentmetaTableName">grabCommentmetaTableName</a></li><li><a href="#grabCommentsTableName">grabCommentsTableName</a></li><li><a href="#grabLatestEntryByFromDatabase">grabLatestEntryByFromDatabase</a></li><li><a href="#grabLinksTableName">grabLinksTableName</a></li><li><a href="#grabOptionFromDatabase">grabOptionFromDatabase</a></li><li><a href="#grabPostsTableName">grabPostsTableName</a></li><li><a href="#grabPrefixedTableNameFor">grabPrefixedTableNameFor</a></li><li><a href="#grabRegistrationLogTableName">grabRegistrationLogTableName</a></li><li><a href="#grabSignupsTableName">grabSignupsTableName</a></li><li><a href="#grabSiteMetaTableName">grabSiteMetaTableName</a></li><li><a href="#grabSiteOptionFromDatabase">grabSiteOptionFromDatabase</a></li><li><a href="#grabSiteTableName">grabSiteTableName</a></li><li><a href="#grabSiteTransientFromDatabase">grabSiteTransientFromDatabase</a></li><li><a href="#grabSiteUrl">grabSiteUrl</a></li><li><a href="#grabTablePrefix">grabTablePrefix</a></li><li><a href="#grabTermIdFromDatabase">grabTermIdFromDatabase</a></li><li><a href="#grabTermMetaTableName">grabTermMetaTableName</a></li><li><a href="#grabTermRelationshipsTableName">grabTermRelationshipsTableName</a></li><li><a href="#grabTermTaxonomyIdFromDatabase">grabTermTaxonomyIdFromDatabase</a></li><li><a href="#grabTermTaxonomyTableName">grabTermTaxonomyTableName</a></li><li><a href="#grabTermsTableName">grabTermsTableName</a></li><li><a href="#grabUserIdFromDatabase">grabUserIdFromDatabase</a></li><li><a href="#grabUserMetaFromDatabase">grabUserMetaFromDatabase</a></li><li><a href="#grabUsermetaTableName">grabUsermetaTableName</a></li><li><a href="#grabUsersTableName">grabUsersTableName</a></li><li><a href="#grabpostmetatablename">grabpostmetatablename</a></li><li><a href="#haveAttachmentInDatabase">haveAttachmentInDatabase</a></li><li><a href="#haveBlogInDatabase">haveBlogInDatabase</a></li><li><a href="#haveCommentInDatabase">haveCommentInDatabase</a></li><li><a href="#haveCommentMetaInDatabase">haveCommentMetaInDatabase</a></li><li><a href="#haveLinkInDatabase">haveLinkInDatabase</a></li><li><a href="#haveManyBlogsInDatabase">haveManyBlogsInDatabase</a></li><li><a href="#haveManyCommentsInDatabase">haveManyCommentsInDatabase</a></li><li><a href="#haveManyLinksInDatabase">haveManyLinksInDatabase</a></li><li><a href="#haveManyPostsInDatabase">haveManyPostsInDatabase</a></li><li><a href="#haveManyTermsInDatabase">haveManyTermsInDatabase</a></li><li><a href="#haveManyUsersInDatabase">haveManyUsersInDatabase</a></li><li><a href="#haveMenuInDatabase">haveMenuInDatabase</a></li><li><a href="#haveMenuItemInDatabase">haveMenuItemInDatabase</a></li><li><a href="#haveOptionInDatabase">haveOptionInDatabase</a></li><li><a href="#havePageInDatabase">havePageInDatabase</a></li><li><a href="#havePostInDatabase">havePostInDatabase</a></li><li><a href="#havePostmetaInDatabase">havePostmetaInDatabase</a></li><li><a href="#haveSiteOptionInDatabase">haveSiteOptionInDatabase</a></li><li><a href="#haveSiteTransientInDatabase">haveSiteTransientInDatabase</a></li><li><a href="#haveTermInDatabase">haveTermInDatabase</a></li><li><a href="#haveTermMetaInDatabase">haveTermMetaInDatabase</a></li><li><a href="#haveTermRelationshipInDatabase">haveTermRelationshipInDatabase</a></li><li><a href="#haveTransientInDatabase">haveTransientInDatabase</a></li><li><a href="#haveUserCapabilitiesInDatabase">haveUserCapabilitiesInDatabase</a></li><li><a href="#haveUserInDatabase">haveUserInDatabase</a></li><li><a href="#haveUserLevelsInDatabase">haveUserLevelsInDatabase</a></li><li><a href="#haveUserMetaInDatabase">haveUserMetaInDatabase</a></li><li><a href="#importSqlDumpFile">importSqlDumpFile</a></li><li><a href="#seeAttachmentInDatabase">seeAttachmentInDatabase</a></li><li><a href="#seeBlogInDatabase">seeBlogInDatabase</a></li><li><a href="#seeCommentInDatabase">seeCommentInDatabase</a></li><li><a href="#seeCommentMetaInDatabase">seeCommentMetaInDatabase</a></li><li><a href="#seeLinkInDatabase">seeLinkInDatabase</a></li><li><a href="#seeOptionInDatabase">seeOptionInDatabase</a></li><li><a href="#seePageInDatabase">seePageInDatabase</a></li><li><a href="#seePostInDatabase">seePostInDatabase</a></li><li><a href="#seePostMetaInDatabase">seePostMetaInDatabase</a></li><li><a href="#seePostWithTermInDatabase">seePostWithTermInDatabase</a></li><li><a href="#seeSiteOptionInDatabase">seeSiteOptionInDatabase</a></li><li><a href="#seeSiteSiteTransientInDatabase">seeSiteSiteTransientInDatabase</a></li><li><a href="#seeTableInDatabase">seeTableInDatabase</a></li><li><a href="#seeTermInDatabase">seeTermInDatabase</a></li><li><a href="#seeTermMetaInDatabase">seeTermMetaInDatabase</a></li><li><a href="#seeTermRelationshipInDatabase">seeTermRelationshipInDatabase</a></li><li><a href="#seeTermTaxonomyInDatabase">seeTermTaxonomyInDatabase</a></li><li><a href="#seeUserInDatabase">seeUserInDatabase</a></li><li><a href="#seeUserMetaInDatabase">seeUserMetaInDatabase</a></li><li><a href="#useBlog">useBlog</a></li><li><a href="#useMainBlog">useMainBlog</a></li><li><a href="#useTheme">useTheme</a></li></ul></nav><h4 id="countRowsInDatabase">countRowsInDatabase</h4>
+<h2>Public API</h2><nav><ul><li><a href="#countRowsInDatabase">countRowsInDatabase</a></li><li><a href="#dontHaveAttachmentFilesInDatabase">dontHaveAttachmentFilesInDatabase</a></li><li><a href="#dontHaveAttachmentInDatabase">dontHaveAttachmentInDatabase</a></li><li><a href="#dontHaveBlogInDatabase">dontHaveBlogInDatabase</a></li><li><a href="#dontHaveCommentInDatabase">dontHaveCommentInDatabase</a></li><li><a href="#dontHaveCommentMetaInDatabase">dontHaveCommentMetaInDatabase</a></li><li><a href="#dontHaveInDatabase">dontHaveInDatabase</a></li><li><a href="#dontHaveLinkInDatabase">dontHaveLinkInDatabase</a></li><li><a href="#dontHaveOptionInDatabase">dontHaveOptionInDatabase</a></li><li><a href="#dontHavePostInDatabase">dontHavePostInDatabase</a></li><li><a href="#dontHavePostMetaInDatabase">dontHavePostMetaInDatabase</a></li><li><a href="#dontHaveSiteOptionInDatabase">dontHaveSiteOptionInDatabase</a></li><li><a href="#dontHaveSiteTransientInDatabase">dontHaveSiteTransientInDatabase</a></li><li><a href="#dontHaveTermInDatabase">dontHaveTermInDatabase</a></li><li><a href="#dontHaveTermMetaInDatabase">dontHaveTermMetaInDatabase</a></li><li><a href="#dontHaveTermRelationshipInDatabase">dontHaveTermRelationshipInDatabase</a></li><li><a href="#dontHaveTermTaxonomyInDatabase">dontHaveTermTaxonomyInDatabase</a></li><li><a href="#dontHaveTransientInDatabase">dontHaveTransientInDatabase</a></li><li><a href="#dontHaveUserInDatabase">dontHaveUserInDatabase</a></li><li><a href="#dontHaveUserInDatabaseWithEmail">dontHaveUserInDatabaseWithEmail</a></li><li><a href="#dontHaveUserMetaInDatabase">dontHaveUserMetaInDatabase</a></li><li><a href="#dontSeeAttachmentInDatabase">dontSeeAttachmentInDatabase</a></li><li><a href="#dontSeeBlogInDatabase">dontSeeBlogInDatabase</a></li><li><a href="#dontSeeCommentInDatabase">dontSeeCommentInDatabase</a></li><li><a href="#dontSeeCommentMetaInDatabase">dontSeeCommentMetaInDatabase</a></li><li><a href="#dontSeeLinkInDatabase">dontSeeLinkInDatabase</a></li><li><a href="#dontSeeOptionInDatabase">dontSeeOptionInDatabase</a></li><li><a href="#dontSeePageInDatabase">dontSeePageInDatabase</a></li><li><a href="#dontSeePostInDatabase">dontSeePostInDatabase</a></li><li><a href="#dontSeePostMetaInDatabase">dontSeePostMetaInDatabase</a></li><li><a href="#dontSeeTermInDatabase">dontSeeTermInDatabase</a></li><li><a href="#dontSeeTermMetaInDatabase">dontSeeTermMetaInDatabase</a></li><li><a href="#dontSeeTermTaxonomyInDatabase">dontSeeTermTaxonomyInDatabase</a></li><li><a href="#dontSeeUserInDatabase">dontSeeUserInDatabase</a></li><li><a href="#dontSeeUserMetaInDatabase">dontSeeUserMetaInDatabase</a></li><li><a href="#getSiteDomain">getSiteDomain</a></li><li><a href="#grabAllFromDatabase">grabAllFromDatabase</a></li><li><a href="#grabAttachmentAttachedFile">grabAttachmentAttachedFile</a></li><li><a href="#grabAttachmentMetadata">grabAttachmentMetadata</a></li><li><a href="#grabBlogVersionsTableName">grabBlogVersionsTableName</a></li><li><a href="#grabBlogsTableName">grabBlogsTableName</a></li><li><a href="#grabCommentmetaTableName">grabCommentmetaTableName</a></li><li><a href="#grabCommentsTableName">grabCommentsTableName</a></li><li><a href="#grabLatestEntryByFromDatabase">grabLatestEntryByFromDatabase</a></li><li><a href="#grabLinksTableName">grabLinksTableName</a></li><li><a href="#grabOptionFromDatabase">grabOptionFromDatabase</a></li><li><a href="#grabPostMetaFromDatabase">grabPostMetaFromDatabase</a></li><li><a href="#grabPostmetaTableName">grabPostmetaTableName</a></li><li><a href="#grabPostsTableName">grabPostsTableName</a></li><li><a href="#grabPrefixedTableNameFor">grabPrefixedTableNameFor</a></li><li><a href="#grabRegistrationLogTableName">grabRegistrationLogTableName</a></li><li><a href="#grabSignupsTableName">grabSignupsTableName</a></li><li><a href="#grabSiteMetaTableName">grabSiteMetaTableName</a></li><li><a href="#grabSiteOptionFromDatabase">grabSiteOptionFromDatabase</a></li><li><a href="#grabSiteTableName">grabSiteTableName</a></li><li><a href="#grabSiteTransientFromDatabase">grabSiteTransientFromDatabase</a></li><li><a href="#grabSiteUrl">grabSiteUrl</a></li><li><a href="#grabTablePrefix">grabTablePrefix</a></li><li><a href="#grabTermIdFromDatabase">grabTermIdFromDatabase</a></li><li><a href="#grabTermMetaTableName">grabTermMetaTableName</a></li><li><a href="#grabTermRelationshipsTableName">grabTermRelationshipsTableName</a></li><li><a href="#grabTermTaxonomyIdFromDatabase">grabTermTaxonomyIdFromDatabase</a></li><li><a href="#grabTermTaxonomyTableName">grabTermTaxonomyTableName</a></li><li><a href="#grabTermsTableName">grabTermsTableName</a></li><li><a href="#grabUserIdFromDatabase">grabUserIdFromDatabase</a></li><li><a href="#grabUserMetaFromDatabase">grabUserMetaFromDatabase</a></li><li><a href="#grabUsermetaTableName">grabUsermetaTableName</a></li><li><a href="#grabUsersTableName">grabUsersTableName</a></li><li><a href="#haveAttachmentInDatabase">haveAttachmentInDatabase</a></li><li><a href="#haveBlogInDatabase">haveBlogInDatabase</a></li><li><a href="#haveCommentInDatabase">haveCommentInDatabase</a></li><li><a href="#haveCommentMetaInDatabase">haveCommentMetaInDatabase</a></li><li><a href="#haveLinkInDatabase">haveLinkInDatabase</a></li><li><a href="#haveManyBlogsInDatabase">haveManyBlogsInDatabase</a></li><li><a href="#haveManyCommentsInDatabase">haveManyCommentsInDatabase</a></li><li><a href="#haveManyLinksInDatabase">haveManyLinksInDatabase</a></li><li><a href="#haveManyPostsInDatabase">haveManyPostsInDatabase</a></li><li><a href="#haveManyTermsInDatabase">haveManyTermsInDatabase</a></li><li><a href="#haveManyUsersInDatabase">haveManyUsersInDatabase</a></li><li><a href="#haveMenuInDatabase">haveMenuInDatabase</a></li><li><a href="#haveMenuItemInDatabase">haveMenuItemInDatabase</a></li><li><a href="#haveOptionInDatabase">haveOptionInDatabase</a></li><li><a href="#havePageInDatabase">havePageInDatabase</a></li><li><a href="#havePostInDatabase">havePostInDatabase</a></li><li><a href="#havePostmetaInDatabase">havePostmetaInDatabase</a></li><li><a href="#haveSiteOptionInDatabase">haveSiteOptionInDatabase</a></li><li><a href="#haveSiteTransientInDatabase">haveSiteTransientInDatabase</a></li><li><a href="#haveTermInDatabase">haveTermInDatabase</a></li><li><a href="#haveTermMetaInDatabase">haveTermMetaInDatabase</a></li><li><a href="#haveTermRelationshipInDatabase">haveTermRelationshipInDatabase</a></li><li><a href="#haveTransientInDatabase">haveTransientInDatabase</a></li><li><a href="#haveUserCapabilitiesInDatabase">haveUserCapabilitiesInDatabase</a></li><li><a href="#haveUserInDatabase">haveUserInDatabase</a></li><li><a href="#haveUserLevelsInDatabase">haveUserLevelsInDatabase</a></li><li><a href="#haveUserMetaInDatabase">haveUserMetaInDatabase</a></li><li><a href="#importSqlDumpFile">importSqlDumpFile</a></li><li><a href="#seeAttachmentInDatabase">seeAttachmentInDatabase</a></li><li><a href="#seeBlogInDatabase">seeBlogInDatabase</a></li><li><a href="#seeCommentInDatabase">seeCommentInDatabase</a></li><li><a href="#seeCommentMetaInDatabase">seeCommentMetaInDatabase</a></li><li><a href="#seeLinkInDatabase">seeLinkInDatabase</a></li><li><a href="#seeOptionInDatabase">seeOptionInDatabase</a></li><li><a href="#seePageInDatabase">seePageInDatabase</a></li><li><a href="#seePostInDatabase">seePostInDatabase</a></li><li><a href="#seePostMetaInDatabase">seePostMetaInDatabase</a></li><li><a href="#seePostWithTermInDatabase">seePostWithTermInDatabase</a></li><li><a href="#seeSiteOptionInDatabase">seeSiteOptionInDatabase</a></li><li><a href="#seeSiteSiteTransientInDatabase">seeSiteSiteTransientInDatabase</a></li><li><a href="#seeTableInDatabase">seeTableInDatabase</a></li><li><a href="#seeTermInDatabase">seeTermInDatabase</a></li><li><a href="#seeTermMetaInDatabase">seeTermMetaInDatabase</a></li><li><a href="#seeTermRelationshipInDatabase">seeTermRelationshipInDatabase</a></li><li><a href="#seeTermTaxonomyInDatabase">seeTermTaxonomyInDatabase</a></li><li><a href="#seeUserInDatabase">seeUserInDatabase</a></li><li><a href="#seeUserMetaInDatabase">seeUserMetaInDatabase</a></li><li><a href="#useBlog">useBlog</a></li><li><a href="#useMainBlog">useMainBlog</a></li><li><a href="#useTheme">useTheme</a></li></ul></nav><h4 id="countRowsInDatabase">countRowsInDatabase</h4>
 - - -
 Returns the number of table rows matching a criteria.
 <pre><code class="language-php">    $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'draft' ]);
@@ -17,28 +17,44 @@ Returns the number of table rows matching a criteria.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$table</strong> - The table to count the rows in.</li>
 <li><em>array</em> <strong>$criteria</strong> = <em>array()</em> - Search criteria, if empty all table rows will be counted.</li></ul>
+<h4 id="dontHaveAttachmentFilesInDatabase">dontHaveAttachmentFilesInDatabase</h4>
+- - -
+Removes all the files attached with an attachment post, it will not remove the database entries. Requires the `WPFilesystem` module to be loaded in the suite.
+<pre><code class="language-php">    $posts = $I-&gt;grabPostsTableName();
+    $attachmentIds = $I-&gt;grabColumnFromDatabase($posts, 'ID', ['post_type' =&gt; 'attachment']);
+    // This will only remove the files, not the database entries.
+    $I-&gt;dontHaveAttachmentFilesInDatabase($attachmentIds);</code></pre>
+<h5>Parameters</h5><ul>
+<li><em>array/int</em> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
 <h4 id="dontHaveAttachmentInDatabase">dontHaveAttachmentInDatabase</h4>
 - - -
-Removes an attachment from the posts table. The method **will not** remove the file upload.
+Removes an attachment from the posts table.
 <pre><code>    $postmeta = $I-&gt;grabpostmetatablename();
-    $thumbnailId = $I-&gt;grabFromDatabase($postmeta, 'meta_value', $criteria = ['post_id' =&gt; $id, 'meta_key'=&gt;'thumbnail_id']);
+    $thumbnailId = $I-&gt;grabFromDatabase($postmeta, 'meta_value', [
+         'post_id' =&gt; $id,
+         'meta_key'=&gt;'thumbnail_id'
+    ]);
+    // Remove only the database entry (including postmeta) but not the files.
     $I-&gt;dontHaveAttachmentInDatabase($thumbnailId);
-    // Use a WPFilesystem method to remove the file.
-    $I-&gt;deleteUploadedFile('post-thumbnail.png');</code></pre>
+    // Remove the database entry (including postmeta) and the files.
+    $I-&gt;dontHaveAttachmentInDatabase($thumbnailId, true, true);</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>array</em> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts table.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to `true` then the meta for the attachment will be purged too.</li></ul>
+<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the attachment will be purged too.</li>
+<li><em>bool</em> <strong>$removeFiles</strong> = <em>false</em> - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in the suite.</li></ul>
 <h4 id="dontHaveBlogInDatabase">dontHaveBlogInDatabase</h4>
 - - -
-Removes an entry from the `blogs` table. The blog tables and uploads will not be removed.
+Removes an entry from the `blogs` table. To remove the blog uploads the `WPFilesystem
 <h5>Parameters</h5><ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria to find the blog row in the blogs table.</li></ul>
+<li><em>array</em> <strong>$criteria</strong> - An array of search criteria to find the blog row in the blogs table.</li>
+<li><em>bool</em> <strong>$removeTables</strong> = <em>true</em> - Remove the blog tables.</li>
+<li><em>bool</em> <strong>$removeUploads</strong> = <em>false</em> - Remove the blog uploads; requires the <code>WPFilesystem</code> module to be loaded in the suite.</li></ul>
 <h4 id="dontHaveCommentInDatabase">dontHaveCommentInDatabase</h4>
 - - -
 Removes an entry from the comments table.
 <h5>Parameters</h5><ul>
 <li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to `true` then the meta for the comment will be purged too.</li></ul>
+<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the comment will be purged too.</li></ul>
 <h4 id="dontHaveCommentMetaInDatabase">dontHaveCommentMetaInDatabase</h4>
 - - -
 Removes an entry from the commentmeta table.
@@ -66,7 +82,7 @@ Removes an entry from the options table.
 Removes an entry from the posts table.
 <h5>Parameters</h5><ul>
 <li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to `true` then the meta for the post will be purged too.</li></ul>
+<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the post will be purged too.</li></ul>
 <h4 id="dontHavePostMetaInDatabase">dontHavePostMetaInDatabase</h4>
 - - -
 Removes an entry from the postmeta table.
@@ -175,7 +191,7 @@ Checks that a post meta value is not there. If the meta value is an object or an
 - - -
 Makes sure a term is not in the database. Looks up both the `terms` table and the `term_taxonomy` tables. `term_taxonomy` tables.
 <h5>Parameters</h5><ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the `terms` and the</li></ul>
+<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
 <h4 id="dontSeeTermMetaInDatabase">dontSeeTermMetaInDatabase</h4>
 - - -
 Checks that a term meta is not in the database.
@@ -206,6 +222,21 @@ Returns all entries matching a criteria from the database.
 <li><em>string</em> <strong>$table</strong></li>
 <li><em>string</em> <strong>$column</strong></li>
 <li><em>array</em> <strong>$criteria</strong></li></ul>
+<h4 id="grabAttachmentAttachedFile">grabAttachmentAttachedFile</h4>
+- - -
+Returns the path, as stored in the database, of an attachment `_wp_attached_file` meta. The attached file is, usually, an attachment origal file.
+<pre><code class="language-php">    $file = $I-&gt;grabAttachmentAttachedFile($attachmentId);
+    $fileInfo = new SplFileInfo($file);
+    $I-&gt;assertEquals('jpg', $fileInfo-&gt;getExtension());</code></pre>
+<h5>Parameters</h5><ul>
+<li><em>int</em> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
+<h4 id="grabAttachmentMetadata">grabAttachmentMetadata</h4>
+- - -
+Returns the metadata array for an attachment post. This is the value of the `_wp_attachment_metadata` meta.
+<pre><code class="language-php">    $metadata = $I-&gt;grabAttachmentMetadata($attachmentId);
+    $I-&gt;assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);</code></pre>
+<h5>Parameters</h5><ul>
+<li><em>int</em> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
 <h4 id="grabBlogVersionsTableName">grabBlogVersionsTableName</h4>
 - - -
 Gets the prefixed `blog_versions` table name.
@@ -232,6 +263,17 @@ Returns the prefixed links table name. E.g. `wp_links`.
 Gets an option from the database.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$option_name</strong></li></ul>
+<h4 id="grabPostMetaFromDatabase">grabPostMetaFromDatabase</h4>
+- - -
+Gets the value of one or more post meta values from the database.
+<pre><code class="language-php">    $thumbnail_id = $I-&gt;grabPostMetaFromDatabase($postId, '_thumbnail_id', true);</code></pre>
+<h5>Parameters</h5><ul>
+<li><em>int</em> <strong>$postId</strong> - The post ID.</li>
+<li><em>string</em> <strong>$metaKey</strong> - The key of the meta to retrieve.</li>
+<li><em>bool</em> <strong>$single</strong> = <em>false</em> - Whether to return a single meta value or an arrya of all available meta values.</li></ul>
+<h4 id="grabPostmetaTableName">grabPostmetaTableName</h4>
+- - -
+Returns the prefixed post meta table name.
 <h4 id="grabPostsTableName">grabPostsTableName</h4>
 - - -
 Gets the posts table name.
@@ -239,7 +281,7 @@ Gets the posts table name.
 - - -
 Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. `users`) then the proper table name will be returned.
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$tableName</strong> = <em>`''`</em> - The table name, e.g. `options`.</li></ul>
+<li><em>string</em> <strong>$tableName</strong> = <em>`''`</em> - The table name, e.g. <code>options</code>.</li></ul>
 <h4 id="grabRegistrationLogTableName">grabRegistrationLogTableName</h4>
 - - -
 Gets the prefixed `registration_log` table name.
@@ -309,24 +351,21 @@ Returns the prefixed `usermeta` table name, e.g. `wp_usermeta`.
 <h4 id="grabUsersTableName">grabUsersTableName</h4>
 - - -
 Gets the users table name.
-<h4 id="grabpostmetatablename">grabpostmetatablename</h4>
-- - -
-Returns the prefixed post meta table name.
 <h4 id="haveAttachmentInDatabase">haveAttachmentInDatabase</h4>
 - - -
 Creates the database entries representing an attachment and moves the attachment file to the right location. Requires the WPFilesystem module. should be used to build the "year/time" uploads sub-folder structure. image sizes created by default.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$file</strong> - The absolute path to the attachment file.</li>
-<li><em>string/string/int</em> <strong>$date</strong> = <em>`'now'`</em> - Either a string supported by the `strtotime` function or a UNIX timestamp that</li>
+<li><em>string/string/int</em> <strong>$date</strong> = <em>`'now'`</em> - Either a string supported by the <code>strtotime</code> function or a UNIX timestamp that</li>
 <li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of values overriding the default ones.</li>
-<li><em>array</em> <strong>$imageSizes</strong> = <em>null</em> - An associative array in the format [ <size> => [<width>,<height>]] to override the</li></ul>
+<li><em>array</em> <strong>$imageSizes</strong> = <em>null</em> - An associative array in the format [ <size> =&gt; [<width>,<height>]] to override the</li></ul>
 <h4 id="haveBlogInDatabase">haveBlogInDatabase</h4>
 - - -
 Inserts a blog in the `blogs` table. or subfolder (`true`)
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$domainOrPath</strong> - The subdomain or the path to the be used for the blog.</li>
 <li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the defaults.</li>
-<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blog should be created as a subdomain (`true`)</li></ul>
+<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blog should be created as a subdomain (<code>true</code>)</li></ul>
 <h4 id="haveCommentInDatabase">haveCommentInDatabase</h4>
 - - -
 Inserts a comment in the database.
@@ -351,7 +390,7 @@ Inserts many blogs in the database. or subfolder (`true`)
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$count</strong></li>
 <li><em>array</em> <strong>$overrides</strong> = <em>array()</em></li>
-<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blogs should be created as a subdomain (`true`)</li></ul>
+<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blogs should be created as a subdomain (<code>true</code>)</li></ul>
 <h4 id="haveManyCommentsInDatabase">haveManyCommentsInDatabase</h4>
 - - -
 Inserts many comments in the database.
@@ -400,8 +439,8 @@ Adds a menu element to a menu for the current theme. meta.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
 <li><em>string</em> <strong>$title</strong> - The menu item title.</li>
-<li><em>int/null</em> <strong>$menuOrder</strong> = <em>null</em> - An optional menu order, `1` based.</li>
-<li><em>array/array/null/array</em> <strong>$meta</strong> = <em>array()</em> - An associative array that will be prefixed with `_menu_item_` for the item post</li></ul>
+<li><em>int/null</em> <strong>$menuOrder</strong> = <em>null</em> - An optional menu order, <code>1</code> based.</li>
+<li><em>array/array/null/array</em> <strong>$meta</strong> = <em>array()</em> - An associative array that will be prefixed with <code>_menu_item_</code> for the item post</li></ul>
 <h4 id="haveOptionInDatabase">haveOptionInDatabase</h4>
 - - -
 Inserts an option in the database. If the option value is an object or an array then the value will be serialized.
@@ -423,8 +462,8 @@ Inserts a post in the database.
 - - -
 Adds one or more meta key and value couples in the database for a post.
 <h5>Parameters</h5><ul>
-<li><em>int</em> <strong>$post_id</strong></li>
-<li><em>string</em> <strong>$meta_key</strong></li>
+<li><em>int</em> <strong>$postId</strong> - The post ID.</li>
+<li><em>string</em> <strong>$meta_key</strong> - The meta key.</li>
 <li><em>mixed</em> <strong>$meta_value</strong> - The value to insert in the database, objects and arrays will be serialized.</li></ul>
 <h4 id="haveSiteOptionInDatabase">haveSiteOptionInDatabase</h4>
 - - -
@@ -442,7 +481,7 @@ Inserts a site transient in the database. If the value is an array or an object 
 - - -
 Inserts a term in the database.
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$name</strong> - The term name, e.g. "Fuzzy".</li>
+<li><em>string</em> <strong>$name</strong> - The term name, e.g. &quot;Fuzzy&quot;.</li>
 <li><em>string</em> <strong>$taxonomy</strong> - The term taxonomy</li>
 <li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the default ones.</li></ul>
 <h4 id="haveTermMetaInDatabase">haveTermMetaInDatabase</h4>
@@ -458,7 +497,7 @@ Creates a term relationship in the database. No check about the consistency of t
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$object_id</strong> - A post ID, a user ID or anything that can be assigned a taxonomy term.</li>
 <li><em>int</em> <strong>$term_taxonomy_id</strong></li>
-<li><em>int</em> <strong>$term_order</strong> - Defaults to `0`.</li></ul>
+<li><em>int</em> <strong>$term_order</strong> - Defaults to <code>0</code>.</li></ul>
 <h4 id="haveTransientInDatabase">haveTransientInDatabase</h4>
 - - -
 Inserts a transient in the database. If the value is an array or an object then the value will be serialized.
@@ -470,20 +509,20 @@ Inserts a transient in the database. If the value is an array or an object then 
 Sets a user capabilities. for a multisite installation; e.g. `[1 => 'administrator`, 2 => 'subscriber']`.
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$userId</strong></li>
-<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. `administrator`) or an associative array of blog IDs/roles</li></ul>
+<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an associative array of blog IDs/roles</li></ul>
 <h4 id="haveUserInDatabase">haveUserInDatabase</h4>
 - - -
 Inserts a user and appropriate meta in the database. and "usermeta" table.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$user_login</strong> - The user login slug</li>
-<li><em>string</em> <strong>$role</strong> = <em>`'subscriber'`</em> - The user role slug, e.g. "administrator"; defaults to "subscriber".</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of column names and values overridind defaults in the "users"</li></ul>
+<li><em>string</em> <strong>$role</strong> = <em>`'subscriber'`</em> - The user role slug, e.g. &quot;administrator&quot;; defaults to &quot;subscriber&quot;.</li>
+<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of column names and values overridind defaults in the &quot;users&quot;</li></ul>
 <h4 id="haveUserLevelsInDatabase">haveUserLevelsInDatabase</h4>
 - - -
 Sets the user level in the database for a user. multisite installation.
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$userId</strong></li>
-<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a</li></ul>
+<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an array of blog IDs/roles for a</li></ul>
 <h4 id="haveUserMetaInDatabase">haveUserMetaInDatabase</h4>
 - - -
 Sets a user meta. values will trigger the insertion of multiple rows.
@@ -569,7 +608,7 @@ Checks for a table in the database.
 - - -
 Checks for a term in the database. Looks up the `terms` and `term_taxonomy` prefixed tables. `term_taxonomy` tables.
 <h5>Parameters</h5><ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the `terms` and the</li></ul>
+<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
 <h4 id="seeTermMetaInDatabase">seeTermMetaInDatabase</h4>
 - - -
 Checks for a term meta in the database.
@@ -607,9 +646,9 @@ Sets the current blog to the main one (`blog_id` 1).
 - - -
 Sets the current theme options.
 <h5>Parameters</h5><ul>
-<li><em>string</em> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. `twentysixteen`.</li>
-<li><em>string/null</em> <strong>$template</strong> = <em>null</em> - The theme template slug, e.g. `twentysixteen`, defaults to `$stylesheet`.</li>
-<li><em>string/null</em> <strong>$themeName</strong> = <em>null</em> - The theme name, e.g. `Twentysixteen`, defaults to title version of `$stylesheet`.</li></ul></br>
+<li><em>string</em> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>
+<li><em>string/null</em> <strong>$template</strong> = <em>null</em> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
+<li><em>string/null</em> <strong>$themeName</strong> = <em>null</em> - The theme name, e.g. <code>Twentysixteen</code>, defaults to title version of <code>$stylesheet</code>.</li></ul></br>
 
 *This class extends \Codeception\Module\Db*
 

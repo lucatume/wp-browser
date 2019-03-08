@@ -140,6 +140,13 @@ class WPDb extends Db
      */
     protected $scaffoldedBlogIds;
 
+    /**
+     * Whether the current database belongs to a multisite installation or not.
+     *
+     * @var bool
+     */
+    protected $isMultisite;
+
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
@@ -519,15 +526,15 @@ class WPDb extends Db
     /**
      * Adds one or more meta key and value couples in the database for a post.
      *
-     * @param int    $post_id
-     * @param string $meta_key
+     * @param int    $postId The post ID.
+     * @param string $meta_key The meta key.
      * @param mixed  $meta_value The value to insert in the database, objects and arrays will be serialized.
      *
      * @return int The inserted meta `meta_id`.
      */
-    public function havePostmetaInDatabase($post_id, $meta_key, $meta_value)
+    public function havePostmetaInDatabase($postId, $meta_key, $meta_value)
     {
-        if (!is_int($post_id)) {
+        if (!is_int($postId)) {
             throw new \BadMethodCallException('Post id must be an int', 1);
         }
         if (!is_string($meta_key)) {
@@ -536,7 +543,7 @@ class WPDb extends Db
         $tableName = $this->grabPostMetaTableName();
 
         return $this->haveInDatabase($tableName, [
-            'post_id' => $post_id,
+            'post_id' => $postId,
             'meta_key' => $meta_key,
             'meta_value' => $this->maybeSerialize($meta_value),
         ]);
@@ -1796,7 +1803,6 @@ class WPDb extends Db
 
     /**
      * Checks that a term taxonomy is not in the database.
-     *
      * Will look up the prefixed `term_taxonomy` table, e.g. `wp_term_taxonomy`.
      *
      * @param array $criteria An array of search criteria.
@@ -2038,13 +2044,27 @@ class WPDb extends Db
     }
 
     /**
-     * Removes an entry from the `blogs` table.
-     * The blog tables and uploads will not be removed.
+     * Removes a blog entry and tables from the database.
      *
      * @param array $criteria An array of search criteria to find the blog row in the blogs table.
+     * @param bool  $removeTables Remove the blog tables.
+     * @param bool $removeUploads Remove the blog uploads; requires the `WPFilesystem` module to be loaded in the suite.
      */
-    public function dontHaveBlogInDatabase(array $criteria)
+    public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = false)
     {
+        $blogId = $this->grabFromDatabase($this->grabBlogsTableName(), 'blog_id', $criteria);
+
+        if (empty($blogId)) {
+            codecept_debug('No blog found matching criteria ' . json_encode($criteria, JSON_PRETTY_PRINT));
+            return;
+        }
+
+        if ($removeTables) {
+            foreach ($this->grabBlogTableNames($blogId) as $tableName) {
+                $this->dontHaveTableInDatabase($tableName);
+            }
+        }
+
         $this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
     }
 
@@ -2566,7 +2586,7 @@ class WPDb extends Db
 
     /**
      * Removes all the files attached with an attachment post, it will not remove the database entries.
-     * Requires the WPFilesystem module to be loaded in the suite.
+     * Requires the `WPFilesystem` module to be loaded in the suite.
      *
      * @example
      * ```php
@@ -2654,5 +2674,128 @@ class WPDb extends Db
         return !empty($serializedData) ?
             unserialize($serializedData)
             : [];
+    }
+
+    /**
+     * Gets the value of one or more post meta values from the database.
+     *
+     * @example
+     * ```php
+     * $thumbnail_id = $I->grabPostMetaFromDatabase($postId, '_thumbnail_id', true);
+     * ```
+     *
+     * @param int    $postId  The post ID.
+     * @param string $metaKey The key of the meta to retrieve.
+     * @param bool   $single  Whether to return a single meta value or an arrya of all available meta values.
+     *
+     * @return mixed|array Either a single meta value or an array of all the available meta values.
+     */
+    public function grabPostMetaFromDatabase($postId, $metaKey, $single = false)
+    {
+        $postmeta = $this->grabPostmetaTableName();
+        $grabbed = (array)$this->grabColumnFromDatabase(
+            $postmeta,
+            'meta_value',
+            ['post_id' => $postId, 'meta_key' => $metaKey]
+        );
+        $values = array_reduce($grabbed, function (array $metaValues, $value) {
+            $values = (array)$this->maybeUnserialize($value);
+            array_push($metaValues, ...$values);
+            return $metaValues;
+        }, []);
+
+       return (bool) $single ? $values[0] : $values;
+    }
+
+    /**
+     * Returns a list of tables for a blog ID.
+     *
+     * @example
+     * ```php
+     * $blogId = $I->haveBlogInDatabase('test');
+     * $tables = $I->grabBlogTableNames($blogId);
+     * $options = array_filter($tables, function($tableName){
+     *      return str_pos($tableName, 'options') !== false;
+     * });
+     * ```
+     *
+     * @param int $blogId The ID of the blog to fetch the tables for.
+     *
+     * @return array An array of tables for the blog, it does not include the tables common to all blogs; an empty array
+     *               if the tables for the blog do not exist.
+     *
+     * @throws \Exception If there is any error while preparing the query.
+     */
+    public function grabBlogTableNames($blogId)
+    {
+        $table_prefix = "{$this->tablePrefix}{$blogId}_";
+        $query = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name like '{$table_prefix}%'";
+        $databaseName = $this->_getDriver()->executeQuery('select database()', [])->fetchColumn();
+        return $this->_getDriver()->executeQuery($query, [$databaseName])->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Returns the full name of a table for a blog from a multisite installation database.
+     *
+     * @example
+     * ```php
+     * $blogOptionTable = $I->grabBlogTableName($blogId, 'option');
+     * ```
+     *
+     * @param int $blogId The blog ID.
+     * @param string $table The table name, without table prefix.
+     *
+     * @return string The full blog table name, including the table prefix or an empty string
+     *                if the table does not exist.
+     *
+     * @throws \Codeception\Exception\ModuleException If no tables are found for the blog.
+     */
+    public function grabBlogTableName($blogId, $table)
+    {
+        $blogTableNames = $this->grabBlogTableNames($blogId);
+
+        if (!count($blogTableNames)) {
+            throw new ModuleException($this, 'No tables found for blog with ID ' . $blogId);
+        }
+
+        foreach ($blogTableNames as $candidate) {
+            if (strpos($candidate, $table) === false) {
+                continue;
+            }
+            return $candidate;
+        }
+
+        return '';
+    }
+
+    /**
+     * Removes a table from the database.
+     * The case where a table does not exist is handled without raising an error.
+     *
+     * @example
+     * ```php
+     * $ordersTable = $I->grabPrefixedTableNameFor('orders');
+     * $I->dontHaveTableInDatabase($ordersTable);
+     * ```
+     *
+     * @param string $fullTableName The full table name, including the table prefix.
+     *
+     * @throws \Exception If there is an error while dropping the table.
+     */
+    public function dontHaveTableInDatabase($fullTableName)
+    {
+        $drop = "DROP TABLE {$fullTableName}";
+
+        try {
+            $this->_getDriver()->executeQuery($drop, []);
+        } catch (\PDOException $e) {
+            if (false === strpos($e->getMessage(), 'table or view not found')) {
+                throw $e;
+            }
+            codecept_debug("Table {$fullTableName} not removed from database: it did not exist.");
+            return;
+        }
+
+        codecept_debug("Table {$fullTableName} removed from database.");
     }
 }

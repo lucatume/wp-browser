@@ -65,6 +65,8 @@ travis_before_install:
 	# Create the databases that will be used in the tests.
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test_site"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdir_test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdomain_test"'
 	# Start the WordPress container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d wp
 	# Fetch the IP address of the WordPress container in the containers network.
