@@ -2822,4 +2822,23 @@ class WPDb extends Db
         $count = $this->_seeTableInDatabase($table);
         $this->assertEmpty($count, "Found {$count} matches for the {$table} table in database; expected none.");
     }
+
+    /**
+     * Returns the table prefix for a blog.
+     *
+     * @example
+     * ```php
+     * $blogId = $I->haveBlogInDatabase('test');
+     * $blogTablePrefix = $I->getBlogTablePrefix($blogId);
+     * $blogOrders = $I->blogTablePrefix . 'orders';
+     * ```
+     *
+     * @param int $blogId The blog ID.
+     *
+     * @return string The table prefix for the blog.
+     */
+    public function grabBlogTablePrefix($blogId)
+    {
+        return $this->grabTablePrefix() . "{$blogId}_";
+    }
 }

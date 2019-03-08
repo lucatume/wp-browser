@@ -215,13 +215,9 @@ class WPFilesystem extends Filesystem
      */
     public function getUploadsPath($file = '', $date = null)
     {
-        $dateFrag = '';
-        if (null !== $date) {
-            $timestamp = is_numeric($date) ? $date : strtotime($date);
-            $Y         = date('Y', $timestamp);
-            $m         = date('m', $timestamp);
-            $dateFrag  = $Y . DIRECTORY_SEPARATOR . $m;
-        }
+        $dateFrag = $date !== null ?
+            $this->buildDateFrag($date)
+            : '';
 
         $uploads = Utils::untrailslashit($this->config['uploads']);
         $path = $file;
@@ -1173,6 +1169,31 @@ CSS;
      */
     public function getBlogUploadsPath($blogId, $file = '', $date = null)
     {
-        throw new \Exception('Not implemented');
+        $dateFrag = $date !== null ?
+            $this->buildDateFrag($date)
+            : '';
+
+        $uploads = Utils::untrailslashit($this->config['uploads']) . "/sites/{$blogId}";
+        $path = $file;
+
+        if (false === strpos($file, $uploads)) {
+            $path = implode(DIRECTORY_SEPARATOR, array_filter([
+                $uploads,
+                $dateFrag,
+                Utils::unleadslashit($file),
+            ]));
+        }
+
+        return $path;
+    }
+
+    protected function buildDateFrag($date)
+    {
+        $timestamp = is_numeric($date) ? $date : strtotime($date);
+        $Y = date('Y', $timestamp);
+        $m = date('m', $timestamp);
+        $dateFrag = $Y . DIRECTORY_SEPARATOR . $m;
+
+        return $dateFrag;
     }
 }
