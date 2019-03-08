@@ -1158,4 +1158,21 @@ CSS;
     {
         return Utils::untrailslashit($this->config['wpRootFolder']);
     }
+
+    /**
+     * Returns the absolute path to a blog uploads folder or file.
+     *
+     * @since TBD
+     *
+     * @param int    $blogId The blog ID to get the path for.
+     * @param string $file   The path, relatitve to the blog uploads folder, to the file or folder.
+     * @param null   $date   The date that should be used to build the uploads sub-folders in the year/month format;
+     *                       a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.
+     *
+     * @throws \Exception
+     */
+    public function getBlogUploadsPath($blogId, $file = '', $date = null)
+    {
+        throw new \Exception('Not implemented');
+    }
 }

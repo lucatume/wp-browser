@@ -24,7 +24,6 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
 
         $I->dontHaveBlogInDatabase(['blog_id' => $blogId], true);
-        $I->dontHaveTableInDatabase($blogTablesBefore[0]);
 
         $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
         $blogTablesAfter = $I->grabBlogTableNames($blogId);
@@ -36,9 +35,19 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_but_not_its_tables()
+    public function should_allow_removing_a_blog_but_not_its_tables(FunctionalTester $I)
     {
+        $blogs = $I->grabBlogsTableName();
+        $blogId = $I->grabFromDatabase($blogs, 'blog_id', ['path' => '/subdir-one/']);
+        codecept_debug('Blog ID: ' . $blogId);
+        $blogTablesBefore = $I->grabBlogTableNames($blogId);
+        codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
 
+        $I->dontHaveBlogInDatabase(['blog_id' => $blogId], false);
+
+        $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
+        $blogTablesAfter = $I->grabBlogTableNames($blogId);
+        $I->assertEquals($blogTablesBefore, $blogTablesAfter);
     }
 
     /**
@@ -48,7 +57,18 @@ class WPDbBlogSubdirCest
      */
     public function should_allow_removing_a_blog_tables_and_uploads()
     {
+        $blogs = $I->grabBlogsTableName();
+        $blogId = $I->grabFromDatabase($blogs, 'blog_id', ['path' => '/subdir-one/']);
+        codecept_debug('Blog ID: ' . $blogId);
+        $blogTablesBefore = $I->grabBlogTableNames($blogId);
+        codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
+        $blogUploadsDir = $I->getBlogUploadsPath($blogId);
 
+        $I->dontHaveBlogInDatabase(['blog_id' => $blogId], true, true);
+
+        $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
+        $blogTablesAfter = $I->grabBlogTableNames($blogId);
+        $I->assertEmpty($blogTablesAfter);
     }
 
     /**

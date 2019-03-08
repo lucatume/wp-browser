@@ -1833,9 +1833,15 @@ class WPDb extends Db
     }
 
     /**
-     * Checks for a table in the database.
+     * Checks that a table is in the database.
      *
-     * @param string $table
+     * @example
+     * ```php
+     * $options = $I->grabPrefixedTableNameFor('options');
+     * $I->seeTableInDatabase($options);
+     * ```
+     *
+     * @param string $table The full table name, including the table prefix.
      */
     public function seeTableInDatabase($table)
     {
@@ -2797,5 +2803,23 @@ class WPDb extends Db
         }
 
         codecept_debug("Table {$fullTableName} removed from database.");
+    }
+
+    /**
+     * Checks that a table is not in the database.
+     *
+     * @example
+     * ```php
+     * $options = $I->grabPrefixedTableNameFor('options');
+     * $I->dontHaveTableInDatabase($options)
+     * $I->dontSeeTableInDatabase($options);
+     * ```
+     *
+     * @param string $table The full table name, including the table prefix.
+     */
+    public function dontSeeTableInDatabase($table)
+    {
+        $count = $this->_seeTableInDatabase($table);
+        $this->assertEmpty($count, "Found {$count} matches for the {$table} table in database; expected none.");
     }
 }
