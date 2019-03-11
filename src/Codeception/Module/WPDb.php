@@ -1985,6 +1985,11 @@ class WPDb extends Db
         $blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
         $this->scaffoldBlogTables($blogId, $domainOrPath, (bool) $subdomain);
 
+        if (($fs = $this->getWpFilesystemModule()) instanceof WPFilesystem) {
+            $this->debug('Scaffolding blog uploads directories.');
+            $fs->makeUploadsDir("sites/{$blogId}");
+        }
+
         return $blogId;
     }
 
@@ -2056,12 +2061,12 @@ class WPDb extends Db
      * @param bool  $removeTables Remove the blog tables.
      * @param bool $removeUploads Remove the blog uploads; requires the `WPFilesystem` module to be loaded in the suite.
      */
-    public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = false)
+    public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = true)
     {
         $blogId = $this->grabFromDatabase($this->grabBlogsTableName(), 'blog_id', $criteria);
 
         if (empty($blogId)) {
-            codecept_debug('No blog found matching criteria ' . json_encode($criteria, JSON_PRETTY_PRINT));
+            $this->debug('No blog found matching criteria ' . json_encode($criteria, JSON_PRETTY_PRINT));
             return;
         }
 
@@ -2069,6 +2074,10 @@ class WPDb extends Db
             foreach ($this->grabBlogTableNames($blogId) as $tableName) {
                 $this->dontHaveTableInDatabase($tableName);
             }
+        }
+
+        if ($removeUploads && ($fs = $this->getWpFilesystemModule(false))) {
+            $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
         }
 
         $this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
@@ -2574,18 +2583,24 @@ class WPDb extends Db
     /**
      * Gets the WPFilesystem module.
      *
+     * @param bool $throw Whether to throw an exception if the WPFilesystem module is not loaded in
+     *                    the suite or just return `false`.
+     *
      * @return \Codeception\Module\WPFilesystem The filesytem module instance if loaded in the suite.
      *
      * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite.
      */
-    protected function getWpFilesystemModule()
+    protected function getWpFilesystemModule($throw = true)
     {
         try {
             /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->getModule('WPFilesystem');
         } catch (ModuleException $e) {
-            $method = __METHOD__;
-            $message = "the {$method} method requires the WPFilesystem module.";
+            if (!$throw) {
+                return null;
+            }
+
+            $message = 'This method requires the WPFilesystem module.';
             throw new ModuleException(__CLASS__, $message);
         }
     }
@@ -2798,11 +2813,11 @@ class WPDb extends Db
             if (false === strpos($e->getMessage(), 'table or view not found')) {
                 throw $e;
             }
-            codecept_debug("Table {$fullTableName} not removed from database: it did not exist.");
+            $this->debug("Table {$fullTableName} not removed from database: it did not exist.");
             return;
         }
 
-        codecept_debug("Table {$fullTableName} removed from database.");
+        $this->debug("Table {$fullTableName} removed from database.");
     }
 
     /**

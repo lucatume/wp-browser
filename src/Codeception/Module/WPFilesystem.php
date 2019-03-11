@@ -330,6 +330,7 @@ class WPFilesystem extends Filesystem
     public function deleteUploadedDir($dir, $date = null)
     {
         $dir = $this->getUploadsPath($dir, $date);
+        $this->debug('Deleting folder ' . $dir);
         $this->deleteDir($dir);
     }
 
@@ -356,7 +357,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Clears a directory in the uploads folder.
+     * Clears a folder in the uploads folder.
      *
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
@@ -381,7 +382,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Copies a directory to the uploads folder.
+     * Copies a folder to the uploads folder.
      *
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
@@ -465,7 +466,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Sets the current working directory to a directory in a plugin.
+     * Sets the current working folder to a folder in a plugin.
      *
      * ``` php
      * <?php
@@ -481,7 +482,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Copies a directory to a directory in a plugin.
+     * Copies a folder to a folder in a plugin.
      *
      * ``` php
      * <?php
@@ -501,7 +502,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Deletes a file in a plugin directory.
+     * Deletes a file in a plugin folder.
      *
      * ``` php
      * <?php
@@ -517,7 +518,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Writes a file in a plugin directory.
+     * Writes a file in a plugin folder.
      *
      * ``` php
      * <?php
@@ -537,7 +538,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is not found in a plugin directory.
+     * Checks that a file is not found in a plugin folder.
      *
      * ``` php
      * <?php
@@ -553,7 +554,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is found in a plugin directory.
+     * Checks that a file is found in a plugin folder.
      *
      * ``` php
      * <?php
@@ -569,7 +570,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a plugin directory contains a string.
+     * Checks that a file in a plugin folder contains a string.
      *
      * ``` php
      * <?php
@@ -589,7 +590,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a plugin directory does not contain a string.
+     * Checks that a file in a plugin folder does not contain a string.
      *
      * ``` php
      * <?php
@@ -609,7 +610,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Cleans a directory in a plugin directory.
+     * Cleans a folder in a plugin folder.
      *
      * ``` php
      * <?php
@@ -625,7 +626,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Sets the current working directory to a directory in a theme.
+     * Sets the current working folder to a folder in a theme.
      *
      * ``` php
      * <?php
@@ -641,7 +642,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Copies a directory in a theme directory.
+     * Copies a folder in a theme folder.
      *
      * ``` php
      * <?php
@@ -661,7 +662,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Deletes a file in a theme directory.
+     * Deletes a file in a theme folder.
      *
      * ``` php
      * <?php
@@ -677,7 +678,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Writes a string to a file in a theme directory.
+     * Writes a string to a file in a theme folder.
      *
      * ``` php
      * <?php
@@ -697,7 +698,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is not found in a theme directory.
+     * Checks that a file is not found in a theme folder.
      *
      * ``` php
      * <?php
@@ -713,7 +714,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is found in a theme directory.
+     * Checks that a file is found in a theme folder.
      *
      * ``` php
      * <?php
@@ -729,7 +730,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a theme directory contains a string.
+     * Checks that a file in a theme folder contains a string.
      *
      * ``` php
      * <?php
@@ -749,7 +750,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a theme directory does not contain a string.
+     * Checks that a file in a theme folder does not contain a string.
      *
      * ``` php
      * <?php
@@ -769,7 +770,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Clears a directory in a theme directory.
+     * Clears a folder in a theme folder.
      *
      * ``` php
      * <?php
@@ -785,7 +786,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Sets the current working directory to a directory in a mu-plugin.
+     * Sets the current working folder to a folder in a mu-plugin.
      *
      * ``` php
      * <?php
@@ -801,7 +802,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Copies a directory to a directory in a mu-plugin.
+     * Copies a folder to a folder in a mu-plugin.
      *
      * ``` php
      * <?php
@@ -821,7 +822,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Deletes a file in a mu-plugin directory.
+     * Deletes a file in a mu-plugin folder.
      *
      * ``` php
      * <?php
@@ -837,7 +838,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Writes a file in a mu-plugin directory.
+     * Writes a file in a mu-plugin folder.
      *
      * ``` php
      * <?php
@@ -857,7 +858,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is not found in a mu-plugin directory.
+     * Checks that a file is not found in a mu-plugin folder.
      *
      * ``` php
      * <?php
@@ -873,7 +874,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file is found in a mu-plugin directory.
+     * Checks that a file is found in a mu-plugin folder.
      *
      * ``` php
      * <?php
@@ -889,7 +890,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a mu-plugin directory contains a string.
+     * Checks that a file in a mu-plugin folder contains a string.
      *
      * ``` php
      * <?php
@@ -909,7 +910,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Checks that a file in a mu-plugin directory does not contain a string.
+     * Checks that a file in a mu-plugin folder does not contain a string.
      *
      * ``` php
      * <?php
@@ -929,7 +930,7 @@ class WPFilesystem extends Filesystem
     }
 
     /**
-     * Cleans a directory in a mu-plugin directory.
+     * Cleans a folder in a mu-plugin folder.
      *
      * ``` php
      * <?php
@@ -1074,7 +1075,7 @@ PHP;
      * ```
      *
      * @param string $folder              The path, relative to the themes
-     *                                  folder, of the plugin directory to
+     *                                  folder, of the plugin folder to
      *                                  create.
      * @param string $indexFileCode     The content of the theme index.php file
      *                                  without the opening php tag.
@@ -1195,5 +1196,50 @@ CSS;
         $dateFrag = $Y . DIRECTORY_SEPARATOR . $m;
 
         return $dateFrag;
+    }
+
+    /**
+     * Creates an empty folder in the WordPress installation uploads folder.
+     *
+     * @example
+     * ```php
+     * $logsDir = $I->makeUploadsDir('logs/acme');
+     * ```
+     *
+     * @param string $path The path, relative to the WordPress installation uploads folder, of the folder
+     *                     to create.
+     *
+     * @return string The absolute path to the created folder.
+     *
+     * @throws \Codeception\Exception\ModuleException
+     */
+    public function makeUploadsDir($path)
+    {
+        $path = $this->getUploadsPath($path);
+
+        if (is_dir($path)) {
+            $this->debug("Uploads folder '{$path}' already exists.");
+            return $path;
+        }
+        try {
+            if (!mkdir($path, 0777, true) && !is_dir($path)) {
+                throw new ModuleException($this, sprintf('Could not create uploads folder "%s"', $path));
+            }
+        } catch (ModuleException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            throw new ModuleException($this, sprintf("Could not create uploads folder '%s'\nreason: %s\nuser: %s",
+                    $path,
+                    $e->getMessage(),
+                    get_current_user()
+                )
+            );
+        }
+
+        $this->debug("Created uploads folder '{$path}'");
+
+        $this->toClean[] = $path;
+
+        return $path;
     }
 }
