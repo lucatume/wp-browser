@@ -317,6 +317,7 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
+     * @example
      * ``` php
      * <?php
      * $I->deleteUploadedDir('folder');
@@ -324,8 +325,9 @@ class WPFilesystem extends Filesystem
      * ?>
      * ```
      *
-     * @param  string $dir
-     * @param  string $date
+     * @param  string $dir The path to the directory to delete, relative to the uploads folder.
+     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`
+     *                                    if not passed.
      */
     public function deleteUploadedDir($dir, $date = null)
     {
