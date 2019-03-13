@@ -85,6 +85,7 @@ In the plugin administration screen activates a plugin clicking the "Activate" l
     $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
+
 <h4 id="amEditingPostWithId">amEditingPostWithId</h4>
 
 ***
@@ -96,6 +97,7 @@ Go to the admin page to edit the post with the specified ID. The method will **n
     $I-&gt;fillField('post_title', 'Post title');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$id</strong> - The post ID.</li></ul>
+
 <h4 id="amOnAdminAjaxPage">amOnAdminAjaxPage</h4>
 
 ***
@@ -104,6 +106,7 @@ Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX
 <pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23]]);</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>array/string</em> <strong>$queryVars</strong> = <em>null</em> - A string or array of query variables to append to the AJAX path.</li></ul>
+
 <h4 id="amOnAdminPage">amOnAdminPage</h4>
 
 ***
@@ -117,6 +120,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
     $I-&gt;amOnAdminPage('/plugins.php');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$page</strong> - The path, relative to the admin area URL, to the page.</li></ul>
+
 <h4 id="amOnCronPage">amOnCronPage</h4>
 
 ***
@@ -126,6 +130,7 @@ Go to the cron page to start a synchronous, and blocking, `GET` request to the c
     $I-&gt;amOnCronPage('?some-query-var=some-value');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>array/string</em> <strong>$queryVars</strong> = <em>null</em> - A string or array of query variables to append to the AJAX path.</li></ul>
+
 <h4 id="amOnPagesPage">amOnPagesPage</h4>
 
 ***
@@ -134,6 +139,7 @@ Go the "Pages" administration screen. The method will **not** handle authenticat
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPagesPage();
     $I-&gt;see('Add New');</code></pre>
+
 <h4 id="amOnPluginsPage">amOnPluginsPage</h4>
 
 ***
@@ -142,6 +148,7 @@ Go to the plugins administration screen. The method will **not** handle authenti
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;activatePlugin('hello-dolly');</code></pre>
+
 <h4 id="deactivatePlugin">deactivatePlugin</h4>
 
 ***
@@ -157,6 +164,7 @@ On to the plugin administration screen and deactivate a plugin clicking the "Dea
     $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
+
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
 
 ***
@@ -167,6 +175,7 @@ Assert a plugin is not installed in the plugins list. The method will **not** na
     $I-&gt;dontSeePluginInstalled('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
+
 <h4 id="grabCookiesWithPattern">grabCookiesWithPattern</h4>
 
 ***
@@ -177,6 +186,7 @@ Returns all the cookies whose name matches a regex pattern.
     $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$cookiePattern</strong></li></ul>
+
 <h4 id="grabFullUrl">grabFullUrl</h4>
 
 ***
@@ -185,6 +195,7 @@ Grabs the current page full URL including the query vars.
 <pre><code class="language-php">    $today = date('Y-m-d');
     $I-&gt;amOnPage('/concerts?date=' . $today);
     $I-&gt;assertRegExp('#\\/concerts$#', $I-&gt;grabFullUrl());</code></pre>
+
 <h4 id="grabWordPressTestCookie">grabWordPressTestCookie</h4>
 
 ***
@@ -192,6 +203,7 @@ Grabs the current page full URL including the query vars.
 Returns WordPress default test cookie object if present.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$name</strong> = <em>null</em> - Optional, overrides the default cookie name.</li></ul>
+
 <h4 id="loginAs">loginAs</h4>
 
 ***
@@ -202,6 +214,7 @@ Login as the specified user. The method will **not** follow redirection, after t
 <li><em>string</em> <strong>$password</strong></li>
 <li><em>int</em> <strong>$timeout</strong> = <em>10</em> - The max time, in seconds, to try to login.</li>
 <li><em>int</em> <strong>$maxAttempts</strong> = <em>5</em> - The max number of attempts to try to login.</li></ul>
+
 <h4 id="loginAsAdmin">loginAsAdmin</h4>
 
 ***
@@ -213,6 +226,7 @@ Login as the administrator user using the credentials specified in the module co
 <h5>Parameters</h5><ul>
 <li><em>int</em> <strong>$timeout</strong> = <em>10</em> - The max time, in seconds, to try to login.</li>
 <li><em>int</em> <strong>$maxAttempts</strong> = <em>5</em> - The max number of attempts to try to login.</li></ul>
+
 <h4 id="seeErrorMessage">seeErrorMessage</h4>
 
 ***
@@ -223,6 +237,7 @@ In an administration screen will look for an error admin notice. Allows for clas
     $I-&gt;seeErrorMessage('.my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the error notice should have in addition to the <code>.notice.notice-error</code> ones.</li></ul>
+
 <h4 id="seeMessage">seeMessage</h4>
 
 ***
@@ -233,6 +248,7 @@ In an administration screen will look for an admin notice. Allows for class-base
     $I-&gt;seeMessage('.notice-warning.my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
+
 <h4 id="seePluginActivated">seePluginActivated</h4>
 
 ***
@@ -243,6 +259,7 @@ Assert a plugin is activated in the plugins list. The method will **not** naviga
     $I-&gt;seePluginActivated('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
+
 <h4 id="seePluginDeactivated">seePluginDeactivated</h4>
 
 ***
@@ -253,6 +270,7 @@ Assert a plugin is not activated in the plugins list. The method will **not** na
     $I-&gt;seePluginDeactivated('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
+
 <h4 id="seePluginInstalled">seePluginInstalled</h4>
 
 ***
@@ -263,6 +281,7 @@ Assert a plugin is installed, no matter its activation status, in the plugins li
     $I-&gt;seePluginInstalled('my-plugin');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
+
 <h4 id="seeWpDiePage">seeWpDiePage</h4>
 
 ***
@@ -271,6 +290,7 @@ Checks that the current page is a `wp_die` generated one. The method will try to
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/forbidden');
     $I-&gt;seeWpDiePage();</code></pre>
+
 <h4 id="waitForJqueryAjax">waitForJqueryAjax</h4>
 
 ***

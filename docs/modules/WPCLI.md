@@ -33,6 +33,7 @@ Executes a wp-cli command targeting the test WordPress installation.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
+
 <h4 id="cliToArray">cliToArray</h4>
 
 ***

@@ -27,21 +27,25 @@
 ***
 
 
+
 <h4 id="bootstrapActions">bootstrapActions</h4>
 
 ***
 
 Calls a list of user-defined actions needed in tests.
+
 <h4 id="factory">factory</h4>
 
 ***
 
 Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
+
 <h4 id="loadPlugins">loadPlugins</h4>
 
 ***
 
 Loads the plugins required by the test.
+
 <h4 id="switchTheme">switchTheme</h4>
 
 ***
