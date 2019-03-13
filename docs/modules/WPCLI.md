@@ -10,8 +10,22 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 <!--doc-->
 
 
-<h2>Public API</h2><nav><ul><li><a href="#cli">cli</a></li><li><a href="#cliToArray">cliToArray</a></li></ul></nav><h4 id="cli">cli</h4>
-- - -
+<h2>Public API</h2>
+<nav>
+	<ul>
+		<li>
+			<a href="#cli">cli</a>
+		</li>
+		<li>
+			<a href="#cliToArray">cliToArray</a>
+		</li>
+	</ul>
+</nav>
+
+<h4 id="cli">cli</h4>
+
+***
+
 Executes a wp-cli command targeting the test WordPress installation.
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli('plugin activate my-plugin');
@@ -20,7 +34,9 @@ Executes a wp-cli command targeting the test WordPress installation.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
 <h4 id="cliToArray">cliToArray</h4>
-- - -
+
+***
+
 Returns the output of a wp-cli command as an array.
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');
@@ -32,7 +48,8 @@ Returns the output of a wp-cli command as an array.
     });</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
-<li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul></br>
+<li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul>
+</br>
 
 *This class extends \Codeception\Module*
 
