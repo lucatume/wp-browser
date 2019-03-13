@@ -24,31 +24,23 @@
 
 <h4 id="activatePlugins">activatePlugins</h4>
 
-***
-
-
+</br>
 
 <h4 id="bootstrapActions">bootstrapActions</h4>
-
-***
-
 Calls a list of user-defined actions needed in tests.
+</br>
 
 <h4 id="factory">factory</h4>
-
-***
-
 Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
+</br>
 
 <h4 id="loadPlugins">loadPlugins</h4>
-
-***
-
 Loads the plugins required by the test.
+</br>
 
 <h4 id="switchTheme">switchTheme</h4>
 
-***
+</br>
 </br>
 
 *This class extends \Codeception\Module*

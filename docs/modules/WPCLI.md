@@ -23,9 +23,6 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 </nav>
 
 <h4 id="cli">cli</h4>
-
-***
-
 Executes a wp-cli command targeting the test WordPress installation.
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli('plugin activate my-plugin');
@@ -33,11 +30,9 @@ Executes a wp-cli command targeting the test WordPress installation.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
+</br>
 
 <h4 id="cliToArray">cliToArray</h4>
-
-***
-
 Returns the output of a wp-cli command as an array.
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');
@@ -50,6 +45,7 @@ Returns the output of a wp-cli command as an array.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
 <li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul>
+</br>
 </br>
 
 *This class extends \Codeception\Module*
