@@ -100,9 +100,9 @@ trait WPBrowserMethods
     }
 
     /**
-     * On to the plugin administration screen and deactivate a plugin clicking the "Deactivate" link.
+     * In the plugin administration screen deactivate a plugin clicking the "Deactivate" link.
      *
-     * The method will not **handle** authentication to the admin area.
+     * The method will **not** handle authentication and navigation to the plugins administration page.
      *
      * @example
      * ```php
@@ -116,7 +116,7 @@ trait WPBrowserMethods
      * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
      * ```
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      */
     public function deactivatePlugin($pluginSlug)
     {

@@ -150,31 +150,17 @@ Go to the plugins administration screen. The method will **not** handle authenti
 
 <h4 id="deactivatePlugin">deactivatePlugin</h4>
 ***
-In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
-<pre><code class="language-php">    // Activate a plugin.
+In the plugin administration screen deactivate a plugin clicking the "Deactivate" link. The method will **not** handle authentication and navigation to the plugins administration page.
+<pre><code class="language-php">    // Deactivate one plugin.
     $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin('hello-dolly');
-    // Activate a list of plugins.
+    $I-&gt;deactivatePlugin('hello-dolly');
+    // Deactivate a list of plugins.
     $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
-<pre><code>public function activatePlugin($pluginSlug)
-{
-    $plugins = (array)$pluginSlug;
-    foreach ($plugins as $plugin) {
-```php
-// Deactivate one plugin.
-$I-&gt;loginAsAdmin();
-$I-&gt;amOnPluginsPage();
-$I-&gt;deactivatePlugin('hello-dolly');
-// Deactivate a list of plugins.
-$I-&gt;loginAsAdmin();
-$I-&gt;amOnPluginsPage();
-$I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);
-```</code></pre>
+    $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
+<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
 </br>
 
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>

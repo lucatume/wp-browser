@@ -144,7 +144,7 @@ Go to the plugins administration screen. The method will **not** handle authenti
 
 <h4 id="deactivatePlugin">deactivatePlugin</h4>
 ***
-On to the plugin administration screen and deactivate a plugin clicking the "Deactivate" link. The method will not **handle** authentication to the admin area.
+In the plugin administration screen deactivate a plugin clicking the "Deactivate" link. The method will **not** handle authentication and navigation to the plugins administration page.
 <pre><code class="language-php">    // Deactivate one plugin.
     $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -154,7 +154,7 @@ On to the plugin administration screen and deactivate a plugin clicking the "Dea
     $I-&gt;amOnPluginsPage();
     $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);</code></pre>
 <h5>Parameters</h5><ul>
-<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
+<li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
 </br>
 
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
