@@ -13,7 +13,7 @@ See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpB
 <!--doc-->
 
 
-<h2>Public API</h2>
+## Public API
 <nav>
 	<ul>
 		<li>
@@ -76,7 +76,7 @@ See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpB
 	</ul>
 </nav>
 
-<h4 id="activatePlugin">activatePlugin</h4>
+<h3 id="activatePlugin">activatePlugin</h3>
 ***
 In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    // Activate a plugin.
@@ -91,7 +91,7 @@ In the plugin administration screen activates a plugin clicking the "Activate" l
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
 </br>
 
-<h4 id="amEditingPostWithId">amEditingPostWithId</h4>
+<h3 id="amEditingPostWithId">amEditingPostWithId</h3>
 ***
 Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -102,7 +102,7 @@ Go to the admin page to edit the post with the specified ID. The method will **n
 <li><em>int</em> <strong>$id</strong> - The post ID.</li></ul>
 </br>
 
-<h4 id="amOnAdminAjaxPage">amOnAdminAjaxPage</h4>
+<h3 id="amOnAdminAjaxPage">amOnAdminAjaxPage</h3>
 ***
 Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX request.
 <pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23]]);</code></pre>
@@ -110,7 +110,7 @@ Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX
 <li><em>array/string</em> <strong>$queryVars</strong> = <em>null</em> - A string or array of query variables to append to the AJAX path.</li></ul>
 </br>
 
-<h4 id="amOnAdminPage">amOnAdminPage</h4>
+<h3 id="amOnAdminPage">amOnAdminPage</h3>
 ***
 Go to a page in the admininstration area of the site.
 <p>Will this comment show up in the output?
@@ -123,7 +123,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 <li><em>string</em> <strong>$page</strong> - The path, relative to the admin area URL, to the page.</li></ul>
 </br>
 
-<h4 id="amOnCronPage">amOnCronPage</h4>
+<h3 id="amOnCronPage">amOnCronPage</h3>
 ***
 Go to the cron page to start a synchronous, and blocking, `GET` request to the cron script.
 <pre><code class="language-php">    // Triggers the cron job with an optional query argument.
@@ -132,7 +132,7 @@ Go to the cron page to start a synchronous, and blocking, `GET` request to the c
 <li><em>array/string</em> <strong>$queryVars</strong> = <em>null</em> - A string or array of query variables to append to the AJAX path.</li></ul>
 </br>
 
-<h4 id="amOnPagesPage">amOnPagesPage</h4>
+<h3 id="amOnPagesPage">amOnPagesPage</h3>
 ***
 Go the "Pages" administration screen. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -140,7 +140,7 @@ Go the "Pages" administration screen. The method will **not** handle authenticat
     $I-&gt;see('Add New');</code></pre>
 </br>
 
-<h4 id="amOnPluginsPage">amOnPluginsPage</h4>
+<h3 id="amOnPluginsPage">amOnPluginsPage</h3>
 ***
 Go to the plugins administration screen. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -148,7 +148,7 @@ Go to the plugins administration screen. The method will **not** handle authenti
     $I-&gt;activatePlugin('hello-dolly');</code></pre>
 </br>
 
-<h4 id="deactivatePlugin">deactivatePlugin</h4>
+<h3 id="deactivatePlugin">deactivatePlugin</h3>
 ***
 In the plugin administration screen deactivate a plugin clicking the "Deactivate" link. The method will **not** handle authentication and navigation to the plugins administration page.
 <pre><code class="language-php">    // Deactivate one plugin.
@@ -163,7 +163,7 @@ In the plugin administration screen deactivate a plugin clicking the "Deactivate
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
 </br>
 
-<h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
+<h3 id="dontSeePluginInstalled">dontSeePluginInstalled</h3>
 ***
 Assert a plugin is not installed in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -173,7 +173,7 @@ Assert a plugin is not installed in the plugins list. The method will **not** na
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 </br>
 
-<h4 id="grabCookiesWithPattern">grabCookiesWithPattern</h4>
+<h3 id="grabCookiesWithPattern">grabCookiesWithPattern</h3>
 ***
 Returns all the cookies whose name matches a regex pattern.
 <pre><code class="language-php">    $I-&gt;loginAs('customer','password');
@@ -183,14 +183,14 @@ Returns all the cookies whose name matches a regex pattern.
 <li><em>string</em> <strong>$cookiePattern</strong></li></ul>
 </br>
 
-<h4 id="grabWordPressTestCookie">grabWordPressTestCookie</h4>
+<h3 id="grabWordPressTestCookie">grabWordPressTestCookie</h3>
 ***
 Returns WordPress default test cookie object if present.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$name</strong> = <em>null</em> - Optional, overrides the default cookie name.</li></ul>
 </br>
 
-<h4 id="loginAs">loginAs</h4>
+<h3 id="loginAs">loginAs</h3>
 ***
 Login as the specified user. The method will **not** follow redirection, after the login, to any page.
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
@@ -201,7 +201,7 @@ Login as the specified user. The method will **not** follow redirection, after t
 <li><em>string</em> <strong>$password</strong></li></ul>
 </br>
 
-<h4 id="loginAsAdmin">loginAsAdmin</h4>
+<h3 id="loginAsAdmin">loginAsAdmin</h3>
 ***
 Login as the administrator user using the credentials specified in the module configuration. The method will **not** follow redirection, after the login, to any page.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -209,7 +209,7 @@ Login as the administrator user using the credentials specified in the module co
     $I-&gt;see('Dashboard');</code></pre>
 </br>
 
-<h4 id="seeErrorMessage">seeErrorMessage</h4>
+<h3 id="seeErrorMessage">seeErrorMessage</h3>
 ***
 In an administration screen will look for an error admin notice. Allows for class-based error checking to decouple from internationalization.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
@@ -219,7 +219,7 @@ In an administration screen will look for an error admin notice. Allows for clas
 <li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the error notice should have in addition to the <code>.notice.notice-error</code> ones.</li></ul>
 </br>
 
-<h4 id="seeMessage">seeMessage</h4>
+<h3 id="seeMessage">seeMessage</h3>
 ***
 In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
@@ -229,7 +229,7 @@ In an administration screen will look for an admin notice. Allows for class-base
 <li><em>string/array/string</em> <strong>$classes</strong> = <em>`''`</em> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
 </br>
 
-<h4 id="seePluginActivated">seePluginActivated</h4>
+<h3 id="seePluginActivated">seePluginActivated</h3>
 ***
 Assert a plugin is activated in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -239,7 +239,7 @@ Assert a plugin is activated in the plugins list. The method will **not** naviga
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 </br>
 
-<h4 id="seePluginDeactivated">seePluginDeactivated</h4>
+<h3 id="seePluginDeactivated">seePluginDeactivated</h3>
 ***
 Assert a plugin is not activated in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -249,7 +249,7 @@ Assert a plugin is not activated in the plugins list. The method will **not** na
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 </br>
 
-<h4 id="seePluginInstalled">seePluginInstalled</h4>
+<h3 id="seePluginInstalled">seePluginInstalled</h3>
 ***
 Assert a plugin is installed, no matter its activation status, in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
@@ -259,7 +259,7 @@ Assert a plugin is installed, no matter its activation status, in the plugins li
 <li><em>string</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
 </br>
 
-<h4 id="seeWpDiePage">seeWpDiePage</h4>
+<h3 id="seeWpDiePage">seeWpDiePage</h3>
 ***
 Checks that the current page is a `wp_die` generated one. The method will try to identify the page based on the default WordPress die page markup.
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');

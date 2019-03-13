@@ -117,7 +117,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-        $str = PHP_EOL . '<h4 id="' . $func->getName() . '">' . $func->getName() . '</h4>' . PHP_EOL . '***' . PHP_EOL;
+        $str = PHP_EOL . '<h3 id="' . $func->getName() . '">' . $func->getName() . '</h3>' . PHP_EOL . '***' . PHP_EOL;
         $str .= $func->getDescription();
 
         if ($func->getExample()) {
@@ -158,7 +158,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     public function getTable()
     {
         $this->parser->setBreaksEnabled(true);
-        $toc = '<h2>Public API</h2>' . PHP_EOL . $this->buildToc();
+        $toc = '## Public API' . PHP_EOL . $this->buildToc();
         return $toc . PHP_EOL . trim($this->output) . PHP_EOL . '</br>';
     }
 

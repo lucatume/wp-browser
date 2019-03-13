@@ -1,7 +1,7 @@
 <!--doc-->
 
 
-<h2>Public API</h2>
+## Public API
 <nav>
 	<ul>
 		<li>
@@ -22,27 +22,27 @@
 	</ul>
 </nav>
 
-<h4 id="activatePlugins">activatePlugins</h4>
+<h3 id="activatePlugins">activatePlugins</h3>
 ***
 
 </br>
 
-<h4 id="bootstrapActions">bootstrapActions</h4>
+<h3 id="bootstrapActions">bootstrapActions</h3>
 ***
 Calls a list of user-defined actions needed in tests.
 </br>
 
-<h4 id="factory">factory</h4>
+<h3 id="factory">factory</h3>
 ***
 Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
 </br>
 
-<h4 id="loadPlugins">loadPlugins</h4>
+<h3 id="loadPlugins">loadPlugins</h3>
 ***
 Loads the plugins required by the test.
 </br>
 
-<h4 id="switchTheme">switchTheme</h4>
+<h3 id="switchTheme">switchTheme</h3>
 ***
 
 </br>
