@@ -22,18 +22,19 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 	</ul>
 </nav>
 
-<h3 id="cli">cli</h3>
+###cli
 ***
 Executes a wp-cli command targeting the test WordPress installation.
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli('plugin activate my-plugin');
     // Change a user password.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
-<h5>Parameters</h5><ul>
+#### Parameters
+<ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
 </br>
 
-<h3 id="cliToArray">cliToArray</h3>
+###cliToArray
 ***
 Returns the output of a wp-cli command as an array.
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
@@ -44,7 +45,8 @@ Returns the output of a wp-cli command as an array.
                  return strpos(trim($name), 'foo') === 0;
          });
     });</code></pre>
-<h5>Parameters</h5><ul>
+#### Parameters
+<ul>
 <li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
 <li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul>
 </br>

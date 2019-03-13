@@ -8,7 +8,6 @@
 
 namespace tad\WPBrowser\Documentation;
 
-use DOMDocument;
 use PHPDocsMD\FunctionEntity;
 
 /**
@@ -117,7 +116,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-        $str = PHP_EOL . '<h3 id="' . $func->getName() . '">' . $func->getName() . '</h3>' . PHP_EOL . '***' . PHP_EOL;
+        $str = PHP_EOL . '###' . $func->getName() . PHP_EOL . '***' . PHP_EOL;
         $str .= $func->getDescription();
 
         if ($func->getExample()) {
@@ -126,7 +125,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             $str .= PHP_EOL . $example;
         }
         if ($func->hasParams()) {
-            $str .= PHP_EOL . '<h5>Parameters</h5><ul>';
+            $str .= PHP_EOL . '#### Parameters' . PHP_EOL . '<ul>';
             $params = [];
             foreach ($func->getParams() as $param) {
                 $paramStr = '<li><em>' . $param->getType() . '</em> <strong>' . $param->getName() . '</strong>';

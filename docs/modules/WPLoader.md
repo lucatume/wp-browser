@@ -22,27 +22,27 @@
 	</ul>
 </nav>
 
-<h3 id="activatePlugins">activatePlugins</h3>
+###activatePlugins
 ***
 
 </br>
 
-<h3 id="bootstrapActions">bootstrapActions</h3>
+###bootstrapActions
 ***
 Calls a list of user-defined actions needed in tests.
 </br>
 
-<h3 id="factory">factory</h3>
+###factory
 ***
 Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
 </br>
 
-<h3 id="loadPlugins">loadPlugins</h3>
+###loadPlugins
 ***
 Loads the plugins required by the test.
 </br>
 
-<h3 id="switchTheme">switchTheme</h3>
+###switchTheme
 ***
 
 </br>
