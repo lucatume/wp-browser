@@ -179,3 +179,5 @@ module_docs: composer.lock src/Codeception/Module
 		rm doc.tmp; \
 	done;
 
+gitbook_serve: module_docs
+	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
