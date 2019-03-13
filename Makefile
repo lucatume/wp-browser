@@ -181,3 +181,4 @@ module_docs: composer.lock src/Codeception/Module
 
 gitbook_serve: module_docs
 	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
+	docker run --rm -v "${CURDIR}:/gitbook" -p 4000:4000 billryan/gitbook gitbook serve --live
