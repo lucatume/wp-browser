@@ -81,9 +81,21 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_and_its_uploads_but_not_the_tables()
+    public function should_allow_removing_a_blog_and_its_uploads_but_not_the_tables(FunctionalTester $I)
     {
+        $blogId = $I->haveBlogInDatabase('/subdir-test/', [], false);
+        codecept_debug('Blog ID: ' . $blogId);
+        $blogTablesBefore = $I->grabBlogTableNames($blogId);
+        codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
+        $blogUploadsDir = $I->getBlogUploadsPath($blogId);
+        codecept_debug('Blog uploads dir: ' . $blogUploadsDir);
 
+        $I->dontHaveBlogInDatabase(['blog_id' => $blogId], false, true);
+
+        $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
+        $blogTablesAfter = $I->grabBlogTableNames($blogId);
+        $I->assertEquals($blogTablesBefore, $blogTablesAfter);
+        $I->dontSeeFileFound($blogUploadsDir);
     }
 
     /**
@@ -91,9 +103,33 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_multiple_blogs_tables()
+    public function should_allow_removing_multiple_blogs_tables(FunctionalTester $I)
     {
+        $blogIds = $I->haveManyBlogsInDatabase(3, [], false);
+        codecept_debug('Blog IDs: ' . json_encode($blogIds, JSON_PRETTY_PRINT));
+        codecept_debug('Blog domains and paths: ' . json_encode(array_map(function ($blogId) use ($I) {
+                return [
+                    'domain' => $I->grabBlogDomain($blogId),
+                    'path' => $I->grabBlogPath($blogId),
+                ];
+            }, $blogIds), JSON_PRETTY_PRINT));
+        $blogTablesBefore = array_combine($blogIds, array_map(function ($blogId) use ($I) {
+            $I->grabBlogTableNames($blogId);
+        }, $blogIds));
+        codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
+        $blogUploadsDir = array_combine($blogIds, array_map(function ($blogId) use ($I) {
+            return $I->getBlogUploadsPath($blogId);
+        }, $blogIds));
+        codecept_debug('Blog uploads dir: ' . json_encode($blogUploadsDir, JSON_PRETTY_PRINT));
 
+        $I->dontHaveBlogInDatabase(['domain' => $I->getSiteDomain()], true, false);
+
+        throw new Exception('Test not finished!');
+
+//        $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
+//        $blogTablesAfter = $I->grabBlogTableNames($blogId);
+//        $I->assertEquals($blogTablesBefore, $blogTablesAfter);
+//        $I->dontSeeFileFound($blogUploadsDir);
     }
 
     /**

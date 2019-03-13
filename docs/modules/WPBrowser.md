@@ -77,6 +77,7 @@ See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpB
 </nav>
 
 <h4 id="activatePlugin">activatePlugin</h4>
+***
 In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    // Activate a plugin.
     $I-&gt;loginAsAdmin();
@@ -91,6 +92,7 @@ In the plugin administration screen activates a plugin clicking the "Activate" l
 </br>
 
 <h4 id="amEditingPostWithId">amEditingPostWithId</h4>
+***
 Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $postId = $I-&gt;havePostInDatabase();
@@ -101,6 +103,7 @@ Go to the admin page to edit the post with the specified ID. The method will **n
 </br>
 
 <h4 id="amOnAdminAjaxPage">amOnAdminAjaxPage</h4>
+***
 Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX request.
 <pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23]]);</code></pre>
 <h5>Parameters</h5><ul>
@@ -108,6 +111,7 @@ Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX
 </br>
 
 <h4 id="amOnAdminPage">amOnAdminPage</h4>
+***
 Go to a page in the admininstration area of the site.
 <p>Will this comment show up in the output?
 And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
@@ -120,6 +124,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 </br>
 
 <h4 id="amOnCronPage">amOnCronPage</h4>
+***
 Go to the cron page to start a synchronous, and blocking, `GET` request to the cron script.
 <pre><code class="language-php">    // Triggers the cron job with an optional query argument.
     $I-&gt;amOnCronPage('?some-query-var=some-value');</code></pre>
@@ -128,6 +133,7 @@ Go to the cron page to start a synchronous, and blocking, `GET` request to the c
 </br>
 
 <h4 id="amOnPagesPage">amOnPagesPage</h4>
+***
 Go the "Pages" administration screen. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPagesPage();
@@ -135,6 +141,7 @@ Go the "Pages" administration screen. The method will **not** handle authenticat
 </br>
 
 <h4 id="amOnPluginsPage">amOnPluginsPage</h4>
+***
 Go to the plugins administration screen. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -142,6 +149,7 @@ Go to the plugins administration screen. The method will **not** handle authenti
 </br>
 
 <h4 id="deactivatePlugin">deactivatePlugin</h4>
+***
 In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    // Activate a plugin.
     $I-&gt;loginAsAdmin();
@@ -170,6 +178,7 @@ $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);
 </br>
 
 <h4 id="dontSeePluginInstalled">dontSeePluginInstalled</h4>
+***
 Assert a plugin is not installed in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -179,6 +188,7 @@ Assert a plugin is not installed in the plugins list. The method will **not** na
 </br>
 
 <h4 id="grabCookiesWithPattern">grabCookiesWithPattern</h4>
+***
 Returns all the cookies whose name matches a regex pattern.
 <pre><code class="language-php">    $I-&gt;loginAs('customer','password');
     $I-&gt;amOnPage('/shop');
@@ -188,12 +198,14 @@ Returns all the cookies whose name matches a regex pattern.
 </br>
 
 <h4 id="grabWordPressTestCookie">grabWordPressTestCookie</h4>
+***
 Returns WordPress default test cookie object if present.
 <h5>Parameters</h5><ul>
 <li><em>string</em> <strong>$name</strong> = <em>null</em> - Optional, overrides the default cookie name.</li></ul>
 </br>
 
 <h4 id="loginAs">loginAs</h4>
+***
 Login as the specified user. The method will **not** follow redirection, after the login, to any page.
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/');
@@ -204,6 +216,7 @@ Login as the specified user. The method will **not** follow redirection, after t
 </br>
 
 <h4 id="loginAsAdmin">loginAsAdmin</h4>
+***
 Login as the administrator user using the credentials specified in the module configuration. The method will **not** follow redirection, after the login, to any page.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnAdminPage('/');
@@ -211,6 +224,7 @@ Login as the administrator user using the credentials specified in the module co
 </br>
 
 <h4 id="seeErrorMessage">seeErrorMessage</h4>
+***
 In an administration screen will look for an error admin notice. Allows for class-based error checking to decouple from internationalization.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage('/');
@@ -220,6 +234,7 @@ In an administration screen will look for an error admin notice. Allows for clas
 </br>
 
 <h4 id="seeMessage">seeMessage</h4>
+***
 In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage('/');
@@ -229,6 +244,7 @@ In an administration screen will look for an admin notice. Allows for class-base
 </br>
 
 <h4 id="seePluginActivated">seePluginActivated</h4>
+***
 Assert a plugin is activated in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -238,6 +254,7 @@ Assert a plugin is activated in the plugins list. The method will **not** naviga
 </br>
 
 <h4 id="seePluginDeactivated">seePluginDeactivated</h4>
+***
 Assert a plugin is not activated in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -247,6 +264,7 @@ Assert a plugin is not activated in the plugins list. The method will **not** na
 </br>
 
 <h4 id="seePluginInstalled">seePluginInstalled</h4>
+***
 Assert a plugin is installed, no matter its activation status, in the plugins list. The method will **not** navigate to the plugin administration screen.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -256,6 +274,7 @@ Assert a plugin is installed, no matter its activation status, in the plugins li
 </br>
 
 <h4 id="seeWpDiePage">seeWpDiePage</h4>
+***
 Checks that the current page is a `wp_die` generated one. The method will try to identify the page based on the default WordPress die page markup.
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/forbidden');

@@ -23,6 +23,7 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 </nav>
 
 <h4 id="cli">cli</h4>
+***
 Executes a wp-cli command targeting the test WordPress installation.
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli('plugin activate my-plugin');
@@ -33,6 +34,7 @@ Executes a wp-cli command targeting the test WordPress installation.
 </br>
 
 <h4 id="cliToArray">cliToArray</h4>
+***
 Returns the output of a wp-cli command as an array.
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');

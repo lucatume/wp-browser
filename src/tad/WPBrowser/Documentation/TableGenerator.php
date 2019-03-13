@@ -8,6 +8,7 @@
 
 namespace tad\WPBrowser\Documentation;
 
+use DOMDocument;
 use PHPDocsMD\FunctionEntity;
 
 /**
@@ -70,7 +71,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      *
      * @param bool $toggle
      */
-    function appendExamplesToEndOfTable($toggle)
+    public function appendExamplesToEndOfTable($toggle)
     {
         // no-op
     }
@@ -78,7 +79,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     /**
      * Begin generating a new markdown-formatted table
      */
-    function openTable()
+    public function openTable()
     {
         $this->output .= '';
     }
@@ -89,7 +90,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      *
      * @param bool $toggle
      */
-    function doDeclareAbstraction($toggle)
+    public function doDeclareAbstraction($toggle)
     {
         $this->declareAbstraction = (bool)$toggle;
     }
@@ -102,7 +103,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      *
      * @return string
      */
-    function addFunc(FunctionEntity $func)
+    public function addFunc(FunctionEntity $func)
     {
         $this->fullClassName = $func->getClass();
 
@@ -116,7 +117,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-        $str = '<h4 id="' . $func->getName() . '">' . $func->getName() . '</h4>' . PHP_EOL . '- - -' . PHP_EOL;
+        $str = PHP_EOL . '<h4 id="' . $func->getName() . '">' . $func->getName() . '</h4>' . PHP_EOL . '***' . PHP_EOL;
         $str .= $func->getDescription();
 
         if ($func->getExample()) {
@@ -146,20 +147,19 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             $str .= PHP_EOL . implode(PHP_EOL, $params) . '</ul>';
         }
 
-        $this->output .= PHP_EOL . $str;
+        $this->output .= PHP_EOL . $str . PHP_EOL . '</br>';
         $this->index[] = $func->getName();
-
         return $str;
     }
 
     /**
      * @return string
      */
-    function getTable()
+    public function getTable()
     {
-        $output = trim($this->output);
-
-        return '<h2>Public API</h2>' . $this->buildToc() . $output . '</br>';
+        $this->parser->setBreaksEnabled(true);
+        $toc = '<h2>Public API</h2>' . PHP_EOL . $this->buildToc();
+        return $toc . PHP_EOL . trim($this->output) . PHP_EOL . '</br>';
     }
 
     protected function buildToc()
@@ -168,12 +168,12 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             return '';
         }
 
-        $toc = '<nav><ul>';
+        $toc = '<nav>' . "\n\t<ul>";
         foreach ($this->index as $funcName) {
-            $toc .= '<li><a href="#' . $funcName . '">' . $funcName . '</a></li>';
+            $toc .= "\n\t\t\<li>\n\t\t\t" . '<a href="#' . $funcName . '">' . $funcName . '</a>' . "\n\t\t</li>";
         }
 
-        $toc .= '</ul></nav>';
+        $toc .= "\n\t</ul>" . PHP_EOL . '</nav>' . PHP_EOL;
 
         return $toc;
     }

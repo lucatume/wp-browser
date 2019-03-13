@@ -146,12 +146,11 @@ class WPBrowser extends PhpBrowser
      */
     public function deactivatePlugin($pluginSlug)
     {
-        $plugins = (array) $pluginSlug;
-        foreach ($plugins as $plugin) {
+        foreach ((array) $pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
         }
         $this->selectOption('action', 'deactivate-selected');
-        $this->click("#doaction");
+        $this->click('#doaction');
     }
 
     protected function validateConfig()

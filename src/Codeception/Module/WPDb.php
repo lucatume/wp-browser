@@ -1939,10 +1939,19 @@ class WPDb extends Db
     /**
      * Inserts many blogs in the database.
      *
-     * @param int   $count
-     * @param array $overrides
-     * @param bool  $subdomain          Whether the new blogs should be created as a subdomain (`true`)
-     *                                  or subfolder (`true`)
+     * @example
+     * ```php
+     * $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
+     * foreach($blogIds as $blogId){
+     *      $I->useBlog($blogId);
+     *      $I->haveManuPostsInDatabase(3);
+     * }
+     * ```
+     *
+     *
+     * @param int   $count     The number of blogs to create.
+     * @param array $overrides An array of values to override the default ones; `{{n}}` will be replaced by the count.
+     * @param bool  $subdomain Whether the new blogs should be created as a subdomain or subfolder.
      *
      * @return array An array of inserted blogs `blog_id`s.
      */
@@ -1952,7 +1961,14 @@ class WPDb extends Db
         $overrides = $this->setTemplateData($overrides);
         for ($i = 0; $i < $count; $i++) {
             $blogOverrides = $this->replaceNumbersInArray($overrides, $i);
-            $blogIds[] = $this->haveBlogInDatabase('blog' . $i, $blogOverrides, $subdomain);
+            $domainOrPath = 'blog-' . $i;
+
+            if (isset($blogOverrides['slug'])) {
+                $domainOrPath = $blogOverrides['slug'];
+                unset($blogOverrides['slug']);
+            }
+
+            $blogIds[] = $this->haveBlogInDatabase($domainOrPath, $blogOverrides, $subdomain);
         }
 
         return $blogIds;
@@ -2855,5 +2871,39 @@ class WPDb extends Db
     public function grabBlogTablePrefix($blogId)
     {
         return $this->grabTablePrefix() . "{$blogId}_";
+    }
+
+    /**
+     *
+     *
+     * @since TBD
+     *
+     * @param $blogId
+     *
+     * @return mixed
+     */
+    public function grabBlogDomain($blogId)
+    {
+        return $this->grabFromDatabase($this->grabBlogsTableName(), 'domain', ['blog_id' => $blogId]);
+    }
+
+    /**
+     * Grabs a blog domain from the blogs table.
+     *
+     * @example
+     * ```php
+     * $blogId = $I->haveBlogInDatabase('test');
+     * $path = $I->grabBlogDomain($blogId);
+     * $I->amOnSubdomain($path);
+     * $I->amOnPage('/');
+     * ```
+     *
+     * @param int $blogId The blog ID.
+     *
+     * @return string The blog domain, if set in the database.
+     */
+    public function grabBlogPath($blogId)
+    {
+        return $this->grabFromDatabase($this->grabBlogsTableName(), 'path', ['blog_id' => $blogId]);
     }
 }
