@@ -14,7 +14,9 @@ See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpB
 
 
 <h2>Public API</h2><nav><ul><li><a href="#activatePlugin">activatePlugin</a></li><li><a href="#amEditingPostWithId">amEditingPostWithId</a></li><li><a href="#amOnAdminAjaxPage">amOnAdminAjaxPage</a></li><li><a href="#amOnAdminPage">amOnAdminPage</a></li><li><a href="#amOnCronPage">amOnCronPage</a></li><li><a href="#amOnPagesPage">amOnPagesPage</a></li><li><a href="#amOnPluginsPage">amOnPluginsPage</a></li><li><a href="#deactivatePlugin">deactivatePlugin</a></li><li><a href="#dontSeePluginInstalled">dontSeePluginInstalled</a></li><li><a href="#grabCookiesWithPattern">grabCookiesWithPattern</a></li><li><a href="#grabWordPressTestCookie">grabWordPressTestCookie</a></li><li><a href="#loginAs">loginAs</a></li><li><a href="#loginAsAdmin">loginAsAdmin</a></li><li><a href="#seeErrorMessage">seeErrorMessage</a></li><li><a href="#seeMessage">seeMessage</a></li><li><a href="#seePluginActivated">seePluginActivated</a></li><li><a href="#seePluginDeactivated">seePluginDeactivated</a></li><li><a href="#seePluginInstalled">seePluginInstalled</a></li><li><a href="#seeWpDiePage">seeWpDiePage</a></li></ul></nav><h4 id="activatePlugin">activatePlugin</h4>
+
 - - -
+
 In the plugin administration screen activates a plugin clicking the "Activate" link. The method will **not** handle authentication to the admin area.
 <pre><code class="language-php">    // Activate a plugin.
     $I-&gt;loginAsAdmin();
@@ -27,7 +29,9 @@ In the plugin administration screen activates a plugin clicking the "Activate" l
 <h5>Parameters</h5><ul>
 <li><em>string/array</em> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
 <h4 id="amEditingPostWithId">amEditingPostWithId</h4>
+
 - - -
+
 Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $postId = $I-&gt;havePostInDatabase();
