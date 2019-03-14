@@ -5,392 +5,391 @@
 <nav>
 	<ul>
 		<li>
-			<a href="#assertCountQueries">assertCountQueries</a>
+			<a href="#assertcountqueries">assertCountQueries</a>
 		</li>
 		<li>
-			<a href="#assertNotQueries">assertNotQueries</a>
+			<a href="#assertnotqueries">assertNotQueries</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByAction">assertNotQueriesByAction</a>
+			<a href="#assertnotqueriesbyaction">assertNotQueriesByAction</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByFilter">assertNotQueriesByFilter</a>
+			<a href="#assertnotqueriesbyfilter">assertNotQueriesByFilter</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByFunction">assertNotQueriesByFunction</a>
+			<a href="#assertnotqueriesbyfunction">assertNotQueriesByFunction</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByMethod">assertNotQueriesByMethod</a>
+			<a href="#assertnotqueriesbymethod">assertNotQueriesByMethod</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByStatement">assertNotQueriesByStatement</a>
+			<a href="#assertnotqueriesbystatement">assertNotQueriesByStatement</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByStatementAndAction">assertNotQueriesByStatementAndAction</a>
+			<a href="#assertnotqueriesbystatementandaction">assertNotQueriesByStatementAndAction</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByStatementAndFilter">assertNotQueriesByStatementAndFilter</a>
+			<a href="#assertnotqueriesbystatementandfilter">assertNotQueriesByStatementAndFilter</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByStatementAndFunction">assertNotQueriesByStatementAndFunction</a>
+			<a href="#assertnotqueriesbystatementandfunction">assertNotQueriesByStatementAndFunction</a>
 		</li>
 		<li>
-			<a href="#assertNotQueriesByStatementAndMethod">assertNotQueriesByStatementAndMethod</a>
+			<a href="#assertnotqueriesbystatementandmethod">assertNotQueriesByStatementAndMethod</a>
 		</li>
 		<li>
-			<a href="#assertQueries">assertQueries</a>
+			<a href="#assertqueries">assertQueries</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByAction">assertQueriesByAction</a>
+			<a href="#assertqueriesbyaction">assertQueriesByAction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByFilter">assertQueriesByFilter</a>
+			<a href="#assertqueriesbyfilter">assertQueriesByFilter</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByFunction">assertQueriesByFunction</a>
+			<a href="#assertqueriesbyfunction">assertQueriesByFunction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByMethod">assertQueriesByMethod</a>
+			<a href="#assertqueriesbymethod">assertQueriesByMethod</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByStatement">assertQueriesByStatement</a>
+			<a href="#assertqueriesbystatement">assertQueriesByStatement</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByStatementAndAction">assertQueriesByStatementAndAction</a>
+			<a href="#assertqueriesbystatementandaction">assertQueriesByStatementAndAction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByStatementAndFilter">assertQueriesByStatementAndFilter</a>
+			<a href="#assertqueriesbystatementandfilter">assertQueriesByStatementAndFilter</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByStatementAndFunction">assertQueriesByStatementAndFunction</a>
+			<a href="#assertqueriesbystatementandfunction">assertQueriesByStatementAndFunction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesByStatementAndMethod">assertQueriesByStatementAndMethod</a>
+			<a href="#assertqueriesbystatementandmethod">assertQueriesByStatementAndMethod</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByAction">assertQueriesCountByAction</a>
+			<a href="#assertqueriescountbyaction">assertQueriesCountByAction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByFilter">assertQueriesCountByFilter</a>
+			<a href="#assertqueriescountbyfilter">assertQueriesCountByFilter</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByFunction">assertQueriesCountByFunction</a>
+			<a href="#assertqueriescountbyfunction">assertQueriesCountByFunction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByMethod">assertQueriesCountByMethod</a>
+			<a href="#assertqueriescountbymethod">assertQueriesCountByMethod</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByStatement">assertQueriesCountByStatement</a>
+			<a href="#assertqueriescountbystatement">assertQueriesCountByStatement</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByStatementAndAction">assertQueriesCountByStatementAndAction</a>
+			<a href="#assertqueriescountbystatementandaction">assertQueriesCountByStatementAndAction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByStatementAndFilter">assertQueriesCountByStatementAndFilter</a>
+			<a href="#assertqueriescountbystatementandfilter">assertQueriesCountByStatementAndFilter</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByStatementAndFunction">assertQueriesCountByStatementAndFunction</a>
+			<a href="#assertqueriescountbystatementandfunction">assertQueriesCountByStatementAndFunction</a>
 		</li>
 		<li>
-			<a href="#assertQueriesCountByStatementAndMethod">assertQueriesCountByStatementAndMethod</a>
+			<a href="#assertqueriescountbystatementandmethod">assertQueriesCountByStatementAndMethod</a>
 		</li>
 	</ul>
 </nav>
 
-###assertCountQueries
+<h3>assertCountQueries</h3>
 ***
 Asserts that n queries have been made.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueries
+* `int` **$n** - The expected number of queries.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueries</h3>
 ***
 Asserts that no queries were made. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByAction
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByAction</h3>
 ***
 Asserts that no queries were made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByFilter
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByFilter</h3>
 ***
 Asserts that no queries were made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByFunction
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByFunction</h3>
 ***
 Asserts that no queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByMethod
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByMethod</h3>
 ***
 Asserts that no queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$class</strong></li>
-<li><em>mixed</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByStatement
+* `mixed` **$class**
+* `mixed` **$method**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByStatement</h3>
 ***
 Asserts that no queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByStatementAndAction
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByStatementAndAction</h3>
 ***
 Asserts that no queries were made as a consequence of the specified action containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByStatementAndFilter
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByStatementAndFilter</h3>
 ***
 Asserts that no queries were made as a consequence of the specified filter containing the specified SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByStatementAndFunction
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByStatementAndFunction</h3>
 ***
 Asserts that no queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertNotQueriesByStatementAndMethod
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertNotQueriesByStatementAndMethod</h3>
 ***
 Asserts that no queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$class</strong></li>
-<li><em>string</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueries
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$class**
+* `string` **$method**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueries</h3>
 ***
 Asserts that at least one query was made during the test. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByAction
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByAction</h3>
 ***
 Asserts that at least one query was made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByFilter
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByFilter</h3>
 ***
 Asserts that at least one query was made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByFunction
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByFunction</h3>
 ***
 Asserts that queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByMethod
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByMethod</h3>
 ***
 Asserts that at least one query has been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$class</strong></li>
-<li><em>string</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByStatement
+* `string` **$class**
+* `string` **$method**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByStatement</h3>
 ***
 Asserts that at least a query starting with the specified statement was made. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByStatementAndAction
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByStatementAndAction</h3>
 ***
 Asserts that at least one query was made as a consequence of the specified action containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByStatementAndFilter
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByStatementAndFilter</h3>
 ***
 Asserts that at least one query was made as a consequence of the specified filter containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByStatementAndFunction
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByStatementAndFunction</h3>
 ***
 Asserts that queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesByStatementAndMethod
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesByStatementAndMethod</h3>
 ***
 Asserts that queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$class</strong></li>
-<li><em>string</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByAction
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$class**
+* `string` **$method**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByAction</h3>
 ***
 Asserts that n queries were made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByFilter
+* `int` **$n** - The expected number of queries.
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByFilter</h3>
 ***
 Asserts that n queries were made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByFunction
+* `int` **$n** - The expected number of queries.
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByFunction</h3>
 ***
 Asserts that n queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByMethod
+* `int` **$n** - The expected number of queries.
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByMethod</h3>
 ***
 Asserts that n queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$class</strong></li>
-<li><em>string</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByStatement
+* `int` **$n** - The expected number of queries.
+* `string` **$class**
+* `string` **$method**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByStatement</h3>
 ***
 Asserts that n queries starting with the specified statement were made. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByStatementAndAction
+* `int` **$n** - The expected number of queries.
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByStatementAndAction</h3>
 ***
 Asserts that n queries were made as a consequence of the specified action containing the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$action</strong> - The action name, e.g. 'init'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByStatementAndFilter
+* `int` **$n** - The expected number of queries.
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$action** - The action name, e.g. 'init'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByStatementAndFilter</h3>
 ***
 Asserts that n queries were made as a consequence of the specified filter containing the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$filter</strong> - The filter name, e.g. 'posts_where'.</li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByStatementAndFunction
+* `int` **$n** - The expected number of queries.
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$filter** - The filter name, e.g. 'posts_where'.
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByStatementAndFunction</h3>
 ***
 Asserts that n queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$function</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
 
-###assertQueriesCountByStatementAndMethod
+* `int` **$n** - The expected number of queries.
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$function**
+* `string` **$message** - An optional message to override the default one.
+  
+
+<h3>assertQueriesCountByStatementAndMethod</h3>
 ***
 Asserts that n queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$n</strong> - The expected number of queries.</li>
-<li><em>string</em> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><em>string</em> <strong>$class</strong></li>
-<li><em>string</em> <strong>$method</strong></li>
-<li><em>string</em> <strong>$message</strong> = <em>`''`</em> - An optional message to override the default one.</li></ul>
-</br>
+
+* `int` **$n** - The expected number of queries.
+* `string` **$statement** - A simple string the statement should start with or a valid regular expression.
+* `string` **$class**
+* `string` **$method**
+* `string` **$message** - An optional message to override the default one.
 </br>
 
 *This class extends \Codeception\Module*

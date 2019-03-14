@@ -1493,7 +1493,7 @@ class WPDb extends Db
      * $I->haveManyPostsInDatabase(3, ['post_status' => 'private' ]);
      * // Make sure there are now the expected number of draft posts.
      * $postsTable = $I->grabPostsTableName();
-     * $I->countRowsInDatabase($postsTable, ['post_status' => 'draft']);
+     * $draftsCount = $I->countRowsInDatabase($postsTable, ['post_status' => 'draft']);
      * ```
      *
      * @param string $table    The table to count the rows in.
@@ -1923,7 +1923,7 @@ class WPDb extends Db
      */
     public function seeBlogInDatabase(array $criteria)
     {
-        $this->seeInDatabase($this->grabBlogsTableName(), $criteria);
+        $this->seeInDatabase($this->grabBlogsTableName(), $this->prepareBlogCriteria($criteria));
     }
 
     /**
@@ -2071,32 +2071,46 @@ class WPDb extends Db
     }
 
     /**
-     * Removes a blog entry and tables from the database.
+     * Removes one ore more blogs frome the database.
      *
-     * @param array $criteria An array of search criteria to find the blog row in the blogs table.
+     * @example
+     * ```php
+     * // Remove the blog, all its tables and files.
+     * $I->dontHaveBlogInDatabase(['path' => 'test/one']);
+     * // Remove the blog entry, not the tables though.
+     * $I->dontHaveBlogInDatabase(['blog_id' => $blogId]);
+     * // Remove multiple blogs.
+     * $I->dontHaveBlogInDatabase(['domain' => 'test']);
+     * ```
+     *
+     * @param array $criteria An array of search criteria to find the blog rows in the blogs table.
      * @param bool  $removeTables Remove the blog tables.
      * @param bool $removeUploads Remove the blog uploads; requires the `WPFilesystem` module to be loaded in the suite.
      */
     public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = true)
     {
-        $blogId = $this->grabFromDatabase($this->grabBlogsTableName(), 'blog_id', $criteria);
+        $criteria = $this->prepareBlogCriteria($criteria);
 
-        if (empty($blogId)) {
-            $this->debug('No blog found matching criteria ' . json_encode($criteria, JSON_PRETTY_PRINT));
-            return;
-        }
+        $blogIds = $this->grabAllFromDatabase($this->grabBlogsTableName(), 'blog_id', $criteria);
 
-        if ($removeTables) {
-            foreach ($this->grabBlogTableNames($blogId) as $tableName) {
-                $this->dontHaveTableInDatabase($tableName);
+        foreach (array_column($blogIds, 'blog_id') as $blogId) {
+            if (empty($blogId)) {
+                $this->debug('No blog found matching criteria ' . json_encode($criteria, JSON_PRETTY_PRINT));
+                return;
             }
-        }
 
-        if ($removeUploads && ($fs = $this->getWpFilesystemModule(false))) {
-            $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
-        }
+            if ($removeTables) {
+                foreach ($this->grabBlogTableNames($blogId) as $tableName) {
+                    $this->dontHaveTableInDatabase($tableName);
+                }
+            }
 
-        $this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
+            if ($removeUploads && ($fs = $this->getWpFilesystemModule(false))) {
+                $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
+            }
+
+            $this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
+        }
     }
 
     /**
@@ -2106,7 +2120,7 @@ class WPDb extends Db
      */
     public function dontSeeBlogInDatabase(array $criteria)
     {
-        $this->dontSeeInDatabase($this->grabBlogsTableName(), $criteria);
+        $this->dontSeeInDatabase($this->grabBlogsTableName(), $this->prepareBlogCriteria($criteria));
     }
 
     /**
@@ -2905,5 +2919,13 @@ class WPDb extends Db
     public function grabBlogPath($blogId)
     {
         return $this->grabFromDatabase($this->grabBlogsTableName(), 'path', ['blog_id' => $blogId]);
+    }
+
+    protected function prepareBlogCriteria(array $criteria)
+    {
+        if (isset($criteria['path']) && $criteria['path'] !== '/') {
+            $criteria['path'] = '/' . trim($criteria['path'], '/') . '/';
+        }
+        return $criteria;
     }
 }

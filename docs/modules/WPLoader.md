@@ -5,47 +5,45 @@
 <nav>
 	<ul>
 		<li>
-			<a href="#activatePlugins">activatePlugins</a>
+			<a href="#activateplugins">activatePlugins</a>
 		</li>
 		<li>
-			<a href="#bootstrapActions">bootstrapActions</a>
+			<a href="#bootstrapactions">bootstrapActions</a>
 		</li>
 		<li>
 			<a href="#factory">factory</a>
 		</li>
 		<li>
-			<a href="#loadPlugins">loadPlugins</a>
+			<a href="#loadplugins">loadPlugins</a>
 		</li>
 		<li>
-			<a href="#switchTheme">switchTheme</a>
+			<a href="#switchtheme">switchTheme</a>
 		</li>
 	</ul>
 </nav>
 
-###activatePlugins
+<h3>activatePlugins</h3>
 ***
 
-</br>
+  
 
-###bootstrapActions
+<h3>bootstrapActions</h3>
 ***
 Calls a list of user-defined actions needed in tests.
-</br>
+  
 
-###factory
+<h3>factory</h3>
 ***
 Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
-</br>
+  
 
-###loadPlugins
+<h3>loadPlugins</h3>
 ***
 Loads the plugins required by the test.
-</br>
+  
 
-###switchTheme
+<h3>switchTheme</h3>
 ***
-
-</br>
 </br>
 
 *This class extends \Codeception\Module*

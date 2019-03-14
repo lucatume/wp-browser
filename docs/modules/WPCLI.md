@@ -17,12 +17,12 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 			<a href="#cli">cli</a>
 		</li>
 		<li>
-			<a href="#cliToArray">cliToArray</a>
+			<a href="#clitoarray">cliToArray</a>
 		</li>
 	</ul>
 </nav>
 
-###cli
+<h3>cli</h3>
 ***
 Executes a wp-cli command targeting the test WordPress installation.
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
@@ -30,11 +30,11 @@ Executes a wp-cli command targeting the test WordPress installation.
     // Change a user password.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$userCommand</strong> = <em>`'core version'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
-</br>
 
-###cliToArray
+* `string` **$userCommand** - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.
+  
+
+<h3>cliToArray</h3>
 ***
 Returns the output of a wp-cli command as an array.
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
@@ -46,10 +46,9 @@ Returns the output of a wp-cli command as an array.
          });
     });</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$userCommand</strong> = <em>`'post list --format=ids'`</em> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
-<li><em>\callable</em> <strong>$splitCallback</strong> = <em>null</em> - An optional callback function in charge of splitting the results array.</li></ul>
-</br>
+
+* `string` **$userCommand** - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.
+* `\callable` **$splitCallback** - An optional callback function in charge of splitting the results array.
 </br>
 
 *This class extends \Codeception\Module*

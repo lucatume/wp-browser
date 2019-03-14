@@ -116,7 +116,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-        $str = PHP_EOL . '###' . $func->getName() . PHP_EOL . '***' . PHP_EOL;
+        $str = PHP_EOL . '<h3>' . $func->getName() . '</h3>' . PHP_EOL . '***' . PHP_EOL;
         $str .= $func->getDescription();
 
         if ($func->getExample()) {
@@ -125,14 +125,10 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             $str .= PHP_EOL . $example;
         }
         if ($func->hasParams()) {
-            $str .= PHP_EOL . '#### Parameters' . PHP_EOL . '<ul>';
+            $str .= PHP_EOL . '#### Parameters' . PHP_EOL;
             $params = [];
             foreach ($func->getParams() as $param) {
-                $paramStr = '<li><em>' . $param->getType() . '</em> <strong>' . $param->getName() . '</strong>';
-
-                if ($param->getDefault()) {
-                    $paramStr .= ' = <em>' . $param->getDefault() . '</em>';
-                }
+                $paramStr = sprintf('* `%s` **%s**', $param->getType(), $param->getName());
 
                 $description = $param->getDescription();
 
@@ -140,13 +136,12 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                     $paramStr .= ' - ' . $this->parser->line($param->getDescription());
                 }
 
-                $paramStr .= '</li>';
                 $params[] = $paramStr;
             }
-            $str .= PHP_EOL . implode(PHP_EOL, $params) . '</ul>';
+            $str .= PHP_EOL . implode(PHP_EOL, $params);
         }
 
-        $this->output .= PHP_EOL . $str . PHP_EOL . '</br>';
+        $this->output .= PHP_EOL . $str . PHP_EOL  . '  ';
         $this->index[] = $func->getName();
         return $str;
     }
@@ -169,7 +164,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         $toc = '<nav>' . "\n\t<ul>";
         foreach ($this->index as $funcName) {
-            $toc .= "\n\t\t\<li>\n\t\t\t" . '<a href="#' . $funcName . '">' . $funcName . '</a>' . "\n\t\t</li>";
+            $toc .= "\n\t\t\<li>\n\t\t\t" . '<a href="#' . strtolower($funcName) . '">' . $funcName . '</a>' . "\n\t\t</li>";
         }
 
         $toc .= "\n\t</ul>" . PHP_EOL . '</nav>' . PHP_EOL;

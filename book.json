@@ -6,5 +6,9 @@
   "structure": {
     "readme": "welcome.md",
     "summary": "summary.md"
-  }
+  },
+  "plugins": [
+    "favicon",
+    "expandable-chapters"
+  ]
 }

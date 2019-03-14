@@ -24,9 +24,9 @@ if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
 }
 endef
 
-docker/parallel-lint/id:
+docker/parallel-lint/id: docker/parallel-lint/id
 	# Builds the Docker-based parallel-lint util.
-	docker build --iidfile ./docker/parallel-lint/id ./docker/parallel-lint --tag parallel-lint:5.6
+	docker build --force-rm --iidfile docker/parallel-lint/id ./docker/parallel-lint --tag lucatume/parallel-lint:5.6
 
 lint: docker/parallel-lint/id src
 	# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
@@ -147,9 +147,9 @@ down:
 	# Gracefully stop the Docker containers.
 	docker-compose -f docker/docker-compose.yml down
 
-docker/markdown-toc/id:
+docker/markdown-toc/id: docker/markdown-toc/id
 	# Builds the Docker-based markdown-toc util.
-	docker build --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag md-toc:latest
+	docker build --force-rm --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag lucatume/md-toc:latest
 
 toc: docker/markdown-toc/id
 	# Re-builds the Readme ToC.
@@ -179,6 +179,14 @@ module_docs: composer.lock src/Codeception/Module
 		rm doc.tmp; \
 	done;
 
-gitbook_serve: module_docs
+docker/gitbook/id: docker/gitbook/id
+	docker build --force-rm --iidfile docker/gitbook/id ./docker/gitbook --tag lucatume/gitbook:latest
+
+duplicate_gitbook_files:
 	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
-	docker run --rm -v "${CURDIR}:/gitbook" -p 4000:4000 billryan/gitbook gitbook serve --live
+
+gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs
+	docker run --rm -it -v "${CURDIR}:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook install && gitbook serve --live
+
+gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs
+	docker run --rm -it -v "${CURDIR}:/gitbook" lucatume/gitbook gitbook install && gitbook build

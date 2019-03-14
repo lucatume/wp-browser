@@ -10,398 +10,398 @@ The module provides methods to read, write and update the WordPress database **d
 <nav>
 	<ul>
 		<li>
-			<a href="#countRowsInDatabase">countRowsInDatabase</a>
+			<a href="#countrowsindatabase">countRowsInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveAttachmentFilesInDatabase">dontHaveAttachmentFilesInDatabase</a>
+			<a href="#donthaveattachmentfilesindatabase">dontHaveAttachmentFilesInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveAttachmentInDatabase">dontHaveAttachmentInDatabase</a>
+			<a href="#donthaveattachmentindatabase">dontHaveAttachmentInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveBlogInDatabase">dontHaveBlogInDatabase</a>
+			<a href="#donthaveblogindatabase">dontHaveBlogInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveCommentInDatabase">dontHaveCommentInDatabase</a>
+			<a href="#donthavecommentindatabase">dontHaveCommentInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveCommentMetaInDatabase">dontHaveCommentMetaInDatabase</a>
+			<a href="#donthavecommentmetaindatabase">dontHaveCommentMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveInDatabase">dontHaveInDatabase</a>
+			<a href="#donthaveindatabase">dontHaveInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveLinkInDatabase">dontHaveLinkInDatabase</a>
+			<a href="#donthavelinkindatabase">dontHaveLinkInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveOptionInDatabase">dontHaveOptionInDatabase</a>
+			<a href="#donthaveoptionindatabase">dontHaveOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHavePostInDatabase">dontHavePostInDatabase</a>
+			<a href="#donthavepostindatabase">dontHavePostInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHavePostMetaInDatabase">dontHavePostMetaInDatabase</a>
+			<a href="#donthavepostmetaindatabase">dontHavePostMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveSiteOptionInDatabase">dontHaveSiteOptionInDatabase</a>
+			<a href="#donthavesiteoptionindatabase">dontHaveSiteOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveSiteTransientInDatabase">dontHaveSiteTransientInDatabase</a>
+			<a href="#donthavesitetransientindatabase">dontHaveSiteTransientInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTableInDatabase">dontHaveTableInDatabase</a>
+			<a href="#donthavetableindatabase">dontHaveTableInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTermInDatabase">dontHaveTermInDatabase</a>
+			<a href="#donthavetermindatabase">dontHaveTermInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTermMetaInDatabase">dontHaveTermMetaInDatabase</a>
+			<a href="#donthavetermmetaindatabase">dontHaveTermMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTermRelationshipInDatabase">dontHaveTermRelationshipInDatabase</a>
+			<a href="#donthavetermrelationshipindatabase">dontHaveTermRelationshipInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTermTaxonomyInDatabase">dontHaveTermTaxonomyInDatabase</a>
+			<a href="#donthavetermtaxonomyindatabase">dontHaveTermTaxonomyInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveTransientInDatabase">dontHaveTransientInDatabase</a>
+			<a href="#donthavetransientindatabase">dontHaveTransientInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveUserInDatabase">dontHaveUserInDatabase</a>
+			<a href="#donthaveuserindatabase">dontHaveUserInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontHaveUserInDatabaseWithEmail">dontHaveUserInDatabaseWithEmail</a>
+			<a href="#donthaveuserindatabasewithemail">dontHaveUserInDatabaseWithEmail</a>
 		</li>
 		<li>
-			<a href="#dontHaveUserMetaInDatabase">dontHaveUserMetaInDatabase</a>
+			<a href="#donthaveusermetaindatabase">dontHaveUserMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeAttachmentInDatabase">dontSeeAttachmentInDatabase</a>
+			<a href="#dontseeattachmentindatabase">dontSeeAttachmentInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeBlogInDatabase">dontSeeBlogInDatabase</a>
+			<a href="#dontseeblogindatabase">dontSeeBlogInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeCommentInDatabase">dontSeeCommentInDatabase</a>
+			<a href="#dontseecommentindatabase">dontSeeCommentInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeCommentMetaInDatabase">dontSeeCommentMetaInDatabase</a>
+			<a href="#dontseecommentmetaindatabase">dontSeeCommentMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeLinkInDatabase">dontSeeLinkInDatabase</a>
+			<a href="#dontseelinkindatabase">dontSeeLinkInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeOptionInDatabase">dontSeeOptionInDatabase</a>
+			<a href="#dontseeoptionindatabase">dontSeeOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeePageInDatabase">dontSeePageInDatabase</a>
+			<a href="#dontseepageindatabase">dontSeePageInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeePostInDatabase">dontSeePostInDatabase</a>
+			<a href="#dontseepostindatabase">dontSeePostInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeePostMetaInDatabase">dontSeePostMetaInDatabase</a>
+			<a href="#dontseepostmetaindatabase">dontSeePostMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeTableInDatabase">dontSeeTableInDatabase</a>
+			<a href="#dontseetableindatabase">dontSeeTableInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeTermInDatabase">dontSeeTermInDatabase</a>
+			<a href="#dontseetermindatabase">dontSeeTermInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeTermMetaInDatabase">dontSeeTermMetaInDatabase</a>
+			<a href="#dontseetermmetaindatabase">dontSeeTermMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeTermTaxonomyInDatabase">dontSeeTermTaxonomyInDatabase</a>
+			<a href="#dontseetermtaxonomyindatabase">dontSeeTermTaxonomyInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeUserInDatabase">dontSeeUserInDatabase</a>
+			<a href="#dontseeuserindatabase">dontSeeUserInDatabase</a>
 		</li>
 		<li>
-			<a href="#dontSeeUserMetaInDatabase">dontSeeUserMetaInDatabase</a>
+			<a href="#dontseeusermetaindatabase">dontSeeUserMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#getSiteDomain">getSiteDomain</a>
+			<a href="#getsitedomain">getSiteDomain</a>
 		</li>
 		<li>
-			<a href="#grabAllFromDatabase">grabAllFromDatabase</a>
+			<a href="#graballfromdatabase">grabAllFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabAttachmentAttachedFile">grabAttachmentAttachedFile</a>
+			<a href="#grabattachmentattachedfile">grabAttachmentAttachedFile</a>
 		</li>
 		<li>
-			<a href="#grabAttachmentMetadata">grabAttachmentMetadata</a>
+			<a href="#grabattachmentmetadata">grabAttachmentMetadata</a>
 		</li>
 		<li>
-			<a href="#grabBlogDomain">grabBlogDomain</a>
+			<a href="#grabblogdomain">grabBlogDomain</a>
 		</li>
 		<li>
-			<a href="#grabBlogPath">grabBlogPath</a>
+			<a href="#grabblogpath">grabBlogPath</a>
 		</li>
 		<li>
-			<a href="#grabBlogTableName">grabBlogTableName</a>
+			<a href="#grabblogtablename">grabBlogTableName</a>
 		</li>
 		<li>
-			<a href="#grabBlogTableNames">grabBlogTableNames</a>
+			<a href="#grabblogtablenames">grabBlogTableNames</a>
 		</li>
 		<li>
-			<a href="#grabBlogTablePrefix">grabBlogTablePrefix</a>
+			<a href="#grabblogtableprefix">grabBlogTablePrefix</a>
 		</li>
 		<li>
-			<a href="#grabBlogVersionsTableName">grabBlogVersionsTableName</a>
+			<a href="#grabblogversionstablename">grabBlogVersionsTableName</a>
 		</li>
 		<li>
-			<a href="#grabBlogsTableName">grabBlogsTableName</a>
+			<a href="#grabblogstablename">grabBlogsTableName</a>
 		</li>
 		<li>
-			<a href="#grabCommentmetaTableName">grabCommentmetaTableName</a>
+			<a href="#grabcommentmetatablename">grabCommentmetaTableName</a>
 		</li>
 		<li>
-			<a href="#grabCommentsTableName">grabCommentsTableName</a>
+			<a href="#grabcommentstablename">grabCommentsTableName</a>
 		</li>
 		<li>
-			<a href="#grabLatestEntryByFromDatabase">grabLatestEntryByFromDatabase</a>
+			<a href="#grablatestentrybyfromdatabase">grabLatestEntryByFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabLinksTableName">grabLinksTableName</a>
+			<a href="#grablinkstablename">grabLinksTableName</a>
 		</li>
 		<li>
-			<a href="#grabOptionFromDatabase">grabOptionFromDatabase</a>
+			<a href="#graboptionfromdatabase">grabOptionFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabPostMetaFromDatabase">grabPostMetaFromDatabase</a>
+			<a href="#grabpostmetafromdatabase">grabPostMetaFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabPostmetaTableName">grabPostmetaTableName</a>
+			<a href="#grabpostmetatablename">grabPostmetaTableName</a>
 		</li>
 		<li>
-			<a href="#grabPostsTableName">grabPostsTableName</a>
+			<a href="#grabpoststablename">grabPostsTableName</a>
 		</li>
 		<li>
-			<a href="#grabPrefixedTableNameFor">grabPrefixedTableNameFor</a>
+			<a href="#grabprefixedtablenamefor">grabPrefixedTableNameFor</a>
 		</li>
 		<li>
-			<a href="#grabRegistrationLogTableName">grabRegistrationLogTableName</a>
+			<a href="#grabregistrationlogtablename">grabRegistrationLogTableName</a>
 		</li>
 		<li>
-			<a href="#grabSignupsTableName">grabSignupsTableName</a>
+			<a href="#grabsignupstablename">grabSignupsTableName</a>
 		</li>
 		<li>
-			<a href="#grabSiteMetaTableName">grabSiteMetaTableName</a>
+			<a href="#grabsitemetatablename">grabSiteMetaTableName</a>
 		</li>
 		<li>
-			<a href="#grabSiteOptionFromDatabase">grabSiteOptionFromDatabase</a>
+			<a href="#grabsiteoptionfromdatabase">grabSiteOptionFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabSiteTableName">grabSiteTableName</a>
+			<a href="#grabsitetablename">grabSiteTableName</a>
 		</li>
 		<li>
-			<a href="#grabSiteTransientFromDatabase">grabSiteTransientFromDatabase</a>
+			<a href="#grabsitetransientfromdatabase">grabSiteTransientFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabSiteUrl">grabSiteUrl</a>
+			<a href="#grabsiteurl">grabSiteUrl</a>
 		</li>
 		<li>
-			<a href="#grabTablePrefix">grabTablePrefix</a>
+			<a href="#grabtableprefix">grabTablePrefix</a>
 		</li>
 		<li>
-			<a href="#grabTermIdFromDatabase">grabTermIdFromDatabase</a>
+			<a href="#grabtermidfromdatabase">grabTermIdFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabTermMetaTableName">grabTermMetaTableName</a>
+			<a href="#grabtermmetatablename">grabTermMetaTableName</a>
 		</li>
 		<li>
-			<a href="#grabTermRelationshipsTableName">grabTermRelationshipsTableName</a>
+			<a href="#grabtermrelationshipstablename">grabTermRelationshipsTableName</a>
 		</li>
 		<li>
-			<a href="#grabTermTaxonomyIdFromDatabase">grabTermTaxonomyIdFromDatabase</a>
+			<a href="#grabtermtaxonomyidfromdatabase">grabTermTaxonomyIdFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabTermTaxonomyTableName">grabTermTaxonomyTableName</a>
+			<a href="#grabtermtaxonomytablename">grabTermTaxonomyTableName</a>
 		</li>
 		<li>
-			<a href="#grabTermsTableName">grabTermsTableName</a>
+			<a href="#grabtermstablename">grabTermsTableName</a>
 		</li>
 		<li>
-			<a href="#grabUserIdFromDatabase">grabUserIdFromDatabase</a>
+			<a href="#grabuseridfromdatabase">grabUserIdFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabUserMetaFromDatabase">grabUserMetaFromDatabase</a>
+			<a href="#grabusermetafromdatabase">grabUserMetaFromDatabase</a>
 		</li>
 		<li>
-			<a href="#grabUsermetaTableName">grabUsermetaTableName</a>
+			<a href="#grabusermetatablename">grabUsermetaTableName</a>
 		</li>
 		<li>
-			<a href="#grabUsersTableName">grabUsersTableName</a>
+			<a href="#grabuserstablename">grabUsersTableName</a>
 		</li>
 		<li>
-			<a href="#haveAttachmentInDatabase">haveAttachmentInDatabase</a>
+			<a href="#haveattachmentindatabase">haveAttachmentInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveBlogInDatabase">haveBlogInDatabase</a>
+			<a href="#haveblogindatabase">haveBlogInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveCommentInDatabase">haveCommentInDatabase</a>
+			<a href="#havecommentindatabase">haveCommentInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveCommentMetaInDatabase">haveCommentMetaInDatabase</a>
+			<a href="#havecommentmetaindatabase">haveCommentMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveLinkInDatabase">haveLinkInDatabase</a>
+			<a href="#havelinkindatabase">haveLinkInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyBlogsInDatabase">haveManyBlogsInDatabase</a>
+			<a href="#havemanyblogsindatabase">haveManyBlogsInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyCommentsInDatabase">haveManyCommentsInDatabase</a>
+			<a href="#havemanycommentsindatabase">haveManyCommentsInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyLinksInDatabase">haveManyLinksInDatabase</a>
+			<a href="#havemanylinksindatabase">haveManyLinksInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyPostsInDatabase">haveManyPostsInDatabase</a>
+			<a href="#havemanypostsindatabase">haveManyPostsInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyTermsInDatabase">haveManyTermsInDatabase</a>
+			<a href="#havemanytermsindatabase">haveManyTermsInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveManyUsersInDatabase">haveManyUsersInDatabase</a>
+			<a href="#havemanyusersindatabase">haveManyUsersInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveMenuInDatabase">haveMenuInDatabase</a>
+			<a href="#havemenuindatabase">haveMenuInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveMenuItemInDatabase">haveMenuItemInDatabase</a>
+			<a href="#havemenuitemindatabase">haveMenuItemInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveOptionInDatabase">haveOptionInDatabase</a>
+			<a href="#haveoptionindatabase">haveOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#havePageInDatabase">havePageInDatabase</a>
+			<a href="#havepageindatabase">havePageInDatabase</a>
 		</li>
 		<li>
-			<a href="#havePostInDatabase">havePostInDatabase</a>
+			<a href="#havepostindatabase">havePostInDatabase</a>
 		</li>
 		<li>
-			<a href="#havePostmetaInDatabase">havePostmetaInDatabase</a>
+			<a href="#havepostmetaindatabase">havePostmetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveSiteOptionInDatabase">haveSiteOptionInDatabase</a>
+			<a href="#havesiteoptionindatabase">haveSiteOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveSiteTransientInDatabase">haveSiteTransientInDatabase</a>
+			<a href="#havesitetransientindatabase">haveSiteTransientInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveTermInDatabase">haveTermInDatabase</a>
+			<a href="#havetermindatabase">haveTermInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveTermMetaInDatabase">haveTermMetaInDatabase</a>
+			<a href="#havetermmetaindatabase">haveTermMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveTermRelationshipInDatabase">haveTermRelationshipInDatabase</a>
+			<a href="#havetermrelationshipindatabase">haveTermRelationshipInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveTransientInDatabase">haveTransientInDatabase</a>
+			<a href="#havetransientindatabase">haveTransientInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveUserCapabilitiesInDatabase">haveUserCapabilitiesInDatabase</a>
+			<a href="#haveusercapabilitiesindatabase">haveUserCapabilitiesInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveUserInDatabase">haveUserInDatabase</a>
+			<a href="#haveuserindatabase">haveUserInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveUserLevelsInDatabase">haveUserLevelsInDatabase</a>
+			<a href="#haveuserlevelsindatabase">haveUserLevelsInDatabase</a>
 		</li>
 		<li>
-			<a href="#haveUserMetaInDatabase">haveUserMetaInDatabase</a>
+			<a href="#haveusermetaindatabase">haveUserMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#importSqlDumpFile">importSqlDumpFile</a>
+			<a href="#importsqldumpfile">importSqlDumpFile</a>
 		</li>
 		<li>
-			<a href="#seeAttachmentInDatabase">seeAttachmentInDatabase</a>
+			<a href="#seeattachmentindatabase">seeAttachmentInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeBlogInDatabase">seeBlogInDatabase</a>
+			<a href="#seeblogindatabase">seeBlogInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeCommentInDatabase">seeCommentInDatabase</a>
+			<a href="#seecommentindatabase">seeCommentInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeCommentMetaInDatabase">seeCommentMetaInDatabase</a>
+			<a href="#seecommentmetaindatabase">seeCommentMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeLinkInDatabase">seeLinkInDatabase</a>
+			<a href="#seelinkindatabase">seeLinkInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeOptionInDatabase">seeOptionInDatabase</a>
+			<a href="#seeoptionindatabase">seeOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#seePageInDatabase">seePageInDatabase</a>
+			<a href="#seepageindatabase">seePageInDatabase</a>
 		</li>
 		<li>
-			<a href="#seePostInDatabase">seePostInDatabase</a>
+			<a href="#seepostindatabase">seePostInDatabase</a>
 		</li>
 		<li>
-			<a href="#seePostMetaInDatabase">seePostMetaInDatabase</a>
+			<a href="#seepostmetaindatabase">seePostMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#seePostWithTermInDatabase">seePostWithTermInDatabase</a>
+			<a href="#seepostwithtermindatabase">seePostWithTermInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeSiteOptionInDatabase">seeSiteOptionInDatabase</a>
+			<a href="#seesiteoptionindatabase">seeSiteOptionInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeSiteSiteTransientInDatabase">seeSiteSiteTransientInDatabase</a>
+			<a href="#seesitesitetransientindatabase">seeSiteSiteTransientInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeTableInDatabase">seeTableInDatabase</a>
+			<a href="#seetableindatabase">seeTableInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeTermInDatabase">seeTermInDatabase</a>
+			<a href="#seetermindatabase">seeTermInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeTermMetaInDatabase">seeTermMetaInDatabase</a>
+			<a href="#seetermmetaindatabase">seeTermMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeTermRelationshipInDatabase">seeTermRelationshipInDatabase</a>
+			<a href="#seetermrelationshipindatabase">seeTermRelationshipInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeTermTaxonomyInDatabase">seeTermTaxonomyInDatabase</a>
+			<a href="#seetermtaxonomyindatabase">seeTermTaxonomyInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeUserInDatabase">seeUserInDatabase</a>
+			<a href="#seeuserindatabase">seeUserInDatabase</a>
 		</li>
 		<li>
-			<a href="#seeUserMetaInDatabase">seeUserMetaInDatabase</a>
+			<a href="#seeusermetaindatabase">seeUserMetaInDatabase</a>
 		</li>
 		<li>
-			<a href="#useBlog">useBlog</a>
+			<a href="#useblog">useBlog</a>
 		</li>
 		<li>
-			<a href="#useMainBlog">useMainBlog</a>
+			<a href="#usemainblog">useMainBlog</a>
 		</li>
 		<li>
-			<a href="#useTheme">useTheme</a>
+			<a href="#usetheme">useTheme</a>
 		</li>
 	</ul>
 </nav>
 
-###countRowsInDatabase
+<h3>countRowsInDatabase</h3>
 ***
 Returns the number of table rows matching a criteria.
 <pre><code class="language-php">    $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'draft' ]);
     $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'private' ]);
     // Make sure there are now the expected number of draft posts.
     $postsTable = $I-&gt;grabPostsTableName();
-    $I-&gt;countRowsInDatabase($postsTable, ['post_status' =&gt; 'draft']);</code></pre>
+    $draftsCount = $I-&gt;countRowsInDatabase($postsTable, ['post_status' =&gt; 'draft']);</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$table</strong> - The table to count the rows in.</li>
-<li><em>array</em> <strong>$criteria</strong> = <em>array()</em> - Search criteria, if empty all table rows will be counted.</li></ul>
-</br>
 
-###dontHaveAttachmentFilesInDatabase
+* `string` **$table** - The table to count the rows in.
+* `array` **$criteria** - Search criteria, if empty all table rows will be counted.
+  
+
+<h3>dontHaveAttachmentFilesInDatabase</h3>
 ***
 Removes all the files attached with an attachment post, it will not remove the database entries. Requires the `WPFilesystem` module to be loaded in the suite.
 <pre><code class="language-php">    $posts = $I-&gt;grabPostsTableName();
@@ -409,11 +409,11 @@ Removes all the files attached with an attachment post, it will not remove the d
     // This will only remove the files, not the database entries.
     $I-&gt;dontHaveAttachmentFilesInDatabase($attachmentIds);</code></pre>
 #### Parameters
-<ul>
-<li><em>array/int</em> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
-</br>
 
-###dontHaveAttachmentInDatabase
+* `array/int` **$attachmentIds** - An attachment post ID or an array of attachment post IDs.
+  
+
+<h3>dontHaveAttachmentInDatabase</h3>
 ***
 Removes an attachment from the posts table.
 <pre><code>    $postmeta = $I-&gt;grabpostmetatablename();
@@ -426,344 +426,350 @@ Removes an attachment from the posts table.
     // Remove the database entry (including postmeta) and the files.
     $I-&gt;dontHaveAttachmentInDatabase($thumbnailId, true, true);</code></pre>
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts table.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the attachment will be purged too.</li>
-<li><em>bool</em> <strong>$removeFiles</strong> = <em>false</em> - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in the suite.</li></ul>
-</br>
 
-###dontHaveBlogInDatabase
+* `array` **$criteria** - An array of search criteria to find the attachment post in the posts table.
+* `bool` **$purgeMeta** - If set to <code>true</code> then the meta for the attachment will be purged too.
+* `bool` **$removeFiles** - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in the suite.
+  
+
+<h3>dontHaveBlogInDatabase</h3>
 ***
-Removes a blog entry and tables from the database.
+Removes one ore more blogs frome the database.
+<pre><code class="language-php">    // Remove the blog, all its tables and files.
+    $I-&gt;dontHaveBlogInDatabase(['path' =&gt; 'test/one']);
+    // Remove the blog entry, not the tables though.
+    $I-&gt;dontHaveBlogInDatabase(['blog_id' =&gt; $blogId]);
+    // Remove multiple blogs.
+    $I-&gt;dontHaveBlogInDatabase(['domain' =&gt; 'test']);</code></pre>
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria to find the blog row in the blogs table.</li>
-<li><em>bool</em> <strong>$removeTables</strong> = <em>true</em> - Remove the blog tables.</li>
-<li><em>bool</em> <strong>$removeUploads</strong> = <em>true</em> - Remove the blog uploads; requires the <code>WPFilesystem</code> module to be loaded in the suite.</li></ul>
-</br>
 
-###dontHaveCommentInDatabase
+* `array` **$criteria** - An array of search criteria to find the blog rows in the blogs table.
+* `bool` **$removeTables** - Remove the blog tables.
+* `bool` **$removeUploads** - Remove the blog uploads; requires the <code>WPFilesystem</code> module to be loaded in the suite.
+  
+
+<h3>dontHaveCommentInDatabase</h3>
 ***
 Removes an entry from the comments table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the comment will be purged too.</li></ul>
-</br>
 
-###dontHaveCommentMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+* `bool` **$purgeMeta** - If set to <code>true</code> then the meta for the comment will be purged too.
+  
+
+<h3>dontHaveCommentMetaInDatabase</h3>
 ***
 Removes an entry from the commentmeta table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveInDatabase</h3>
 ***
 Deletes a database entry.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$table</strong> - The table name.</li>
-<li><em>array</em> <strong>$criteria</strong> - An associative array of the column names and values to use as deletion criteria.</li></ul>
-</br>
 
-###dontHaveLinkInDatabase
+* `string` **$table** - The table name.
+* `array` **$criteria** - An associative array of the column names and values to use as deletion criteria.
+  
+
+<h3>dontHaveLinkInDatabase</h3>
 ***
 Removes a link from the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveOptionInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveOptionInDatabase</h3>
 ***
 Removes an entry from the options table.
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$key</strong></li>
-<li><em>null</em> <strong>$value</strong> = <em>null</em></li></ul>
-</br>
 
-###dontHavePostInDatabase
+* `mixed` **$key**
+* `null` **$value**
+  
+
+<h3>dontHavePostInDatabase</h3>
 ***
 Removes an entry from the posts table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - If set to <code>true</code> then the meta for the post will be purged too.</li></ul>
-</br>
 
-###dontHavePostMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+* `bool` **$purgeMeta** - If set to <code>true</code> then the meta for the post will be purged too.
+  
+
+<h3>dontHavePostMetaInDatabase</h3>
 ***
 Removes an entry from the postmeta table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveSiteOptionInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveSiteOptionInDatabase</h3>
 ***
 Removes a site option from the database.
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$key</strong></li>
-<li><em>null</em> <strong>$value</strong> = <em>null</em></li></ul>
-</br>
 
-###dontHaveSiteTransientInDatabase
+* `mixed` **$key**
+* `null` **$value**
+  
+
+<h3>dontHaveSiteTransientInDatabase</h3>
 ***
 Removes a site transient from the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li></ul>
-</br>
 
-###dontHaveTableInDatabase
+* `string` **$key**
+  
+
+<h3>dontHaveTableInDatabase</h3>
 ***
 Removes a table from the database. The case where a table does not exist is handled without raising an error.
 <pre><code class="language-php">    $ordersTable = $I-&gt;grabPrefixedTableNameFor('orders');
     $I-&gt;dontHaveTableInDatabase($ordersTable);</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$fullTableName</strong> - The full table name, including the table prefix.</li></ul>
-</br>
 
-###dontHaveTermInDatabase
+* `string` **$fullTableName** - The full table name, including the table prefix.
+  
+
+<h3>dontHaveTermInDatabase</h3>
 ***
 Removes a term from the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - Whether the terms meta should be purged along side with the meta or not.</li></ul>
-</br>
 
-###dontHaveTermMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+* `bool` **$purgeMeta** - Whether the terms meta should be purged along side with the meta or not.
+  
+
+<h3>dontHaveTermMetaInDatabase</h3>
 ***
 Removes a term meta from the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveTermRelationshipInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveTermRelationshipInDatabase</h3>
 ***
 Removes an entry from the term_relationships table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveTermTaxonomyInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveTermTaxonomyInDatabase</h3>
 ***
 Removes an entry from the term_taxonomy table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontHaveTransientInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontHaveTransientInDatabase</h3>
 ***
 Removes a transient from the database.
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$transient</strong></li></ul>
-</br>
 
-###dontHaveUserInDatabase
+* `mixed` **$transient**
+  
+
+<h3>dontHaveUserInDatabase</h3>
 ***
 Removes a user from the database.
 #### Parameters
-<ul>
-<li><em>int/string</em> <strong>$userIdOrLogin</strong></li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - Whether the user meta should be purged alongside the user or not.</li></ul>
-</br>
 
-###dontHaveUserInDatabaseWithEmail
+* `int/string` **$userIdOrLogin**
+* `bool` **$purgeMeta** - Whether the user meta should be purged alongside the user or not.
+  
+
+<h3>dontHaveUserInDatabaseWithEmail</h3>
 ***
 Removes a user(s) from the database using the user email address.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$userEmail</strong></li>
-<li><em>bool</em> <strong>$purgeMeta</strong> = <em>true</em> - Whether the user meta should be purged alongside the user or not.</li></ul>
-</br>
 
-###dontHaveUserMetaInDatabase
+* `string` **$userEmail**
+* `bool` **$purgeMeta** - Whether the user meta should be purged alongside the user or not.
+  
+
+<h3>dontHaveUserMetaInDatabase</h3>
 ***
 Removes an entry from the usermeta table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeAttachmentInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeAttachmentInDatabase</h3>
 ***
 Checks that an attachment is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeBlogInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeBlogInDatabase</h3>
 ***
 Checks that a row is not present in the `blogs` table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeCommentInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeCommentInDatabase</h3>
 ***
 Checks that a comment is not in the database. Will look up the "comments" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###dontSeeCommentMetaInDatabase
+* `array` **$criteria**
+  
+
+<h3>dontSeeCommentMetaInDatabase</h3>
 ***
 Checks that a comment meta value is not in the database. Will look up the "commentmeta" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###dontSeeLinkInDatabase
+* `array` **$criteria**
+  
+
+<h3>dontSeeLinkInDatabase</h3>
 ***
 Checks that a link is not in the database. Will look up the "links" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeOptionInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeOptionInDatabase</h3>
 ***
 Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked for.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeePageInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeePageInDatabase</h3>
 ***
 Checks that a page is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeePostInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeePostInDatabase</h3>
 ***
 Checks that a post is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeePostMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeePostMetaInDatabase</h3>
 ***
 Checks that a post meta value is not there. If the meta value is an object or an array then the serialized version will be checked for.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeTableInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeTableInDatabase</h3>
 ***
 Checks that a table is not in the database.
 <pre><code class="language-php">    $options = $I-&gt;grabPrefixedTableNameFor('options');
     $I-&gt;dontHaveTableInDatabase($options)
     $I-&gt;dontSeeTableInDatabase($options);</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
-</br>
 
-###dontSeeTermInDatabase
+* `string` **$table** - The full table name, including the table prefix.
+  
+
+<h3>dontSeeTermInDatabase</h3>
 ***
 Makes sure a term is not in the database. Looks up both the `terms` table and the `term_taxonomy` tables. `term_taxonomy` tables.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
-</br>
 
-###dontSeeTermMetaInDatabase
+* `array` **$criteria** - An array of criteria to search for the term, can be columns from the <code>terms</code> and the
+  
+
+<h3>dontSeeTermMetaInDatabase</h3>
 ***
 Checks that a term meta is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeTermTaxonomyInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeTermTaxonomyInDatabase</h3>
 ***
 Checks that a term taxonomy is not in the database. Will look up the prefixed `term_taxonomy` table, e.g. `wp_term_taxonomy`.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeUserInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeUserInDatabase</h3>
 ***
 Checks that a user is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###dontSeeUserMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>dontSeeUserMetaInDatabase</h3>
 ***
 Check that a user meta value is not in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###getSiteDomain
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>getSiteDomain</h3>
 ***
 Returns the site domain inferred from the `url` set in the config.
-</br>
+  
 
-###grabAllFromDatabase
+<h3>grabAllFromDatabase</h3>
 ***
 Returns all entries matching a criteria from the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$table</strong></li>
-<li><em>string</em> <strong>$column</strong></li>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###grabAttachmentAttachedFile
+* `string` **$table**
+* `string` **$column**
+* `array` **$criteria**
+  
+
+<h3>grabAttachmentAttachedFile</h3>
 ***
 Returns the path, as stored in the database, of an attachment `_wp_attached_file` meta. The attached file is, usually, an attachment origal file.
 <pre><code class="language-php">    $file = $I-&gt;grabAttachmentAttachedFile($attachmentId);
     $fileInfo = new SplFileInfo($file);
     $I-&gt;assertEquals('jpg', $fileInfo-&gt;getExtension());</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
-</br>
 
-###grabAttachmentMetadata
+* `int` **$attachmentPostId** - The attachment post ID.
+  
+
+<h3>grabAttachmentMetadata</h3>
 ***
 Returns the metadata array for an attachment post. This is the value of the `_wp_attachment_metadata` meta.
 <pre><code class="language-php">    $metadata = $I-&gt;grabAttachmentMetadata($attachmentId);
     $I-&gt;assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
-</br>
 
-###grabBlogDomain
+* `int` **$attachmentPostId** - The attachment post ID.
+  
+
+<h3>grabBlogDomain</h3>
 ***
 
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$blogId</strong></li></ul>
-</br>
 
-###grabBlogPath
+* `mixed` **$blogId**
+  
+
+<h3>grabBlogPath</h3>
 ***
 Grabs a blog domain from the blogs table.
 <pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
@@ -771,21 +777,21 @@ Grabs a blog domain from the blogs table.
     $I-&gt;amOnSubdomain($path);
     $I-&gt;amOnPage('/');</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$blogId</strong> - The blog ID.</li></ul>
-</br>
 
-###grabBlogTableName
+* `int` **$blogId** - The blog ID.
+  
+
+<h3>grabBlogTableName</h3>
 ***
 Returns the full name of a table for a blog from a multisite installation database.
 <pre><code class="language-php">    $blogOptionTable = $I-&gt;grabBlogTableName($blogId, 'option');</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$blogId</strong> - The blog ID.</li>
-<li><em>string</em> <strong>$table</strong> - The table name, without table prefix.</li></ul>
-</br>
 
-###grabBlogTableNames
+* `int` **$blogId** - The blog ID.
+* `string` **$table** - The table name, without table prefix.
+  
+
+<h3>grabBlogTableNames</h3>
 ***
 Returns a list of tables for a blog ID.
 <pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
@@ -794,253 +800,253 @@ Returns a list of tables for a blog ID.
          return str_pos($tableName, 'options') !== false;
     });</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$blogId</strong> - The ID of the blog to fetch the tables for.</li></ul>
-</br>
 
-###grabBlogTablePrefix
+* `int` **$blogId** - The ID of the blog to fetch the tables for.
+  
+
+<h3>grabBlogTablePrefix</h3>
 ***
 Returns the table prefix for a blog.
 <pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
     $blogTablePrefix = $I-&gt;getBlogTablePrefix($blogId);
     $blogOrders = $I-&gt;blogTablePrefix . 'orders';</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$blogId</strong> - The blog ID.</li></ul>
-</br>
 
-###grabBlogVersionsTableName
+* `int` **$blogId** - The blog ID.
+  
+
+<h3>grabBlogVersionsTableName</h3>
 ***
 Gets the prefixed `blog_versions` table name.
-</br>
+  
 
-###grabBlogsTableName
+<h3>grabBlogsTableName</h3>
 ***
 Gets the prefixed `blogs` table name.
-</br>
+  
 
-###grabCommentmetaTableName
+<h3>grabCommentmetaTableName</h3>
 ***
 Returns the prefixed comment meta table name. E.g. `wp_commentmeta`.
-</br>
+  
 
-###grabCommentsTableName
+<h3>grabCommentsTableName</h3>
 ***
 Gets the comments table name.
-</br>
+  
 
-###grabLatestEntryByFromDatabase
+<h3>grabLatestEntryByFromDatabase</h3>
 ***
 Returns the id value of the last table entry.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$tableName</strong></li>
-<li><em>string</em> <strong>$idColumn</strong> = <em>`'ID'`</em></li></ul>
-</br>
 
-###grabLinksTableName
+* `string` **$tableName**
+* `string` **$idColumn**
+  
+
+<h3>grabLinksTableName</h3>
 ***
 Returns the prefixed links table name. E.g. `wp_links`.
-</br>
+  
 
-###grabOptionFromDatabase
+<h3>grabOptionFromDatabase</h3>
 ***
 Gets an option from the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$option_name</strong></li></ul>
-</br>
 
-###grabPostMetaFromDatabase
+* `string` **$option_name**
+  
+
+<h3>grabPostMetaFromDatabase</h3>
 ***
 Gets the value of one or more post meta values from the database.
 <pre><code class="language-php">    $thumbnail_id = $I-&gt;grabPostMetaFromDatabase($postId, '_thumbnail_id', true);</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$postId</strong> - The post ID.</li>
-<li><em>string</em> <strong>$metaKey</strong> - The key of the meta to retrieve.</li>
-<li><em>bool</em> <strong>$single</strong> = <em>false</em> - Whether to return a single meta value or an arrya of all available meta values.</li></ul>
-</br>
 
-###grabPostmetaTableName
+* `int` **$postId** - The post ID.
+* `string` **$metaKey** - The key of the meta to retrieve.
+* `bool` **$single** - Whether to return a single meta value or an arrya of all available meta values.
+  
+
+<h3>grabPostmetaTableName</h3>
 ***
 Returns the prefixed post meta table name.
-</br>
+  
 
-###grabPostsTableName
+<h3>grabPostsTableName</h3>
 ***
 Gets the posts table name.
-</br>
+  
 
-###grabPrefixedTableNameFor
+<h3>grabPrefixedTableNameFor</h3>
 ***
 Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. `users`) then the proper table name will be returned.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$tableName</strong> = <em>`''`</em> - The table name, e.g. <code>options</code>.</li></ul>
-</br>
 
-###grabRegistrationLogTableName
+* `string` **$tableName** - The table name, e.g. <code>options</code>.
+  
+
+<h3>grabRegistrationLogTableName</h3>
 ***
 Gets the prefixed `registration_log` table name.
-</br>
+  
 
-###grabSignupsTableName
+<h3>grabSignupsTableName</h3>
 ***
 Gets the prefixed `signups` table name.
-</br>
+  
 
-###grabSiteMetaTableName
+<h3>grabSiteMetaTableName</h3>
 ***
 Gets the prefixed `sitemeta` table name.
-</br>
+  
 
-###grabSiteOptionFromDatabase
+<h3>grabSiteOptionFromDatabase</h3>
 ***
 Gets a site option from the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li></ul>
-</br>
 
-###grabSiteTableName
+* `string` **$key**
+  
+
+<h3>grabSiteTableName</h3>
 ***
 Gets the prefixed `site` table name.
-</br>
+  
 
-###grabSiteTransientFromDatabase
+<h3>grabSiteTransientFromDatabase</h3>
 ***
 Gets a site transient from the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li></ul>
-</br>
 
-###grabSiteUrl
+* `string` **$key**
+  
+
+<h3>grabSiteUrl</h3>
 ***
 Returns the current site url as specified in the module configuration.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong> = <em>null</em> - A path that should be appended to the site URL.</li></ul>
-</br>
 
-###grabTablePrefix
+* `string` **$path** - A path that should be appended to the site URL.
+  
+
+<h3>grabTablePrefix</h3>
 ***
 Returns the table prefix, namespaced for secondary blogs if selected.
-</br>
+  
 
-###grabTermIdFromDatabase
+<h3>grabTermIdFromDatabase</h3>
 ***
 Gets a term from the database. Looks up the prefixed `terms` table, e.g. `wp_terms`.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###grabTermMetaTableName
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>grabTermMetaTableName</h3>
 ***
 Gets the terms meta table prefixed name. E.g.: `wp_termmeta`.
-</br>
+  
 
-###grabTermRelationshipsTableName
+<h3>grabTermRelationshipsTableName</h3>
 ***
 Gets the prefixed term relationships table name, e.g. `wp_term_relationships`.
-</br>
+  
 
-###grabTermTaxonomyIdFromDatabase
+<h3>grabTermTaxonomyIdFromDatabase</h3>
 ***
 Gets a `term_taxonomy_id` from the database. Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###grabTermTaxonomyTableName
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>grabTermTaxonomyTableName</h3>
 ***
 Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
-</br>
+  
 
-###grabTermsTableName
+<h3>grabTermsTableName</h3>
 ***
 Gets the prefixed terms table name, e.g. `wp_terms`.
-</br>
+  
 
-###grabUserIdFromDatabase
+<h3>grabUserIdFromDatabase</h3>
 ***
 Gets the a user ID from the database using the user login.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$userLogin</strong></li></ul>
-</br>
 
-###grabUserMetaFromDatabase
+* `string` **$userLogin**
+  
+
+<h3>grabUserMetaFromDatabase</h3>
 ***
 Gets a user meta from the database.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$userId</strong></li>
-<li><em>string</em> <strong>$meta_key</strong></li></ul>
-</br>
 
-###grabUsermetaTableName
+* `int` **$userId**
+* `string` **$meta_key**
+  
+
+<h3>grabUsermetaTableName</h3>
 ***
 Returns the prefixed `usermeta` table name, e.g. `wp_usermeta`.
-</br>
+  
 
-###grabUsersTableName
+<h3>grabUsersTableName</h3>
 ***
 Gets the users table name.
-</br>
+  
 
-###haveAttachmentInDatabase
+<h3>haveAttachmentInDatabase</h3>
 ***
 Creates the database entries representing an attachment and moves the attachment file to the right location. Requires the WPFilesystem module. should be used to build the "year/time" uploads sub-folder structure. image sizes created by default.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong> - The absolute path to the attachment file.</li>
-<li><em>string/string/int</em> <strong>$date</strong> = <em>`'now'`</em> - Either a string supported by the <code>strtotime</code> function or a UNIX timestamp that</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of values overriding the default ones.</li>
-<li><em>array</em> <strong>$imageSizes</strong> = <em>null</em> - An associative array in the format [ <size> =&gt; [<width>,<height>]] to override the</li></ul>
-</br>
 
-###haveBlogInDatabase
+* `string` **$file** - The absolute path to the attachment file.
+* `string/string/int` **$date** - Either a string supported by the <code>strtotime</code> function or a UNIX timestamp that
+* `array` **$overrides** - An associative array of values overriding the default ones.
+* `array` **$imageSizes** - An associative array in the format [ <size> =&gt; [<width>,<height>]] to override the
+  
+
+<h3>haveBlogInDatabase</h3>
 ***
 Inserts a blog in the `blogs` table. or subfolder (`true`)
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$domainOrPath</strong> - The subdomain or the path to the be used for the blog.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the defaults.</li>
-<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blog should be created as a subdomain (<code>true</code>)</li></ul>
-</br>
 
-###haveCommentInDatabase
+* `string` **$domainOrPath** - The subdomain or the path to the be used for the blog.
+* `array` **$overrides** - An array of values to override the defaults.
+* `bool` **$subdomain** - Whether the new blog should be created as a subdomain (<code>true</code>)
+  
+
+<h3>haveCommentInDatabase</h3>
 ***
 Inserts a comment in the database.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$comment_post_ID</strong> - The id of the post the comment refers to.</li>
-<li><em>array</em> <strong>$data</strong> = <em>array()</em> - The comment data overriding default and random generated values.</li></ul>
-</br>
 
-###haveCommentMetaInDatabase
+* `int` **$comment_post_ID** - The id of the post the comment refers to.
+* `array` **$data** - The comment data overriding default and random generated values.
+  
+
+<h3>haveCommentMetaInDatabase</h3>
 ***
 Inserts a comment meta field in the database. Array and object meta values will be serialized.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$comment_id</strong></li>
-<li><em>string</em> <strong>$meta_key</strong></li>
-<li><em>mixed</em> <strong>$meta_value</strong></li></ul>
-</br>
 
-###haveLinkInDatabase
+* `int` **$comment_id**
+* `string` **$meta_key**
+* `mixed` **$meta_value**
+  
+
+<h3>haveLinkInDatabase</h3>
 ***
 Inserts a link in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - The data to insert.</li></ul>
-</br>
 
-###haveManyBlogsInDatabase
+* `array` **$overrides** - The data to insert.
+  
+
+<h3>haveManyBlogsInDatabase</h3>
 ***
 Inserts many blogs in the database.
 <pre><code class="language-php">    $blogIds = $I-&gt;haveManyBlogsInDatabase(3, ['domain' =&gt;'test-{{n}}']);
@@ -1049,402 +1055,401 @@ Inserts many blogs in the database.
          $I-&gt;haveManuPostsInDatabase(3);
     }</code></pre>
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$count</strong> - The number of blogs to create.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the default ones; <code>{{n}}</code> will be replaced by the count.</li>
-<li><em>bool</em> <strong>$subdomain</strong> = <em>true</em> - Whether the new blogs should be created as a subdomain or subfolder.</li></ul>
-</br>
 
-###haveManyCommentsInDatabase
+* `int` **$count** - The number of blogs to create.
+* `array` **$overrides** - An array of values to override the default ones; <code>{{n}}</code> will be replaced by the count.
+* `bool` **$subdomain** - Whether the new blogs should be created as a subdomain or subfolder.
+  
+
+<h3>haveManyCommentsInDatabase</h3>
 ***
 Inserts many comments in the database.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$count</strong> - The number of comments to insert.</li>
-<li><em>int</em> <strong>$comment_post_ID</strong> - The comment parent post ID.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array to override the defaults.</li></ul>
-</br>
 
-###haveManyLinksInDatabase
+* `int` **$count** - The number of comments to insert.
+* `int` **$comment_post_ID** - The comment parent post ID.
+* `array` **$overrides** - An associative array to override the defaults.
+  
+
+<h3>haveManyLinksInDatabase</h3>
 ***
 Inserts many links in the database.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$count</strong></li>
-<li><em>array/array/null/array</em> <strong>$overrides</strong> = <em>array()</em></li></ul>
-</br>
 
-###haveManyPostsInDatabase
+* `int` **$count**
+* `array/array/null/array` **$overrides**
+  
+
+<h3>haveManyPostsInDatabase</h3>
 ***
 Inserts many posts in the database returning their IDs. An array of values to override the defaults. The `{{n}}` placeholder can be used to have the post count inserted in its place; e.g. `Post Title - {{n}}` will be set to `Post Title - 0` for the first post, `Post Title - 1` for the second one and so on. The same applies to meta values as well.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$count</strong> - The number of posts to insert.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em></li></ul>
-</br>
 
-###haveManyTermsInDatabase
+* `int` **$count** - The number of posts to insert.
+* `array` **$overrides**
+  
+
+<h3>haveManyTermsInDatabase</h3>
 ***
 Inserts many terms in the database.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$count</strong></li>
-<li><em>string</em> <strong>$name</strong> - The term name.</li>
-<li><em>string</em> <strong>$taxonomy</strong> - The taxonomy name.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of default overrides.</li></ul>
-</br>
 
-###haveManyUsersInDatabase
+* `int` **$count**
+* `string` **$name** - The term name.
+* `string` **$taxonomy** - The taxonomy name.
+* `array` **$overrides** - An associative array of default overrides.
+  
+
+<h3>haveManyUsersInDatabase</h3>
 ***
 
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$count</strong></li>
-<li><em>mixed</em> <strong>$user_login</strong></li>
-<li><em>string</em> <strong>$role</strong> = <em>`'subscriber'`</em></li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em></li></ul>
-</br>
 
-###haveMenuInDatabase
+* `mixed` **$count**
+* `mixed` **$user_login**
+* `string` **$role**
+* `array` **$overrides**
+  
+
+<h3>haveMenuInDatabase</h3>
 ***
 Creates and adds a menu to a theme location in the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$slug</strong> - The menu slug.</li>
-<li><em>string</em> <strong>$location</strong> - The theme menu location the menu will be assigned to.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the defaults.</li></ul>
-</br>
 
-###haveMenuItemInDatabase
+* `string` **$slug** - The menu slug.
+* `string` **$location** - The theme menu location the menu will be assigned to.
+* `array` **$overrides** - An array of values to override the defaults.
+  
+
+<h3>haveMenuItemInDatabase</h3>
 ***
 Adds a menu element to a menu for the current theme. meta.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
-<li><em>string</em> <strong>$title</strong> - The menu item title.</li>
-<li><em>int/null</em> <strong>$menuOrder</strong> = <em>null</em> - An optional menu order, <code>1</code> based.</li>
-<li><em>array/array/null/array</em> <strong>$meta</strong> = <em>array()</em> - An associative array that will be prefixed with <code>_menu_item_</code> for the item post</li></ul>
-</br>
 
-###haveOptionInDatabase
+* `string` **$menuSlug** - The menu slug the item should be added to.
+* `string` **$title** - The menu item title.
+* `int/null` **$menuOrder** - An optional menu order, <code>1</code> based.
+* `array/array/null/array` **$meta** - An associative array that will be prefixed with <code>_menu_item_</code> for the item post
+  
+
+<h3>haveOptionInDatabase</h3>
 ***
 Inserts an option in the database. If the option value is an object or an array then the value will be serialized.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$option_name</strong></li>
-<li><em>mixed</em> <strong>$option_value</strong></li>
-<li><em>string</em> <strong>$autoload</strong> = <em>`'yes'`</em></li></ul>
-</br>
 
-###havePageInDatabase
+* `string` **$option_name**
+* `mixed` **$option_value**
+* `string` **$autoload**
+  
+
+<h3>havePageInDatabase</h3>
 ***
 Inserts a page in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the default ones.</li></ul>
-</br>
 
-###havePostInDatabase
+* `array` **$overrides** - An array of values to override the default ones.
+  
+
+<h3>havePostInDatabase</h3>
 ***
 Inserts a post in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$data</strong> = <em>array()</em> - An associative array of post data to override default and random generated values.</li></ul>
-</br>
 
-###havePostmetaInDatabase
+* `array` **$data** - An associative array of post data to override default and random generated values.
+  
+
+<h3>havePostmetaInDatabase</h3>
 ***
 Adds one or more meta key and value couples in the database for a post.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$postId</strong> - The post ID.</li>
-<li><em>string</em> <strong>$meta_key</strong> - The meta key.</li>
-<li><em>mixed</em> <strong>$meta_value</strong> - The value to insert in the database, objects and arrays will be serialized.</li></ul>
-</br>
 
-###haveSiteOptionInDatabase
+* `int` **$postId** - The post ID.
+* `string` **$meta_key** - The meta key.
+* `mixed` **$meta_value** - The value to insert in the database, objects and arrays will be serialized.
+  
+
+<h3>haveSiteOptionInDatabase</h3>
 ***
 Inserts a site option in the database. If the value is an array or an object then the value will be serialized.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li>
-<li><em>mixed</em> <strong>$value</strong></li></ul>
-</br>
 
-###haveSiteTransientInDatabase
+* `string` **$key**
+* `mixed` **$value**
+  
+
+<h3>haveSiteTransientInDatabase</h3>
 ***
 Inserts a site transient in the database. If the value is an array or an object then the value will be serialized.
 #### Parameters
-<ul>
-<li><em>mixed</em> <strong>$key</strong></li>
-<li><em>mixed</em> <strong>$value</strong></li></ul>
-</br>
 
-###haveTermInDatabase
+* `mixed` **$key**
+* `mixed` **$value**
+  
+
+<h3>haveTermInDatabase</h3>
 ***
 Inserts a term in the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$name</strong> - The term name, e.g. &quot;Fuzzy&quot;.</li>
-<li><em>string</em> <strong>$taxonomy</strong> - The term taxonomy</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An array of values to override the default ones.</li></ul>
-</br>
 
-###haveTermMetaInDatabase
+* `string` **$name** - The term name, e.g. &quot;Fuzzy&quot;.
+* `string` **$taxonomy** - The term taxonomy
+* `array` **$overrides** - An array of values to override the default ones.
+  
+
+<h3>haveTermMetaInDatabase</h3>
 ***
 Inserts a term meta row in the database. Objects and array meta values will be serialized.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$term_id</strong></li>
-<li><em>string</em> <strong>$meta_key</strong></li>
-<li><em>mixed</em> <strong>$meta_value</strong></li></ul>
-</br>
 
-###haveTermRelationshipInDatabase
+* `int` **$term_id**
+* `string` **$meta_key**
+* `mixed` **$meta_value**
+  
+
+<h3>haveTermRelationshipInDatabase</h3>
 ***
 Creates a term relationship in the database. No check about the consistency of the insertion is made. E.g. a post could be assigned a term from a taxonomy that's not registered for that post type.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$object_id</strong> - A post ID, a user ID or anything that can be assigned a taxonomy term.</li>
-<li><em>int</em> <strong>$term_taxonomy_id</strong></li>
-<li><em>int</em> <strong>$term_order</strong> - Defaults to <code>0</code>.</li></ul>
-</br>
 
-###haveTransientInDatabase
+* `int` **$object_id** - A post ID, a user ID or anything that can be assigned a taxonomy term.
+* `int` **$term_taxonomy_id**
+* `int` **$term_order** - Defaults to <code>0</code>.
+  
+
+<h3>haveTransientInDatabase</h3>
 ***
 Inserts a transient in the database. If the value is an array or an object then the value will be serialized.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$transient</strong></li>
-<li><em>mixed</em> <strong>$value</strong></li></ul>
-</br>
 
-###haveUserCapabilitiesInDatabase
+* `string` **$transient**
+* `mixed` **$value**
+  
+
+<h3>haveUserCapabilitiesInDatabase</h3>
 ***
 Sets a user capabilities. for a multisite installation; e.g. `[1 => 'administrator`, 2 => 'subscriber']`.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$userId</strong></li>
-<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an associative array of blog IDs/roles</li></ul>
-</br>
 
-###haveUserInDatabase
+* `int` **$userId**
+* `string/array` **$role** - Either a role string (e.g. <code>administrator</code>) or an associative array of blog IDs/roles
+  
+
+<h3>haveUserInDatabase</h3>
 ***
 Inserts a user and appropriate meta in the database. and "usermeta" table.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$user_login</strong> - The user login slug</li>
-<li><em>string</em> <strong>$role</strong> = <em>`'subscriber'`</em> - The user role slug, e.g. &quot;administrator&quot;; defaults to &quot;subscriber&quot;.</li>
-<li><em>array</em> <strong>$overrides</strong> = <em>array()</em> - An associative array of column names and values overridind defaults in the &quot;users&quot;</li></ul>
-</br>
 
-###haveUserLevelsInDatabase
+* `string` **$user_login** - The user login slug
+* `string` **$role** - The user role slug, e.g. &quot;administrator&quot;; defaults to &quot;subscriber&quot;.
+* `array` **$overrides** - An associative array of column names and values overridind defaults in the &quot;users&quot;
+  
+
+<h3>haveUserLevelsInDatabase</h3>
 ***
 Sets the user level in the database for a user. multisite installation.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$userId</strong></li>
-<li><em>string/array</em> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an array of blog IDs/roles for a</li></ul>
-</br>
 
-###haveUserMetaInDatabase
+* `int` **$userId**
+* `string/array` **$role** - Either a role string (e.g. <code>administrator</code>) or an array of blog IDs/roles for a
+  
+
+<h3>haveUserMetaInDatabase</h3>
 ***
 Sets a user meta. values will trigger the insertion of multiple rows.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$userId</strong></li>
-<li><em>string</em> <strong>$meta_key</strong></li>
-<li><em>mixed</em> <strong>$meta_value</strong> - Either a single value or an array of values; objects will be serialized while array of</li></ul>
-</br>
 
-###importSqlDumpFile
+* `int` **$userId**
+* `string` **$meta_key**
+* `mixed` **$meta_value** - Either a single value or an array of values; objects will be serialized while array of
+  
+
+<h3>importSqlDumpFile</h3>
 ***
 Import the SQL dump file if populate is enabled. Specifying a dump file that file will be imported.
 #### Parameters
-<ul>
-<li><em>null/string</em> <strong>$dumpFile</strong> = <em>null</em> - The dump file that should be imported in place of the default one.</li></ul>
-</br>
 
-###seeAttachmentInDatabase
+* `null/string` **$dumpFile** - The dump file that should be imported in place of the default one.
+  
+
+<h3>seeAttachmentInDatabase</h3>
 ***
 Checks for an attachment in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeBlogInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeBlogInDatabase</h3>
 ***
 Checks for a blog in the database, looks up the `blogs` table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeCommentInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeCommentInDatabase</h3>
 ***
 Checks for a comment in the database. Will look up the "comments" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###seeCommentMetaInDatabase
+* `array` **$criteria**
+  
+
+<h3>seeCommentMetaInDatabase</h3>
 ***
 Checks that a comment meta value is in the database. Will look up the "commentmeta" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###seeLinkInDatabase
+* `array` **$criteria**
+  
+
+<h3>seeLinkInDatabase</h3>
 ***
 Checks for a link in the database. Will look up the "links" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeOptionInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeOptionInDatabase</h3>
 ***
 Checks if an option is in the database for the current blog. If checking for an array or an object then the serialized version will be checked for.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seePageInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seePageInDatabase</h3>
 ***
 Checks for a page in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seePostInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seePostInDatabase</h3>
 ***
 Checks for a post in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seePostMetaInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seePostMetaInDatabase</h3>
 ***
 Checks for a post meta value in the database for the current blog. If the `meta_value` is an object or an array then the serialized value will be checked for.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seePostWithTermInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seePostWithTermInDatabase</h3>
 ***
 Checks that a post to term relation exists in the database. Will look up the "term_relationships" table.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$post_id</strong> - The post ID.</li>
-<li><em>int</em> <strong>$term_id</strong> - The term ID.</li>
-<li><em>integer</em> <strong>$term_order</strong> - The order the term applies to the post, defaults to 0.</li></ul>
-</br>
 
-###seeSiteOptionInDatabase
+* `int` **$post_id** - The post ID.
+* `int` **$term_id** - The term ID.
+* `integer` **$term_order** - The order the term applies to the post, defaults to 0.
+  
+
+<h3>seeSiteOptionInDatabase</h3>
 ***
 Checks that a site option is in the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li>
-<li><em>mixed/null</em> <strong>$value</strong> = <em>null</em></li></ul>
-</br>
 
-###seeSiteSiteTransientInDatabase
+* `string` **$key**
+* `mixed/null` **$value**
+  
+
+<h3>seeSiteSiteTransientInDatabase</h3>
 ***
 Checks that a site option is in the database.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$key</strong></li>
-<li><em>mixed/null</em> <strong>$value</strong> = <em>null</em></li></ul>
-</br>
 
-###seeTableInDatabase
+* `string` **$key**
+* `mixed/null` **$value**
+  
+
+<h3>seeTableInDatabase</h3>
 ***
 Checks that a table is in the database.
 <pre><code class="language-php">    $options = $I-&gt;grabPrefixedTableNameFor('options');
     $I-&gt;seeTableInDatabase($options);</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
-</br>
 
-###seeTermInDatabase
+* `string` **$table** - The full table name, including the table prefix.
+  
+
+<h3>seeTermInDatabase</h3>
 ***
 Checks for a term in the database. Looks up the `terms` and `term_taxonomy` prefixed tables. `term_taxonomy` tables.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
-</br>
 
-###seeTermMetaInDatabase
+* `array` **$criteria** - An array of criteria to search for the term, can be columns from the <code>terms</code> and the
+  
+
+<h3>seeTermMetaInDatabase</h3>
 ***
 Checks for a term meta in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeTermRelationshipInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeTermRelationshipInDatabase</h3>
 ***
 Checks for a term relationship in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeTermTaxonomyInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeTermTaxonomyInDatabase</h3>
 ***
 Checks for a term taxonomy in the database. Will look up the prefixed `term_taxonomy` table, e.g. `wp_term_taxonomy`.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###seeUserInDatabase
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>seeUserInDatabase</h3>
 ***
 Checks that a user is in the database. Will look up the "users" table.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong></li></ul>
-</br>
 
-###seeUserMetaInDatabase
+* `array` **$criteria**
+  
+
+<h3>seeUserMetaInDatabase</h3>
 ***
 Checks for a user meta value in the database.
 #### Parameters
-<ul>
-<li><em>array</em> <strong>$criteria</strong> - An array of search criteria.</li></ul>
-</br>
 
-###useBlog
+* `array` **$criteria** - An array of search criteria.
+  
+
+<h3>useBlog</h3>
 ***
 Sets the blog to be used.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$id</strong></li></ul>
-</br>
 
-###useMainBlog
+* `int` **$id**
+  
+
+<h3>useMainBlog</h3>
 ***
 Sets the current blog to the main one (`blog_id` 1).
-</br>
+  
 
-###useTheme
+<h3>useTheme</h3>
 ***
 Sets the current theme options.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>
-<li><em>string/null</em> <strong>$template</strong> = <em>null</em> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
-<li><em>string/null</em> <strong>$themeName</strong> = <em>null</em> - The theme name, e.g. <code>Twentysixteen</code>, defaults to title version of <code>$stylesheet</code>.</li></ul>
-</br>
+
+* `string` **$stylesheet** - The theme stylesheet slug, e.g. <code>twentysixteen</code>.
+* `string/null` **$template** - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.
+* `string/null` **$themeName** - The theme name, e.g. <code>Twentysixteen</code>, defaults to title version of <code>$stylesheet</code>.
 </br>
 
 *This class extends \Codeception\Module\Db*

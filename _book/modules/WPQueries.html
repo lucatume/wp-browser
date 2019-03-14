@@ -1,0 +1,856 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>WPQueries · wp-browser docs</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Luca Tumedei">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="WPWebDriver.html" />
+    
+    
+    <link rel="prev" href="WPLoader.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Summary</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Welcome
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1.1" data-path="../faq.html">
+            
+                <a href="../faq.html">
+            
+                    
+                    Frequently asked questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.2" data-path="../codeception-phpunit-and-wpbrowser.html">
+            
+                <a href="../codeception-phpunit-and-wpbrowser.html">
+            
+                    
+                    Codeception, PHPUnit and wp-browser
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.3" data-path="../levels-of-testing.html">
+            
+                <a href="../levels-of-testing.html">
+            
+                    
+                    Levels of testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    Getting started
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../requirements.html">
+            
+                <a href="../requirements.html">
+            
+                    
+                    Requirements
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../installation.html">
+            
+                <a href="../installation.html">
+            
+                    
+                    Installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../setting-up-minimum-wordpress-installation.html">
+            
+                <a href="../setting-up-minimum-wordpress-installation.html">
+            
+                    
+                    Setting up a minimum WordPress installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../configuration.html">
+            
+                <a href="../configuration.html">
+            
+                    
+                    Configuration
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    Modules
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="WPBrowser.html">
+            
+                <a href="WPBrowser.html">
+            
+                    
+                    WPBrowser
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="WPCLI.html">
+            
+                <a href="WPCLI.html">
+            
+                    
+                    WPCLI
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="WPDb.html">
+            
+                <a href="WPDb.html">
+            
+                    
+                    WPDb
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="WPFilesystem.html">
+            
+                <a href="WPFilesystem.html">
+            
+                    
+                    WPFilesystem
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="WPLoader.html">
+            
+                <a href="WPLoader.html">
+            
+                    
+                    WPLoader
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.6" data-path="WPQueries.html">
+            
+                <a href="WPQueries.html">
+            
+                    
+                    WPQueries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="WPWebDriver.html">
+            
+                <a href="WPWebDriver.html">
+            
+                    
+                    WPWebDriver
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" >
+            
+                <span>
+            
+                    
+                    Extensions
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../changelog.html">
+            
+                <a href="../changelog.html">
+            
+                    
+                    Changelog
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >WPQueries</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <!--doc-->
+<h2 id="public-api">Public API</h2>
+<nav>
+    <ul>
+        <li>
+            <a href="#assertcountqueries">assertCountQueries</a>
+        </li>
+        <li>
+            <a href="#assertnotqueries">assertNotQueries</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbyaction">assertNotQueriesByAction</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbyfilter">assertNotQueriesByFilter</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbyfunction">assertNotQueriesByFunction</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbymethod">assertNotQueriesByMethod</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbystatement">assertNotQueriesByStatement</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbystatementandaction">assertNotQueriesByStatementAndAction</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbystatementandfilter">assertNotQueriesByStatementAndFilter</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbystatementandfunction">assertNotQueriesByStatementAndFunction</a>
+        </li>
+        <li>
+            <a href="#assertnotqueriesbystatementandmethod">assertNotQueriesByStatementAndMethod</a>
+        </li>
+        <li>
+            <a href="#assertqueries">assertQueries</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbyaction">assertQueriesByAction</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbyfilter">assertQueriesByFilter</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbyfunction">assertQueriesByFunction</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbymethod">assertQueriesByMethod</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbystatement">assertQueriesByStatement</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbystatementandaction">assertQueriesByStatementAndAction</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbystatementandfilter">assertQueriesByStatementAndFilter</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbystatementandfunction">assertQueriesByStatementAndFunction</a>
+        </li>
+        <li>
+            <a href="#assertqueriesbystatementandmethod">assertQueriesByStatementAndMethod</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbyaction">assertQueriesCountByAction</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbyfilter">assertQueriesCountByFilter</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbyfunction">assertQueriesCountByFunction</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbymethod">assertQueriesCountByMethod</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbystatement">assertQueriesCountByStatement</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbystatementandaction">assertQueriesCountByStatementAndAction</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbystatementandfilter">assertQueriesCountByStatementAndFilter</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbystatementandfunction">assertQueriesCountByStatementAndFunction</a>
+        </li>
+        <li>
+            <a href="#assertqueriescountbystatementandmethod">assertQueriesCountByStatementAndMethod</a>
+        </li>
+    </ul>
+</nav>
+
+<p></p><h3 id="assertcountqueries">assertCountQueries</h3><p></p>
+<hr>
+<p>Asserts that n queries have been made.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueries">assertNotQueries</h3><p></p>
+<hr>
+<p>Asserts that no queries were made. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbyaction">assertNotQueriesByAction</h3><p></p>
+<hr>
+<p>Asserts that no queries were made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbyfilter">assertNotQueriesByFilter</h3><p></p>
+<hr>
+<p>Asserts that no queries were made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbyfunction">assertNotQueriesByFunction</h3><p></p>
+<hr>
+<p>Asserts that no queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbymethod">assertNotQueriesByMethod</h3><p></p>
+<hr>
+<p>Asserts that no queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$class</strong></li>
+<li><code>mixed</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbystatement">assertNotQueriesByStatement</h3><p></p>
+<hr>
+<p>Asserts that no queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbystatementandaction">assertNotQueriesByStatementAndAction</h3><p></p>
+<hr>
+<p>Asserts that no queries were made as a consequence of the specified action containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbystatementandfilter">assertNotQueriesByStatementAndFilter</h3><p></p>
+<hr>
+<p>Asserts that no queries were made as a consequence of the specified filter containing the specified SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbystatementandfunction">assertNotQueriesByStatementAndFunction</h3><p></p>
+<hr>
+<p>Asserts that no queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertnotqueriesbystatementandmethod">assertNotQueriesByStatementAndMethod</h3><p></p>
+<hr>
+<p>Asserts that no queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$class</strong></li>
+<li><code>string</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueries">assertQueries</h3><p></p>
+<hr>
+<p>Asserts that at least one query was made during the test. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbyaction">assertQueriesByAction</h3><p></p>
+<hr>
+<p>Asserts that at least one query was made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbyfilter">assertQueriesByFilter</h3><p></p>
+<hr>
+<p>Asserts that at least one query was made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbyfunction">assertQueriesByFunction</h3><p></p>
+<hr>
+<p>Asserts that queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbymethod">assertQueriesByMethod</h3><p></p>
+<hr>
+<p>Asserts that at least one query has been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$class</strong></li>
+<li><code>string</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbystatement">assertQueriesByStatement</h3><p></p>
+<hr>
+<p>Asserts that at least a query starting with the specified statement was made. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbystatementandaction">assertQueriesByStatementAndAction</h3><p></p>
+<hr>
+<p>Asserts that at least one query was made as a consequence of the specified action containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbystatementandfilter">assertQueriesByStatementAndFilter</h3><p></p>
+<hr>
+<p>Asserts that at least one query was made as a consequence of the specified filter containing the SQL query. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbystatementandfunction">assertQueriesByStatementAndFunction</h3><p></p>
+<hr>
+<p>Asserts that queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriesbystatementandmethod">assertQueriesByStatementAndMethod</h3><p></p>
+<hr>
+<p>Asserts that queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$class</strong></li>
+<li><code>string</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbyaction">assertQueriesCountByAction</h3><p></p>
+<hr>
+<p>Asserts that n queries were made as a consequence of the specified action. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbyfilter">assertQueriesCountByFilter</h3><p></p>
+<hr>
+<p>Asserts that n queries were made as a consequence of the specified filter. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbyfunction">assertQueriesCountByFunction</h3><p></p>
+<hr>
+<p>Asserts that n queries were made by the specified function. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbymethod">assertQueriesCountByMethod</h3><p></p>
+<hr>
+<p>Asserts that n queries have been made by the specified class method. Queries generated by setUp, tearDown and factory methods are excluded by default.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$class</strong></li>
+<li><code>string</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbystatement">assertQueriesCountByStatement</h3><p></p>
+<hr>
+<p>Asserts that n queries starting with the specified statement were made. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbystatementandaction">assertQueriesCountByStatementAndAction</h3><p></p>
+<hr>
+<p>Asserts that n queries were made as a consequence of the specified action containing the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$action</strong> - The action name, e.g. &apos;init&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbystatementandfilter">assertQueriesCountByStatementAndFilter</h3><p></p>
+<hr>
+<p>Asserts that n queries were made as a consequence of the specified filter containing the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$filter</strong> - The filter name, e.g. &apos;posts_where&apos;.</li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbystatementandfunction">assertQueriesCountByStatementAndFunction</h3><p></p>
+<hr>
+<p>Asserts that n queries were made by the specified function starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li>
+</ul>
+<p></p><h3 id="assertqueriescountbystatementandmethod">assertQueriesCountByStatementAndMethod</h3><p></p>
+<hr>
+<p>Asserts that n queries were made by the specified class method starting with the specified SQL statement. Queries generated by setUp, tearDown and factory methods are excluded by default. Regular expressions must contain delimiters.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$n</strong> - The expected number of queries.</li>
+<li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
+<li><code>string</code> <strong>$class</strong></li>
+<li><code>string</code> <strong>$method</strong></li>
+<li><code>string</code> <strong>$message</strong> - An optional message to override the default one.
+&lt;/br&gt;</li>
+</ul>
+<p><em>This class extends \Codeception\Module</em></p>
+<!--/doc-->
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="WPLoader.html" class="navigation navigation-prev " aria-label="Previous page: WPLoader">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="WPWebDriver.html" class="navigation navigation-next " aria-label="Next page: WPWebDriver">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"WPQueries","level":"1.3.6","depth":2,"next":{"title":"WPWebDriver","level":"1.3.7","depth":2,"path":"modules/WPWebDriver.md","ref":"modules/WPWebDriver.md","articles":[]},"previous":{"title":"WPLoader","level":"1.3.5","depth":2,"path":"modules/WPLoader.md","ref":"modules/WPLoader.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"expandable-chapters":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPQueries.md","mtime":"2019-03-14T17:00:01.018Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-14T17:00:06.541Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

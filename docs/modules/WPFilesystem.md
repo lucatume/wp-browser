@@ -5,270 +5,270 @@
 <nav>
 	<ul>
 		<li>
-			<a href="#amInMuPluginPath">amInMuPluginPath</a>
+			<a href="#aminmupluginpath">amInMuPluginPath</a>
 		</li>
 		<li>
-			<a href="#amInPluginPath">amInPluginPath</a>
+			<a href="#aminpluginpath">amInPluginPath</a>
 		</li>
 		<li>
-			<a href="#amInThemePath">amInThemePath</a>
+			<a href="#aminthemepath">amInThemePath</a>
 		</li>
 		<li>
-			<a href="#amInUploadsPath">amInUploadsPath</a>
+			<a href="#aminuploadspath">amInUploadsPath</a>
 		</li>
 		<li>
-			<a href="#cleanMuPluginDir">cleanMuPluginDir</a>
+			<a href="#cleanmuplugindir">cleanMuPluginDir</a>
 		</li>
 		<li>
-			<a href="#cleanPluginDir">cleanPluginDir</a>
+			<a href="#cleanplugindir">cleanPluginDir</a>
 		</li>
 		<li>
-			<a href="#cleanThemeDir">cleanThemeDir</a>
+			<a href="#cleanthemedir">cleanThemeDir</a>
 		</li>
 		<li>
-			<a href="#cleanUploadsDir">cleanUploadsDir</a>
+			<a href="#cleanuploadsdir">cleanUploadsDir</a>
 		</li>
 		<li>
-			<a href="#copyDirToMuPlugin">copyDirToMuPlugin</a>
+			<a href="#copydirtomuplugin">copyDirToMuPlugin</a>
 		</li>
 		<li>
-			<a href="#copyDirToPlugin">copyDirToPlugin</a>
+			<a href="#copydirtoplugin">copyDirToPlugin</a>
 		</li>
 		<li>
-			<a href="#copyDirToTheme">copyDirToTheme</a>
+			<a href="#copydirtotheme">copyDirToTheme</a>
 		</li>
 		<li>
-			<a href="#copyDirToUploads">copyDirToUploads</a>
+			<a href="#copydirtouploads">copyDirToUploads</a>
 		</li>
 		<li>
-			<a href="#deleteMuPluginFile">deleteMuPluginFile</a>
+			<a href="#deletemupluginfile">deleteMuPluginFile</a>
 		</li>
 		<li>
-			<a href="#deletePluginFile">deletePluginFile</a>
+			<a href="#deletepluginfile">deletePluginFile</a>
 		</li>
 		<li>
-			<a href="#deleteThemeFile">deleteThemeFile</a>
+			<a href="#deletethemefile">deleteThemeFile</a>
 		</li>
 		<li>
-			<a href="#deleteUploadedDir">deleteUploadedDir</a>
+			<a href="#deleteuploadeddir">deleteUploadedDir</a>
 		</li>
 		<li>
-			<a href="#deleteUploadedFile">deleteUploadedFile</a>
+			<a href="#deleteuploadedfile">deleteUploadedFile</a>
 		</li>
 		<li>
-			<a href="#dontSeeInMuPluginFile">dontSeeInMuPluginFile</a>
+			<a href="#dontseeinmupluginfile">dontSeeInMuPluginFile</a>
 		</li>
 		<li>
-			<a href="#dontSeeInPluginFile">dontSeeInPluginFile</a>
+			<a href="#dontseeinpluginfile">dontSeeInPluginFile</a>
 		</li>
 		<li>
-			<a href="#dontSeeInThemeFile">dontSeeInThemeFile</a>
+			<a href="#dontseeinthemefile">dontSeeInThemeFile</a>
 		</li>
 		<li>
-			<a href="#dontSeeInUploadedFile">dontSeeInUploadedFile</a>
+			<a href="#dontseeinuploadedfile">dontSeeInUploadedFile</a>
 		</li>
 		<li>
-			<a href="#dontSeeMuPluginFileFound">dontSeeMuPluginFileFound</a>
+			<a href="#dontseemupluginfilefound">dontSeeMuPluginFileFound</a>
 		</li>
 		<li>
-			<a href="#dontSeePluginFileFound">dontSeePluginFileFound</a>
+			<a href="#dontseepluginfilefound">dontSeePluginFileFound</a>
 		</li>
 		<li>
-			<a href="#dontSeeThemeFileFound">dontSeeThemeFileFound</a>
+			<a href="#dontseethemefilefound">dontSeeThemeFileFound</a>
 		</li>
 		<li>
-			<a href="#dontSeeUploadedFileFound">dontSeeUploadedFileFound</a>
+			<a href="#dontseeuploadedfilefound">dontSeeUploadedFileFound</a>
 		</li>
 		<li>
-			<a href="#getBlogUploadsPath">getBlogUploadsPath</a>
+			<a href="#getbloguploadspath">getBlogUploadsPath</a>
 		</li>
 		<li>
-			<a href="#getUploadsPath">getUploadsPath</a>
+			<a href="#getuploadspath">getUploadsPath</a>
 		</li>
 		<li>
-			<a href="#getWpRootFolder">getWpRootFolder</a>
+			<a href="#getwprootfolder">getWpRootFolder</a>
 		</li>
 		<li>
-			<a href="#haveMuPlugin">haveMuPlugin</a>
+			<a href="#havemuplugin">haveMuPlugin</a>
 		</li>
 		<li>
-			<a href="#havePlugin">havePlugin</a>
+			<a href="#haveplugin">havePlugin</a>
 		</li>
 		<li>
-			<a href="#haveTheme">haveTheme</a>
+			<a href="#havetheme">haveTheme</a>
 		</li>
 		<li>
-			<a href="#makeUploadsDir">makeUploadsDir</a>
+			<a href="#makeuploadsdir">makeUploadsDir</a>
 		</li>
 		<li>
-			<a href="#openUploadedFile">openUploadedFile</a>
+			<a href="#openuploadedfile">openUploadedFile</a>
 		</li>
 		<li>
-			<a href="#seeInMuPluginFile">seeInMuPluginFile</a>
+			<a href="#seeinmupluginfile">seeInMuPluginFile</a>
 		</li>
 		<li>
-			<a href="#seeInPluginFile">seeInPluginFile</a>
+			<a href="#seeinpluginfile">seeInPluginFile</a>
 		</li>
 		<li>
-			<a href="#seeInThemeFile">seeInThemeFile</a>
+			<a href="#seeinthemefile">seeInThemeFile</a>
 		</li>
 		<li>
-			<a href="#seeInUploadedFile">seeInUploadedFile</a>
+			<a href="#seeinuploadedfile">seeInUploadedFile</a>
 		</li>
 		<li>
-			<a href="#seeMuPluginFileFound">seeMuPluginFileFound</a>
+			<a href="#seemupluginfilefound">seeMuPluginFileFound</a>
 		</li>
 		<li>
-			<a href="#seePluginFileFound">seePluginFileFound</a>
+			<a href="#seepluginfilefound">seePluginFileFound</a>
 		</li>
 		<li>
-			<a href="#seeThemeFileFound">seeThemeFileFound</a>
+			<a href="#seethemefilefound">seeThemeFileFound</a>
 		</li>
 		<li>
-			<a href="#seeUploadedFileFound">seeUploadedFileFound</a>
+			<a href="#seeuploadedfilefound">seeUploadedFileFound</a>
 		</li>
 		<li>
-			<a href="#writeToMuPluginFile">writeToMuPluginFile</a>
+			<a href="#writetomupluginfile">writeToMuPluginFile</a>
 		</li>
 		<li>
-			<a href="#writeToPluginFile">writeToPluginFile</a>
+			<a href="#writetopluginfile">writeToPluginFile</a>
 		</li>
 		<li>
-			<a href="#writeToThemeFile">writeToThemeFile</a>
+			<a href="#writetothemefile">writeToThemeFile</a>
 		</li>
 		<li>
-			<a href="#writeToUploadedFile">writeToUploadedFile</a>
+			<a href="#writetouploadedfile">writeToUploadedFile</a>
 		</li>
 	</ul>
 </nav>
 
-###amInMuPluginPath
+<h3>amInMuPluginPath</h3>
 ***
 Sets the current working folder to a folder in a mu-plugin. ``` php <?php $I->amInMuPluginPath('mu-plugin'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong></li></ul>
-</br>
 
-###amInPluginPath
+* `string` **$path**
+  
+
+<h3>amInPluginPath</h3>
 ***
 Sets the current working folder to a folder in a plugin. ``` php <?php $I->amInPluginPath('my-plugin'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong></li></ul>
-</br>
 
-###amInThemePath
+* `string` **$path**
+  
+
+<h3>amInThemePath</h3>
 ***
 Sets the current working folder to a folder in a theme. ``` php <?php $I->amInThemePath('my-theme'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong></li></ul>
-</br>
 
-###amInUploadsPath
+* `string` **$path**
+  
+
+<h3>amInUploadsPath</h3>
 ***
 Enters the uploads folder in the local filesystem.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong> = <em>null</em></li></ul>
-</br>
 
-###cleanMuPluginDir
+* `string` **$path**
+  
+
+<h3>cleanMuPluginDir</h3>
 ***
 Cleans a folder in a mu-plugin folder. ``` php <?php $I->cleanMuPluginDir('mu-plugin1/foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$dir</strong></li></ul>
-</br>
 
-###cleanPluginDir
+* `string` **$dir**
+  
+
+<h3>cleanPluginDir</h3>
 ***
 Cleans a folder in a plugin folder. ``` php <?php $I->cleanPluginDir('plugin1/foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$dir</strong></li></ul>
-</br>
 
-###cleanThemeDir
+* `string` **$dir**
+  
+
+<h3>cleanThemeDir</h3>
 ***
 Clears a folder in a theme folder. ``` php <?php $I->cleanThemeDir('my-theme/foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$dir</strong></li></ul>
-</br>
 
-###cleanUploadsDir
+* `string` **$dir**
+  
+
+<h3>cleanUploadsDir</h3>
 ***
 Clears a folder in the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->cleanUploadsDir('some/folder'); $I->cleanUploadsDir('some/folder', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$dir</strong> = <em>null</em></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###copyDirToMuPlugin
+* `string` **$dir**
+* `string` **$date**
+  
+
+<h3>copyDirToMuPlugin</h3>
 ***
 Copies a folder to a folder in a mu-plugin. ``` php <?php $I->copyDirToMuPlugin(codecept_data_dir('foo'), 'mu-plugin/foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$src</strong></li>
-<li><em>string</em> <strong>$pluginDst</strong></li></ul>
-</br>
 
-###copyDirToPlugin
+* `string` **$src**
+* `string` **$pluginDst**
+  
+
+<h3>copyDirToPlugin</h3>
 ***
 Copies a folder to a folder in a plugin. ``` php <?php $I->copyDirToPlugin(codecept_data_dir('foo'), 'plugin/foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$src</strong></li>
-<li><em>string</em> <strong>$pluginDst</strong></li></ul>
-</br>
 
-###copyDirToTheme
+* `string` **$src**
+* `string` **$pluginDst**
+  
+
+<h3>copyDirToTheme</h3>
 ***
 Copies a folder in a theme folder. ``` php <?php $I->copyDirToTheme(codecept_data_dir('foo'), 'my-theme'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$src</strong></li>
-<li><em>string</em> <strong>$themeDst</strong></li></ul>
-</br>
 
-###copyDirToUploads
+* `string` **$src**
+* `string` **$themeDst**
+  
+
+<h3>copyDirToUploads</h3>
 ***
 Copies a folder to the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo'); $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$src</strong></li>
-<li><em>string</em> <strong>$dst</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###deleteMuPluginFile
+* `string` **$src**
+* `string` **$dst**
+* `string` **$date**
+  
+
+<h3>deleteMuPluginFile</h3>
 ***
 Deletes a file in a mu-plugin folder. ``` php <?php $I->deleteMuPluginFile('mu-plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###deletePluginFile
+* `string` **$file**
+  
+
+<h3>deletePluginFile</h3>
 ***
 Deletes a file in a plugin folder. ``` php <?php $I->deletePluginFile('plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###deleteThemeFile
+* `string` **$file**
+  
+
+<h3>deleteThemeFile</h3>
 ***
 Deletes a file in a theme folder. ``` php <?php $I->deleteThemeFile('my-theme/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###deleteUploadedDir
+* `string` **$file**
+  
+
+<h3>deleteUploadedDir</h3>
 ***
 Deletes a dir in the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path.
 <pre><code class="language-php">    &lt;?php
@@ -277,267 +277,266 @@ Deletes a dir in the uploads folder. The date argument can be a string compatibl
     ?&gt;</code></pre>
 <pre><code>                                   if not passed.</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$dir</strong> - The path to the directory to delete, relative to the uploads folder.</li>
-<li><em>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</em> <strong>$date</strong> = <em>null</em> - The date of the uploads to delete, will default to <code>now</code></li></ul>
-</br>
 
-###deleteUploadedFile
+* `string` **$dir** - The path to the directory to delete, relative to the uploads folder.
+* `string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)` **$date** - The date of the uploads to delete, will default to <code>now</code>
+  
+
+<h3>deleteUploadedFile</h3>
 ***
 Deletes a file in the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->deleteUploadedFile('some-file.txt'); $I->deleteUploadedFile('some-file.txt', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###dontSeeInMuPluginFile
+* `string` **$file**
+* `string` **$date**
+  
+
+<h3>dontSeeInMuPluginFile</h3>
 ***
 Checks that a file in a mu-plugin folder does not contain a string. ``` php <?php $I->dontSeeInMuPluginFile('mu-plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###dontSeeInPluginFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>dontSeeInPluginFile</h3>
 ***
 Checks that a file in a plugin folder does not contain a string. ``` php <?php $I->dontSeeInPluginFile('plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###dontSeeInThemeFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>dontSeeInThemeFile</h3>
 ***
 Checks that a file in a theme folder does not contain a string. ``` php <?php $I->dontSeeInThemeFile('my-theme/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###dontSeeInUploadedFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>dontSeeInUploadedFile</h3>
 ***
 Checks that a file in the uploads folder does contain a string. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->dontSeeInUploadedFile('some-file.txt', 'foo'); $I->dontSeeInUploadedFile('some-file.txt','foo', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###dontSeeMuPluginFileFound
+* `string` **$file**
+* `string` **$contents**
+* `string` **$date**
+  
+
+<h3>dontSeeMuPluginFileFound</h3>
 ***
 Checks that a file is not found in a mu-plugin folder. ``` php <?php $I->dontSeeMuPluginFileFound('mu-plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###dontSeePluginFileFound
+* `string` **$file**
+  
+
+<h3>dontSeePluginFileFound</h3>
 ***
 Checks that a file is not found in a plugin folder. ``` php <?php $I->dontSeePluginFileFound('plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###dontSeeThemeFileFound
+* `string` **$file**
+  
+
+<h3>dontSeeThemeFileFound</h3>
 ***
 Checks that a file is not found in a theme folder. ``` php <?php $I->dontSeeThemeFileFound('my-theme/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###dontSeeUploadedFileFound
+* `string` **$file**
+  
+
+<h3>dontSeeUploadedFileFound</h3>
 ***
 Checks thata a file does not exist in the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->dontSeeUploadedFileFound('some-file.txt'); $I->dontSeeUploadedFileFound('some-file.txt','today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###getBlogUploadsPath
+* `string` **$file**
+* `string` **$date**
+  
+
+<h3>getBlogUploadsPath</h3>
 ***
 Returns the absolute path to a blog uploads folder or file.
 #### Parameters
-<ul>
-<li><em>int</em> <strong>$blogId</strong> - The blog ID to get the path for.</li>
-<li><em>string</em> <strong>$file</strong> = <em>`''`</em> - The path, relatitve to the blog uploads folder, to the file or folder.</li>
-<li><em>null</em> <strong>$date</strong> = <em>null</em> - The date that should be used to build the uploads sub-folders in the year/month format;</li></ul>
-</br>
 
-###getUploadsPath
+* `int` **$blogId** - The blog ID to get the path for.
+* `string` **$file** - The path, relatitve to the blog uploads folder, to the file or folder.
+* `null` **$date** - The date that should be used to build the uploads sub-folders in the year/month format;
+  
+
+<h3>getUploadsPath</h3>
 ***
 Returns the path to the specified uploads file of folder. Not providing a value for `$file` and `$date` will return the uploads folder path. a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong> = <em>`''`</em> - The file path, relative to the uploads folder.</li>
-<li><em>null</em> <strong>$date</strong> = <em>null</em> - The date that should be used to build the uploads sub-folders in the year/month format;</li></ul>
-</br>
 
-###getWpRootFolder
+* `string` **$file** - The file path, relative to the uploads folder.
+* `null` **$date** - The date that should be used to build the uploads sub-folders in the year/month format;
+  
+
+<h3>getWpRootFolder</h3>
 ***
 Returns the absolute path to WordPress root folder without trailing slash.
-</br>
+  
 
-###haveMuPlugin
+<h3>haveMuPlugin</h3>
 ***
 Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code should not contain the opening '<?php' tag. ``` php <?php $code = 'echo "Hello world!"'; $I->haveMuPlugin('foo-mu-plugin.php', $code); ?> ``` plugin file to create. php tag.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filename</strong> - The path, relative to the plugins folder, of the</li>
-<li><em>string</em> <strong>$code</strong> - The content of the plugin file without the opening</li></ul>
-</br>
 
-###havePlugin
+* `string` **$filename** - The path, relative to the plugins folder, of the
+* `string` **$code** - The content of the plugin file without the opening
+  
+
+<h3>havePlugin</h3>
 ***
 Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code should not contain the opening '<?php' tag. ``` php <?php $code = 'echo "Hello world!"'; $I->havePlugin('foo/plugin.php', $code); ?> ``` plugin file to create. php tag.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong> - The path, relative to the plugins folder, of the</li>
-<li><em>string</em> <strong>$code</strong> - The content of the plugin file without the opening</li></ul>
-</br>
 
-###haveTheme
+* `string` **$path** - The path, relative to the plugins folder, of the
+* `string` **$code** - The content of the plugin file without the opening
+  
+
+<h3>haveTheme</h3>
 ***
 Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code should not contain the opening '<?php' tag. ``` php <?php $code = 'sayHi();'; $functionsCode  = 'function sayHi(){echo "Hello world";};'; $I->haveTheme('foo', $indexCode, $functionsCode); ?> ``` folder, of the plugin folder to create. without the opening php tag. file without the opening php tag.
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$folder</strong> - The path, relative to the themes</li>
-<li><em>string</em> <strong>$indexFileCode</strong> - The content of the theme index.php file</li>
-<li><em>string</em> <strong>$functionsFileCode</strong> = <em>null</em> - The content of the theme functions.php</li></ul>
-</br>
 
-###makeUploadsDir
+* `string` **$folder** - The path, relative to the themes
+* `string` **$indexFileCode** - The content of the theme index.php file
+* `string` **$functionsFileCode** - The content of the theme functions.php
+  
+
+<h3>makeUploadsDir</h3>
 ***
 Creates an empty folder in the WordPress installation uploads folder.
 <pre><code class="language-php">    $logsDir = $I-&gt;makeUploadsDir('logs/acme');</code></pre>
 <pre><code>                    to create.</code></pre>
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$path</strong> - The path, relative to the WordPress installation uploads folder, of the folder</li></ul>
-</br>
 
-###openUploadedFile
+* `string` **$path** - The path, relative to the WordPress installation uploads folder, of the folder
+  
+
+<h3>openUploadedFile</h3>
 ***
 Opens a file in the the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->openUploadedFile('some-file.txt'); $I->openUploadedFile('some-file.txt', 'time'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filename</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###seeInMuPluginFile
+* `string` **$filename**
+* `string` **$date**
+  
+
+<h3>seeInMuPluginFile</h3>
 ***
 Checks that a file in a mu-plugin folder contains a string. ``` php <?php $I->seeInMuPluginFile('mu-plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###seeInPluginFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>seeInPluginFile</h3>
 ***
 Checks that a file in a plugin folder contains a string. ``` php <?php $I->seeInPluginFile('plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###seeInThemeFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>seeInThemeFile</h3>
 ***
 Checks that a file in a theme folder contains a string. ``` php <?php $I->seeInThemeFile('my-theme/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li></ul>
-</br>
 
-###seeInUploadedFile
+* `string` **$file**
+* `string` **$contents**
+  
+
+<h3>seeInUploadedFile</h3>
 ***
 Checks that a file in the uploads folder contains a string. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->seeInUploadedFile('some-file.txt', 'foo'); $I->seeInUploadedFile('some-file.txt','foo', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$contents</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###seeMuPluginFileFound
+* `string` **$file**
+* `string` **$contents**
+* `string` **$date**
+  
+
+<h3>seeMuPluginFileFound</h3>
 ***
 Checks that a file is found in a mu-plugin folder. ``` php <?php $I->seeMuPluginFileFound('mu-plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###seePluginFileFound
+* `string` **$file**
+  
+
+<h3>seePluginFileFound</h3>
 ***
 Checks that a file is found in a plugin folder. ``` php <?php $I->seePluginFileFound('plugin1/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###seeThemeFileFound
+* `string` **$file**
+  
+
+<h3>seeThemeFileFound</h3>
 ***
 Checks that a file is found in a theme folder. ``` php <?php $I->seeThemeFileFound('my-theme/some-file.txt'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li></ul>
-</br>
 
-###seeUploadedFileFound
+* `string` **$file**
+  
+
+<h3>seeUploadedFileFound</h3>
 ***
 Checks if file exists in the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. Opens a file when it's exists ``` php <?php $I->seeUploadedFileFound('some-file.txt'); $I->seeUploadedFileFound('some-file.txt','today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filename</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
 
-###writeToMuPluginFile
+* `string` **$filename**
+* `string` **$date**
+  
+
+<h3>writeToMuPluginFile</h3>
 ***
 Writes a file in a mu-plugin folder. ``` php <?php $I->writeToMuPluginFile('mu-plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$data</strong></li></ul>
-</br>
 
-###writeToPluginFile
+* `string` **$file**
+* `string` **$data**
+  
+
+<h3>writeToPluginFile</h3>
 ***
 Writes a file in a plugin folder. ``` php <?php $I->writeToPluginFile('plugin1/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$data</strong></li></ul>
-</br>
 
-###writeToThemeFile
+* `string` **$file**
+* `string` **$data**
+  
+
+<h3>writeToThemeFile</h3>
 ***
 Writes a string to a file in a theme folder. ``` php <?php $I->writeToThemeFile('my-theme/some-file.txt', 'foo'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$file</strong></li>
-<li><em>string</em> <strong>$data</strong></li></ul>
-</br>
 
-###writeToUploadedFile
+* `string` **$file**
+* `string` **$data**
+  
+
+<h3>writeToUploadedFile</h3>
 ***
 Writes a string to a file in the the uploads folder. The date argument can be a string compatible with `strtotime` or a Unix timestamp that will be used to build the `Y/m` uploads subfolder path. ``` php <?php $I->writeToUploadedFile('some-file.txt', 'foo bar'); $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today'); ?> ```
 #### Parameters
-<ul>
-<li><em>string</em> <strong>$filename</strong></li>
-<li><em>string</em> <strong>$data</strong></li>
-<li><em>string</em> <strong>$date</strong> = <em>null</em></li></ul>
-</br>
+
+* `string` **$filename**
+* `string` **$data**
+* `string` **$date**
 </br>
 
 *This class extends \Codeception\Module\Filesystem*
