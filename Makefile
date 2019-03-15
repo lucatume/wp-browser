@@ -37,6 +37,7 @@ docker_pull:
 		'selenium/standalone-chrome' \
 		'mariadb:latest' \
 		'wordpress:php5.6' \
+		'andthensome/alpine-surge-bash' \
 	); \
 	for image in "$${images[@]}"; do \
 		docker pull "$$image"; \

@@ -1,0 +1,13 @@
+token:
+    type: doc
+    tokens:
+        - type: header_one
+          data:
+              id: hey
+          tokens:
+              - type: text
+                text: Hello
+        - type: paragraph
+          tokens:
+              - type: text
+                text: World

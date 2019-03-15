@@ -1,0 +1,25 @@
+.mdtabs {
+
+}
+
+.mdtabs .mdtabs-header .mdtab {
+    display: inline-block;
+    padding: 3px 6px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.mdtabs .mdtabs-header .mdtab.active {
+    border-bottom-color: #428bca;
+    cursor: default;
+    opacity: 1;
+}
+
+.mdtabs .mdtabs-body .mdtab {
+    display: none;
+}
+
+.mdtabs .mdtabs-body .mdtab.active {
+    display: block;
+}
