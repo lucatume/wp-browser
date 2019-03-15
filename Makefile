@@ -24,33 +24,52 @@ if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
 }
 endef
 
+# PUll all the Docker images this repository will use in building images or running processes.
+docker_pull:
+	images=( \
+		'texthtml/phpcs' \
+		'composer/composer:master-php5' \
+		'phpstan/phpstan' \
+		'wordpress:cli' \
+		'billryan/gitbook' \
+		'mhart/alpine-node:11' \
+		'php:5.6' \
+		'selenium/standalone-chrome' \
+		'mariadb:latest' \
+		'wordpress:php5.6' \
+	); \
+	for image in "$${images[@]}"; do \
+		docker pull "$$image"; \
+	done;
+
+# Builds the Docker-based parallel-lint util.
 docker/parallel-lint/id: docker/parallel-lint/id
-	# Builds the Docker-based parallel-lint util.
 	docker build --force-rm --iidfile docker/parallel-lint/id ./docker/parallel-lint --tag lucatume/parallel-lint:5.6
 
+# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
 lint: docker/parallel-lint/id src
-	# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
-	docker run --rm -v ${CURDIR}:/app parallel-lint:5.6 --colors /app/src
+	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
 
+# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
 fix: src
-	# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf \
 		--standard=/scripts/phpcs.xml \
 		--ignore=data,includes,tad/scripts \
 		/scripts
 
+# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
 sniff: fix src
-	# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcs \
 		--standard=/scripts/phpcs.xml \
 		--ignore=data,includes,tad/scripts \
 		/scripts -s
 
+# Updates Composer dependencies using PHP 5.6.
 composer_update: composer.json
-	# Updates Composer dependencies using PHP 5.6.
 	docker run --rm -v ${CURDIR}:/app composer/composer:master-php5 update
+
+# Runs phpstan on the source files.
 phpstan: src
-	# Runs phpstan on the source files.
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
 travis_before_install:
@@ -143,20 +162,20 @@ travis_prepare: travis_before_install travis_install travis_before_script
 
 travis_run: lint sniff travis_prepare travis_script
 
+# Gracefully stop the Docker containers used in the tests.
 down:
-	# Gracefully stop the Docker containers.
 	docker-compose -f docker/docker-compose.yml down
 
+# Builds the Docker-based markdown-toc util.
 docker/markdown-toc/id: docker/markdown-toc/id
-	# Builds the Docker-based markdown-toc util.
 	docker build --force-rm --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag lucatume/md-toc:latest
 
+# Re-builds the Readme ToC.
 toc: docker/markdown-toc/id
-	# Re-builds the Readme ToC.
-	docker run --rm -it -v ${CURDIR}:/project md-toc markdown-toc -i /project/README.md
+	docker run --rm -it -v ${CURDIR}:/project lucatume/md-toc markdown-toc -i /project/README.md
 
+# Produces the Modules documentation in the docs/modules folder.
 module_docs: composer.lock src/Codeception/Module
-	# Produces the Modules documentation in the docs/modules folder.
 	mkdir -p docs/modules
 	for file in ${CURDIR}/src/Codeception/Module/*.php; \
 	do \
@@ -185,8 +204,16 @@ docker/gitbook/id: docker/gitbook/id
 duplicate_gitbook_files:
 	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
 
-gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs
-	docker run --rm -it -v "${CURDIR}:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook install && gitbook serve --live
+gitbook_install: docs/node_modules
+	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook install
 
-gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs
-	docker run --rm -it -v "${CURDIR}:/gitbook" lucatume/gitbook gitbook install && gitbook build
+gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+	docker run --rm -v "${CURDIR}/docs:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook serve --live
+
+gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
+
+gitbook_surge: gitbook_build
+	 surge ${CURDIR}/docs/site wpbrowser.theaveragedev.com
+ 
+

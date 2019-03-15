@@ -1,0 +1,784 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>WPWebDriver · wp-browser docs</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Luca Tumedei">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="WPQueries.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Summary</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Welcome
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1.1" data-path="../faq.html">
+            
+                <a href="../faq.html">
+            
+                    
+                    Frequently asked questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.2" data-path="../codeception-phpunit-and-wpbrowser.html">
+            
+                <a href="../codeception-phpunit-and-wpbrowser.html">
+            
+                    
+                    Codeception, PHPUnit and wp-browser
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.3" data-path="../levels-of-testing.html">
+            
+                <a href="../levels-of-testing.html">
+            
+                    
+                    Levels of testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    Getting started
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../requirements.html">
+            
+                <a href="../requirements.html">
+            
+                    
+                    Requirements
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../installation.html">
+            
+                <a href="../installation.html">
+            
+                    
+                    Installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../setting-up-minimum-wordpress-installation.html">
+            
+                <a href="../setting-up-minimum-wordpress-installation.html">
+            
+                    
+                    Setting up a minimum WordPress installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../configuration.html">
+            
+                <a href="../configuration.html">
+            
+                    
+                    Configuration
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    Modules
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="WPBrowser.html">
+            
+                <a href="WPBrowser.html">
+            
+                    
+                    WPBrowser
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="WPCLI.html">
+            
+                <a href="WPCLI.html">
+            
+                    
+                    WPCLI
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="WPDb.html">
+            
+                <a href="WPDb.html">
+            
+                    
+                    WPDb
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="WPFilesystem.html">
+            
+                <a href="WPFilesystem.html">
+            
+                    
+                    WPFilesystem
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="WPLoader.html">
+            
+                <a href="WPLoader.html">
+            
+                    
+                    WPLoader
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="WPQueries.html">
+            
+                <a href="WPQueries.html">
+            
+                    
+                    WPQueries
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.7" data-path="WPWebDriver.html">
+            
+                <a href="WPWebDriver.html">
+            
+                    
+                    WPWebDriver
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" >
+            
+                <span>
+            
+                    
+                    Extensions
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../changelog.html">
+            
+                <a href="../changelog.html">
+            
+                    
+                    Changelog
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >WPWebDriver</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <!--doc-->
+<h2 id="public-api">Public API</h2>
+<nav>
+    <ul>
+        <li>
+            <a href="#activateplugin">activatePlugin</a>
+        </li>
+        <li>
+            <a href="#ameditingpostwithid">amEditingPostWithId</a>
+        </li>
+        <li>
+            <a href="#amonadminajaxpage">amOnAdminAjaxPage</a>
+        </li>
+        <li>
+            <a href="#amonadminpage">amOnAdminPage</a>
+        </li>
+        <li>
+            <a href="#amoncronpage">amOnCronPage</a>
+        </li>
+        <li>
+            <a href="#amonpagespage">amOnPagesPage</a>
+        </li>
+        <li>
+            <a href="#amonpluginspage">amOnPluginsPage</a>
+        </li>
+        <li>
+            <a href="#deactivateplugin">deactivatePlugin</a>
+        </li>
+        <li>
+            <a href="#dontseeplugininstalled">dontSeePluginInstalled</a>
+        </li>
+        <li>
+            <a href="#grabcookieswithpattern">grabCookiesWithPattern</a>
+        </li>
+        <li>
+            <a href="#grabfullurl">grabFullUrl</a>
+        </li>
+        <li>
+            <a href="#grabwordpresstestcookie">grabWordPressTestCookie</a>
+        </li>
+        <li>
+            <a href="#loginas">loginAs</a>
+        </li>
+        <li>
+            <a href="#loginasadmin">loginAsAdmin</a>
+        </li>
+        <li>
+            <a href="#seeerrormessage">seeErrorMessage</a>
+        </li>
+        <li>
+            <a href="#seemessage">seeMessage</a>
+        </li>
+        <li>
+            <a href="#seepluginactivated">seePluginActivated</a>
+        </li>
+        <li>
+            <a href="#seeplugindeactivated">seePluginDeactivated</a>
+        </li>
+        <li>
+            <a href="#seeplugininstalled">seePluginInstalled</a>
+        </li>
+        <li>
+            <a href="#seewpdiepage">seeWpDiePage</a>
+        </li>
+        <li>
+            <a href="#waitforjqueryajax">waitForJqueryAjax</a>
+        </li>
+    </ul>
+</nav>
+
+<p></p><h3 id="activateplugin">activatePlugin</h3><p></p>
+<hr>
+<p>In the plugin administration screen activates a plugin clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication to the admin area.</p>
+<pre><code class="language-php">    <span class="hljs-comment">// Activate a plugin.</span>
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin(<span class="hljs-string">&apos;hello-dolly&apos;</span>);
+    <span class="hljs-comment">// Activate a list of plugins.</span>
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin([<span class="hljs-string">&apos;hello-dolly&apos;</span>,<span class="hljs-string">&apos;another-plugin&apos;</span>]);</code></pre>
+#### Parameters
+
+* `string/array` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.
+
+
+<h3 id="ameditingpostwithid">amEditingPostWithId</h3>
+***
+Go to the admin page to edit the post with the specified ID. The method will **not** handle authentication the admin area.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $postId = $I-&gt;havePostInDatabase();
+    $I-&gt;amEditingPostWithId($postId);
+    $I-&gt;fillField(<span class="hljs-string">&apos;post_title&apos;</span>, <span class="hljs-string">&apos;Post title&apos;</span>);</code></pre>
+#### Parameters
+
+* `int` **$id** - The post ID.
+
+
+<h3 id="amonadminajaxpage">amOnAdminAjaxPage</h3>
+***
+Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX request.
+<pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage([<span class="hljs-string">&apos;action&apos;</span> =&gt; <span class="hljs-string">&apos;my-action&apos;</span>, <span class="hljs-string">&apos;data&apos;</span> =&gt; [<span class="hljs-string">&apos;id&apos;</span> =&gt; <span class="hljs-number">23</span>]]);</code></pre>
+#### Parameters
+
+* `array/string` **$queryVars** - A string or array of query variables to append to the AJAX path.
+
+
+<h3 id="amonadminpage">amOnAdminPage</h3>
+***
+Go to a page in the admininstration area of the site.
+<p>Will this comment show up in the output?
+And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one?
+Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p>
+<pre><code class="language-php">    $I-&gt;loginAs(<span class="hljs-string">&apos;user&apos;</span>, <span class="hljs-string">&apos;password&apos;</span>);
+    <span class="hljs-comment">// Go to the plugins management screen.</span>
+    $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/plugins.php&apos;</span>);</code></pre>
+#### Parameters
+
+* `string` **$page** - The path, relative to the admin area URL, to the page.
+
+
+<h3 id="amoncronpage">amOnCronPage</h3>
+***
+Go to the cron page to start a synchronous, and blocking, `GET` request to the cron script.
+<pre><code class="language-php">    <span class="hljs-comment">// Triggers the cron job with an optional query argument.</span>
+    $I-&gt;amOnCronPage(<span class="hljs-string">&apos;?some-query-var=some-value&apos;</span>);</code></pre>
+#### Parameters
+
+* `array/string` **$queryVars** - A string or array of query variables to append to the AJAX path.
+
+
+<h3 id="amonpagespage">amOnPagesPage</h3>
+***
+Go the &quot;Pages&quot; administration screen. The method will **not** handle authentication to the admin area.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPagesPage();
+    $I-&gt;see(<span class="hljs-string">&apos;Add New&apos;</span>);</code></pre>
+
+
+<p></p><h3 id="amonpluginspage">amOnPluginsPage</h3><p></p>
+<hr>
+<p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication to the admin area.</p>
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;activatePlugin(<span class="hljs-string">&apos;hello-dolly&apos;</span>);</code></pre>
+
+
+<p></p><h3 id="deactivateplugin">deactivatePlugin</h3><p></p>
+<hr>
+<p>In the plugin administration screen deactivate a plugin clicking the &quot;Deactivate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
+<pre><code class="language-php">    <span class="hljs-comment">// Deactivate one plugin.</span>
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;deactivatePlugin(<span class="hljs-string">&apos;hello-dolly&apos;</span>);
+    <span class="hljs-comment">// Deactivate a list of plugins.</span>
+    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;deactivatePlugin([<span class="hljs-string">&apos;hello-dolly&apos;</span>, <span class="hljs-string">&apos;my-plugin&apos;</span>]);</code></pre>
+#### Parameters
+
+* `string/array` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.
+
+
+<h3 id="dontseeplugininstalled">dontSeePluginInstalled</h3>
+***
+Assert a plugin is not installed in the plugins list. The method will **not** navigate to the plugin administration screen.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;dontSeePluginInstalled(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot;.
+
+
+<h3 id="grabcookieswithpattern">grabCookiesWithPattern</h3>
+***
+Returns all the cookies whose name matches a regex pattern.
+<pre><code class="language-php">    $I-&gt;loginAs(<span class="hljs-string">&apos;customer&apos;</span>,<span class="hljs-string">&apos;password&apos;</span>);
+    $I-&gt;amOnPage(<span class="hljs-string">&apos;/shop&apos;</span>);
+    $cartCookies = $I-&gt;grabCookiesWithPattern(<span class="hljs-string">&quot;#^shop_cart\\.*#&quot;</span>);</code></pre>
+#### Parameters
+
+* `string` **$cookiePattern**
+
+
+<h3 id="grabfullurl">grabFullUrl</h3>
+***
+Grabs the current page full URL including the query vars.
+<pre><code class="language-php">    $today = date(<span class="hljs-string">&apos;Y-m-d&apos;</span>);
+    $I-&gt;amOnPage(<span class="hljs-string">&apos;/concerts?date=&apos;</span> . $today);
+    $I-&gt;assertRegExp(<span class="hljs-string">&apos;#\\/concerts$#&apos;</span>, $I-&gt;grabFullUrl());</code></pre>
+
+
+<p></p><h3 id="grabwordpresstestcookie">grabWordPressTestCookie</h3><p></p>
+<hr>
+<p>Returns WordPress default test cookie object if present.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li>
+</ul>
+<p></p><h3 id="loginas">loginAs</h3><p></p>
+<hr>
+<p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page. Depending on the driven browser the login might be &quot;too fast&quot; and the server might have not replied with valid cookies yet; in that case the method will re-attempt the login to obtain the cookies. * @example <code>php $I-&gt;loginAs(&apos;user&apos;, &apos;password&apos;); $I-&gt;amOnAdminPage(&apos;/&apos;); $I-&gt;see(&apos;Dashboard&apos;);</code></p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$username</strong></li>
+<li><code>string</code> <strong>$password</strong></li>
+<li><code>int</code> <strong>$timeout</strong> - The max time, in seconds, to try to login.</li>
+<li><code>int</code> <strong>$maxAttempts</strong> - The max number of attempts to try to login.</li>
+</ul>
+<p></p><h3 id="loginasadmin">loginAsAdmin</h3><p></p>
+<hr>
+<p>Login as the administrator user using the credentials specified in the module configuration. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/&apos;</span>);
+    $I-&gt;see(<span class="hljs-string">&apos;Dashboard&apos;</span>);</code></pre>
+#### Parameters
+
+* `int` **$timeout** - The max time, in seconds, to try to login.
+* `int` **$maxAttempts** - The max number of attempts to try to login.
+
+
+<h3 id="seeerrormessage">seeErrorMessage</h3>
+***
+In an administration screen will look for an error admin notice. Allows for class-based error checking to decouple from internationalization.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
+    $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/&apos;</span>);
+    $I-&gt;seeErrorMessage(<span class="hljs-string">&apos;.my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string/array/string` **$classes** - A list of classes the error notice should have in addition to the <code>.notice.notice-error</code> ones.
+
+
+<h3 id="seemessage">seeMessage</h3>
+***
+In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
+    $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/&apos;</span>);
+    $I-&gt;seeMessage(<span class="hljs-string">&apos;.notice-warning.my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string/array/string` **$classes** - A list of classes the message should have in addition to the <code>.notice</code> one.
+
+
+<h3 id="seepluginactivated">seePluginActivated</h3>
+***
+Assert a plugin is activated in the plugins list. The method will **not** navigate to the plugin administration screen.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;seePluginActivated(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot;.
+
+
+<h3 id="seeplugindeactivated">seePluginDeactivated</h3>
+***
+Assert a plugin is not activated in the plugins list. The method will **not** navigate to the plugin administration screen.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;seePluginDeactivated(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot;.
+
+
+<h3 id="seeplugininstalled">seePluginInstalled</h3>
+***
+Assert a plugin is installed, no matter its activation status, in the plugins list. The method will **not** navigate to the plugin administration screen.
+<pre><code class="language-php">    $I-&gt;loginAsAdmin();
+    $I-&gt;amOnPluginsPage();
+    $I-&gt;seePluginInstalled(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre>
+#### Parameters
+
+* `string` **$pluginSlug** - The plugin slug, like &quot;hello-dolly&quot;.
+
+
+<h3 id="seewpdiepage">seeWpDiePage</h3>
+***
+Checks that the current page is a `wp_die` generated one. The method will try to identify the page based on the default WordPress die page markup.
+<pre><code class="language-php">    $I-&gt;loginAs(<span class="hljs-string">&apos;user&apos;</span>, <span class="hljs-string">&apos;password&apos;</span>);
+    $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/forbidden&apos;</span>);
+    $I-&gt;seeWpDiePage();</code></pre>
+
+
+<p></p><h3 id="waitforjqueryajax">waitForJqueryAjax</h3><p></p>
+<hr>
+<p>Waits for any jQuery triggered AJAX request to be resolved.</p>
+<p><pre><code class="language-php">    $I-&gt;amOnPage(<span class="hljs-string">&apos;/triggering-ajax-requests&apos;</span>);
+    $I-&gt;waitForJqueryAjax();
+    $I-&gt;see(<span class="hljs-string">&apos;From AJAX&apos;</span>);</code></pre></p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$time</strong> - The max time to wait for AJAX requests to complete.
+&lt;/br&gt;</li>
+</ul>
+<p><em>This class extends \Codeception\Module\WebDriver</em></p>
+<p><em>This class implements \Codeception\Lib\Interfaces\RequiresPackage, \Codeception\Lib\Interfaces\ConflictsWithModule, \Codeception\Lib\Interfaces\ElementLocator, \Codeception\Lib\Interfaces\PageSourceSaver, \Codeception\Lib\Interfaces\ScreenshotSaver, \Codeception\Lib\Interfaces\SessionSnapshot, \Codeception\Lib\Interfaces\MultiSession, \Codeception\Lib\Interfaces\Remote, \Codeception\Lib\Interfaces\Web</em></p>
+<!--/doc-->
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="WPQueries.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: WPQueries">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"WPWebDriver","level":"1.3.7","depth":2,"next":{"title":"Extensions","level":"1.4","depth":1,"ref":"","articles":[]},"previous":{"title":"WPQueries","level":"1.3.6","depth":2,"path":"modules/WPQueries.md","ref":"modules/WPQueries.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"expandable-chapters":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPWebDriver.md","mtime":"2019-03-14T19:21:06.194Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-14T19:26:03.397Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
