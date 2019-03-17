@@ -240,7 +240,13 @@ class WPDb extends Db
     /**
      * Checks that an option is not in the database for the current blog.
      *
-     * If the value is an object or an array then the serialized option will be checked for.
+     * If the value is an object or an array then the serialized option will be checked.
+     *
+     * @example
+     * ```php
+     * $I->dontHaveOptionInDatabase('posts_per_page');
+     * $I->dontSeeOptionInDatabase('posts_per_page');
+     * ```
      *
      * @param array $criteria An array of search criteria.
      */
@@ -257,6 +263,17 @@ class WPDb extends Db
      * Returns a prefixed table name for the current blog.
      *
      * If the table is not one to be prefixed (e.g. `users`) then the proper table name will be returned.
+     *
+     * @example
+     * ```php
+     * // Will return wp_users.
+     * $usersTable = $I->grabPrefixedTableNameFor('users');
+     * // Will return wp_options.
+     * $optionsTable = $I->grabPrefixedTableNameFor('options');
+     * // Use a different blog and get its options table.
+     * $I->useBlog(2);
+     * $blogOptionsTable = $I->grabPrefixedTableNameFor('options');
+     * ```
      *
      * @param  string $tableName The table name, e.g. `options`.
      *
@@ -289,7 +306,13 @@ class WPDb extends Db
     /**
      * Checks for a post meta value in the database for the current blog.
      *
-     * If the `meta_value` is an object or an array then the serialized value will be checked for.
+     * If the `meta_value` is an object or an array then the check will be made for serialized values.
+     *
+     * @example
+     * ```php
+     * $postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']];
+     * $I->seePostMetaInDatabase(['post_id' => '$postId', 'meta_key' => 'foo']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -303,9 +326,7 @@ class WPDb extends Db
     }
 
     /**
-     * Checks for a link in the database.
-     *
-     * Will look up the "links" table.
+     * Checks for a link in the `links` table of the database.
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -316,9 +337,7 @@ class WPDb extends Db
     }
 
     /**
-     * Checks that a link is not in the database.
-     *
-     * Will look up the "links" table.
+     * Checks that a link is not in the `links` database table.
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -329,9 +348,15 @@ class WPDb extends Db
     }
 
     /**
-     * Checks that a post meta value is not there.
+     * Checks that a post meta value does not exist.
      *
-     * If the meta value is an object or an array then the serialized version will be checked for.
+     * If the meta value is an object or an array then the check will be made on its serialized version.
+     *
+     * @example
+     * ```php
+     * $postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']]);
+     * $I->dontSeePostMetaInDatabase(['post_id' => $postId, 'meta_key' => 'woot']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -347,7 +372,14 @@ class WPDb extends Db
     /**
      * Checks that a post to term relation exists in the database.
      *
-     * Will look up the "term_relationships" table.
+     * The method will check the "term_relationships" table.
+     *
+     * @example
+     * ```php
+     * list($fiction) = $I->haveTermInDatabase('fiction', 'genre');
+     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => [$fiction]]]);
+     * $I->seePostWithTermInDatabase($postId, $fiction);
+     * ```
      *
      * @param  int     $post_id    The post ID.
      * @param  int     $term_id    The term ID.
