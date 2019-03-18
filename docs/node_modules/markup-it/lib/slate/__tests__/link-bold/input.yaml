@@ -1,0 +1,17 @@
+token:
+    type: doc
+    tokens:
+        - type: paragraph
+          tokens:
+              - type: text
+                text: Hello
+              - type: BOLD
+                tokens:
+                  - type: link
+                    data:
+                        href: https://google.com
+                    tokens:
+                        - type: text
+                          text: World
+              - type: text
+                text: !

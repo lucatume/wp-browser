@@ -1,0 +1,17 @@
+nodes:
+  - kind: block
+    type: paragraph
+    isVoid: false
+    data: {}
+    nodes:
+      - kind: text
+        text: Hello
+        marks: []
+  - kind: block
+    type: paragraph
+    isVoid: false
+    data: {}
+    nodes:
+      - kind: text
+        text: World
+        marks: []

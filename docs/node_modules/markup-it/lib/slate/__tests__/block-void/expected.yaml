@@ -1,0 +1,22 @@
+nodes:
+  - kind: block
+    type: header_one
+    isVoid: false
+    data: {}
+    nodes:
+      - kind: text
+        text: Hello
+        marks: []
+  - kind: block
+    type: hr
+    isVoid: true
+    data: {}
+    nodes: []
+  - kind: block
+    type: paragraph
+    isVoid: false
+    data: {}
+    nodes:
+      - kind: text
+        text: World
+        marks: []

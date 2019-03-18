@@ -1,0 +1,21 @@
+nodes:
+  - kind: block
+    type: paragraph
+    isVoid: false
+    data: {}
+    nodes:
+      - kind: text
+        text: Hello
+        marks: []
+      - kind: inline
+        type: link
+        isVoid: false
+        data:
+            href: https://google.com
+        nodes:
+          - kind: text
+            text: World
+            marks: []
+      - kind: text
+        text: !
+        marks: []

@@ -1,0 +1,11 @@
+token:
+    type: doc
+    tokens:
+        - type: paragraph
+          tokens:
+              - type: text
+                text: Hello
+        - type: paragraph
+          tokens:
+              - type: text
+                text: World

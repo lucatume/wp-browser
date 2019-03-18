@@ -1,0 +1,14 @@
+{
+  "title": "wp-browser docs",
+  "description": "Setup and API documentation for the wp-browser project",
+  "author": "Luca Tumedei",
+  "structure": {
+    "readme": "welcome.md",
+    "summary": "summary.md"
+  },
+  "plugins": [
+    "expandable-chapters",
+    "simpletabs",
+    "code"
+  ]
+}

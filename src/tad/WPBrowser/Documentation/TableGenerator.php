@@ -116,8 +116,9 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         }
 
 
-        $str = PHP_EOL . '<h3>' . $func->getName() . '</h3>' . PHP_EOL . '***' . PHP_EOL;
-        $str .= $func->getDescription();
+        $str = PHP_EOL . '<h3>' . $func->getName() . '</h3>' . "\n\n<hr>\n\n";
+
+        $str .= $this->parser->text($func->getDescription());
 
         if ($func->getExample()) {
             $rawExample = $func->getExample();
@@ -125,10 +126,10 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             $str .= PHP_EOL . $example;
         }
         if ($func->hasParams()) {
-            $str .= PHP_EOL . '#### Parameters' . PHP_EOL;
+            $str .= PHP_EOL . '<h4>Parameters</h4>' . PHP_EOL . '<ul>';
             $params = [];
             foreach ($func->getParams() as $param) {
-                $paramStr = sprintf('* `%s` **%s**', $param->getType(), $param->getName());
+                $paramStr = sprintf('<li><code>%s</code> <strong>%s</strong>', $param->getType(), $param->getName());
 
                 $description = $param->getDescription();
 
@@ -136,10 +137,12 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                     $paramStr .= ' - ' . $this->parser->line($param->getDescription());
                 }
 
-                $params[] = $paramStr;
+                $params[] = $paramStr . '</li>';
             }
             $str .= PHP_EOL . implode(PHP_EOL, $params);
         }
+
+        $str .= '</ul>';
 
         $this->output .= PHP_EOL . $str . PHP_EOL  . '  ';
         $this->index[] = $func->getName();

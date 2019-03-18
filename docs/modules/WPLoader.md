@@ -23,27 +23,38 @@
 </nav>
 
 <h3>activatePlugins</h3>
-***
 
+<hr>
+
+</ul>
   
 
 <h3>bootstrapActions</h3>
-***
-Calls a list of user-defined actions needed in tests.
+
+<hr>
+
+<p>Calls a list of user-defined actions needed in tests.</p></ul>
   
 
 <h3>factory</h3>
-***
-Accessor method to get the object storing the factories for things. Example usage: $postId = $I->factory()->post->create();
+
+<hr>
+
+<p>Accessor method to get the object storing the factories for things. Example usage: $postId = $I-&gt;factory()-&gt;post-&gt;create();</p></ul>
   
 
 <h3>loadPlugins</h3>
-***
-Loads the plugins required by the test.
+
+<hr>
+
+<p>Loads the plugins required by the test.</p></ul>
   
 
 <h3>switchTheme</h3>
-***
+
+<hr>
+
+</ul>
 </br>
 
 *This class extends \Codeception\Module*

@@ -23,20 +23,24 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 </nav>
 
 <h3>cli</h3>
-***
-Executes a wp-cli command targeting the test WordPress installation.
+
+<hr>
+
+<p>Executes a wp-cli command targeting the test WordPress installation.</p>
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli('plugin activate my-plugin');
     // Change a user password.
     $I-&gt;cli('user update luca --user_pass=newpassword');</code></pre>
-#### Parameters
-
-* `string` **$userCommand** - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
   
 
 <h3>cliToArray</h3>
-***
-Returns the output of a wp-cli command as an array.
+
+<hr>
+
+<p>Returns the output of a wp-cli command as an array.</p>
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');
     // Get the list of installed plugins and only keep the ones starting with "foo".
@@ -45,10 +49,10 @@ Returns the output of a wp-cli command as an array.
                  return strpos(trim($name), 'foo') === 0;
          });
     });</code></pre>
-#### Parameters
-
-* `string` **$userCommand** - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.
-* `\callable` **$splitCallback** - An optional callback function in charge of splitting the results array.
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
+<li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function in charge of splitting the results array.</li></ul>
 </br>
 
 *This class extends \Codeception\Module*
