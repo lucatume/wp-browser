@@ -90,7 +90,7 @@ class WPCLI extends Module
      *
      * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
      *
-     * @return int The command exit value.
+     * @return int The command exit value; `0` usually means success.
      *
      * @throws \Codeception\Exception\ModuleException If the status evaluates to non-zero and the `throw` configuration
      *                                                parameter is set to `true`.
@@ -212,7 +212,7 @@ class WPCLI extends Module
     }
 
     /**
-     * Returns the output of a wp-cli command as an array.
+     * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
      * @example
      * ```php

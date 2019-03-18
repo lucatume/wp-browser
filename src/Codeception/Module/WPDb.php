@@ -400,11 +400,14 @@ class WPDb extends Db
     /**
      * Checks that a user is in the database.
      *
-     * Will look up the "users" table.
+     * The method will check the "users" table.
      *
-     * @param  array $criteria
+     * @example
+     * ```php
+     * $userId = $I->haveUserInDatabase(['])
+     * ```
      *
-     * @return void
+     * @param  array $criteria An array of search criteria.
      */
     public function seeUserInDatabase(array $criteria)
     {
