@@ -1675,8 +1675,13 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $subscribers = $I->haveManyUsersInDatabase(5, 'contributor-{{n}}');
-     * $editors = $I->haveManyUsersInDatabase(5, 'contributor-{{n}}', 'editor', ['user_email' => 'editor-{{n}}@example.org']);
+     * $subscribers = $I->haveManyUsersInDatabase(5, 'user-{{n}}');
+     * $editors = $I->haveManyUsersInDatabase(
+     *      5,
+     *      'user-{{n}}',
+     *      'editor',
+     *      ['user_email' => 'user-{{n}}@example.org']
+     * );
      * ```
      *
      * @param int    $count      The number of users to insert.
@@ -2373,7 +2378,7 @@ class WPDb extends Db
      *
      * @param array $criteria      An array of search criteria to find the blog rows in the blogs table.
      * @param bool  $removeTables  Remove the blog tables.
-     * @param bool  $removeUploads Remove the blog uploads; requires the `WPFilesystem` module to be loaded in the suite.
+     * @param bool  $removeUploads Remove the blog uploads; requires the `WPFilesystem` module.
      */
     public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = true)
     {
@@ -2423,7 +2428,9 @@ class WPDb extends Db
     public function grabBlogTableNames($blogId)
     {
         $table_prefix = "{$this->tablePrefix}{$blogId}_";
-        $query = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name like '{$table_prefix}%'";
+        $query = 'SELECT table_name '
+                 . 'FROM information_schema.tables '
+                 . "WHERE table_schema = ? and table_name like '{$table_prefix}%'";
         $databaseName = $this->_getDriver()->executeQuery('select database()', [])->fetchColumn();
         return $this->_getDriver()->executeQuery($query, [$databaseName])->fetchAll(PDO::FETCH_COLUMN);
     }
@@ -2488,7 +2495,7 @@ class WPDb extends Db
      * @param string      $stylesheet The theme stylesheet slug, e.g. `twentysixteen`.
      * @param string|null $template   The theme template slug, e.g. `twentysixteen`, defaults to `$stylesheet`.
      *
-     * @param string|null $themeName  The theme name, e.g. `Twentysixteen`, defaults to the "title" version of `$stylesheet`.
+     * @param string|null $themeName  The theme name, e.g. `Acme`, defaults to the "title" version of `$stylesheet`.
      */
     public function useTheme($stylesheet, $template = null, $themeName = null)
     {

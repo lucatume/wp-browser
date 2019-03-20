@@ -257,7 +257,7 @@ trait WPBrowserMethods
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @param array|string $classes A list of classes the error notice should have in addition to the `.notice.notice-error` ones.
+     * @param array|string $classes A list of classes the notice should have other than the `.notice.notice-error` ones.
      */
     public function seeErrorMessage($classes = '')
     {

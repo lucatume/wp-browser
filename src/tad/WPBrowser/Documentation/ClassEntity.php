@@ -200,7 +200,7 @@ class ClassEntity extends CodeEntity
     /**
      * @param string $name
      */
-    function setName($name)
+    public function setName($name)
     {
         parent::setName(Utils::sanitizeClassName($name));
     }
@@ -210,7 +210,7 @@ class ClassEntity extends CodeEntity
      * @param string|object $class
      * @return bool
      */
-    function isSame($class)
+    public function isSame($class)
     {
         $className = is_object($class) ? get_class($class) : $class;
         return Utils::sanitizeClassName($className) == $this->getName();
@@ -221,7 +221,7 @@ class ClassEntity extends CodeEntity
      * @param string $format
      * @return string
      */
-    function generateTitle($format = '%label%: %name% %extra%')
+    public function generateTitle($format = '%label%: %name% %extra%')
     {
         return '';
     }
@@ -230,7 +230,7 @@ class ClassEntity extends CodeEntity
      * Generates an anchor link out of the generated title (see generateTitle)
      * @return string
      */
-    function generateAnchor()
+    public function generateAnchor()
     {
         $title = $this->generateTitle();
         return strtolower(str_replace([':', ' ', '\\', '(', ')'], ['', '-', '', '', ''], $title));

@@ -675,20 +675,28 @@ EOF;
 
     protected function askForAcknowledgment()
     {
-        $this->say('<info>Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!</info>');
+        $this->say('<info>'
+                   . 'Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!'
+                   . '</info>');
         $this->say('<info>This command will guide you through the initial setup for your project.</info>');
         echo PHP_EOL;
         $this->say('<info>If you are new to wp-browser please take the time to read this guide:</info>');
         $this->say('<info>https://github.com/lucatume/wp-browser#initial-setup</info>');
         echo PHP_EOL;
         $acknowledge = $this->ask(
-            '<warning>I acknowledge wp-browser should run on development servers only, that I have made a backup of my files and database contents before proceeding.</warning>',
+            '<warning>'
+            .'I acknowledge wp-browser should run on development servers only, '
+            .'that I have made a backup of my files and database contents before proceeding.'
+            .'</warning>',
             true
         );
         echo PHP_EOL;
         if (!$acknowledge) {
             $this->say('<info>The command did not do anything, nothing changed.</info>');
-            $this->say('<info>Setup a WordPress installation and database dedicated to development and restart this command when ready using `vendor/bin/codecept init wpbrowser`.</info>');
+            $this->say('<info>'
+                       .'Setup a WordPress installation and database dedicated to development and '
+                       .'restart this command when ready using `vendor/bin/codecept init wpbrowser`.'
+                       .'</info>');
             echo PHP_EOL;
             $this->say('<info>See you soon!</info>');
             exit(0);

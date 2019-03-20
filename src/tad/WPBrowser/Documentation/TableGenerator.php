@@ -167,7 +167,13 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         $toc = '<nav>' . "\n\t<ul>";
         foreach ($this->index as $funcName) {
-            $toc .= "\n\t\t\<li>\n\t\t\t" . '<a href="#' . strtolower($funcName) . '">' . $funcName . '</a>' . "\n\t\t</li>";
+            $toc .= "\n\t\t\<li>\n\t\t\t"
+                    . '<a href="#'
+                    . strtolower($funcName)
+                    . '">'
+                    . $funcName
+                    . '</a>'
+                    . "\n\t\t</li>";
         }
 
         $toc .= "\n\t</ul>" . PHP_EOL . '</nav>' . PHP_EOL;
