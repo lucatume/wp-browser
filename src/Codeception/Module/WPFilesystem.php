@@ -1230,12 +1230,12 @@ CSS;
         } catch (ModuleException $e) {
             throw $e;
         } catch (\Exception $e) {
-            throw new ModuleException($this, sprintf("Could not create uploads folder '%s'\nreason: %s\nuser: %s",
-                    $path,
-                    $e->getMessage(),
-                    get_current_user()
-                )
-            );
+            throw new ModuleException($this, sprintf(
+                "Could not create uploads folder '%s'\nreason: %s\nuser: %s",
+                $path,
+                $e->getMessage(),
+                get_current_user()
+            ));
         }
 
         $this->debug("Created uploads folder '{$path}'");

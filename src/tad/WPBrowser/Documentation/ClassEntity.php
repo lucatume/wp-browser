@@ -1,7 +1,6 @@
 <?php
 namespace PHPDocsMD;
 
-
 /**
  * Object describing a class or an interface.
  *
@@ -10,7 +9,8 @@ namespace PHPDocsMD;
  *
  * @package PHPDocsMD
  */
-class ClassEntity extends CodeEntity {
+class ClassEntity extends CodeEntity
+{
 
     /**
      * @var \PHPDocsMD\FunctionEntity[]
@@ -61,9 +61,9 @@ class ClassEntity extends CodeEntity {
      * @param bool $toggle
      * @return bool
      */
-    public function isAbstract($toggle=null)
+    public function isAbstract($toggle = null)
     {
-        if ( $toggle === null ) {
+        if ($toggle === null) {
             return $this->abstract;
         } else {
             return $this->abstract = (bool)$toggle;
@@ -74,9 +74,9 @@ class ClassEntity extends CodeEntity {
      * @param bool $toggle
      * @return bool
      */
-    public function hasIgnoreTag($toggle=null)
+    public function hasIgnoreTag($toggle = null)
     {
-        if( $toggle === null ) {
+        if ($toggle === null) {
             return $this->hasIgnoreTag;
         } else {
             return $this->hasIgnoreTag = (bool)$toggle;
@@ -105,9 +105,9 @@ class ClassEntity extends CodeEntity {
      * @param bool $toggle
      * @return bool
      */
-    public function isInterface($toggle=null)
+    public function isInterface($toggle = null)
     {
-        if( $toggle === null ) {
+        if ($toggle === null) {
             return $this->isInterface;
         } else {
             return $this->isInterface = (bool)$toggle;
@@ -118,9 +118,9 @@ class ClassEntity extends CodeEntity {
      * @param bool $toggle
      * @return bool
      */
-    public function isNative($toggle=null)
+    public function isNative($toggle = null)
     {
-        if( $toggle === null ) {
+        if ($toggle === null) {
             return $this->isNative;
         } else {
             return $this->isNative = (bool)$toggle;
@@ -157,7 +157,7 @@ class ClassEntity extends CodeEntity {
     public function setSee(array $see)
     {
         $this->see = [];
-        foreach($see as $i) {
+        foreach ($see as $i) {
             $this->see[] = $i;
         }
     }
@@ -168,7 +168,7 @@ class ClassEntity extends CodeEntity {
     public function setInterfaces(array $implements)
     {
         $this->interfaces = [];
-        foreach($implements as $interface) {
+        foreach ($implements as $interface) {
             $this->interfaces[] = Utils::sanitizeClassName($interface);
         }
     }
@@ -221,7 +221,7 @@ class ClassEntity extends CodeEntity {
      * @param string $format
      * @return string
      */
-    function generateTitle($format='%label%: %name% %extra%')
+    function generateTitle($format = '%label%: %name% %extra%')
     {
         return '';
     }
@@ -236,4 +236,3 @@ class ClassEntity extends CodeEntity {
         return strtolower(str_replace([':', ' ', '\\', '(', ')'], ['', '-', '', '', ''], $title));
     }
 }
-
