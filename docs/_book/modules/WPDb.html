@@ -1104,7 +1104,7 @@
 
 <hr>
 
-<p></p><p>Checks that a link is not in the database. Will look up the &quot;links&quot; table.</p><p></p>
+<p></p><p>Checks that a link is not in the <code>links</code> database table.</p><p></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1114,7 +1114,9 @@
 
 <hr>
 
-<p></p><p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked for.</p><p></p>
+<p></p><p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;dontHaveOptionInDatabase(<span class="hljs-string">&apos;posts_per_page&apos;</span>);
+    $I-&gt;dontSeeOptionInDatabase(<span class="hljs-string">&apos;posts_per_page&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1144,7 +1146,9 @@
 
 <hr>
 
-<p></p><p>Checks that a post meta value is not there. If the meta value is an object or an array then the serialized version will be checked for.</p><p></p>
+<p></p><p>Checks that a post meta value does not exist. If the meta value is an object or an array then the check will be made on its serialized version.</p><p></p>
+<p><pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase([<span class="hljs-string">&apos;meta_input&apos;</span> =&gt; [<span class="hljs-string">&apos;foo&apos;</span> =&gt; <span class="hljs-string">&apos;bar&apos;</span>]]);
+    $I-&gt;dontSeePostMetaInDatabase([<span class="hljs-string">&apos;post_id&apos;</span> =&gt; $postId, <span class="hljs-string">&apos;meta_key&apos;</span> =&gt; <span class="hljs-string">&apos;woot&apos;</span>]);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1393,6 +1397,13 @@
 <hr>
 
 <p></p><p>Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. <code>users</code>) then the proper table name will be returned.</p><p></p>
+<p><pre><code class="language-php">    <span class="hljs-comment">// Will return wp_users.</span>
+    $usersTable = $I-&gt;grabPrefixedTableNameFor(<span class="hljs-string">&apos;users&apos;</span>);
+    <span class="hljs-comment">// Will return wp_options.</span>
+    $optionsTable = $I-&gt;grabPrefixedTableNameFor(<span class="hljs-string">&apos;options&apos;</span>);
+    <span class="hljs-comment">// Use a different blog and get its options table.</span>
+    $I-&gt;useBlog(<span class="hljs-number">2</span>);
+    $blogOptionsTable = $I-&gt;grabPrefixedTableNameFor(<span class="hljs-string">&apos;options&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>string</code> <strong>$tableName</strong> - The table name, e.g. <code>options</code>.</li></ul>
@@ -1897,7 +1908,7 @@
 
 <hr>
 
-<p></p><p>Checks for a link in the database. Will look up the &quot;links&quot; table.</p><p></p>
+<p></p><p>Checks for a link in the <code>links</code> table of the database.</p><p></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1937,7 +1948,9 @@
 
 <hr>
 
-<p></p><p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the serialized value will be checked for.</p><p></p>
+<p></p><p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the check will be made for serialized values.</p><p></p>
+<p><pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase([<span class="hljs-string">&apos;meta_input&apos;</span> =&gt; [<span class="hljs-string">&apos;foo&apos;</span> =&gt; <span class="hljs-string">&apos;bar&apos;</span>]];
+    $I-&gt;seePostMetaInDatabase([<span class="hljs-string">&apos;post_id&apos;</span> =&gt; <span class="hljs-string">&apos;$postId&apos;</span>, <span class="hljs-string">&apos;meta_key&apos;</span> =&gt; <span class="hljs-string">&apos;foo&apos;</span>]);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1947,7 +1960,10 @@
 
 <hr>
 
-<p></p><p>Checks that a post to term relation exists in the database. Will look up the &quot;term_relationships&quot; table.</p><p></p>
+<p></p><p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p><p></p>
+<p><pre><code class="language-php">    <span class="hljs-keyword">list</span>($fiction) = $I-&gt;haveTermInDatabase(<span class="hljs-string">&apos;fiction&apos;</span>, <span class="hljs-string">&apos;genre&apos;</span>);
+    $postId = $I-&gt;havePostInDatabase([<span class="hljs-string">&apos;tax_input&apos;</span> =&gt; [<span class="hljs-string">&apos;genre&apos;</span> =&gt; [$fiction]]]);
+    $I-&gt;seePostWithTermInDatabase($postId, $fiction);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
@@ -2033,10 +2049,11 @@
 
 <hr>
 
-<p></p><p>Checks that a user is in the database. Will look up the &quot;users&quot; table.</p><p></p>
+<p></p><p>Checks that a user is in the database. The method will check the &quot;users&quot; table.</p><p></p>
+<p><pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase([<span class="hljs-string">&apos;])</span></code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>array</code> <strong>$criteria</strong></li></ul>
+<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
 
 
 <h3 id="seeusermetaindatabase">seeUserMetaInDatabase</h3>
@@ -2121,7 +2138,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"WPDb","level":"1.3.3","depth":2,"next":{"title":"WPFilesystem","level":"1.3.4","depth":2,"path":"modules/WPFilesystem.md","ref":"modules/WPFilesystem.md","articles":[]},"previous":{"title":"WPCLI","level":"1.3.2","depth":2,"path":"modules/WPCLI.md","ref":"modules/WPCLI.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPDb.md","mtime":"2019-03-15T19:00:57.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-15T18:56:00.270Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"WPDb","level":"1.3.3","depth":2,"next":{"title":"WPFilesystem","level":"1.3.4","depth":2,"path":"modules/WPFilesystem.md","ref":"modules/WPFilesystem.md","articles":[]},"previous":{"title":"WPCLI","level":"1.3.2","depth":2,"path":"modules/WPCLI.md","ref":"modules/WPCLI.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPDb.md","mtime":"2019-03-19T20:13:12.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-19T20:13:23.317Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

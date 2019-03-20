@@ -40,7 +40,7 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 
 <hr>
 
-<p>Returns the output of a wp-cli command as an array.</p>
+<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.</p>
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');
     // Get the list of installed plugins and only keep the ones starting with "foo".

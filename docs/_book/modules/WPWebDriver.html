@@ -489,7 +489,7 @@
 
 <hr>
 
-<p></p><p>In the plugin administration screen activates a plugin clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication to the admin area.</p><p></p>
+<p></p><p>In the plugin administration screen activates one or more plugins clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p><p></p>
 <p><pre><code class="language-php">    <span class="hljs-comment">// Activate a plugin.</span>
     $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -521,8 +521,8 @@
 
 <hr>
 
-<p></p><p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request.</p><p></p>
-<p><pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage([<span class="hljs-string">&apos;action&apos;</span> =&gt; <span class="hljs-string">&apos;my-action&apos;</span>, <span class="hljs-string">&apos;data&apos;</span> =&gt; [<span class="hljs-string">&apos;id&apos;</span> =&gt; <span class="hljs-number">23</span>]]);</code></pre></p>
+<p></p><p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request. The method will <strong>not</strong> handle authentication, nonces or authorization.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage([<span class="hljs-string">&apos;action&apos;</span> =&gt; <span class="hljs-string">&apos;my-action&apos;</span>, <span class="hljs-string">&apos;data&apos;</span> =&gt; [<span class="hljs-string">&apos;id&apos;</span> =&gt; <span class="hljs-number">23</span>], <span class="hljs-string">&apos;nonce&apos;</span> =&gt; $nonce]);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -532,10 +532,7 @@
 
 <hr>
 
-<p></p><p>Go to a page in the admininstration area of the site.</p><p></p>
-<p></p><p>Will this comment show up in the output?
-And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one?
-Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
+<p></p><p>Go to a page in the admininstration area of the site. This method will <strong>not</strong> handle authentication to the administration area.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAs(<span class="hljs-string">&apos;user&apos;</span>, <span class="hljs-string">&apos;password&apos;</span>);
     <span class="hljs-comment">// Go to the plugins management screen.</span>
     $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/plugins.php&apos;</span>);</code></pre></p>
@@ -550,7 +547,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <p></p><p>Go to the cron page to start a synchronous, and blocking, <code>GET</code> request to the cron script.</p><p></p>
 <p><pre><code class="language-php">    <span class="hljs-comment">// Triggers the cron job with an optional query argument.</span>
-    $I-&gt;amOnCronPage(<span class="hljs-string">&apos;?some-query-var=some-value&apos;</span>);</code></pre></p>
+    $I-&gt;amOnCronPage(<span class="hljs-string">&apos;/?some-query-var=some-value&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -560,7 +557,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication to the admin area.</p><p></p>
+<p></p><p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPagesPage();
     $I-&gt;see(<span class="hljs-string">&apos;Add New&apos;</span>);</code></pre>&lt;/ul&gt;</p>
@@ -568,7 +565,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication to the admin area.</p><p></p>
+<p></p><p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;activatePlugin(<span class="hljs-string">&apos;hello-dolly&apos;</span>);</code></pre>&lt;/ul&gt;</p>
@@ -594,7 +591,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Assert a plugin is not installed in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p><p></p>
+<p></p><p>Assert a plugin is not installed in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;dontSeePluginInstalled(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre></p>
@@ -665,7 +662,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>In an administration screen will look for an error admin notice. Allows for class-based error checking to decouple from internationalization.</p><p></p>
+<p></p><p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/&apos;</span>);
     $I-&gt;seeErrorMessage(<span class="hljs-string">&apos;.my-plugin&apos;</span>);</code></pre></p>
@@ -678,10 +675,10 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.</p><p></p>
+<p></p><p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/&apos;</span>);
-    $I-&gt;seeMessage(<span class="hljs-string">&apos;.notice-warning.my-plugin&apos;</span>);</code></pre></p>
+    $I-&gt;seeMessage(<span class="hljs-string">&apos;.missing-api-token.my-plugin&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
@@ -691,7 +688,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Assert a plugin is activated in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p><p></p>
+<p></p><p>Assert a plugin is activated in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginActivated(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre></p>
@@ -704,7 +701,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Assert a plugin is not activated in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p><p></p>
+<p></p><p>Assert a plugin is not activated in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginDeactivated(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre></p>
@@ -717,7 +714,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Assert a plugin is installed, no matter its activation status, in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p><p></p>
+<p></p><p>Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginInstalled(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre></p>
@@ -730,7 +727,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
 
 <hr>
 
-<p></p><p>Checks that the current page is a <code>wp_die</code> generated one. The method will try to identify the page based on the default WordPress die page markup.</p><p></p>
+<p></p><p>Checks that the current page is one generated by the <code>wp_die</code> function. The method will try to identify the page based on the default WordPress die page HTML attributes.</p><p></p>
 <p><pre><code class="language-php">    $I-&gt;loginAs(<span class="hljs-string">&apos;user&apos;</span>, <span class="hljs-string">&apos;password&apos;</span>);
     $I-&gt;amOnAdminPage(<span class="hljs-string">&apos;/forbidden&apos;</span>);
     $I-&gt;seeWpDiePage();</code></pre>&lt;/ul&gt;</p>
@@ -788,7 +785,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></stron></p><p></p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"WPWebDriver","level":"1.3.7","depth":2,"next":{"title":"Extensions","level":"1.4","depth":1,"ref":"","articles":[]},"previous":{"title":"WPQueries","level":"1.3.6","depth":2,"path":"modules/WPQueries.md","ref":"modules/WPQueries.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPWebDriver.md","mtime":"2019-03-15T19:00:58.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-15T18:56:00.270Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"WPWebDriver","level":"1.3.7","depth":2,"next":{"title":"Extensions","level":"1.4","depth":1,"ref":"","articles":[]},"previous":{"title":"WPQueries","level":"1.3.6","depth":2,"path":"modules/WPQueries.md","ref":"modules/WPQueries.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPWebDriver.md","mtime":"2019-03-19T20:13:13.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-19T20:13:23.317Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -690,7 +690,7 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks that a link is not in the database. Will look up the &quot;links&quot; table.</p>
+<p>Checks that a link is not in the <code>links</code> database table.</p>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -700,7 +700,9 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked for.</p>
+<p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked.</p>
+<pre><code class="language-php">    $I-&gt;dontHaveOptionInDatabase('posts_per_page');
+    $I-&gt;dontSeeOptionInDatabase('posts_per_page');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -730,7 +732,9 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks that a post meta value is not there. If the meta value is an object or an array then the serialized version will be checked for.</p>
+<p>Checks that a post meta value does not exist. If the meta value is an object or an array then the check will be made on its serialized version.</p>
+<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']]);
+    $I-&gt;dontSeePostMetaInDatabase(['post_id' =&gt; $postId, 'meta_key' =&gt; 'woot']);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -995,6 +999,13 @@ The module provides methods to read, write and update the WordPress database **d
 <hr>
 
 <p>Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. <code>users</code>) then the proper table name will be returned.</p>
+<pre><code class="language-php">    // Will return wp_users.
+    $usersTable = $I-&gt;grabPrefixedTableNameFor('users');
+    // Will return wp_options.
+    $optionsTable = $I-&gt;grabPrefixedTableNameFor('options');
+    // Use a different blog and get its options table.
+    $I-&gt;useBlog(2);
+    $blogOptionsTable = $I-&gt;grabPrefixedTableNameFor('options');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$tableName</strong> - The table name, e.g. <code>options</code>.</li></ul>
@@ -1521,7 +1532,7 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks for a link in the database. Will look up the &quot;links&quot; table.</p>
+<p>Checks for a link in the <code>links</code> table of the database.</p>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1561,7 +1572,9 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the serialized value will be checked for.</p>
+<p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the check will be made for serialized values.</p>
+<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']];
+    $I-&gt;seePostMetaInDatabase(['post_id' =&gt; '$postId', 'meta_key' =&gt; 'foo']);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1571,7 +1584,10 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks that a post to term relation exists in the database. Will look up the &quot;term_relationships&quot; table.</p>
+<p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p>
+<pre><code class="language-php">    list($fiction) = $I-&gt;haveTermInDatabase('fiction', 'genre');
+    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; [$fiction]]]);
+    $I-&gt;seePostWithTermInDatabase($postId, $fiction);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
@@ -1657,10 +1673,11 @@ The module provides methods to read, write and update the WordPress database **d
 
 <hr>
 
-<p>Checks that a user is in the database. Will look up the &quot;users&quot; table.</p>
+<p>Checks that a user is in the database. The method will check the &quot;users&quot; table.</p>
+<pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase(['])</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong></li></ul>
+<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeUserMetaInDatabase</h3>

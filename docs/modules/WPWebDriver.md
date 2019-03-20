@@ -74,7 +74,7 @@
 
 <hr>
 
-<p>In the plugin administration screen activates a plugin clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication to the admin area.</p>
+<p>In the plugin administration screen activates one or more plugins clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
 <pre><code class="language-php">    // Activate a plugin.
     $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
@@ -106,8 +106,8 @@
 
 <hr>
 
-<p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request.</p>
-<pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23]]);</code></pre>
+<p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request. The method will <strong>not</strong> handle authentication, nonces or authorization.</p>
+<pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23], 'nonce' =&gt; $nonce]);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -117,10 +117,7 @@
 
 <hr>
 
-<p>Go to a page in the admininstration area of the site.</p>
-<p>Will this comment show up in the output?
-And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
-Or <strong>Markdown</strong> tags? <em>Please...</em></p>
+<p>Go to a page in the admininstration area of the site. This method will <strong>not</strong> handle authentication to the administration area.</p>
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     // Go to the plugins management screen.
     $I-&gt;amOnAdminPage('/plugins.php');</code></pre>
@@ -135,7 +132,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <p>Go to the cron page to start a synchronous, and blocking, <code>GET</code> request to the cron script.</p>
 <pre><code class="language-php">    // Triggers the cron job with an optional query argument.
-    $I-&gt;amOnCronPage('?some-query-var=some-value');</code></pre>
+    $I-&gt;amOnCronPage('/?some-query-var=some-value');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -145,7 +142,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication to the admin area.</p>
+<p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPagesPage();
     $I-&gt;see('Add New');</code></pre></ul>
@@ -155,7 +152,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication to the admin area.</p>
+<p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;activatePlugin('hello-dolly');</code></pre></ul>
@@ -183,7 +180,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Assert a plugin is not installed in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p>
+<p>Assert a plugin is not installed in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;dontSeePluginInstalled('my-plugin');</code></pre>
@@ -256,7 +253,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>In an administration screen will look for an error admin notice. Allows for class-based error checking to decouple from internationalization.</p>
+<p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage('/');
     $I-&gt;seeErrorMessage('.my-plugin');</code></pre>
@@ -269,10 +266,10 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>In an administration screen will look for an admin notice. Allows for class-based error checking to decouple from internationalization.</p>
+<p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
     $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeMessage('.notice-warning.my-plugin');</code></pre>
+    $I-&gt;seeMessage('.missing-api-token.my-plugin');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
@@ -282,7 +279,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Assert a plugin is activated in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p>
+<p>Assert a plugin is activated in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginActivated('my-plugin');</code></pre>
@@ -295,7 +292,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Assert a plugin is not activated in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p>
+<p>Assert a plugin is not activated in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginDeactivated('my-plugin');</code></pre>
@@ -308,7 +305,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Assert a plugin is installed, no matter its activation status, in the plugins list. The method will <strong>not</strong> navigate to the plugin administration screen.</p>
+<p>Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;seePluginInstalled('my-plugin');</code></pre>
@@ -321,7 +318,7 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 
 <hr>
 
-<p>Checks that the current page is a <code>wp_die</code> generated one. The method will try to identify the page based on the default WordPress die page markup.</p>
+<p>Checks that the current page is one generated by the <code>wp_die</code> function. The method will try to identify the page based on the default WordPress die page HTML attributes.</p>
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/forbidden');
     $I-&gt;seeWpDiePage();</code></pre></ul>
