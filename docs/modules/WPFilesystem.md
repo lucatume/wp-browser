@@ -1,3 +1,16 @@
+# WPFilesystem module
+This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+This module extends the [Filesystem module](https://codeception.com/docs/modules/Filesystem) adding WordPress-specific configuration parameters and methods.  
+The module provides methods to read, write and update the WordPress filesystem **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
+This module also provides methods to scaffold plugins and themes on the fly in the context of tests and auto-remove them after each test.
+
+## Configuration
+
+* `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
+* `themes` - defaults to `/wp-content/themes`; the path, relative to the the WordPress installaion root folder, to the themes folder.
+* `plugins` - defaults to `/wp-content/plugins`; the path, relative to the WordPress installation root folder, to the plugins folder.
+* `mu-plugins` - defaults to `wp-content/mu-plugins`; the path, relative to the WordPress installation root folder, to the must-use plugins folder.
+* `uploads` - defaults to `/wp-content/uploads`; the path, relative to the WordPress installation root folder, to the uploads folder.
 <!--doc-->
 
 
