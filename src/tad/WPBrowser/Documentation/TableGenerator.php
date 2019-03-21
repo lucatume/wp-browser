@@ -140,9 +140,9 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
                 $params[] = $paramStr . '</li>';
             }
             $str .= PHP_EOL . implode(PHP_EOL, $params);
+            $str .= '</ul>';
         }
 
-        $str .= '</ul>';
 
         $this->output .= PHP_EOL . $str . PHP_EOL  . '  ';
         $this->index[] = $func->getName();
@@ -156,7 +156,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     {
         $this->parser->setBreaksEnabled(true);
         $toc = '## Public API' . PHP_EOL . $this->buildToc();
-        return $toc . PHP_EOL . trim($this->output) . PHP_EOL . '</br>';
+        return $toc . PHP_EOL . trim($this->output) . PHP_EOL;
     }
 
     protected function buildToc()

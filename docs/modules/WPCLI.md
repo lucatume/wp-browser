@@ -53,7 +53,7 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 <ul>
 <li><code>string</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
 <li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function in charge of splitting the results array.</li></ul>
-</br>
+
 
 *This class extends \Codeception\Module*
 

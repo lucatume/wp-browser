@@ -563,277 +563,305 @@
 
 <hr>
 
-<p></p><p>Sets the current working folder to a folder in a mu-plugin. <code>php &lt;?php $I-&gt;amInMuPluginPath(&apos;mu-plugin&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Sets the current working folder to a folder in a mu-plugin.</p>
+<pre><code class="language-php">    $I-&gt;amInMuPluginPath(<span class="hljs-string">&apos;mu-plugin&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$path</strong></li></ul>
+<li><code>string</code> <strong>$path</strong> - The path to the folder, relative to the mu-plugins root folder.</li></ul>
 
 
 <h3 id="aminpluginpath">amInPluginPath</h3>
 
 <hr>
 
-<p></p><p>Sets the current working folder to a folder in a plugin. <code>php &lt;?php $I-&gt;amInPluginPath(&apos;my-plugin&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Sets the current working folder to a folder in a plugin.</p>
+<pre><code class="language-php">    $I-&gt;amInPluginPath(<span class="hljs-string">&apos;my-plugin&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$path</strong></li></ul>
+<li><code>string</code> <strong>$path</strong> - The folder path, relative to the root uploads folder, to change to.</li></ul>
 
 
 <h3 id="aminthemepath">amInThemePath</h3>
 
 <hr>
 
-<p></p><p>Sets the current working folder to a folder in a theme. <code>php &lt;?php $I-&gt;amInThemePath(&apos;my-theme&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Sets the current working folder to a folder in a theme.</p>
+<pre><code class="language-php">    $I-&gt;amInThemePath(<span class="hljs-string">&apos;my-theme&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$path</strong></li></ul>
+<li><code>string</code> <strong>$path</strong> - The path to the theme folder, relative to themes root folder.</li></ul>
 
 
 <h3 id="aminuploadspath">amInUploadsPath</h3>
 
 <hr>
 
-<p></p><p>Enters the uploads folder in the local filesystem.</p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Enters, changing directory, to the uploads folder in the local filesystem.</p>
+<pre><code class="language-php">    $I-&gt;amInUploadsPath(<span class="hljs-string">&apos;/logs&apos;</span>);
+    $I-&gt;seeFileFound(<span class="hljs-string">&apos;shop.log&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$path</strong></li></ul>
+<li><code>string</code> <strong>$path</strong> - The path, relative to the site uploads folder.</li></ul>
 
 
 <h3 id="cleanmuplugindir">cleanMuPluginDir</h3>
 
 <hr>
 
-<p></p><p>Cleans a folder in a mu-plugin folder. <code>php &lt;?php $I-&gt;cleanMuPluginDir(&apos;mu-plugin1/foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Cleans, emptying it, a folder in a mu-plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;cleanMuPluginDir(<span class="hljs-string">&apos;mu-plugin1/foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$dir</strong></li></ul>
+<li><code>string</code> <strong>$dir</strong> - The path to the directory, relative to the mu-plugins root folder.</li></ul>
 
 
 <h3 id="cleanplugindir">cleanPluginDir</h3>
 
 <hr>
 
-<p></p><p>Cleans a folder in a plugin folder. <code>php &lt;?php $I-&gt;cleanPluginDir(&apos;plugin1/foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Cleans, emptying it, a folder in a plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;cleanPluginDir(<span class="hljs-string">&apos;my-plugin/foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$dir</strong></li></ul>
+<li><code>string</code> <strong>$dir</strong> - The path to the folder, relative to the plugins root folder.</li></ul>
 
 
 <h3 id="cleanthemedir">cleanThemeDir</h3>
 
 <hr>
 
-<p></p><p>Clears a folder in a theme folder. <code>php &lt;?php $I-&gt;cleanThemeDir(&apos;my-theme/foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Clears, emptying it, a folder in a theme folder.</p>
+<pre><code class="language-php">    $I-&gt;cleanThemeDir(<span class="hljs-string">&apos;my-theme/foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$dir</strong></li></ul>
+<li><code>string</code> <strong>$dir</strong> - The path to the folder, relative to the themese root folder.</li></ul>
 
 
 <h3 id="cleanuploadsdir">cleanUploadsDir</h3>
 
 <hr>
 
-<p></p><p>Clears a folder in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;cleanUploadsDir(&apos;some/folder&apos;); $I-&gt;cleanUploadsDir(&apos;some/folder&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Clears a folder in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;cleanUploadsDir(<span class="hljs-string">&apos;some/folder&apos;</span>);
+    $I-&gt;cleanUploadsDir(<span class="hljs-string">&apos;some/folder&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$dir</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$dir</strong> - The path to the directory to delete, relative to the uploads folder.</li>
+<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code>.</li></ul>
 
 
 <h3 id="copydirtomuplugin">copyDirToMuPlugin</h3>
 
 <hr>
 
-<p></p><p>Copies a folder to a folder in a mu-plugin. <code>php &lt;?php $I-&gt;copyDirToMuPlugin(codecept_data_dir(&apos;foo&apos;), &apos;mu-plugin/foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Copies a folder to a folder in a mu-plugin.</p>
+<pre><code class="language-php">    $I-&gt;copyDirToMuPlugin(codecept_data_dir(<span class="hljs-string">&apos;foo&apos;</span>), <span class="hljs-string">&apos;mu-plugin/foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$src</strong></li>
-<li><code>string</code> <strong>$pluginDst</strong></li></ul>
+<li><code>string</code> <strong>$src</strong> - The path to the source file to copy.</li>
+<li><code>string</code> <strong>$pluginDst</strong> - The path to the destination folder, relative to the mu-plugins root folder.</li></ul>
 
 
 <h3 id="copydirtoplugin">copyDirToPlugin</h3>
 
 <hr>
 
-<p></p><p>Copies a folder to a folder in a plugin. <code>php &lt;?php $I-&gt;copyDirToPlugin(codecept_data_dir(&apos;foo&apos;), &apos;plugin/foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Copies a folder to a folder in a plugin.</p>
+<pre><code class="language-php">    <span class="hljs-comment">// Copy the &apos;foo&apos; folder to the &apos;foo&apos; folder in the plugin.</span>
+    $I-&gt;copyDirToPlugin(codecept_data_dir(<span class="hljs-string">&apos;foo&apos;</span>), <span class="hljs-string">&apos;my-plugin/foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$src</strong></li>
-<li><code>string</code> <strong>$pluginDst</strong></li></ul>
+<li><code>string</code> <strong>$src</strong> - The path to the source directory to copy.</li>
+<li><code>string</code> <strong>$pluginDst</strong> - The destination path, relative to the plugins root folder.</li></ul>
 
 
 <h3 id="copydirtotheme">copyDirToTheme</h3>
 
 <hr>
 
-<p></p><p>Copies a folder in a theme folder. <code>php &lt;?php $I-&gt;copyDirToTheme(codecept_data_dir(&apos;foo&apos;), &apos;my-theme&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Copies a folder in a theme folder.</p>
+<pre><code class="language-php">    $I-&gt;copyDirToTheme(codecept_data_dir(<span class="hljs-string">&apos;foo&apos;</span>), <span class="hljs-string">&apos;my-theme&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$src</strong></li>
-<li><code>string</code> <strong>$themeDst</strong></li></ul>
+<li><code>string</code> <strong>$src</strong> - The path to the source file.</li>
+<li><code>string</code> <strong>$themeDst</strong> - The path to the destination folder, relative to the themes root folder.</li></ul>
 
 
 <h3 id="copydirtouploads">copyDirToUploads</h3>
 
 <hr>
 
-<p></p><p>Copies a folder to the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;copyDirToUploads(codecept_data_dir(&apos;foo&apos;), &apos;uploadsFoo&apos;); $I-&gt;copyDirToUploads(codecept_data_dir(&apos;foo&apos;), &apos;uploadsFoo&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Copies a folder to the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;copyDirToUploads(codecept_data_dir(<span class="hljs-string">&apos;foo&apos;</span>), <span class="hljs-string">&apos;uploadsFoo&apos;</span>);
+    $I-&gt;copyDirToUploads(codecept_data_dir(<span class="hljs-string">&apos;foo&apos;</span>), <span class="hljs-string">&apos;uploadsFoo&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$src</strong></li>
-<li><code>string</code> <strong>$dst</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$src</strong> - The path to the source file, relative to the current uploads folder.</li>
+<li><code>string</code> <strong>$dst</strong> - The path to the destination file, relative to the current uploads folder.</li>
+<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code>.</li></ul>
 
 
 <h3 id="deletemupluginfile">deleteMuPluginFile</h3>
 
 <hr>
 
-<p></p><p>Deletes a file in a mu-plugin folder. <code>php &lt;?php $I-&gt;deleteMuPluginFile(&apos;mu-plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Deletes a file in a mu-plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;deleteMuPluginFile(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins root folder.</li></ul>
 
 
 <h3 id="deletepluginfile">deletePluginFile</h3>
 
 <hr>
 
-<p></p><p>Deletes a file in a plugin folder. <code>php &lt;?php $I-&gt;deletePluginFile(&apos;plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Deletes a file in a plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;deletePluginFile(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The folder path, relative to the plugins root folder.</li></ul>
 
 
 <h3 id="deletethemefile">deleteThemeFile</h3>
 
 <hr>
 
-<p></p><p>Deletes a file in a theme folder. <code>php &lt;?php $I-&gt;deleteThemeFile(&apos;my-theme/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Deletes a file in a theme folder.</p>
+<pre><code class="language-php">    $I-&gt;deleteThemeFile(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file to delete, relative to the themes root folder.</li></ul>
 
 
 <h3 id="deleteuploadeddir">deleteUploadedDir</h3>
 
 <hr>
 
-<p></p><p>Deletes a dir in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p><p></p>
-<p><pre><code class="language-php">    <span class="hljs-meta">&lt;?php</span>
-    $I-&gt;deleteUploadedDir(<span class="hljs-string">&apos;folder&apos;</span>);
-    $I-&gt;deleteUploadedDir(<span class="hljs-string">&apos;folder&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);
-    <span class="hljs-meta">?&gt;</span></code></pre></p>
-<p><pre><code>                                   if not passed.</code></pre></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Deletes a dir in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;deleteUploadedDir(<span class="hljs-string">&apos;folder&apos;</span>);
+    $I-&gt;deleteUploadedDir(<span class="hljs-string">&apos;folder&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the directory to delete, relative to the uploads folder.</li>
-<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code></li></ul>
+<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code>.</li></ul>
 
 
 <h3 id="deleteuploadedfile">deleteUploadedFile</h3>
 
 <hr>
 
-<p></p><p>Deletes a file in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;deleteUploadedFile(&apos;some-file.txt&apos;); $I-&gt;deleteUploadedFile(&apos;some-file.txt&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Deletes a file in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;deleteUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>);
+    $I-&gt;deleteUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="dontseeinmupluginfile">dontSeeInMuPluginFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a mu-plugin folder does not contain a string. <code>php &lt;?php $I-&gt;dontSeeInMuPluginFile(&apos;mu-plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file in a mu-plugin folder does not contain a string.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeInMuPluginFile(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="dontseeinpluginfile">dontSeeInPluginFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a plugin folder does not contain a string. <code>php &lt;?php $I-&gt;dontSeeInPluginFile(&apos;plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file in a plugin folder does not contain a string.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeInPluginFile(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="dontseeinthemefile">dontSeeInThemeFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a theme folder does not contain a string. <code>php &lt;?php $I-&gt;dontSeeInThemeFile(&apos;my-theme/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file in a theme folder does not contain a string.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeInThemeFile(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="dontseeinuploadedfile">dontSeeInUploadedFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in the uploads folder does contain a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;dontSeeInUploadedFile(&apos;some-file.txt&apos;, &apos;foo&apos;); $I-&gt;dontSeeInUploadedFile(&apos;some-file.txt&apos;,&apos;foo&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file in the uploads folder does contain a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeInUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);
+    $I-&gt;dontSeeInUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>,<span class="hljs-string">&apos;foo&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The not expected file contents or part of them.</li>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="dontseemupluginfilefound">dontSeeMuPluginFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is not found in a mu-plugin folder. <code>php &lt;?php $I-&gt;dontSeeMuPluginFileFound(&apos;mu-plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file is not found in a mu-plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeMuPluginFileFound(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins folder.</li></ul>
 
 
 <h3 id="dontseepluginfilefound">dontSeePluginFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is not found in a plugin folder. <code>php &lt;?php $I-&gt;dontSeePluginFileFound(&apos;plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file is not found in a plugin folder.</p>
+<pre><code class="language-php">    $I-&gt;dontSeePluginFileFound(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li></ul>
 
 
 <h3 id="dontseethemefilefound">dontSeeThemeFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is not found in a theme folder. <code>php &lt;?php $I-&gt;dontSeeThemeFileFound(&apos;my-theme/some-file.txt&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks that a file is not found in a theme folder.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeThemeFileFound(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li></ul>
 
 
 <h3 id="dontseeuploadedfilefound">dontSeeUploadedFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks thata a file does not exist in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;dontSeeUploadedFileFound(&apos;some-file.txt&apos;); $I-&gt;dontSeeUploadedFileFound(&apos;some-file.txt&apos;,&apos;today&apos;); ?&gt;</code></p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Checks thata a file does not exist in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<pre><code class="language-php">    $I-&gt;dontSeeUploadedFileFound(<span class="hljs-string">&apos;some-file.txt&apos;</span>);
+    $I-&gt;dontSeeUploadedFileFound(<span class="hljs-string">&apos;some-file.txt&apos;</span>,<span class="hljs-string">&apos;today&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="getbloguploadspath">getBlogUploadsPath</h3>
 
 <hr>
 
-<p></p><p>Returns the absolute path to a blog uploads folder or file.</p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Returns the absolute path to a blog uploads folder or file.</p>
+<h4 id="parameters">Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID to get the path for.</li>
 <li><code>string</code> <strong>$file</strong> - The path, relatitve to the blog uploads folder, to the file or folder.</li>
@@ -844,50 +872,61 @@
 
 <hr>
 
-<p></p><p>Returns the path to the specified uploads file of folder. Not providing a value for <code>$file</code> and <code>$date</code> will return the uploads folder path. a UNIX timestamp or a string supported by the <code>strtotime</code> function; defaults to <code>now</code>.</p><p></p>
-<p></p><h4 id="parameters">Parameters</h4><p></p>
+<p>Returns the path to the specified uploads file of folder. Not providing a value for <code>$file</code> and <code>$date</code> will return the uploads folder path.</p>
+<pre><code class="language-php">    $todaysPath = $I-&gt;getUploadsPath();
+    $lastWeek = $I-&gt;getUploadsPath(<span class="hljs-string">&apos;&apos;</span>, <span class="hljs-string">&apos;-1 week&apos;</span>);</code></pre>
+<h4 id="parameters">Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder.</li>
-<li><code>null</code> <strong>$date</strong> - The date that should be used to build the uploads sub-folders in the year/month format;</li></ul>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="getwprootfolder">getWpRootFolder</h3>
 
 <hr>
 
-<p></p><p>Returns the absolute path to WordPress root folder without trailing slash.</p>&lt;/ul&gt;<p></p>
+<p>Returns the absolute path to WordPress root folder without trailing slash.</p>
+
+
 <h3 id="havemuplugin">haveMuPlugin</h3>
 
 <hr>
 
-<p></p><p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code should not contain the opening &apos;&lt;?php&apos; tag. <code>php &lt;?php $code = &apos;echo &quot;Hello world!&quot;&apos;; $I-&gt;haveMuPlugin(&apos;foo-mu-plugin.php&apos;, $code); ?&gt;</code> plugin file to create. php tag.</p><p></p>
+<p></p><p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code should <strong>not</strong> contain the opening &apos;&lt;?php&apos; tag.</p><p></p>
+<p><pre><code class="language-php">    $code = <span class="hljs-string">&apos;echo &quot;Hello world!&quot;&apos;</span>;
+    $I-&gt;haveMuPlugin(<span class="hljs-string">&apos;foo-mu-plugin.php&apos;</span>, $code);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$filename</strong> - The path, relative to the plugins folder, of the</li>
-<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening</li></ul>
+<li><code>string</code> <strong>$filename</strong> - The path to the file to create, relative to the plugins root folder.</li>
+<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening PHP tag.</li></ul>
 
 
 <h3 id="haveplugin">havePlugin</h3>
 
 <hr>
 
-<p></p><p>Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code should not contain the opening &apos;&lt;?php&apos; tag. <code>php &lt;?php $code = &apos;echo &quot;Hello world!&quot;&apos;; $I-&gt;havePlugin(&apos;foo/plugin.php&apos;, $code); ?&gt;</code> plugin file to create. php tag.</p><p></p>
+<p></p><p>Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code should <strong>not</strong> contain the opening &apos;&lt;?php&apos; tag.</p><p></p>
+<p><pre><code class="language-php">    $code = <span class="hljs-string">&apos;echo &quot;Hello world!&quot;&apos;</span>;
+    $I-&gt;havePlugin(<span class="hljs-string">&apos;foo/plugin.php&apos;</span>, $code);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$path</strong> - The path, relative to the plugins folder, of the</li>
-<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening</li></ul>
+<li><code>string</code> <strong>$path</strong> - The path to the file to create, relative to the plugins folder.</li>
+<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening PHP tag.</li></ul>
 
 
 <h3 id="havetheme">haveTheme</h3>
 
 <hr>
 
-<p></p><p>Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code should not contain the opening &apos;&lt;?php&apos; tag. <code>php &lt;?php $code = &apos;sayHi();&apos;; $functionsCode  = &apos;function sayHi(){echo &quot;Hello world&quot;;};&apos;; $I-&gt;haveTheme(&apos;foo&apos;, $indexCode, $functionsCode); ?&gt;</code> folder, of the plugin folder to create. without the opening php tag. file without the opening php tag.</p><p></p>
+<p></p><p>Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code should not contain the opening &apos;&lt;?php&apos; tag.</p><p></p>
+<p><pre><code class="language-php">    $code = <span class="hljs-string">&apos;sayHi();&apos;</span>;
+    $functionsCode  = <span class="hljs-string">&apos;function sayHi(){echo &quot;Hello world&quot;;};&apos;</span>;
+    $I-&gt;haveTheme(<span class="hljs-string">&apos;foo&apos;</span>, $indexCode, $functionsCode);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$folder</strong> - The path, relative to the themes</li>
-<li><code>string</code> <strong>$indexFileCode</strong> - The content of the theme index.php file</li>
-<li><code>string</code> <strong>$functionsFileCode</strong> - The content of the theme functions.php</li></ul>
+<li><code>string</code> <strong>$folder</strong> - The path to the theme to create, relative to the themes root folder.</li>
+<li><code>string</code> <strong>$indexFileCode</strong> - The content of the theme index.php file without the opening PHP tag.</li>
+<li><code>string</code> <strong>$functionsFileCode</strong> - The content of the theme functions.php file without the opening PHP tag.</li></ul>
 
 
 <h3 id="makeuploadsdir">makeUploadsDir</h3>
@@ -906,143 +945,164 @@
 
 <hr>
 
-<p></p><p>Opens a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;openUploadedFile(&apos;some-file.txt&apos;); $I-&gt;openUploadedFile(&apos;some-file.txt&apos;, &apos;time&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Opens a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;openUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>);
+    $I-&gt;openUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;time&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$filename</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$filename</strong> - The path to the file, relative to the current uploads folder.</li>
+<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code>.</li></ul>
 
 
 <h3 id="seeinmupluginfile">seeInMuPluginFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a mu-plugin folder contains a string. <code>php &lt;?php $I-&gt;seeInMuPluginFile(&apos;mu-plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file in a mu-plugin folder contains a string.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeInMuPluginFile(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path the file, relative to the mu-plugins root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="seeinpluginfile">seeInPluginFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a plugin folder contains a string. <code>php &lt;?php $I-&gt;seeInPluginFile(&apos;plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file in a plugin folder contains a string.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeInPluginFile(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="seeinthemefile">seeInThemeFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in a theme folder contains a string. <code>php &lt;?php $I-&gt;seeInThemeFile(&apos;my-theme/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file in a theme folder contains a string.</p><p></p>
+<p><pre><code class="language-php">    <span class="hljs-meta">&lt;?php</span>
+    $I-&gt;seeInThemeFile(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);
+    <span class="hljs-meta">?&gt;</span></code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The contents to check the file for.</li></ul>
 
 
 <h3 id="seeinuploadedfile">seeInUploadedFile</h3>
 
 <hr>
 
-<p></p><p>Checks that a file in the uploads folder contains a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;seeInUploadedFile(&apos;some-file.txt&apos;, &apos;foo&apos;); $I-&gt;seeInUploadedFile(&apos;some-file.txt&apos;,&apos;foo&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file in the uploads folder contains a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeInUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);
+    $I-&gt;seeInUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>,<span class="hljs-string">&apos;foo&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$contents</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
+<li><code>string</code> <strong>$contents</strong> - The expected file contents or part of them.</li>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="seemupluginfilefound">seeMuPluginFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is found in a mu-plugin folder. <code>php &lt;?php $I-&gt;seeMuPluginFileFound(&apos;mu-plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file is found in a mu-plugin folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeMuPluginFileFound(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins folder.</li></ul>
 
 
 <h3 id="seepluginfilefound">seePluginFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is found in a plugin folder. <code>php &lt;?php $I-&gt;seePluginFileFound(&apos;plugin1/some-file.txt&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file is found in a plugin folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seePluginFileFound(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to thep plugins root folder.</li></ul>
 
 
 <h3 id="seethemefilefound">seeThemeFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks that a file is found in a theme folder. <code>php &lt;?php $I-&gt;seeThemeFileFound(&apos;my-theme/some-file.txt&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks that a file is found in a theme folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeThemeFileFound(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li></ul>
 
 
 <h3 id="seeuploadedfilefound">seeUploadedFileFound</h3>
 
 <hr>
 
-<p></p><p>Checks if file exists in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. Opens a file when it&apos;s exists <code>php &lt;?php $I-&gt;seeUploadedFileFound(&apos;some-file.txt&apos;); $I-&gt;seeUploadedFileFound(&apos;some-file.txt&apos;,&apos;today&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Checks if file exists in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;seeUploadedFileFound(<span class="hljs-string">&apos;some-file.txt&apos;</span>);
+    $I-&gt;seeUploadedFileFound(<span class="hljs-string">&apos;some-file.txt&apos;</span>,<span class="hljs-string">&apos;today&apos;</span>);
+    <span class="hljs-meta">?&gt;</span></code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$filename</strong></li>
-<li><code>string</code> <strong>$date</strong></li></ul>
+<li><code>string</code> <strong>$filename</strong> - The file path, relative to the uploads folder or the current folder.</li>
+<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
 
 
 <h3 id="writetomupluginfile">writeToMuPluginFile</h3>
 
 <hr>
 
-<p></p><p>Writes a file in a mu-plugin folder. <code>php &lt;?php $I-&gt;writeToMuPluginFile(&apos;mu-plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Writes a file in a mu-plugin folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;writeToMuPluginFile(<span class="hljs-string">&apos;mu-plugin1/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$data</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the destination file, relative to the mu-plugins root folder.</li>
+<li><code>string</code> <strong>$data</strong> - The data to write to the file.</li></ul>
 
 
 <h3 id="writetopluginfile">writeToPluginFile</h3>
 
 <hr>
 
-<p></p><p>Writes a file in a plugin folder. <code>php &lt;?php $I-&gt;writeToPluginFile(&apos;plugin1/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Writes a file in a plugin folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;writeToPluginFile(<span class="hljs-string">&apos;my-plugin/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$data</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
+<li><code>string</code> <strong>$data</strong> - The data to write in the file.</li></ul>
 
 
 <h3 id="writetothemefile">writeToThemeFile</h3>
 
 <hr>
 
-<p></p><p>Writes a string to a file in a theme folder. <code>php &lt;?php $I-&gt;writeToThemeFile(&apos;my-theme/some-file.txt&apos;, &apos;foo&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Writes a string to a file in a theme folder.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;writeToThemeFile(<span class="hljs-string">&apos;my-theme/some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
 <ul>
-<li><code>string</code> <strong>$file</strong></li>
-<li><code>string</code> <strong>$data</strong></li></ul>
+<li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themese root folder.</li>
+<li><code>string</code> <strong>$data</strong> - The data to write to the file.</li></ul>
 
 
 <h3 id="writetouploadedfile">writeToUploadedFile</h3>
 
 <hr>
 
-<p></p><p>Writes a string to a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path. <code>php &lt;?php $I-&gt;writeToUploadedFile(&apos;some-file.txt&apos;, &apos;foo bar&apos;); $I-&gt;writeToUploadedFile(&apos;some-file.txt&apos;, &apos;foo bar&apos;, &apos;today&apos;); ?&gt;</code></p><p></p>
+<p></p><p>Writes a string to a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p><p></p>
+<p><pre><code class="language-php">    $I-&gt;writeToUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo bar&apos;</span>);
+    $I-&gt;writeToUploadedFile(<span class="hljs-string">&apos;some-file.txt&apos;</span>, <span class="hljs-string">&apos;foo bar&apos;</span>, <span class="hljs-string">&apos;today&apos;</span>);</code></pre></p>
 <p></p><h4 id="parameters">Parameters</h4><p></p>
-<p><ul></ul></p>
-<p><li><code>string</code> <strong>$filename</strong></li></p>
-<p><li><code>string</code> <strong>$data</strong></li></p>
-<p><li><code>string</code> <strong>$date</strong></li>&lt;/ul&gt;
-&lt;/br&gt;</p>
+<ul>
+<li><code>string</code> <strong>$filename</strong> - The path to the destination file, relative to the current uploads folder.</li>
+<li><code>string</code> <strong>$data</strong> - The data to write to the file.</li>
+<li><code>string/int/[\DateTime](http://php.net/manual/en/class.datetime.php)</code> <strong>$date</strong> - The date of the uploads to delete, will default to <code>now</code>.</li></ul>
+
+
 <p><em>This class extends \Codeception\Module\Filesystem</em></p>
 <!--/doc-->
 
@@ -1088,7 +1148,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"WPFilesystem","level":"1.3.4","depth":2,"next":{"title":"WPLoader","level":"1.3.5","depth":2,"path":"modules/WPLoader.md","ref":"modules/WPLoader.md","articles":[]},"previous":{"title":"WPDb","level":"1.3.3","depth":2,"path":"modules/WPDb.md","ref":"modules/WPDb.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPFilesystem.md","mtime":"2019-03-19T20:13:13.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-19T20:13:23.317Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"WPFilesystem","level":"1.3.4","depth":2,"next":{"title":"WPLoader","level":"1.3.5","depth":2,"path":"modules/WPLoader.md","ref":"modules/WPLoader.md","articles":[]},"previous":{"title":"WPDb","level":"1.3.3","depth":2,"path":"modules/WPDb.md","ref":"modules/WPDb.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","simpletabs","code","livereload"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"code":{"copyButtons":true},"simpletabs":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{}},"theme":"default","author":"Luca Tumedei","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"welcome.md","glossary":"GLOSSARY.md","summary":"summary.md"},"variables":{},"title":"wp-browser docs","gitbook":"*","description":"Setup and API documentation for the wp-browser project"},"file":{"path":"modules/WPFilesystem.md","mtime":"2019-03-21T17:14:04.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-21T13:27:51.010Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

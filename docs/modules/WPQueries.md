@@ -450,7 +450,7 @@
 <li><code>string</code> <strong>$class</strong></li>
 <li><code>string</code> <strong>$method</strong></li>
 <li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li></ul>
-</br>
+
 
 *This class extends \Codeception\Module*
 
