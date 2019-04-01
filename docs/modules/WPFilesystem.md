@@ -11,6 +11,16 @@ This module also provides methods to scaffold plugins and themes on the fly in t
 * `plugins` - defaults to `/wp-content/plugins`; the path, relative to the WordPress installation root folder, to the plugins folder.
 * `mu-plugins` - defaults to `wp-content/mu-plugins`; the path, relative to the WordPress installation root folder, to the must-use plugins folder.
 * `uploads` - defaults to `/wp-content/uploads`; the path, relative to the WordPress installation root folder, to the uploads folder.
+
+### Example configuration
+```yaml
+modules:
+    enabled:
+        - WPFilesystem
+    config:
+        WPFilesystem:
+            wpRootFolder: "/var/www/wordpress"
+```
 <!--doc-->
 
 

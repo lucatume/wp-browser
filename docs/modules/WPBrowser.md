@@ -4,11 +4,29 @@ This module extends the [PHPBrowser module](https://codeception.com/docs/modules
 The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver.md).  
 
 ## Configuration
-See [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for information about the base configuration parameters.  
+Since this module extends the `PHPBrowser` module provided by Codeception, please refer to the [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for more information about the base configuration parameters.  
 
+* `url` *required* - Start URL of your WordPress project, e.g. `http://wp.localhost`.
+* `headers` - Default headers are set before each test; this might be useful to simulate a specific user agent during the tests or to identify the request source.
+* `handler` (default: `curl`) - The [Guzzle handler](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html) to use. By default `curl` is used, also possible to pass `stream`, or any valid class name as Handler.
+* `middleware` - The Guzzle middlewares to add. An array of valid callables is required; see [here for more information](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html#middleware).
+* `curl` - curl options; only applied if using the `curl` handler; [more options are available](http://docs.guzzlephp.org/en/stable/request-options.html).
 * `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
 * `adminPassword` *required* - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
 * `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
+
+### Example configuration
+```yaml
+  modules:
+      enabled:
+          - WPBrowser
+      config:
+          WPBrowser:
+              url: 'http://wordpress.localhost'
+              adminUsername: 'admin'
+              adminPassword: 'password'
+              adminPath: '/wp-admin'
+```
 
 <!--doc-->
 

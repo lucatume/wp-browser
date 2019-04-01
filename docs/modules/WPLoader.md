@@ -49,6 +49,29 @@ The parameters provided to the module duplicate the ones used in the WordPress c
 
 **A word of caution**: right now the only way to write tests able to take advantage of the suite is to use the `WP_UnitTestCase` test case class; while the module will load fine and will raise no problems `WP_UnitTestCase` will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.
 
+### Example configuration
+```yml
+  modules:
+      enabled:
+          - WPLoader
+      config:
+          WPLoader:
+              multisite: false
+              wpRootFolder: "/Users/luca/www/wordpress"
+              dbName: "wordpresss_tests"
+              dbHost: "localhost"
+              dbUser: "root"
+              dbPassword: "password"
+              isolatedInstall: true
+              tablePrefix: "wptests_"
+              domain: "wordrpess.localhost"
+              adminEmail: "admin@wordpress.localhost"
+              title: "Test Blog"
+              theme: my-theme
+              plugins: ['hello.php', 'my-plugin/my-plugin.php']
+              activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
+```
+
 ## WPLoader to only bootstrap WordPress
 If the need is to just bootstrap the WordPress installation in the context of the tests variable scope then the `WPLoader` module `loadOnly` parameter should be set to `true`; this could be the case for functional tests in need to access WordPress provided methods, functions and values.  
 An example configuration for the module in this mode is this one:

@@ -17,7 +17,7 @@
     * [WPLoader](modules/WPLoader.md)
     * [WPQueries](modules/WPQueries.md)
     * [WPWebDriver](modules/WPWebDriver.md)
-* Commands
-* Extensions
+* [Commands](commands.md)
+* [Extensions](extensions.md)
 * [Changelog](changelog.md)
    

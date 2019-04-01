@@ -1,5 +1,32 @@
+# WPBrowser module
+This module should be used in acceptance tests, see [levels of testing for more information](./../levels-of-testing.md).  
+This module extends the [WebDriver module](https://codeception.com/docs/modules/WebDriver) adding WordPress-specific configuration parameters and methods.  
+The module simulates a user interaction with the site **with Javascript support**; if you don't need to test your project with Javascript support use the [WPBrowser module](WPBrowser.md).  
 <!--doc-->
 
+## Configuration
+Since this module extends the `WebDriver` module provided by Codeception, please refer to the [WebDriver configuration section](https://codeception.com/docs/modules/WebDriver#Configuration) for more information about the base configuration parameters.  
+
+* `url` *required* - Start URL of your WordPress project, e.g. `http://wp.localhost`.
+* `browser` *required* - Browser to launch; usually a value like `chrome` or `phantomjs` or `firefox`. Find more information about the supported browsers on [Codeception documentation](https://codeception.com/docs/modules/WebDriver#Local-Testing).
+* `host` - The Selenium server host (`127.0.0.1` by default).
+* `port` - The Selenium server port (`4444` by default).
+* `restart` - Set to `false` (default) to use the same browser window for all tests, or set to `true` to create a new window for each test. In any case, when all tests are finished the browser window is closed.
+* `start` - Autostart a browser for tests. Can be disabled if browser session is started with `_initializeSession` inside a Helper.
+* `window_size` - Initial window size. Set to `maximize` or a dimension in the format `640x480`.
+* `clear_cookies` - Set to `false` to keep cookies, or set to `true` (default) to delete all cookies between tests.
+* `wait` - defaults `0` seconds, wait for up to n seconds before failing an assertion, or step, looking for an element on the page.
+* `capabilities` - Sets Selenium desired capabilities, this hould be a key-value array. Find more information [in Selenium documentation](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities).
+* `connection_timeout` - timeout for opening a connection to remote selenium server (`30` seconds by default).
+* `request_timeout` - timeout for a request to return something from remote selenium server (30 seconds by default).
+* `pageload_timeout` - amount of time to wait for a page load to complete before throwing an error (default 0 seconds).
+* `http_proxy` - sets http proxy server url for testing a remote server.
+* `http_proxy_port` - sets http proxy server port.
+* `debug_log_entries` - how many selenium entries to print with debugWebDriverLogs or on fail (15 by default).
+* `log_js_errors` - Set to true to include possible JavaScript to HTML report, or set to false (default) to deactivate.
+* `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
+* `adminPassword` *required* - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
+* `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
 
 ## Public API
 <nav>

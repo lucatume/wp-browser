@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 ### Removed
 - the `WordPress` module
+### Added
+- first version of the documentaion
 
 ## [2.2.1] 2019-02-11;
 ### Changed

@@ -51,3 +51,19 @@ So, in short, **run each suite separately**.
 Yes, you should.  
 As an example you might have a `frontend` suite running [acceptance tests](levels-of-testing.md#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.  
 Think of suites as a tool to organize your tests: there's a good measure between too organized and not organized at all.
+
+### I've used PHPUnit before for my unit tests, can I reuse that knowledge and code with wp-browser?
+Yes.
+Codeception uses PHPUnit as one of its main components and can run PHPUnit tests with little or no modification.  
+As such you can just move your existing PHPUnit tests in a dedicated suite and be ready to run in minutes.
+
+### I've already set up my tests to run using the Core PHPUnit-based test suite, can I keep using my tests?
+Yes.  
+Codeception uses PHPUnit as one of its main components and can run PHPUnit tests with little or no modification.  
+One of the goals of wp-browser was to make it easier to test WordPress application at an integration level (or "WordPress unit" level).  
+As such migrating those tests could be a matter of minutes requiring no modification to the tests if not for moving some files and creating a dedicated suite.
+
+### Why is the project called wp-browser?
+When I started working with Codeception to run my acceptance tests I kept creating steps that I would reuse over and over in my projects.  
+I packed them in a module extending [the `PHPBrowser` module](https://codeception.com/docs/modules/PhpBrowser).  
+Being a natural talent in naming things I've called the module `WPBrowser` and published it. As I started relying on Codeception more and more I kept adding modules but the name remained.

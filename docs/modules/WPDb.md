@@ -18,6 +18,25 @@ The module provides methods to read, write and update the WordPress database **d
 * `waitlock` - defaults to `10`; wait lock (in seconds) that the database session should use for DDL statements.
 * `tablePrefix` - defaults to `wp_`; sets the prefix of the tables that the module will manipulate.
 
+### Example configuration
+```yaml
+  modules:
+      enabledr
+          - WPDb
+      config:
+          WPDb:
+              dsn: 'mysql:host=localhost;dbname=wordpress'
+              user: 'root'
+              password: 'password'
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              waitlock: 10
+              url: 'http://wordpress.localhost'
+              urlReplacement: true
+              tablePrefix: 'wp_'
+```
+
 <!--doc-->
 
 

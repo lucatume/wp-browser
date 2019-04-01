@@ -7,6 +7,18 @@ The module will use **its own** version of wp-cli, not the one installed in the 
 
 * `path` *required* - the absolute, or relative, path to the WordPress root folder. This will be mapped to the `--path` argument of the wp-cli binary.  
 * `throw` - defaults to `true` to throw an exception when a wp-cli command does not return an exit status of `0`; if set to `false` then the exit status of the commands will be returned as is.
+
+### Example configuration
+```yaml
+modules:
+    enabled:
+        - WPCLI
+    config:
+        WPCLI:
+            path: /Users/Luca/Sites/wp
+            throw: true
+```
+
 <!--doc-->
 
 
