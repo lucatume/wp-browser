@@ -173,7 +173,7 @@ class Wpbrowser extends Bootstrap
                 'commands' => $this->getAddtionalCommands(),
             ],
             'params' => [
-                '.env',
+                '.env.testing',
             ],
         ];
 
@@ -234,7 +234,7 @@ class Wpbrowser extends Bootstrap
                 // deactivate all modules that could trigger exceptions when initialized with sudo values
                 'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
             ];
-            $this->envFileName = '.env';
+            $this->envFileName = '.env.testing';
         } else {
             $installationData = $this->askForInstallationData();
         }
@@ -273,10 +273,10 @@ class Wpbrowser extends Bootstrap
         $this->say('---');
         $this->say();
 
-        while (strpos($this->envFileName, '.env') !== 0) {
+        while (strpos($this->envFileName, '.env.testing') !== 0) {
             $this->envFileName = $this->ask(
                 'How would you like to call the env configuration file? (Should start with ".env")',
-                '.env'
+                '.env.testing'
             );
         }
 
@@ -494,13 +494,13 @@ class Wpbrowser extends Bootstrap
         $written = file_put_contents($filename, $envFileContents);
         if (!$written) {
             $this->removeCreatedFiles();
-            throw new RuntimeException('Could not write .env file!');
+            throw new RuntimeException("Could not write {$this->envFileName} file!");
         }
     }
 
     protected function removeCreatedFiles()
     {
-        $files = ['codeception.yml', '.env'];
+        $files = ['codeception.yml', $this->envFileName];
         $dirs = ['tests'];
         foreach ($files as $file) {
             if (file_exists(getcwd() . '/' . $file)) {
@@ -668,7 +668,7 @@ EOF;
     {
         $envFileName = trim($this->envFileName);
         if (strpos($envFileName, '.env') !== 0) {
-            $message = 'Please specify an env file name starting with ".env", e.g. ".env.ci" or ".env.local"';
+            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or ".env.development"';
             throw new RuntimeException($message);
         }
     }
