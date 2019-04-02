@@ -1,26 +1,19 @@
+# PhpStorm and MacOS misc. files.
 .idea
 .DS_Store
 
-### Composer template
-composer.phar
-tests/_support/_generated
+# Composer files.
 vendor/
 
-# Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
-
-# Created by .ignore support plugin (hsz.mobi)
+# Local test folders.
 tests/_output
 
-# local configuration files
+# Local test configuration files.
 codeception.yml
 tests/*.suite.yml
-.env.local
-src/Codeception/Module/patchwork.json
+.env.testing.local
 
-# Patchwork cache folder
+# Patchwork cache folder.
 cache/*
+src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
-todos.txt
-composer.lock
