@@ -598,15 +598,15 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
-            waitlock: 0
+            waitlock: 10
             url: '%WP_URL%'
             urlReplacement: true
-            tablePrefix: '%TABLE_SITE_PREFIX%'
+            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
         WPBrowser:
-            url: '%WP_URL%'
-            adminUsername: '%ADMIN_USERNAME%'
-            adminPassword: '%ADMIN_PASSWORD%'
-            adminPath: '%WP_ADMIN_PATH%'
+            url: '%TEST_SITE_WP_URL%'
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
         WPFilesystem:
             wpRootFolder: '%WP_ROOT_FOLDER%'
             plugins: '/wp-content/plugins'
@@ -646,7 +646,7 @@ modules:
             populate: true 
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
             cleanup: true 
-            waitlock: 0
+            waitlock: 10
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
