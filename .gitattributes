@@ -1,7 +1,7 @@
 /docker                 export-ignore
 /docs                   export-ignore
 /tests                  export-ignore
-/.env                   export-ignore
+/.env.testing           export-ignore
 /.gitattributes         export-ignore
 /.gitbook.yaml          export-ignore
 /.gitignore             export-ignore
