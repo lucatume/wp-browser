@@ -19,7 +19,7 @@
   "prefer-stable": true,
   "repositories": [
     {
-      "type": "github",
+      "type": "git",
       "url": "https://github.com/lucatume/PHP-Markdown-Documentation-Generator.git"
     }
   ],
