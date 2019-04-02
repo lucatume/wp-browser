@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7931ea5b68778ae91bb740f27c6ea169",
+    "content-hash": "1942c8cce89199ade19cfce402528172",
     "packages": [
         {
             "name": "antecedent/patchwork",
@@ -3417,36 +3417,44 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.11",
+            "version": "v3.3.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "3d3e4fa5f0614c8e45220e5de80332322e33bd90"
+                "reference": "af7ec995de93671c03cc1b4e3176c8588bc79dcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/3d3e4fa5f0614c8e45220e5de80332322e33bd90",
-                "reference": "3d3e4fa5f0614c8e45220e5de80332322e33bd90",
+                "url": "https://api.github.com/repos/symfony/console/zipball/af7ec995de93671c03cc1b4e3176c8588bc79dcc",
+                "reference": "af7ec995de93671c03cc1b4e3176c8588bc79dcc",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9",
+                "php": "^5.5.9|>=7.0.8",
+                "symfony/debug": "~2.8|~3.0",
                 "symfony/polyfill-mbstring": "~1.0"
+            },
+            "conflict": {
+                "symfony/dependency-injection": "<3.3"
             },
             "require-dev": {
                 "psr/log": "~1.0",
-                "symfony/event-dispatcher": "~2.1|~3.0.0",
-                "symfony/process": "~2.1|~3.0.0"
+                "symfony/config": "~3.3",
+                "symfony/dependency-injection": "~3.3",
+                "symfony/event-dispatcher": "~2.8|~3.0",
+                "symfony/filesystem": "~2.8|~3.0",
+                "symfony/process": "~2.8|~3.0"
             },
             "suggest": {
                 "psr/log": "For using the console logger",
                 "symfony/event-dispatcher": "",
+                "symfony/filesystem": "",
                 "symfony/process": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -3473,7 +3481,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-06T10:55:00+00:00"
+            "time": "2018-01-29T09:02:23+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -3933,16 +3941,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.10.0",
+            "version": "v1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494"
+                "reference": "fe5e94c604826c35a32fa832f35bd036b6799609"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/c79c051f5b3a46be09205c73b80b346e4153e494",
-                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/fe5e94c604826c35a32fa832f35bd036b6799609",
+                "reference": "fe5e94c604826c35a32fa832f35bd036b6799609",
                 "shasum": ""
             },
             "require": {
@@ -3954,7 +3962,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9-dev"
+                    "dev-master": "1.11-dev"
                 }
             },
             "autoload": {
@@ -3988,7 +3996,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-09-21T13:07:52+00:00"
+            "time": "2019-02-06T07:57:58+00:00"
         },
         {
             "name": "symfony/process",
@@ -6209,68 +6217,6 @@
             "time": "2017-08-01T08:02:14+00:00"
         },
         {
-            "name": "ofbeaton/console-tester",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ofbeaton/console-tester.git",
-                "reference": "a619187a1837bfcc97e8d8cd2545d38a210b4e09"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ofbeaton/console-tester/zipball/a619187a1837bfcc97e8d8cd2545d38a210b4e09",
-                "reference": "a619187a1837bfcc97e8d8cd2545d38a210b4e09",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "symfony/console": "~2.3"
-            },
-            "require-dev": {
-                "humbug/humbug": "dev-master",
-                "mayflower/php-codebrowser": "~1.1",
-                "phing/phing": "~2.10",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Ofbeaton\\Console\\Tester\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Finlay Beaton",
-                    "email": "ofbeaton@gmail.com"
-                },
-                {
-                    "name": "of Beaton Community",
-                    "homepage": "https://github.com/ofbeaton/console-tester/graphs/contributors"
-                }
-            ],
-            "description": "Symfony Console Question Helper Tester",
-            "homepage": "https://github.com/ofbeaton/console-tester",
-            "keywords": [
-                "command",
-                "console",
-                "helper",
-                "input",
-                "question",
-                "symfony"
-            ],
-            "time": "2015-05-22T20:27:42+00:00"
-        },
-        {
             "name": "victorjonsson/markdowndocs",
             "version": "dev-feature/visibility-and-regex",
             "source": {
@@ -6326,7 +6272,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.6.0",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-fileinfo": "*"
     },
     "platform-dev": []
 }
