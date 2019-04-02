@@ -100,7 +100,7 @@ travis_before_install:
 
 travis_install:
 	# Update Composer using the host machine PHP version.
-	composer update --prefer-dist -o -vvv
+	composer update -o -vvv
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
