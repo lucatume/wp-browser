@@ -222,9 +222,6 @@ gitbook_build: docker_build_gitbook duplicate_gitbook_files module_docs gitbook_
 gitbook_surge: gitbook_build
 	surge ${CURDIR}/docs/site wpbrowser.theaveragedev.com
 
-project:
-	echo '${PROJECT}'
-
 remove_hosts_entries:
 	echo "Removing project ${PROJECT} hosts entries..."
 	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
