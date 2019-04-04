@@ -12,6 +12,7 @@ TRAVIS_WP_SUBDOMAIN_2 ?= "test2"
 TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
+PROJECT := $(shell basename ${CURDIR})
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -44,11 +45,11 @@ docker_pull:
 	done;
 
 # Builds the Docker-based parallel-lint util.
-docker/parallel-lint/id: docker/parallel-lint/id
+docker_build_parallel_lint: docker/parallel-lint/id
 	docker build --force-rm --iidfile docker/parallel-lint/id ./docker/parallel-lint --tag lucatume/parallel-lint:5.6
 
 # Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
-lint: docker/parallel-lint/id src
+lint: docker_build_parallel_lint src
 	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
 
 # Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
@@ -73,7 +74,7 @@ composer_update: composer.json
 phpstan: src
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
-travis_before_install:
+ci_before_install:
 	# Clone WordPress in the vendor folder if not there already.
 	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
 	# Make sure the WordPress folder is write-able.
@@ -93,14 +94,10 @@ travis_before_install:
 	# Start the Chromedriver container using that information to have the *.wp.test domain bound to the WP container.
 	WP_CONTAINER_IP=`docker inspect -f '{{ .NetworkSettings.Networks.docker_default.IPAddress }}' wpbrowser_wp` \
 	docker-compose -f docker/${COMPOSE_FILE} up -d chromedriver
-	# Make sure the host machine can ping the WordPress container
-	ping -c 1 wp.test
-	ping -c 1 test1.wp.test
-	ping -c 1 test2.wp.test
 
-travis_install:
+ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update -o
+	composer update -a
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
@@ -143,11 +140,11 @@ travis_install:
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
 
-travis_before_script:
+ci_before_script:
 	# Build Codeception modules.
 	codecept build
 
-travis_script:
+ci_script:
 	codecept run acceptance
 	codecept run cli
 	codecept run climodule
@@ -159,20 +156,28 @@ travis_script:
 	codecept run wploadersuite
 	codecept run wpmodule
 
-travis_prepare: travis_before_install travis_install travis_before_script
+ensure_pingable_hosts:
+	# Make sure the host machine can ping the WordPress container
+	set -o allexport &&  source .env.testing &&  set +o allexport && \
+	echo $${TEST_HOSTS} | \
+	sed -e $$'s/ /\\\n/g' | while read host; do echo "\nPinging $${host}" && ping -c 1 "$${host}"; done
 
-travis_run: lint sniff travis_prepare travis_script
+ci_prepare: ci_before_install ensure_pingable_hosts ci_install ci_before_script
+
+ci_local_prepare: sync_hosts_entries ci_before_install ensure_pingable_hosts ci_install ci_before_script
+
+ci_run: lint sniff ci_prepare ci_script
 
 # Gracefully stop the Docker containers used in the tests.
 down:
 	docker-compose -f docker/docker-compose.yml down
 
 # Builds the Docker-based markdown-toc util.
-docker/markdown-toc/id: docker/markdown-toc/id
-	docker build --force-rm --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag lucatume/md-toc:latest
+docker_build_markdown_toc: docker/markdown-toc/id
+	docker build --force-rm --iidfile docker/markdown-toc/id ./docker/markdown-toc --tag lucatume/md-toc:latest
 
 # Re-builds the Readme ToC.
-toc: docker/markdown-toc/id
+toc: docker_build_markdown_toc
 	docker run --rm -it -v ${CURDIR}:/project lucatume/md-toc markdown-toc -i /project/README.md
 
 # Produces the Modules documentation in the docs/modules folder.
@@ -199,7 +204,7 @@ module_docs: composer.lock src/Codeception/Module
 		rm doc.tmp; \
 	done;
 
-docker/gitbook/id: docker/gitbook/id
+docker_build_gitbook: docker/gitbook/id
 	docker build --force-rm --iidfile docker/gitbook/id ./docker/gitbook --tag lucatume/gitbook:latest
 
 duplicate_gitbook_files:
@@ -208,13 +213,27 @@ duplicate_gitbook_files:
 gitbook_install: docs/node_modules
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook install
 
-gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+gitbook_serve: docker_build_gitbook duplicate_gitbook_files module_docs gitbook_install
 	docker run --rm -v "${CURDIR}/docs:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook serve --live
 
-gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+gitbook_build: docker_build_gitbook duplicate_gitbook_files module_docs gitbook_install
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
 
 gitbook_surge: gitbook_build
-	 surge ${CURDIR}/docs/site wpbrowser.theaveragedev.com
- 
+	surge ${CURDIR}/docs/site wpbrowser.theaveragedev.com
 
+project:
+	echo '${PROJECT}'
+
+remove_hosts_entries:
+	echo "Removing project ${PROJECT} hosts entries..."
+	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
+	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## $${project} project - end ##$$/d' /etc/hosts
+
+sync_hosts_entries: remove_hosts_entries
+	echo "Adding project ${project} hosts entries..."
+	set -o allexport &&  source .env.testing &&  set +o allexport && \
+	sudo -- sh -c "echo '' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT} project - start ##' >> /etc/hosts" && \
+	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"
