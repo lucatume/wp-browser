@@ -127,7 +127,7 @@ class WPDbBlogSubdirCest
         foreach ($blogIds as $blogId) {
             $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
             $blogTablesAfter = $I->grabBlogTableNames($blogId);
-            $I->assertEquals($blogTablesBefore[$blogId], $blogTablesAfter);
+            $I->assertEmpty($blogTablesAfter);
             $I->seeFileFound($blogUploadsDir[$blogId]);
         }
     }
@@ -148,7 +148,9 @@ class WPDbBlogSubdirCest
                 ];
             }, $blogIds), JSON_PRETTY_PRINT));
         $blogTablesBefore = array_combine($blogIds, array_map(function ($blogId) use ($I) {
-            return $I->grabBlogTableNames($blogId);
+            $tables = $I->grabBlogTableNames($blogId);
+            sort($tables);
+            return $tables;
         }, $blogIds));
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
         $blogUploadsDir = array_combine($blogIds, array_map(function ($blogId) use ($I) {
@@ -161,7 +163,7 @@ class WPDbBlogSubdirCest
         foreach ($blogIds as $blogId) {
             $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
             $blogTablesAfter = $I->grabBlogTableNames($blogId);
-            $I->assertEquals($blogTablesBefore[$blogId], $blogTablesAfter);
+            $I->assertEmpty($blogTablesAfter);
             $I->dontSeeFileFound($blogUploadsDir[$blogId]);
         }
     }
@@ -177,12 +179,15 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog ID: ' . $blogId);
 
         $blogTables = $I->grabBlogTableNames($blogId);
+        sort($blogTables);
         codecept_debug('Blog tables: ' . json_encode($blogTables, JSON_PRETTY_PRINT));
 
         $tablePrefix = $I->grabBlogTablePrefix($blogId);
-        $I->assertEquals(array_map(function ($table) use ($tablePrefix) {
+        $expectedTables = array_map(function ($table) use ($tablePrefix) {
             return $tablePrefix . $table;
-        }, Tables::newBlogTables()), $blogTables);
+        }, Tables::newBlogTables());
+        sort($expectedTables);
+        $I->assertEquals($expectedTables, $blogTables);
         $I->assertFileExists($I->getBlogUploadsPath($blogId));
     }
 }

@@ -2269,6 +2269,12 @@ class WPDb extends Db
         }
 
         $data = array_merge($base, array_intersect_key($overrides, $base));
+
+        // Make sure the path is in the `/path/` format.
+        if (isset($data['path']) && $data['path'] !== '/') {
+            $data['path'] = '/' . Utils::unleadslashit(Utils::untrailslashit($data['path'])) . '/';
+        }
+
         $blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
         $this->scaffoldBlogTables($blogId, $domainOrPath, (bool)$subdomain);
 
