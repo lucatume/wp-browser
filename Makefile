@@ -45,15 +45,15 @@ docker_pull:
 	done;
 
 # Builds the Docker-based parallel-lint util.
-docker_build_parallel_lint: docker/parallel-lint/id
-	docker build --force-rm --iidfile docker/parallel-lint/id ./docker/parallel-lint --tag lucatume/parallel-lint:5.6
+docker/parallel-lint/id:
+	docker build --force-rm --iidfile docker/parallel-lint/id docker/parallel-lint --tag lucatume/parallel-lint:5.6
 
 # Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
-lint: docker_build_parallel_lint src
+lint: docker/parallel-lint/id
 	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
 
 # Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
-fix: src
+fix:
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf \
 		--standard=/scripts/phpcs.xml \
 		--ignore=data,includes,tad/scripts \
@@ -173,11 +173,11 @@ down:
 	docker-compose -f docker/docker-compose.yml down
 
 # Builds the Docker-based markdown-toc util.
-docker_build_markdown_toc: docker/markdown-toc/id
-	docker build --force-rm --iidfile docker/markdown-toc/id ./docker/markdown-toc --tag lucatume/md-toc:latest
+docker/markdown-toc/id:
+	docker build --force-rm --iidfile docker/markdown-toc/id docker/markdown-toc --tag lucatume/md-toc:latest
 
 # Re-builds the Readme ToC.
-toc: docker_build_markdown_toc
+toc: docker/markdown-toc/id
 	docker run --rm -it -v ${CURDIR}:/project lucatume/md-toc markdown-toc -i /project/README.md
 
 # Produces the Modules documentation in the docs/modules folder.
@@ -204,8 +204,8 @@ module_docs: composer.lock src/Codeception/Module
 		rm doc.tmp; \
 	done;
 
-docker_build_gitbook: docker/gitbook/id
-	docker build --force-rm --iidfile docker/gitbook/id ./docker/gitbook --tag lucatume/gitbook:latest
+docker/gitbook/id:
+	docker build --force-rm --iidfile docker/gitbook/id docker/gitbook --tag lucatume/gitbook:latest
 
 duplicate_gitbook_files:
 	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
@@ -213,10 +213,10 @@ duplicate_gitbook_files:
 gitbook_install: docs/node_modules
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook install
 
-gitbook_serve: docker_build_gitbook duplicate_gitbook_files module_docs gitbook_install
+gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
 	docker run --rm -v "${CURDIR}/docs:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook serve --live
 
-gitbook_build: docker_build_gitbook duplicate_gitbook_files module_docs gitbook_install
+gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
 
 gitbook_surge: gitbook_build
