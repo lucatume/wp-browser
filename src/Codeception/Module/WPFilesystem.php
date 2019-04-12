@@ -1137,7 +1137,13 @@ CSS;
     /**
      * Returns the absolute path to WordPress root folder without trailing slash.
      *
-     * @return string
+     * @example
+     * ```php
+     * $rootFolder = $I->getWpRootFolder();
+     * $I->assertFileExists($rootFolder . 'wp-load.php');
+     * ```
+     *
+     * @return string The absolute path to the WordPress root folder.
      */
     public function getWpRootFolder()
     {
@@ -1147,14 +1153,20 @@ CSS;
     /**
      * Returns the absolute path to a blog uploads folder or file.
      *
-     * @since TBD
+     * @example
+     * ```php
+     * $blogId = $I->haveBlogInDatabase('test');
+     * $testTodayUploads = $I->getBlogUploadsPath($blogId);
+     * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
+     * ```
      *
      * @param int    $blogId The blog ID to get the path for.
      * @param string $file   The path, relatitve to the blog uploads folder, to the file or folder.
      * @param null   $date   The date that should be used to build the uploads sub-folders in the year/month format;
      *                       a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.
      *
-     * @throws \Exception
+     * @return string The absolute path to a blog uploads folder or file.
+     * @throws \Exception If the date is not a valid format.
      */
     public function getBlogUploadsPath($blogId, $file = '', $date = null)
     {

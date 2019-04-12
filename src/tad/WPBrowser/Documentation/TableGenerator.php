@@ -120,11 +120,14 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         $str .= $this->parser->text($func->getDescription());
 
-        if ($func->getExample()) {
-            $rawExample = $func->getExample();
-            $example = $this->parser->text($rawExample);
-            $str .= PHP_EOL . $example;
+        if (!$func->getExample()) {
+            throw new \DOMException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
         }
+
+        $rawExample = $func->getExample();
+        $example = $this->parser->text($rawExample);
+        $str .= PHP_EOL . $example;
+
         if ($func->hasParams()) {
             $str .= PHP_EOL . '<h4>Parameters</h4>' . PHP_EOL . '<ul>';
             $params = [];

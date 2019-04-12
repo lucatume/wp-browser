@@ -17,7 +17,7 @@ trait MuloaderTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Calls a list of user-defined actions needed in tests.
-     * @see \Codeception\Module\WPLoader::bootstrapActions()
+     * @see \Codeception\Module\WPLoader::_bootstrapActions()
      */
     public function bootstrapActions() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('bootstrapActions', func_get_args()));
@@ -28,7 +28,7 @@ trait MuloaderTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      *
-     * @see \Codeception\Module\WPLoader::switchTheme()
+     * @see \Codeception\Module\WPLoader::_switchTheme()
      */
     public function switchTheme() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('switchTheme', func_get_args()));
@@ -39,7 +39,7 @@ trait MuloaderTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      *
-     * @see \Codeception\Module\WPLoader::activatePlugins()
+     * @see \Codeception\Module\WPLoader::_activatePlugins()
      */
     public function activatePlugins() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('activatePlugins', func_get_args()));
@@ -50,7 +50,7 @@ trait MuloaderTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Loads the plugins required by the test.
-     * @see \Codeception\Module\WPLoader::loadPlugins()
+     * @see \Codeception\Module\WPLoader::_loadPlugins()
      */
     public function loadPlugins() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loadPlugins', func_get_args()));

@@ -1,3 +1,5 @@
+
+
 TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress"
 TRAVIS_WP_URL ?= "http://wp.test"
 TRAVIS_WP_DOMAIN ?= "wp.test"
@@ -200,6 +202,7 @@ module_docs: composer.lock src/Codeception/Module
 			--methodRegex="/^[^_]/" \
 			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
 			$${class} > doc.tmp; \
+		if [ 0 != $$? ]; then rm doc.tmp && exit 1; fi; \
 		echo "${CURDIR}/doc.tmp $${file}" | xargs php ${CURDIR}/docs/bin/update_doc.php; \
 		rm doc.tmp; \
 	done;

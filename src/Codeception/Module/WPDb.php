@@ -174,9 +174,17 @@ class WPDb extends Db
     /**
      * Import the SQL dump file if populate is enabled.
      *
+     * @example
+     * ```php
+     * // Import a dump file passing the absolute path.
+     * $I->importSqlDumpFile(codecept_data_dir('dumps/start.sql'));
+     * ```
+     *
      * Specifying a dump file that file will be imported.
      *
      * @param null|string $dumpFile The dump file that should be imported in place of the default one.
+     *
+     * @throws \InvalidArgumentException If the specified file does not exist.
      */
     public function importSqlDumpFile($dumpFile = null)
     {
@@ -184,6 +192,7 @@ class WPDb extends Db
             if (!file_exists($dumpFile) || !is_readable($dumpFile)) {
                 throw new \InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
             }
+
             $this->driver->load($dumpFile);
 
             return;
@@ -293,6 +302,14 @@ class WPDb extends Db
     /**
      * Checks for a link in the `links` table of the database.
      *
+     * @example
+     * ```php
+     * // Asserts a link exists by name.
+     * $I->seeLinkInDatabase(['link_name' => 'my-link']);
+     * // Asserts at least one link exists for the user.
+     * $I->seeLinkInDatabase(['link_owner' => $userId]);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function seeLinkInDatabase(array $criteria)
@@ -303,6 +320,12 @@ class WPDb extends Db
 
     /**
      * Checks that a link is not in the `links` database table.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeLinkInDatabase(['link_url' => 'http://example.com']);
+     * $I->dontSeeLinkInDatabase(['link_url' => 'http://example.com', 'link_name' => 'example']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -394,6 +417,14 @@ class WPDb extends Db
     /**
      * Checks that a user is not in the database.
      *
+     * @example
+     * ```php
+     * // Asserts a user does not exist in the database.
+     * $I->dontSeeUserInDatabase(['user_login' => 'luca']);
+     * // Asserts a user with email and login is not in the database.
+     * $I->dontSeeUserInDatabase(['user_login' => 'luca', 'user_email' => 'luca@theaveragedev.com']);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function dontSeeUserInDatabase(array $criteria)
@@ -418,9 +449,19 @@ class WPDb extends Db
     /**
      * Inserts a page in the database.
      *
+     * @example
+     * ```php
+     * // Creates a test page in the database with random values.
+     * $randomPageId = $I->havePageInDatabase();
+     * // Creates a test page in the database defining its title.
+     * $testPageId = $I->havePageInDatabase(['post_title' => 'Test page']);
+     * ```
+     *
      * @param array $overrides An array of values to override the default ones.
      *
      * @return int The inserted page post ID.
+     *
+     * @see \Codeception\Module\WPDb::havePostInDatabase()
      */
     public function havePageInDatabase(array $overrides = [])
     {
@@ -431,6 +472,23 @@ class WPDb extends Db
 
     /**
      * Inserts a post in the database.
+     *
+     * @example
+     * ```php
+     * // Insert a post with random values in the database.
+     * $randomPostId = $I->havePostInDatabase();
+     * // Insert a post with specific values in the database.
+     * $I->dontSeeOptionInDatabase([
+     *         'post_type' => 'book',
+     *         'post_title' => 'Alice in Wonderland',
+     *         'meta_input' => [
+     *              'readers_count' => 23
+     *          ],
+     *         'tax_input' => [
+     *              'genre' => 'fiction'
+     *          ]
+     * ]);
+     * ```
      *
      * @param  array $data An associative array of post data to override default and random generated values.
      *
@@ -516,11 +574,18 @@ class WPDb extends Db
 
     /**
      * Returns the id value of the last table entry.
+     * @example
+     * ```php
+     * $I->haveManyPostsInDatabase();
+     * $postsTable = $I->grabPostsTableName();
+     * $last = $I->grabLatestEntryByFromDatabase($postsTable, 'ID');
+     * ```
      *
-     * @param string $tableName
-     * @param string $idColumn
+     * @param string $tableName The table to fetch the last insertion for.
+     * @param string $idColumn The column that is used, in the table, to uniquely identify
+     *                         items.
      *
-     * @return mixed
+     * @return int The last insertion id.
      */
     public function grabLatestEntryByFromDatabase($tableName, $idColumn = 'ID')
     {
@@ -535,11 +600,23 @@ class WPDb extends Db
     /**
      * Adds one or more meta key and value couples in the database for a post.
      *
+     * @example
+     * ```php
+     * // Set the post-meta for a post.
+     * $I->havePostmetaInDatabase($postId, 'karma', 23);
+     * // Set an array post-meta for a post, it will be serialized in the db.
+     * $I->havePostmetaInDatabase($postId, 'data', ['one', 'two']);
+     * // Use a loop to insert one meta per row.
+     * foreach( ['one', 'two'] as $value){
+     *      $I->havePostmetaInDatabase($postId, 'data', $value);
+     * }
+     * ```
      * @param int    $postId     The post ID.
      * @param string $meta_key   The meta key.
      * @param mixed  $meta_value The value to insert in the database, objects and arrays will be serialized.
      *
      * @return int The inserted meta `meta_id`.
+     *
      */
     public function havePostmetaInDatabase($postId, $meta_key, $meta_value)
     {
@@ -561,6 +638,15 @@ class WPDb extends Db
     /**
      * Returns the prefixed post meta table name.
      *
+     * @example
+     * ```php
+     * // Returns 'wp_postmeta'.
+     * $I->grabPostmetaTableName();
+     * // Returns 'wp_23_postmeta'.
+     * $I->useBlog(23);
+     * $I->grabPostmetaTableName();
+     * ```
+     *
      * @return string The prefixed `postmeta` table name, e.g. `wp_postmeta`.
      */
     public function grabPostmetaTableName()
@@ -569,9 +655,18 @@ class WPDb extends Db
     }
 
     /**
-     * Gets a term from the database.
-     *
+     * Gets a term ID from the database.
      * Looks up the prefixed `terms` table, e.g. `wp_terms`.
+     *
+     * @example
+     * ```php
+     * // Return the 'fiction' term 'term_id'.
+     * $termId = $I->grabTermIdFromDatabase(['name' => 'fiction']);
+     * // Get a term ID by more stringent criteria.
+     * $termId = $I->grabTermIdFromDatabase(['name' => 'fiction', 'slug' => 'genre--fiction']);
+     * // Return the 'term_id' of the first term for a group.
+     * $termId = $I->grabTermIdFromDatabase(['term_group' => 23]);
+     * ```
      *
      * @param array $criteria An array of search criteria.
      *
@@ -585,7 +680,16 @@ class WPDb extends Db
     /**
      * Gets the prefixed terms table name, e.g. `wp_terms`.
      *
-     * @return string
+     * @example
+     * ```php
+     * // Returns 'wp_terms'.
+     * $I->grabTermsTableName();
+     * // Returns 'wp_23_terms'.
+     * $I->useBlog(23);
+     * $I->grabTermsTableName();
+     * ```
+     *
+     * @return string The prefixed terms table name.
      */
     public function grabTermsTableName()
     {
@@ -594,6 +698,19 @@ class WPDb extends Db
 
     /**
      * Inserts a term in the database.
+     *
+     * @example
+     * ```php
+     * // Insert a random 'genre' term in the database.
+     * $I->haveTermInDatabase('non-fiction', 'genre');
+     * // Insert a term in the database with term meta.
+     * $I->haveTermInDatabase('fiction', 'genre', [
+     *      'slug' => 'genre--fiction',
+     *      'meta' => [
+     *         'readers_count' => 23
+     *      ]
+     * ]);
+     * ```
      *
      * @param  string $name      The term name, e.g. "Fuzzy".
      * @param string  $taxonomy  The term taxonomy
@@ -634,7 +751,16 @@ class WPDb extends Db
     /**
      * Gets the prefixed term and taxonomy table name, e.g. `wp_term_taxonomy`.
      *
-     * @return string
+     * @example
+     * ```php
+     * // Returns 'wp_term_taxonomy'.
+     * $I->grabTermTaxonomyTableName();
+     * // Returns 'wp_23_term_taxonomy'.
+     * $I->useBlog(23);
+     * $I->grabTermTaxonomyTableName();
+     * ```
+     *
+     * @return string The prefixed term taxonomy table name.
      */
     public function grabTermTaxonomyTableName()
     {
@@ -643,14 +769,24 @@ class WPDb extends Db
 
     /**
      * Inserts a term meta row in the database.
-     *
      * Objects and array meta values will be serialized.
+     *
+     * @example
+     * ```php
+     * $I->haveTermMetaInDatabase($fictionId, 'readers_count', 23);
+     * // Insert some meta that will be serialized.
+     * $I->haveTermMetaInDatabase($fictionId, 'flags', [3, 4, 89]);
+     * // Use a loop to insert one meta per row.
+     * foreach([3, 4, 89] as $value) {
+     *      $I->haveTermMetaInDatabase($fictionId, 'flag', $value);
+     * }
+     * ```
      *
      * @param int    $term_id
      * @param string $meta_key
      * @param mixed  $meta_value
      *
-     * @return int The inserted term meta `meta_id`
+     * @return int The inserted term meta `meta_id`.
      */
     public function haveTermMetaInDatabase($term_id, $meta_key, $meta_value)
     {
@@ -672,9 +808,16 @@ class WPDb extends Db
     /**
      * Gets the terms meta table prefixed name.
      *
-     * E.g.: `wp_termmeta`.
+     * @example
+     * ```php
+     * // Returns 'wp_termmeta'.
+     * $I->grabTermMetaTableName();
+     * // Returns 'wp_23_termmeta'.
+     * $I->useBlog(23);
+     * $I->grabTermMetaTableName();
+     * ```
      *
-     * @return string
+     * @return string The prefixed term meta table name.
      */
     public function grabTermMetaTableName()
     {
@@ -685,6 +828,14 @@ class WPDb extends Db
      * Gets a `term_taxonomy_id` from the database.
      *
      * Looks up the prefixed `terms_relationships` table, e.g. `wp_term_relationships`.
+     *
+     * @example
+     * ```php
+     * // Get the `term_taxonomy_id` for a term and a taxonomy.
+     * $I->grabTermTaxonomyIdFromDatabase(['term_id' => $fictionId, 'taxonomy' => 'genre']);
+     * // Get the `term_taxonomy_id` for the first term with a count of 23.
+     * $I->grabTermTaxonomyIdFromDatabase(['count' => 23]);
+     * ```
      *
      * @param array $criteria An array of search criteria.
      *
@@ -701,9 +852,15 @@ class WPDb extends Db
      * No check about the consistency of the insertion is made. E.g. a post could be assigned a term from
      * a taxonomy that's not registered for that post type.
      *
-     * @param     int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
-     * @param     int $term_taxonomy_id
-     * @param int     $term_order Defaults to `0`.
+     * @example
+     * ```php
+     * // Assign the `fiction` term to a book.
+     * $I->haveTermRelationshipInDatabase($bookId, $fictionId);
+     * ```
+     *
+     * @param int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
+     * @param int $term_taxonomy_id
+     * @param int $term_order Defaults to `0`.
      */
     public function haveTermRelationshipInDatabase($object_id, $term_taxonomy_id, $term_order = 0)
     {
@@ -717,7 +874,12 @@ class WPDb extends Db
     /**
      * Gets the prefixed term relationships table name, e.g. `wp_term_relationships`.
      *
-     * @return string
+     * @example
+     * ```php
+     * $I->grabTermRelationshipsTableName();
+     * ```
+     *
+     * @return string The `term_relationships` table complete name, including the table prefix.
      */
     public function grabTermRelationshipsTableName()
     {
@@ -735,6 +897,14 @@ class WPDb extends Db
     /**
      * Checks for a page in the database.
      *
+     * @example
+     * ```php
+     * // Asserts a page with an exists in the database.
+     * $I->seePageInDatabase(['ID' => 23]);
+     * // Asserts a page with a slug and ID exists in the database.
+     * $I->seePageInDatabase(['post_title' => 'Test Page', 'ID' => 23]);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function seePageInDatabase(array $criteria)
@@ -745,6 +915,14 @@ class WPDb extends Db
 
     /**
      * Checks for a post in the database.
+     *
+     * @example
+     * ```php
+     * // Assert a post exists in the database.
+     * $I->seePostInDatabase(['ID' => 23]);
+     * // Assert a post with a slug and ID exists in the database.
+     * $I->seePostInDatabase(['post_content' => 'test content', 'ID' => 23]);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -757,6 +935,14 @@ class WPDb extends Db
     /**
      * Checks that a page is not in the database.
      *
+     * @example
+     * ```php
+     * // Assert a page with an ID does not exist.
+     * $I->dontSeePageInDatabase(['ID' => 23]);
+     * // Assert a page with a slug and ID.
+     * $I->dontSeePageInDatabase(['post_name' => 'test', 'ID' => 23]);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function dontSeePageInDatabase(array $criteria)
@@ -767,6 +953,14 @@ class WPDb extends Db
 
     /**
      * Checks that a post is not in the database.
+     *
+     * @example
+     * ```php
+     * // Asserts a post with title 'Test' is not in the database.
+     * $I->dontSeePostInDatabase(['post_title' => 'Test']);
+     * // Asserts a post with title 'Test' and content 'Test content' is not in the database.
+     * $I->dontSeePostInDatabase(['post_title' => 'Test', 'post_content' => 'Test content']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -781,9 +975,13 @@ class WPDb extends Db
      *
      * Will look up the "comments" table.
      *
-     * @param  array $criteria
+     * @example
+     * ```php
+     * $I->dontHaveOptionInDatabase('posts_per_page');
+     * $I->dontSeeOptionInDatabase('posts_per_page');
+     * ```
      *
-     * @return void
+     * @param  array $criteria An array of search criteria.
      */
     public function seeCommentInDatabase(array $criteria)
     {
@@ -796,9 +994,15 @@ class WPDb extends Db
      *
      * Will look up the "comments" table.
      *
-     * @param  array $criteria
+     * @example
+     * ```php
+     * // Remove one comment from the database.
+     * $I->dontSeeCommentInDatabase(['comment_ID' => 23]);
+     * // Remove all comments from a user.
+     * $I->dontSeeCommentInDatabase(['user_id' => 89]);
+     * ```
      *
-     * @return void
+     * @param  array $criteria The serach criteria.
      */
     public function dontSeeCommentInDatabase(array $criteria)
     {
@@ -826,9 +1030,15 @@ class WPDb extends Db
      *
      * Will look up the "commentmeta" table.
      *
-     * @param  array $criteria
+     * @example
+     * ```php
+     * // Delete a comment `karma` meta.
+     * $I->dontSeeCommentMetaInDatabase(['comment_id' => 23, 'meta_key' => 'karma']);
+     * // Delete all meta for a comment.
+     * $I->dontSeeCommentMetaInDatabase(['comment_id' => 23]);
+     * ```
      *
-     * @return void
+     * @param  array $criteria An array of search criteria.
      */
     public function dontSeeCommentMetaInDatabase(array $criteria)
     {
@@ -838,6 +1048,14 @@ class WPDb extends Db
 
     /**
      * Checks for a user meta value in the database.
+     *
+     * @example
+     * ```php
+     * // Delete a comment `karma` meta.
+     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23]);
+     * // Checks for a specific user meta.
+     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -850,6 +1068,14 @@ class WPDb extends Db
     /**
      * Check that a user meta value is not in the database.
      *
+     * @example
+     * ```php
+     * // Asserts a user does not have a 'karma' meta assigned.
+     * $I->dontSeeUserInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * // Asserts no user has any 'karma' meta assigned.
+     * $I->dontSeeUserInDatabase(['meta_key' => 'karma']);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function dontSeeUserMetaInDatabase(array $criteria)
@@ -860,6 +1086,11 @@ class WPDb extends Db
 
     /**
      * Removes a link from the database.
+     *
+     * @example
+     * ```php
+     * $I->dontHaveLinkInDatabase(['link_url' => 'http://example.com']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -872,10 +1103,13 @@ class WPDb extends Db
     /**
      * Deletes a database entry.
      *
+     * @example
+     * ```php
+     * $I->dontHaveInDatabase('custom_table', ['book_ID' => 23, 'book_genre' => 'fiction']);
+     * ```
+     *
      * @param  string $table    The table name.
      * @param  array  $criteria An associative array of the column names and values to use as deletion criteria.
-     *
-     * @return void
      */
     public function dontHaveInDatabase($table, array $criteria)
     {
@@ -889,6 +1123,14 @@ class WPDb extends Db
     /**
      * Removes an entry from the term_relationships table.
      *
+     * @example
+     * ```php
+     * // Remove the relation between a post and a category.
+     * $I->dontHaveTermRelationshipInDatabase(['object_id' => $postId, 'term_taxonomy_id' => $ttaxId]);
+     * // Remove all terms for a post.
+     * $I->dontHaveTermMetaInDatabase(['object_id' => $postId]);
+     * ```
+     *
      * @param  array $criteria An array of search criteria.
      */
     public function dontHaveTermRelationshipInDatabase(array $criteria)
@@ -898,7 +1140,15 @@ class WPDb extends Db
     }
 
     /**
-     * Removes an entry from the term_taxonomy table.
+     * Removes an entry from the `term_taxonomy` table.
+     *
+     * @example
+     * ```php
+     * // Remove a specific term from the genre taxonomy.
+     * $I->dontHaveTermTaxonomyInDatabase(['term_id' => $postId, 'taxonomy' => 'genre']);
+     * // Remove all terms for a taxonomy.
+     * $I->dontHaveTermTaxonomyInDatabase(['taxonomy' => 'genre']);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -910,6 +1160,14 @@ class WPDb extends Db
 
     /**
      * Removes an entry from the usermeta table.
+     *
+     * @example
+     * ```php
+     * // Remove the `karma` user meta for a user.
+     * $I->dontHaveUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * // Remove all the user meta for a user.
+     * $I->dontHaveUserMetaInDatabase(['user_id' => 23]);
+     * ```
      *
      * @param  array $criteria An array of search criteria.
      */
@@ -943,12 +1201,22 @@ class WPDb extends Db
     /**
      * Returns all entries matching a criteria from the database.
      *
-     * @param string $table
-     * @param string $column
-     * @param array  $criteria
+     * @example
+     * ```php
+     * // Asserts a user does not exist in the database.
+     * $I->dontSeeUserInDatabase(['user_login' => 'luca']);
+     * // Asserts a user with email and login is not in the database.
+     * $books = $I->grabPrefixedTableNameFor('books');
+     * $I->grabAllFromDatabase($books, 'title', ['genre' => 'fiction']);
+     * ```
+     *
+     * @param string $table The table to grab the values from.
+     * @param string $column The column to fetch.
+     * @param array  $criteria The search criteria.
      *
      * @return array An array of results.
-     * @throws \Exception
+     *
+     * @throws \Exception If the criteria is inconsistent.
      */
     public function grabAllFromDatabase($table, $column, $criteria)
     {
@@ -963,9 +1231,17 @@ class WPDb extends Db
      * Inserts a transient in the database.
      *
      * If the value is an array or an object then the value will be serialized.
+     * Since the transients are set in the context of tests it's not possible to
+     * set an expiration directly.
      *
-     * @param string $transient
-     * @param mixed  $value
+     * @example
+     * ```php
+     * // Store an array in the `tweets` transient.
+     * $I->haveTransientInDatabase('tweets', $tweets);
+     * ```
+     *
+     * @param string $transient The transient name.
+     * @param mixed  $value The transient value.
      *
      * @return int The inserted option `option_id`.
      */
@@ -1001,9 +1277,13 @@ class WPDb extends Db
     /**
      * Removes a transient from the database.
      *
-     * @param $transient
+     * @example
+     * ```php
+     * // Removes the `tweets` transient from the database, if set.
+     * $I->dontHaveTransientInDatabase('tweets');
+     * ```
      *
-     * @return void
+     * @param $transient The transient name.
      */
     public function dontHaveTransientInDatabase($transient)
     {
@@ -1013,17 +1293,23 @@ class WPDb extends Db
     /**
      * Removes an entry from the options table.
      *
-     * @param      $key
-     * @param null $value
+     * @example
+     * ```php
+     * // Remove the `foo` option.
+     * $I->dontHaveOptionInDatabase('foo');
+     * // Remove the 'bar' option only if it has the `baz` value.
+     * $I->dontHaveOptionInDatabase('bar', 'baz');
+     * ```
      *
-     * @return void
+     * @param string     $key   The option name.
+     * @param null|mixed $value If set the option will only be removed if its value matches the passed one.
      */
     public function dontHaveOptionInDatabase($key, $value = null)
     {
         $tableName = $this->grabPrefixedTableNameFor('options');
         $criteria['option_name'] = $key;
         if (!empty($value)) {
-            $criteria['option_value'] = $value;
+            $criteria['option_value'] = $this->maybeUnserialize($value);
         }
 
         $this->dontHaveInDatabase($tableName, $criteria);
@@ -1034,8 +1320,13 @@ class WPDb extends Db
      *
      * If the value is an array or an object then the value will be serialized.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @example
+     * ```php
+     * $fooCountOptionId = $I->haveSiteOptionInDatabase('foo_count','23');
+     * ```
+     *
+     * @param string $key The name of the option to insert.
+     * @param mixed  $value The value ot insert for the option.
      *
      * @return int The inserted option `option_id`.
      */
@@ -1073,8 +1364,16 @@ class WPDb extends Db
     /**
      * Removes a site option from the database.
      *
-     * @param      $key
-     * @param null $value
+     * @example
+     * ```php
+     * // Remove the `foo_count` option.
+     * $I->dontHaveSiteOptionInDatabase('foo_count');
+     * // Remove the `foo_count` option only if its value is `23`.
+     * $I->dontHaveSiteOptionInDatabase('foo_count', 23);
+     * ```
+     *
+     * @param string $key The option name.
+     * @param null|mixed $value If set the option will only be removed it its value matches the specified one.
      */
     public function dontHaveSiteOptionInDatabase($key, $value = null)
     {
@@ -1107,7 +1406,12 @@ class WPDb extends Db
     /**
      * Removes a site transient from the database.
      *
-     * @param string $key
+     * @example
+     * ```php
+     * $I->dontHaveSiteTransientInDatabase(['my_plugin_site_buffer']);
+     * ```
+     *
+     * @param string $key The name of the transient to delete.
      */
     public function dontHaveSiteTransientInDatabase($key)
     {
@@ -1120,7 +1424,12 @@ class WPDb extends Db
     /**
      * Gets a site option from the database.
      *
-     * @param string $key
+     * @example
+     * ```php
+     * $fooCountOptionId = $I->haveSiteOptionInDatabase('foo_count','23');
+     * ```
+     *
+     * @param string $key The name of the option to read from the database.
      *
      * @return mixed|string
      */
@@ -1135,11 +1444,16 @@ class WPDb extends Db
     }
 
     /**
-     * Gets an option from the database.
+     * Gets an option value from the database.
      *
-     * @param string $option_name
+     * @example
+     * ```php
+     * $count = $I->grabOptionFromDatabase('foo_count');
+     * ```
      *
-     * @return mixed|string
+     * @param string $option_name The name of the option to grab from the database.
+     *
+     * @return mixed|string The option value. If the value is serialized it will be unserialized.
      */
     public function grabOptionFromDatabase($option_name)
     {
@@ -1209,8 +1523,16 @@ class WPDb extends Db
     /**
      * Checks that a site option is in the database.
      *
-     * @param string     $key
-     * @param mixed|null $value
+     * @example
+     * ```php
+     * // Check that the option is set in the database.
+     * $I->seeSiteOptionInDatabase('foo_count');
+     * // Check that the option is set and has a specific value.
+     * $I->seeSiteOptionInDatabase('foo_count', 23);
+     * ```
+     *
+     * @param string     $key The name of the otpion to check.
+     * @param mixed|null $value If set the assertion will also check the option value.
      */
     public function seeSiteOptionInDatabase($key, $value = null)
     {
@@ -1346,6 +1668,12 @@ class WPDb extends Db
     /**
      * Removes a term from the database.
      *
+     * @example
+     * ```php
+     * $I->dontHaveTermInDatabase(['name' => 'romance']);
+     * $I->dontHaveTermInDatabase(['slug' => 'genre--romance']);
+     * ```
+     *
      * @param array $criteria  An array of search criteria.
      * @param bool  $purgeMeta Whether the terms meta should be purged along side with the meta or not.
      */
@@ -1383,6 +1711,14 @@ class WPDb extends Db
     /**
      * Removes a term meta from the database.
      *
+     * @example
+     * ```php
+     * // Remove the "karma" key.
+     * $I->dontHaveTermMetaInDatabase(['term_id' => $termId, 'meta_key' => 'karma']);
+     * // Remove all meta for the term.
+     * $I->dontHaveTermMetaInDatabase(['term_id' => $termId]);
+     * ```
+     *
      * @param array $criteria An array of search criteria.
      */
     public function dontHaveTermMetaInDatabase(array $criteria)
@@ -1394,6 +1730,14 @@ class WPDb extends Db
      * Makes sure a term is not in the database.
      *
      * Looks up both the `terms` table and the `term_taxonomy` tables.
+     *
+     * @example
+     * ```php
+     * // Asserts a 'fiction' term is not in the database.
+     * $I->dontSeeTermInDatabase(['name' => 'fiction']);
+     * // Asserts a 'fiction' term with slug 'genre--fiction' is not in the database.
+     * $I->dontSeeTermInDatabase(['name' => 'fiction', 'slug' => 'genre--fiction']);
+     * ```
      *
      * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
      *                        `term_taxonomy` tables.
@@ -1518,9 +1862,14 @@ class WPDb extends Db
     /**
      * Returns the prefixed comment meta table name.
      *
-     * E.g. `wp_commentmeta`.
+     * @example
+     * ```php
+     * // Get all the values of 'karma' for all comments.
+     * $commentMeta = $I->grabCommentmetaTableName();
+     * $I->grabAllFromDatabase($commentMeta, 'meta_value', ['meta_key' => 'karma']);
+     * ```
      *
-     * @return string
+     * @return string The complete name of the comment meta table name, including the table prefix.
      */
     public function grabCommentmetaTableName()
     {
@@ -1552,8 +1901,15 @@ class WPDb extends Db
     /**
      * Removes an entry from the comments table.
      *
+     * @example
+     * ```php
+     * $I->dontHaveCommentInDatabase(['comment_post_ID' => 23, 'comment_url' => 'http://example.copm']);
+     * ```
+     *
      * @param  array $criteria  An array of search criteria.
-     * @param bool   $purgeMeta If set to `true` then the meta for the comment will be purged too.
+     * @param bool $purgeMeta If set to `true` then the meta for the comment will be purged too.
+     *
+     * @throws \Exception In case of incoherent query criteria.
      */
     public function dontHaveCommentInDatabase(array $criteria, $purgeMeta = true)
     {
@@ -1572,6 +1928,15 @@ class WPDb extends Db
 
     /**
      * Gets the comments table name.
+     *
+     * @example
+     * ```php
+     * // Will be `wp_comments`.
+     * $comments = $I->grabCommentsTableName();
+     * // Will be `wp_23_comments`.
+     * $I->useBlog(23);
+     * $comments = $I->grabCommentsTableName();
+     * ```
      *
      * @return string The prefixed table name, e.g. `wp_comments`.
      */

@@ -5,7 +5,8 @@ The module will set, if not set already, the `SAVEQUERIES` constant to `true` an
 
 ## Configuration
 This module does not require any configuration, but requires the [WPLoader module](WPLoader.md) to work correctly. 
-<!--doc--> 
+<!--doc-->
+
 
 ## Public API
 <nav>

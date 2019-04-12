@@ -467,6 +467,10 @@ modules:
 <hr>
 
 <p>Returns the absolute path to a blog uploads folder or file.</p>
+<pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
+    $testTodayUploads = $I-&gt;getBlogUploadsPath($blogId);
+    $testLastMonthLogs = $I-&gt;getBlogUploadsPath($blogId, '/logs', '-1 month');</code></pre>
+<pre><code>                      a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID to get the path for.</li>
@@ -492,6 +496,8 @@ modules:
 <hr>
 
 <p>Returns the absolute path to WordPress root folder without trailing slash.</p>
+<pre><code class="language-php">    $rootFolder = $I-&gt;getWpRootFolder();
+    $I-&gt;assertFileExists($rootFolder . 'wp-load.php');</code></pre>
   
 
 <h3>haveMuPlugin</h3>

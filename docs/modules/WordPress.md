@@ -1,7 +1,3 @@
-# WPBrowser module
-This module should be used in acceptance tests, see [levels of testing for more information](./../levels-of-testing.md).  
-This module extends the [WebDriver module](https://codeception.com/docs/modules/WebDriver) adding WordPress-specific configuration parameters and methods.  
-The module simulates a user interaction with the site **with Javascript support**; if you don't need to test your project with Javascript support use the [WPBrowser module](WPBrowser.md).  
 <!--doc-->
 
 
@@ -24,6 +20,9 @@ The module simulates a user interaction with the site **with Javascript support*
 			<a href="#amoncronpage">amOnCronPage</a>
 		</li>
 		<li>
+			<a href="#amonpage">amOnPage</a>
+		</li>
+		<li>
 			<a href="#amonpagespage">amOnPagesPage</a>
 		</li>
 		<li>
@@ -36,10 +35,13 @@ The module simulates a user interaction with the site **with Javascript support*
 			<a href="#dontseeplugininstalled">dontSeePluginInstalled</a>
 		</li>
 		<li>
-			<a href="#grabcookieswithpattern">grabCookiesWithPattern</a>
+			<a href="#extractcookie">extractCookie</a>
 		</li>
 		<li>
-			<a href="#grabfullurl">grabFullUrl</a>
+			<a href="#getresponsecontent">getResponseContent</a>
+		</li>
+		<li>
+			<a href="#getwprootfolder">getWpRootFolder</a>
 		</li>
 		<li>
 			<a href="#grabwordpresstestcookie">grabWordPressTestCookie</a>
@@ -67,9 +69,6 @@ The module simulates a user interaction with the site **with Javascript support*
 		</li>
 		<li>
 			<a href="#seewpdiepage">seeWpDiePage</a>
-		</li>
-		<li>
-			<a href="#waitforjqueryajax">waitForJqueryAjax</a>
 		</li>
 	</ul>
 </nav>
@@ -121,7 +120,10 @@ The module simulates a user interaction with the site **with Javascript support*
 
 <hr>
 
-<p>Go to a page in the admininstration area of the site. This method will <strong>not</strong> handle authentication to the administration area.</p>
+<p>Go to a page in the admininstration area of the site.</p>
+<p>Will this comment show up in the output?
+And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
+Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     // Go to the plugins management screen.
     $I-&gt;amOnAdminPage('/plugins.php');</code></pre>
@@ -140,6 +142,22 @@ The module simulates a user interaction with the site **with Javascript support*
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
+  
+
+<h3>amOnPage</h3>
+
+<hr>
+
+<p>Go to a page on the site. The module will try to reach the page, relative to the URL specified in the module configuration, without applying any permalink resolution.</p>
+<pre><code class="language-php">    // Go the the homepage.
+    $I-&gt;amOnPage('/');
+    // Go to the single page of post with ID 23.
+    $I-&gt;amOnPage('/?p=23');
+    // Go to search page for the string "foo".
+    $I-&gt;amOnPage('/?s=foo');</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$page</strong> - The path to the page, relative to the the root URL.</li></ul>
   
 
 <h3>amOnPagesPage</h3>
@@ -193,27 +211,42 @@ The module simulates a user interaction with the site **with Javascript support*
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
   
 
-<h3>grabCookiesWithPattern</h3>
+<h3>extractCookie</h3>
 
 <hr>
 
-<p>Returns all the cookies whose name matches a regex pattern.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('customer','password');
-    $I-&gt;amOnPage('/shop');
-    $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
+<p>Grab a cookie value from the current session, sets it in the $_COOKIE array and returns its value. This method utility is to get, in the scope of test code, the value of a cookie set during the tests.</p>
+<pre><code class="language-php">    $id = $I-&gt;haveUserInDatabase('user', 'subscriber', ['user_pass' =&gt; 'pass']);
+    $I-&gt;loginAs('user', 'pass');
+    // The cookie is now set in the `$_COOKIE` super-global.
+    $I-&gt;extractCookie(LOGGED_IN_COOKIE);
+    // Generate a nonce using WordPress methods (see WPLoader in loadOnly mode) with correctly set context.
+    wp_set_current_user($id);
+    $nonce = wp_create_nonce('wp_rest');
+    // Use the generated nonce to make a request to the the REST API.
+    $I-&gt;haveHttpHeader('X-WP-Nonce', $nonce);</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$cookiePattern</strong></li></ul>
+<li><code>string</code> <strong>$cookie</strong> - The cookie name.</li>
+<li><code>array</code> <strong>$params</strong> - Parameters to filter the cookie value.</li></ul>
   
 
-<h3>grabFullUrl</h3>
+<h3>getResponseContent</h3>
 
 <hr>
 
-<p>Grabs the current page full URL including the query vars.</p>
-<pre><code class="language-php">    $today = date('Y-m-d');
-    $I-&gt;amOnPage('/concerts?date=' . $today);
-    $I-&gt;assertRegExp('#\\/concerts$#', $I-&gt;grabFullUrl());</code></pre>
+<p>Returns content of the last response. This method exposes an underlying API for custom assertions.</p>
+<pre><code class="language-php">    // In test class.
+    $this-&gt;assertContains($text, $this-&gt;getResponseContent(), "foo-bar");</code></pre>
+  
+
+<h3>getWpRootFolder</h3>
+
+<hr>
+
+<p>Returns the absolute path to the WordPress root folder.</p>
+<pre><code class="language-php">    $root = $I-&gt;getWpRootFolder();
+    $this-&gt;assertFileExists($root . '/someFile.txt');</code></pre>
   
 
 <h3>grabWordPressTestCookie</h3>
@@ -234,16 +267,14 @@ The module simulates a user interaction with the site **with Javascript support*
 
 <hr>
 
-<p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page. Depending on the driven browser the login might be &quot;too fast&quot; and the server might have not replied with valid cookies yet; in that case the method will re-attempt the login to obtain the cookies.</p>
+<p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/');
-    $I-&gt;see('Dashboard');</code></pre>
+    $I-&gt;seeElement('.admin');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$username</strong></li>
-<li><code>string</code> <strong>$password</strong></li>
-<li><code>int</code> <strong>$timeout</strong> - The max time, in seconds, to try to login.</li>
-<li><code>int</code> <strong>$maxAttempts</strong> - The max number of attempts to try to login.</li></ul>
+<li><code>string</code> <strong>$password</strong></li></ul>
   
 
 <h3>loginAsAdmin</h3>
@@ -254,10 +285,6 @@ The module simulates a user interaction with the site **with Javascript support*
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnAdminPage('/');
     $I-&gt;see('Dashboard');</code></pre>
-<h4>Parameters</h4>
-<ul>
-<li><code>int</code> <strong>$timeout</strong> - The max time, in seconds, to try to login.</li>
-<li><code>int</code> <strong>$maxAttempts</strong> - The max number of attempts to try to login.</li></ul>
   
 
 <h3>seeErrorMessage</h3>
@@ -333,23 +360,10 @@ The module simulates a user interaction with the site **with Javascript support*
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     $I-&gt;amOnAdminPage('/forbidden');
     $I-&gt;seeWpDiePage();</code></pre>
-  
-
-<h3>waitForJqueryAjax</h3>
-
-<hr>
-
-<p>Waits for any jQuery triggered AJAX request to be resolved.</p>
-<pre><code class="language-php">    $I-&gt;amOnPage('/triggering-ajax-requests');
-    $I-&gt;waitForJqueryAjax();
-    $I-&gt;see('From AJAX');</code></pre>
-<h4>Parameters</h4>
-<ul>
-<li><code>int</code> <strong>$time</strong> - The max time to wait for AJAX requests to complete.</li></ul>
 
 
-*This class extends \Codeception\Module\WebDriver*
+*This class extends \Codeception\Lib\Framework*
 
-*This class implements \Codeception\Lib\Interfaces\RequiresPackage, \Codeception\Lib\Interfaces\ConflictsWithModule, \Codeception\Lib\Interfaces\ElementLocator, \Codeception\Lib\Interfaces\PageSourceSaver, \Codeception\Lib\Interfaces\ScreenshotSaver, \Codeception\Lib\Interfaces\SessionSnapshot, \Codeception\Lib\Interfaces\MultiSession, \Codeception\Lib\Interfaces\Remote, \Codeception\Lib\Interfaces\Web*
+*This class implements \Codeception\Lib\Interfaces\Web, \Codeception\Lib\Interfaces\PageSourceSaver, \Codeception\Lib\Interfaces\ElementLocator, \Codeception\Lib\Interfaces\ConflictsWithModule, \Codeception\Lib\Interfaces\DependsOnModule*
 
 <!--/doc-->

@@ -231,6 +231,10 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 <hr>
 
 <p>Returns WordPress default test cookie object if present.</p>
+<pre><code class="language-php">    // Grab the default WordPress test cookie.
+    $wpTestCookie = $I-&gt;grabWordPressTestCookie();
+    // Grab a customized version of the test cookie.
+    $myTestCookie = $I-&gt;grabWordPressTestCookie('my_test_cookie');</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li></ul>

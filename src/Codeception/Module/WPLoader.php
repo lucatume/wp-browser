@@ -428,21 +428,21 @@ class WPLoader extends Module
         $this->_setActiveTheme();
 
         if (!$this->requiresIsolatedInstallation()) {
-            tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-            tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+            tests_add_filter('muplugins_loaded', [$this, '_loadPlugins']);
+            tests_add_filter('wp_install', [$this, '_activatePlugins'], 100);
             tests_add_filter(
                 'wp_install',
-                [$this, 'bootstrapActions'],
+                [$this, '_bootstrapActions'],
                 101
             );
-            tests_add_filter('plugins_loaded', [$this, 'switchTheme']);
+            tests_add_filter('plugins_loaded', [$this, '_switchTheme']);
         }
 
         require_once $this->wpBootstrapFile;
 
         if ($this->requiresIsolatedInstallation()) {
-            $this->bootstrapActions();
-            $this->switchTheme();
+            $this->_bootstrapActions();
+            $this->_switchTheme();
         }
     }
 
@@ -489,7 +489,7 @@ class WPLoader extends Module
     /**
      * Calls a list of user-defined actions needed in tests.
      */
-    public function bootstrapActions()
+    public function _bootstrapActions()
     {
         if (empty($this->config['bootstrapActions'])) {
             return;
@@ -504,7 +504,7 @@ class WPLoader extends Module
         }
     }
 
-    public function switchTheme()
+    public function _switchTheme()
     {
         if (!empty($this->config['theme'])) {
             $stylesheet    = is_array($this->config['theme']) ?
@@ -519,7 +519,7 @@ class WPLoader extends Module
         }
     }
 
-    public function activatePlugins()
+    public function _activatePlugins()
     {
         $currentUserIdBackup = get_current_user_id();
 
@@ -543,7 +543,7 @@ class WPLoader extends Module
     /**
      * Loads the plugins required by the test.
      */
-    public function loadPlugins()
+    public function _loadPlugins()
     {
         if (empty($this->config['plugins']) || !defined('WP_PLUGIN_DIR')) {
             return;
@@ -567,12 +567,17 @@ class WPLoader extends Module
 
     /**
      * Accessor method to get the object storing the factories for things.
-     *
-     * Example usage:
-     *
-     *        $postId = $I->factory()->post->create();
+     * This methods gives access to the same factories provided by the [PHPUnit Core test suite](https://make.wordpress
+     * .org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
      * @return \tad\WPBrowser\Module\WPLoader\FactoryStore
+     * @example
+     * ```php
+     * $postId = $I->factory()->post->create();
+     * $userId = $I->factory()->user->create(['role' => 'administrator']);
+     * ```
+     *
+     * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
     public function factory()
     {

@@ -92,7 +92,7 @@ class WPWebDriver extends WebDriver
      * Depending on the driven browser the login might be "too fast" and the server might have not
      * replied with valid cookies yet; in that case the method will re-attempt the login to obtain
      * the cookies.
-     * * @example
+     * @example
      * ```php
      * $I->loginAs('user', 'password');
      * $I->amOnAdminPage('/');

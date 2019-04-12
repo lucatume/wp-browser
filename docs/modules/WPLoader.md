@@ -99,54 +99,18 @@ The module can be used in conjuction with a `WPDb` module to provide the tests w
 <nav>
 	<ul>
 		<li>
-			<a href="#activateplugins">activatePlugins</a>
-		</li>
-		<li>
-			<a href="#bootstrapactions">bootstrapActions</a>
-		</li>
-		<li>
 			<a href="#factory">factory</a>
-		</li>
-		<li>
-			<a href="#loadplugins">loadPlugins</a>
-		</li>
-		<li>
-			<a href="#switchtheme">switchTheme</a>
 		</li>
 	</ul>
 </nav>
-
-<h3>activatePlugins</h3>
-
-<hr>
-
-
-  
-
-<h3>bootstrapActions</h3>
-
-<hr>
-
-<p>Calls a list of user-defined actions needed in tests.</p>
-  
 
 <h3>factory</h3>
 
 <hr>
 
-<p>Accessor method to get the object storing the factories for things. Example usage: $postId = $I-&gt;factory()-&gt;post-&gt;create();</p>
-  
-
-<h3>loadPlugins</h3>
-
-<hr>
-
-<p>Loads the plugins required by the test.</p>
-  
-
-<h3>switchTheme</h3>
-
-<hr>
+<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the [PHPUnit Core test suite](<a href="https://make.wordpress">https://make.wordpress</a> .org/core/handbook/testing/automated-testing/writing-phpunit-tests/).</p>
+<pre><code class="language-php">    $postId = $I-&gt;factory()-&gt;post-&gt;create();
+    $userId = $I-&gt;factory()-&gt;user-&gt;create(['role' =&gt; 'administrator']);</code></pre>
 
 
 *This class extends \Codeception\Module*

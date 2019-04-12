@@ -309,6 +309,13 @@ trait WPBrowserMethods
 
     /**
      * Returns WordPress default test cookie object if present.
+     * @example
+     * ```php
+     * // Grab the default WordPress test cookie.
+     * $wpTestCookie = $I->grabWordPressTestCookie();
+     * // Grab a customized version of the test cookie.
+     * $myTestCookie = $I->grabWordPressTestCookie('my_test_cookie');
+     * ```
      *
      *
      * @param string $name Optional, overrides the default cookie name.
