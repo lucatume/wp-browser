@@ -29,8 +29,7 @@
     "vlucas/phpdotenv": "^3.0"
   },
   "require-dev": {
-    "mikey179/vfsStream": "^1.6",
-    "ofbeaton/console-tester": "^1.1"
+    "mikey179/vfsStream": "^1.6"
   },
   "autoload": {
     "psr-4": {
