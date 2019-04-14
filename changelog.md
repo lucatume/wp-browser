@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.2] 2019-04-14;
 ### Fixed
 - an issue in `src/includes/utils.php` (thanks @lots0logs)
 - an issue with `WPDb` URL replacement functionality that would prevent it from working with the dump format of some applications
@@ -837,7 +839,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.1...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.2...HEAD
+[2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.3
 [2.2.1]: https://github.com/lucatume/wp-browser/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/lucatume/wp-browser/compare/2.1.6...2.2.0
 [2.1.6]: https://github.com/lucatume/wp-browser/compare/2.1.5...2.1.6
