@@ -28,7 +28,11 @@ class DbDump
             return [];
         }
 
-        return array_map([$this, 'replaceSiteDomainInSqlString'], $sql);
+        $delimiter = md5(uniqid('delim', true));
+        $joined = implode($delimiter, $sql);
+        $replaced = $this->replaceSiteDomainInSqlString($joined);
+
+        return explode($delimiter, $replaced);
     }
 
     /**
@@ -44,7 +48,11 @@ class DbDump
             return [];
         }
 
-        return array_map([$this, 'replaceSiteDomainInMultisiteSqlString'], $sql);
+        $delimiter = md5(uniqid('delim', true));
+        $joined = implode($delimiter, $sql);
+        $replaced = $this->replaceSiteDomainInMultisiteSqlString($joined);
+
+        return explode($delimiter, $replaced);
     }
 
     /**
