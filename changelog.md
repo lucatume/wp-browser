@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 ### Fixed
 - an issue in `src/includes/utils.php` (thanks @lots0logs)
+- an issue with `WPDb` URL replacement functionality that would prevent it from working with the dump format of some applications
 
 ## [2.2.1] 2019-02-11;
 ### Changed
