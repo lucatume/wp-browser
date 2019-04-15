@@ -203,7 +203,7 @@ The module simulates a user interaction with the site **with Javascript support*
     $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$cookiePattern</strong></li></ul>
+<li><code>string</code> <strong>$cookiePattern</strong> - The regular expression pattern to use for the matching.</li></ul>
   
 
 <h3>grabFullUrl</h3>
@@ -240,8 +240,8 @@ The module simulates a user interaction with the site **with Javascript support*
     $I-&gt;see('Dashboard');</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$username</strong></li>
-<li><code>string</code> <strong>$password</strong></li>
+<li><code>string</code> <strong>$username</strong> - The user login name.</li>
+<li><code>string</code> <strong>$password</strong> - The user password in plain text.</li>
 <li><code>int</code> <strong>$timeout</strong> - The max time, in seconds, to try to login.</li>
 <li><code>int</code> <strong>$maxAttempts</strong> - The max number of attempts to try to login.</li></ul>
   

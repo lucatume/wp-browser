@@ -273,8 +273,8 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
     $I-&gt;seeElement('.admin');</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$username</strong></li>
-<li><code>string</code> <strong>$password</strong></li></ul>
+<li><code>string</code> <strong>$username</strong> - The user login name.</li>
+<li><code>string</code> <strong>$password</strong> - The user password in plain text.</li></ul>
   
 
 <h3>loginAsAdmin</h3>

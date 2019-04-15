@@ -223,7 +223,7 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
     $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$cookiePattern</strong></li></ul>
+<li><code>string</code> <strong>$cookiePattern</strong> - The regular expression pattern to use for the matching.</li></ul>
   
 
 <h3>grabWordPressTestCookie</h3>
@@ -250,8 +250,8 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
     $I-&gt;see('Dashboard');</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string</code> <strong>$username</strong></li>
-<li><code>string</code> <strong>$password</strong></li></ul>
+<li><code>string</code> <strong>$username</strong> - The user login name.</li>
+<li><code>string</code> <strong>$password</strong> - The user password in plain text.</li></ul>
   
 
 <h3>loginAsAdmin</h3>

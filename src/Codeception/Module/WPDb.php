@@ -970,7 +970,6 @@ class WPDb extends Db
 
     /**
      * Checks for a comment in the database.
-     *
      * Will look up the "comments" table.
      *
      * @example
@@ -1012,7 +1011,7 @@ class WPDb extends Db
      * Checks that a comment meta value is in the database.
      * Will look up the "commentmeta" table.
      *
-     * @examples
+     * @example
      * ```php
      * // Assert a specifid meta for a comment exists.
      * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
@@ -1183,7 +1182,7 @@ class WPDb extends Db
     /**
      * Gets a user meta from the database.
      *
-     * @examples
+     * @example
      * ```php
      * // Returns a user 'karma' value.
      * $I->grabUserMetaFromDatabase($userId, 'karma');

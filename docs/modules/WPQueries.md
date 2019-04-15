@@ -276,7 +276,7 @@ This module does not require any configuration, but requires the [WPLoader modul
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$statement</strong> - A simple string the statement should start with or a valid regular expression.</li>
-<li><code>string</code> <strong>$function</strong></li>
+<li><code>string</code> <strong>$function</strong> - The name of the function to check the assertions for.</li>
 <li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li></ul>
   
 

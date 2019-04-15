@@ -8,7 +8,10 @@
 
 namespace tad\WPBrowser\Documentation;
 
+use Parsedown;
 use PHPDocsMD\FunctionEntity;
+use ReflectionMethod;
+use RuntimeException;
 
 /**
  * Class TableGenerator
@@ -46,9 +49,16 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      */
     protected $index = [];
 
+    /**
+     * The current class fully qualified name.
+     *
+     * @var string
+     */
+    protected $fullClassName;
+
     public function __construct()
     {
-        $this->parser = new \Parsedown();
+        $this->parser = new Parsedown();
     }
 
     /**
@@ -101,27 +111,27 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      * @param FunctionEntity $func
      *
      * @return string
+     * @throws \DOMException
+     * @throws \ReflectionException
      */
     public function addFunc(FunctionEntity $func)
     {
         $this->fullClassName = $func->getClass();
 
         // Skip the method if it's an @internal one.
-        $methodReflection = new \ReflectionMethod($this->fullClassName, $func->getName());
-        $methodFullDoc = $methodReflection->getDocComment();
+        $methodFullDoc = (new ReflectionMethod($this->fullClassName, $func->getName()))->getDocComment();
         foreach (explode(PHP_EOL, $methodFullDoc) as $line) {
             if (strpos($line, ' @internal ') !== false) {
                 return '';
             }
         }
 
-
         $str = PHP_EOL . '<h3>' . $func->getName() . '</h3>' . "\n\n<hr>\n\n";
 
         $str .= $this->parser->text($func->getDescription());
 
         if (!$func->getExample()) {
-            throw new \DOMException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
+            throw new RuntimeException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
         }
 
         $rawExample = $func->getExample();
