@@ -544,7 +544,7 @@ class WPQueries extends Module
      *
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
-     * @param string $function
+     * @param string $function The name of the function to check the assertions for.
      * @param string $message An optional message to override the default one.
      */
     public function assertNotQueriesByStatementAndFunction($statement, $function, $message = '')

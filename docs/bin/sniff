@@ -12,8 +12,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $missingExample = [];
 $voidReturn = [];
-$paramPattern = '/@param\\s(?<types>[^\\s]+)\\s(?<name>\\$[^\\s]+)\\s(?<comment>[^\\s]+)/u';
-$returnPattern = '/@return\\s(?<type>[^\\s]+)\\s(?<comment>[^\\s]+)/u';
+$paramPattern = '/@param\\s+(?<types>[^\\s]+)\\s+(?<name>\\$[^\\s]+)\\s+(?<comment>[^\\s]+)/u';
+$returnPattern = '/@return\\s+(?<type>[^\\s]+)\\s+(?<comment>[^\\s]+)/u';
 $missingParamComment = [];
 $missingReturnComment = [];
 
@@ -25,7 +25,8 @@ foreach ($modules as $module => $fileInfo) {
     $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
     $methods = array_filter($methods, static function (ReflectionMethod $method) use ($class) {
         return strpos($method->name, '_') !== 0
-               && $method->getDeclaringClass()->name === $class;
+               && $method->getDeclaringClass()->name === $class
+               && strpos($method->getDocComment(), '@internal') === false;
     });
     /** @var \ReflectionMethod $method */
     foreach ($methods as $method) {

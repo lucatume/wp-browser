@@ -163,8 +163,6 @@ class WPLoader extends Module
      * take care of installing and loading WordPress. The simple inclusion of
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
-     *
-     * @return void
      */
     public function _initialize()
     {
@@ -253,8 +251,6 @@ class WPLoader extends Module
      * This method does little but wrapping preparing the global space for the
      * original automated testing bootstrap file and taking charge of replacing
      * the original "wp-tests-config.php" file in setting up the globals.
-     *
-     * @return void
      */
     protected function loadWordPress()
     {
@@ -281,8 +277,6 @@ class WPLoader extends Module
      * The method replaces the "wp-tests-config.php" file the original
      * testing workflow included to allow run-time customization of the
      * globals in a Codeception friendly way.
-     *
-     * @return void
      */
     protected function defineGlobals()
     {
@@ -570,12 +564,13 @@ class WPLoader extends Module
      * This methods gives access to the same factories provided by the [PHPUnit Core test suite](https://make.wordpress
      * .org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
-     * @return \tad\WPBrowser\Module\WPLoader\FactoryStore
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
+     *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */

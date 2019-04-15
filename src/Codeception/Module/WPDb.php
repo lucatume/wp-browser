@@ -372,8 +372,6 @@ class WPDb extends Db
      * @param  int     $post_id    The post ID.
      * @param  int     $term_id    The term ID.
      * @param  integer $term_order The order the term applies to the post, defaults to 0.
-     *
-     * @return void
      */
     public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
     {
@@ -782,9 +780,9 @@ class WPDb extends Db
      * }
      * ```
      *
-     * @param int    $term_id
-     * @param string $meta_key
-     * @param mixed  $meta_value
+     * @param int    $term_id The ID of the term to insert the meta for.
+     * @param string $meta_key The key of the meta to insert.
+     * @param mixed  $meta_value The value of the meta to insert, if serializable it will be serialized.
      *
      * @return int The inserted term meta `meta_id`.
      */
@@ -859,7 +857,7 @@ class WPDb extends Db
      * ```
      *
      * @param int $object_id  A post ID, a user ID or anything that can be assigned a taxonomy term.
-     * @param int $term_taxonomy_id
+     * @param int $term_taxonomy_id The `term_taxonomy_id` of the term and taxonomy to create a relation with.
      * @param int $term_order Defaults to `0`.
      */
     public function haveTermRelationshipInDatabase($object_id, $term_taxonomy_id, $term_order = 0)
@@ -1012,12 +1010,17 @@ class WPDb extends Db
 
     /**
      * Checks that a comment meta value is in the database.
-     *
      * Will look up the "commentmeta" table.
      *
-     * @param  array $criteria
+     * @examples
+     * ```php
+     * // Assert a specifid meta for a comment exists.
+     * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
+     * // Assert the comment has at least one meta set.
+     * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId]);
+     * ```
      *
-     * @return void
+     * @param  array $criteria An array of search criteria.
      */
     public function seeCommentMetaInDatabase(array $criteria)
     {
@@ -1180,10 +1183,20 @@ class WPDb extends Db
     /**
      * Gets a user meta from the database.
      *
-     * @param int    $userId
-     * @param string $meta_key
+     * @examples
+     * ```php
+     * // Returns a user 'karma' value.
+     * $I->grabUserMetaFromDatabase($userId, 'karma');
+     * // Returns an array, the unserialized version of the value stored in the database.
+     * $I->grabUserMetaFromDatabase($userId, 'api_data');
+     * ```
+     *
+     * @param int    $userId The ID of th user to get the meta for.
+     * @param string $meta_key The meta key to fetch the value for.
      *
      * @return array An associative array of meta key/values.
+     *
+     * @throws \Exception If the search criteria is incoherent.
      */
     public function grabUserMetaFromDatabase($userId, $meta_key)
     {
@@ -1193,9 +1206,7 @@ class WPDb extends Db
             return [];
         }
 
-        return array_map(function ($val) {
-            return $val['meta_value'];
-        }, $meta);
+        return array_column($meta, 'meta_value');
     }
 
     /**
@@ -1253,11 +1264,17 @@ class WPDb extends Db
     /**
      * Inserts an option in the database.
      *
+     * @example
+     * ```php
+     * $I->haveOptionInDatabase('posts_per_page, 23);
+     * $I->haveOptionInDatabase('my_plugin_options', ['key_one' => 'value_one', 'key_two' => 89]);
+     * ```
+     *
      * If the option value is an object or an array then the value will be serialized.
      *
-     * @param  string $option_name
-     * @param  mixed  $option_value
-     * @param string  $autoload
+     * @param  string $option_name The option name.
+     * @param  mixed  $option_value The option value; if an array or object it will be serialized.
+     * @param string  $autoload Wether the option should be autoloaded by WordPress or not.
      *
      * @return int The inserted option `option_id`
      */
@@ -1283,7 +1300,7 @@ class WPDb extends Db
      * $I->dontHaveTransientInDatabase('tweets');
      * ```
      *
-     * @param $transient The transient name.
+     * @param string $transient The name of the transient to delete.
      */
     public function dontHaveTransientInDatabase($transient)
     {
@@ -1342,6 +1359,14 @@ class WPDb extends Db
 
     /**
      * Sets the current blog to the main one (`blog_id` 1).
+     *
+     * @example
+     * ```php
+     * // Switch to the blog with ID 23.
+     * $I->useBlog(23);
+     * // Switch back to the main blog.
+     * $I->useMainBlog();
+     * ```
      */
     public function useMainBlog()
     {
@@ -1351,14 +1376,24 @@ class WPDb extends Db
     /**
      * Sets the blog to be used.
      *
-     * @param int $id
+     * This has nothing to do with WordPress `switch_to_blog` function, this code will affect the table prefixes used.
+     *
+     * @example
+     * ```php
+     * // Switch to the blog with ID 23.
+     * $I->useBlog(23);
+     * // Switch back to the main blog.
+     * $I->useMainBlog();
+     * ```
+     *
+     * @param int $blogId The ID of the blog to use.
      */
-    public function useBlog($id = 0)
+    public function useBlog($blogId = 0)
     {
-        if (!(is_numeric($id) && intval($id) === $id && intval($id) >= 0)) {
+        if (!(is_numeric($blogId) && intval($blogId) === $blogId && intval($blogId) >= 0)) {
             throw new \InvalidArgumentException('Id must be an integer greater than or equal to 0');
         }
-        $this->blogId = intval($id);
+        $this->blogId = intval($blogId);
     }
 
     /**
@@ -1385,11 +1420,17 @@ class WPDb extends Db
 
     /**
      * Inserts a site transient in the database.
-     *
      * If the value is an array or an object then the value will be serialized.
      *
-     * @param $key
-     * @param $value
+     * @example
+     * ```php
+     * $I->haveSiteTransientInDatabase('total_comments_count', 23);
+     * // This value will be serialized.
+     * $I->haveSiteTransientInDatabase('api_data', ['user' => 'luca', 'token' => '11ae3ijns-j83']);
+     * ```
+     *
+     * @param string $key The key of the site transient to insert, w/o the `_site_transient_` prefix.
+     * @param mixed $value The value to insert; if serializable the value will be serialized.
      *
      * @return int The inserted transient `option_id`
      */
@@ -1431,7 +1472,7 @@ class WPDb extends Db
      *
      * @param string $key The name of the option to read from the database.
      *
-     * @return mixed|string
+     * @return mixed|string The value of the option stored in the database, if unserializable the value will be unserialized.
      */
     public function grabSiteOptionFromDatabase($key)
     {
@@ -1473,9 +1514,15 @@ class WPDb extends Db
     /**
      * Gets a site transient from the database.
      *
-     * @param string $key
+     * @example
+     * ```php
+     * $I->grabSiteTransientFromDatabase('total_comments');
+     * $I->grabSiteTransientFromDatabase('api_data');
+     * ```
      *
-     * @return mixed|string
+     * @param string $key The site transient to fetch the value for, w/o the `_site_transient_` prefix.
+     *
+     * @return mixed|string The value of the site transient. If the value is serialized it will be unserialized.
      */
     public function grabSiteTransientFromDatabase($key)
     {
@@ -1490,8 +1537,16 @@ class WPDb extends Db
     /**
      * Checks that a site option is in the database.
      *
-     * @param string     $key
-     * @param mixed|null $value
+     * @example
+     * ```php
+     * // Check a transient exists.
+     * $I->seeSiteSiteTransientInDatabase('total_counts');
+     * // Check a transient exists and has a specific value.
+     * $I->seeSiteSiteTransientInDatabase('total_counts', 23);
+     * ```
+     *
+     * @param string     $key The name of the transient to check for, w/o the `_site_transient_` prefix.
+     * @param mixed|null $value If provided then the assertion will include the value.
      */
     public function seeSiteSiteTransientInDatabase($key, $value = null)
     {
@@ -1506,8 +1561,15 @@ class WPDb extends Db
 
     /**
      * Checks if an option is in the database for the current blog.
-     *
      * If checking for an array or an object then the serialized version will be checked for.
+     *
+     * @example
+     * ```php
+     * // Checks an option is in the database.
+     * $I->seeOptionInDatabase('tables_version');
+     * // Checks an option is in the database and has a specific value.
+     * $I->seeOptionInDatabase('tables_version', '1.0');
+     * ```
      *
      * @param array $criteria An array of search criteria.
      */
@@ -1564,7 +1626,15 @@ class WPDb extends Db
      *                    added for each entry. See `havePostmetaInDatabase` method.
      * }
      *
-     * @return array
+     * @example
+     * ```php
+     * // Insert 3 random posts.
+     * $I->haveManyPostsInDatabase(3);
+     * // Insert 3 posts with generated titles.
+     * $I->haveManyPostsInDatabase(3, ['post_title' => 'Test post {{n}}']);
+     * ```
+     *
+     * @return array An array of the inserted post IDs.
      */
     public function haveManyPostsInDatabase($count, array $overrides = [])
     {
@@ -1645,8 +1715,13 @@ class WPDb extends Db
 
     /**
      * Checks for a term in the database.
-     *
      * Looks up the `terms` and `term_taxonomy` prefixed tables.
+     *
+     * @example
+     * ```php
+     * $I->seeTermInDatabase(['slug' => 'genre--fiction']);
+     * $I->seeTermInDatabase(['name' => 'Fiction', 'slug' => 'genre--fiction']);
+     * ```
      *
      * @param array $criteria An array of criteria to search for the term, can be columns from the `terms` and the
      *                        `term_taxonomy` tables.
@@ -1759,6 +1834,15 @@ class WPDb extends Db
     /**
      * Inserts many comments in the database.
      *
+     *
+     * @example
+     * ```php
+     * // Insert 3 random comments for a post.
+     * $I->haveManyCommentsInDatabase(3, $postId);
+     * // Insert 3 random comments for a post.
+     * $I->haveManyCommentsInDatabase(3, $postId, ['comment_content' => 'Comment {{n}}']);
+     * ```
+     *
      * @param int   $count           The number of comments to insert.
      * @param   int $comment_post_ID The comment parent post ID.
      * @param array $overrides       An associative array to override the defaults.
@@ -1783,10 +1867,15 @@ class WPDb extends Db
     /**
      * Inserts a comment in the database.
      *
+     * @example
+     * ```php
+     * $I->haveCommentInDatabase($postId, ['comment_content' => 'Test Comment', 'comment_karma' => 23]);
+     * ```
+     *
      * @param  int   $comment_post_ID The id of the post the comment refers to.
      * @param  array $data            The comment data overriding default and random generated values.
      *
-     * @return int The inserted comment `comment_id`
+     * @return int The inserted comment `comment_id`.
      */
     public function haveCommentInDatabase($comment_post_ID, array $data = [])
     {
@@ -1834,14 +1923,21 @@ class WPDb extends Db
 
     /**
      * Inserts a comment meta field in the database.
-     *
      * Array and object meta values will be serialized.
      *
-     * @param int    $comment_id
-     * @param string $meta_key
-     * @param mixed  $meta_value
+     * @example
+     * ```php
+     * $I->haveCommentMetaInDatabase($commentId, 'api_ID', 23);
+     * // The value will be serialized.
+     * $apiData = ['ID' => 23, 'user' => 89, 'origin' => 'twitter'];
+     * $I->haveCommentMetaInDatabase($commentId, 'api_data', $apiData);
+     * ```
      *
-     * @return int The inserted comment meta ID
+     * @param int    $comment_id The ID of the comment to insert the meta for.
+     * @param string $meta_key The key of the comment meta to insert.
+     * @param mixed  $meta_value The value of the meta to insert, if serializable it will be serialized.
+     *
+     * @return int The inserted comment meta ID.
      */
     public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value)
     {
@@ -2662,7 +2758,7 @@ class WPDb extends Db
      * $I->seeCurrentUrlEquals('https://' . $domain);
      * ```
      *
-     * @return string
+     * @return string The site domain, e.g. `worpdress.localhost` or `localhost:8080`.
      */
     public function getSiteDomain()
     {

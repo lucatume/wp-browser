@@ -36,8 +36,8 @@ trait WPBrowserMethods
      * $I->see('Dashboard');
      * ```
      *
-     * @param string $username
-     * @param string $password
+     * @param string $username The user login name.
+     * @param string $password The user password in plain text.
      */
     public function loginAs($username, $password)
     {
@@ -141,8 +141,6 @@ trait WPBrowserMethods
      * $I->amOnPluginsPage();
      * $I->activatePlugin('hello-dolly');
      * ```
-     *
-     * @return void
      */
     public function amOnPluginsPage()
     {

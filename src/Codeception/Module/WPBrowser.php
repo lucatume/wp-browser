@@ -38,7 +38,6 @@ class WPBrowser extends PhpBrowser
 
     /**
      * Initializes the module setting the properties values.
-     * @return void
      */
     public function _initialize()
     {
@@ -69,9 +68,9 @@ class WPBrowser extends PhpBrowser
      * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
      * ```
      *
-     * @param string $cookiePattern
+     * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array|null
+     * @return array|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -83,11 +82,10 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, function (Cookie $cookie) use ($cookiePattern) {
-
+        $matchingCookies = array_filter($cookies, static function (Cookie $cookie) use ($cookiePattern) {
             return preg_match($cookiePattern, $cookie->getName());
         });
-        $cookieList = array_map(function (Cookie $cookie) {
+        $cookieList = array_map(static function (Cookie $cookie) {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 

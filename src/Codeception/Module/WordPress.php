@@ -346,7 +346,8 @@ EOF;
      * $this->assertContains($text, $this->getResponseContent(), "foo-bar");
      * ```
      *
-     * @return string
+     * @return string The response content, in plain text.
+     *
      * @throws \Codeception\Exception\ModuleException If the underlying modules is not available.
      */
     public function getResponseContent()
@@ -407,8 +408,8 @@ EOF;
      * $I->seeElement('.admin');
      * ```
      *
-     * @param string $username
-     * @param string $password
+     * @param string $username The user login name.
+     * @param string $password The user password in plain text.
      */
     public function loginAs($username, $password)
     {

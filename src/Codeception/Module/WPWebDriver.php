@@ -42,7 +42,6 @@ class WPWebDriver extends WebDriver
 
     /**
      * Initializes the module setting the properties values.
-     * @return void
      */
     public function _initialize()
     {
@@ -99,8 +98,8 @@ class WPWebDriver extends WebDriver
      * $I->see('Dashboard');
      * ```
      *
-     * @param string $username
-     * @param string $password
+     * @param string $username The user login name.
+     * @param string $password The user password in plain text.
      * @param int    $timeout The max time, in seconds, to try to login.
      * @param int    $maxAttempts The max number of attempts to try to login.
      *
@@ -150,9 +149,9 @@ class WPWebDriver extends WebDriver
      * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
      * ```
      *
-     * @param string $cookiePattern
+     * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array|null
+     * @return array|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {

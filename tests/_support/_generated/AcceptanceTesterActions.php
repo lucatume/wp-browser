@@ -3704,7 +3704,13 @@ trait AcceptanceTesterActions
      *
      * Will look up the "commentmeta" table.
      *
-     * @param  array $criteria
+     * @example
+     * ```php
+     * xxx
+     * ```
+     *
+     *
+     * @param array $criteria An array of search criteria.
      *
      * @return void
      * @see \Codeception\Module\WPDb::seeCommentMetaInDatabase()
