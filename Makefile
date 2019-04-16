@@ -1,4 +1,4 @@
-
+SHELL := /bin/bash
 
 TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress"
 TRAVIS_WP_URL ?= "http://wp.test"
