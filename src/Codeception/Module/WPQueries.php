@@ -71,7 +71,7 @@ class WPQueries extends Module
 
         $this->constants->defineIfUndefined('SAVEQUERIES', true);
 
-        if (!(bool)SAVEQUERIES) {
+        if (!(bool)$this->constants->constant('SAVEQUERIES')) {
             $message = 'The "SAVEQUERIES" should either not be set or set to "true";'
                        . ' this module cannot work if "SAVEQUERIES" is not set to "true".';
             throw new ModuleException(__CLASS__, $message);
