@@ -17,3 +17,5 @@ tests/*.suite.yml
 cache/*
 src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
+docs/node_modules
+docs/_book

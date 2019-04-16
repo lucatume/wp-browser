@@ -9,6 +9,27 @@
   "plugins": [
     "expandable-chapters",
     "simpletabs",
-    "code"
-  ]
+    "code",
+    "prism",
+    "-highlight",
+    "atoc",
+    "codeblock-filename",
+    "versions-select"
+  ],
+  "pluginsConfig": {
+    "atoc": {
+      "addClass": true,
+      "className": "atoc"
+    },
+    "versions":
+    {
+      "gitbookConfigURL": "https://raw.githubusercontent.com/lucatume/wp-browser/doc-v2.2/docs/book.json",
+      "options": [
+        {
+          "value": "/",
+          "text": "Version 2.2"
+        }
+      ]
+    }
+  }
 }

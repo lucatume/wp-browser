@@ -221,9 +221,10 @@ gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 
 gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
+	rm -rf ${CURDIR}/docs/site/bin
 
 gitbook_surge: gitbook_build
-	surge ${CURDIR}/docs/site wpbrowser.theaveragedev.com
+	surge ${CURDIR}/docs/site docs.wptestkit.dev
 
 remove_hosts_entries:
 	echo "Removing project ${PROJECT} hosts entries..."
