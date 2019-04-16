@@ -1,3 +1,29 @@
+# WordPress module
+**This module requires good knowledge and attention to be used effectively; you can replace it with a combination of the [WPBrowser](WPBrowser.md) module together with the [WPLoader module in loadOnly mode](WPLoader.md#wploader-to-only-bootstrap-wordpress).**
+This module should be used in functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+This module provides a middle-ground, in terms of testing and effects, between the fully isolated approach of the [WPBrowser](WPBrowser.md) module and the fully integrated approach of the [WPLoader module with loadOnly set to `false`](WPLoader.md).  
+It allows to interact with WordPress on a very high level, using methods like `$I->loginAs()` or `$I->amOnPage()` as you could do with the `WPBrowser` module while also loading WordPress in the same variable scope as the tests as the `WPLoader` module would.
+Due to WordPress reliance on constants, globals and side-effects this module will make requests to WordPress in an insualted manner and reproduce WordPress environment (globals and super-globals) after each response in the tests variable scope.
+The module simulates a user interaction with the site **without Javascript support**, use the [WPWebDriver module](WPWebDriver.md) for any kind of testing that requires Javascript-based interaction with the site.
+
+## Configuration
+* `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
+* `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
+* `adminPassword` *required* - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
+* `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
+
+### Example configuration
+```yaml
+  modules:
+      enabled:
+          - WordPress
+      config:
+          WordPress:
+              wpRootFolder: "/var/www/wordpress"
+              adminUsername: 'admin'
+              adminPassword: 'password'
+              adminPath: '/wp-admin'
+```
 <!--doc-->
 
 
