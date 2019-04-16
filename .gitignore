@@ -19,3 +19,4 @@ src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
 docs/node_modules
 docs/_book
+tests/_support/_generated
