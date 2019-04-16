@@ -67,3 +67,4 @@ before_script:
 
 script:
   - make ci_script
+  - php docs/bin/sniff
