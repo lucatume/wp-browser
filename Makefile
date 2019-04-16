@@ -223,9 +223,6 @@ gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
 	rm -rf ${CURDIR}/docs/site/bin
 
-gitbook_surge: gitbook_build
-	surge ${CURDIR}/docs/site docs.wptestkit.dev
-
 remove_hosts_entries:
 	echo "Removing project ${PROJECT} hosts entries..."
 	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
