@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 ### Added
 - first version of the documentaion
+- fixed an issue where the initialization template would not correctly set the placeholder names (thanks @Luc45)
 
 ## [2.2.2] 2019-04-14;
 ### Fixed
