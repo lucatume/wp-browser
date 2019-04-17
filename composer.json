@@ -30,7 +30,7 @@
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
-    "victorjonsson/": "dev-master",
+    "victorjonsson/markdowndocs": "dev-master",
     "erusev/parsedown": "^1.7"
   },
   "autoload": {
