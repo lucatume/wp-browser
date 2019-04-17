@@ -7,7 +7,6 @@
 /.gitignore             export-ignore
 /.travis.yml            export-ignore
 /.codeception.dist.yml  export-ignore
-/Makefile               export-ignore
-/README.md              export-ignore
-/src/phpcs.xml			export-ignore
 /composer.lock 			export-ignore
+/Makefile               export-ignore
+/src/phpcs.xml			export-ignore
