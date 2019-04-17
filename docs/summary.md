@@ -19,6 +19,6 @@
     * [WPWebDriver](modules/WPWebDriver.md)
 * [Commands](commands.md)
 * [Extensions](extensions.md)
-* [Changelog](changelog.md)
 * [Contributing](contributing.md)
+* [Changelog](changelog.md)
    
