@@ -7,7 +7,8 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 $skipDots = FilesystemIterator::SKIP_DOTS;
 $keyAsFilename = FilesystemIterator::KEY_AS_FILENAME;
 $modules = new FilesystemIterator(__DIR__ . '/../../src/Codeception/Module', $skipDots | $keyAsFilename);
-$moduleDocsRoot = __DIR__ . '/../../docs/modules/';
+$docsRoot = __DIR__ . '/../../docs';
+$moduleDocsRoot = $docsRoot . '/modules/';
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -20,6 +21,7 @@ $missingReturnComment = [];
 $missingDocs = [];
 $emptyDocs = [];
 $missingDocEntry = [];
+$malformedMarkdownLinks = [];
 
 /** @var \SplFileInfo $fileInfo */
 foreach ($modules as $module => $fileInfo) {
@@ -82,6 +84,18 @@ foreach ($modules as $module => $fileInfo) {
     }
 }
 
+$allDocFiles = new CallbackFilterIterator(new RecursiveDirectoryIterator($docsRoot), static function (SplFileInfo $fileInfo) {
+    return $fileInfo->getExtension() === 'md';
+});
+
+/** @var \SplFileInfo $file */
+foreach ($allDocFiles as $file) {
+    $malformedMarkdownLinkPattern = '/.*\\[[^\\(]*\\]\\s+\\([^\\)]*\\)/um';
+    if (preg_match($malformedMarkdownLinkPattern, file_get_contents($file->getPathname()))) {
+        $malformedMarkdownLinks[] = realpath($file->getPathname());
+    }
+}
+
 $output = new ConsoleOutput();
 
 if (
@@ -92,6 +106,7 @@ if (
     && empty($missingDocs)
     && empty($emptyDocs)
     && empty($missingDocEntry)
+    && empty($malformedMarkdownLinks)
 ) {
     $output->writeln('<info>Everything is fine with the modules documentation blocks.</info>');
     echo PHP_EOL;
@@ -153,6 +168,16 @@ if (!empty($missingDocEntry)) {
     echo PHP_EOL;
     foreach ($missingDocEntry as $module) {
         $output->writeln("<comment>{$module}</comment>");
+    }
+    echo PHP_EOL;
+}
+
+if (!empty($malformedMarkdownLinks)) {
+    $output->writeln("<error>Some documentation pages have malformed markdown links, here's a list</error>");
+    echo PHP_EOL;
+    foreach ($malformedMarkdownLinks as $file) {
+        $basename = basename($file);
+        $output->writeln("<info>{$basename} =></info> <comment>{$file}</comment>");
     }
     echo PHP_EOL;
 }

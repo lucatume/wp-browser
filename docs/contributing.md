@@ -24,14 +24,12 @@ feels something is amiss.
  ### Requesting new features  
  I've not used all the tools, environments and possible setups wp-browser could cover.  
  If you feel wp-browser is missing a feature open an issue and try to provide as many details as possible:  
- 
  * What  problem would the new feature solve?
  * Is it possible to do what you would like the new feature to do with the existing API?
  * Could you provide an example of the API/configuration you would like to be able to use?
- 
  A new feature can be as small as a new module method or as large as a new module entirely: do not be afraid to ask.  
  
- ## Pull requests  
+## Pull requests  
  If you encounter any of the issues above and have a proposed fix for it then open a pull request alongside an issue.  
  Any pull-request has to pass tests before being merged and I might add code to your pull request to add tests or 
  update them; I will work with you on the pull request if required.  
