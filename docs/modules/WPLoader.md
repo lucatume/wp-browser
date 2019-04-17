@@ -4,6 +4,13 @@ Setting the `loadOnly` parameter to `true` the module can be additionally used i
 This module is a wrapper around the functionalities provided by [the WordPress PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/), as such it provides the same method and facilities.  
 The parameters provided to the module duplicate the ones used in the WordPress configuration file: the `WPLoader` module will **not** bootstrap WordPress using the `wp-config.php` file, it will define and use its own WordPress configuration built from the module parameters.
 
+## Everything happens in a transaction
+When used to bootstrap and install WordPress (`loadOnly: false`) exactly as the [the WordPress PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) it is based on, this module will operate any change to the database in a transaction.  
+This means that, in the context of integration tests, the result of any write or delete operation done during the tests will be rolled back at the end of each test method; this is done for a number of reasons like performance and tests independence.  
+Inspection of the database during tests, e.g. stopping execution using XDebug, **will not show any change in the database**.
+Keep this in mind while trying to debug integration tests using the `WPLoader` module.  
+When configured to only load WordPress (`loadOnly: true`) then any database operation will be committed and written to the database.
+
 ## Configuration
 * `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
 * `dbName` *required* - The name of the database used by the WordPress installation, same as the `DB_NAME` constant.
