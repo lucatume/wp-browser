@@ -173,7 +173,7 @@ class Wpbrowser extends Bootstrap
                 'commands' => $this->getAddtionalCommands(),
             ],
             'params' => [
-                '.env',
+                '.env.testing',
             ],
         ];
 
@@ -234,7 +234,7 @@ class Wpbrowser extends Bootstrap
                 // deactivate all modules that could trigger exceptions when initialized with sudo values
                 'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
             ];
-            $this->envFileName = '.env';
+            $this->envFileName = '.env.testing';
         } else {
             $installationData = $this->askForInstallationData();
         }
@@ -273,10 +273,10 @@ class Wpbrowser extends Bootstrap
         $this->say('---');
         $this->say();
 
-        while (strpos($this->envFileName, '.env') !== 0) {
+        while (strpos($this->envFileName, '.env.testing') !== 0) {
             $this->envFileName = $this->ask(
                 'How would you like to call the env configuration file? (Should start with ".env")',
-                '.env'
+                '.env.testing'
             );
         }
 
@@ -287,11 +287,11 @@ class Wpbrowser extends Bootstrap
         echo PHP_EOL;
 
         $installationData['wpRootFolder'] = $this->normalizePath($this->ask(
-            "Where is WordPress installed?",
+            'Where is WordPress installed?',
             '/var/www/wp'
         ));
         $installationData['testSiteWpAdminPath'] = $this->ask(
-            'What is the path, relative to WordPress root folder, of the admin area of the test site?',
+            'What is the path, relative to WordPress root URL, of the admin area of the test site?',
             '/wp-admin'
         );
         $normalizedAdminPath = trim($this->normalizePath($installationData['testSiteWpAdminPath']), '/');
@@ -377,14 +377,20 @@ class Wpbrowser extends Bootstrap
             'What is the password of the administrator user of the test site?',
             'password'
         );
-        $sut = $this->ask("Are you testing a plugin or a theme?", 'plugin');
+
+        $sut = '';
+
+        while (!in_array($sut, ['plugin', 'theme', 'both'])) {
+            $sut = $this->ask('Are you testing a plugin, a theme or a combination of both (both)?', 'plugin');
+        }
+
         $installationData['plugins'] = [];
         if ($sut === 'plugin') {
             $installationData['mainPlugin'] = $this->ask(
                 'What is the <comment>folder/plugin.php</comment> name of the plugin?',
                 'my-plugin/my-plugin.php'
             );
-        } else {
+        } elseif ($sut === 'theme') {
             $isChildTheme = $this->ask('Are you developing a child theme?', 'no');
             if (preg_match('/^(y|Y)/', $isChildTheme)) {
                 $installationData['parentTheme'] = $this->ask(
@@ -393,9 +399,19 @@ class Wpbrowser extends Bootstrap
                 );
             }
             $installationData['theme'] = $this->ask('What is the slug of the theme?', 'my-theme');
+        } else {
+            $isChildTheme = $this->ask('Are you using a child theme?', 'no');
+            if (preg_match('/^(y|Y)/', $isChildTheme)) {
+                $installationData['parentTheme'] = $this->ask(
+                    'What is the slug of the parent theme?',
+                    'twentyseventeen'
+                );
+            }
+            $installationData['theme'] = $this->ask('What is the slug of the theme you are using?', 'my-theme');
         }
+
         $activateFurtherPlugins = $this->ask(
-            'Does your plugin or theme needs additional plugins to be activated to work?',
+            'Does your project needs additional plugins to be activated to work?',
             'no'
         );
 
@@ -478,13 +494,13 @@ class Wpbrowser extends Bootstrap
         $written = file_put_contents($filename, $envFileContents);
         if (!$written) {
             $this->removeCreatedFiles();
-            throw new RuntimeException('Could not write .env file!');
+            throw new RuntimeException("Could not write {$this->envFileName} file!");
         }
     }
 
     protected function removeCreatedFiles()
     {
-        $files = ['codeception.yml', '.env'];
+        $files = ['codeception.yml', $this->envFileName];
         $dirs = ['tests'];
         foreach ($files as $file) {
             if (file_exists(getcwd() . '/' . $file)) {
@@ -582,15 +598,15 @@ modules:
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
-            waitlock: 0
+            waitlock: 10
             url: '%WP_URL%'
             urlReplacement: true
-            tablePrefix: '%TABLE_SITE_PREFIX%'
+            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
         WPBrowser:
-            url: '%WP_URL%'
-            adminUsername: '%ADMIN_USERNAME%'
-            adminPassword: '%ADMIN_PASSWORD%'
-            adminPath: '%WP_ADMIN_PATH%'
+            url: '%TEST_SITE_WP_URL%'
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
         WPFilesystem:
             wpRootFolder: '%WP_ROOT_FOLDER%'
             plugins: '/wp-content/plugins'
@@ -630,7 +646,7 @@ modules:
             populate: true 
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
             cleanup: true 
-            waitlock: 0
+            waitlock: 10
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
@@ -652,25 +668,35 @@ EOF;
     {
         $envFileName = trim($this->envFileName);
         if (strpos($envFileName, '.env') !== 0) {
-            $message = 'Please specify an env file name starting with ".env", e.g. ".env.ci" or ".env.local"';
+            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or ".env.development"';
             throw new RuntimeException($message);
         }
     }
 
     protected function askForAcknowledgment()
     {
-        $this->say('<info>Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!</info>');
+        $this->say('<info>'
+                   . 'Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!'
+                   . '</info>');
         $this->say('<info>This command will guide you through the initial setup for your project.</info>');
         echo PHP_EOL;
         $this->say('<info>If you are new to wp-browser please take the time to read this guide:</info>');
         $this->say('<info>https://github.com/lucatume/wp-browser#initial-setup</info>');
         echo PHP_EOL;
-        $acknowledge = $this->ask('<warning>I acknowledge wp-browser should run on development servers only, that I have made a backup of my files and database contents before proceeding.</warning>',
-            true);
+        $acknowledge = $this->ask(
+            '<warning>'
+            .'I acknowledge wp-browser should run on development servers only, '
+            .'that I have made a backup of my files and database contents before proceeding.'
+            .'</warning>',
+            true
+        );
         echo PHP_EOL;
-        if(!$acknowledge){
+        if (!$acknowledge) {
             $this->say('<info>The command did not do anything, nothing changed.</info>');
-            $this->say('<info>Setup a WordPress installation and database dedicated to development and restart this command when ready using `vendor/bin/codecept init wpbrowser`.</info>');
+            $this->say('<info>'
+                       .'Setup a WordPress installation and database dedicated to development and '
+                       .'restart this command when ready using `vendor/bin/codecept init wpbrowser`.'
+                       .'</info>');
             echo PHP_EOL;
             $this->say('<info>See you soon!</info>');
             exit(0);

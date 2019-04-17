@@ -16,10 +16,10 @@
       "role": "Developer"
     }
   ],
-  "prefer-stable": true,
   "require": {
     "php": ">=5.6.0",
     "ext-pdo": "*",
+    "ext-fileinfo": "*",
     "lucatume/wp-browser-commons": "^1.2.5",
     "wp-cli/wp-cli": "^1.1",
     "symfony/process": ">=2.7 <5.0",
@@ -29,7 +29,9 @@
     "vlucas/phpdotenv": "^3.0"
   },
   "require-dev": {
-    "mikey179/vfsStream": "^1.6"
+    "mikey179/vfsstream": "^1.6",
+    "victorjonsson/": "dev-master",
+    "erusev/parsedown": "^1.7"
   },
   "autoload": {
     "psr-4": {

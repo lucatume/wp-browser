@@ -163,8 +163,6 @@ class WPLoader extends Module
      * take care of installing and loading WordPress. The simple inclusion of
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
-     *
-     * @return void
      */
     public function _initialize()
     {
@@ -253,8 +251,6 @@ class WPLoader extends Module
      * This method does little but wrapping preparing the global space for the
      * original automated testing bootstrap file and taking charge of replacing
      * the original "wp-tests-config.php" file in setting up the globals.
-     *
-     * @return void
      */
     protected function loadWordPress()
     {
@@ -281,8 +277,6 @@ class WPLoader extends Module
      * The method replaces the "wp-tests-config.php" file the original
      * testing workflow included to allow run-time customization of the
      * globals in a Codeception friendly way.
-     *
-     * @return void
      */
     protected function defineGlobals()
     {
@@ -428,21 +422,21 @@ class WPLoader extends Module
         $this->_setActiveTheme();
 
         if (!$this->requiresIsolatedInstallation()) {
-            tests_add_filter('muplugins_loaded', [$this, 'loadPlugins']);
-            tests_add_filter('wp_install', [$this, 'activatePlugins'], 100);
+            tests_add_filter('muplugins_loaded', [$this, '_loadPlugins']);
+            tests_add_filter('wp_install', [$this, '_activatePlugins'], 100);
             tests_add_filter(
                 'wp_install',
-                [$this, 'bootstrapActions'],
+                [$this, '_bootstrapActions'],
                 101
             );
-            tests_add_filter('plugins_loaded', [$this, 'switchTheme']);
+            tests_add_filter('plugins_loaded', [$this, '_switchTheme']);
         }
 
         require_once $this->wpBootstrapFile;
 
         if ($this->requiresIsolatedInstallation()) {
-            $this->bootstrapActions();
-            $this->switchTheme();
+            $this->_bootstrapActions();
+            $this->_switchTheme();
         }
     }
 
@@ -489,7 +483,7 @@ class WPLoader extends Module
     /**
      * Calls a list of user-defined actions needed in tests.
      */
-    public function bootstrapActions()
+    public function _bootstrapActions()
     {
         if (empty($this->config['bootstrapActions'])) {
             return;
@@ -504,7 +498,7 @@ class WPLoader extends Module
         }
     }
 
-    public function switchTheme()
+    public function _switchTheme()
     {
         if (!empty($this->config['theme'])) {
             $stylesheet    = is_array($this->config['theme']) ?
@@ -519,7 +513,7 @@ class WPLoader extends Module
         }
     }
 
-    public function activatePlugins()
+    public function _activatePlugins()
     {
         $currentUserIdBackup = get_current_user_id();
 
@@ -543,7 +537,7 @@ class WPLoader extends Module
     /**
      * Loads the plugins required by the test.
      */
-    public function loadPlugins()
+    public function _loadPlugins()
     {
         if (empty($this->config['plugins']) || !defined('WP_PLUGIN_DIR')) {
             return;
@@ -567,12 +561,18 @@ class WPLoader extends Module
 
     /**
      * Accessor method to get the object storing the factories for things.
+     * This methods gives access to the same factories provided by the [PHPUnit Core test suite](https://make.wordpress
+     * .org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
-     * Example usage:
+     * @example
+     * ```php
+     * $postId = $I->factory()->post->create();
+     * $userId = $I->factory()->user->create(['role' => 'administrator']);
+     * ```
      *
-     *        $postId = $I->factory()->post->create();
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object factories.
      *
-     * @return \tad\WPBrowser\Module\WPLoader\FactoryStore
+     * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
     public function factory()
     {

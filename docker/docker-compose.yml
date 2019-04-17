@@ -25,6 +25,7 @@ services:
       MYSQL_DATABASE: test_site
       MYSQL_USER: wordrpess
       MYSQL_PASSWORD: wordpress
+    command: mysqld --debug-no-sync
 
   wp:
     image: wordpress:php5.6

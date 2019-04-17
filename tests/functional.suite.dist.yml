@@ -22,5 +22,26 @@ modules:
         reconnect: false
         url: '%WP_URL%'
         tablePrefix: 'wp_'
+        databases:
+          multisite-subdir:
+            dsn: 'mysql:host=%DB_HOST%;dbname=%MU_SUBDIR_DB_NAME%'
+            user: %DB_USER%
+            password: %DB_PASSWORD%
+            dump: 'tests/_data/mu-subdir-dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: '%MU_WP_SUBDIR_URL%'
+            tablePrefix: 'wp_'
+          multisite-subdomain:
+            dsn: 'mysql:host=%DB_HOST%;dbname=%MU_SUBDOMAIN_DB_NAME%'
+            user: %DB_USER%
+            password: %DB_PASSWORD%
+            dump: 'tests/_data/mu-subdomain-dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: '%MU_WP_SUBDIR_URL%'
+            tablePrefix: 'wp_'
       WPFilesystem:
         wpRootFolder: %WP_ROOT_FOLDER%

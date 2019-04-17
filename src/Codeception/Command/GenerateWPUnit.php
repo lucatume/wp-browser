@@ -13,9 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Generates skeleton for unit test as in classical PHPUnit.
  *
- * * `wpcept g:wpunit unit UserTest`
- * * `wpcept g:wpunit unit User`
- * * `wpcept g:wpunit unit "App\User`
+ * * `codecept g:wpunit unit UserTest`
+ * * `codecept g:wpunit unit User`
+ * * `codecept g:wpunit unit "App\User`
  *
  */
 class GenerateWPUnit extends GenerateTest implements CustomCommandInterface

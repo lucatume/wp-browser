@@ -10,6 +10,12 @@ use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Filesystem\Utils;
 
+/**
+ * A module dedicated to functional testing using acceptance-like methods.
+ * Differently from WPBrowser or WpWebDriver modules the WordPress code will be loaded in the same scope as the tests.
+ *
+ * @package Codeception\Module
+ */
 class WordPress extends Framework implements DependsOnModule
 {
 
@@ -99,9 +105,11 @@ EOF;
     /**
      * WordPress constructor.
      *
-     * @param ModuleContainer $moduleContainer
-     * @param array           $config
-     * @param                 $client WordPressConnector
+     * @param \Codeception\Lib\ModuleContainer        $moduleContainer
+     * @param array                                   $config
+     * @param \tad\WPBrowser\Connector\WordPress|null $client
+     *
+     * @throws \Codeception\Exception\ModuleConfigException
      */
     public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
     {
@@ -124,6 +132,8 @@ EOF;
 
     /**
      * @param TestInterface $test
+     *
+     * @throws \Codeception\Exception\ModuleException
      */
     public function _before(TestInterface $test)
     {
@@ -191,11 +201,20 @@ EOF;
     }
 
     /**
-     * Goes to an admin page on the site.
+     * Go to a page in the admininstration area of the site.
      *
-     * @param string $page The relative path to an admin page.
+     * @example
+     * Will this comment show up in the output?
+     * And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
+     * Or **Markdown** tags? *Please...*
      *
-     * @return null|string
+     * ```php
+     * $I->loginAs('user', 'password');
+     * // Go to the plugins management screen.
+     * $I->amOnAdminPage('/plugins.php');
+     * ```
+     *
+     * @param string $page The path, relative to the admin area URL, to the page.
      */
     public function amOnAdminPage($page)
     {
@@ -207,11 +226,6 @@ EOF;
         return $this->amOnPage($page);
     }
 
-    /**
-     * @param $page
-     *
-     * @return string
-     */
     private function preparePage($page)
     {
         $page = $this->untrailslashIt($page);
@@ -220,11 +234,6 @@ EOF;
         return $page;
     }
 
-    /**
-     * @param $path
-     *
-     * @return mixed
-     */
     private function untrailslashIt($path)
     {
         $path = preg_replace('~\\/?$~', '', $path);
@@ -232,11 +241,22 @@ EOF;
     }
 
     /**
-     * Goes to a page on the site.
+     * Go to a page on the site.
      *
-     * @param string $page The relative path to a page.
+     * The module will try to reach the page, relative to the URL specified in the module configuration, without
+     * applying any permalink resolution.
      *
-     * @return null|string
+     * @example
+     * ```php
+     * // Go the the homepage.
+     * $I->amOnPage('/');
+     * // Go to the single page of post with ID 23.
+     * $I->amOnPage('/?p=23');
+     * // Go to search page for the string "foo".
+     * $I->amOnPage('/?s=foo');
+     * ```
+     *
+     * @param string $page The path to the page, relative to the the root URL.
      */
     public function amOnPage($page)
     {
@@ -260,9 +280,6 @@ EOF;
         return null;
     }
 
-    /**
-     * @param $page
-     */
     private function setRequestType($page)
     {
         if ($this->isAdminPageRequest($page)) {
@@ -278,7 +295,10 @@ EOF;
     }
 
     /**
-     * Returns a list of recognized domain names
+     * Returns a list of recognized domain names for the test site.
+     *
+     * @internal This method is public for inter-operability and compatibility purposes and should
+     *           not be considered part of the API.
      *
      * @return array
      */
@@ -292,7 +312,13 @@ EOF;
     /**
      * Returns the absolute path to the WordPress root folder.
      *
-     * @return string
+     * @example
+     * ```php
+     * $root = $I->getWpRootFolder();
+     * $this->assertFileExists($root . '/someFile.txt');
+     * ```
+     *
+     * @return string The absolute path to the WordPress root folder, without a trailing slash.
      */
     public function getWpRootFolder()
     {
@@ -311,9 +337,18 @@ EOF;
     }
 
     /**
-     * Returns the raw response content.
+     * Returns content of the last response.
+     * This method exposes an underlying API for custom assertions.
      *
-     * @return string
+     * @example
+     * ```php
+     * // In test class.
+     * $this->assertContains($text, $this->getResponseContent(), "foo-bar");
+     * ```
+     *
+     * @return string The response content, in plain text.
+     *
+     * @throws \Codeception\Exception\ModuleException If the underlying modules is not available.
      */
     public function getResponseContent()
     {
@@ -331,22 +366,50 @@ EOF;
     }
 
     /**
-     * Gets a cookie value and sets it on the current $_COOKIE array.
+     * Grab a cookie value from the current session, sets it in the $_COOKIE array and returns its value.
      *
-     * @param string $cookie The cookie name
-     * @param array  $params Parameter to filter the cookie value
+     * This method utility is to get, in the scope of test code, the value of a cookie set during the tests.
+     *
+     * @example
+     * ```php
+     * $id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
+     * $I->loginAs('user', 'pass');
+     * // The cookie is now set in the `$_COOKIE` super-global.
+     * $I->extractCookie(LOGGED_IN_COOKIE);
+     * // Generate a nonce using WordPress methods (see WPLoader in loadOnly mode) with correctly set context.
+     * wp_set_current_user($id);
+     * $nonce = wp_create_nonce('wp_rest');
+     * // Use the generated nonce to make a request to the the REST API.
+     * $I->haveHttpHeader('X-WP-Nonce', $nonce);
+     * ```
+     *
+     * @param string $cookie The cookie name.
+     * @param array  $params Parameters to filter the cookie value.
+     *
+     * @return mixed|string|null The cookie value or `null` if no cookie matching the parameters is found.
      */
     public function extractCookie($cookie, array $params = [])
     {
-        $cookieValue      = $this->grabCookie($cookie, $params);
+        $cookieValue = $this->grabCookie($cookie, $params);
         $_COOKIE[$cookie] = $cookieValue;
+
+        return $cookieValue;
     }
 
     /**
-     * Logs in as the specified user.
+     * Login as the specified user.
      *
-     * @param string $username
-     * @param string $password
+     * The method will **not** follow redirection, after the login, to any page.
+     *
+     * @example
+     * ```php
+     * $I->loginAs('user', 'password');
+     * $I->amOnAdminPage('/');
+     * $I->seeElement('.admin');
+     * ```
+     *
+     * @param string $username The user login name.
+     * @param string $password The user password in plain text.
      */
     public function loginAs($username, $password)
     {

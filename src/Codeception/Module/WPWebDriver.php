@@ -5,7 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleException;
 
 /**
- * A Codeception module offering specific WordPress browsing methods.
+ * An extension of Codeception WebDriver module offering specific WordPress browsing methods.
  */
 class WPWebDriver extends WebDriver
 {
@@ -42,7 +42,6 @@ class WPWebDriver extends WebDriver
 
     /**
      * Initializes the module setting the properties values.
-     * @return void
      */
     public function _initialize()
     {
@@ -64,30 +63,45 @@ class WPWebDriver extends WebDriver
     }
 
     /**
-     * Goes to the login page and logs in as the site admin.
+     * Login as the administrator user using the credentials specified in the module configuration.
      *
-     * @param int $time
+     * The method will **not** follow redirection, after the login, to any page.
      *
-     * @return array An array of login credentials and auth cookies.
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnAdminPage('/');
+     * $I->see('Dashboard');
+     * ```
+     *
+     * @param int    $timeout The max time, in seconds, to try to login.
+     * @param int    $maxAttempts The max number of attempts to try to login.
+     *
+     * @throws \Codeception\Exception\ModuleException If all the attempts of obtaining the cookie fail.
      */
-    public function loginAsAdmin($time = 10)
+    public function loginAsAdmin($timeout = 10, $maxAttempts = 5)
     {
-        return $this->loginAs($this->config['adminUsername'], $this->config['adminPassword'], $time);
+        $this->loginAs($this->config['adminUsername'], $this->config['adminPassword'], $timeout, $maxAttempts);
     }
 
     /**
-     * Goes to the login page, wait for the login form and logs in using the given credentials.
+     * Login as the specified user.
      *
+     * The method will **not** follow redirection, after the login, to any page.
      * Depending on the driven browser the login might be "too fast" and the server might have not
      * replied with valid cookies yet; in that case the method will re-attempt the login to obtain
      * the cookies.
+     * @example
+     * ```php
+     * $I->loginAs('user', 'password');
+     * $I->amOnAdminPage('/');
+     * $I->see('Dashboard');
+     * ```
      *
-     * @param string $username
-     * @param string $password
-     * @param int    $timeout
-     * @param int    $maxAttempts
-     *
-     * @return array An array of login credentials and auth cookies.
+     * @param string $username The user login name.
+     * @param string $password The user password in plain text.
+     * @param int    $timeout The max time, in seconds, to try to login.
+     * @param int    $maxAttempts The max number of attempts to try to login.
      *
      * @throws \Codeception\Exception\ModuleException If all the attempts of obtaining the cookie fail.
      */
@@ -119,24 +133,25 @@ class WPWebDriver extends WebDriver
         if ($empty_cookies) {
             $this->loginAttempt++;
             $this->wait(1);
-            return $this->loginAs($username, $password, $timeout, $maxAttempts);
+            $this->loginAs($username, $password, $timeout, $maxAttempts);
         }
 
         $this->loginAttempt = 0;
-        return [
-            'username' => $username,
-            'password' => $password,
-            'authCookie' => $authCookie,
-            'loginCookie' => $loginCookie,
-        ];
     }
 
     /**
      * Returns all the cookies whose name matches a regex pattern.
      *
-     * @param string $cookiePattern
+     * @example
+     * ```php
+     * $I->loginAs('customer','password');
+     * $I->amOnPage('/shop');
+     * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
+     * ```
      *
-     * @return array|null
+     * @param string $cookiePattern The regular expression pattern to use for the matching.
+     *
+     * @return array|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -161,7 +176,14 @@ class WPWebDriver extends WebDriver
     /**
      * Waits for any jQuery triggered AJAX request to be resolved.
      *
-     * @param int $time
+     * @example
+     * ```php
+     * $I->amOnPage('/triggering-ajax-requests');
+     * $I->waitForJqueryAjax();
+     * $I->see('From AJAX');
+     * ```
+     *
+     * @param int $time The max time to wait for AJAX requests to complete.
      */
     public function waitForJqueryAjax($time = 10)
     {
@@ -170,12 +192,22 @@ class WPWebDriver extends WebDriver
 
     /**
      * Grabs the current page full URL including the query vars.
+     *
+     * @example
+     * ```php
+     * $today = date('Y-m-d');
+     * $I->amOnPage('/concerts?date=' . $today);
+     * $I->assertRegExp('#\\/concerts$#', $I->grabFullUrl());
+     * ```
      */
     public function grabFullUrl()
     {
         return $this->executeJS('return location.href');
     }
 
+    /**
+     * @internal
+     */
     protected function validateConfig()
     {
         $this->configBackCompat();

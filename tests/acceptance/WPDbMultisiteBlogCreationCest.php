@@ -16,10 +16,6 @@ class WPDbMultisiteBlogCreationCest
         $this->tables = new Tables();
     }
 
-    public function _after(FunctionalTester $I)
-    {
-    }
-
     /**
      * @test
      * it should allow having blogs in the database in subdomain multisite installation

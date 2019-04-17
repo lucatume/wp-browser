@@ -96,7 +96,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->do_action('after_switch_theme', 'bar')->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->switchTheme();
+        $sut->_switchTheme();
     }
 
     /**
@@ -111,7 +111,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->do_action('after_switch_theme', 'foo')->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->switchTheme();
+        $sut->_switchTheme();
     }
 
     /**
@@ -124,7 +124,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->switch_theme(Argument::type('string'))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
-        $sut->switchTheme();
+        $sut->_switchTheme();
     }
 
     protected function _before()

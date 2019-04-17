@@ -38,7 +38,6 @@ class WPBrowser extends PhpBrowser
 
     /**
      * Initializes the module setting the properties values.
-     * @return void
      */
     public function _initialize()
     {
@@ -62,9 +61,16 @@ class WPBrowser extends PhpBrowser
     /**
      * Returns all the cookies whose name matches a regex pattern.
      *
-     * @param string $cookiePattern
+     * @example
+     * ```php
+     * $I->loginAs('customer','password');
+     * $I->amOnPage('/shop');
+     * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
+     * ```
      *
-     * @return Cookie|null
+     * @param string $cookiePattern The regular expression pattern to use for the matching.
+     *
+     * @return array|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -76,11 +82,10 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, function (Cookie $cookie) use ($cookiePattern) {
-
+        $matchingCookies = array_filter($cookies, static function (Cookie $cookie) use ($cookiePattern) {
             return preg_match($cookiePattern, $cookie->getName());
         });
-        $cookieList = array_map(function (Cookie $cookie) {
+        $cookieList = array_map(static function (Cookie $cookie) {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 
@@ -92,16 +97,25 @@ class WPBrowser extends PhpBrowser
     /**
      * In the plugin administration screen activates a plugin clicking the "Activate" link.
      *
-     * The method will presume the browser is in the plugin screen already.
+     * The method will **not** handle authentication to the admin area.
+     *
+     * @example
+     * ```php
+     * // Activate a plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin('hello-dolly');
+     * // Activate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin(['hello-dolly','another-plugin']);
+     * ```
      *
      * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-     *
-     * @return void
      */
     public function activatePlugin($pluginSlug)
     {
-        $plugins = (array)$pluginSlug;
-        foreach ($plugins as $plugin) {
+        foreach ((array)$pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
         }
         $this->selectOption('action', 'activate-selected');
@@ -109,22 +123,31 @@ class WPBrowser extends PhpBrowser
     }
 
     /**
-     * In the plugin administration screen deactivates a plugin clicking the "Deactivate" link.
+     * In the plugin administration screen deactivate a plugin clicking the "Deactivate" link.
      *
-     * The method will presume the browser is in the plugin screen already.
+     * The method will **not** handle authentication and navigation to the plugins administration page.
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     * @example
+     * ```php
+     * // Deactivate one plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin('hello-dolly');
+     * // Deactivate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
+     * ```
      *
-     * @return void
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      */
     public function deactivatePlugin($pluginSlug)
     {
-        $plugins = (array) $pluginSlug;
-        foreach ($plugins as $plugin) {
+        foreach ((array) $pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
         }
         $this->selectOption('action', 'deactivate-selected');
-        $this->click("#doaction");
+        $this->click('#doaction');
     }
 
     protected function validateConfig()

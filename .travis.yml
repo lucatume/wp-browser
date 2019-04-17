@@ -33,6 +33,8 @@ addons:
     - blog0.wp.test
     - blog1.wp.test
     - blog2.wp.test
+    - mu-subdir.test
+    - mu-subdomain.test
 
 env:
   global:
@@ -52,16 +54,17 @@ env:
     - WP_VERSION=latest
 
 before_install:
-  # Remove the vendor folder completely just in case.
-  - make travis_before_install
+  - make ci_before_install
+  - make ensure_pingable_hosts
   # Make Composer binaries available w/o the vendor/bin prefix.
   - export PATH=vendor/bin:$PATH
 
 install:
-  - make travis_install
+  - make ci_install
 
 before_script:
-  - make travis_before_script
+  - make ci_before_script
 
 script:
-  - make travis_script
+  - make ci_script
+  - php docs/bin/sniff

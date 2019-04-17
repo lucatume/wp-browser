@@ -345,4 +345,26 @@ class WPDbAttachmentCest
         $I->seeUploadedFileFound('pdf-doc.pdf', 'now');
         $I->seePostMetaInDatabase(['post_id' => $id, 'meta_key' => '_wp_attached_file', 'meta_value' => "{$year}/${month}/pdf-doc.pdf"]);
     }
+
+    /**
+     * It should allow removing attachment files along with the attachment
+     *
+     * @test
+     */
+    public function should_allow_removing_attachment_files_along_with_the_attachment(FunctionalTester $I)
+    {
+        $file = codecept_data_dir('attachments/kitten.jpeg');
+        $id = $I->haveAttachmentInDatabase($file);
+        $attachedFile = $I->grabAttachmentAttachedFile($id);
+        $metadata = $I->grabAttachmentMetadata($id);
+
+        $I->seeUploadedFileFound('kitten.jpeg', 'now');
+
+        $I->dontHaveAttachmentInDatabase(['ID' => $id], true, true);
+
+        $I->dontSeeUploadedFileFound($attachedFile);
+        foreach ($metadata['sizes'] as $size => $sizeData) {
+            $I->dontSeeUploadedFileFound($sizeData['file']);
+        }
+    }
 }

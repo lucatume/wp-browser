@@ -1,4 +1,5 @@
 <?php
+
 use BaconStringUtils\Slugifier;
 use tad\WPBrowser\Generators\Date;
 
@@ -360,5 +361,25 @@ class WPDbPostCest
                 ]);
             }
         }
+    }
+
+    /**
+     * It should allow getting a post meta from the database
+     *
+     * @test
+     */
+    public function should_allow_getting_a_post_meta_from_the_database(FunctionalTester $I)
+    {
+        $id = $I->havePostInDatabase([
+            'meta_input' => [
+                'key_one' => 'single_value',
+                'key_two' => ['multi_value_1', 'multi_value_2', 'multi_value_3'],
+            ],
+        ]);
+
+        $I->assertEquals('single_value', $I->grabPostMetaFromDatabase($id, 'key_one', true));
+        $I->assertEquals(['single_value'], $I->grabPostMetaFromDatabase($id, 'key_one', false));
+        $I->assertEquals('multi_value_1', $I->grabPostMetaFromDatabase($id, 'key_two', true));
+        $I->assertEquals(['multi_value_1', 'multi_value_2', 'multi_value_3'], $I->grabPostMetaFromDatabase($id, 'key_two', false));
     }
 }

@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 TRAVIS_WP_FOLDER ?= "vendor/wordpress/wordpress"
 TRAVIS_WP_URL ?= "http://wp.test"
 TRAVIS_WP_DOMAIN ?= "wp.test"
@@ -12,6 +14,7 @@ TRAVIS_WP_SUBDOMAIN_2 ?= "test2"
 TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
+PROJECT := $(shell basename ${CURDIR})
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -24,36 +27,56 @@ if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
 }
 endef
 
+# PUll all the Docker images this repository will use in building images or running processes.
+docker_pull:
+	images=( \
+		'texthtml/phpcs' \
+		'composer/composer:master-php5' \
+		'phpstan/phpstan' \
+		'wordpress:cli' \
+		'billryan/gitbook' \
+		'mhart/alpine-node:11' \
+		'php:5.6' \
+		'selenium/standalone-chrome' \
+		'mariadb:latest' \
+		'wordpress:php5.6' \
+		'andthensome/alpine-surge-bash' \
+	); \
+	for image in "$${images[@]}"; do \
+		docker pull "$$image"; \
+	done;
+
+# Builds the Docker-based parallel-lint util.
 docker/parallel-lint/id:
-	# Builds the Docker-based parallel-lint util.
-	docker build --iidfile ./docker/parallel-lint/id ./docker/parallel-lint --tag parallel-lint:5.6
+	docker build --force-rm --iidfile docker/parallel-lint/id docker/parallel-lint --tag lucatume/parallel-lint:5.6
 
-lint: docker/parallel-lint/id src
-	# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
-	docker run --rm -v ${CURDIR}:/app parallel-lint:5.6 --colors /app/src
+# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
+lint: docker/parallel-lint/id
+	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
 
-fix: src
-	# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
+# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
+fix:
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf \
 		--standard=/scripts/phpcs.xml \
 		--ignore=data,includes,tad/scripts \
 		/scripts
 
+# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
 sniff: fix src
-	# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
 	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcs \
 		--standard=/scripts/phpcs.xml \
 		--ignore=data,includes,tad/scripts \
 		/scripts -s
 
+# Updates Composer dependencies using PHP 5.6.
 composer_update: composer.json
-	# Updates Composer dependencies using PHP 5.6.
 	docker run --rm -v ${CURDIR}:/app composer/composer:master-php5 update
+
+# Runs phpstan on the source files.
 phpstan: src
-	# Runs phpstan on the source files.
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
-travis_before_install:
+ci_before_install:
 	# Clone WordPress in the vendor folder if not there already.
 	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
 	# Make sure the WordPress folder is write-able.
@@ -65,20 +88,18 @@ travis_before_install:
 	# Create the databases that will be used in the tests.
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test_site"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdir_test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdomain_test"'
 	# Start the WordPress container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d wp
 	# Fetch the IP address of the WordPress container in the containers network.
 	# Start the Chromedriver container using that information to have the *.wp.test domain bound to the WP container.
 	WP_CONTAINER_IP=`docker inspect -f '{{ .NetworkSettings.Networks.docker_default.IPAddress }}' wpbrowser_wp` \
 	docker-compose -f docker/${COMPOSE_FILE} up -d chromedriver
-	# Make sure the host machine can ping the WordPress container
-	ping -c 1 wp.test
-	ping -c 1 test1.wp.test
-	ping -c 1 test2.wp.test
 
-travis_install:
+ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update --prefer-dist
+	composer update -a
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
@@ -121,11 +142,11 @@ travis_install:
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
 
-travis_before_script:
+ci_before_script:
 	# Build Codeception modules.
 	codecept build
 
-travis_script:
+ci_script:
 	codecept run acceptance
 	codecept run cli
 	codecept run climodule
@@ -137,18 +158,80 @@ travis_script:
 	codecept run wploadersuite
 	codecept run wpmodule
 
-travis_prepare: travis_before_install travis_install travis_before_script
+ensure_pingable_hosts:
+	# Make sure the host machine can ping the WordPress container
+	set -o allexport &&  source .env.testing &&  set +o allexport && \
+	echo $${TEST_HOSTS} | \
+	sed -e $$'s/ /\\\n/g' | while read host; do echo "\nPinging $${host}" && ping -c 1 "$${host}"; done
 
-travis_run: lint sniff travis_prepare travis_script
+ci_prepare: ci_before_install ensure_pingable_hosts ci_install ci_before_script
 
+ci_local_prepare: sync_hosts_entries ci_before_install ensure_pingable_hosts ci_install ci_before_script
+
+ci_run: lint sniff ci_prepare ci_script
+
+# Gracefully stop the Docker containers used in the tests.
 down:
-	# Gracefully stop the Docker containers.
 	docker-compose -f docker/docker-compose.yml down
 
+# Builds the Docker-based markdown-toc util.
 docker/markdown-toc/id:
-	# Builds the Docker-based markdown-toc util.
-	docker build --iidfile ./docker/markdown-toc/id ./docker/markdown-toc --tag md-toc:latest
+	docker build --force-rm --iidfile docker/markdown-toc/id docker/markdown-toc --tag lucatume/md-toc:latest
 
+# Re-builds the Readme ToC.
 toc: docker/markdown-toc/id
-	# Re-builds the Readme ToC.
-	docker run --rm -it -v ${CURDIR}:/project md-toc markdown-toc -i /project/README.md
+	docker run --rm -it -v ${CURDIR}:/project lucatume/md-toc markdown-toc -i /project/README.md
+
+# Produces the Modules documentation in the docs/modules folder.
+module_docs: composer.lock src/Codeception/Module
+	mkdir -p docs/modules
+	for file in ${CURDIR}/src/Codeception/Module/*.php; \
+	do \
+		name=$$(basename "$${file}" | cut -d. -f1); \
+		if	[ $${name} = "WPBrowserMethods" ]; then \
+			continue; \
+		fi; \
+		class="Codeception\\Module\\$${name}"; \
+		file=${CURDIR}/docs/modules/$${name}.md; \
+		if [ ! -f $${file} ]; then \
+			echo "<!--doc--><!--/doc-->" > $${file}; \
+		fi; \
+		echo "Generating documentation for module $${class} in file $${file}..."; \
+		docs/bin/wpbdocmd generate \
+			--visibility=public \
+			--methodRegex="/^[^_]/" \
+			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
+			$${class} > doc.tmp; \
+		if [ 0 != $$? ]; then rm doc.tmp && exit 1; fi; \
+		echo "${CURDIR}/doc.tmp $${file}" | xargs php ${CURDIR}/docs/bin/update_doc.php; \
+		rm doc.tmp; \
+	done;
+
+docker/gitbook/id:
+	docker build --force-rm --iidfile docker/gitbook/id docker/gitbook --tag lucatume/gitbook:latest
+
+duplicate_gitbook_files:
+	cp ${CURDIR}/docs/welcome.md ${CURDIR}/docs/README.md
+
+gitbook_install: docs/node_modules
+	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook install
+
+gitbook_serve: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+	docker run --rm -v "${CURDIR}/docs:/gitbook" -p 4000:4000 -p 35729:35729 lucatume/gitbook gitbook serve --live
+
+gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_install
+	docker run --rm -v "${CURDIR}/docs:/gitbook" lucatume/gitbook gitbook build . /site
+	rm -rf ${CURDIR}/docs/site/bin
+
+remove_hosts_entries:
+	echo "Removing project ${PROJECT} hosts entries..."
+	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
+	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## $${project} project - end ##$$/d' /etc/hosts
+
+sync_hosts_entries: remove_hosts_entries
+	echo "Adding project ${project} hosts entries..."
+	set -o allexport &&  source .env.testing &&  set +o allexport && \
+	sudo -- sh -c "echo '' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT} project - start ##' >> /etc/hosts" && \
+	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"

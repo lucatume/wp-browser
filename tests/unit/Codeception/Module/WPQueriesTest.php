@@ -58,6 +58,7 @@ class WPQueriesTest extends \Codeception\TestCase\Test
     public function it_should_define_the_savequeries_constant_if_not_defined_already()
     {
         $this->constants->defineIfUndefined('SAVEQUERIES', true)->shouldBeCalled();
+        $this->constants->constant('SAVEQUERIES')->willReturn(true);
         $sut = $this->make_instance();
         $sut->_initialize();
     }
