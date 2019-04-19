@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Added
+- allow opening PHP tags in the code arguments of the `WPFilesystem::havePlugin`, `WPFilesystem::haveMuPlugin` and `WPFilesystem::haveTheme` methods.
 
 ## [2.2.4] 2019-04-19;
 ### Fixed

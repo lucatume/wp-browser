@@ -952,18 +952,22 @@ class WPFilesystem extends Filesystem
     /**
      * Creates a plugin file, including plugin header, in the plugins folder.
      *
-     * The plugin is just created and not activated; the code should **not** contain the opening '<?php' tag.
+     * The plugin is just created and not activated; the code can not contain the opening '<?php' tag.
      *
-     * @example
+     *@example
      * ``` php
      * $code = 'echo "Hello world!"';
+     * $I->havePlugin('foo/plugin.php', $code);
+     * // Load the code from a file.
+     * $code = file_get_contents(codecept_data_dir('code/plugin.php'));
      * $I->havePlugin('foo/plugin.php', $code);
      * ```
      *
      * @param string $path The path to the file to create, relative to the plugins folder.
-     * @param string $code The content of the plugin file without the opening PHP tag.
+     * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
      * @throws \Codeception\Exception\ModuleException If the plugin folder and/or files could not be created.
+     *
      */
     public function havePlugin($path, $code)
     {
@@ -976,6 +980,7 @@ class WPFilesystem extends Filesystem
             );
         }
         $slug = basename(dirname($path));
+        $code = $this->removeOpeningPhpTag($code);
         $name = $slug;
         $contents = <<<PHP
 <?php
@@ -1002,16 +1007,19 @@ PHP;
     /**
      * Creates a mu-plugin file, including plugin header, in the mu-plugins folder.
      *
-     * The code should **not** contain the opening '<?php' tag.
+     * The code can not contain the opening '<?php' tag.
      *
      * @example
      * ``` php
      * $code = 'echo "Hello world!"';
      * $I->haveMuPlugin('foo-mu-plugin.php', $code);
+     * // Load the code from a file.
+     * $code = file_get_contents(codecept_data_dir('code/mu-plugin.php'));
+     * $I->haveMuPlugin('foo-mu-plugin.php', $code);
      * ```
      *
      * @param string $filename The path to the file to create, relative to the plugins root folder.
-     * @param string $code     The content of the plugin file without the opening PHP tag.
+     * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
      * @throws \Codeception\Exception\ModuleException If the mu-plugin folder and/or files could not be created.
      */
@@ -1031,6 +1039,7 @@ PHP;
             $this->toClean[] = $dir;
         }
 
+        $code = $this->removeOpeningPhpTag($code);
         $name = 'Test mu-plugin ' . ++$this->testPluginCount;
         $contents = <<<PHP
 <?php
@@ -1057,18 +1066,22 @@ PHP;
     /**
      * Creates a theme file structure, including theme style file and index, in the themes folder.
      *
-     * The theme is just created and not activated; the code should not contain the opening '<?php' tag.
+     * The theme is just created and not activated; the code can not contain the opening '<?php' tag.
      *
      * @example
      * ``` php
      * $code = 'sayHi();';
      * $functionsCode  = 'function sayHi(){echo "Hello world";};';
      * $I->haveTheme('foo', $indexCode, $functionsCode);
+     * // Load the code from a file.
+     * $indexCode = file_get_contents(codecept_data_dir('code/index.php'));
+     * $functionsCode = file_get_contents(codecept_data_dir('code/functions.php'));
+     * $I->haveTheme('foo', $indexCode, $functionsCode);
      * ```
      *
      * @param string $folder            The path to the theme to create, relative to the themes root folder.
-     * @param string $indexFileCode     The content of the theme index.php file without the opening PHP tag.
-     * @param string $functionsFileCode The content of the theme functions.php file without the opening PHP tag.
+     * @param string $indexFileCode     The content of the theme index.php file with or without the opening PHP tag.
+     * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
      * @throws \Codeception\Exception\ModuleException If the mu-plugin folder and/or files could not be created.
      */
@@ -1088,7 +1101,8 @@ PHP;
                 "Could not create [{$dir}] theme folder."
             );
         }
-
+        $indexFileCode = $this->removeOpeningPhpTag($indexFileCode);
+        $functionsFileCode = $this->removeOpeningPhpTag($functionsFileCode);
         $name = $folder;
         $style = <<<CSS
 /*
@@ -1231,5 +1245,19 @@ CSS;
         $this->toClean[] = $path;
 
         return $path;
+    }
+
+    /**
+     * Remove the opening PHP tag from the code if present.
+     *
+     * @param string $code The code to update.
+     *
+     * @return string The code without the opening PHP tag.
+     */
+    protected function removeOpeningPhpTag($code)
+    {
+        // Remove the opening PHP tag if present.
+        $code = preg_replace('/^\<\?php\\s*/', '', $code);
+        return $code;
     }
 }
