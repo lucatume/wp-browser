@@ -101,6 +101,12 @@ This module does not require any configuration, but requires the [WPLoader modul
 		<li>
 			<a href="#assertqueriescountbystatementandmethod">assertQueriesCountByStatementAndMethod</a>
 		</li>
+		<li>
+			<a href="#countqueries">countQueries</a>
+		</li>
+		<li>
+			<a href="#getqueries">getQueries</a>
+		</li>
 	</ul>
 </nav>
 
@@ -644,6 +650,34 @@ This module does not require any configuration, but requires the [WPLoader modul
 <li><code>string</code> <strong>$class</strong> - The fully qualified name of the class to check.</li>
 <li><code>string</code> <strong>$method</strong> - The name of the method to check.</li>
 <li><code>string</code> <strong>$message</strong> - An optional message to override the default one.</li></ul>
+  
+
+<h3>countQueries</h3>
+
+<hr>
+
+<p>Returns the current number of queries. Set-up and tear-down queries performed by the test case are filtered out.</p>
+<pre><code class="language-php">    // In a WPTestCase, using the global $wpdb object.
+    $queriesCount = $this-&gt;queries()-&gt;countQueries();
+    // In a WPTestCase, using a custom $wpdb object.
+    $queriesCount = $this-&gt;queries()-&gt;countQueries($customWdbb);</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>null/\wpdb</code> <strong>$wpdb</strong> - A specific instance of the <code>wpdb</code> class or <code>null</code> to use the global one.</li></ul>
+  
+
+<h3>getQueries</h3>
+
+<hr>
+
+<p>Returns the queries currently performed by the global database object or the specified one. Set-up and tear-down queries performed by the test case are filtered out.</p>
+<pre><code class="language-php">    // In a WPTestCase, using the global $wpdb object.
+    $queries = $this-&gt;queries()-&gt;getQueries();
+    // In a WPTestCase, using a custom $wpdb object.
+    $queries = $this-&gt;queries()-&gt;getQueries($customWdbb);</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>null/\wpdb</code> <strong>$wpdb</strong> - A specific instance of the <code>wpdb</code> class or <code>null</code> to use the global one.</li></ul>
 
 
 *This class extends \Codeception\Module*
