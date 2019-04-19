@@ -954,7 +954,7 @@ class WPFilesystem extends Filesystem
      *
      * The plugin is just created and not activated; the code can not contain the opening '<?php' tag.
      *
-     *@example
+     * @example
      * ``` php
      * $code = 'echo "Hello world!"';
      * $I->havePlugin('foo/plugin.php', $code);

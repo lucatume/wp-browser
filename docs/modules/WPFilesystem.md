@@ -504,41 +504,51 @@ modules:
 
 <hr>
 
-<p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code should <strong>not</strong> contain the opening '&lt;?php' tag.</p>
+<p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code can not contain the opening '&lt;?php' tag.</p>
 <pre><code class="language-php">    $code = 'echo "Hello world!"';
+    $I-&gt;haveMuPlugin('foo-mu-plugin.php', $code);
+    // Load the code from a file.
+    $code = file_get_contents(codecept_data_dir('code/mu-plugin.php'));
     $I-&gt;haveMuPlugin('foo-mu-plugin.php', $code);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$filename</strong> - The path to the file to create, relative to the plugins root folder.</li>
-<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening PHP tag.</li></ul>
+<li><code>string</code> <strong>$code</strong> - The content of the plugin file with or without the opening PHP tag.</li></ul>
   
 
 <h3>havePlugin</h3>
 
 <hr>
 
-<p>Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code should <strong>not</strong> contain the opening '&lt;?php' tag.</p>
+<p>Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
 <pre><code class="language-php">    $code = 'echo "Hello world!"';
+    $I-&gt;havePlugin('foo/plugin.php', $code);
+    // Load the code from a file.
+    $code = file_get_contents(codecept_data_dir('code/plugin.php'));
     $I-&gt;havePlugin('foo/plugin.php', $code);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path to the file to create, relative to the plugins folder.</li>
-<li><code>string</code> <strong>$code</strong> - The content of the plugin file without the opening PHP tag.</li></ul>
+<li><code>string</code> <strong>$code</strong> - The content of the plugin file with or without the opening PHP tag.</li></ul>
   
 
 <h3>haveTheme</h3>
 
 <hr>
 
-<p>Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code should not contain the opening '&lt;?php' tag.</p>
+<p>Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
 <pre><code class="language-php">    $code = 'sayHi();';
     $functionsCode  = 'function sayHi(){echo "Hello world";};';
+    $I-&gt;haveTheme('foo', $indexCode, $functionsCode);
+    // Load the code from a file.
+    $indexCode = file_get_contents(codecept_data_dir('code/index.php'));
+    $functionsCode = file_get_contents(codecept_data_dir('code/functions.php'));
     $I-&gt;haveTheme('foo', $indexCode, $functionsCode);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$folder</strong> - The path to the theme to create, relative to the themes root folder.</li>
-<li><code>string</code> <strong>$indexFileCode</strong> - The content of the theme index.php file without the opening PHP tag.</li>
-<li><code>string</code> <strong>$functionsFileCode</strong> - The content of the theme functions.php file without the opening PHP tag.</li></ul>
+<li><code>string</code> <strong>$indexFileCode</strong> - The content of the theme index.php file with or without the opening PHP tag.</li>
+<li><code>string</code> <strong>$functionsFileCode</strong> - The content of the theme functions.php file with or without the opening PHP tag.</li></ul>
   
 
 <h3>makeUploadsDir</h3>
