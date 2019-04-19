@@ -974,8 +974,9 @@ class WPQueries extends Module
      *
      * @return int The current count of performed queries.
      */
-    public function countQueries( $wpdb = null ) {
-        return count( $this->getQueries( $wpdb ) );
+    public function countQueries($wpdb = null)
+    {
+        return count($this->getQueries($wpdb));
     }
 
     /**
@@ -994,7 +995,8 @@ class WPQueries extends Module
      *
      * @return array An array of queries.
      */
-    public function getQueries( $wpdb = null ) {
-        return iterator_to_array( $this->_getFilteredQueriesIterator( $wpdb ), false );
+    public function getQueries($wpdb = null)
+    {
+        return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
     }
 }

@@ -765,6 +765,76 @@ class WPQueriesTest extends \Codeception\TestCase\Test
         $sut->assertNotQueriesByStatement("/SELECT .* FROM wp_postmeta/");
     }
 
+    /**
+     * It should allow getting the count of the queries
+     *
+     * @test
+     */
+    public function should_allow_getting_the_count_of_the_queries()
+    {
+        $this->wpdb->queries = [
+            [
+                "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $this->assertEquals(4, $sut->countQueries());
+    }
+
+    /**
+     * It should allow getting the queries
+     *
+     * @test
+     */
+    public function should_allow_getting_the_queries()
+    {
+        $this->wpdb->queries = [
+            [
+                "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT ID FROM ... (SELECT...)',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'SELECT * FROM ... INSERT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+            [
+                'UPDATE some_table... (SELECT',
+                'some ms timing',
+                'a stack trace including Acme\MyPlugin->someMethod'
+            ],
+        ];
+
+        $sut = $this->make_instance();
+
+        $this->assertEquals($this->wpdb->queries, $sut->getQueries());
+    }
+
     protected function _before()
     {
         $this->moduleContainer = $this->prophesize('Codeception\Lib\ModuleContainer');
