@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.4] 2019-04-19;
+### Fixed
+- a mu-plugins path issue in the `WPFilesystem` module.
+
 ## [2.2.3] 2019-04-19;
 ### Added
 - first version of the documentaion
@@ -845,7 +849,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.3...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.4...HEAD
+[2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/lucatume/wp-browser/compare/2.2.0...2.2.1
