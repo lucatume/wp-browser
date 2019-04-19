@@ -3,9 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.3] 2019-04-19;
 ### Added
 - first version of the documentaion
 - fixed an issue where the initialization template would not correctly set the placeholder names (thanks @Luc45)
+- methods `getQueries` and `countQueries` to the `WPQueries` module
 
 ## [2.2.2] 2019-04-14;
 ### Fixed
@@ -842,8 +845,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.2...HEAD
-[2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.3...HEAD
+[2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
+[2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/lucatume/wp-browser/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/lucatume/wp-browser/compare/2.1.6...2.2.0
 [2.1.6]: https://github.com/lucatume/wp-browser/compare/2.1.5...2.1.6
