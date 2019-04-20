@@ -1,5 +1,5 @@
 ## What is a unit test? An acceptance test?
-This page has no pretense to be THE source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and components involved in testing.  
+This page has no pretense to be THE source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and components of testing.  
 Wikipedia, forums and other documents online will offer alternate, and equally valid, definitions.
 
 ## The signup page example
