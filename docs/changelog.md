@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.5] 2019-04-22;
 ### Added
 - allow opening PHP tags in the code arguments of the `WPFilesystem::havePlugin`, `WPFilesystem::haveMuPlugin` and `WPFilesystem::haveTheme` methods.
 
@@ -851,7 +853,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.4...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.5...HEAD
+[2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
 [2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.2
