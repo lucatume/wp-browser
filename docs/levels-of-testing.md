@@ -83,7 +83,7 @@ Furthermore the format of the test is not the same as the one used in the accept
 The acceptance test is written in the most eloquent testing format supported by Codeception, the [Cept format](https://codeception.com/docs/02-GettingStarted), this test uses a more PHPUnit-like format, the [Cest format](https://codeception.com/docs/07-AdvancedUsage#Cest-Classes).  
 While the first is easier to skim for  non-developers the second harnesses the power of a re-using pieces of code, the page creation and navigation in the example, to optimize the test code.
 
-### Integration test
+### Integration tests
 In brief: **test modules of the code in the context of a WordPress website**.
 In this type of test the WordPress, and additional plugins code, is loaded in the same variable scope as the tests; this is why in the example below I'm using classes (`WP_REST_Request`, `WP_REST_Response`) and methods (`register_rest_route`) defined by WordPress, not the plugin code.  
 The REST API request sent by the application form will be handled by a class, `Acme\Signup\SubmissionHandler`, that's been attached to the `/wp-json/acme/v1/signup` path:
