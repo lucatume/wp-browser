@@ -5,7 +5,7 @@ There are many ways you can contribute to the project and most of them do not in
  ## Reporting an issue
  It can be done [from here](https://github.com/lucatume/wp-browser/issues/new).  
  Whenever you find yourself struggling with something, anything, while using wp-browser, please report an issue.  
- If your issue is not a real issue it will be quickly closed but still provide two values:
+ If your issue is not a real issue it will be quickly closed but still provide value in two ways:
  1. it will remain in the repository issues archive making it searchable for any other user having the same, or 
  similar, issue
  2. it might shine a light on missing documentation, API or clarity in general.
@@ -22,7 +22,7 @@ report it. No documentation can possibly cover any case ever but there's a good 
 feels something is amiss.
  
  ### Requesting new features  
- I've not used all the tools, environments and possible setups wp-browser could cover.  
+ I've not used all the tools, environments and possible setups wp-browser could be used in.  
  If you feel wp-browser is missing a feature open an issue and try to provide as many details as possible:  
  * What  problem would the new feature solve?
  * Is it possible to do what you would like the new feature to do with the existing API?
