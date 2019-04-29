@@ -18,6 +18,34 @@ In the screenshot the answers I've provided to each question, with reference to 
 wp-browswer will try to provide a brief explanation of what each question is but below is the long version.
 
 ### Long question explanation
+I've tried to condense as much clarity as possible in the questions the `codecept init wpbrowser` command will ask but, for sake of brevity and space, there's no way I could provide inline a deeper explanation of each.  
+Below is a longer explanation of each question:
+
+* [How would you like the acceptance suite to be called?](#how-would-you-like-the-acceptance-suite-to-be-called)  
+* [How would you like the functional suite to be called?](#how-would-you-like-the-functional-suite-to-be-called)  
+* [How would you like the WordPress unit and integration suite to be called?](#how-would-you-like-the-wordpress-unit-and-integration-suite-to-be-called)  
+* [How would you like to call the env configuration file?](#how-would-you-like-to-call-the-env-configuration-file)  
+* [Where is WordPress installed?](#where-is-wordpress-installed)  
+* [What is the path, relative to WordPress root URL, of the admin area of the test site?](#what-is-the-path,  -relative-to-wordpress-root-url-of-the-admin-area-of-the-test-site)
+* [What is the name of the test database used by the test site?](#what-is-the-name-of-the-test-database-used-by-the-test-site)  
+* [What is the host of the test database used by the test site?](#what-is-the-host-of-the-test-database-used-by-the-test-site)  
+* [What is the user of the test database WPLoader should use?](#what-is-the-user-of-the-test-database-wploader-should-use)  
+* [What is the password of the test database WPLoader should use?](#what-is-the-password-of-the-test-database-wploader-should-use)  
+* [What is the table prefix of the test database WPLoader should use?](#what-is-the-table-prefix-of-the-test-database-wploader-should-use)  
+* [What is the URL the test site?](#what-is-the-url-the-test-site)  
+* [What is the email of the test site WordPress administrator?](#what-is-the-email-of-the-test-site-wordpress-administrator)  
+* [What is the title of the test site?](#what-is-the-title-of-the-test-site)  
+* [What is the login of the administrator user of the test site?](#what-is-the-login-of-the-administrator-user-of-the-test-site)  
+* [What is the password of the administrator user of the test site?](#what-is-the-password-of-the-administrator-user-of-the-test-site)  
+* [Are you testing a plugin, a theme or a combination of both?](#are-you-testing-a-plugin,-a-theme-or-a-combination-of-both)  
+* [What is the folder/plugin.php name of the plugin?](#what-is-the-folder-plugin-php-name-of-the-plugin)  
+* [Are you developing a child theme?](#are-you-developing-a-child-theme)  
+* [Are you using a child theme?](#are-you-using-a-child-theme)  
+* [What is the slug of the parent theme?](#what-is-the-slug-of-the-parent-theme)  
+* [What is the slug of the theme?](#what-is-the-slug-of-the-theme)  
+* [What is the slug of the theme you are using?](#what-is-the-slug-of-the-theme-you-are-using)  
+* [Does your project needs additional plugins to be activated to work?](#does-your-project-needs-additional-plugins-to-be-activated-to-work)  
+
 #### How would you like the acceptance suite to be called?
 With reference to the [testing levels definition](levels-of-testing.md) this question provides you with the possibility to change the name of the acceptance-like test suite.  
 Common, alternative, names are `ui`, `rest` and `user`.  

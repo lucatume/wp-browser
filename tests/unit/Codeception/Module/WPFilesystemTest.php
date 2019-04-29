@@ -918,4 +918,120 @@ PHP;
         $this->assertFileNotExists($themeIndexFile);
         $this->assertFileNotExists($themeFunctionsFile);
     }
+
+    /**
+     * It should allow opening PHP tag when having plugin
+     *
+     * @test
+     */
+    public function should_allow_opening_php_tag_when_having_plugin()
+    {
+        $sut = $this->make_instance();
+
+        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/foo';
+        $pluginFile   = $pluginFolder . '/plugin.php';
+
+        $code = "<?php echo 'Hello world';";
+        $sut->havePlugin('foo/plugin.php', $code);
+
+        $this->assertFileExists($pluginFolder);
+        $this->assertFileExists($pluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: foo
+Description: foo
+*/
+
+echo 'Hello world';
+PHP;
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($pluginFile);
+        $this->assertFileNotExists($pluginFolder);
+    }
+
+    /**
+     * It should allow the opening PHP tag when having a mu plugin
+     *
+     * @test
+     */
+    public function should_allow_the_opening_php_tag_when_having_a_mu_plugin()
+    {
+        $sut = $this->make_instance();
+
+        $muPluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
+        $muPluginFile   = $muPluginFolder . '/test-mu-plugin.php';
+
+        $code = "<?php\necho 'Hello world';";
+        $sut->haveMuPlugin('test-mu-plugin.php', $code);
+
+        $this->assertFileExists($muPluginFolder);
+        $this->assertFileExists($muPluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: Test mu-plugin 1
+Description: Test mu-plugin 1
+*/
+
+echo 'Hello world';
+PHP;
+
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($muPluginFile);
+        $this->assertFileExists($muPluginFolder);
+    }
+
+    /**
+     * It should allow the opening PHP tag when having a theme
+     *
+     * @test
+     */
+    public function should_allow_the_opening_php_tag_when_having_a_theme()
+    {
+        $sut = $this->make_instance();
+
+        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
+        $themeIndexFile = $themeFolder . '/test/index.php';
+        $themeStyleFile = $themeFolder . '/test/style.css';
+        $themeFunctionsFile = $themeFolder . '/test/functions.php';
+
+        $code = "<?php\necho 'Hello world';";
+        $sut->haveTheme('test', $code, $code);
+
+        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themeIndexFile);
+        $this->assertFileExists($themeStyleFile);
+
+        $expectedCss = <<<CSS
+/*
+Theme Name: test
+Author: wp-browser
+Description: test
+Version: 1.0
+*/
+CSS;
+
+        $expectedIndex = <<< PHP
+<?php echo 'Hello world';
+PHP;
+
+        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
+
+        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+
+        $this->assertFileNotExists($themeStyleFile);
+        $this->assertFileNotExists($themeIndexFile);
+        $this->assertFileNotExists($themeFunctionsFile);
+    }
 }

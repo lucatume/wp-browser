@@ -957,4 +957,46 @@ class WPQueries extends Module
         ), $statement);
         Assert::assertCount($n, iterator_to_array($iterator), $message);
     }
+
+    /**
+     * Returns the current number of queries.
+     * Set-up and tear-down queries performed by the test case are filtered out.
+     *
+     * @example
+     * ```php
+     * // In a WPTestCase, using the global $wpdb object.
+     * $queriesCount = $this->queries()->countQueries();
+     * // In a WPTestCase, using a custom $wpdb object.
+     * $queriesCount = $this->queries()->countQueries($customWdbb);
+     * ```
+     *
+     * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
+     *
+     * @return int The current count of performed queries.
+     */
+    public function countQueries($wpdb = null)
+    {
+        return count($this->getQueries($wpdb));
+    }
+
+    /**
+     * Returns the queries currently performed by the global database object or the specified one.
+     * Set-up and tear-down queries performed by the test case are filtered out.
+     *
+     * @example
+     * ```php
+     * // In a WPTestCase, using the global $wpdb object.
+     * $queries = $this->queries()->getQueries();
+     * // In a WPTestCase, using a custom $wpdb object.
+     * $queries = $this->queries()->getQueries($customWdbb);
+     * ```
+     *
+     * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
+     *
+     * @return array An array of queries.
+     */
+    public function getQueries($wpdb = null)
+    {
+        return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
+    }
 }
