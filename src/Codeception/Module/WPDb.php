@@ -147,6 +147,13 @@ class WPDb extends Db
      */
     protected $isMultisite;
 
+    /**
+     * Whether the module did init already or not.
+     *
+     * @var bool
+     */
+    protected $didInit = false;
+
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
@@ -169,6 +176,7 @@ class WPDb extends Db
         $this->tablePrefix = $this->config['tablePrefix'];
         $this->handlebars = $handlebars ?: new Handlebars();
         $this->tables = $table ?: new Tables();
+        $this->didInit = true;
     }
 
     /**
@@ -1471,7 +1479,7 @@ class WPDb extends Db
      *
      * @param string $key The name of the option to read from the database.
      *
-     * @return mixed|string The value of the option stored in the database, if unserializable the value will be unserialized.
+     * @return mixed|string The value of the option stored in the database, unserialized if serialized.
      */
     public function grabSiteOptionFromDatabase($key)
     {
@@ -3702,6 +3710,16 @@ class WPDb extends Db
     public function grabBlogPath($blogId)
     {
         return $this->grabFromDatabase($this->grabBlogsTableName(), 'path', ['blog_id' => $blogId]);
+    }
+
+    /**
+     * Return whether the module did init already or not.
+     *
+     * @return bool Whether the module did init already or not.
+     */
+    public function _didInit()
+    {
+        return $this->didInit;
     }
 
     /**
