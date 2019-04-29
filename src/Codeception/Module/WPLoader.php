@@ -4,10 +4,11 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
-use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
@@ -143,6 +144,13 @@ class WPLoader extends Module
      * @var \tad\WPBrowser\Module\WPLoader\FactoryStore
      */
     protected $factoryStore;
+
+    /**
+     * Whether WordPress did load correctly or not.
+     *
+     * @var bool
+     */
+    protected $wpDidLoadCorrectly = false;
 
     /**
      * @var WP
@@ -378,60 +386,9 @@ class WPLoader extends Module
     {
         $this->ensureServerVars();
 
-        $wpDidLoadCorrectly = false;
-        register_shutdown_function(function () use (&$wpDidLoadCorrectly) {
-            if (!$wpDidLoadCorrectly) {
-                $output = new ConsoleOutput();
-                $lines = [
-                    'The WPLoader module could not correctly load WordPress.',
-                    'If you do not see any other output beside this, probably a call to `die` or `exit` might have been'
-                    .' made while loading WordPress files.',
-                    'There are a number of reasons why this might happen and the most common is an empty, incomplete or'
-                    .' incoherent database status.',
-                    '',
-                    'E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain '
-                    .'multisite tables.'
-                ];
-                $moduleContainer = $this->moduleContainer;
-                if ($moduleContainer->hasModule('WPDb')
-                    || $moduleContainer->hasModule('Db')
-                ) {
-                    $dbModule = $moduleContainer->hasModule('WPDb') ? 'WPDb' : 'Db';
-                    $lines [] = '';
-                    $lines[] = "It looks like, alongside the WPLoader module, you are using the {$dbModule} one.";
-                    if (empty($this->config['loadOnly'])) {
-                          $lines[] = 'Since the `WPLoader::loadOnly` parameter is not set or set to `false` both the '
-                              ."WPLoader module and the {$dbModule} one are trying to populate the database."   ;
-                          $lines[] = "If you want to fill the database with a dump then keep using the {$dbModule} "
-                              . 'module but set the `WPLoader::loadOnly` parameter to `true` and make sure that, '
-                              ."in the suite configuration file, in the `modules` section, the {$dbModule} module comes"
-                              .' before the WPLoader one.' ;
-                          $lines[] = '';
-                          $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
-                              ." {$dbModule} module or should set the `populate` and `cleanup` arguments to `false`";
-                    } else {
-                        $lines[] = 'Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module'
-                            .' will not try to populate the database.'   ;
-                        $lines[] = "The database should be populated from a dump using the {$dbModule} modules.";
-                        $lines[] = 'Make sure the SQL dump you\'re trying to use is not empty and correct for the kind '
-                            .'of installation you are trying to test.';
-                        $lines[] = 'Make also sure that, in the suite configuration file, in the `modules` section, ' .
-                            "the {$dbModule} modules comes before the WPLoader one.".
-                            $lines[] = '';
-                        $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
-                            ." {$dbModule} module or should set the `populate` and `cleanup` arguments to `false` and "
-                            .'set the `WPLoader::loadOnly` parameter to `false` to let the WPLoader module populate the'
-                            .' database for you.';
-                    }
-                    $lines[] = 'Find out more about this at '
-                        .'https://wpbrowser.wptestkit.dev/summary/modules/wploader'
-                        .'#wploader-to-only-bootstrap-wordpress';
-                }
-                $output->writeln('<error>'.implode(PHP_EOL, $lines).'</error>');
-            }
-        });
+        register_shutdown_function([$this, '_wordpressExitHandler']);
         include_once Utils::untrailslashit($this->wpRootFolder).'/wp-load.php';
-        $wpDidLoadCorrectly = true;
+        $this->wpDidLoadCorrectly = true;
 
         $this->setupCurrentSite();
         $this->factoryStore = new FactoryStore();
@@ -646,5 +603,71 @@ class WPLoader extends Module
                 $_SERVER[$key] = $value;
             }
         }
+    }
+
+    /**
+     * Returns a closure to handle the exit of WordPress during the bootstrap process.
+     *
+     * @param OutputInterface|null  $output An output stream.
+     */
+    public function _wordpressExitHandler(OutputInterface $output = null)
+    {
+        if ($this->wpDidLoadCorrectly) {
+            return;
+        }
+
+        $output = $output ? $output : new ConsoleOutput();
+
+        $lines = [
+            'The WPLoader module could not correctly load WordPress.',
+            'If you do not see any other output beside this, probably a call to `die` or `exit` might have been'
+            .' made while loading WordPress files.',
+            'There are a number of reasons why this might happen and the most common is an empty, incomplete or'
+            .' incoherent database status.',
+            '',
+            'E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain '
+            .'multisite tables.'
+        ];
+
+        $moduleContainer = $this->moduleContainer;
+
+        if ($moduleContainer->hasModule('WPDb') || $moduleContainer->hasModule('Db')) {
+            $dbModule = $moduleContainer->hasModule('WPDb') ? 'WPDb' : 'Db';
+            $lines [] = '';
+            $lines[] = "It looks like, alongside the WPLoader module, you are using the {$dbModule} one.";
+            if (empty($this->config['loadOnly'])) {
+                $lines[] = 'Since the `WPLoader::loadOnly` parameter is not set or set to `false` both the '
+                    ."WPLoader module and the {$dbModule} one are trying to populate the database.";
+                $lines[] = "If you want to fill the database with a dump then keep using the {$dbModule} "
+                    .'module but set the `WPLoader::loadOnly` parameter to `true` and make sure that, '
+                    ."in the suite configuration file, in the `modules` section, the {$dbModule} module comes"
+                    .' before the WPLoader one.';
+                $lines[] = '';
+                $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
+                    ." {$dbModule} module or should set the `populate` and `cleanup` arguments to `false`";
+            } else {
+                $lines[] = 'Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module'
+                    .' will not try to populate the database.';
+                $lines[] = "The database should be populated from a dump using the {$dbModule} modules.";
+                $lines[] = 'Make sure the SQL dump you\'re trying to use is not empty and correct for the kind '
+                    .'of installation you are trying to test.';
+                $lines[] = 'Make also sure that, in the suite configuration file, in the `modules` section, '.
+                    "the {$dbModule} modules comes before the WPLoader one.".
+                    $lines[] = '';
+                $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
+                    ." {$dbModule} module or should set the `populate` and `cleanup` arguments to `false` and "
+                    .'set the `WPLoader::loadOnly` parameter to `false` to let the WPLoader module populate the'
+                    .' database for you.';
+            }
+            $lines[] = 'Find out more about this at '
+                .'https://wpbrowser.wptestkit.dev/summary/modules/wploader'
+                .'#wploader-to-only-bootstrap-wordpress';
+        } else {
+            $lines[] = 'Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module'
+                .' will not try to populate the database.';
+            $lines[] = 'The database should be populated from a dump using the WPDb/Db modules.';
+        }
+
+        $output->writeln('<error>'.implode(PHP_EOL, $lines).'</error>');
     }
 }
