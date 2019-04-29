@@ -4,10 +4,14 @@ namespace Codeception\Module;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
+use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Console\Output\BufferedOutput;
 use tad\WPBrowser\Adapters\WP;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
+    use MatchesSnapshots;
+
     protected $backupGlobals = false;
     /**
      * @var \UnitTester
@@ -127,6 +131,18 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $sut->_switchTheme();
     }
 
+    public function exitMessagesCombos()
+    {
+        return [
+            'no_db_module_loadOnly_true' => [false,true],
+            'no_db_module_loadOnly_false' => [false,false],
+            'WPDb_module_loadOnly_true' => ['WPDb',true],
+            'WPDb_module_loadOnly_false' => ['WPDb',false],
+            'Db_module_loadOnly_true' => ['Db',true],
+            'Db_module_loadOnly_false' => ['Db',false],
+        ];
+    }
+
     protected function _before()
     {
         $root = vfsStream::setup();
@@ -144,5 +160,25 @@ class WPLoaderTest extends \Codeception\Test\Unit
             'dbPassword' => 'somePass',
         ];
         $this->wp = $this->prophesize(WP::class);
+    }
+
+    /**
+     * Test exit messages
+     *
+     * @dataProvider exitMessagesCombos
+     */
+    public function test_exit_messages($dbModule, $loadOnly)
+    {
+        $this->moduleContainer->hasModule('WPDb')->willReturn($dbModule === 'WPDb');
+        $this->moduleContainer->hasModule('Db')->willReturn($dbModule === 'Db');
+        $sut = $this->make_instance();
+        $output = new BufferedOutput();
+        $sut->_setConfig(array_merge($sut->_getConfig(), [
+            'loadOnly' => $loadOnly
+        ]));
+
+        $sut->_wordpressExitHandler($output);
+
+        $this->assertMatchesSnapshot($output->fetch());
     }
 }
