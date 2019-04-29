@@ -153,7 +153,6 @@ ci_script:
 	codecept run wpfunctional
 	codecept run wploadersuite
 	codecept run wpmodule
-	codecept run wploader_wpdb_interaction
 
 ensure_pingable_hosts:
 	# Make sure the host machine can ping the WordPress container
