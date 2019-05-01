@@ -115,7 +115,7 @@ The module can be used in conjuction with a `WPDb` module to provide the tests w
 
 <hr>
 
-<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the [PHPUnit Core test suite](<a href="https://make.wordpress">https://make.wordpress</a> .org/core/handbook/testing/automated-testing/writing-phpunit-tests/).</p>
+<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the [PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).</p>
 <pre><code class="language-php">    $postId = $I-&gt;factory()-&gt;post-&gt;create();
     $userId = $I-&gt;factory()-&gt;user-&gt;create(['role' =&gt; 'administrator']);</code></pre>
 
