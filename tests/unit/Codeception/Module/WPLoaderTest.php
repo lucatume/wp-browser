@@ -1,16 +1,17 @@
 <?php
+
 namespace Codeception\Module;
 
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\BufferedOutput;
+use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\Adapters\WP;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
-    use MatchesSnapshots;
+    use SnapshotAssertions;
 
     protected $backupGlobals = false;
     /**
@@ -134,32 +135,13 @@ class WPLoaderTest extends \Codeception\Test\Unit
     public function exitMessagesCombos()
     {
         return [
-            'no_db_module_loadOnly_true' => [false,true],
-            'no_db_module_loadOnly_false' => [false,false],
-            'WPDb_module_loadOnly_true' => ['WPDb',true],
-            'WPDb_module_loadOnly_false' => ['WPDb',false],
-            'Db_module_loadOnly_true' => ['Db',true],
-            'Db_module_loadOnly_false' => ['Db',false],
+            'no_db_module_loadOnly_true' => [false, true],
+            'no_db_module_loadOnly_false' => [false, false],
+            'WPDb_module_loadOnly_true' => ['WPDb', true],
+            'WPDb_module_loadOnly_false' => ['WPDb', false],
+            'Db_module_loadOnly_true' => ['Db', true],
+            'Db_module_loadOnly_false' => ['Db', false],
         ];
-    }
-
-    protected function _before()
-    {
-        $root = vfsStream::setup();
-        $wpFolder = vfsStream::newDirectory('wp');
-        $wpLoadFile = vfsStream::newFile('wp-load.php', 0777);
-        $wpFolder->addChild($wpLoadFile);
-        $root->addChild($wpFolder);
-
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
-        $this->config = [
-            'wpRootFolder' => $root->url() . '/wp',
-            'dbName' => 'someDb',
-            'dbHost' => 'localhost',
-            'dbUser' => 'somePass',
-            'dbPassword' => 'somePass',
-        ];
-        $this->wp = $this->prophesize(WP::class);
     }
 
     /**
@@ -179,6 +161,25 @@ class WPLoaderTest extends \Codeception\Test\Unit
 
         $sut->_wordpressExitHandler($output);
 
-        $this->assertMatchesSnapshot($output->fetch());
+        $this->assertMatchesStringSnapshot($output->fetch());
+    }
+
+    protected function _before()
+    {
+        $root = vfsStream::setup();
+        $wpFolder = vfsStream::newDirectory('wp');
+        $wpLoadFile = vfsStream::newFile('wp-load.php', 0777);
+        $wpFolder->addChild($wpLoadFile);
+        $root->addChild($wpFolder);
+
+        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->config = [
+            'wpRootFolder' => $root->url().'/wp',
+            'dbName' => 'someDb',
+            'dbHost' => 'localhost',
+            'dbUser' => 'somePass',
+            'dbPassword' => 'somePass',
+        ];
+        $this->wp = $this->prophesize(WP::class);
     }
 }

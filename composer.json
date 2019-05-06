@@ -16,6 +16,12 @@
       "role": "Developer"
     }
   ],
+  "repositories": [
+    {
+      "type": "github",
+      "url": "git@github.com:lucatume/codeception-snapshot-assertions.git"
+    }
+  ],
   "require": {
     "php": ">=5.6.0",
     "ext-pdo": "*",
@@ -33,7 +39,7 @@
     "victorjonsson/markdowndocs": "dev-master",
     "erusev/parsedown": "^1.7",
     "squizlabs/php_codesniffer": "^3.4",
-    "spatie/phpunit-snapshot-assertions": "*"
+    "lucatume/codeception-snapshot-assertions": "dev-master"
   },
   "autoload": {
     "psr-4": {
