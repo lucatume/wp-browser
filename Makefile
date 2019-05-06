@@ -95,7 +95,7 @@ ci_before_install:
 
 ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update -a
+	travis_retry composer update -a
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
