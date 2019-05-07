@@ -3,8 +3,10 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.6] 2019-05-07;
 ### Added
-- informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddendly.
+- informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddenly.
 
 ## [2.2.5] 2019-04-22;
 ### Added
@@ -855,7 +857,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.6...HEAD
+[2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6:
 [2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
 [2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
