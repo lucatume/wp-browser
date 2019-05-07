@@ -16,6 +16,8 @@ TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
 PROJECT := $(shell basename ${CURDIR})
 
+.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff
+
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
 	if ( ! defined( 'WP_HOME' ) ) {
@@ -54,19 +56,13 @@ docker/parallel-lint/id:
 lint: docker/parallel-lint/id
 	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
 
-# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
-fix:
-	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf \
-		--standard=/scripts/phpcs.xml \
-		--ignore=data,includes,tad/scripts \
-		/scripts
+cs_sniff:
+	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src
 
-# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
-sniff: fix src
-	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcs \
-		--standard=/scripts/phpcs.xml \
-		--ignore=data,includes,tad/scripts \
-		/scripts -s
+cs_fix:
+	vendor/bin/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests
+
+cs_fix_n_sniff: cs_fix cs_sniff
 
 # Updates Composer dependencies using PHP 5.6.
 composer_update: composer.json
@@ -235,3 +231,8 @@ sync_hosts_entries: remove_hosts_entries
 	sudo -- sh -c "echo '## ${PROJECT} project - start ##' >> /etc/hosts" && \
 	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
 	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"
+
+wp_dump:
+	# Export a dump of WordPressdatabase to the _data folder of the project.
+	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
+		/project/tests/_data/dump.sql

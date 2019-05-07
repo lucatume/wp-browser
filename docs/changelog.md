@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Added
+- informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddendly.
 
 ## [2.2.5] 2019-04-22;
 ### Added

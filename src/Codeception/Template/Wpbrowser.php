@@ -668,7 +668,8 @@ EOF;
     {
         $envFileName = trim($this->envFileName);
         if (strpos($envFileName, '.env') !== 0) {
-            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or ".env.development"';
+            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or '
+                .'".env.development"';
             throw new RuntimeException($message);
         }
     }

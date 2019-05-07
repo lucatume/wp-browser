@@ -4,8 +4,8 @@ namespace tad\WPBrowser\Tests\Support;
 
 function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
-    if(strpos($dbHost,':') >0){
-        list($dbHost, $dbPort) = explode(':',$dbHost);
+    if (strpos($dbHost, ':') >0) {
+        list($dbHost, $dbPort) = explode(':', $dbHost);
         $dbHost = sprintf('%s -P %d', $dbHost, $dbPort);
     }
 
@@ -50,5 +50,5 @@ function getMySQLVersion()
 */
 function normalizeNewLine($str)
 {
-	return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
+    return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
 }
