@@ -155,6 +155,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 			<a href="#dontseepostmetaindatabase">dontSeePostMetaInDatabase</a>
 		</li>
 		<li>
+			<a href="#dontseepostwithtermindatabase">dontSeePostWithTermInDatabase</a>
+		</li>
+		<li>
 			<a href="#dontseetableindatabase">dontSeeTableInDatabase</a>
 		</li>
 		<li>
@@ -863,6 +866,28 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+  
+
+<h3>dontSeePostWithTermInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post to term relation does not exist in the database. The method will check the &quot;term_relationships&quot; table.</p>
+<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+    $nonFiction = $I-&gt;haveTermInDatabase('non-fiction', 'genre');
+    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+    $I-&gt;dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );</code></pre>
+<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
+                                        `term_taxonomy_id`.
+                                        the
+                                        term order.
+                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
   
 
 <h3>dontSeeTableInDatabase</h3>
@@ -2003,14 +2028,20 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p>
-<pre><code class="language-php">    list($fiction) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; [$fiction]]]);
-    $I-&gt;seePostWithTermInDatabase($postId, $fiction);</code></pre>
+<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+    $I-&gt;seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);</code></pre>
+<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
+                                        `term_taxonomy_id`.
+                                        the
+                                        term order.
+                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
-<li><code>int</code> <strong>$term_id</strong> - The term ID.</li>
-<li><code>integer</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to 0.</li></ul>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
   
 
 <h3>seeSiteOptionInDatabase</h3>

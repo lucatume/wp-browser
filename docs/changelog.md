@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.2.6] 2019-05-07;
 ### Added
 - informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddenly.
+- the `WPDb::dontSeePostWithTermInDatabase` method (#230, thanks @jcabot)
+
+### Fixed
+- the `WPDb::seePostWithTermInDatabase` method logic (#230, thanks @jcabot)
+
 
 ## [2.2.5] 2019-04-22;
 ### Added
