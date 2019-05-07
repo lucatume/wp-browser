@@ -86,8 +86,20 @@ An example configuration for the module in this mode is this one:
 ```yaml
   modules:
       enabled:
-          - WPLoader
+          - WPDb # BEFORE the WPLoader one!
+          - WPLoader # AFTER the WPDb one!
       config:
+          WPDb:
+              dsn: 'mysql:host=localhost;dbname=wordpress'
+              user: 'root'
+              password: 'password'
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              waitlock: 10
+              url: 'http://wordpress.localhost'
+              urlReplacement: true
+              tablePrefix: 'wp_'
           WPLoader:
               loadOnly: true 
               wpRootFolder: "/Users/User/www/wordpress"
@@ -98,7 +110,21 @@ An example configuration for the module in this mode is this one:
 ```
 
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
-The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand.
+The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand; when doing so please take care to list, in the suite configuration file `modules` section (see example above) the `WPDb` module **before** the `WPLoader` one.  
+Codeception will initialize the modules **in the same order they are listed in the modules section of the suite configuration file** and the WPLoader module **needs** the database to be populated by the `WPDb` module before it runs!
+As an example this is a correct suite configuration:
+```yaml
+modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+```
 <!--doc-->
 
 
@@ -115,7 +141,7 @@ The module can be used in conjuction with a `WPDb` module to provide the tests w
 
 <hr>
 
-<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the [PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).</p>
+<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/">PHPUnit Core test suite</a>.</p>
 <pre><code class="language-php">    $postId = $I-&gt;factory()-&gt;post-&gt;create();
     $userId = $I-&gt;factory()-&gt;user-&gt;create(['role' =&gt; 'administrator']);</code></pre>
 

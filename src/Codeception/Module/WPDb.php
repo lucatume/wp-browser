@@ -147,6 +147,13 @@ class WPDb extends Db
      */
     protected $isMultisite;
 
+    /**
+     * Whether the module did init already or not.
+     *
+     * @var bool
+     */
+    protected $didInit = false;
+
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
@@ -169,6 +176,7 @@ class WPDb extends Db
         $this->tablePrefix = $this->config['tablePrefix'];
         $this->handlebars = $handlebars ?: new Handlebars();
         $this->tables = $table ?: new Tables();
+        $this->didInit = true;
     }
 
     /**
@@ -364,23 +372,49 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * list($fiction) = $I->haveTermInDatabase('fiction', 'genre');
-     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => [$fiction]]]);
-     * $I->seePostWithTermInDatabase($postId, $fiction);
+     * $fiction = $I->haveTermInDatabase('fiction', 'genre');
+     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+     * $I->seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);
      * ```
      *
-     * @param  int     $post_id    The post ID.
-     * @param  int     $term_id    The term ID.
-     * @param  integer $term_order The order the term applies to the post, defaults to 0.
+     * @param  int          $post_id           The post ID.
+     * @param  int          $term_taxonomy_id  The term `term_id` or `term_taxonomy_id`; if the `$taxonomy` argument is
+     *                                         passed this parameter will be interpreted as a `term_id`, else as a
+     *                                         `term_taxonomy_id`.
+     * @param  int|null     $term_order        The order the term applies to the post, defaults to `null` to not use
+     *                                         the
+     *                                         term order.
+     * @param  string|null  $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
+     *                                         to build a `taxonomy_term_id` from the `term_id`.
+     * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
      */
-    public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    public function seePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null,$taxonomy= null)
     {
+        if ($taxonomy !== null) {
+            $match = $this->grabTermTaxonomyIdFromDatabase([
+                'term_id' => $term_taxonomy_id,
+                'taxonomy' => $taxonomy
+            ]);
+            if(empty($match)){
+               throw new ModuleException(
+                   $this,
+                   "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
+               );
+            }
+            $term_taxonomy_id = $match;
+        }
+
         $tableName = $this->grabPrefixedTableNameFor('term_relationships');
-        $this->dontSeeInDatabase($tableName, [
+        $criteria = [
             'object_id' => $post_id,
-            'term_id' => $term_id,
-            'term_order' => $term_order,
-        ]);
+            'term_taxonomy_id' => $term_taxonomy_id,
+        ];
+
+        if (null !== $term_order) {
+            $criteria['term_order'] = $term_order;
+        }
+
+        $this->seeInDatabase($tableName, $criteria);
     }
 
     /**
@@ -526,10 +560,17 @@ class WPDb extends Db
         if ($hasTerms) {
             foreach ($terms as $taxonomy => $termNames) {
                 foreach ($termNames as $termName) {
+                    // Let's try to match the term by name first.
                     $termId = $this->grabTermIdFromDatabase(['name' => $termName]);
 
+                    // Then by slug.
                     if (empty($termId)) {
                         $termId = $this->grabTermIdFromDatabase(['slug' => $termName]);
+                    }
+
+                    // Then by `term_id`.
+                    if (empty($termId)) {
+                        $termId = $this->grabTermIdFromDatabase(['term_id' => $termName]);
                     }
 
                     if (empty($termId)) {
@@ -1471,7 +1512,7 @@ class WPDb extends Db
      *
      * @param string $key The name of the option to read from the database.
      *
-     * @return mixed|string The value of the option stored in the database, if unserializable the value will be unserialized.
+     * @return mixed|string The value of the option stored in the database, unserialized if serialized.
      */
     public function grabSiteOptionFromDatabase($key)
     {
@@ -3705,6 +3746,16 @@ class WPDb extends Db
     }
 
     /**
+     * Return whether the module did init already or not.
+     *
+     * @return bool Whether the module did init already or not.
+     */
+    public function _didInit()
+    {
+        return $this->didInit;
+    }
+
+    /**
      * Prepares a database dump to be loaded by cleaning it and replacing
      * URLs in it if required.
      *
@@ -3774,5 +3825,57 @@ class WPDb extends Db
         }
 
         parent::loadDumpUsingDriver($databaseKey);
+    }
+
+    /**
+     * Checks that a post to term relation does not exist in the database.
+     *
+     * The method will check the "term_relationships" table.
+     *
+     * @example
+     * ```php
+     * $fiction = $I->haveTermInDatabase('fiction', 'genre');
+     * $nonFiction = $I->haveTermInDatabase('non-fiction', 'genre');
+     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+     * $I->dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );
+     * ```
+     *
+     * @param  int          $post_id           The post ID.
+     * @param  int          $term_taxonomy_id  The term `term_id` or `term_taxonomy_id`; if the `$taxonomy` argument is
+     *                                         passed this parameter will be interpreted as a `term_id`, else as a
+     *                                         `term_taxonomy_id`.
+     * @param  int|null     $term_order        The order the term applies to the post, defaults to `null` to not use
+     *                                         the
+     *                                         term order.
+     * @param  string|null  $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
+     *                                         to build a `taxonomy_term_id` from the `term_id`.
+     * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
+     */
+    public function dontSeePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null,$taxonomy= null){
+        if ($taxonomy !== null) {
+            $match = $this->grabTermTaxonomyIdFromDatabase([
+                'term_id' => $term_taxonomy_id,
+                'taxonomy' => $taxonomy
+            ]);
+            if(empty($match)){
+                throw new ModuleException(
+                    $this,
+                    "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
+                );
+            }
+            $term_taxonomy_id = $match;
+        }
+
+        $tableName = $this->grabPrefixedTableNameFor('term_relationships');
+        $criteria = [
+            'object_id' => $post_id,
+            'term_taxonomy_id' => $term_taxonomy_id,
+        ];
+
+        if (null !== $term_order) {
+            $criteria['term_order'] = $term_order;
+        }
+
+        $this->dontSeeInDatabase($tableName, $criteria);
     }
 }

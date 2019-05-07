@@ -20,22 +20,40 @@ The module provides methods to read, write and update the WordPress database **d
 
 ### Example configuration
 ```yaml
-  modules:
-      enabledr
-          - WPDb
-      config:
-          WPDb:
-              dsn: 'mysql:host=localhost;dbname=wordpress'
-              user: 'root'
-              password: 'password'
-              dump: 'tests/_data/dump.sql'
-              populate: true
-              cleanup: true
-              waitlock: 10
-              url: 'http://wordpress.localhost'
-              urlReplacement: true
-              tablePrefix: 'wp_'
+modules:
+  enabled:
+      - WPDb
+  config:
+      WPDb:
+          dsn: 'mysql:host=localhost;dbname=wordpress'
+          user: 'root'
+          password: 'password'
+          dump: 'tests/_data/dump.sql'
+          populate: true
+          cleanup: true
+          waitlock: 10
+          url: 'http://wordpress.localhost'
+          urlReplacement: true
+          tablePrefix: 'wp_'
 ```
+
+## Using the module with the WPLoader one
+This module is often used in conjunction with the [WPLoader one](WPLoader.md) to use WordPress-defined functions, classes and methods in acceptance or functional tests.  
+The WPLoader module should be [set to only load WordPress](WPLoader.md#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.eanbled` section of the suite configuration file **before** the `WPLoader` one:
+
+```yaml
+modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+```
+This will avoid issues where the `WPLoader` module could `exit`, terminating the test run, due to an inconsistent database state.
 
 <!--doc-->
 
@@ -135,6 +153,9 @@ The module provides methods to read, write and update the WordPress database **d
 		</li>
 		<li>
 			<a href="#dontseepostmetaindatabase">dontSeePostMetaInDatabase</a>
+		</li>
+		<li>
+			<a href="#dontseepostwithtermindatabase">dontSeePostWithTermInDatabase</a>
 		</li>
 		<li>
 			<a href="#dontseetableindatabase">dontSeeTableInDatabase</a>
@@ -845,6 +866,28 @@ The module provides methods to read, write and update the WordPress database **d
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+  
+
+<h3>dontSeePostWithTermInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post to term relation does not exist in the database. The method will check the &quot;term_relationships&quot; table.</p>
+<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+    $nonFiction = $I-&gt;haveTermInDatabase('non-fiction', 'genre');
+    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+    $I-&gt;dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );</code></pre>
+<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
+                                        `term_taxonomy_id`.
+                                        the
+                                        term order.
+                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
   
 
 <h3>dontSeeTableInDatabase</h3>
@@ -1985,14 +2028,20 @@ The module provides methods to read, write and update the WordPress database **d
 <hr>
 
 <p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p>
-<pre><code class="language-php">    list($fiction) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; [$fiction]]]);
-    $I-&gt;seePostWithTermInDatabase($postId, $fiction);</code></pre>
+<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+    $I-&gt;seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);</code></pre>
+<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
+                                        `term_taxonomy_id`.
+                                        the
+                                        term order.
+                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
-<li><code>int</code> <strong>$term_id</strong> - The term ID.</li>
-<li><code>integer</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to 0.</li></ul>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
   
 
 <h3>seeSiteOptionInDatabase</h3>

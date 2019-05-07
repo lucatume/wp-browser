@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.6] 2019-05-07;
+### Added
+- informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddenly.
+- the `WPDb::dontSeePostWithTermInDatabase` method (#230, thanks @jcabot)
+
+### Fixed
+- the `WPDb::seePostWithTermInDatabase` method logic (#230, thanks @jcabot)
+
+
 ## [2.2.5] 2019-04-22;
 ### Added
 - allow opening PHP tags in the code arguments of the `WPFilesystem::havePlugin`, `WPFilesystem::haveMuPlugin` and `WPFilesystem::haveTheme` methods.
@@ -853,7 +862,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.5...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.6...HEAD
+[2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6:
 [2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
 [2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3

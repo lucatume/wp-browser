@@ -22,7 +22,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 {
 
     /**
-     * Whether the abstract nature of methods should be declared in the method documentaion or not.
+     * Whether the abstract nature of methods should be declared in the method documentation or not.
      *
      * @var bool
      */

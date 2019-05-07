@@ -1,0 +1,24 @@
+actor: Wploader_wpdb_interactionTester
+modules:
+    enabled:
+        - \Helper\Wploader_wpdb_interaction
+        - WPLoader
+        - WPDb
+    config:
+        WPDb:
+            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+            user: %DB_USER%
+            password: %DB_PASSWORD%
+            dump: 'tests/_data/wploader-wpdb-dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: '%WP_URL%'
+            tablePrefix: 'wp_'
+        WPLoader:
+            loadOnly: true
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            dbName: %DB_NAME%
+            dbHost: %DB_HOST%
+            dbUser: %DB_USER%
+            dbPassword: %DB_PASSWORD%
