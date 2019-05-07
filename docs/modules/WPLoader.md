@@ -112,6 +112,19 @@ An example configuration for the module in this mode is this one:
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
 The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand; when doing so please take care to list, in the suite configuration file `modules` section (see example above) the `WPDb` module **before** the `WPLoader` one.  
 Codeception will initialize the modules **in the same order they are listed in the modules section of the suite configuration file** and the WPLoader module **needs** the database to be populated by the `WPDb` module before it runs!
+As an example this is a correct suite configuration:
+```yaml
+modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+```
 <!--doc-->
 
 

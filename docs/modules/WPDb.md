@@ -20,22 +20,40 @@ The module provides methods to read, write and update the WordPress database **d
 
 ### Example configuration
 ```yaml
-  modules:
-      enabledr
-          - WPDb
-      config:
-          WPDb:
-              dsn: 'mysql:host=localhost;dbname=wordpress'
-              user: 'root'
-              password: 'password'
-              dump: 'tests/_data/dump.sql'
-              populate: true
-              cleanup: true
-              waitlock: 10
-              url: 'http://wordpress.localhost'
-              urlReplacement: true
-              tablePrefix: 'wp_'
+modules:
+  enabled:
+      - WPDb
+  config:
+      WPDb:
+          dsn: 'mysql:host=localhost;dbname=wordpress'
+          user: 'root'
+          password: 'password'
+          dump: 'tests/_data/dump.sql'
+          populate: true
+          cleanup: true
+          waitlock: 10
+          url: 'http://wordpress.localhost'
+          urlReplacement: true
+          tablePrefix: 'wp_'
 ```
+
+## Using the module with the WPLoader one
+This module is often used in conjunction with the [WPLoader one](WPLoader.md) to use WordPress-defined functions, classes and methods in acceptance or functional tests.  
+The WPLoader module should be [set to only load WordPress](WPLoader.md#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.eanbled` section of the suite configuration file **before** the `WPLoader` one:
+
+```yaml
+modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+```
+This will avoid issues where the `WPLoader` module could `exit`, terminating the test run, due to an inconsistent database state.
 
 <!--doc-->
 
