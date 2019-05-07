@@ -222,7 +222,7 @@ gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 remove_hosts_entries:
 	echo "Removing project ${PROJECT} hosts entries..."
 	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
-	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## $${project} project - end ##$$/d' /etc/hosts
+	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## ${PROJECT} project - end ##$$/d' /etc/hosts
 
 sync_hosts_entries: remove_hosts_entries
 	echo "Adding project ${project} hosts entries..."

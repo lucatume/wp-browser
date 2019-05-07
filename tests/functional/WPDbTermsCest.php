@@ -1,4 +1,5 @@
 <?php
+
 use BaconStringUtils\Slugifier;
 
 class WPDbTermsCest
@@ -237,5 +238,31 @@ class WPDbTermsCest
                 'meta_value' => 'bar_of_' . $i
             ]);
         }
+    }
+
+    /**
+     * It should allow seeing posts with and without terms in database
+     *
+     * @test
+     */
+    public function should_allow_seeing_posts_with_and_without_terms_in_database(FunctionalTester $I)
+    {
+        list($fictionTermId, $fictionTaxTermId) = $I->haveTermInDatabase('fiction', 'genre');
+        list($greenTermId, $greenTaxTermId) = $I->haveTermInDatabase('green', 'color');
+        list($redTermId, $redTaxTermId) = $I->haveTermInDatabase('red', 'color');
+        $postId = $I->havePostInDatabase([
+            'tax_input' => [
+                'genre' => ['fiction'],
+                'color' => ['green']
+            ]
+        ]);
+
+        $I->seePostWithTermInDatabase($postId, $fictionTermId, null, 'genre');
+        $I->seePostWithTermInDatabase($postId, $fictionTaxTermId);
+        $I->seePostWithTermInDatabase($postId, $greenTermId, null, 'color');
+        $I->seePostWithTermInDatabase($postId, $greenTaxTermId);
+
+        $I->dontSeePostWithTermInDatabase($postId, $redTermId, null, 'color');
+        $I->dontSeePostWithTermInDatabase($postId, $redTaxTermId);
     }
 }
