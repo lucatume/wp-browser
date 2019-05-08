@@ -574,7 +574,7 @@ class WPLoader extends Module
     /**
      * Accessor method to get the object storing the factories for things.
      * This methods gives access to the same factories provided by the
-     * [PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
+     * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
      * @example
      * ```php
