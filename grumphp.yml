@@ -1,0 +1,4 @@
+parameters:
+    tasks:
+        make:
+            task: cs_sniff

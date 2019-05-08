@@ -70,8 +70,11 @@ class WPCLI extends Module
     {
         parent::__construct($moduleContainer, $config);
 
-        if (!is_dir($config['path'])) {
-            throw new ModuleConfigException(__CLASS__, 'Specified path [' . $config['path'] . '] is not a directory.');
+        if (! is_dir($config['path'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'Specified path [' . $config['path'] . '] is not a directory.'
+            );
         }
 
         $this->executor = $executor ?: new Executor();
@@ -97,8 +100,12 @@ class WPCLI extends Module
      */
     public function cli($userCommand = 'core version')
     {
-        // Set an environment variable to let client code know the request is coming from the host machine.
-        putenv('WPBROWSER_HOST_REQUEST=1');
+        /**
+         * Set an environment variable to let client code know the request is coming from the host machine.
+         * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
+         */
+        putenv('WPBROWSER_HOST_REQUEST="1"');
+        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
 
         $this->initPaths();
 
@@ -107,7 +114,7 @@ class WPCLI extends Module
         $output = [];
         $this->debugSection('command', $command);
         $status = $this->executor->exec($command, $output);
-        $this->debugSection('output', implode("\n", $output));
+        $this->debugSection('output', implode("\n", (array)$output));
 
         $this->evaluateStatus($output, $status);
 
@@ -137,8 +144,34 @@ class WPCLI extends Module
         } catch (\ReflectionException $e) {
             throw new ModuleException(__CLASS__, 'could not find the path to embedded WPCLI Configurator class');
         }
+
         $this->wpCliRoot = dirname($ref->getFileName()) . '/../../';
-        $this->bootPath  = $this->wpCliRoot . '/php/boot-fs.php';
+
+        $wpCliRootRealPath = realpath($this->wpCliRoot);
+
+        if (! empty($wpCliRootRealPath)) {
+            $this->wpCliRoot = $wpCliRootRealPath;
+        }
+
+        if (!is_dir($this->wpCliRoot)) {
+            throw new ModuleException(
+                $this,
+                "wp-cli root folder ({$this->wpCliRoot}) does not exist."
+            );
+        }
+
+        $this->debugSection('WPCLI Module', 'wp-cli root path: ' . $this->wpCliRoot);
+
+        $this->bootPath = rtrim($this->wpCliRoot, '\\/') . '/php/boot-fs.php';
+
+        if (! file_exists($this->bootPath)) {
+            throw new ModuleException(
+                $this,
+                'Expected the "boot-fs.php" to  be in "' . $this->bootPath . '" but the file does not exist.'
+            );
+        }
+
+        $this->debugSection('WPCLI Module', 'boot-fs.php path: ' . $this->bootPath);
     }
 
     /**

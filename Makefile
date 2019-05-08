@@ -16,7 +16,7 @@ TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
 PROJECT := $(shell basename ${CURDIR})
 
-.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff
+.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -154,8 +154,12 @@ ci_script:
 	codecept run wploadersuite
 	codecept run wpmodule
 
+# Restarts the project containers.
+ci_docker_restart:
+	docker-compose -f docker/${COMPOSE_FILE} restart
+
+# Make sure the host machine can ping the WordPress container
 ensure_pingable_hosts:
-	# Make sure the host machine can ping the WordPress container
 	set -o allexport &&  source .env.testing &&  set +o allexport && \
 	echo $${TEST_HOSTS} | \
 	sed -e $$'s/ /\\\n/g' | while read host; do echo "\nPinging $${host}" && ping -c 1 "$${host}"; done
@@ -232,7 +236,7 @@ sync_hosts_entries: remove_hosts_entries
 	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
 	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"
 
+# Export a dump of WordPressdatabase to the _data folder of the project.
 wp_dump:
-	# Export a dump of WordPressdatabase to the _data folder of the project.
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
