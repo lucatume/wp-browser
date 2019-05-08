@@ -388,18 +388,18 @@ class WPDb extends Db
      *                                         to build a `taxonomy_term_id` from the `term_id`.
      * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
      */
-    public function seePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null,$taxonomy= null)
+    public function seePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null, $taxonomy = null)
     {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([
                 'term_id' => $term_taxonomy_id,
                 'taxonomy' => $taxonomy
             ]);
-            if(empty($match)){
-               throw new ModuleException(
-                   $this,
-                   "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
-               );
+            if (empty($match)) {
+                throw new ModuleException(
+                    $this,
+                    "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
+                );
             }
             $term_taxonomy_id = $match;
         }
@@ -3851,13 +3851,14 @@ class WPDb extends Db
      *                                         to build a `taxonomy_term_id` from the `term_id`.
      * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
      */
-    public function dontSeePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null,$taxonomy= null){
+    public function dontSeePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null, $taxonomy = null)
+    {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([
                 'term_id' => $term_taxonomy_id,
                 'taxonomy' => $taxonomy
             ]);
-            if(empty($match)){
+            if (empty($match)) {
                 throw new ModuleException(
                     $this,
                     "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
