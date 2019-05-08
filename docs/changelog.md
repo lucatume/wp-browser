@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Changed
+- replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
 
 ## [2.2.6] 2019-05-07;
 ### Added
