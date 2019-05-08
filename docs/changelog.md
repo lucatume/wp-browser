@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.7] 2019-05-08;
 ### Changed
 - replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
 
@@ -864,7 +866,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.6...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.7...HEAD
+[2.2.7]: https://github.com/lucatume/wp-browser/compare/2.2.6...2.2.7:
 [2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6:
 [2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
 [2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
