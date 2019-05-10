@@ -96,7 +96,7 @@ ci_before_install:
 
 ci_install:
 	# Update Composer using the host machine PHP version.
-	composer require codeception/codeception:${CODECEPTION_VERSION} -a
+	composer require codeception/codeception:"${CODECEPTION_VERSION}"
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
