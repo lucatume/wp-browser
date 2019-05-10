@@ -17,8 +17,8 @@ matrix:
   allow_failures:
     - php: nightly
   env:
-    CODECEPTION_VERSION="^2.5"
-    CODECEPTION_VERSION="^3.0"
+    - CODECEPTION_VERSION="^2.5"
+    - CODECEPTION_VERSION="^3.0"
 
 services:
   - docker
