@@ -17,7 +17,7 @@ COMPOSE_FILE ?= docker-compose.yml
 CODECEPTION_VERSION ?= "^2.5"
 PROJECT := $(shell basename ${CURDIR})
 
-.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script
+.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script pre_commit
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -241,3 +241,5 @@ sync_hosts_entries: remove_hosts_entries
 wp_dump:
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
+
+pre_commit: lint cs_sniff
