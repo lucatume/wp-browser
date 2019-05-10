@@ -14,6 +14,7 @@ TRAVIS_WP_SUBDOMAIN_2 ?= "test2"
 TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
+CODECEPTION_VERSION ?= "^2.5"
 PROJECT := $(shell basename ${CURDIR})
 
 .PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script
@@ -95,7 +96,7 @@ ci_before_install:
 
 ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update -a
+	composer require codeception/codeception:$${CODECEPTION_VERSION} -a
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
