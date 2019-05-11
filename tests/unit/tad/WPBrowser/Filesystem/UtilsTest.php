@@ -1,7 +1,9 @@
 <?php
 namespace tad\WPBrowser\Filesystem;
 
-class UtilsTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UtilsTest extends TestCase
 {
 
     protected function setUp()
