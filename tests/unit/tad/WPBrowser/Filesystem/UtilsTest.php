@@ -1,26 +1,18 @@
 <?php
 namespace tad\WPBrowser\Filesystem;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class UtilsTest extends TestCase
 {
-
-    protected function setUp()
-    {
-    }
-
-    protected function tearDown()
-    {
-    }
-
     /**
      * @test
      * it should throw if path is not a string
      */
     public function it_should_throw_if_path_is_not_a_string()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         Utils::homeify(23);
     }
 
