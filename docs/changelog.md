@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.8] 2019-05-13;
+### Changed
+- udpated requirement of `codeception/codeception` to include version `3.0`
+- internalized the classes and functions provided by the `lucatume/wp-browser-commons` package
+
 ## [2.2.7] 2019-05-08;
 ### Changed
 - replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
@@ -866,7 +871,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.7...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.8...HEAD
+[2.2.8]: https://github.com/lucatume/wp-browser/compare/2.2.7...2.2.8:
 [2.2.7]: https://github.com/lucatume/wp-browser/compare/2.2.6...2.2.7:
 [2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6:
 [2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
