@@ -44,8 +44,6 @@ class WPTestCase extends \Codeception\Test\Unit
         $wpdb->db_connect();
         ini_set('display_errors', 1);
 
-        parent::_setUpBeforeClass();
-
         $c = self::get_called_class();
         if (!method_exists($c, 'wpSetUpBeforeClass')) {
             self::commit_transaction();
@@ -95,8 +93,6 @@ class WPTestCase extends \Codeception\Test\Unit
 
     public static function _tearDownAfterClass()
     {
-        parent::_tearDownAfterClass();
-
         _delete_all_data();
         self::flush_cache();
 
@@ -172,8 +168,6 @@ class WPTestCase extends \Codeception\Test\Unit
 
     public function _setUp()
     {
-        parent::_setUp();
-
         set_time_limit(0);
 
         if (!self::$ignore_files) {
@@ -423,8 +417,6 @@ class WPTestCase extends \Codeception\Test\Unit
         remove_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
         $this->_restore_hooks();
         wp_set_current_user(0);
-
-        parent::_tearDown();
     }
 
     /**
