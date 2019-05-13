@@ -32,7 +32,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
     {
         $path             = 23;
         $wpconfigContents = $this->contentsProvider();
-        $this->setExpectedException('\Codeception\Exception\ModuleConfigException');
+        $this->expectException( ModuleConfigException::class );
 
         $sut = new WPConfigReplacer($path, $wpconfigContents->reveal());
     }
@@ -45,7 +45,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
     {
         $path             = 23;
         $wpconfigContents = $this->contentsProvider();
-        $this->setExpectedException('\Codeception\Exception\ModuleConfigException');
+        $this->expectException( ModuleConfigException::class );
 
         $sut = new WPConfigReplacer(vfsStream::url('root') . '/wordpress/wp-config.php', $wpconfigContents->reveal());
     }
@@ -58,7 +58,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
     {
         $path             = 23;
         $wpconfigContents = $this->contentsProvider();
-        $this->setExpectedException('\Codeception\Exception\ModuleConfigException');
+        $this->expectException( ModuleConfigException::class );
         vfsStream::setup('writeable', 0222, [ 'wordpress' => [ 'wp-config.php' ] ]);
 
         $sut = new WPConfigReplacer(vfsStream::url('writeable') . '/wordpress/wp-config.php', $wpconfigContents->reveal());
@@ -72,7 +72,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
     {
         $path             = 23;
         $wpconfigContents = $this->contentsProvider();
-        $this->setExpectedException('\Codeception\Exception\ModuleConfigException');
+        $this->expectException( ModuleConfigException::class );
         vfsStream::setup('readable', 0444, [ 'wordpress' => [ 'wp-config.php' ] ]);
 
         $sut = new WPConfigReplacer(vfsStream::url('readable') . '/wordpress/wp-config.php', $wpconfigContents->reveal());
@@ -86,7 +86,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
     {
         $path             = 23;
         $wpconfigContents = $this->contentsProvider();
-        $this->setExpectedException('\Codeception\Exception\ModuleConfigException');
+        $this->expectException( ModuleConfigException::class );
 
         $sut = new WPConfigReplacer(vfsStream::url('root') . '/missing-wp-config', $wpconfigContents->reveal());
     }
