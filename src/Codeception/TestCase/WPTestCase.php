@@ -35,7 +35,7 @@ class WPTestCase extends \Codeception\Test\Unit
 
     protected $backupGlobals = false;
 
-    public static function setUpBeforeClass()
+    public static function _setUpBeforeClass()
     {
         global $wpdb;
 
@@ -93,7 +93,7 @@ class WPTestCase extends \Codeception\Test\Unit
         return $factory;
     }
 
-    public static function tearDownAfterClass()
+    public static function _tearDownAfterClass()
     {
         parent::tearDownAfterClass();
 
@@ -170,7 +170,7 @@ class WPTestCase extends \Codeception\Test\Unit
         }
     }
 
-    public function setUp()
+    public function _setUp()
     {
         parent::setUp();
 
@@ -388,7 +388,7 @@ class WPTestCase extends \Codeception\Test\Unit
     /**
      * After a test method runs, reset any state in WordPress the test method might have changed.
      */
-    public function tearDown()
+    public function _tearDown()
     {
         global $wpdb, $wp_query, $wp;
         $wpdb->query('ROLLBACK');
