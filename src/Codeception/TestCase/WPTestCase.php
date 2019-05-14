@@ -10,8 +10,7 @@ if (!class_exists('TracTickets')) {
 }
 
 // Load the PHPUnit compatibility layer.
-require_once __DIR__.'/../../tad/WPBrowser/phpunit-compat.php';
-
+require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
 // phpcs:enable
 
 
