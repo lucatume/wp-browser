@@ -3,7 +3,7 @@
  * Loads the correct version of the compatible test case depending on the PHPUnit version.
  */
 
-if (class_exists('\PHPUnit\Runner\Version')) {
+if (class_exists('PHPUnit\Runner\Version')) {
     $phpunitSeries = \PHPUnit\Runner\Version::series();
 } elseif (class_exists('PHPUnit_Runner_Version')) {
     $phpunitSeries = PHPUnit_Runner_Version::series();

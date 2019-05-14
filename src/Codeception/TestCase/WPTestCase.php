@@ -1,8 +1,6 @@
 <?php
 namespace Codeception\TestCase;
 
-use PHPUnit\Framework\AssertionFailedError;
-
 // phpcs:disable
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
@@ -10,7 +8,12 @@ if (!class_exists('WP_UnitTest_Factory')) {
 if (!class_exists('TracTickets')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
 }
+
+// Load the PHPUnit compatibility layer.
+require_once __DIR__.'/../../tad/WPBrowser/phpunit-compat.php';
+
 // phpcs:enable
+
 
 /**
  * Defines a basic fixture to run multiple tests.
