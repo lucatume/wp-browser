@@ -55,10 +55,13 @@ docker/parallel-lint/id:
 
 # Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
 lint: docker/parallel-lint/id
-	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
+	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 \
+		--exclude /app/src/tad/WPBrowser/Compat/PHPUnit/Version8 \
+		--colors \
+		/app/src
 
 cs_sniff:
-	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src
+	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
 
 cs_fix:
 	vendor/bin/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests

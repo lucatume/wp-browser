@@ -1,5 +1,4 @@
 <?php
-
 namespace Codeception\TestCase;
 
 use PHPUnit\Framework\AssertionFailedError;
@@ -20,9 +19,9 @@ if (!class_exists('TracTickets')) {
  *
  * Includes utility functions and assertions useful for testing WordPress.
  *
- * All WordPress unit tests should inherit from this class.
+ * All WordPress unit/integrations tests should inherit from this class.
  */
-class WPTestCase extends \Codeception\Test\Unit
+class WPTestCase extends \tad\WPBrowser\Compat\PHPUnit\Testcase
 {
 
     protected static $forced_tickets = array();
@@ -840,7 +839,7 @@ class WPTestCase extends \Codeception\Test\Unit
      *
      * @since 4.2.0
      */
-    protected function assertPostConditions()
+    protected function _assertPostConditions()
     {
         $this->expectedDeprecated();
     }

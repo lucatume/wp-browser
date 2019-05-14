@@ -45,7 +45,8 @@
       "tad\\": "src/tad"
     },
     "files": [
-      "src/tad/WPBrowser/functions.php"
+      "src/tad/WPBrowser/functions.php",
+      "src/tad/WPBrowser/phpunit-compat.php"
     ]
   }
 }
