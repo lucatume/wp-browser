@@ -186,6 +186,11 @@ class WPLoader extends Module
             $this->ensureDbModuleCompat();
         }
 
+        /*
+         * @todo Populate the db if *Db module is available.
+         * @body WPLoader will fail and exit if `loadOnly` and the database is not setup.
+         */
+
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors
