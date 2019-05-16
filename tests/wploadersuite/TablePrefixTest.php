@@ -8,10 +8,10 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 
     public static $otherInstallationPrefix = 'foo_';
 
-    public static function setUpBeforeClass()
+    public static function _setUpBeforeClass()
     {
         self::importOtherPrefixInstallation();
-        parent::setUpBeforeClass();
+        parent::_setUpBeforeClass();
     }
 
     protected static function importOtherPrefixInstallation()
@@ -21,7 +21,7 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 
         if (!importDump($dumpFile, $dbName, $dbUser, $dbPass, $dbHost)) {
             throw new AssertionFailedError("Test failed as MySQL import failed\nCredentials: " .
-                                           print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
+               print_r(self::getDbAccessCredentials(), true) . "\nPath: " . self::getDumpFilePath());
         }
     }
 
