@@ -8,7 +8,7 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 
     public static $otherInstallationPrefix = 'foo_';
 
-    public static function wpSetUpBeforeClass()
+    public static function _setUpBeforeClass()
     {
         self::importOtherPrefixInstallation();
     }
