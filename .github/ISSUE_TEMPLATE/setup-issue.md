@@ -22,7 +22,7 @@ The bootstrap command is the recommended way to scaffold tests.
 **Did you take a look at Codeception and wp-browser documentation?**
 Codeception documentation can be found [here](https://codeception.com/docs/01-Introduction), wp-browser documentation can be found [here](https://wpbrowser.wptestkit.dev/).
 
-Codeception configuration file
+**Codeception configuration file**
 If you were able to complete the setup then paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensible data!
 
 ```yaml
