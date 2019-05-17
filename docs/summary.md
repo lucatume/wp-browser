@@ -4,6 +4,11 @@
     * [Frequently asked questions](faq.md)
     * [Codeception, PHPUnit and wp-browser](codeception-phpunit-and-wpbrowser.md)
     * [Levels of testing](levels-of-testing.md)
+		* [Acceptance Tests](levels-of-testing.md#acceptance-tests)
+		* [Funnctiona Tests](levels-of-testing.md#functional-tests)
+		* [Integration Tests](levels-of-testing.md#integration-tests)
+		* [Unit Tests](levels-of-testing.md#unit-tests)
+		* [WordPress "unit" tests](levels-of-testing.md#wordpress-unit-tests)
 * Getting started
     * [Requirements](requirements.md)
     * [Installation](installation.md)
