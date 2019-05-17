@@ -9,15 +9,26 @@
 
 namespace tad\WPBrowser\Compat\PHPUnit;
 
-use Codeception\Test\Unit;
-
 /**
  * Class Testcase
  *
  * @package tad\WPBrowser\Compat\PHPUnit
  */
-class Testcase extends Unit
+class Testcase extends \Codeception\PHPUnit\TestCase
 {
+	public static function setUpBeforeClass()
+	{
+		if (method_exists(get_called_class(), '_setUpBeforeClass')) {
+			static::_setUpBeforeClass();
+		}
+	}
+
+	public static function tearDownAfterClass()
+	{
+		if (method_exists(get_called_class(), '_tearDownAfterClass')) {
+			static::_tearDownAfterClass();
+		}
+	}
     protected function assertPreConditions(): void
     {
         if (method_exists(get_called_class(), '_assertPreConditions')) {

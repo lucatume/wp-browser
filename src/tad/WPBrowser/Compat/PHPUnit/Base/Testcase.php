@@ -16,7 +16,7 @@ use Codeception\Test\Unit;
  *
  * @package tad\WPBrowser\Compat\PHPUnit
  */
-class Testcase extends Unit
+class Testcase extends \Codeception\PHPUnit\TestCase
 {
 
     protected function assertPreConditions()
