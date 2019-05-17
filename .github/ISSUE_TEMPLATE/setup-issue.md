@@ -1,26 +1,29 @@
 ---
-name: Bug report
-about: You found a bug, damn.
-title: "[BUG]"
-labels: bug
-assignees: lucatume
+name: Setup issue
+about: You've encountered an issue while trying to set up tests
+title: "[SETUP ISSUE]"
+labels: ''
+assignees: ''
 
 ---
 
 **Environment**
-OS: [e.g. Windows, Mac, Linux]  
-PHP version: [e.g. 7.1, 5.6]  
-Installed Codeception version: [e.g. 2.5.0]  
-Installed wp-browser version: [e.g. 2.2.1]  
-WordPress version: [e.g. 5.4]  
-Local development environment: [e.g. PHP built-in server, Valet, MAMP, Local by Flywheel, Docker]  
-WordPress structure and management: [e.g. default, Bedrock, other]  
+OS: [e.g. Windows, Mac, Linux]
+PHP version: [e.g. 7.1, 5.6]
+Installed Codeception version: [e.g. 2.5.0]
+Installed wp-browser version: [e.g. 2.2.1]
+WordPress version: [e.g. 5.4]
+Local development environment: [e.g. PHP built-in server, Valet, MAMP, Local by Flywheel, Docker]
+WordPress structure and management: [e.g. default, Bedrock, other]
 
-**Can you perform the test manually?**
-If applicable, try to walk through the test and execute it manually: can you do it using the browser?
+**Did you use the `codecept init wpbrowser` command?**
+The bootstrap command is the recommended way to scaffold tests.
 
-**Codeception configuration file**  
-Paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensible data!  
+**Did you take a look at Codeception and wp-browser documentation?**
+Codeception documentation can be found [here](https://codeception.com/docs/01-Introduction), wp-browser documentation can be found [here](https://wpbrowser.wptestkit.dev/).
+
+Codeception configuration file
+If you were able to complete the setup then paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensible data!
 
 ```yaml
 actor: Tester
@@ -37,13 +40,10 @@ params:
     - .env.testing
 ```
 
-
 **Suite configuration file**
-Paste, in a fenced YAML block, the content of the suite configuration file; remove any sensible data!
+If you're encountering an issue with a specific suite, please provide its configuration file.
 
 ```yaml
-# Codeception Test Suite Configuration
-
 # suite for acceptance tests.
 # perform tests in browser using the WebDriver or PhpBrowser.
 # If you need both WebDriver and PHPBrowser tests - create a separate suite.
@@ -79,17 +79,14 @@ modules:
             uploads: '/wp-content/uploads'
 ```
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the issue you're encountering**
+A clear and concise description of what the problem is.
 
 **Output**
 If applicable paste here the output of the command that's causing the issue
 
 **To Reproduce**
 Steps to reproduce the behavior.
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
