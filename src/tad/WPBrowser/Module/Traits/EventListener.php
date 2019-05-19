@@ -60,7 +60,7 @@ trait EventListener
         /** @var \Codeception\Application $app */
         global $app;
 
-        if ( ! $app instanceof Application) {
+        if (! $app instanceof Application) {
             throw new ModuleException(
                 $this,
                 'Global `app` object is either empty or not an instance of the \Codeception\Application class.'
@@ -81,7 +81,7 @@ trait EventListener
                 $e->getMessage()
             );
         }
-        if ( ! $dispatcher instanceof EventDispatcher) {
+        if (! $dispatcher instanceof EventDispatcher) {
             throw new ModuleException($this, sprintf(
                 '\\Codeception\\Codecept::$eventDispatcher property is not an instance of %s; value is instead: %s',
                 EventDispatcher::class,

@@ -219,7 +219,7 @@ class WPLoader extends Module
      */
     protected function ensureWPRoot($wpRootFolder)
     {
-        if ( ! file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+        if (! file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
             throw new ModuleConfigException(
                 __CLASS__,
                 "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
@@ -252,15 +252,15 @@ class WPLoader extends Module
     protected function ensureDbModuleCompat()
     {
         $interference_candidates = ['Db', 'WPDb'];
-        $allModules              = $this->moduleContainer->all();
+        $allModules = $this->moduleContainer->all();
         foreach ($interference_candidates as $moduleName) {
-            if ( ! $this->moduleContainer->hasModule($moduleName)) {
+            if (! $this->moduleContainer->hasModule($moduleName)) {
                 continue;
             }
             /** @var \Codeception\Module $module */
-            $module         = $allModules[$moduleName];
+            $module = $allModules[$moduleName];
             $cleanup_config = $module->_getConfig('cleanup');
-            if ( ! empty($cleanup_config)) {
+            if (! empty($cleanup_config)) {
                 throw new ModuleConflictException(
                     __CLASS__,
                     "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: "
@@ -290,7 +290,7 @@ class WPLoader extends Module
 
         require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
 
-        if ( ! empty($this->config['loadOnly'])) {
+        if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();
         } else {
             $this->installAndBootstrapInstallation();
@@ -332,12 +332,12 @@ class WPLoader extends Module
         ];
 
         foreach ($constants as $key => $value) {
-            if ( ! defined($key)) {
+            if (! defined($key)) {
                 define($key, $value);
             }
         }
 
-        if ( ! defined('WP_PLUGIN_DIR') && ! empty($this->config['pluginsFolder'])) {
+        if (! defined('WP_PLUGIN_DIR') && ! empty($this->config['pluginsFolder'])) {
             define('WP_PLUGIN_DIR', $this->getPluginsFolder());
         }
     }
@@ -351,12 +351,12 @@ class WPLoader extends Module
     protected function loadConfigFile($folder = null)
     {
         $folder = $folder ?: codecept_root_dir();
-        $frags  = $this->config['configFile'];
-        $frags  = is_array($frags) ?: [$frags];
+        $frags = $this->config['configFile'];
+        $frags = is_array($frags) ?: [$frags];
         foreach ($frags as $frag) {
-            if ( ! empty($frag)) {
+            if (! empty($frag)) {
                 $configFile = Utils::findHereOrInParent($frag, $folder);
-                if ( ! file_exists($configFile)) {
+                if (! file_exists($configFile)) {
                     throw new ModuleConfigException(
                         __CLASS__,
                         "\nConfig file `{$frag}` could not be found in WordPress root folder or above."
@@ -385,7 +385,7 @@ class WPLoader extends Module
             $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR
                 : realpath($this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']));
 
-            if ( ! file_exists($path)) {
+            if (! file_exists($path)) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "The path to the plugins folder ('{$path}') doesn't exist."
@@ -436,15 +436,15 @@ class WPLoader extends Module
 
         $current_site = new \stdClass;
 
-        if ( ! empty($wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}blogs'"))) {
-            $query                   = "SELECT domain, path  FROM {$wpdb->prefix}blogs WHERE blog_id = 1 AND site_id = 1";
-            $data                    = $wpdb->get_row($query);
-            $current_site->domain    = $data->domain;
-            $current_site->path      = $data->path;
+        if (! empty($wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}blogs'"))) {
+            $query = "SELECT domain, path  FROM {$wpdb->prefix}blogs WHERE blog_id = 1 AND site_id = 1";
+            $data = $wpdb->get_row($query);
+            $current_site->domain = $data->domain;
+            $current_site->path = $data->path;
             $current_site->site_name = ucfirst($data->domain);
         } else {
             $site_url = $wpdb->get_var("SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'");
-            if ( ! empty($site_url)) {
+            if (! empty($site_url)) {
                 $current_site->domain = parse_url($site_url, PHP_URL_HOST);
                 if ($port = parse_url($site_url, PHP_URL_PORT)) {
                     $current_site->domain .= ":{$port}";
@@ -455,7 +455,7 @@ class WPLoader extends Module
             $current_site->path = '/';
         }
         $current_site->site_name = ucfirst($current_site->domain);
-        $current_site->id        = 1;
+        $current_site->id = 1;
     }
 
     protected function installAndBootstrapInstallation()
@@ -463,7 +463,7 @@ class WPLoader extends Module
         $this->setActivePlugins();
         $this->_setActiveTheme();
 
-        if ( ! $this->requiresIsolatedInstallation()) {
+        if (! $this->requiresIsolatedInstallation()) {
             tests_add_filter('muplugins_loaded', [$this, '_loadPlugins']);
             tests_add_filter('wp_install', [$this, '_activatePlugins'], 100);
             tests_add_filter(
@@ -488,7 +488,7 @@ class WPLoader extends Module
             return;
         }
 
-        if ( ! empty($GLOBALS['wp_tests_options']['active_plugins'])) {
+        if (! empty($GLOBALS['wp_tests_options']['active_plugins'])) {
             $GLOBALS['wp_tests_options']['active_plugins'] = array_merge(
                 $GLOBALS['wp_tests_options']['active_plugins'],
                 $this->config['plugins']
@@ -508,15 +508,15 @@ class WPLoader extends Module
             return;
         }
 
-        if ( ! is_array($this->config['theme'])) {
-            $template   = $this->config['theme'];
+        if (! is_array($this->config['theme'])) {
+            $template = $this->config['theme'];
             $stylesheet = $this->config['theme'];
         } else {
-            $template   = reset($this->config['theme']);
+            $template = reset($this->config['theme']);
             $stylesheet = end($this->config['theme']);
         }
 
-        $GLOBALS['wp_tests_options']['template']   = $template;
+        $GLOBALS['wp_tests_options']['template'] = $template;
         $GLOBALS['wp_tests_options']['stylesheet'] = $stylesheet;
 
         codecept_debug('Set template to [' . $template . '] and stylesheet to [' . $stylesheet . ']');
@@ -532,7 +532,7 @@ class WPLoader extends Module
         }
 
         foreach ($this->config['bootstrapActions'] as $action) {
-            if ( ! is_callable($action)) {
+            if (! is_callable($action)) {
                 do_action($action);
             } else {
                 call_user_func($action);
@@ -542,8 +542,8 @@ class WPLoader extends Module
 
     public function _switchTheme()
     {
-        if ( ! empty($this->config['theme'])) {
-            $stylesheet    = is_array($this->config['theme']) ?
+        if (! empty($this->config['theme'])) {
+            $stylesheet = is_array($this->config['theme']) ?
                 end($this->config['theme'])
                 : $this->config['theme'];
             $functionsFile = $this->wp->WP_CONTENT_DIR() . '/themes/' . $stylesheet . '/functions.php';
@@ -585,10 +585,10 @@ class WPLoader extends Module
             return;
         }
         $pluginsPath = $this->getPluginsFolder() . DIRECTORY_SEPARATOR;
-        $plugins     = $this->config['plugins'];
+        $plugins = $this->config['plugins'];
         foreach ($plugins as $plugin) {
             $path = $pluginsPath . $plugin;
-            if ( ! file_exists($path)) {
+            if (! file_exists($path)) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; "
@@ -650,7 +650,7 @@ class WPLoader extends Module
         if ($moduleContainer->hasModule('WPDb') || $moduleContainer->hasModule('Db')) {
             $dbModule = $moduleContainer->hasModule('WPDb') ? 'WPDb' : 'Db';
             $lines [] = '';
-            $lines[]  = "It looks like, alongside the WPLoader module, you are using the {$dbModule} one.";
+            $lines[] = "It looks like, alongside the WPLoader module, you are using the {$dbModule} one.";
             if (empty($this->config['loadOnly'])) {
                 $lines[] = 'Since the `WPLoader::loadOnly` parameter is not set or set to `false` both the '
                            . "WPLoader module and the {$dbModule} one are trying to populate the database.";
