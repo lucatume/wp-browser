@@ -4,6 +4,7 @@ modules:
         - \Helper\Wploader_wpdb_interaction
         - WPLoader
         - WPDb
+        - Asserts
     config:
         WPDb:
             dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
