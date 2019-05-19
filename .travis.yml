@@ -6,7 +6,6 @@ notifications:
   email: false
 
 matrix:
-  fast_finish: true
   include:
     - php: '5.6'
       env: CODECEPTION_VERSION="^2.5"
