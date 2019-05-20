@@ -203,8 +203,7 @@ SQL;
 
         $sut      = $this->make_instance();
         $replaced = $sut->replaceSiteDomainInSqlArray($sql);
-
-        $this->assertInternalType('array', $replaced);
+        
         $this->assertEquals($expectedSql, $replaced);
     }
 
@@ -266,7 +265,6 @@ SQL;
         $sut      = $this->make_instance();
         $replaced = $sut->replaceSiteDomainInMultisiteSqlArray($sql);
 
-        $this->assertInternalType('array', $replaced);
         $this->assertEquals($expectedSql, $replaced);
     }
 

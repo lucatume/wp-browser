@@ -124,7 +124,7 @@ abstract class WPAjaxTestCase extends WPTestCase
         'get-post-thumbnail-html',
     );
 
-    public static function setUpBeforeClass()
+    public static function _setUpBeforeClass()
     {
         if (!defined('DOING_AJAX')) {
             define('DOING_AJAX', true);
@@ -148,7 +148,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      * Set up the test fixture.
      * Override wp_die(), pretend to be ajax, and suppres E_WARNINGs
      */
-    public function setUp()
+    public function _setUp()
     {
         parent::setUp();
 
@@ -171,7 +171,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      * Tear down the test fixture.
      * Reset $_POST, remove the wp_die() override, restore error reporting
      */
-    public function tearDown()
+    public function _tearDown()
     {
         parent::tearDown();
         $_POST = array();
@@ -212,12 +212,12 @@ abstract class WPAjaxTestCase extends WPTestCase
      * Error conditions (no output, just die) will throw <code>WPAjaxDieStopException( $message )</code>
      * You can test for this with:
      * <code>
-     * $this->setExpectedException( 'WPAjaxDieStopException', 'something contained in $message' );
+     * $this->expectException( WPAjaxDieStopException::classs, 'something contained in $message' );
      * </code>
      * Normal program termination (wp_die called at then end of output) will throw <code>WPAjaxDieContinueException(
      * $message )</code> You can test for this with:
      * <code>
-     * $this->setExpectedException( 'WPAjaxDieContinueException', 'something contained in $message' );
+     * $this->expectException( WPAjaxDieContinueException::class, 'something contained in $message' );
      * </code>
      *
      * @param string $message

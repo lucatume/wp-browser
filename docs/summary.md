@@ -20,5 +20,4 @@
 * [Commands](commands.md)
 * [Extensions](extensions.md)
 * [Contributing](contributing.md)
-* [Changelog](changelog.md)
-   
+* [Changelog](https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md)

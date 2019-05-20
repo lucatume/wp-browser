@@ -104,7 +104,6 @@ abstract class WP_Test_REST_Post_Type_Controller_Testcase extends WP_Test_REST_C
 		}
 
 		if ( post_type_supports( $post->post_type, 'editor' ) ) {
-			// TODO: apply content filter for more accurate testing.
 			if ( ! $post->post_password ) {
 				$this->assertEquals( wpautop( $post->post_content ), $data['content']['rendered'] );
 			}
@@ -120,11 +119,8 @@ abstract class WP_Test_REST_Post_Type_Controller_Testcase extends WP_Test_REST_C
 
 		if ( post_type_supports( $post->post_type, 'excerpt' ) ) {
 			if ( empty( $post->post_password ) ) {
-				// TODO: apply excerpt filter for more accurate testing.
 				$this->assertEquals( wpautop( $post->post_excerpt ), $data['excerpt']['rendered'] );
-			} else {
-				// TODO: better testing for excerpts for password protected posts.
-			}
+			} 
 			if ( 'edit' === $context ) {
 				$this->assertEquals( $post->post_excerpt, $data['excerpt']['raw'] );
 			} else {

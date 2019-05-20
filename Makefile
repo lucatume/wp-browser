@@ -14,9 +14,10 @@ TRAVIS_WP_SUBDOMAIN_2 ?= "test2"
 TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
+CODECEPTION_VERSION ?= "^2.5"
 PROJECT := $(shell basename ${CURDIR})
 
-.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script
+.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script pre_commit
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -54,10 +55,13 @@ docker/parallel-lint/id:
 
 # Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
 lint: docker/parallel-lint/id
-	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
+	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 \
+		--exclude /app/src/tad/WPBrowser/Compat/PHPUnit/Version8 \
+		--colors \
+		/app/src
 
 cs_sniff:
-	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src
+	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
 
 cs_fix:
 	vendor/bin/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests
@@ -95,7 +99,7 @@ ci_before_install:
 
 ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update -a
+	composer require codeception/codeception:"${CODECEPTION_VERSION}"
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
@@ -153,6 +157,7 @@ ci_script:
 	codecept run wpfunctional
 	codecept run wploadersuite
 	codecept run wpmodule
+	codecept run wploader_wpdb_interaction
 
 # Restarts the project containers.
 ci_docker_restart:
@@ -240,3 +245,5 @@ sync_hosts_entries: remove_hosts_entries
 wp_dump:
 	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
 		/project/tests/_data/dump.sql
+
+pre_commit: lint cs_sniff

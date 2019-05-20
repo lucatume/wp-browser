@@ -7,9 +7,10 @@ if (!function_exists('wpbrowser_vendor_path')) {
     /**
      * Gets the absolute path to the `vendor` dir optionally appending a path.
      *
-     * @param string $path The relative path.
+     * @param  string  $path  The relative path.
      *
      * @return string The absolute path to the file.
+     * @throws \ReflectionException
      */
     function wpbrowser_vendor_path($path = '')
     {

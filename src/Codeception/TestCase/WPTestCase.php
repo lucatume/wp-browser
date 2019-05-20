@@ -1,8 +1,5 @@
 <?php
-
 namespace Codeception\TestCase;
-
-use PHPUnit\Framework\AssertionFailedError;
 
 // phpcs:disable
 if (!class_exists('WP_UnitTest_Factory')) {
@@ -11,7 +8,11 @@ if (!class_exists('WP_UnitTest_Factory')) {
 if (!class_exists('TracTickets')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
 }
+
+// Load the PHPUnit compatibility layer.
+require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
 // phpcs:enable
+
 
 /**
  * Defines a basic fixture to run multiple tests.
@@ -20,9 +21,9 @@ if (!class_exists('TracTickets')) {
  *
  * Includes utility functions and assertions useful for testing WordPress.
  *
- * All WordPress unit tests should inherit from this class.
+ * All WordPress unit/integrations tests should inherit from this class.
  */
-class WPTestCase extends \Codeception\Test\Unit
+class WPTestCase extends \tad\WPBrowser\Compat\PHPUnit\Testcase
 {
 
     protected static $forced_tickets = array();
@@ -35,7 +36,7 @@ class WPTestCase extends \Codeception\Test\Unit
 
     protected $backupGlobals = false;
 
-    public static function setUpBeforeClass()
+    public static function _setUpBeforeClass()
     {
         global $wpdb;
 
@@ -43,8 +44,6 @@ class WPTestCase extends \Codeception\Test\Unit
         $wpdb->show_errors = true;
         $wpdb->db_connect();
         ini_set('display_errors', 1);
-
-        parent::setUpBeforeClass();
 
         $c = self::get_called_class();
         if (!method_exists($c, 'wpSetUpBeforeClass')) {
@@ -93,10 +92,8 @@ class WPTestCase extends \Codeception\Test\Unit
         return $factory;
     }
 
-    public static function tearDownAfterClass()
+    public static function _tearDownAfterClass()
     {
-        parent::tearDownAfterClass();
-
         _delete_all_data();
         self::flush_cache();
 
@@ -170,10 +167,8 @@ class WPTestCase extends \Codeception\Test\Unit
         }
     }
 
-    public function setUp()
+    public function _setUp()
     {
-        parent::setUp();
-
         set_time_limit(0);
 
         if (!self::$ignore_files) {
@@ -388,7 +383,7 @@ class WPTestCase extends \Codeception\Test\Unit
     /**
      * After a test method runs, reset any state in WordPress the test method might have changed.
      */
-    public function tearDown()
+    public function _tearDown()
     {
         global $wpdb, $wp_query, $wp;
         $wpdb->query('ROLLBACK');
@@ -423,8 +418,6 @@ class WPTestCase extends \Codeception\Test\Unit
         remove_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
         $this->_restore_hooks();
         wp_set_current_user(0);
-
-        parent::tearDown();
     }
 
     /**
@@ -848,7 +841,7 @@ class WPTestCase extends \Codeception\Test\Unit
      *
      * @since 4.2.0
      */
-    protected function assertPostConditions()
+    protected function _assertPostConditions()
     {
         $this->expectedDeprecated();
     }

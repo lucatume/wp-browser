@@ -141,7 +141,7 @@ modules:
 
 <hr>
 
-<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/">PHPUnit Core test suite</a>.</p>
+<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/">Core test suite</a>.</p>
 <pre><code class="language-php">    $postId = $I-&gt;factory()-&gt;post-&gt;create();
     $userId = $I-&gt;factory()-&gt;user-&gt;create(['role' =&gt; 'administrator']);</code></pre>
 

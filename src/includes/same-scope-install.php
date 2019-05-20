@@ -1,8 +1,6 @@
 <?php
 /**
  * Installs WordPress for the purpose of the unit-tests
- *
- * @todo Reuse the init/load code in init.php
  */
 error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 
