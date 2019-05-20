@@ -10,6 +10,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - updated `WPTestCase` to handle PHPUnit v8 compatibility
 - internalized the classes and functions provided by the `lucatume/wp-browser-commons` package
 
+### Fixed
+- initialize the WPLoader module after all other modules initialized when `loadOnly` is `true` to avoid WordPress exiting due to a non-initialized database fixture
+
 ## [2.2.7] 2019-05-08;
 ### Changed
 - replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
