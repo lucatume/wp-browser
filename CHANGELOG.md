@@ -4,10 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [2.2.8] 2019-05-13;
+## [2.2.8] 2019-05-20;
 ### Changed
-- udpated requirement of `codeception/codeception` to include version `3.0`
-- updated `WPTestCase` to handle PHPUnit v8 compatibility
+- updated requirement of `codeception/codeception` to include version `3.0`
+- updated `WPTestCase` to handle PHPUnit version `8.0+` compatibility
 - internalized the classes and functions provided by the `lucatume/wp-browser-commons` package
 
 ### Fixed
