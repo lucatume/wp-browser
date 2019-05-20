@@ -157,6 +157,7 @@ ci_script:
 	codecept run wpfunctional
 	codecept run wploadersuite
 	codecept run wpmodule
+	codecept run wploader_wpdb_interaction
 
 # Restarts the project containers.
 ci_docker_restart:
