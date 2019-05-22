@@ -424,7 +424,10 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $userId = $I->haveUserInDatabase(['])
+     * $I->seeUserInDatabase([
+     *     "user_email" => "test@example.org",
+     *     "user_login" => "login name"
+     * ])
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -510,7 +513,7 @@ class WPDb extends Db
      * // Insert a post with random values in the database.
      * $randomPostId = $I->havePostInDatabase();
      * // Insert a post with specific values in the database.
-     * $I->dontSeeOptionInDatabase([
+     * $I->havePostInDatabase([
      *         'post_type' => 'book',
      *         'post_title' => 'Alice in Wonderland',
      *         'meta_input' => [
@@ -1015,8 +1018,7 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $I->dontHaveOptionInDatabase('posts_per_page');
-     * $I->dontSeeOptionInDatabase('posts_per_page');
+     * $I->seeCommentInDatabase(['comment_ID' => 23]);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -1034,9 +1036,9 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Remove one comment from the database.
+     * // Checks for one comment.
      * $I->dontSeeCommentInDatabase(['comment_ID' => 23]);
-     * // Remove all comments from a user.
+     * // Checks for comments from a user.
      * $I->dontSeeCommentInDatabase(['user_id' => 89]);
      * ```
      *
@@ -1094,10 +1096,7 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Delete a comment `karma` meta.
-     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23]);
-     * // Checks for a specific user meta.
-     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * $I->seeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -1114,9 +1113,9 @@ class WPDb extends Db
      * @example
      * ```php
      * // Asserts a user does not have a 'karma' meta assigned.
-     * $I->dontSeeUserInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * $I->dontSeeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
      * // Asserts no user has any 'karma' meta assigned.
-     * $I->dontSeeUserInDatabase(['meta_key' => 'karma']);
+     * $I->dontSeeUserMetaInDatabase(['meta_key' => 'karma']);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -1254,9 +1253,6 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Asserts a user does not exist in the database.
-     * $I->dontSeeUserInDatabase(['user_login' => 'luca']);
-     * // Asserts a user with email and login is not in the database.
      * $books = $I->grabPrefixedTableNameFor('books');
      * $I->grabAllFromDatabase($books, 'title', ['genre' => 'fiction']);
      * ```
@@ -1306,7 +1302,7 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $I->haveOptionInDatabase('posts_per_page, 23);
+     * $I->haveOptionInDatabase('posts_per_page', 23);
      * $I->haveOptionInDatabase('my_plugin_options', ['key_one' => 'value_one', 'key_two' => 89]);
      * ```
      *
@@ -2218,6 +2214,10 @@ class WPDb extends Db
      * ```php
      * $userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
      * $subscriberId = $I->haveUserInDatabase('test');
+     * $userWithMeta = $I->haveUserInDatabase('luca', 'editor', [
+     *     'user_email' => 'luca@example.org'
+     *     'meta' => ['a meta_key' => 'a_meta_value']
+     * ]);
      * ```
      *
      * @param  string $user_login The user login name.
