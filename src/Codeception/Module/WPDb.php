@@ -1014,6 +1014,7 @@ class WPDb extends Db
 
     /**
      * Checks for a comment in the database.
+     *
      * Will look up the "comments" table.
      *
      * @example

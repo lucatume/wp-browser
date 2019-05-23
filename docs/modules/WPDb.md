@@ -781,9 +781,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a comment is not in the database. Will look up the &quot;comments&quot; table.</p>
-<pre><code class="language-php">    // Remove one comment from the database.
+<pre><code class="language-php">    // Checks for one comment.
     $I-&gt;dontSeeCommentInDatabase(['comment_ID' =&gt; 23]);
-    // Remove all comments from a user.
+    // Checks for comments from a user.
     $I-&gt;dontSeeCommentInDatabase(['user_id' =&gt; 89]);</code></pre>
 <h4>Parameters</h4>
 <ul>
@@ -963,9 +963,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 
 <p>Check that a user meta value is not in the database.</p>
 <pre><code class="language-php">    // Asserts a user does not have a 'karma' meta assigned.
-    $I-&gt;dontSeeUserInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
+    $I-&gt;dontSeeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
     // Asserts no user has any 'karma' meta assigned.
-    $I-&gt;dontSeeUserInDatabase(['meta_key' =&gt; 'karma']);</code></pre>
+    $I-&gt;dontSeeUserMetaInDatabase(['meta_key' =&gt; 'karma']);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -999,10 +999,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns all entries matching a criteria from the database.</p>
-<pre><code class="language-php">    // Asserts a user does not exist in the database.
-    $I-&gt;dontSeeUserInDatabase(['user_login' =&gt; 'luca']);
-    // Asserts a user with email and login is not in the database.
-    $books = $I-&gt;grabPrefixedTableNameFor('books');
+<pre><code class="language-php">    $books = $I-&gt;grabPrefixedTableNameFor('books');
     $I-&gt;grabAllFromDatabase($books, 'title', ['genre' =&gt; 'fiction']);</code></pre>
 <h4>Parameters</h4>
 <ul>
@@ -1670,7 +1667,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts an option in the database.</p>
-<pre><code class="language-php">    $I-&gt;haveOptionInDatabase('posts_per_page, 23);
+<pre><code class="language-php">    $I-&gt;haveOptionInDatabase('posts_per_page', 23);
     $I-&gt;haveOptionInDatabase('my_plugin_options', ['key_one' =&gt; 'value_one', 'key_two' =&gt; 89]);</code></pre>
 <pre><code>    If the option value is an object or an array then the value will be serialized.</code></pre>
 <h4>Parameters</h4>
@@ -1702,7 +1699,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <pre><code class="language-php">    // Insert a post with random values in the database.
     $randomPostId = $I-&gt;havePostInDatabase();
     // Insert a post with specific values in the database.
-    $I-&gt;dontSeeOptionInDatabase([
+    $I-&gt;havePostInDatabase([
             'post_type' =&gt; 'book',
             'post_title' =&gt; 'Alice in Wonderland',
             'meta_input' =&gt; [
@@ -1851,7 +1848,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 
 <p>Inserts a user and its meta in the database.</p>
 <pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase('luca', 'editor', ['user_email' =&gt; 'luca@example.org']);
-    $subscriberId = $I-&gt;haveUserInDatabase('test');</code></pre>
+    $subscriberId = $I-&gt;haveUserInDatabase('test');
+    $userWithMeta = $I-&gt;haveUserInDatabase('luca', 'editor', [
+        'user_email' =&gt; 'luca@example.org'
+        'meta' =&gt; ['a meta_key' =&gt; 'a_meta_value']
+    ]);</code></pre>
 <pre><code>                           and "usermeta" table.</code></pre>
 <h4>Parameters</h4>
 <ul>
@@ -1934,8 +1935,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a comment in the database. Will look up the &quot;comments&quot; table.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveOptionInDatabase('posts_per_page');
-    $I-&gt;dontSeeOptionInDatabase('posts_per_page');</code></pre>
+<pre><code class="language-php">    $I-&gt;seeCommentInDatabase(['comment_ID' =&gt; 23]);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2141,7 +2141,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a user is in the database. The method will check the &quot;users&quot; table.</p>
-<pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase(['])</code></pre>
+<pre><code class="language-php">    $I-&gt;seeUserInDatabase([
+        "user_email" =&gt; "test@example.org",
+        "user_login" =&gt; "login name"
+    ])</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2152,10 +2155,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a user meta value in the database.</p>
-<pre><code class="language-php">    // Delete a comment `karma` meta.
-    $I-&gt;dontSeeCommentMetaInDatabase(['user_id' =&gt; 23]);
-    // Checks for a specific user meta.
-    $I-&gt;dontSeeCommentMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);</code></pre>
+<pre><code class="language-php">    $I-&gt;seeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
