@@ -1,7 +1,9 @@
 <?php
+
 namespace Codeception\Lib\Generator;
 
 use Codeception\Lib\Generator\Shared\Classname;
+use Codeception\TestCase\WPTestCase;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
 
@@ -19,28 +21,31 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
 class {{name}}Test extends {{baseClass}}
 {
 
-    public function setUp()
+    public function setUp(){{voidReturnType}}
     {
-        // before
+        // Before...
         parent::setUp();
 
-        // your set up methods here
+        // Your set up methods here.
     }
 
-    public function tearDown()
+    public function tearDown(){{voidReturnType}}
     {
-        // your tear down methods here
+        // Your tear down methods here.
 
-        // then
+        // Then...
         parent::tearDown();
     }
 
-    // tests
-    public function testMe()
+    // Tests
+    public function test_it_works()
     {
+        \$post = static::factory()->post->create_and_get();
+        
+        \$this->assertInstanceOf(\\WP_Post::class, \$post);
     }
-
 }
+
 EOF;
 
     public function __construct($settings, $name, $baseClass)
@@ -54,9 +59,18 @@ EOF;
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
+        $phpunitSeries = getenv('WPBROWSER_PHPUNIT_SERIES');
+        if (empty($phpunitSeries) && class_exists(WPTestCase::class)) {
+            $phpunitSeries = getenv('WPBROWSER_PHPUNIT_SERIES');
+        }
+        $voidReturnType = version_compare($phpunitSeries, '8.0', '<') ?
+            ''
+            : ': void';
+
         return (new Template($this->template))->place('namespace', $ns)
             ->place('baseClass', $this->baseClass)
             ->place('name', $this->getShortClassName($this->name))
+            ->place('voidReturnType', $voidReturnType)
             ->produce();
     }
 }

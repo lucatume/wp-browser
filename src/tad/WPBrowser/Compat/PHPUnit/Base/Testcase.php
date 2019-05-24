@@ -10,6 +10,7 @@
 namespace tad\WPBrowser\Compat\PHPUnit;
 
 use Codeception\Test\Unit;
+use Codeception\TestCase\WPTestCase;
 
 /**
  * Class Testcase

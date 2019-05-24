@@ -11,7 +11,9 @@ if (class_exists('PHPUnit\Runner\Version')) {
     $phpunitSeries = '5.0';
 }
 
-if (version_compare($phpunitSeries, '8.0.0', '<')) {
+putenv('WPBROWSER_PHPUNIT_SERIES=' . $phpunitSeries);
+
+if (version_compare($phpunitSeries, '8.0', '<')) {
     require_once __DIR__ . '/Compat/PHPUnit/Base/Testcase.php';
 } else {
     require_once __DIR__ . '/Compat/PHPUnit/Version8/Testcase.php';
