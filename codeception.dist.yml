@@ -10,6 +10,14 @@ settings:
     memory_limit: 1024M
 params:
     - .env.testing
+coverage:
+    enabled: true
+    include:
+        - src/*
+    exclude:
+        - src/tad/scripts/*
+        - src/data/*
+        - src/includes/*
 wpFolder: '%WP_ROOT_FOLDER%'
 extensions:
     enabled:
