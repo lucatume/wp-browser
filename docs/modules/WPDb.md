@@ -3,6 +3,108 @@ This module should be used in acceptance and functional tests, see [levels of te
 This module extends the [Db module](https://codeception.com/docs/modules/Db) adding WordPress-specific configuration parameters and methods.  
 The module provides methods to read, write and update the WordPress database **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 
+## Backup your content
+This module, like the [Codeception Db](https://codeception.com/docs/modules/Db) one it extends, by default **will load a databse dump in the database it's using.**  
+This means that **the database contents will be replaced by the dump contents** on each run of a suite using the module.  
+You can set the `populate` and `cleanup` parameters to `false` to prevent this default behavior but it's usually not what you need in an automated test.  
+**Make a backup of any database you're using in tests that contains any information you care about before you run any test!**
+
+## Change the databse used depending on whether you're running tests or not
+The chore of having to plug different databases, or backup them, depending on whether you're manually testing the site or automatically testing can be mitigated switching them automatically depending on the browser user agent or request headers.  
+This module was born to be used in acceptance and functional tests (see [levels of testing for more information](./../levels-of-testing.md)) and will often be coupled with modules like the [WPBrowser](WPBrowser.md) one or the [WPWebDriver](WPWebDriver.md) one.  
+Depending on which of the two modules is being used in the suite there are different ways to automate the "database switching".
+
+### Automatically changing database based on the browser user agent
+If you would like to automate the "switching above" below you will find an example setup.  
+Update the test site `wp-config.php` file from this:
+```php
+define( 'DB_NAME', 'wordpress' );
+```
+ to this:
+```php
+<?php
+if ( 
+    // Custom header.
+    isset( $_SERVER['HTTP_X_TESTING'] )
+    // Custom user agent.
+    || ( isset( $_SERVER['HTTP_USER_AGENT'] ) && $_SERVER['HTTP_USER_AGENT'] === 'wp-browser' )
+    // The env var set by the WPClIr or WordPress modules.
+    || getenv( 'WPBROWSER_HOST_REQUEST' )
+) {
+    // Use the test database if the request comes from a test.
+    define( 'DB_NAME', 'wordpress_test' );
+} else {
+    // Else use the default one.
+    define( 'DB_NAME', 'wordpress' );
+}
+```
+
+If you're using the [WPWebDriver](WPWebDriver.md) module set the user agent in the browser, in this example I'm setting the user agent in Chromedriver:
+```yaml
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - \Helper\Acceptance
+        - WPDb
+        - WPWebDriver
+    config:
+        WPDb:
+            dsn: 'mysql:host=%WP_DB_HOST%;dbname=%WP_DB_NAME%'
+            user: %WP_DB_USER%
+            password: %WP_DB_PASSWORD%
+            dump: tests/_data/dump.sql
+            populate: true
+            cleanup: false
+            url: '%WP_URL%'
+            tablePrefix: %WP_TABLE_PREFIX%
+            urlReplacement: true
+        WPWebDriver:
+            url: '%WP_URL%'
+            adminUsername: '%WP_ADMIN_USERNAME%'
+            adminPassword: '%WP_ADMIN_PASSWORD%'
+            adminPath: '%WP_ADMIN_PATH%'
+            browser: chrome
+            host: localhost
+            port: 4444
+            window_size: false
+            wait: 5
+            capabilities:
+                # Used in more recent releases of Selenium.
+                "goog:chromeOptions":
+                    args: ["--no-sandbox", "--headless", "--disable-gpu", "--user-agent=wp-browser"]
+                # Support the old format for back-compatibility purposes. 
+                "chromeOptions":
+                    args: ["--no-sandbox", "--headless", "--disable-gpu", "--user-agent=wp-browser"]
+```
+
+If you're using the [WPBrowser](WPBrowser.md) module send a specific header in the context of test requests: 
+```yaml
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - \Helper\Acceptance
+        - WPDb
+        - WPBrowser
+    config:
+        WPDb:
+              dsn: 'mysql:host=%DB_HOST%;dbname=%WP_DB_NAME%'
+              user: %WP_DB_USER%
+              password: %WP_DB_PASSWORD%
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              reconnect: false
+              url: '%WP_URL%'
+              tablePrefix: 'wp_'
+        WPBrowser:
+              url: '%WP_URL%'
+              adminUsername: 'admin'
+              adminPassword: 'admin'
+              adminPath: '/wp-admin'
+              headers: 
+                X-Testing: 'wp-browser'
+```
+
 ## Configuration
 
 * `dsn` *required* - the database POD DSN connection details; read more [on PHP PDO documentation](https://secure.php.net/manual/en/ref.pdo-mysql.connection.php).

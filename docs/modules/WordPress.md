@@ -6,6 +6,27 @@ It allows to interact with WordPress on a very high level, using methods like `$
 Due to WordPress reliance on constants, globals and side-effects this module will make requests to WordPress in an insualted manner and reproduce WordPress environment (globals and super-globals) after each response in the tests variable scope.
 The module simulates a user interaction with the site **without Javascript support**, use the [WPWebDriver module](WPWebDriver.md) for any kind of testing that requires Javascript-based interaction with the site.
 
+## Detecting requests coming from this module 
+When it runs this module will set the `WPBROWSER_HOST_REQUEST` environment variable.  
+You can detect and use that information to, as an example, use the correct database in your test site `wp-config.php` file:
+```php
+<?php
+if ( 
+    // Custom header.
+    isset( $_SERVER['HTTP_X_TESTING'] )
+    // Custom user agent.
+    || ( isset( $_SERVER['HTTP_USER_AGENT'] ) && $_SERVER['HTTP_USER_AGENT'] === 'wp-browser' )
+    // The env var set by the WPClIr or WordPress modules.
+    || getenv( 'WPBROWSER_HOST_REQUEST' )
+) {
+    // Use the test database if the request comes from a test.
+    define( 'DB_NAME', 'wordpress_test' );
+} else {
+    // Else use the default one.
+    define( 'DB_NAME', 'wordpress' );
+}
+```
+
 ## Configuration
 * `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
 * `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  

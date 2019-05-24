@@ -3,6 +3,27 @@ This module should be used in acceptance and functional tests to setup, or verif
 This module allows invoking any supported [WP-CLI](https://wp-cli.org/) command, refer to the official site for more information.  
 The module will use **its own** version of wp-cli, not the one installed in the machine running the tests to grant isolation from local settings.  
 
+## Detecting requests coming from this module 
+When it runs this module will set the `WPBROWSER_HOST_REQUEST` environment variable.  
+You can detect and use that information to, as an example, use the correct database in your test site `wp-config.php` file:
+```php
+<?php
+if ( 
+    // Custom header.
+    isset( $_SERVER['HTTP_X_TESTING'] )
+    // Custom user agent.
+    || ( isset( $_SERVER['HTTP_USER_AGENT'] ) && $_SERVER['HTTP_USER_AGENT'] === 'wp-browser' )
+    // The env var set by the WPClIr or WordPress modules.
+    || getenv( 'WPBROWSER_HOST_REQUEST' )
+) {
+    // Use the test database if the request comes from a test.
+    define( 'DB_NAME', 'wordpress_test' );
+} else {
+    // Else use the default one.
+    define( 'DB_NAME', 'wordpress' );
+}
+```
+
 ## Configuration
 
 * `path` *required* - the absolute, or relative, path to the WordPress root folder. This will be mapped to the `--path` argument of the wp-cli binary.  
