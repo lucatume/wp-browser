@@ -5,6 +5,7 @@ namespace tad\WPBrowser\Extension;
 use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use tad\WPBrowser\Filesystem\Filesystem;
 
@@ -30,12 +31,25 @@ class Symlinker extends Extension
      */
     private $filesystem;
 
+    /**
+     * Symlinker constructor.
+     *
+     * @param array $config The configuration contents.
+     * @param array $options An array of options..
+     * @param Filesystem|null $filesystem A wrapper around file system operations.
+     */
     public function __construct($config, $options, Filesystem $filesystem = null)
     {
         $this->filesystem = $filesystem ? $filesystem : new Filesystem();
         parent::__construct($config, $options);
     }
 
+    /**
+     * Symbolically links one or more source folders to one or more destinations.
+     *
+     * @param \Codeception\Event\SuiteEvent $e The event the method is running on.
+     * @throws ExtensionException If there are issues with the source or destination folders.
+     */
     public function symlink(\Codeception\Event\SuiteEvent $e)
     {
         $rootFolder = $this->getRootFolder($e->getSettings());
@@ -55,7 +69,9 @@ class Symlinker extends Extension
     }
 
     /**
-     * @return string
+     * Returns the root folder for a symlink.
+     *
+     * @return string The root folder path.
      */
     protected function getRootFolder(array $settings = null)
     {
@@ -79,9 +95,11 @@ class Symlinker extends Extension
     }
 
     /**
-     * @param $rootFolder
-     * @param array $settings
-     * @return array|mixed|string
+     * Returns the symlink destination folder.
+     *
+     * @param string $rootFolder The root folder path.
+     * @param array $settings The current extension settings.
+     * @return array|string The destination path or an array of destination paths.
      */
     protected function getDestination($rootFolder, array $settings = null)
     {
@@ -99,28 +117,58 @@ class Symlinker extends Extension
         return $destination;
     }
 
+    /**
+     * Unlinks the plugin(s) symbolically linked by the extension.
+     *
+     * @param \Codeception\Event\SuiteEvent $e The suite event the operation is hooking on.
+     */
     public function unlink(\Codeception\Event\SuiteEvent $e)
     {
         $rootFolder = $this->getRootFolder($e->getSettings());
         $destination = $this->getDestination($rootFolder, $e->getSettings());
 
         if ($this->filesystem->file_exists($destination)) {
-            $unlinked = $this->filesystem->unlink($destination);
-            if (!$unlinked) {
-                // let's not kill the suite but let's notify the user
-                $this->writeln('Could not unlink file [' . $destination . '], manual removal is required.');
+            try {
+                $unlinked = $this->filesystem->unlink($destination);
+                if (!$unlinked) {
+                    // Let's not kill the suite but let's notify the user.
+                    $this->writeln(
+                        sprintf(
+                            'Could not unlink file [%s], manual removal is required.',
+                            $destination
+                        )
+                    );
+                }
+            } catch (\Exception $e) {
+                // Let's not kill the suite but let's notify the user.
+                $this->writeln(sprintf(
+                    "There was an error while trying to unlink file [%s], manual removal is required.\nError: %s",
+                    $destination,
+                    $e->getMessage()
+                ));
+                return;
             }
 
             $this->writeln('Unliked plugin folder [' . $destination . ']');
         }
     }
 
+    /**
+     * Initializes the extension, checking its settings.
+     *
+     * @throws ExtensionException If the settings are not valid.
+     */
     public function _initialize()
     {
         parent::_initialize();
         $this->checkRequirements();
     }
 
+    /**
+     * Checks that the extension broader requirements are met.
+     *
+     * @throws ExtensionException If one or more requirements are not satisfied.
+     */
     protected function checkRequirements()
     {
         if (!isset($this->config['mode'])) {
@@ -155,8 +203,10 @@ class Symlinker extends Extension
     }
 
     /**
-     * @param $destination
-     * @throws ExtensionException
+     * Checks the destination folder to make sure it exists and is writable.
+     *
+     * @param string $destination The path to the destination folder.
+     * @throws ExtensionException If the destination folder does not exist or is not writable.
      */
     protected function checkDestination($destination)
     {
@@ -168,6 +218,12 @@ class Symlinker extends Extension
         }
     }
 
+    /**
+     * Checks the root folder specified in the settings to make sure it exists and it's writeable.
+     *
+     * @param string $rootFolder The path to the root folder.
+     * @throws ExtensionException If the root folder does not exist or is not readable.
+     */
     protected function checkRootFolder($rootFolder)
     {
         if (!($this->filesystem->is_dir($rootFolder) && $this->filesystem->is_readable($rootFolder))) {
@@ -179,14 +235,26 @@ class Symlinker extends Extension
     }
 
     /**
-     * @param array $settings
+     * Parses and returns the environments, if any, from the settings.
      *
-     * @return array
+     * @param array $settings The settings array.
+     *
+     * @return array The environment(s) found in the settings, or `default` if none was found.
      */
     protected function getCurrentEnvsFromSettings(array $settings)
     {
         $rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
 
         return preg_split('/\\s*,\\s*/', $rawCurrentEnvs);
+    }
+
+    /**
+     * Sets the output the instance should use.
+     *
+     * @param OutputInterface $output The output the instance should use.
+     */
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
     }
 }
