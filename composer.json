@@ -34,7 +34,7 @@
   },
   "require-dev": {
     "erusev/parsedown": "^1.7",
-    "lucatume/codeception-snapshot-assertions": "^0.1",
+    "lucatume/codeception-snapshot-assertions": "^0.2.0",
     "mikey179/vfsstream": "^1.6",
     "squizlabs/php_codesniffer": "^3.4",
     "victorjonsson/markdowndocs": "dev-master"
