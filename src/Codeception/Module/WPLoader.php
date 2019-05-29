@@ -7,10 +7,12 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use Codeception\Util\Debug;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
+use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\Traits\Delayable;
 use tad\WPBrowser\Module\Traits\EventListener;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
@@ -163,6 +165,13 @@ class WPLoader extends Module
     protected $dbModules;
 
     /**
+     * A list of redirections triggered by WordPress during load.
+     *
+     * @var array.
+     */
+    protected $loadRedirections = [];
+
+    /**
      * @var WP
      */
     private $wp;
@@ -170,10 +179,12 @@ class WPLoader extends Module
     public function __construct(
         ModuleContainer $moduleContainer,
         $config,
-        WP $wp = null
+        WP $wp = null,
+        WPHealthcheck $healthcheck = null
     ) {
         parent::__construct($moduleContainer, $config);
         $this->wp = $wp ? $wp : new WP();
+        $this->healthcheck = $healthcheck ? $healthcheck : new WPHealthcheck();
     }
 
     /**
@@ -210,21 +221,29 @@ class WPLoader extends Module
     }
 
     /**
-     * @param  string  $wpRootFolder
+     * @param string $wpRootFolder
+     * @param bool $throw Whether to throw an exception on invalid path or return a value.
      *
-     * @throws \Codeception\Exception\ModuleConfigException If the specified
-     *                                                      WordPress root
-     *                                                      folder is not found
-     *                                                      or not valid.
+     * @return bool If `$throw` if `false` then this will be the value of j:w
+     *
+     *
+     * @throws \Codeception\Exception\ModuleConfigException If the specified WordPress root folder is not found or not
+     *                                                      valid.
      */
-    protected function ensureWPRoot($wpRootFolder)
+    protected function ensureWPRoot($wpRootFolder, $throw = true)
     {
         if (! file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+            if (!$throw) {
+                return false;
+            }
+
             throw new ModuleConfigException(
                 __CLASS__,
                 "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
             );
         }
+
+        return true;
     }
 
     /**
@@ -294,6 +313,13 @@ class WPLoader extends Module
             $this->bootstrapWP();
         } else {
             $this->installAndBootstrapInstallation();
+        }
+
+        if (Debug::isEnabled()) {
+            codecept_debug('WordPress status: ' . json_encode(
+                $this->healthcheck->run(),
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            ));
         }
     }
 
@@ -402,9 +428,9 @@ class WPLoader extends Module
     {
         $this->ensureServerVars();
 
-        register_shutdown_function([$this, '_wordpressExitHandler']);
+        $this->setupLoadWatchers();
         include_once Utils::untrailslashit($this->wpRootFolder) . '/wp-load.php';
-        $this->wpDidLoadCorrectly = true;
+        $this->removeLoadWatchers();
 
         $this->setupCurrentSite();
         $this->factoryStore = new FactoryStore();
@@ -546,7 +572,7 @@ class WPLoader extends Module
             $stylesheet = is_array($this->config['theme']) ?
                 end($this->config['theme'])
                 : $this->config['theme'];
-            $functionsFile = $this->wp->WP_CONTENT_DIR() . '/themes/' . $stylesheet . '/functions.php';
+            $functionsFile = $this->wp->getWpContentDir() . '/themes/' . $stylesheet . '/functions.php';
             if (file_exists($functionsFile)) {
                 require_once($functionsFile);
             }
@@ -626,7 +652,7 @@ class WPLoader extends Module
      *
      * @param  OutputInterface|null  $output  An output stream.
      */
-    public function _wordpressExitHandler(OutputInterface $output = null)
+    public function _wordPressExitHandler(OutputInterface $output = null)
     {
         if ($this->wpDidLoadCorrectly) {
             return;
@@ -634,8 +660,17 @@ class WPLoader extends Module
 
         $output = $output ? $output : new ConsoleOutput();
 
+        if (Debug::isEnabled()) {
+            codecept_debug(
+                'WordPress status: ' . json_encode(
+                    $this->healthcheck->run(),
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                )
+            );
+        }
+
         $lines = [
-            'The WPLoader module could not correctly load WordPress.',
+            'WPLoader could not correctly load WordPress.',
             'If you do not see any other output beside this, probably a call to `die` or `exit` might have been'
             . ' made while loading WordPress files.',
             'There are a number of reasons why this might happen and the most common is an empty, incomplete or'
@@ -643,6 +678,7 @@ class WPLoader extends Module
             '',
             'E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain '
             . 'multisite tables.',
+            'Run the same test command again activating debug (-vvv) to run a WordPress status check.'
         ];
 
         $moduleContainer = $this->moduleContainer;
@@ -697,5 +733,32 @@ class WPLoader extends Module
         ));
 
         $this->_loadWordpress();
+    }
+
+    public function _wordPressRedirectHandler($location, $status)
+    {
+        $this->loadRedirections [$location] = $status;
+
+        codecept_debug(sprintf(
+            'WordPress redirected to [%s] with status [%s] before exiting.',
+            $location,
+            $status
+        ));
+
+        return $location;
+    }
+
+    protected function setupLoadWatchers()
+    {
+        register_shutdown_function([$this, '_wordPressExitHandler']);
+        tests_add_filter('wp_redirect', [$this, '_wordPressRedirectHandler'], 0, 2);
+        $this->loadRedirections = [];
+    }
+
+    protected function removeLoadWatchers()
+    {
+        $this->wpDidLoadCorrectly = true;
+        remove_filter('wp_redirect', [$this, '_wordPressRedirectHandler'], 0);
+        $this->loadRedirections = [];
     }
 }

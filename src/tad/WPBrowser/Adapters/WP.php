@@ -1,9 +1,21 @@
 <?php
+/**
+ * A wrapper around common WordPress functions.
+ *
+ * @package tad\WPBrowser\Adapters
+ */
 
 namespace tad\WPBrowser\Adapters;
 
+use tad\WPBrowser\Traits\WPHealthcheck;
+
+/**
+ * Class WP
+ * @package tad\WPBrowser\Adapters
+ */
 class WP
 {
+
     public function locate_template($template_names, $load = false, $require_once = true)
     {
         return locate_template($template_names, $load, $require_once);
@@ -57,10 +69,5 @@ class WP
     public function apply_filters($tag, $value)
     {
         return do_action($tag, $value);
-    }
-
-    public function WP_CONTENT_DIR()
-    {
-        return defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR : '';
     }
 }

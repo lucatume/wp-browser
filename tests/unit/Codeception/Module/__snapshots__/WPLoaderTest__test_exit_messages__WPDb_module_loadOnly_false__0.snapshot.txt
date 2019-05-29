@@ -1,8 +1,9 @@
-The WPLoader module could not correctly load WordPress.
+WPLoader could not correctly load WordPress.
 If you do not see any other output beside this, probably a call to `die` or `exit` might have been made while loading WordPress files.
 There are a number of reasons why this might happen and the most common is an empty, incomplete or incoherent database status.
 
 E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain multisite tables.
+Run the same test command again activating debug (-vvv) to run a WordPress status check.
 
 It looks like, alongside the WPLoader module, you are using the WPDb one.
 Since the `WPLoader::loadOnly` parameter is not set or set to `false` both the WPLoader module and the WPDb one are trying to populate the database.
