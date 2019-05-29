@@ -11,6 +11,6 @@ See [Composer installation guide](https://getcomposer.org/doc/00-intro.md#instal
 
 ### WordPress, MySQL, Apache/Nginx
 wp-browser will **not** download, install and configure WordPress for you.  
-It will also **no** download, install and configure MySQL, Apache, Nginx or any other technology required by a fully functional WordPress installation for you.  
-You need to set up a local WordPress installation on your own; you can use [your preferred solution to do it](faq.md/$do-i-need-to-use-a-specific-local-development-environment-to-use-wp-browser).
+It will also **not** download, install and configure MySQL, Apache, Nginx or any other technology required by a fully functional WordPress installation for you.  
+You need to set up a local WordPress installation on your own; you can use [your preferred solution to do it](faq.md/do-i-need-to-use-a-specific-local-development-environment-to-use-wp-browser).
 In the documentation I will show automated ways to do this but, for most projects, that's not the best solution.
