@@ -70,4 +70,21 @@ class WP
     {
         return do_action($tag, $value);
     }
+
+    /**
+     * Returns the absolute path to the content directory.
+     *
+     * @return string The absolute path to the content directory.
+     */
+    public function getWpContentDir()
+    {
+        if (defined('WP_CONTENT_DIR')) {
+            return WP_CONTENT_DIR;
+        }
+        if (defined('ABSPATH')) {
+            return ABSPATH . 'wp-content';
+        }
+
+        return '';
+    }
 }

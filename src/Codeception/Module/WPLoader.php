@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
-use tad\WPBrowser\Module\Traits\Delayable;
 use tad\WPBrowser\Module\Traits\EventListener;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 
@@ -170,6 +169,12 @@ class WPLoader extends Module
      * @var array.
      */
     protected $loadRedirections = [];
+    /**
+     * An instance of the WordPress healthcheck provider object.
+     *
+     * @var WPHealthcheck
+     */
+    protected $healthcheck;
 
     /**
      * @var WP
