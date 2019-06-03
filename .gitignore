@@ -21,4 +21,7 @@ docs/node_modules
 docs/_book
 tests/_support/_generated
 composer.lock
+
+# Some local vim files
 tags
+*.swp

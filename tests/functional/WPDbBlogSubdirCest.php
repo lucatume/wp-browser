@@ -185,7 +185,7 @@ class WPDbBlogSubdirCest
         $tablePrefix = $I->grabBlogTablePrefix($blogId);
         $expectedTables = array_map(function ($table) use ($tablePrefix) {
             return $tablePrefix . $table;
-        }, Tables::newBlogTables());
+        }, Tables::blogTables());
         sort($expectedTables);
         $I->assertEquals($expectedTables, $blogTables);
         $I->assertFileExists($I->getBlogUploadsPath($blogId));

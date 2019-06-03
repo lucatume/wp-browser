@@ -20,6 +20,7 @@
     "php": ">=5.6.0",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
+    "ext-json": "*",
     "antecedent/patchwork": "^2.0",
     "bacon/bacon-string-utils": "~1.0",
     "codeception/codeception": "^2.5 || ^3.0",
@@ -34,7 +35,7 @@
   },
   "require-dev": {
     "erusev/parsedown": "^1.7",
-    "lucatume/codeception-snapshot-assertions": "^0.2.0",
+    "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
     "squizlabs/php_codesniffer": "^3.4",
     "victorjonsson/markdowndocs": "dev-master"
@@ -47,5 +48,10 @@
     "files": [
       "src/tad/WPBrowser/functions.php"
     ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "tad\\Test\\" : "tests/_support/lib"
+    }
   }
 }

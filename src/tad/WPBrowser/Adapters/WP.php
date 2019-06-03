@@ -1,9 +1,21 @@
 <?php
+/**
+ * A wrapper around common WordPress functions.
+ *
+ * @package tad\WPBrowser\Adapters
+ */
 
 namespace tad\WPBrowser\Adapters;
 
+use tad\WPBrowser\Traits\WPHealthcheck;
+
+/**
+ * Class WP
+ * @package tad\WPBrowser\Adapters
+ */
 class WP
 {
+
     public function locate_template($template_names, $load = false, $require_once = true)
     {
         return locate_template($template_names, $load, $require_once);
@@ -59,8 +71,20 @@ class WP
         return do_action($tag, $value);
     }
 
-    public function WP_CONTENT_DIR()
+    /**
+     * Returns the absolute path to the content directory.
+     *
+     * @return string The absolute path to the content directory.
+     */
+    public function getWpContentDir()
     {
-        return defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR : '';
+        if (defined('WP_CONTENT_DIR')) {
+            return WP_CONTENT_DIR;
+        }
+        if (defined('ABSPATH')) {
+            return ABSPATH . 'wp-content';
+        }
+
+        return '';
     }
 }
