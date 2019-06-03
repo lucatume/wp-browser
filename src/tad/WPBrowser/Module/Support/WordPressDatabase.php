@@ -47,16 +47,18 @@ class WordPressDatabase
      * Checks, by attempting it, if the database credentials defined in WordPress constants allow establishing a
      * database connection.
      *
+     * @param bool $force Whether to retry the connection entirely or use the cached value.
+     *
      * @return bool Whether the database credentials defined in WordPress constants allow establishing a database
      *              connection or not.
      */
-    public function checkDbConnection()
+    public function checkDbConnection($force = false)
     {
-        if ($this->dbConnectionError !== null) {
+        if (!$force && $this->dbConnectionError !== null) {
             return false;
         }
 
-        if ($this->pdo instanceof \PDO) {
+        if (!$force && $this->pdo instanceof \PDO) {
             return true;
         }
 
@@ -74,7 +76,7 @@ class WordPressDatabase
         $dbUser = $this->constants->constant('DB_USER', null);
         $dbPassword = $this->constants->constant('DB_PASSWORD', null);
 
-        if (!isset($dbUser, $dbPassword)) {
+        if (!isset($dbUser)) {
             $this->dbConnectionError = 'DB_USER and/or DB_PASSWORD are not set: ' . json_encode([
                     'DB_USER' => $dbUser,
                     'DB_PASSWORD' => $dbPassword
@@ -87,6 +89,9 @@ class WordPressDatabase
             $this->dbConnectionError = $e->getMessage();
             return false;
         }
+
+        $this->dbConnectionError = null;
+
         return true;
     }
 

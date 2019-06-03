@@ -5,7 +5,7 @@ Easy acceptance, functional, integration and unit testing for WordPress plugins,
 [![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
 
 wp-browser provides a [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") based solution to
- test WordPress plugins, themes and whole sitest at all levels of testing.  
+ test WordPress plugins, themes and whole sites at all levels of testing.  
 
 [Find out more here in the documentation](https://wpbrowser.wptestkit.dev).
 
@@ -22,8 +22,8 @@ Answer the questions and you will be ready to test your project. Find out more a
 documentation](https://wpbrowser.wptestkit.dev).
 
 ## Usage
-The project provides a number of modules to easy the testing of WordPress projects; you can find out more in the 
-[modules section of the documentation](https://wpbrowser.wptestkit.dev/modules).  
+The project provides a number of modules to ease the testing of WordPress projects; you can find out more in the 
+[modules section of the documentation](https://wpbrowser.wptestkit.dev/summary/modules).  
 Here's a quick example acceptance test you can write:
 
 ```php

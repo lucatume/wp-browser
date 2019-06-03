@@ -23,7 +23,7 @@ require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
  *
  * All WordPress unit/integrations tests should inherit from this class.
  */
-class WPTestCase extends \tad\WPBrowser\Compat\PHPUnit\Testcase
+class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 {
 
     protected static $forced_tickets = array();

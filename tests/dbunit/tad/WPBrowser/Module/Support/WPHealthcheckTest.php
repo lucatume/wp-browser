@@ -165,7 +165,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             ->will(function (array $args) {
                 return $args[0];
             });
-        $database->checkDbConnection()->willReturn(false);
+        $database->checkDbConnection(Argument::cetera())->willReturn(false);
         $database->getDbConnectionError()->willReturn('Cannot connect.');
         $this->database = $database->reveal();
         $sut = $this->make_instance();
@@ -346,7 +346,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
         $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
-        $database->checkDbConnection()->willReturn(true);
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->getOption('template', false)->willReturn('foo-bar');
@@ -380,7 +380,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
         $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
-        $database->checkDbConnection()->willReturn(true);
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->getOption('template', false)->willReturn('twentynineteen');
@@ -410,7 +410,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
         $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
-        $database->checkDbConnection()->willReturn(true);
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('');
         $database->getOption('template', false)->willReturn('twentynineteen');
@@ -442,7 +442,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
         $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
-        $database->checkDbConnection()->willReturn(true);
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->query(Argument::containingString('FROM wp_blogs'))->willReturn(false);
@@ -475,7 +475,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
         $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
-        $database->checkDbConnection()->willReturn(true);
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://foo.bar');
         $realDb = new WordPressDatabase($this->constants);

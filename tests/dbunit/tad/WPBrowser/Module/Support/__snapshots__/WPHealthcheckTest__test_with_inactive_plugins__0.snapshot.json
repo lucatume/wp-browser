@@ -28,7 +28,7 @@
             "stylesheet": "twentynineteen",
             "twentynineteen directory": "wp-content/themes/twentynineteen"
         },
-        "Must-use plugins health-check:": "mu - plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
             "Inactive plugin [test]": "../../../tests/_data/plugins/test",
             "Inactive plugin [mu-plugin-1]": "../../../tests/_data/plugins/mu-plugin-1"
