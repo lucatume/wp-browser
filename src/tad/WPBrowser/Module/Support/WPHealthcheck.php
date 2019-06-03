@@ -110,8 +110,8 @@ class WPHealthcheck
         WordPressDirectories $directories = null
     ) {
         $this->constants = $constants ? $constants : new Constants();
-        $this->database = $database ? $database : new WordPressDatabase();
-        $this->directories = $directories ? $directories : new WordPressDirectories();
+        $this->database = $database ? $database : new WordPressDatabase($this->constants);
+        $this->directories = $directories ? $directories : new WordPressDirectories($this->constants);
     }
 
     /**
