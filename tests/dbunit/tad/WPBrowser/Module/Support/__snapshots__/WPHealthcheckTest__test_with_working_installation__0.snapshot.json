@@ -1,0 +1,38 @@
+{
+    "constants": {
+        "ABSPATH": "vendor/wordpress/wordpress/",
+        "WP_DEFAULT_THEME": "not set",
+        "WP_CONTENT_DIR": "not set",
+        "WP_PLUGIN_DIR": "not set",
+        "WP_HOME": "http://wp.test",
+        "WP_SITEURL": "http://wp.test",
+        "WPMU_PLUGIN_DIR": "not set",
+        "DB_HOST": "127.0.0.1:3307",
+        "DB_NAME": "test_site",
+        "DB_PASSWORD": "",
+        "DB_USER": "root",
+        "CUSTOM_USER_TABLE": "not set",
+        "CUSTOM_USER_META_TABLE": "not set"
+    },
+    "globals": {
+        "table_prefix": "wp_"
+    },
+    "checks": {
+        "Site is multisite": "no",
+        "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
+        "Database connection works": "Yes, connection successful.",
+        "Database structure as expected": "Yes, as expected.",
+        "Blog installed": "Yes, blog is installed.",
+        "Theme :": {
+            "template": "twentynineteen",
+            "stylesheet": "twentynineteen",
+            "twentynineteen directory": "wp-content/themes/twentynineteen"
+        },
+        "Must-use plugins health-check:": "mu - plugins directory(wp-content/mu-plugins) does not exist.",
+        "Plugins health-check:": {
+            "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] found.",
+            "Inactive plugin [test]": "wp-content/plugins/test",
+            "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1"
+        }
+    }
+}

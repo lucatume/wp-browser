@@ -1,0 +1,5 @@
+actor: DbunitTester
+modules:
+    enabled:
+        - Asserts
+        - \Helper\Dbunit

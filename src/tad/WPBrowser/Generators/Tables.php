@@ -24,13 +24,24 @@ class Tables
      */
     public function __construct(Handlebars $handlebars = null)
     {
-        $this->handlebars   = $handlebars ?: new Handlebars();
+        $this->handlebars = $handlebars ?: new Handlebars();
         $this->templatesDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates';
     }
 
-    public static function newBlogTables()
+    /**
+     * Returns a list of default table names for a single site WordPress installation.
+     *
+     * @param string $table_prefix The table prefix to prepend to each blog table name.
+     * @param int $blog_id The ID of the blog to return the table names for.
+     *
+     * @return array The list of tables, not prefixed with the table prefix.
+     */
+    public static function blogTables($table_prefix = '', $blog_id = 1)
     {
-        return [
+        $blog_id = (int)$blog_id < 2 ? '' : $blog_id . '_';
+        return array_map(static function ($table) use ($table_prefix, $blog_id) {
+            return sprintf('%s%s%s', $table_prefix, $blog_id, $table);
+        }, [
             'commentmeta',
             'comments',
             'links',
@@ -41,12 +52,12 @@ class Tables
             'term_taxonomy',
             'termmeta',
             'terms'
-        ];
+        ]);
     }
 
     public function getAlterTableQuery($table, $prefix)
     {
-        $data = [ 'operation' => 'ALTER TABLE', 'prefix' => $prefix ];
+        $data = ['operation' => 'ALTER TABLE', 'prefix' => $prefix];
         return in_array($table, $this->alterableTables()) ? $this->renderQuery($table, $data) : '';
     }
 
@@ -73,50 +84,63 @@ class Tables
 
     private function tables()
     {
-        return array_merge([ ], $this->multisiteTables());
+        return array_merge([], $this->multisiteTables());
     }
 
-    public static function multisiteTables()
+    /**
+     * Returns a list of additional table names that will be created in default multi-site installation.
+     *
+     * This list does not include single site installation tables.
+     *
+     * @param string $table_prefix The table prefix to prepend to each table name.
+     *
+     * @return array The list of tables, not prefixed with the table prefix.
+     *
+     * @see Tables::blogTables()
+     */
+    public static function multisiteTables($table_prefix = '')
     {
-        return [
+        return array_map(static function ($table) use ($table_prefix) {
+            return $table_prefix . $table;
+        }, [
             'blogs',
             'blog_versions',
             'sitemeta',
             'site',
             'signups',
             'registration_log'
-        ];
+        ]);
     }
 
     private function templates($table)
     {
         $map = [
-            'blogs'            => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'blogs.handlebars' ));
+            'blogs' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('blogs.handlebars'));
             },
             'drop-blog-tables' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'drop-blog-tables.handlebars' ));
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('drop-blog-tables.handlebars'));
             },
-            'blog_versions'    => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'blog_versions.handlebars' ));
+            'blog_versions' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('blog_versions.handlebars'));
             },
             'registration_log' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'registration_log.handlebars' ));
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('registration_log.handlebars'));
             },
-            'signups'          => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'signups.handlebars' ));
+            'signups' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('signups.handlebars'));
             },
-            'site'             => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'site.handlebars' ));
+            'site' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('site.handlebars'));
             },
-            'sitemeta'         => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'site_meta.handlebars' ));
+            'sitemeta' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('site_meta.handlebars'));
             },
-            'users'            => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'users.handlebars' ));
+            'users' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('users.handlebars'));
             },
-            'new-blog'         => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ( 'new-blog.handlebars' ));
+            'new-blog' => function () {
+                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('new-blog.handlebars'));
             }
         ];
 
@@ -125,17 +149,17 @@ class Tables
 
     public function getCreateTableQuery($table, $prefix)
     {
-        $data = [ 'operation' => 'CREATE TABLE IF NOT EXISTS', 'prefix' => $prefix ];
+        $data = ['operation' => 'CREATE TABLE IF NOT EXISTS', 'prefix' => $prefix];
         return $this->renderQuery($table, $data);
     }
 
     public function getBlogScaffoldQuery($prefix, $blogId, array $data)
     {
         $template = $this->templates('new-blog');
-        $data     = array_merge([
-            'prefix'  => $prefix,
+        $data = array_merge([
+            'prefix' => $prefix,
             'blog_id' => $blogId,
-            'scheme'  => 'http'
+            'scheme' => 'http'
         ], $data);
 
         return $this->handlebars->render($template, $data);
@@ -144,8 +168,8 @@ class Tables
     public function getBlogDropQuery($tablePrefix, $blogId)
     {
         $template = $this->templates('drop-blog-tables');
-        $data     = [
-            'prefix'  => $tablePrefix,
+        $data = [
+            'prefix' => $tablePrefix,
             'blog_id' => $blogId
         ];
 
