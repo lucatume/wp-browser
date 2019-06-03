@@ -1,42 +1,38 @@
 <?php
 /**
- * An extension of the PHPUnit TestCase wrapper provided by the `codeception/phpunit-wrapper` package to cover all
- * methods required by the test cases to work.
+ * An extension of Codeception Unit TestCase to cover all methods required by the test cases to work.
  * This specific file will be loaded when the loaded version of PHPUnit is >= 8.0.
  *
- * @package tad\WPBrowser\Compat\PHPUnit
+ * @package tad\WPBrowser\Compat\Codeception
  */
 
-namespace tad\WPBrowser\Compat\PHPUnit;
+namespace tad\WPBrowser\Compat\Codeception;
 
 /**
- * Class Testcase
- *
- * @package tad\WPBrowser\Compat\PHPUnit
+ * Class Unit
+ * @package tad\WPBrowser\Compat\Codeception
  */
-class Testcase extends \Codeception\PHPUnit\TestCase
+class Unit extends \Codeception\Test\Unit
 {
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass() : void
     {
         if (method_exists(get_called_class(), '_setUpBeforeClass')) {
             static::_setUpBeforeClass();
         }
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass() : void
     {
         if (method_exists(get_called_class(), '_tearDownAfterClass')) {
             static::_tearDownAfterClass();
         }
     }
-
     protected function assertPreConditions(): void
     {
         if (method_exists(get_called_class(), '_assertPreConditions')) {
             static::_assertPreConditions();
         }
     }
-
     protected function assertPostConditions(): void
     {
         if (method_exists(get_called_class(), '_assertPostConditions')) {

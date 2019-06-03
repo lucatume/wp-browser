@@ -76,11 +76,7 @@ composer_update: composer.json
 phpstan: src
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
-ci_before_install:
-	# Clone WordPress in the vendor folder if not there already.
-	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
-	# Make sure the WordPress folder is write-able.
-	sudo chmod -R 0777 vendor/wordpress
+ci_setup_db:
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
 	# Give the DB container some time to initialize.
@@ -90,6 +86,15 @@ ci_before_install:
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdir_test"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdomain_test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists empty"'
+
+ci_setup_wp:
+	# Clone WordPress in the vendor folder if not there already.
+	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
+	# Make sure the WordPress folder is write-able.
+	sudo chmod -R 0777 vendor/wordpress
+
+ci_before_install: ci_setup_db ci_setup_wp
 	# Start the WordPress container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d wp
 	# Fetch the IP address of the WordPress container in the containers network.
@@ -155,6 +160,7 @@ ci_script:
 	codecept run unit
 	codecept run webdriver
 	codecept run wpfunctional
+	codecept g:wpunit wploadersuite UnitExtension
 	codecept run wploadersuite
 	codecept run wpmodule
 	codecept run wploader_wpdb_interaction

@@ -1,0 +1,30 @@
+{
+    "constants": {
+        "ABSPATH": "vendor/wordpress/wordpress/",
+        "WP_DEFAULT_THEME": "not set",
+        "WP_CONTENT_DIR": "not set",
+        "WP_PLUGIN_DIR": "not set",
+        "WP_HOME": "http://mu-subdir.test",
+        "WP_SITEURL": "http://mu-subdir.test",
+        "WPMU_PLUGIN_DIR": "not set",
+        "DB_HOST": "127.0.0.1:3307",
+        "DB_NAME": "mu_subdir_test",
+        "DB_PASSWORD": "",
+        "DB_USER": "root",
+        "CUSTOM_USER_TABLE": "not set",
+        "CUSTOM_USER_META_TABLE": "not set"
+    },
+    "globals": {
+        "table_prefix": "wp_"
+    },
+    "checks": {
+        "Site is multisite": "yes",
+        "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
+        "Database connection works": "Yes, connection successful.",
+        "Database structure as expected": "No, structure errors: no tables found in database.",
+        "Blog installed": "No, blog is not installed: database table [wp_options] does not contain a 'siteurl' option.",
+        "Theme :": "Cannot find the 'template' option in the database.",
+        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Plugins health-check:": "The 'active_plugins' option was not found in the database . "
+    }
+}

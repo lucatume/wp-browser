@@ -169,7 +169,7 @@ class WPDbMultisiteBlogCreationCest
         $id = $I->haveBlogInDatabase('testsite', [], false);
 
         $I->useBlog($id);
-        foreach (Tables::newBlogTables() as $table) {
+        foreach (Tables::blogTables() as $table) {
             $I->seeTableInDatabase($I->grabPrefixedTableNameFor($table));
         }
     }
