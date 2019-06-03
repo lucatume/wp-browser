@@ -24,7 +24,7 @@
         "Database structure as expected": "No, structure errors: cannot connect to database to check structure.",
         "Blog installed": "No, blog is not installed: cannot connect to database to check if blog is installed.",
         "Theme :": "Cannot connect to database to check for current theme.",
-        "Must-use plugins health-check:": "mu - plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": "Cannot connect to database to check on plugins."
     }
 }

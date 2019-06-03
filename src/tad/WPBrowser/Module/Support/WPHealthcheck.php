@@ -193,6 +193,8 @@ class WPHealthcheck
      */
     protected function runChecks()
     {
+        $this->database->checkDbConnection(true);
+
         return [
             'Site is multisite' => $this->isMultisite() ? 'yes' : 'no',
             'ABSPATH points to valid WordPress directory' => $this->checkWpRoot() ?
@@ -447,7 +449,7 @@ class WPHealthcheck
         $muPluginsFolder = $this->directories->getWpmuPluginsDir();
 
         if (!file_exists($muPluginsFolder)) {
-            $this->muPlugins = "mu - plugins directory({$this->relative($muPluginsFolder)}) does not exist.";
+            $this->muPlugins = "mu-plugins directory({$this->relative($muPluginsFolder)}) does not exist.";
             return true;
         }
 

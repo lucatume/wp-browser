@@ -20,11 +20,11 @@
     "checks": {
         "Site is multisite": "no",
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
-        "Database connection works": "Yes, connection successful.",
-        "Database structure as expected": "No, structure errors: no tables found in database.",
-        "Blog installed": "No, blog is not installed: database table [wp_options] does not contain a 'siteurl' option.",
-        "Theme :": "Cannot find the 'template' option in the database.",
-        "Must-use plugins health-check:": "mu - plugins directory(wp-content/mu-plugins) does not exist.",
-        "Plugins health-check:": "The 'active_plugins' option was not found in the database . "
+        "Database connection works": "No, connection errors: SQLSTATE[HY000] [1049] Unknown database 'empty'",
+        "Database structure as expected": "No, structure errors: cannot connect to database to check structure.",
+        "Blog installed": "No, blog is not installed: cannot connect to database to check if blog is installed.",
+        "Theme :": "Cannot connect to database to check for current theme.",
+        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Plugins health-check:": "Cannot connect to database to check on plugins."
     }
 }
