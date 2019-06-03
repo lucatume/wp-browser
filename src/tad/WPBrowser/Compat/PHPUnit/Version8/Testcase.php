@@ -9,8 +9,6 @@
 
 namespace tad\WPBrowser\Compat\PHPUnit;
 
-use PHPUnit\Framework\MockObject\MockObject;
-
 /**
  * Class Testcase
  *
@@ -18,25 +16,27 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class Testcase extends \Codeception\PHPUnit\TestCase
 {
-    public static function setUpBeforeClass() : void
+    public static function setUpBeforeClass(): void
     {
         if (method_exists(get_called_class(), '_setUpBeforeClass')) {
             static::_setUpBeforeClass();
         }
     }
 
-    public static function tearDownAfterClass() : void
+    public static function tearDownAfterClass(): void
     {
         if (method_exists(get_called_class(), '_tearDownAfterClass')) {
             static::_tearDownAfterClass();
         }
     }
+
     protected function assertPreConditions(): void
     {
         if (method_exists(get_called_class(), '_assertPreConditions')) {
             static::_assertPreConditions();
         }
     }
+
     protected function assertPostConditions(): void
     {
         if (method_exists(get_called_class(), '_assertPostConditions')) {
