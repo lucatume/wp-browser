@@ -1,4 +1,5 @@
 <?php
+
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
@@ -45,6 +46,7 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_be_instantiatable()
     {
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $sut = $this->make_instance();
 
         $this->assertInstanceOf(WPCLI::class, $sut);
@@ -87,6 +89,7 @@ class WPCLITest extends \Codeception\Test\Unit
             Argument::any(),
             Argument::any()
         )->shouldBeCalled();
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -120,6 +123,7 @@ class WPCLITest extends \Codeception\Test\Unit
             Argument::any(),
             Argument::any()
         )->shouldBeCalled();
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -149,6 +153,7 @@ class WPCLITest extends \Codeception\Test\Unit
             Argument::any(),
             Argument::any()
         )->shouldBeCalled();
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -169,6 +174,7 @@ class WPCLITest extends \Codeception\Test\Unit
             Argument::any(),
             Argument::any()
         )->shouldBeCalled();
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -183,6 +189,7 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
         $this->executor->exec(Argument::type('string'), Argument::any(), Argument::any())->willReturn(-1);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $this->expectException(ModuleException::class);
 
         $sut = $this->make_instance();
@@ -198,6 +205,7 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = false;
         $this->executor->exec(Argument::type('string'), Argument::any(), Argument::any())->willReturn(-1);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -223,6 +231,7 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_not_cast_output_to_any_format($raw, $expected)
     {
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn($raw);
 
         $sut = $this->make_instance();
@@ -239,6 +248,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_allow_defining_a_split_callback_function()
     {
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('23 12');
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $expected = [1, 2, 3];
         $splitCallback = function () use ($expected) {
             return $expected;
@@ -257,6 +267,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_throw_if_split_callback_function_does_not_return_an_array()
     {
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn('23 12');
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $splitCallback = function () {
             return 'foo';
         };
@@ -267,16 +278,6 @@ class WPCLITest extends \Codeception\Test\Unit
         $sut->cliToArray('post list --format=ids', $splitCallback);
     }
 
-    protected function _before()
-    {
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
-        $this->root = vfsStream::setup('root');
-        $wpDir = vfsStream::newDirectory('wp');
-        $this->root->addChild($wpDir);
-        $this->config = ['path' => $this->root->url() . '/wp'];
-        $this->executor = $this->prophesize(Executor::class);
-    }
-
     /**
      * @test
      * it should handle the case where the command output is not a string
@@ -285,6 +286,7 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $expected = $output = ['23', '89', '13', '45'];
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn($output);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -298,6 +300,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_handle_the_case_where_the_command_output_is_an_empty_array()
     {
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn([]);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -311,6 +314,7 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_handle_the_case_where_the_command_output_is_null()
     {
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn(null);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -325,6 +329,7 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $output = ['123foo', 'foo123', '123foo', 'bar'];
         $this->executor->execAndOutput(Argument::type('string'), Argument::any())->willReturn($output);
+        $this->executor->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
 
         $sut = $this->make_instance();
 
@@ -334,5 +339,69 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $expected = preg_split('/123\\n/', implode(PHP_EOL, $output));
         $this->assertEquals($expected, $sut->cliToArray('post list --format=ids', $callback));
+    }
+
+    /**
+     * It should allow setting a timeout in the configuration
+     *
+     * @test
+     */
+    public function should_allow_setting_a_timeout_in_the_configuration()
+    {
+        $this->config['timeout'] = 23;
+        $this->executor = $this->prophesize(Executor::class);
+        $this->executor->setTimeout(23)->shouldBeCalled();
+
+        $this->make_instance();
+    }
+
+    /**
+     * It should set the executor timeout to null if set to nullable value
+     *
+     * @test
+     * @dataProvider nullTimeoutValues
+     */
+    public function should_set_the_executor_timeout_to_null_if_set_to_nullable_value($timeoutValue)
+    {
+        $this->config['timeout'] = $timeoutValue;
+        $this->executor = $this->prophesize(Executor::class);
+        $this->executor->setTimeout(null)->shouldBeCalled();
+
+        $this->make_instance();
+    }
+
+    /**
+     * It should throw if timeout value is not valid
+     *
+     * @test
+     */
+    public function should_throw_if_timeout_value_is_not_valid()
+    {
+        $this->executor->setTimeout(Argument::any())->willThrow(new \InvalidArgumentException('invalid'));
+        $this->config['timeout'] = 'foo-bar';
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->make_instance();
+    }
+
+    public function nullTimeoutValues()
+    {
+        return [
+            'null' => [null],
+            'false' => [false],
+            'zero' => [0],
+            'zero_point_zero' => [0.0],
+        ];
+    }
+
+    protected function _before()
+    {
+        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->root = vfsStream::setup('root');
+        $wpDir = vfsStream::newDirectory('wp');
+        $this->root->addChild($wpDir);
+        $this->config = ['path' => $this->root->url() . '/wp'];
+        $this->executor = $this->prophesize(Executor::class);
     }
 }
