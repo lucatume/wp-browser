@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.11] 2019-06-06;
+## Added
+- support for `timeout` parameter in WPCLI module configuration
+
 ## [2.2.10] 2019-06-03;
 ### Added
 - when in debug mode the `WPLoader` module will now display a report about the bootstrapped WordPress installation
@@ -890,12 +894,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.10...HEAD
-[2.2.10]: https://github.com/lucatume/wp-browser/compare/2.2.9...2.2.10:
-[2.2.9]: https://github.com/lucatume/wp-browser/compare/2.2.8...2.2.9:
-[2.2.8]: https://github.com/lucatume/wp-browser/compare/2.2.7...2.2.8:
-[2.2.7]: https://github.com/lucatume/wp-browser/compare/2.2.6...2.2.7:
-[2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6:
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.11...HEAD
+[2.2.11]: https://github.com/lucatume/wp-browser/compare/2.2.10...2.2.11:
+[2.2.10]: https://github.com/lucatume/wp-browser/compare/2.2.9...2.2.10
+[2.2.9]: https://github.com/lucatume/wp-browser/compare/2.2.8...2.2.9
+[2.2.8]: https://github.com/lucatume/wp-browser/compare/2.2.7...2.2.8
+[2.2.7]: https://github.com/lucatume/wp-browser/compare/2.2.6...2.2.7
+[2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6
 [2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
 [2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
