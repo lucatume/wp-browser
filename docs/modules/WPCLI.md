@@ -28,6 +28,7 @@ if (
 
 * `path` *required* - the absolute, or relative, path to the WordPress root folder. This will be mapped to the `--path` argument of the wp-cli binary.  
 * `throw` - defaults to `true` to throw an exception when a wp-cli command does not return an exit status of `0`; if set to `false` then the exit status of the commands will be returned as is.
+* `timeout` - defaults to `60` (seconds) to set each process execution timeout to a certain value; set to `null`, `false` or `0` to disable timeout completely.
 
 ### Example configuration
 ```yaml
@@ -38,6 +39,7 @@ modules:
         WPCLI:
             path: /Users/Luca/Sites/wp
             throw: true
+            timeout: 60
 ```
 
 <!--doc-->

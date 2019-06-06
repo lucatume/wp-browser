@@ -18,10 +18,11 @@ use WP_CLI\Configurator;
  */
 class WPCLI extends Module
 {
+    const DEFAULT_TIMEOUT = 60;
     /**
-     * @var array {
      * @param string $path The absolute path to the target WordPress installation root folder.
      * }
+     * @var array {
      */
     protected $requiredFields = ['path'];
 
@@ -51,10 +52,13 @@ class WPCLI extends Module
     protected $options = ['ssh', 'http', 'url', 'user', 'skip-plugins', 'skip-themes', 'skip-packages', 'require'];
 
     /**
+     * An array of configuration variables and their default values.
+     *
      * @var array
      */
     protected $config = [
-        'throw' => true
+        'throw' => true,
+        'timeout' => 60,
     ];
 
     /**
@@ -70,7 +74,7 @@ class WPCLI extends Module
     {
         parent::__construct($moduleContainer, $config);
 
-        if (! is_dir($config['path'])) {
+        if (!is_dir($config['path'])) {
             throw new ModuleConfigException(
                 __CLASS__,
                 'Specified path [' . $config['path'] . '] is not a directory.'
@@ -78,11 +82,41 @@ class WPCLI extends Module
         }
 
         $this->executor = $executor ?: new Executor();
+
+        try {
+            $this->executor->setTimeout($this->getConfigTimeout($config));
+        } catch (\InvalidArgumentException $e) {
+            throw new ModuleConfigException($this, $e->getMessage());
+        }
+    }
+
+    /**
+     * Parses and returns the timeout from the configuration array.
+     *
+     * @param array $config The configuration array to parse.
+     *
+     * @return int|null The timeout value or `null` to indicate a timeout is not set.
+     */
+    protected function getConfigTimeout($config)
+    {
+        $timeout = static::DEFAULT_TIMEOUT;
+
+        if (array_key_exists('timeout', $config)) {
+            $timeout = empty($config['timeout']) ? null : $config['timeout'];
+        }
+
+        return $timeout;
     }
 
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
+     *
+     * @return int The command exit value; `0` usually means success.
+     *
+     * @throws \Codeception\Exception\ModuleException If the status evaluates to non-zero and the `throw` configuration
+     *                                                parameter is set to `true`.
      * @example
      * ```php
      * // Activate a plugin via wp-cli in the test WordPress site.
@@ -91,12 +125,6 @@ class WPCLI extends Module
      * $I->cli('user update luca --user_pass=newpassword');
      * ```
      *
-     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
-     *
-     * @return int The command exit value; `0` usually means success.
-     *
-     * @throws \Codeception\Exception\ModuleException If the status evaluates to non-zero and the `throw` configuration
-     *                                                parameter is set to `true`.
      */
     public function cli($userCommand = 'core version')
     {
@@ -149,7 +177,7 @@ class WPCLI extends Module
 
         $wpCliRootRealPath = realpath($this->wpCliRoot);
 
-        if (! empty($wpCliRootRealPath)) {
+        if (!empty($wpCliRootRealPath)) {
             $this->wpCliRoot = $wpCliRootRealPath;
         }
 
@@ -164,7 +192,7 @@ class WPCLI extends Module
 
         $this->bootPath = rtrim($this->wpCliRoot, '\\/') . '/php/boot-fs.php';
 
-        if (! file_exists($this->bootPath)) {
+        if (!file_exists($this->bootPath)) {
             throw new ModuleException(
                 $this,
                 'Expected the "boot-fs.php" to  be in "' . $this->bootPath . '" but the file does not exist.'
@@ -172,6 +200,15 @@ class WPCLI extends Module
         }
 
         $this->debugSection('WPCLI Module', 'boot-fs.php path: ' . $this->bootPath);
+    }
+
+    /**
+     * @param string $title
+     * @param string $message
+     */
+    protected function debugSection($title, $message)
+    {
+        parent::debugSection($this->prettyName . ' ' . $title, $message);
     }
 
     /**
@@ -219,15 +256,6 @@ class WPCLI extends Module
     }
 
     /**
-     * @param string $title
-     * @param string $message
-     */
-    protected function debugSection($title, $message)
-    {
-        parent::debugSection($this->prettyName . ' ' . $title, $message);
-    }
-
-    /**
      * @param $output
      * @param $status
      * @throws ModuleException
@@ -237,8 +265,8 @@ class WPCLI extends Module
         if (!empty($this->config['throw']) && $status < 0) {
             $output = !is_array($output) ?: json_encode($output);
             $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured "
-                       . 'to throw an exception when wp-cli terminates with an error status; '
-                       . 'set the `throw` parameter to `false` to avoid this.';
+                . 'to throw an exception when wp-cli terminates with an error status; '
+                . 'set the `throw` parameter to `false` to avoid this.';
 
             throw new ModuleException(__CLASS__, $message);
         }
@@ -247,6 +275,12 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
+     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
+     * @param callable $splitCallback An optional callback function in charge of splitting the results array.
+     *
+     * @return array An array containing the output of wp-cli split into single elements.
+     *
+     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
      * @example
      * ```php
      * // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
@@ -259,14 +293,8 @@ class WPCLI extends Module
      * });
      * ```
      *
-     * @param string $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
-     * @param callable $splitCallback An optional callback function in charge of splitting the results array.
-     *
-     * @return array An array containing the output of wp-cli split into single elements.
-     *
-     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable  $splitCallback = null)
+    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
         $this->initPaths();
 
@@ -283,7 +311,7 @@ class WPCLI extends Module
         }
 
         $hasSplitCallback = null !== $splitCallback;
-        $originalOutput   = $output;
+        $originalOutput = $output;
         if (!is_array($output) || (is_array($output) && $hasSplitCallback)) {
             if (is_array($output)) {
                 $output = implode(PHP_EOL, $output);
