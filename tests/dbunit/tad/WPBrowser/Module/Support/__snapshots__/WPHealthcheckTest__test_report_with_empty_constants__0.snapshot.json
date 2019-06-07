@@ -12,7 +12,8 @@
         "DB_PASSWORD": "not set",
         "DB_USER": "not set",
         "CUSTOM_USER_TABLE": "not set",
-        "CUSTOM_USER_META_TABLE": "not set"
+        "CUSTOM_USER_META_TABLE": "not set",
+        "DISABLE_WP_CRON": "not set"
     },
     "globals": {
         "table_prefix": "wp_ (guessed, global not set)"

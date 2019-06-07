@@ -54,7 +54,6 @@ $configuration = unserialize(base64_decode($argv[1]));
 
 $multisite = !empty($argv[2]) ? $argv[2] : false;
 
-
 // require_once 'vendor/autoload.php';
 require_once $configuration['autoload'];
 
@@ -78,6 +77,15 @@ if (!empty($configuration['activePlugins'])) {
 }
 else {
 	$activePlugins = [];
+}
+
+// If Cron is not disable it's disabled here.
+if ( ! isset( $configuration['constants']['DISABLE_WP_CRON'] ) ) {
+    print( "Disabling cron\n" );
+    $configuration['constants']['DISABLE_WP_CRON'] = true;
+} else {
+    $enabled = DISABLE_WP_CRON ? 'yes' : 'no';
+    print( "Cron disabled (via 'DISABLE_WP_CRON' constant): {$enabled}\n" );
 }
 
 printf("\nConfiguration:\n\n%s\n\n", json_encode($configuration, JSON_PRETTY_PRINT));
