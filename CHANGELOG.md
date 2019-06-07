@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+- make sure Cron is disabled while `WPLoader` module is installing WordPress in isolation (default mode)
 
 ## [2.2.11] 2019-06-06;
 ## Added
