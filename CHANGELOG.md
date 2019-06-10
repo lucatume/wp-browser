@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.12] 2019-06-10;
 ### Fixed
 - make sure Cron is disabled while `WPLoader` module is installing WordPress in isolation (default mode)
 
@@ -896,7 +898,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.11...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.12...HEAD
+[2.2.12]: https://github.com/lucatume/wp-browser/compare/2.2.11...2.2.12:
 [2.2.11]: https://github.com/lucatume/wp-browser/compare/2.2.10...2.2.11:
 [2.2.10]: https://github.com/lucatume/wp-browser/compare/2.2.9...2.2.10
 [2.2.9]: https://github.com/lucatume/wp-browser/compare/2.2.8...2.2.9
