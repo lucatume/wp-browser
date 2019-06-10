@@ -153,7 +153,8 @@ class WPHealthcheck
             'DB_PASSWORD' => $this->constants->constant('DB_PASSWORD', 'not set'),
             'DB_USER' => $this->constants->constant('DB_USER', 'not set'),
             'CUSTOM_USER_TABLE' => $this->constants->constant('CUSTOM_USER_TABLE', 'not set'),
-            'CUSTOM_USER_META_TABLE' => $this->constants->constant('CUSTOM_USER_META_TABLE', 'not set')
+            'CUSTOM_USER_META_TABLE' => $this->constants->constant('CUSTOM_USER_META_TABLE', 'not set'),
+            'DISABLE_WP_CRON' => $this->constants->constant('DISABLE_WP_CRON', 'not set')
         ];
     }
 
