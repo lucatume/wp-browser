@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.2.13] 2019-06-13;
 ### Fixed
-- when the `WPLoader` module is set to `loadOnly` mode and used in conjunction with a `*Db` module delay its load after all other modules ran their `_beforeSuite` action; this tackles an issua only partially resolved in `2.2.8` (thanks @Luc45)
+- when the `WPLoader` module is set to `loadOnly` mode and used in conjunction with a `*Db` module delay its load after all other modules ran their `_beforeSuite` action; this tackles an issue only partially resolved in `2.2.8` (thanks @Luc45)
 
 ## [2.2.12] 2019-06-10;
 ### Fixed
