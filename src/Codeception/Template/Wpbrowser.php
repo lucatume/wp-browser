@@ -599,7 +599,7 @@ modules:
             populate: true
             cleanup: true
             waitlock: 10
-            url: '%WP_URL%'
+            url: '%TEST_SITE_WP_URL%'
             urlReplacement: true
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
         WPBrowser:
