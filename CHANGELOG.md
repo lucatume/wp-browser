@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.13] 2019-06-13;
+### Fixed
+- when the `WPLoader` module is set to `loadOnly` mode and used in conjunction with a `*Db` module delay its load after all other modules ran their `_beforeSuite` action; this tackles an issua only partially resolved in `2.2.8` (thanks @Luc45)
+
 ## [2.2.12] 2019-06-10;
 ### Fixed
 - make sure Cron is disabled while `WPLoader` module is installing WordPress in isolation (default mode)
@@ -898,7 +902,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.12...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.13...HEAD
+[2.2.13]: https://github.com/lucatume/wp-browser/compare/2.2.12...2.2.13:
 [2.2.12]: https://github.com/lucatume/wp-browser/compare/2.2.11...2.2.12:
 [2.2.11]: https://github.com/lucatume/wp-browser/compare/2.2.10...2.2.11:
 [2.2.10]: https://github.com/lucatume/wp-browser/compare/2.2.9...2.2.10

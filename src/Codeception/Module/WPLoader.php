@@ -217,7 +217,7 @@ class WPLoader extends Module
             $this->ensureDbModuleCompat();
         } else {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            $this->addAction(Events::SUITE_INIT, [$this, '_loadWordpress'], 99);
+            $this->addAction(Events::SUITE_BEFORE, [$this, '_loadWordpress'], 0);
 
             return;
         }
@@ -296,11 +296,7 @@ class WPLoader extends Module
     }
 
     /**
-     * Loads WordPress calling the bootstrap file
-     *
-     * This method does little but wrapping preparing the global space for the
-     * original automated testing bootstrap file and taking charge of replacing
-     * the original "wp-tests-config.php" file in setting up the globals.
+     * Loads WordPress calling the bootstrap file.
      */
     public function _loadWordpress()
     {
