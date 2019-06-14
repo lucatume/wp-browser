@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.2.14] 2019-06-14;
 ### Fixed
-- remove left-over `%WP_URL%` from generated configuration files when runnin `codecept init wpbrowsre` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
+- remove left-over `%WP_URL%` from generated configuration files when runnin `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
 
 ## [2.2.13] 2019-06-13;
 ### Fixed
