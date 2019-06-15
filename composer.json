@@ -31,7 +31,8 @@
     "mikemclin/laravel-wp-password": "~2.0.0",
     "vlucas/phpdotenv": "^3.0",
     "xamin/handlebars.php": "~0.10",
-    "wp-cli/wp-cli-bundle": ">=2.0 <3.0.0"
+    "wp-cli/wp-cli-bundle": ">=2.0 <3.0.0",
+    "phpunit/phpunit": "<8.2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "<8.2.0",
