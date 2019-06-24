@@ -3,7 +3,7 @@ version: '3.2'
 services:
 
   chromedriver:
-    image: selenium/standalone-chrome
+    image: selenium/standalone-chrome:3.141.59-oxygen
     container_name: wpbrowser_chromedriver
     links:
       - wp

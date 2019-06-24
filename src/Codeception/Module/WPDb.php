@@ -147,6 +147,13 @@ class WPDb extends Db
      */
     protected $isMultisite;
 
+    /**
+     * Whether the module did init already or not.
+     *
+     * @var bool
+     */
+    protected $didInit = false;
+
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
@@ -169,6 +176,7 @@ class WPDb extends Db
         $this->tablePrefix = $this->config['tablePrefix'];
         $this->handlebars = $handlebars ?: new Handlebars();
         $this->tables = $table ?: new Tables();
+        $this->didInit = true;
     }
 
     /**
@@ -364,23 +372,49 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * list($fiction) = $I->haveTermInDatabase('fiction', 'genre');
-     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => [$fiction]]]);
-     * $I->seePostWithTermInDatabase($postId, $fiction);
+     * $fiction = $I->haveTermInDatabase('fiction', 'genre');
+     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+     * $I->seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);
      * ```
      *
-     * @param  int     $post_id    The post ID.
-     * @param  int     $term_id    The term ID.
-     * @param  integer $term_order The order the term applies to the post, defaults to 0.
+     * @param  int          $post_id           The post ID.
+     * @param  int          $term_taxonomy_id  The term `term_id` or `term_taxonomy_id`; if the `$taxonomy` argument is
+     *                                         passed this parameter will be interpreted as a `term_id`, else as a
+     *                                         `term_taxonomy_id`.
+     * @param  int|null     $term_order        The order the term applies to the post, defaults to `null` to not use
+     *                                         the
+     *                                         term order.
+     * @param  string|null  $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
+     *                                         to build a `taxonomy_term_id` from the `term_id`.
+     * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
      */
-    public function seePostWithTermInDatabase($post_id, $term_id, $term_order = 0)
+    public function seePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null, $taxonomy = null)
     {
+        if ($taxonomy !== null) {
+            $match = $this->grabTermTaxonomyIdFromDatabase([
+                'term_id' => $term_taxonomy_id,
+                'taxonomy' => $taxonomy
+            ]);
+            if (empty($match)) {
+                throw new ModuleException(
+                    $this,
+                    "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
+                );
+            }
+            $term_taxonomy_id = $match;
+        }
+
         $tableName = $this->grabPrefixedTableNameFor('term_relationships');
-        $this->dontSeeInDatabase($tableName, [
+        $criteria = [
             'object_id' => $post_id,
-            'term_id' => $term_id,
-            'term_order' => $term_order,
-        ]);
+            'term_taxonomy_id' => $term_taxonomy_id,
+        ];
+
+        if (null !== $term_order) {
+            $criteria['term_order'] = $term_order;
+        }
+
+        $this->seeInDatabase($tableName, $criteria);
     }
 
     /**
@@ -390,7 +424,10 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $userId = $I->haveUserInDatabase(['])
+     * $I->seeUserInDatabase([
+     *     "user_email" => "test@example.org",
+     *     "user_login" => "login name"
+     * ])
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -476,7 +513,7 @@ class WPDb extends Db
      * // Insert a post with random values in the database.
      * $randomPostId = $I->havePostInDatabase();
      * // Insert a post with specific values in the database.
-     * $I->dontSeeOptionInDatabase([
+     * $I->havePostInDatabase([
      *         'post_type' => 'book',
      *         'post_title' => 'Alice in Wonderland',
      *         'meta_input' => [
@@ -526,10 +563,17 @@ class WPDb extends Db
         if ($hasTerms) {
             foreach ($terms as $taxonomy => $termNames) {
                 foreach ($termNames as $termName) {
+                    // Let's try to match the term by name first.
                     $termId = $this->grabTermIdFromDatabase(['name' => $termName]);
 
+                    // Then by slug.
                     if (empty($termId)) {
                         $termId = $this->grabTermIdFromDatabase(['slug' => $termName]);
+                    }
+
+                    // Then by `term_id`.
+                    if (empty($termId)) {
+                        $termId = $this->grabTermIdFromDatabase(['term_id' => $termName]);
                     }
 
                     if (empty($termId)) {
@@ -970,12 +1014,12 @@ class WPDb extends Db
 
     /**
      * Checks for a comment in the database.
+     *
      * Will look up the "comments" table.
      *
      * @example
      * ```php
-     * $I->dontHaveOptionInDatabase('posts_per_page');
-     * $I->dontSeeOptionInDatabase('posts_per_page');
+     * $I->seeCommentInDatabase(['comment_ID' => 23]);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -993,9 +1037,9 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Remove one comment from the database.
+     * // Checks for one comment.
      * $I->dontSeeCommentInDatabase(['comment_ID' => 23]);
-     * // Remove all comments from a user.
+     * // Checks for comments from a user.
      * $I->dontSeeCommentInDatabase(['user_id' => 89]);
      * ```
      *
@@ -1053,10 +1097,7 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Delete a comment `karma` meta.
-     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23]);
-     * // Checks for a specific user meta.
-     * $I->dontSeeCommentMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * $I->seeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -1073,9 +1114,9 @@ class WPDb extends Db
      * @example
      * ```php
      * // Asserts a user does not have a 'karma' meta assigned.
-     * $I->dontSeeUserInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+     * $I->dontSeeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
      * // Asserts no user has any 'karma' meta assigned.
-     * $I->dontSeeUserInDatabase(['meta_key' => 'karma']);
+     * $I->dontSeeUserMetaInDatabase(['meta_key' => 'karma']);
      * ```
      *
      * @param  array $criteria An array of search criteria.
@@ -1213,9 +1254,6 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * // Asserts a user does not exist in the database.
-     * $I->dontSeeUserInDatabase(['user_login' => 'luca']);
-     * // Asserts a user with email and login is not in the database.
      * $books = $I->grabPrefixedTableNameFor('books');
      * $I->grabAllFromDatabase($books, 'title', ['genre' => 'fiction']);
      * ```
@@ -1265,7 +1303,7 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $I->haveOptionInDatabase('posts_per_page, 23);
+     * $I->haveOptionInDatabase('posts_per_page', 23);
      * $I->haveOptionInDatabase('my_plugin_options', ['key_one' => 'value_one', 'key_two' => 89]);
      * ```
      *
@@ -1471,7 +1509,7 @@ class WPDb extends Db
      *
      * @param string $key The name of the option to read from the database.
      *
-     * @return mixed|string The value of the option stored in the database, if unserializable the value will be unserialized.
+     * @return mixed|string The value of the option stored in the database, unserialized if serialized.
      */
     public function grabSiteOptionFromDatabase($key)
     {
@@ -2177,6 +2215,10 @@ class WPDb extends Db
      * ```php
      * $userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
      * $subscriberId = $I->haveUserInDatabase('test');
+     * $userWithMeta = $I->haveUserInDatabase('luca', 'editor', [
+     *     'user_email' => 'luca@example.org'
+     *     'meta' => ['a meta_key' => 'a_meta_value']
+     * ]);
      * ```
      *
      * @param  string $user_login The user login name.
@@ -3705,6 +3747,16 @@ class WPDb extends Db
     }
 
     /**
+     * Return whether the module did init already or not.
+     *
+     * @return bool Whether the module did init already or not.
+     */
+    public function _didInit()
+    {
+        return $this->didInit;
+    }
+
+    /**
      * Prepares a database dump to be loaded by cleaning it and replacing
      * URLs in it if required.
      *
@@ -3774,5 +3826,58 @@ class WPDb extends Db
         }
 
         parent::loadDumpUsingDriver($databaseKey);
+    }
+
+    /**
+     * Checks that a post to term relation does not exist in the database.
+     *
+     * The method will check the "term_relationships" table.
+     *
+     * @example
+     * ```php
+     * $fiction = $I->haveTermInDatabase('fiction', 'genre');
+     * $nonFiction = $I->haveTermInDatabase('non-fiction', 'genre');
+     * $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+     * $I->dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );
+     * ```
+     *
+     * @param  int          $post_id           The post ID.
+     * @param  int          $term_taxonomy_id  The term `term_id` or `term_taxonomy_id`; if the `$taxonomy` argument is
+     *                                         passed this parameter will be interpreted as a `term_id`, else as a
+     *                                         `term_taxonomy_id`.
+     * @param  int|null     $term_order        The order the term applies to the post, defaults to `null` to not use
+     *                                         the
+     *                                         term order.
+     * @param  string|null  $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
+     *                                         to build a `taxonomy_term_id` from the `term_id`.
+     * @throws ModuleException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
+     */
+    public function dontSeePostWithTermInDatabase($post_id, $term_taxonomy_id, $term_order = null, $taxonomy = null)
+    {
+        if ($taxonomy !== null) {
+            $match = $this->grabTermTaxonomyIdFromDatabase([
+                'term_id' => $term_taxonomy_id,
+                'taxonomy' => $taxonomy
+            ]);
+            if (empty($match)) {
+                throw new ModuleException(
+                    $this,
+                    "No term exists for the `term_id` ({$term_taxonomy_id}) and `taxonomy`({$taxonomy}) couple."
+                );
+            }
+            $term_taxonomy_id = $match;
+        }
+
+        $tableName = $this->grabPrefixedTableNameFor('term_relationships');
+        $criteria = [
+            'object_id' => $post_id,
+            'term_taxonomy_id' => $term_taxonomy_id,
+        ];
+
+        if (null !== $term_order) {
+            $criteria['term_order'] = $term_order;
+        }
+
+        $this->dontSeeInDatabase($tableName, $criteria);
     }
 }

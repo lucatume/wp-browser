@@ -14,7 +14,10 @@ TRAVIS_WP_SUBDOMAIN_2 ?= "test2"
 TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
+CODECEPTION_VERSION ?= "^2.5"
 PROJECT := $(shell basename ${CURDIR})
+
+.PHONY: wp_dump cs_sniff cs_fix cs_fix_n_sniff ci_before_install ci_before_script ci_docker_restart ci_install ci_local_prepare ci_run ci_script pre_commit
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -52,21 +55,18 @@ docker/parallel-lint/id:
 
 # Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
 lint: docker/parallel-lint/id
-	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 --colors /app/src
+	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 \
+		--exclude /app/src/tad/WPBrowser/Compat/PHPUnit/Version8 \
+		--colors \
+		/app/src
 
-# Fix the source files code style using PHP_CodeSniffer and PSR-2 standards.
-fix:
-	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcbf \
-		--standard=/scripts/phpcs.xml \
-		--ignore=data,includes,tad/scripts \
-		/scripts
+cs_sniff:
+	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
 
-# Sniff the source files code style using PHP_CodeSniffer and PSR-2 standards.
-sniff: fix src
-	docker run --rm -v ${CURDIR}/src:/scripts/ texthtml/phpcs phpcs \
-		--standard=/scripts/phpcs.xml \
-		--ignore=data,includes,tad/scripts \
-		/scripts -s
+cs_fix:
+	vendor/bin/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests
+
+cs_fix_n_sniff: cs_fix cs_sniff
 
 # Updates Composer dependencies using PHP 5.6.
 composer_update: composer.json
@@ -76,11 +76,7 @@ composer_update: composer.json
 phpstan: src
 	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
 
-ci_before_install:
-	# Clone WordPress in the vendor folder if not there already.
-	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
-	# Make sure the WordPress folder is write-able.
-	sudo chmod -R 0777 vendor/wordpress
+ci_setup_db:
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
 	# Give the DB container some time to initialize.
@@ -90,6 +86,15 @@ ci_before_install:
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdir_test"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists mu_subdomain_test"'
+	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists empty"'
+
+ci_setup_wp:
+	# Clone WordPress in the vendor folder if not there already.
+	if [ ! -d vendor/wordpress/wordpress ]; then mkdir -p vendor/wordpress && git clone https://github.com/WordPress/WordPress.git vendor/wordpress/wordpress; fi
+	# Make sure the WordPress folder is write-able.
+	sudo chmod -R 0777 vendor/wordpress
+
+ci_before_install: ci_setup_db ci_setup_wp
 	# Start the WordPress container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d wp
 	# Fetch the IP address of the WordPress container in the containers network.
@@ -99,7 +104,7 @@ ci_before_install:
 
 ci_install:
 	# Update Composer using the host machine PHP version.
-	composer update -a
+	composer require codeception/codeception:"${CODECEPTION_VERSION}"
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
@@ -155,11 +160,17 @@ ci_script:
 	codecept run unit
 	codecept run webdriver
 	codecept run wpfunctional
+	codecept g:wpunit wploadersuite UnitExtension
 	codecept run wploadersuite
 	codecept run wpmodule
+	codecept run wploader_wpdb_interaction
 
+# Restarts the project containers.
+ci_docker_restart:
+	docker-compose -f docker/${COMPOSE_FILE} restart
+
+# Make sure the host machine can ping the WordPress container
 ensure_pingable_hosts:
-	# Make sure the host machine can ping the WordPress container
 	set -o allexport &&  source .env.testing &&  set +o allexport && \
 	echo $${TEST_HOSTS} | \
 	sed -e $$'s/ /\\\n/g' | while read host; do echo "\nPinging $${host}" && ping -c 1 "$${host}"; done
@@ -226,7 +237,7 @@ gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 remove_hosts_entries:
 	echo "Removing project ${PROJECT} hosts entries..."
 	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
-	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## $${project} project - end ##$$/d' /etc/hosts
+	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## ${PROJECT} project - end ##$$/d' /etc/hosts
 
 sync_hosts_entries: remove_hosts_entries
 	echo "Adding project ${project} hosts entries..."
@@ -235,3 +246,10 @@ sync_hosts_entries: remove_hosts_entries
 	sudo -- sh -c "echo '## ${PROJECT} project - start ##' >> /etc/hosts" && \
 	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
 	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"
+
+# Export a dump of WordPressdatabase to the _data folder of the project.
+wp_dump:
+	docker run -it --rm --volumes-from wpbrowser_wp --network container:wpbrowser_wp wordpress:cli wp db export \
+		/project/tests/_data/dump.sql
+
+pre_commit: lint cs_sniff

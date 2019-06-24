@@ -3,14 +3,6 @@ namespace tad\WPBrowser\Tests;
 
 class PluginActivationTest extends \Codeception\TestCase\WPTestCase
 {
-    public function tearDown()
-    {
-        // your tear down methods here
-
-        // then
-        parent::tearDown();
-    }
-
     /**
      * @test
      * it should network not activate network plugins on non mu installation

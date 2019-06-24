@@ -1,9 +1,9 @@
 ## What is a unit test? An acceptance test?
-This page has no pretense to be _THE_ source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and component of testing.  
 
-Wikipedia, forums and other documents online will offer alternate, and equally valid, definitions.
+This page has no pretense to be _THE_ source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and component of testing. Wikipedia, forums and other documents online will offer alternate, and equally valid, definitions.
 
 ## The signup page example
+
 Let's assume I'm testing a WordPress plugin that adds mailing list management and subscription functionalities to a site.  
 
 The plugin provides a number of functions and, among them, it will add a sign-up page to receive users applications.  
@@ -93,7 +93,7 @@ The acceptance test is written in the most eloquent testing format supported by 
 
 While the first is easier to skim for  non-developers the second harnesses the power of a re-using pieces of code, the page creation and navigation in the example, to optimize the test code.
 
-### Integration test
+### Integration tests
 In brief: **test code modules in the context of a WordPress website**.
 
 In this type of test the WordPress, and additional plugins code, is loaded in the same variable scope as the tests; this is why in the example below I'm using classes (`WP_REST_Request`, `WP_REST_Response`) and methods (`register_rest_route`) defined by WordPress, not the plugin code.  
@@ -118,7 +118,9 @@ add_action( 'rest_api_init', function () {
 ```
 
 I want to test the chain of classes and methods that's handling such a request in the context of a WordPress installation.  
+
 Integration is usually about testing "modules" of code: groups of classes and functions working together to provide a service or complete a task.  
+
 In the context of integration testing the class dependencies and/or the context are **not** mocked.
 
 ```php
@@ -157,7 +159,8 @@ class SubmissionHandlingTest extends \Codeception\TestCase\WPTestCase {
 ```
 
 The test format used is the familiar [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") one; the only difference is the base test class that's being extended (`\Codeception\TestCase\WPTestCase`) is one provided by wp-browser.  
-In the context of WordPress "integration" might also mean testing that filters used by the code have the expected effect.  
+
+In the context of WordPress _"integration"_ might also mean testing that filters used by the code have the expected effect.  
 
 
 ### Unit tests
@@ -204,14 +207,20 @@ class EmailValidatorTest extends Codeception\Test\Test {
 ```
 
 Unit tests is where stubbing/mocking/spying of dependencies is used to gain total control over the input and context the class is using.  
+
 In the last test method I'm doing exactly that testing the email validator with an external validation service.
+
 In the example I'm using the [Prophecy mock engine](https://github.com/phpspec/prophecy) that comes [with PHPUnit](https://phpunit.de/manual/6.5/en/test-doubles.html) along with its own mocking/stubbing/spying solutions.  
+
 There are other mocking engines (e.g [Mockery](http://docs.mockery.io/en/latest/)) that could be used.
 
 ### WordPress "unit" tests
 In brief: **test single classes or functions that require WordPress code in as much isolation as possible**.  
+
 This is what most people referring to "unit tests" in the context of WordPress is talking about.  
+
 The purpose of this kind of tests is to test **one** class of a WordPress application, or one function, that **requires a WordPress-defined function or class** with a unit testing approach.  
+
 In the example below I'm testing the `Acme\Signup\SubmissionHandler` class on a "unit" level making sure it will mark a request as bad if the email is not a valid one. 
 
 ```php
@@ -257,9 +266,14 @@ class SubmissionHandlerTest extends Codeception\Test\Test {
 ```
 
 The class uses the `WP_REST_Request` and `WP_Rest_Response` classes as input and output and will probably, internally, use more functions defined by WordPress.  
+
 One solution to avoid loading WordPress, could be to rewrite test versions of each and all the WordPress functions and classes needed by all the classes I want to unit test; this would require updating each time the classes requirements change.  
+
 Furthermore i18n (e.g. `__()`) and filtering (e.g `apply_filters`) functions would not need to be mocked if not in specific cases and would pretty much be copy and paste versions of the WordPres ones.  
-Loading single pieces of WordPress is a dangerous and brittle endeavour and it's not supported by the framework.
+Loading single pieces of WordPress is a dangerous and brittle endeavour and it's not supported by the 
+framework.
+
 To avoid all this WordPress "unit tests" pay the price of having to bootstrap WordPress, thus requiring a database connection.
+
 This kind of test setup and level is the one you can see in the [PHPUnit Core suite of WordPress itself](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
 

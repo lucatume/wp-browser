@@ -599,7 +599,7 @@ modules:
             populate: true
             cleanup: true
             waitlock: 10
-            url: '%WP_URL%'
+            url: '%TEST_SITE_WP_URL%'
             urlReplacement: true
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
         WPBrowser:
@@ -668,7 +668,8 @@ EOF;
     {
         $envFileName = trim($this->envFileName);
         if (strpos($envFileName, '.env') !== 0) {
-            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or ".env.development"';
+            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or '
+                .'".env.development"';
             throw new RuntimeException($message);
         }
     }

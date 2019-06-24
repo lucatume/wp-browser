@@ -10,6 +10,14 @@ settings:
     memory_limit: 1024M
 params:
     - .env.testing
+coverage:
+    enabled: true
+    include:
+        - src/*
+    exclude:
+        - src/tad/scripts/*
+        - src/data/*
+        - src/includes/*
 wpFolder: '%WP_ROOT_FOLDER%'
 extensions:
     enabled:
@@ -20,3 +28,12 @@ extensions:
                'tests/_data/themes/dummy': '%WP_ROOT_FOLDER%/wp-content/themes/dummy'
                'tests/_data/plugins/mu-plugin-1': '%WP_ROOT_FOLDER%/wp-content/plugins/mu-plugin-1'
                'tests/_data/plugins/test': '%WP_ROOT_FOLDER%/wp-content/plugins/test'
+    commands:
+        - "Codeception\\Command\\GenerateWPUnit"
+        - "Codeception\\Command\\GenerateWPRestApi"
+        - "Codeception\\Command\\GenerateWPRestController"
+        - "Codeception\\Command\\GenerateWPRestPostTypeController"
+        - "Codeception\\Command\\GenerateWPAjax"
+        - "Codeception\\Command\\GenerateWPCanonical"
+        - "Codeception\\Command\\GenerateWPXMLRPC"
+

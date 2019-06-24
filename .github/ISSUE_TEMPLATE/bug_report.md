@@ -16,8 +16,8 @@ WordPress version: [e.g. 5.4]
 Local development environment: [e.g. PHP built-in server, Valet, MAMP, Local by Flywheel, Docker]  
 WordPress structure and management: [e.g. default, Bedrock, other]  
 
-**Can you perform the test by manually?**
-If applicable, try to walk through the test and perform it manually: can you do it using the browser?
+**Can you perform the test manually?**
+If applicable, try to walk through the test and execute it manually: can you do it using the browser?
 
 **Codeception configuration file**  
 Paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensible data!  

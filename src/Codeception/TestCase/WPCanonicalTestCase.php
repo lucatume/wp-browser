@@ -28,7 +28,7 @@ class WPCanonicalTestCase extends WPTestCase
         self::delete_shared_fixtures();
     }
 
-    public function setUp()
+    public function _setUp()
     {
         parent::setUp();
 

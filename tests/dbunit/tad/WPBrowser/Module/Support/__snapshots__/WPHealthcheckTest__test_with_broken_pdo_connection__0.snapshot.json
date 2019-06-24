@@ -1,0 +1,31 @@
+{
+    "constants": {
+        "ABSPATH": "vendor/wordpress/wordpress/",
+        "WP_DEFAULT_THEME": "not set",
+        "WP_CONTENT_DIR": "not set",
+        "WP_PLUGIN_DIR": "not set",
+        "WP_HOME": "http://wp.test",
+        "WP_SITEURL": "http://wp.test",
+        "WPMU_PLUGIN_DIR": "not set",
+        "DB_HOST": "127.0.0.1:3307",
+        "DB_NAME": "test_site",
+        "DB_PASSWORD": "",
+        "DB_USER": "root",
+        "CUSTOM_USER_TABLE": "not set",
+        "CUSTOM_USER_META_TABLE": "not set",
+        "DISABLE_WP_CRON": "not set"
+    },
+    "globals": {
+        "table_prefix": "wp_ (guessed, global not set)"
+    },
+    "checks": {
+        "Site is multisite": "no",
+        "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
+        "Database connection works": "No, connection errors: Cannot connect.",
+        "Database structure as expected": "No, structure errors: cannot connect to database to check structure.",
+        "Blog installed": "No, blog is not installed: cannot connect to database to check if blog is installed.",
+        "Theme :": "Cannot connect to database to check for current theme.",
+        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Plugins health-check:": "Cannot connect to database to check on plugins."
+    }
+}

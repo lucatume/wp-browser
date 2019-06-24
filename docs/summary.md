@@ -3,7 +3,7 @@
 * [Welcome](welcome.md)
     * [Frequently asked questions](faq.md)
     * [Codeception, PHPUnit and wp-browser](codeception-phpunit-and-wpbrowser.md)
-    * [Levels of testing](levels-of-testing.md)
+* [Levels of testing](levels-of-testing.md)
 * Getting started
     * [Requirements](requirements.md)
     * [Installation](installation.md)
@@ -20,5 +20,4 @@
 * [Commands](commands.md)
 * [Extensions](extensions.md)
 * [Contributing](contributing.md)
-* [Changelog](changelog.md)
-   
+* [Changelog](https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md)

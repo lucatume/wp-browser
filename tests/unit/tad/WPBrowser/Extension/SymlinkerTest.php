@@ -3,7 +3,9 @@
 namespace tad\WPBrowser\Extension;
 
 use Codeception\Event\SuiteEvent;
-use Prophecy\Argument;
+use Codeception\Exception\ExtensionException;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Filesystem\Exception\IOException;
 use tad\WPBrowser\Filesystem\Filesystem;
 
 class SymlinkerTest extends \Codeception\TestCase\Test
@@ -40,6 +42,17 @@ class SymlinkerTest extends \Codeception\TestCase\Test
      * @var string
      */
     protected $filename;
+
+
+    protected function _before()
+    {
+        $this->filename   = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $this->filesystem->is_dir(__DIR__)->willReturn(true);
+        $this->filesystem->is_writeable(__DIR__)->willReturn(true);
+        $this->event      = $this->prophesize('\Codeception\Event\SuiteEvent');
+        $this->printEvent = $this->prophesize('\Codeception\Event\PrintResultEvent');
+    }
 
     /**
      * @test
@@ -649,17 +662,63 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $sut->symlink($this->event->reveal());
     }
 
-    protected function _before()
+    /**
+     * It should throw if file cannot be symlinked
+     *
+     * @test
+     */
+    public function should_throw_if_file_cannot_be_symlinked()
     {
-        $this->filename   = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
-        $this->filesystem->is_dir(__DIR__)->willReturn(true);
-        $this->filesystem->is_writeable(__DIR__)->willReturn(true);
-        $this->event      = $this->prophesize('\Codeception\Event\SuiteEvent');
-        $this->printEvent = $this->prophesize('\Codeception\Event\PrintResultEvent');
+        $fooDestinationFolder = '/foo';
+        $gooDestinationFolder = '/goo';
+
+        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $gooDestination = $gooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+
+        $envDestinations = ['foo' => $fooDestinationFolder, 'goo' => $gooDestinationFolder];
+        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
+        $this->event->getSettings()->willReturn([]);
+
+        $this->filesystem->is_dir($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->is_writeable($fooDestinationFolder)->willReturn(true);
+        $this->filesystem->is_dir($gooDestinationFolder)->willReturn(true);
+        $this->filesystem->is_writeable($gooDestinationFolder)->willReturn(true);
+        $this->filesystem->file_exists($fooDestination)->willReturn(false);
+        $this->filesystem->file_exists($gooDestination)->shouldNotBeCalled();
+        $this->filesystem->symlink(
+            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
+            $fooDestination,
+            true
+        )->will(function () {
+            throw new IOException('Symlink failed.');
+        });
+
+        $sut = $this->make_instance();
+
+        $this->expectException(ExtensionException::class);
+        $sut->symlink($this->event->reveal());
     }
 
-    protected function _after()
+    /**
+     * It should throw if unlink operation throws
+     *
+     * @test
+     */
+    public function should_throw_if_unlink_operation_throws()
     {
+        $dest = '/foo' . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+        $this->config = ['mode' => 'plugin', 'destination' => ['foo' => '/foo']];
+        $this->event->getSettings()->willReturn([]);
+        $this->filesystem->is_dir('/foo')->willReturn(true);
+        $this->filesystem->is_writeable('/foo')->willReturn(true);
+        $this->filesystem->file_exists($dest)->willReturn(true);
+        $this->filesystem->unlink($dest)->will(function () {
+            throw new \Exception('Something happened');
+        });
+
+        $sut = $this->make_instance();
+        $sut->setOutput(new BufferedOutput());
+
+        $sut->unlink($this->event->reveal());
     }
 }

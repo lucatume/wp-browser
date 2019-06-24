@@ -112,7 +112,7 @@ class WPDbBlogSubdirCest
                     'domain' => $I->grabBlogDomain($blogId),
                     'path' => $I->grabBlogPath($blogId),
                 ];
-            }, $blogIds), JSON_PRETTY_PRINT));
+        }, $blogIds), JSON_PRETTY_PRINT));
         $blogTablesBefore = array_combine($blogIds, array_map(function ($blogId) use ($I) {
             return $I->grabBlogTableNames($blogId);
         }, $blogIds));
@@ -146,7 +146,7 @@ class WPDbBlogSubdirCest
                     'domain' => $I->grabBlogDomain($blogId),
                     'path' => $I->grabBlogPath($blogId),
                 ];
-            }, $blogIds), JSON_PRETTY_PRINT));
+        }, $blogIds), JSON_PRETTY_PRINT));
         $blogTablesBefore = array_combine($blogIds, array_map(function ($blogId) use ($I) {
             $tables = $I->grabBlogTableNames($blogId);
             sort($tables);
@@ -185,7 +185,7 @@ class WPDbBlogSubdirCest
         $tablePrefix = $I->grabBlogTablePrefix($blogId);
         $expectedTables = array_map(function ($table) use ($tablePrefix) {
             return $tablePrefix . $table;
-        }, Tables::newBlogTables());
+        }, Tables::blogTables());
         sort($expectedTables);
         $I->assertEquals($expectedTables, $blogTables);
         $I->assertFileExists($I->getBlogUploadsPath($blogId));

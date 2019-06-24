@@ -38,6 +38,10 @@ Yes, although wp-browser, as a development tool, cannot be installed without [Co
 No. Unless you know very well what you're doing that's a dangerous idea that might leave you with a broken site and an empty database.  
 As almost any testing tool wp-browser should be used locally on local installations of WordPress that do not contain any valuable information.
 
+### How can I avoid the WPDb module from replacing the contents of my database?
+You should always backup any database that contains any information you care about **before** running any test.  
+You can read the answer to this question [in the WPDb module documentation](modules/WPDb.md#change-the-databse-used-depending-on-whether-you're-running-tests-or-not).  
+
 ### Can I run all my tests with one command?
 Theoretically: yes, in practice: no.  
 When you use `codecept run` Codeception will run all the tests from all the suites.  

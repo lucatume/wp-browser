@@ -139,12 +139,12 @@ abstract class WP_Ajax_UnitTestCase extends WP_UnitTestCase {
 	 * Error conditions (no output, just die) will throw <code>WPAjaxDieStopException( $message )</code>
 	 * You can test for this with:
 	 * <code>
-	 * $this->setExpectedException( 'WPAjaxDieStopException', 'something contained in $message' );
+	 * $this->expectException( WPAjaxDieStopException::class, 'something contained in $message' );
 	 * </code>
 	 * Normal program termination (wp_die called at then end of output) will throw <code>WPAjaxDieContinueException( $message )</code>
 	 * You can test for this with:
 	 * <code>
-	 * $this->setExpectedException( 'WPAjaxDieContinueException', 'something contained in $message' );
+	 * $this->expectException( WPAjaxDieContinueException::class, 'something contained in $message' );
 	 * </code>
 	 * @param string $message
 	 */

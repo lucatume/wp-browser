@@ -3,9 +3,73 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.14] 2019-06-14;
+### Fixed
+- remove left-over `%WP_URL%` from generated configuration files when runnin `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
+
+## [2.2.13] 2019-06-13;
+### Fixed
+- when the `WPLoader` module is set to `loadOnly` mode and used in conjunction with a `*Db` module delay its load after all other modules ran their `_beforeSuite` action; this tackles an issue only partially resolved in `2.2.8` (thanks @Luc45)
+
+## [2.2.12] 2019-06-10;
+### Fixed
+- make sure Cron is disabled while `WPLoader` module is installing WordPress in isolation (default mode)
+
+## [2.2.11] 2019-06-06;
+## Added
+- support for `timeout` parameter in WPCLI module configuration
+
+## [2.2.10] 2019-06-03;
+### Added
+- when in debug mode the `WPLoader` module will now display a report about the bootstrapped WordPress installation
+
+### Fixed
+- restored the `Codeception\Test\Unit` class as parent of the `\Codeception\TestCase\WPTestCase`; it was erroneously removed from the inheritance tree in 2.2.7
+
+## [2.2.9] 2019-05-24;
+### Fixed
+- catch unlink errors in the `Symlinker` extension (thanks @halmos)
+- fix `WPTestCase` template generation to scaffold PHPUnit `8.0+` compatible code (thanks @halmos)
+
+### Changed
+- updated the documentation to cover some more frequent questions and issues about WPDb
+
+## [2.2.8] 2019-05-20;
+### Changed
+- updated requirement of `codeception/codeception` to include version `3.0`
+- updated `WPTestCase` to handle PHPUnit version `8.0+` compatibility
+- internalized the classes and functions provided by the `lucatume/wp-browser-commons` package
+
+### Fixed
+- initialize the WPLoader module after all other modules initialized when `loadOnly` is `true` to avoid WordPress exiting due to a non-initialized database fixture
+
+## [2.2.7] 2019-05-08;
+### Changed
+- replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
+
+## [2.2.6] 2019-05-07;
+### Added
+- informative debug to try and provide guidance and information when the `WPLoader` and `WPDb` modules are used together and WordPress dies suddenly.
+- the `WPDb::dontSeePostWithTermInDatabase` method (#230, thanks @jcabot)
+
+### Fixed
+- the `WPDb::seePostWithTermInDatabase` method logic (#230, thanks @jcabot)
+
+
+## [2.2.5] 2019-04-22;
+### Added
+- allow opening PHP tags in the code arguments of the `WPFilesystem::havePlugin`, `WPFilesystem::haveMuPlugin` and `WPFilesystem::haveTheme` methods.
+
+## [2.2.4] 2019-04-19;
+### Fixed
+- a mu-plugins path issue in the `WPFilesystem` module.
+
+## [2.2.3] 2019-04-19;
 ### Added
 - first version of the documentaion
 - fixed an issue where the initialization template would not correctly set the placeholder names (thanks @Luc45)
+- methods `getQueries` and `countQueries` to the `WPQueries` module
 
 ## [2.2.2] 2019-04-14;
 ### Fixed
@@ -842,8 +906,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.2...HEAD
-[2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.14...HEAD
+[2.2.14]: https://github.com/lucatume/wp-browser/compare/2.2.13...2.2.14
+[2.2.13]: https://github.com/lucatume/wp-browser/compare/2.2.12...2.2.13
+[2.2.12]: https://github.com/lucatume/wp-browser/compare/2.2.11...2.2.12
+[2.2.11]: https://github.com/lucatume/wp-browser/compare/2.2.10...2.2.11
+[2.2.10]: https://github.com/lucatume/wp-browser/compare/2.2.9...2.2.10
+[2.2.9]: https://github.com/lucatume/wp-browser/compare/2.2.8...2.2.9
+[2.2.8]: https://github.com/lucatume/wp-browser/compare/2.2.7...2.2.8
+[2.2.7]: https://github.com/lucatume/wp-browser/compare/2.2.6...2.2.7
+[2.2.6]: https://github.com/lucatume/wp-browser/compare/2.2.5...2.2.6
+[2.2.5]: https://github.com/lucatume/wp-browser/compare/2.2.4...2.2.5
+[2.2.4]: https://github.com/lucatume/wp-browser/compare/2.2.3...2.2.4
+[2.2.3]: https://github.com/lucatume/wp-browser/compare/2.2.2...2.2.3
+[2.2.2]: https://github.com/lucatume/wp-browser/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/lucatume/wp-browser/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/lucatume/wp-browser/compare/2.1.6...2.2.0
 [2.1.6]: https://github.com/lucatume/wp-browser/compare/2.1.5...2.1.6
