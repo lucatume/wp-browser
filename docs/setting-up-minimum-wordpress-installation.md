@@ -1,6 +1,9 @@
 ## Setting up a minimum WordPress installation
+
 As mentioned in [Installation](installation.md) section wp-browser will **not** download, configure and install WordPress for you.  
+
 On a high level, once WordPress is installed and configured, whatever local development environment solution you've used, there are some informations you'll need to gather before moving into wp-browser configuration.  
+
 While there will be a section dedicated to different environments and setups I will outline below the example setup I will use, in the next section, to configure wp-browser:
 
 * WordPress is installed, on my machine, at `/Users/luca/Sites/wordpress`.

@@ -1,14 +1,18 @@
 ## What is a unit test? An acceptance test?
-This page has no pretense to be THE source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and component of testing.  
+This page has no pretense to be _THE_ source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and component of testing.  
+
 Wikipedia, forums and other documents online will offer alternate, and equally valid, definitions.
 
 ## The signup page example
 Let's assume I'm testing a WordPress plugin that adds mailing list management and subscription functionalities to a site.  
+
 The plugin provides a number of functions and, among them, it will add a sign-up page to receive users applications.  
 
 ### Acceptance tests
 In brief: **make assertions as a user would**.  
+
 The user might be tech-savvy as much as I want her to be but still make assertions only on what feedback the site provides. 
+
 The code below tests a user can subscribe to the mailing list:
 
 ```php
@@ -36,7 +40,9 @@ $I->waitForElement( '#signup-confirmation' );
 
 ### Functional tests
 In brief: **make assertions as a developer would**.  
+
 The test code below asserts front-end submissions are correcty processed from the developer perspective:
+
 ```php
 <?php
 // file tests/functional/SignupSubmissionCest.php
@@ -78,14 +84,20 @@ class SignupSubmissionCest {
 ```
     
 The code looks, initially, like an acceptance test, but differs in its action and assertion phase: in place of filling a form and clicking "Submit" it sends a `POST` request to a REST API endpoint and checks the effect of the submission in the database.  
+
 All of these actions fall squarely into what a developer would do, not into what a user could/should be able to do.  
+
 Furthermore, the format of the test is not the same as the one used in the acceptance test.  
+
 The acceptance test is written in the most eloquent testing format supported by Codeception, the [Cept format](https://codeception.com/docs/02-GettingStarted), this test uses a more PHPUnit-like format, the [Cest format](https://codeception.com/docs/07-AdvancedUsage#Cest-Classes).  
+
 While the first is easier to skim for  non-developers the second harnesses the power of a re-using pieces of code, the page creation and navigation in the example, to optimize the test code.
 
 ### Integration test
 In brief: **test code modules in the context of a WordPress website**.
+
 In this type of test the WordPress, and additional plugins code, is loaded in the same variable scope as the tests; this is why in the example below I'm using classes (`WP_REST_Request`, `WP_REST_Response`) and methods (`register_rest_route`) defined by WordPress, not the plugin code.  
+
 The REST API request sent by the application form will be handled by a class, `Acme\Signup\SubmissionHandler`, that's been attached to the `/wp-json/acme/v1/signup` path:
 
 ```php
