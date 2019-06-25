@@ -24,7 +24,7 @@ extensions:
 ## Generation commands
 The library provides commands to quickly scaffold **integration** test cases for specific types of WordPress components, see [levels of testing for more information](./../levels-of-testing.md).  
 
-The tests almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `Codeception\TestCase\WPTestCase` test case.
+The tests are almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `Codeception\TestCase\WPTestCase` test case.
 
 ### generate:wpunit
 Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the

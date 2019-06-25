@@ -12,16 +12,13 @@ Whenever you find yourself struggling with something, anything, while using `wp-
 If your issue is not a real issue it will be quickly closed but still provide two values:
 
 1. it will remain in the repository issues archive making it searchable for any other user having the same, or similar, issue
-
-1. it might shine a light on missing documentation, API or clarity in general.
+2. it might shine a light on missing documentation, API or clarity in general.
  Take the time to fill in the issue template provided and provide as many details as you can.
  
 ### Reporting a bug
 
 The project pulls a number of components together and will have bugs.  
-
 If you run into one of them then provide as much detail as possible when opening the issue.  
-
 Beside what the issue template will ask feel free to provide as much additional detail as you can.  
 
 ### Requesting documentation
@@ -32,10 +29,9 @@ report it. No documentation can possibly cover any case ever but there's a good 
 ### Requesting new features  
  
  I've not used all the tools, environments and possible setups `wp-browser` could cover.  
- 
 
- If you feel wp-browser is missing a feature open an issue and try to provide as many details as possible:  
- 
+ If you feel wp-browser is missing a feature open an issue and try to provide as many details as possible:
+
  * What  problem would the new feature solve?
  * Is it possible to do what you would like the new feature to do with the existing API?
  * Could you provide an example of the API/configuration you would like to be able to use?

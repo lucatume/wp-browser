@@ -5,7 +5,6 @@ This page has no pretense to be _THE_ source of truth about what is called how i
 ## The signup page example
 
 Let's assume I'm testing a WordPress plugin that adds mailing list management and subscription functionalities to a site.  
-
 The plugin provides a number of functions and, among them, it will add a sign-up page to receive users applications.  
 
 ### Acceptance tests
@@ -39,6 +38,7 @@ $I->waitForElement( '#signup-confirmation' );
 ```
 
 ### Functional tests
+
 In brief: **make assertions as a developer would**.  
 
 The test code below asserts front-end submissions are correcty processed from the developer perspective:
@@ -94,6 +94,7 @@ The acceptance test is written in the most eloquent testing format supported by 
 While the first is easier to skim for  non-developers the second harnesses the power of a re-using pieces of code, the page creation and navigation in the example, to optimize the test code.
 
 ### Integration tests
+
 In brief: **test code modules in the context of a WordPress website**.
 
 In this type of test the WordPress, and additional plugins code, is loaded in the same variable scope as the tests; this is why in the example below I'm using classes (`WP_REST_Request`, `WP_REST_Response`) and methods (`register_rest_route`) defined by WordPress, not the plugin code.  
@@ -207,14 +208,13 @@ class EmailValidatorTest extends Codeception\Test\Test {
 ```
 
 Unit tests is where stubbing/mocking/spying of dependencies is used to gain total control over the input and context the class is using.  
-
 In the last test method I'm doing exactly that testing the email validator with an external validation service.
 
 In the example I'm using the [Prophecy mock engine](https://github.com/phpspec/prophecy) that comes [with PHPUnit](https://phpunit.de/manual/6.5/en/test-doubles.html) along with its own mocking/stubbing/spying solutions.  
-
 There are other mocking engines (e.g [Mockery](http://docs.mockery.io/en/latest/)) that could be used.
 
 ### WordPress "unit" tests
+
 In brief: **test single classes or functions that require WordPress code in as much isolation as possible**.  
 
 This is what most people referring to "unit tests" in the context of WordPress is talking about.  
@@ -269,10 +269,9 @@ The class uses the `WP_REST_Request` and `WP_Rest_Response` classes as input and
 
 One solution to avoid loading WordPress, could be to rewrite test versions of each and all the WordPress functions and classes needed by all the classes I want to unit test; this would require updating each time the classes requirements change.  
 
-Furthermore i18n (e.g. `__()`) and filtering (e.g `apply_filters`) functions would not need to be mocked if not in specific cases and would pretty much be copy and paste versions of the WordPres ones.  
+Furthermore internationalization (e.g. `__()`) and filtering (e.g `apply_filters`) functions would not need to be mocked if not in specific cases and would pretty much be copy and paste versions of the WordPres ones.  
 Loading single pieces of WordPress is a dangerous and brittle endeavour and it's not supported by the 
 framework.
-
 To avoid all this WordPress "unit tests" pay the price of having to bootstrap WordPress, thus requiring a database connection.
 
 This kind of test setup and level is the one you can see in the [PHPUnit Core suite of WordPress itself](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
