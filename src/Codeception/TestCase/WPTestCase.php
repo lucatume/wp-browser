@@ -171,8 +171,6 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _setUp()
     {
-        Unit::_setup();
-
         set_time_limit(0);
 
         if (!self::$ignore_files) {
@@ -207,6 +205,17 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $this->start_transaction();
         $this->expectDeprecated();
         add_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
+
+        /**
+         * After WordPress has been initialized in the test context initialize the Codeception Unit test case.
+         * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
+         * Codeception versions.
+         */
+        if (method_exists(Unit::class, '_setUp')) {
+            Unit::_setup();
+        } elseif (method_exists(Unit::class, 'setUp')) {
+            Unit::setUp();
+        }
     }
 
     public function scan_user_uploads()
