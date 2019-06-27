@@ -2,6 +2,8 @@
 namespace Codeception\TestCase;
 
 // phpcs:disable
+use Codeception\Test\Unit;
+
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
 }
@@ -169,6 +171,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _setUp()
     {
+        Unit::_setup();
+
         set_time_limit(0);
 
         if (!self::$ignore_files) {
