@@ -1808,7 +1808,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
                  'readers_count' =&gt; 23
              ],
             'tax_input' =&gt; [
-                 'genre' =&gt; 'fiction'
+                 ['genre' =&gt; 'fiction']
              ]
     ]);</code></pre>
 <h4>Parameters</h4>

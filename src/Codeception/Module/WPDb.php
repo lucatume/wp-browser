@@ -520,7 +520,7 @@ class WPDb extends Db
      *              'readers_count' => 23
      *          ],
      *         'tax_input' => [
-     *              [ 'genre' => 'fiction' ]
+     *              ['genre' => 'fiction']
      *          ]
      * ]);
      * ```
