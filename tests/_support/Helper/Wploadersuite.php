@@ -6,5 +6,13 @@ namespace Helper;
 
 class Wploadersuite extends \Codeception\Module
 {
+    public function create_a_post()
+    {
+        yield wp_insert_post([
+            'post_title' => 'test',
+            'post_status' => 'publish',
+        ]);
 
+        yield $this->getModule('WPLoader')->factory()->post->create();
+    }
 }

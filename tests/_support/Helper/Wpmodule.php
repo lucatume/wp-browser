@@ -6,5 +6,4 @@ namespace Helper;
 
 class Wpmodule extends \Codeception\Module
 {
-
 }

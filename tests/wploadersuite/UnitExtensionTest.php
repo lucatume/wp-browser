@@ -1,7 +1,5 @@
 <?php
 
-use Codeception\Stub\Expected;
-
 class UnitExtensionTest extends \Codeception\TestCase\WPTestCase
 {
     /**
@@ -82,5 +80,21 @@ class UnitExtensionTest extends \Codeception\TestCase\WPTestCase
         );
 
         $this->assertNull($stub->to_array());
+    }
+
+    /**
+     * It should allow using methods provided from a module on the tester
+     *
+     * @test
+     */
+    public function should_allow_using_methods_provided_from_a_module_on_the_tester()
+    {
+        $first_post = $this->tester->create_a_post();
+
+        $this->assertInstanceOf(WP_Post::class, get_post($first_post));
+
+        $second_post = $this->tester->create_a_post();
+
+        $this->assertInstanceOf(WP_Post::class, get_post($second_post));
     }
 }
