@@ -79,6 +79,46 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
               activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
 ```
 
+## Usage in integration or "WordPress unit" tests
+
+The most common use of this module is to run integration, or "WordPress unit" tests (see [levels of testing for more information](./../levels-of-testing.md)).  
+
+As a first step generate a `WPTestCase` using Codeception command-line utility (see [the commands provided by wp-browser](./../commands.md)):
+
+```bash
+codecept generate:wpunit my_suite "Acme\User"
+```
+
+Codeception will generate the `tests/my_suite/Acme/UserTest.php` class.
+The class extends the `Codeception\TestCase\WPTestCase` class provided by wp-browser; this looks like a normal PHPUnit test case but has some perks due to it's _mixed breed_ nature.  
+Understanding them might help you work with it:
+
+* WordPress is installed and configured for the tests **before** the test case is loaded; WordPress defined functions and classes (and those of the plugins and themes loaded with it) will be available in the `setUpBeforeClass` method. 
+* WordPress is **not** loaded when PHPUnit will call the [data provider methods](https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers); this means the `post_provider` method wil generate a function not found exception when the test case runs as the WordPress defined methods are not loaded yet:
+	```php
+	public function post_provider(){
+			// `wp_insert_post` is loaded with WordPress and WordPress has not been loaded yet!
+			return [
+					[wp_insert_post(['post_title' => 'Test', 'post_status' => 'publish'])]
+			];
+	}
+
+	public funcion test_posts($post_id){
+			$this->assertInstanceOf(WP_Post::class, get_post($post_id));
+	}
+	```
+* WordPress is reset to an initial known state before each test runs; the database transaction is rolled back to wipe any data and tables you might have manipulated in the tests, the global space is cleaned. See [Everything happens in a transaction](#everything-happens-in-a-transaction).  
+* This is a [Codeception Unit test](https://codeception.com/docs/05-UnitTests), as such it does provide access to the `$this->tester` property to access the methods defined in other modules loaded in the suite and to [Codeception test doubles](https://codeception.com/docs/05-UnitTests#Test-Doubles)
+* This is a [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") test case too; there are way too many testing functions to cover to report them here but, to highlight a few: [mocking with Prophecy](https://phpunit.readthedocs.io/en/8.2/test-doubles.html) and the wealth of [PHPUnit assertion methods](https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html).
+* This is kind of a WordPress Core suite test case; as such it provides access to its functions and to the often-overlooked `static::factory()` method; in this instance too there are too many methods to list them all but it's worth noting how easy it is to set up test fixtures with the factory:
+	```php
+	public function test_post_creation(){
+			$random_post_id = static::factory()->post->create();
+
+			$this->assertInstanceOf(WP_Post::class, get_post($random_post_id));
+	}
+	```
+
 ## WPLoader to only bootstrap WordPress
 If the need is to just bootstrap the WordPress installation in the context of the tests variable scope then the `WPLoader` module `loadOnly` parameter should be set to `true`; this could be the case for functional tests in need to access WordPress provided methods, functions and values.  
 An example configuration for the module in this mode is this one:
