@@ -147,6 +147,7 @@ This detail will be used in the context of acceptance and functional tests by th
 In my example setup it's empty as I've not set any password for the root account.
   
 In your case it might be different and it should be the password associated with the user specified in the answer to the [What is the user of the test database used by the test site?](#what-is-the-user-of-the-test-database-used-by-the-test-site) question.
+
 This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb.md).
 
 #### What is the table prefix of the test database used by the test site?
@@ -183,8 +184,11 @@ Again the database host is **in relation to the machine running the tests**, all
 This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
 
 #### What is the user of the test database WPLoader should use?
+
 In my example it's `root`.  
+
 Similar to the question [What is the user of the test database used by the test site?](#what-is-the-user-of-the-test-database-used-by-the-test-site) but in relation to the database specified in the question [What is the name of the test database WPLoader should use?](#what-is-the-name-of-the-test-database-wploader-should-use).  
+
 This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
 
 #### What is the password of the test database WPLoader should use?
@@ -311,6 +315,7 @@ This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootst
 ### If you entered a wrong value
 
 No worries, just correct the value in the environment file or in the suites configuration files.  
+
 The environment file will have the name you specified in the answer the question [How would you like to call the env configuration file?](#how-would-you-like-to-call-the-env-configuration-file).  
 
 The suites configuration files can be found in `tests/<suite>.suite.yml`; e.g. the `wpunit` suite configuration file will be `tests/wpunit.suite.yml` file.
@@ -340,7 +345,8 @@ I use MySQL binary to export the database state (a dump) with the command:
 mysqldump -u root -h 127.0.0.1 -P 3306 wordpress > /Users/luca/Sites/wordpress/wp-content/plugins/acme-plugin/tests/_data/dump.sql
 ```
 
-I could use any other combination of tools to produce the dump; using `mysql` binary is not a requirement.  
+I could use any other combination of tools to produce the dump; using `mysql` binary is not a requirement. 
+ 
 Graphic interfaces like [SequelPro](https://sequelpro.com/), [Adminer](https://www.adminer.org/) and the like would be perfectly fine.
 
 ## Pre-flight check
