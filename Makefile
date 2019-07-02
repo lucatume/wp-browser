@@ -173,7 +173,7 @@ ci_script:
 	codecept run unit
 	codecept run webdriver
 	codecept run wpfunctional
-	codecept g:wpunit wploadersuite UnitExtension
+	codecept g:wpunit wploadersuite UnitWrapping
 	codecept run wploadersuite
 	codecept run wpmodule
 	codecept run wploader_wpdb_interaction
