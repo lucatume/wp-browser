@@ -5,6 +5,7 @@ This page has no pretense to be _THE_ source of truth about what is called how i
 ## The signup page example
 
 Let's assume I'm testing a WordPress plugin that adds mailing list management and subscription functionalities to a site.  
+
 The plugin provides a number of functions and, among them, it will add a sign-up page to receive users applications.  
 
 ### Acceptance tests
@@ -165,8 +166,11 @@ In the context of WordPress _"integration"_ might also mean testing that filters
 
 
 ### Unit tests
+
 In brief: **test single classes or functions in isolation**.
+
 The email address is validated by the `Acme\Signup\EmailValidator` class.  
+
 In the test code below I want to make sure the validation works as intended.
 
 ```php
@@ -208,9 +212,11 @@ class EmailValidatorTest extends Codeception\Test\Test {
 ```
 
 Unit tests is where stubbing/mocking/spying of dependencies is used to gain total control over the input and context the class is using.  
+
 In the last test method I'm doing exactly that testing the email validator with an external validation service.
 
 In the example I'm using the [Prophecy mock engine](https://github.com/phpspec/prophecy) that comes [with PHPUnit](https://phpunit.de/manual/6.5/en/test-doubles.html) along with its own mocking/stubbing/spying solutions.  
+
 There are other mocking engines (e.g [Mockery](http://docs.mockery.io/en/latest/)) that could be used.
 
 ### WordPress "unit" tests
@@ -270,8 +276,10 @@ The class uses the `WP_REST_Request` and `WP_Rest_Response` classes as input and
 One solution to avoid loading WordPress, could be to rewrite test versions of each and all the WordPress functions and classes needed by all the classes I want to unit test; this would require updating each time the classes requirements change.  
 
 Furthermore internationalization (e.g. `__()`) and filtering (e.g `apply_filters`) functions would not need to be mocked if not in specific cases and would pretty much be copy and paste versions of the WordPres ones.  
+
 Loading single pieces of WordPress is a dangerous and brittle endeavour and it's not supported by the 
 framework.
+
 To avoid all this WordPress "unit tests" pay the price of having to bootstrap WordPress, thus requiring a database connection.
 
 This kind of test setup and level is the one you can see in the [PHPUnit Core suite of WordPress itself](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/).
