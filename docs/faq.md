@@ -86,8 +86,7 @@ So, in short, **run each suite separately**.
 
 Yes, you should.  
 
-As an example you might have a `frontend` suite running [acceptance tests]
-(levels-of-testing.md#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.  
+As an example you might have a `frontend` suite running [acceptance tests](levels-of-testing.md#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.  
 
 Think of suites as a tool to organize your tests: there's a good measure between too organized and not organized at all.
 
