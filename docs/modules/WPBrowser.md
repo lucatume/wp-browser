@@ -1,9 +1,13 @@
 # WPBrowser module
+
 This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+
 This module extends the [PHPBrowser module](https://codeception.com/docs/modules/PhpBrowser) adding WordPress-specific configuration parameters and methods.  
+
 The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver.md).  
 
 ## Configuration
+
 Since this module extends the `PHPBrowser` module provided by Codeception, please refer to the [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for more information about the base configuration parameters.  
 
 * `url` *required* - Start URL of your WordPress project, e.g. `http://wp.localhost`.
@@ -16,6 +20,7 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 * `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
 
 ### Example configuration
+
 ```yaml
   modules:
       enabled:
@@ -32,6 +37,7 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 
 
 ## Public API
+
 <nav>
 	<ul>
 		<li>

@@ -1,11 +1,17 @@
 # Extensions
+
 The [Codeception testing framework](http://codeception.com/ "Codeception - BDD-style PHP testing.") can be extended in a number of ways.  
+
 The one this project leverages the most are modules but [extensions are another way].  
+
 Modules extend the functionality of Codeception in the context of the tests, while extensions extend its interaction capacities; this is by no means a strict rule but that's usually the case.  
+
 The package contains two additional extensions to facilitate testers' life.
 
 ### Symlinker
+
 The `tad\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
+
 Since version `3.9` WordPress supports this feature (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
 
 * symbolically linking a plugin or theme folder in the specified destination before any suite boots up
@@ -40,10 +46,15 @@ The arguments are:
 * `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
 
 ### Copier
+
 The `tad\WPBrowser\Extension\Copier` extension provides an automation to have specific files and folders copied to specified destination files and folders before the suites run.
+
 While WordPress handles symbolic linking pretty well there are some cases, like themes and drop-ins, where there is a need for "real" files to be put in place.
+
 One of such cases is, currently, one where [Docker](https://www.docker.com/get-started) is used to to host and serve the code under test: symbolically linked files cannot be bound inside a container and Docker containers will fail to start in this case.
+
 The extension follows the standard Codeception extension activation and has one configuration parameter only:
+
 
 ```yaml
 extensions:
@@ -59,11 +70,15 @@ extensions:
 ```
 
 The extension will handle absolute and relative paths for sources and destinations and will resolve relative paths from the project root folder.
+
 When copying directories the extension will only create the destination folder and not the folder tree required; in the example configuration above the last entry specifies that a `mu-plugin.php` file should be copied to the `mu-plugins` folder: that `mu-plugins` folder must be there already.
 
 #### Environments support
+
 Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  
+
 Codeception [supports environments](http://codeception.com/docs/07-AdvancedUsage#Environmentshttp://codeception.com/docs/07-AdvancedUsage#Environments) and the extension does as well specifying a destination for each.
+
 As an example the `acceptance.suite.yml` file might be configured to support `single` and `multisite` environments:
 
 ```yaml
@@ -83,7 +98,9 @@ env:
                 WPDb:
                     dsn: 'mysql:host=127.0.0.1;dbname=mu'
 ```
+
 In the `codeception.yml` file specifying a `destination` for each supported environment will tell the extension to symbolically link the plugin or theme file to different locations according to the current environment:
+
 ```yaml
 extensions:
     enabled:
@@ -95,8 +112,11 @@ extensions:
                 single: /var/www/wp/wp-content/plugins
                 multisite: /var/www/mu/wp-content/plugins
 ```
+
 If no destination is specified for the current environment the extension will fallback to the first specified one.  
+
 A `default` destination can be specified to override this behaviour.
+
 ```yaml
 extensions:
     enabled:
@@ -109,13 +129,18 @@ extensions:
                 single: /var/www/wp/wp-content/plugins
                 multisite: /var/www/mu/wp-content/plugins
 ```
+
 When running a suite specifying more than one environment like
+
 
 ```bash
 codecept run acceptance --env foo,baz,multisite
 ```
+
 Then the extension will use the first matched one, in the case above the `multisite` destination will be used.  
+
 The `rootFolder` parameter too can be set to be environment-aware and it will follow the same logic as the destination:
+
 
 ```yaml
 extensions:
