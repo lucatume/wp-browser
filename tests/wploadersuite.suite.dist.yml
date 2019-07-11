@@ -3,6 +3,7 @@ modules:
     enabled:
         - \Helper\Wploadersuite
         - WPLoader
+        - WPQueries
     config:
         WPLoader:
             wpRootFolder: '%WP_ROOT_FOLDER%'
