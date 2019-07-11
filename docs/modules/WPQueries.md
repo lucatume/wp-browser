@@ -5,6 +5,46 @@ The module will set, if not set already, the `SAVEQUERIES` constant to `true` an
 
 ## Configuration
 This module does not require any configuration, but requires the [WPLoader module](WPLoader.md) to work correctly. 
+
+## Usage
+This module must be used in a test case extending the `\Codeception\TestCase\WPTestCase` class.  
+
+The module public API is accessible calling via the `\Codeception\TestCase\WPTestCase::queries()` method:
+
+```php
+<?php
+
+use Codeception\Module\WPQueries;
+
+class WPQueriesUsageTest extends \Codeception\TestCase\WPTestCase
+{
+    public function test_queries_made_by_factory_are_not_tracked()
+    {
+        $currentQueriesCount = $this->queries()->countQueries();
+
+        $this->assertNotEmpty($currentQueriesCount);
+
+        static::factory()->post->create_many(3);
+
+        $this->assertNotEmpty($currentQueriesCount);
+        $this->assertEquals($currentQueriesCount, $this->queries()->countQueries());
+    }
+
+    public function test_count_queries()
+    {
+        $currentQueriesCount = $this->queries()->countQueries();
+
+        $this->assertNotEmpty($currentQueriesCount);
+
+        foreach (range(1, 3) as $i) {
+            wp_insert_post(['post_title' => 'Post ' . $i, 'post_content' => str_repeat('test', $i)]);
+        }
+
+        $this->assertNotEmpty($currentQueriesCount);
+        $this->assertGreaterThan($currentQueriesCount, $this->queries()->countQueries());
+    }
+}
+```
 <!--doc-->
 
 
