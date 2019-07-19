@@ -2,6 +2,7 @@
 
 namespace Codeception\Lib\Generator;
 
+use Codeception\Configuration;
 use Codeception\Lib\Generator\Shared\Classname;
 use Codeception\TestCase\WPTestCase;
 use Codeception\Util\Shared\Namespaces;
@@ -21,6 +22,8 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
 class {{name}}Test extends {{baseClass}}
 {
 
+    {{tester}}
+    
     public function setUp(){{voidReturnType}}
     {
         // Before...
@@ -71,6 +74,33 @@ EOF;
             ->place('baseClass', $this->baseClass)
             ->place('name', $this->getShortClassName($this->name))
             ->place('voidReturnType', $voidReturnType)
+            ->place('tester', $this->getTester())
             ->produce();
+    }
+
+    private function getTester()
+    {
+        if (is_array($this->settings) && isset($this->settings['actor'])) {
+            $actor = $this->settings['actor'];
+        }
+
+        try {
+            $property = lcfirst(Configuration::config()['actor_suffix']);
+        } catch (\Exception $e) {
+            $property = '';
+        }
+
+        if (empty($property) || empty($actor)) {
+            return '';
+        }
+
+        $tester = <<<EOF
+    /**
+     * @var \\$actor
+     */
+    protected $$property;
+EOF;
+
+        return trim($tester);
     }
 }
