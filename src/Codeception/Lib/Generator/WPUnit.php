@@ -21,9 +21,7 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
 {{namespace}}
 class {{name}}Test extends {{baseClass}}
 {
-
     {{tester}}
-    
     public function setUp(){{voidReturnType}}
     {
         // Before...
@@ -78,29 +76,33 @@ EOF;
             ->produce();
     }
 
-    private function getTester()
+    protected function getTester()
     {
         if (is_array($this->settings) && isset($this->settings['actor'])) {
             $actor = $this->settings['actor'];
         }
 
         try {
-            $property = lcfirst(Configuration::config()['actor_suffix']);
+            $config = Configuration::config();
+            $propertyName = isset($config['actor_suffix']) ?
+                lcfirst($config['actor_suffix'])
+                : '';
         } catch (\Exception $e) {
-            $property = '';
+            $propertyName = '';
         }
 
-        if (empty($property) || empty($actor)) {
+        if (!isset($propertyName, $actor)) {
             return '';
         }
 
-        $tester = <<<EOF
+        $testerFrag = <<<EOF
     /**
      * @var \\$actor
      */
-    protected $$property;
+    protected $$propertyName;
+    
 EOF;
 
-        return trim($tester);
+        return ltrim($testerFrag);
     }
 }
