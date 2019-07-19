@@ -78,6 +78,7 @@ class WPUnitTest extends \Codeception\Test\Unit
      */
     public function should_correctly_add_the_tester_property_if_actor_is_set_in_the_settings()
     {
+        $this->setPhpUnitSeriesTo('6.0');
         $settings = ['namespace' => 'Acme', 'actor' => 'Fixer'];
         $name = 'SomeClass';
         $generator = new WPUnit($settings, $name, WPTestCase::class);
