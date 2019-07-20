@@ -3,6 +3,10 @@ namespace Acme;
 
 class SomeClassTest extends Codeception\TestCase\WPTestCase
 {
+    /**
+     * @var \Fixer
+     */
+    protected $tester;
     
     public function setUp()
     {

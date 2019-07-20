@@ -3,7 +3,7 @@ namespace Acme;
 
 class SomeClassTest extends Codeception\TestCase\WPTestCase
 {
-
+    
     public function setUp(): void
     {
         // Before...
