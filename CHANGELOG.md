@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Added
+- expose a `tad\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
+
 ### Fixed
 - add explicit override of the `$tester` property when scaffolding the `WPTestCase` class (thanks @Luc45)
 
