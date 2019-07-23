@@ -316,6 +316,9 @@ class WPLoader extends Module
             $this->installAndBootstrapInstallation();
         }
 
+        // Make the `factory` property available on the `$tester` property.
+        $this->setupFactoryStore();
+
         if (Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode(
                 $this->healthcheck->run(),
@@ -434,8 +437,6 @@ class WPLoader extends Module
         $this->removeLoadWatchers();
 
         $this->setupCurrentSite();
-        $this->factoryStore = new FactoryStore();
-        $this->factoryStore->setupFactories();
     }
 
     protected function ensureServerVars()
@@ -761,5 +762,14 @@ class WPLoader extends Module
         $this->wpDidLoadCorrectly = true;
         remove_filter('wp_redirect', [$this, '_wordPressRedirectHandler'], 0);
         $this->loadRedirections = [];
+    }
+
+    /**
+     * Instantiates and sets up the factory store that will be available on the suite tester.
+     */
+    protected function setupFactoryStore()
+    {
+        $this->factoryStore = new FactoryStore();
+        $this->factoryStore->setupFactories();
     }
 }

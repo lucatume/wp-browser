@@ -118,6 +118,14 @@ Understanding them might help you work with it:
 			$this->assertInstanceOf(WP_Post::class, get_post($random_post_id));
 	}
 	```
+* The `factory` property can be accessed on the `tester` property too and will work the same way as if called using `static::factory()`:
+    ```php
+	public function test_post_creation(){
+			$random_post_id = $this->tester->factory()->post->create();
+
+			$this->assertInstanceOf(WP_Post::class, get_post($random_post_id));
+	}
+    ```
 
 ## WPLoader to only bootstrap WordPress
 If the need is to just bootstrap the WordPress installation in the context of the tests variable scope then the `WPLoader` module `loadOnly` parameter should be set to `true`; this could be the case for functional tests in need to access WordPress provided methods, functions and values.  
