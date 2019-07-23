@@ -37,7 +37,6 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 
 
 ## Public API
-
 <nav>
 	<ul>
 		<li>
