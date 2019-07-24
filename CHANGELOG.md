@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.16] 2019-07-23;
+### Added
+- expose a `tad\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
+
+### Fixed
+- add explicit override of the `$tester` property when scaffolding the `WPTestCase` class (thanks @Luc45)
+
 ## [2.2.15] 2019-06-28;
 ### Fixed
 - call `Codeception\Test\Unit` setup methods in `WPTestCase` to provide Codeception Unit testing facilities in "WordPress unit" test cases
@@ -910,7 +917,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.15...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.16...HEAD
+[2.2.16]: https://github.com/lucatume/wp-browser/compare/2.2.15...2.2.16
 [2.2.15]: https://github.com/lucatume/wp-browser/compare/2.2.14...2.2.15
 [2.2.14]: https://github.com/lucatume/wp-browser/compare/2.2.13...2.2.14
 [2.2.13]: https://github.com/lucatume/wp-browser/compare/2.2.12...2.2.13

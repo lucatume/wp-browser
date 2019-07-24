@@ -162,21 +162,21 @@ ci_install:
 
 ci_before_script:
 	# Build Codeception modules.
-	codecept build
+	vendor/bin/codecept build
 
 ci_script:
-	codecept run acceptance
-	codecept run cli
-	codecept run climodule
-	codecept run functional
-	codecept run muloader
-	codecept run unit
-	codecept run webdriver
-	codecept run wpfunctional
-	codecept g:wpunit wploadersuite UnitWrapping
-	codecept run wploadersuite
-	codecept run wpmodule
-	codecept run wploader_wpdb_interaction
+	vendor/bin/codecept run acceptance
+	vendor/bin/codecept run cli
+	vendor/bin/codecept run climodule
+	vendor/bin/codecept run functional
+	vendor/bin/codecept run muloader
+	vendor/bin/codecept run unit
+	vendor/bin/codecept run webdriver
+	vendor/bin/codecept run wpfunctional
+	vendor/bin/codecept g:wpunit wploadersuite UnitWrapping
+	vendor/bin/codecept run wploadersuite
+	vendor/bin/codecept run wpmodule
+	vendor/bin/codecept run wploader_wpdb_interaction
 
 # Restarts the project containers.
 ci_docker_restart:
