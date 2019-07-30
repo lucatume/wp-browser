@@ -1,20 +1,39 @@
 <?php
+/**
+ * Handles the instantiation of the WordPress test factories.
+ *
+ * @package tad\WPBrowser\Module\WPLoader
+ */
 
 
 namespace tad\WPBrowser\Module\WPLoader;
 
+/**
+Class FactoryStore
+ *
+ * @package tad\WPBrowser\Module\WPLoader
+ *
+ * @property \WP_UnitTest_Factory_For_Post $post
+ * @property \WP_UnitTest_Factory_For_Bookmark $bookmark
+ * @property \WP_UnitTest_Factory_For_Attachment $attachment
+ * @property \WP_UnitTest_Factory_For_User $user
+ * @property \WP_UnitTest_Factory_For_Comment $comment
+ * @property \WP_UnitTest_Factory_For_Blog $blog
+ * @property \WP_UnitTest_Factory_For_Network $network
+ * @property \WP_UnitTest_Factory_For_Term $term
+ */
 class FactoryStore
 {
 
     /**
      * @var \WP_UnitTest_Factory_For_Post
      */
-    public $post;
+    protected $post;
 
     /**
      * @var \WP_UnitTest_Factory_For_Bookmark
      */
-    public $bookmark;
+    protected $bookmark;
 
     /**
      * @var \WP_UnitTest_Factory_For_Attachment
@@ -24,49 +43,69 @@ class FactoryStore
     /**
      * @var \WP_UnitTest_Factory_For_User
      */
-    public $user;
+    protected $user;
 
     /**
      * @var \WP_UnitTest_Factory_For_Comment
      */
-    public $comment;
+    protected $comment;
 
     /**
      * @var \WP_UnitTest_Factory_For_Blog
      */
-    public $blog;
+    protected $blog;
 
     /**
      * @var \WP_UnitTest_Factory_For_Network
      */
-    public $network;
+    protected $network;
 
     /**
      * @var \WP_UnitTest_Factory_For_Term
      */
-    public $term;
+    protected $term;
 
     /**
-     * Sets up and instantiates the factories.
+     * Lazily instantiate the factories if required.
+     *
+     * @param string $name The name of the property being accessed.
+     *
+     * @return \WP_UnitTest_Factory_For_Thing The required factory instance.
      */
-    public function setupFactories()
-    {
-        require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
-
-        $this->post         = new \WP_UnitTest_Factory_For_Post();
-        $this->bookmark     = new \WP_UnitTest_Factory_For_Bookmark();
-        $this->attachment   = new \WP_UnitTest_Factory_For_Attachment();
-        $this->user         = new \WP_UnitTest_Factory_For_User();
-        $this->comment      = new \WP_UnitTest_Factory_For_Comment();
-        $this->blog         = new \WP_UnitTest_Factory_For_Blog();
-        $this->network      = new \WP_UnitTest_Factory_For_Network();
-        $this->term         = new \WP_UnitTest_Factory_For_Term();
-    }
-
     public function __get($name)
     {
-        if ($name==='attachment') {
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
+        if ($this->{$name} !== null) {
+            return $this->{$name};
+        }
+
+        require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
+
+        switch ($name) {
+            case 'post':
+                $this->post         = new \WP_UnitTest_Factory_For_Post();
+                break;
+            case 'bookmark':
+                $this->bookmark     = new \WP_UnitTest_Factory_For_Bookmark();
+                break;
+            case 'attachment':
+                require_once ABSPATH . 'wp-admin/includes/image.php';
+                $this->attachment   = new \WP_UnitTest_Factory_For_Attachment();
+                break;
+            case 'user':
+                $this->user         = new \WP_UnitTest_Factory_For_User();
+                break;
+            case 'comment':
+                $this->comment      = new \WP_UnitTest_Factory_For_Comment();
+                break;
+            case 'blog':
+                $this->blog         = new \WP_UnitTest_Factory_For_Blog();
+                break;
+            case 'network':
+                $this->network      = new \WP_UnitTest_Factory_For_Network();
+                break;
+            case 'term':
+                $this->term         = new \WP_UnitTest_Factory_For_Term();
+                break;
         }
 
         return $this->{$name};

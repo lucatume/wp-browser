@@ -770,6 +770,5 @@ class WPLoader extends Module
     protected function setupFactoryStore()
     {
         $this->factoryStore = new FactoryStore();
-        $this->factoryStore->setupFactories();
     }
 }
