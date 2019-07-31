@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.17] 2019-07-31;
 ### Fixed
 - eager instantiation of WordPress factories causing warnings (#281)
 
@@ -919,8 +921,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Reference to ModuleConfigException class in WPLoader class.
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.16...HEAD
-[2.2.16]: https://github.com/lucatume/wp-browser/compare/2.2.15...2.2.16
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.17...HEAD
+[2.2.16]: https://github.com/lucatume/wp-browser/compare/2.2.16...2.2.17
 [2.2.15]: https://github.com/lucatume/wp-browser/compare/2.2.14...2.2.15
 [2.2.14]: https://github.com/lucatume/wp-browser/compare/2.2.13...2.2.14
 [2.2.13]: https://github.com/lucatume/wp-browser/compare/2.2.12...2.2.13
