@@ -175,6 +175,7 @@ ci_script:
 	vendor/bin/codecept run wpfunctional
 	vendor/bin/codecept g:wpunit wploadersuite UnitWrapping
 	vendor/bin/codecept run wploadersuite
+	vendor/bin/codecept run wploader_multisite
 	vendor/bin/codecept run wpmodule
 	vendor/bin/codecept run wploader_wpdb_interaction
 

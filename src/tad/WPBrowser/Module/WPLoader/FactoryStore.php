@@ -8,8 +8,11 @@
 
 namespace tad\WPBrowser\Module\WPLoader;
 
+use Codeception\Exception\ModuleException;
+use Codeception\Module\WPLoader;
+
 /**
-Class FactoryStore
+* Class FactoryStore
  *
  * @package tad\WPBrowser\Module\WPLoader
  *
@@ -98,6 +101,13 @@ class FactoryStore
                 $this->comment      = new \WP_UnitTest_Factory_For_Comment();
                 break;
             case 'blog':
+	            if ( ! function_exists( 'is_multisite' ) || ! is_multisite() ) {
+		            throw new ModuleException(
+			            WPLoader::class, 'The `blog` factory can only be used in multisite context:' .
+			                             'in `WPLoader` module configuration set `multisite: true`; read more at ' .
+			                             'https://wpbrowser.wptestkit.dev/summary/modules/wploader#configuration'
+		            );
+	            }
                 $this->blog         = new \WP_UnitTest_Factory_For_Blog();
                 break;
             case 'network':

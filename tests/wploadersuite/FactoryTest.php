@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Exception\ModuleException;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 
 class FactoryTest extends \Codeception\TestCase\WPTestCase
@@ -27,7 +28,6 @@ class FactoryTest extends \Codeception\TestCase\WPTestCase
             'attachment' => [ 'attachment', WP_UnitTest_Factory_For_Attachment::class ],
             'user'       => [ 'user', WP_UnitTest_Factory_For_User::class ],
             'comment'    => [ 'comment', WP_UnitTest_Factory_For_Comment::class ],
-            'blog'       => [ 'blog', WP_UnitTest_Factory_For_Blog::class ],
             'network'    => [ 'network', WP_UnitTest_Factory_For_Network::class ],
             'term'       => [ 'term', WP_UnitTest_Factory_For_Term::class ]
         ];
@@ -42,4 +42,15 @@ class FactoryTest extends \Codeception\TestCase\WPTestCase
     {
         $this->assertInstanceOf($factoryClass, $this->tester->factory()->{$factoryType});
     }
+
+	/**
+	 * It should throw if trying to use blog factory when not in multi-site context
+	 *
+	 * @test
+	 */
+	public function should_throw_if_trying_to_use_blog_factory_when_not_in_multi_site_context() {
+		$this->expectException(ModuleException::class);
+
+		$this->tester->factory()->blog;
+	}
 }
