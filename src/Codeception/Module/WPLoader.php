@@ -212,14 +212,16 @@ class WPLoader extends Module
         // WordPress  will deal with database connection errors
         $this->wpBootstrapFile = dirname(dirname(__DIR__)) . '/includes/bootstrap.php';
 
-        if (empty($this->config['loadOnly'])) {
-            // Any *Db Module should either not be running or properly configured if this has to run alongside it.
-            $this->ensureDbModuleCompat();
-        } else {
+        $loadOnly = ! empty($this->config['loadOnly']);
+
+        if ($loadOnly) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            $this->addAction(Events::SUITE_BEFORE, [$this, '_loadWordpress'], 0);
+            $this->addAction(Events::SUITE_INIT, [$this, '_loadWordpress'], 10);
 
             return;
+        } else {
+            // Any *Db Module should either not be running or properly configured if this has to run alongside it.
+            $this->ensureDbModuleCompat();
         }
 
         $this->_loadWordpress();
