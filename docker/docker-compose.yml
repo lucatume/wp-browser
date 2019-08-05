@@ -45,3 +45,10 @@ services:
       - ./../vendor/wordpress/wordpress:/var/www/html
       # bind the root folder to the /project folder
       - ./..:/project
+
+  waiter:
+    image: martin/wait
+    depends_on:
+      - db
+    environment:
+      - db_TCP=tcp://db:3306

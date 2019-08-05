@@ -57,6 +57,7 @@ docker_pull:
 		'mariadb:latest' \
 		'wordpress:php5.6' \
 		'andthensome/alpine-surge-bash' \
+		'martin/wait' \
 	); \
 	for image in "$${images[@]}"; do \
 		docker pull "$$image"; \
@@ -92,8 +93,8 @@ phpstan: src
 ci_setup_db:
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
-	# Give the DB container some time to initialize.
-	sleep 10
+	# Wait until DB is initialized.
+	docker-compose -f docker/${COMPOSE_FILE} run --rm waiter
 	# Create the databases that will be used in the tests.
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test_site"'
 	docker-compose -f docker/${COMPOSE_FILE} exec db bash -c 'mysql -u root -e "create database if not exists test"'
