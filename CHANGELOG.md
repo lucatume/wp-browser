@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+- enhancements to the build scripts (thanks @karser)
 
 ## [2.2.18] 2019-08-02;
 ### Fixed
