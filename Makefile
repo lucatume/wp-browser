@@ -250,17 +250,15 @@ gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 	rm -rf ${CURDIR}/docs/site/bin
 
 remove_hosts_entries:
-	echo "Removing project ${PROJECT} hosts entries..."
-	sudo sed -n -i .orig '/## ${PROJECT} project - start ##/{x;d;};1h;1!{x;p;};$${x;p;}' /etc/hosts
-	sudo sed -i .orig '/^## ${PROJECT} project - start ##/,/## ${PROJECT} project - end ##$$/d' /etc/hosts
+	echo "Removing project ${PROJECT} hosts entries (and backing up /etc/hosts to /etc/hosts.orig...)"
+	sudo sed -i.orig '/^## ${PROJECT} project - Start ##/,/## ${PROJECT} project - End ##$$/d' /etc/hosts
 
 sync_hosts_entries: remove_hosts_entries
 	echo "Adding project ${project} hosts entries..."
 	set -o allexport &&  source .env.testing &&  set +o allexport && \
-	sudo -- sh -c "echo '' >> /etc/hosts" && \
-	sudo -- sh -c "echo '## ${PROJECT} project - start ##' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT} project - Start ##' >> /etc/hosts" && \
 	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
-	sudo -- sh -c "echo '## ${PROJECT} project - end ##' >> /etc/hosts"
+	sudo -- sh -c "echo '## ${PROJECT} project - End ##' >> /etc/hosts"
 
 # Export a dump of WordPressdatabase to the _data folder of the project.
 wp_dump:
