@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [2.2.189] 2019-08-16;
+## [2.2.19] 2019-08-16;
 ### Fixed
 - enhancements to the build scripts (thanks @karser)
 - avoid redefining constants during `WPLoader` module bootstrap
