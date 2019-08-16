@@ -43,14 +43,15 @@ class FactoryTest extends \Codeception\TestCase\WPTestCase
         $this->assertInstanceOf($factoryClass, $this->tester->factory()->{$factoryType});
     }
 
-	/**
-	 * It should throw if trying to use blog factory when not in multi-site context
-	 *
-	 * @test
-	 */
-	public function should_throw_if_trying_to_use_blog_factory_when_not_in_multi_site_context() {
-		$this->expectException(ModuleException::class);
+    /**
+     * It should throw if trying to use blog factory when not in multi-site context
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_use_blog_factory_when_not_in_multi_site_context()
+    {
+        $this->expectException(ModuleException::class);
 
-		$this->tester->factory()->blog;
-	}
+        $this->tester->factory()->blog;
+    }
 }
