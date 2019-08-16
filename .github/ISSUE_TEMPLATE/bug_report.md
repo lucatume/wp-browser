@@ -20,7 +20,7 @@ WordPress structure and management: [e.g. default, Bedrock, other]
 If applicable, try to walk through the test and execute it manually: can you do it using the browser?
 
 **Codeception configuration file**  
-Paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensible data!  
+Paste, in a fenced YAML block, the content of your Codeception configuration file; remove any sensitive data!  
 
 ```yaml
 actor: Tester
@@ -39,7 +39,7 @@ params:
 
 
 **Suite configuration file**
-Paste, in a fenced YAML block, the content of the suite configuration file; remove any sensible data!
+Paste, in a fenced YAML block, the content of the suite configuration file; remove any sensitive data!
 
 ```yaml
 # Codeception Test Suite Configuration

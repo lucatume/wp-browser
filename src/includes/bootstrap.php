@@ -14,14 +14,19 @@ if (!function_exists('tad_functions')) {
 global $wpdb, $current_site, $current_blog, $wp_rewrite, $shortcode_tags, $wp, $phpmailer;
 
 define('DIR_TESTDATA', __DIR__ . '/../data');
-define('WP_LANG_DIR', DIR_TESTDATA . '/languages');
+
+if(!defined('WP_LANG_DIR')){
+		define('WP_LANG_DIR', DIR_TESTDATA . '/languages');
+}
 
 if (!defined('WP_TESTS_FORCE_KNOWN_BUGS')) {
 	define('WP_TESTS_FORCE_KNOWN_BUGS', false);
 }
 
-// Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only
-define('DISABLE_WP_CRON', true);
+// Cron tries to make an HTTP request to the blog, which always fails, because tests are run in CLI mode only.
+if(!defined('DISABLE_WP_CRON')){
+		define('DISABLE_WP_CRON', true);
+}
 
 define('REST_TESTS_IMPOSSIBLY_HIGH_NUMBER', 99999999);
 

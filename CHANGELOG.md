@@ -3,8 +3,11 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.189] 2019-08-16;
 ### Fixed
 - enhancements to the build scripts (thanks @karser)
+- avoid redefining constants during `WPLoader` module bootstrap
 
 ## [2.2.18] 2019-08-02;
 ### Fixed
@@ -1087,4 +1090,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.16]: https://github.com/lucatume/wp-browser/compare/2.2.15...2.2.16
 [2.2.17]: https://github.com/lucatume/wp-browser/compare/2.2.16...2.2.17
 [2.2.18]: https://github.com/lucatume/wp-browser/compare/2.2.17...2.2.18
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.18...HEAD
+[2.2.19]: https://github.com/lucatume/wp-browser/compare/2.2.18...2.2.19
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.19...HEAD
