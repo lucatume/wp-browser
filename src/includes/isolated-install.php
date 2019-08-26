@@ -143,6 +143,8 @@ echo "\nThe following tables will be dropped: ", "\n\t- ", implode("\n\t- ", $wp
 
 echo "\nInstalling WordPress...\n";
 
+$wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
+
 foreach ($wpdb->tables() as $table => $prefixed_table) {
 	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
 }
@@ -155,6 +157,8 @@ foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
 		$wpdb->$table = $prefixed_table;
 	}
 }
+
+$wpdb->query("SET FOREIGN_KEY_CHECKS = 1");
 
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
 add_action('populate_options', '_set_default_permalink_structure_for_tests');
