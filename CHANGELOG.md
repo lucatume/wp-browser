@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.20] 2019-08-26;
+### Fixed
+- ignore foreign key checks when dropping tables in isolated install (thanks @TimothyBJacobs)
+
 ## [2.2.19] 2019-08-16;
 ### Fixed
 - enhancements to the build scripts (thanks @karser)
@@ -1091,4 +1095,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.17]: https://github.com/lucatume/wp-browser/compare/2.2.16...2.2.17
 [2.2.18]: https://github.com/lucatume/wp-browser/compare/2.2.17...2.2.18
 [2.2.19]: https://github.com/lucatume/wp-browser/compare/2.2.18...2.2.19
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.19...HEAD
+[2.2.20]: https://github.com/lucatume/wp-browser/compare/2.2.19...2.2.20
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.20...HEAD
