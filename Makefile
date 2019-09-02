@@ -179,6 +179,8 @@ ci_script:
 	vendor/bin/codecept run wploader_multisite
 	vendor/bin/codecept run wpmodule
 	vendor/bin/codecept run wploader_wpdb_interaction
+	docker-compose -f test_runner.compose.yml run waiter
+	docker-compose -f test_runner.compose.yml run test_runner bash -c 'cd /project; vendor/bin/codecept run wpcli_module'
 
 # Restarts the project containers.
 ci_docker_restart:
