@@ -296,7 +296,7 @@ class WPCLI extends Module
     }
 
     /**
-     * Validates the configuration timeout..
+     * Validates the configuration timeout.
      *
      * @throws ModuleConfigException If the configuration timeout is not valid.
      */
