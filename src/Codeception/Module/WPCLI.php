@@ -104,6 +104,8 @@ class WPCLI extends Module
      */
     public function cli($userCommand = 'core version')
     {
+        $this->validatePath();
+
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
@@ -208,6 +210,8 @@ class WPCLI extends Module
      */
     public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
+        $this->validatePath();
+
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
@@ -274,7 +278,6 @@ class WPCLI extends Module
     protected function validateConfig()
     {
         parent::validateConfig();
-        $this->validatePath();
         $this->validateTimeout();
     }
 
