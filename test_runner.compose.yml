@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wp:
+    image: wordpress
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - "wp_data:/var/www/html"
+
+  waiter:
+    image: waisbrot/wait
+    links:
+      - db
+      - wp
+    environment:
+      TARGETS: db:3306,wp:80
+
+  test_runner:
+    image: php:7-cli
+    depends_on:
+      - waiter
+    links:
+      - db
+    volumes:
+      - ".:/project"
+      - "wp_data:/var/www/html"
+    command: bash -c 'cd project; vendor/bin/codecept'
+
+volumes:
+  wp_data:
