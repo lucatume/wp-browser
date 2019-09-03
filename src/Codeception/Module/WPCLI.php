@@ -199,6 +199,7 @@ class WPCLI extends Module
      * @return array An array containing the output of wp-cli split into single elements.
      *
      * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
+     *
      * @example
      * ```php
      * // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].

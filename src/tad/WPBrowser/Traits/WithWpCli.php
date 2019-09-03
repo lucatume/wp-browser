@@ -223,6 +223,21 @@ trait WithWpCli
      * @return array The full command including the current PHP binary and the absolute path to the wp-cli boot file.
      *
      * @throws WpCliException If there's an issue building the command.
+     *
+     * @example
+     * ```php
+     * // This method is defined in the WithWpCli trait.
+     *
+     * // Set the wp-cli path, `$this` is a test case.
+     * $this->setUpWpCli( '/var/www/html' );
+     *
+     * // Builds the full wp-cli command, including the `path` variable.
+     * $fullCommand =  $this->buildFullCommand(['core', 'version']);
+     *
+     * // The full command can then be used to run it with another process handler.
+     * $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
+     * $wpCliProcess->run();
+     * ```
      */
     public function buildFullCommand($command)
     {
