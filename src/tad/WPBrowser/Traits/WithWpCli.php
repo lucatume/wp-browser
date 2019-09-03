@@ -197,7 +197,8 @@ trait WithWpCli
      *                                  timeout entirely.
      *
      * @return \Symfony\Component\Process\Process The process object that executed the command.
-     * @throws WpCliException If wp-cli has not been set up first.
+     *
+     * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
     protected function executeWpCliCommand(array $command = ['version'], $timeout = 60)
     {
@@ -209,6 +210,7 @@ trait WithWpCli
         try {
             $process->mustRun();
         } catch (ProcessFailedException $e) {
+            // Even if the process did not complete successfully, go on.
             codecept_debug('WPCLI Process failed: ' . $e->getMessage());
         }
 

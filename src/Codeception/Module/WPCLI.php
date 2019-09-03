@@ -7,6 +7,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use tad\WPBrowser\Adapters\Process;
+use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Traits\WithWpCli;
 use function tad\WPBrowser\buildCommandline;
 
@@ -188,13 +189,14 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
-     * @param string|array $userCommand   The string of command, or commands, and parameters as it would be passed to
-     *                                    wp-cli minus `wp`.
+     * @param string|array $userCommand The command to execute, minus the `wp` part, as a string or as an array in the
+     *                                  format `['plugin', 'list', '--field=name']`.
      * @param callable     $splitCallback An optional callback function in charge of splitting the results array.
      *
      * @return array An array containing the output of wp-cli split into single elements.
      *
      * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
      *
      * @example
      * ```php
@@ -211,30 +213,7 @@ class WPCLI extends Module
      */
     public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
-        $this->validatePath();
-
-        /**
-         * Set an environment variable to let client code know the request is coming from the host machine.
-         * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
-         */
-        putenv('WPBROWSER_HOST_REQUEST="1"');
-        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
-
-        $this->debugSection('command', $userCommand);
-
-        $command = array_merge((array)$userCommand, $this->getConfigOptions($userCommand));
-
-        $this->debugSection('command with configuration options', $command);
-
-        $process = $this->executeWpCliCommand($command, $this->timeout);
-
-        $output = $process->getErrorOutput() ?: $process->getOutput();
-        $status = $process->getExitCode();
-
-        $this->debugSection('output', $output);
-        $this->debugSection(' status', $status);
-
-        $this->evaluateStatus($output, $status);
+        $output = $this->cliToString($userCommand);
 
         if (empty($output)) {
             return [];
@@ -317,5 +296,62 @@ class WPCLI extends Module
         }
 
         $this->timeout = $timeout;
+    }
+
+    /**
+     * Returns the output of a wp-cli command as a string.
+     *
+     * @param string|array $userCommand The command to execute, minus the `wp` part, as a string or as an array in the
+     *                                  format `['option','get','admin_email']`.
+     *
+     * @return string The command output, if any.
+     *
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
+     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $adminEmail = $I->cliToString('option get admin_email');
+     * // Get the list of active plugins in JSON format.
+     * $activePlugins = $I->cliToString(['wp','option','get','active_plugins','--format=json']);
+     * ```
+     */
+    public function cliToString($userCommand)
+    {
+        $this->validatePath();
+
+        /**
+         * Set an environment variable to let client code know the request is coming from the host machine.
+         * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
+         */
+        putenv('WPBROWSER_HOST_REQUEST="1"');
+        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
+
+        $this->debugSection('command', $userCommand);
+
+        $command = array_merge((array) $userCommand, $this->getConfigOptions($userCommand));
+
+        $this->debugSection('command with configuration options', $command);
+
+        try {
+            $process = $this->executeWpCliCommand($command, $this->timeout);
+        } catch (WpCliException $e) {
+            $this->debugSection('command exception', $e->getMessage());
+        } finally {
+            if (isset($this->config['throw']) && $process->getErrorOutput()) {
+                throw new ModuleException($this, $process->getErrorOutput());
+            }
+        }
+
+        $output = $process->getErrorOutput() ?: $process->getOutput();
+        $status = $process->getExitCode();
+
+        $this->debugSection('output', $output);
+        $this->debugSection(' status', $status);
+
+        $this->evaluateStatus($output, $status);
+
+        return $output;
     }
 }

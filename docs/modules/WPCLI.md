@@ -66,6 +66,9 @@ modules:
 		<li>
 			<a href="#clitoarray">cliToArray</a>
 		</li>
+		<li>
+			<a href="#clitostring">cliToString</a>
+		</li>
 	</ul>
 </nav>
 
@@ -105,7 +108,7 @@ modules:
 
 <hr>
 
-<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. wp-cli minus <code>wp</code>.</p>
+<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. format <code>['plugin', 'list', '--field=name']</code>.</p>
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray('theme list --status=inactive --field=name');
     // Get the list of installed plugins and only keep the ones starting with "foo".
@@ -116,8 +119,22 @@ modules:
     });</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command, or commands, and parameters as it would be passed to</li>
+<li><code>string/string/array</code> <strong>$userCommand</strong> - The command to execute, minus the <code>wp</code> part, as a string or as an array in the</li>
 <li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function in charge of splitting the results array.</li></ul>
+  
+
+<h3>cliToString</h3>
+
+<hr>
+
+<p>Returns the output of a wp-cli command as a string. format <code>['option','get','admin_email']</code>.</p>
+<pre><code class="language-php">    // Return the current site administrator email, using string command format.
+    $adminEmail = $I-&gt;cliToString('option get admin_email');
+    // Get the list of active plugins in JSON format.
+    $activePlugins = $I-&gt;cliToString(['wp','option','get','active_plugins','--format=json']);</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string/array</code> <strong>$userCommand</strong> - The command to execute, minus the <code>wp</code> part, as a string or as an array in the</li></ul>
 
 
 *This class extends \Codeception\Module*

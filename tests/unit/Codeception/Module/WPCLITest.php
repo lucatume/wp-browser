@@ -7,6 +7,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use tad\WPBrowser\Adapters\Process;
 
 class WPCLITest extends \Codeception\Test\Unit
@@ -339,17 +340,17 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $cli = $this->make_instance();
 
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
-        $mockProcess->getStatus()->willReturn(0);
-        $mockProcess->getErrorOutput()->willReturn('');
-        $mockProcess->getOutput()->willReturn('23 12');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
-        $mockProcess->getExitCode()->willReturn(-1);
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['post list --format=ids', "--path={$path}"]);
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'getOutput'   => '23 12',
+                'getExitCode' => 0
+            ]
+        );
+        $path        = $this->root->url() . '/wp';
+        $command     = $cli->buildFullCommand([ 'post list --format=ids', "--path={$path}" ]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+                      ->willReturn($mockProcess);
 
         $this->expectException(ModuleException::class);
 
@@ -591,5 +592,112 @@ class WPCLITest extends \Codeception\Test\Unit
                       ->willReturn($mockProcess->reveal());
 
         $cli->cli(['core','version']);
+    }
+
+    /**
+     * It should allow getting a command output as a string
+     *
+     * @test
+     */
+    public function should_allow_getting_a_command_output_as_a_string()
+    {
+        $adminEmail = 'luca@theaveragedev.com';
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'getStatus'      => 0,
+                'getErrorOutput' => null,
+                'getOutput'      => $adminEmail,
+                'getExitCode'    => 0,
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ 'option','get','admin_email', "--path={$path}" ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+
+        $this->assertEquals($adminEmail, $cli->cliToString([ 'option','get','admin_email' ]));
+    }
+
+    /**
+     * It should handle exceptions thrown by the process by throwing
+     *
+     * @test
+     */
+    public function should_handle_exceptions_thrown_by_the_process_by_throwing()
+    {
+        $this->config['throw'] = true;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'mustRun' => function () {
+                    $process = $this->makeEmpty(
+                        \Symfony\Component\Process\Process::class,
+                        [
+                            'isSuccessful'        => false,
+                            'getCommandLine'      => 'invalid',
+                            'getExitCode'         => 1,
+                            'getErrorOutput'      => 'error!',
+                            'getExitCodeText'     => 'error!',
+                            'getWorkingDirectory' => __DIR__,
+                        ]
+                    );
+                    throw new ProcessFailedException($process, 'Error!');
+                },
+                'getErrorOutput'      => 'error!',
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ 'invalid', "--path={$path}" ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+
+        $this->expectException(ModuleException::class);
+
+        $cli->cliToString([ 'invalid' ]);
+    }
+
+    /**
+     * It should handle exceptions thrown by the process
+     *
+     * @test
+     */
+    public function should_handle_exceptions_thrown_by_the_process()
+    {
+        $this->config['throw'] = false;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'mustRun' => function () {
+                    $process = $this->makeEmpty(
+                        \Symfony\Component\Process\Process::class,
+                        [
+                            'isSuccessful'        => false,
+                            'getCommandLine'      => 'invalid',
+                            'getExitCode'         => 1,
+                            'getErrorOutput'      => 'error!',
+                            'getExitCodeText'     => 'error!',
+                            'getWorkingDirectory' => __DIR__,
+                        ]
+                    );
+                    throw new ProcessFailedException($process, 'Error!');
+                },
+                'getErrorOutput'      => 'error!',
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ 'invalid', "--path={$path}" ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+
+        $this->expectException(ModuleException::class);
+
+        $cli->cliToString([ 'invalid' ]);
     }
 }
