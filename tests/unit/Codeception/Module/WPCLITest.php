@@ -61,15 +61,15 @@ class WPCLITest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should throw if path is not folder
+     * it should throw if path is not folder at run time
      */
-    public function it_should_throw_if_path_is_not_folder()
+    public function it_should_throw_if_path_is_not_folder_at_run_time()
     {
         $this->config = ['path' => '/some/path/to/null'];
 
         $this->expectException(ModuleConfigException::class);
 
-        $this->make_instance();
+        $this->make_instance()->cli(['core','version']);
     }
 
     /**
@@ -88,7 +88,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $path = $this->root->url() . '/wp';
         $this->process->forCommand(
-            $cli->buildFullCommand(['core version', "--path={$path}"]),
+            $cli->buildFullCommand(['core','version', "--path={$path}"]),
             $this->root->url() . '/wp'
         )
             ->willReturn($mockProcess->reveal());
@@ -131,7 +131,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $optionValue = $optionValue;
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['core version', "--path={$path}", "--{$option}={$optionValue}"]);
+        $command = $cli->buildFullCommand(['core','version', "--{$option}={$optionValue}", "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
             ->willReturn($mockProcess->reveal());
 
@@ -166,7 +166,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['core version', "--path={$path}"]);
+        $command = $cli->buildFullCommand(['core','version', "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
             ->willReturn($mockProcess->reveal());
 
@@ -192,7 +192,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(["core version --{$option}={$overrideValue}", "--path={$path}"]);
+        $command = $cli->buildFullCommand(['core','version',"--{$option}={$overrideValue}", "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
             ->willReturn($mockProcess->reveal());
 
@@ -216,7 +216,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(-1);
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['core version', "--path={$path}"]);
+        $command = $cli->buildFullCommand(['core','version', "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
             ->willReturn($mockProcess->reveal());
 
@@ -242,7 +242,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(-1);
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['core version', "--path={$path}"]);
+        $command = $cli->buildFullCommand(['core','version', "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
             ->willReturn($mockProcess->reveal());
 
