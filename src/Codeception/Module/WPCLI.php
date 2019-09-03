@@ -114,9 +114,9 @@ class WPCLI extends Module
         putenv('WPBROWSER_HOST_REQUEST="1"');
         $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
 
-	    $userCommand = buildCommandline($userCommand);
+        $userCommand = buildCommandline($userCommand);
 
-	    $this->debugSection('command', $userCommand);
+        $this->debugSection('command', $userCommand);
 
         $command = array_merge($userCommand, $this->getConfigOptions($userCommand));
 
