@@ -8,6 +8,7 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Traits\WithWpCli;
+use function tad\WPBrowser\buildCommandline;
 
 /**
  * Class WPCLI
@@ -113,16 +114,18 @@ class WPCLI extends Module
         putenv('WPBROWSER_HOST_REQUEST="1"');
         $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
 
-        $this->debugSection('command', $userCommand);
+	    $userCommand = buildCommandline($userCommand);
 
-        $command = array_merge((array)$userCommand, $this->getConfigOptions($userCommand));
+	    $this->debugSection('command', $userCommand);
+
+        $command = array_merge($userCommand, $this->getConfigOptions($userCommand));
 
         $this->debugSection('command with configuration options', $command);
 
-        $process = $this->executeWpCliCommand($command, $this->timeout);
+        $commandLineBuilder = $this->executeWpCliCommand($command, $this->timeout);
 
-        $output = $process->getOutput();
-        $status = $process->getExitCode();
+        $output = $commandLineBuilder->getOutput();
+        $status = $commandLineBuilder->getExitCode();
 
         $this->debugSection('output', $output);
         $this->debugSection('status', $status);
@@ -153,6 +156,7 @@ class WPCLI extends Module
     {
         $inlineOptions = $this->parseWpCliInlineOptions((array)$userCommand);
         $configOptions = array_diff_key($this->config, static::$blockedKeys, $inlineOptions);
+        unset($configOptions['path']);
 
         if (empty($configOptions)) {
             return [];
@@ -295,7 +299,7 @@ class WPCLI extends Module
             );
         }
 
-        $this->wpCliWpRootDir = $this->config['path'];
+        $this->wpCliWpRootDir = realpath($this->config['path']) ?: $this->config['path'];
     }
 
     /**
