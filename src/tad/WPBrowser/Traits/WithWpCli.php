@@ -201,8 +201,9 @@ trait WithWpCli
      */
     protected function executeWpCliCommand(array $command = ['version'], $timeout = 60)
     {
-        $fullCommand = $this->buildFullCommand($command);
-        $process = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
+        $fullCommand   = $this->buildFullCommand($command);
+        $fullCommand[] = '--path=' . $this->wpCliWpRootDir;
+        $process       = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
         $process->setTimeout($timeout);
 
         try {
