@@ -521,4 +521,54 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->config = ['path' => $this->root->url() . '/wp'];
         $this->process = $this->prophesize(Process::class);
     }
+
+    /**
+     * It should support and allow-root configuration parameter
+     *
+     * @test
+     */
+    public function should_support_and_allow_root_configuration_parameter()
+    {
+        $this->config['allow-root'] = true;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getOutput()->willReturn(null);
+        $mockProcess->setTimeout(60)->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->getExitCode()->willReturn(0);
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ 'core', 'version', '--allow-root', "--path={$path}" ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp')
+                      ->willReturn($mockProcess->reveal());
+
+        $cli->cli(['core','version']);
+    }
+
+    /**
+     * It should forward options from the configuration to the wp-cli command
+     *
+     * @test
+     */
+    public function should_forward_options_from_the_configuration_to_the_wp_cli_command()
+    {
+        $this->config['some-option'] = 'some-value';
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getOutput()->willReturn(null);
+        $mockProcess->setTimeout(60)->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->getExitCode()->willReturn(0);
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ 'core', 'version', '--some-option=some-value', "--path={$path}" ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp')
+                      ->willReturn($mockProcess->reveal());
+
+        $cli->cli(['core','version']);
+    }
 }

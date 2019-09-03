@@ -30,6 +30,11 @@ if (
 * `throw` - defaults to `true` to throw an exception when a wp-cli command does not return an exit status of `0`; if set to `false` then the exit status of the commands will be returned as is.
 * `timeout` - defaults to `60` (seconds) to set each process execution timeout to a certain value; set to `null`, `false` or `0` to disable timeout completely.
 
+Additionally the module configuration will forward any configuration parameter to `wp-cli` as a flag or option.  
+In the example configuration below the `allow-root` flag and the `some-option` option will be passed to `wp-cli` directly.
+
+> Note: these extrac configuration flags and options will be added to **all** the commands executed by wp-cli!
+
 ### Example configuration
 ```yaml
 modules:
@@ -40,6 +45,10 @@ modules:
             path: /Users/Luca/Sites/wp
             throw: true
             timeout: 60
+            # This will be forwarded to the wp-cli command as the `--allow-root` flag.
+            allow-root: true
+            # This will be forwarded to the wp-cli command as the `--some-option=some-value` option.
+            some-option: some-value
 ```
 
 <!--doc-->
