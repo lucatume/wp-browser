@@ -82,6 +82,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -125,11 +126,11 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
-        $optionValue = $optionValue;
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand(['core','version', "--{$option}={$optionValue}", "--path={$path}"]);
         $this->process->forCommand($command, $this->root->url() . '/wp')
@@ -161,6 +162,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -187,6 +189,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -209,8 +212,11 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $cli = $this->make_instance();
 
+        $error = md5(time());
+
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(-1);
+        $mockProcess->getErrorOutput()->willReturn($error);
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -221,6 +227,7 @@ class WPCLITest extends \Codeception\Test\Unit
             ->willReturn($mockProcess->reveal());
 
         $this->expectException(ModuleException::class);
+        $this->expectExceptionMessageRegExp('/'.preg_quote($error, '/').'/');
 
         $cli->cli('core version');
     }
@@ -235,8 +242,11 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $cli = $this->make_instance();
 
+        $error = md5(time());
+
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(-1);
+        $mockProcess->getErrorOutput()->willReturn($error);
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -272,6 +282,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn($raw);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -301,6 +312,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('23 12');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -329,6 +341,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('23 12');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -354,6 +367,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn($output);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -376,6 +390,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn([]);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -398,6 +413,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -421,6 +437,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn($output);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -450,6 +467,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(23)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -476,6 +494,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(null)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -535,6 +554,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(60)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
@@ -560,6 +580,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
+        $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(60)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();

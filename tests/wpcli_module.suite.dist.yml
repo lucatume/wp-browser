@@ -7,4 +7,5 @@ modules:
     config:
         WPCLI:
             path: /var/www/html
-
+            allow-root: true
+            throw: false
