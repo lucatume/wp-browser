@@ -6,11 +6,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - the `tad\WPBrowser\slug` function to create the slug version of a string
 - the `tad\WPBrowser\buildCommandLine` function to generate a Symfony Process compatible command line (array format) from a string one
+- the `tad\WPBrowser\renderString` function to render a string in the Handlebars format from data
 - the `WPCLI::cliToString` method to get a wp-cli command output as string, fixes #297
 
 ### Changed
 - removed the `bacon/bacon-string-utils` dependency
 - added support for custom extra arguments to the `WPCLI` module, see documentation, fixes #295
+- replaced the `xamin/handlebars.php` dependency with the `zordius/lightncandy` one
 
 ### Fixed
 - lazy evaluation of the WordPress path in `WPCLI` module, fixes #294
