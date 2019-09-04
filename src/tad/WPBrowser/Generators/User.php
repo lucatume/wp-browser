@@ -58,7 +58,7 @@ class User
      */
     public static function generateUserTableDataFrom($user_login, array $userData = array())
     {
-        $login              = slug($user_login);
+        $login              = slug($user_login, '_');
         $usersTableDefaults = array(
             'user_login'          => $login,
             'user_pass'           => WpPassword::instance()->make($user_login),
