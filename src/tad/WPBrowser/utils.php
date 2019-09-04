@@ -7,6 +7,8 @@
 
 namespace tad\WPBrowser;
 
+use LightnCandy\LightnCandy;
+
 /**
  * Builds an array format command line, compatible with the Symfony Process component, from a string command line.
  *
@@ -48,34 +50,65 @@ function buildCommandline($command)
  * This will also convert `camelCase` to `camel-case`.
  *
  * @param string $string The string to create a slug for.
- * @param string $sep The separator character to use, defaults to `-`.
+ * @param string $sep    The separator character to use, defaults to `-`.
+ * @param bool   $let    Whether to let other common separators be or not.
  *
  * @return string The slug version of the string.
  */
-function slug($string, $sep = '-')
+function slug($string, $sep = '-', $let = false)
 {
+    $unquotedSeps = $let ? [ '-', '_', $sep ] : [$sep];
+    $seps   = implode('', array_map(static function ($s) {
+        return preg_quote($s, '~');
+    }, array_unique($unquotedSeps)));
+
     // Prepend the separator to the first uppercase letter and trim the string.
-    $string = preg_replace('/(?<![A-Z])([A-Z])/u', $sep.'$1', trim($string));
+    $string = preg_replace('/(?<![A-Z'. $seps .'])([A-Z])/u', $sep.'$1', trim($string));
 
     // Prepend the separator to the first number not preceded by a number and trim the string.
-    $string = preg_replace('/(?<![0-9])([0-9])/u', $sep.'$1', trim($string));
+    $string = preg_replace('/(?<![0-9'. $seps .'])([0-9])/u', $sep.'$1', trim($string));
+
 
     // Replace non letter or digits with the separator.
-    $string = preg_replace('~[^\pL\d]+~u', $sep, $string);
-
+    $string = preg_replace('~[^\pL\d'. $seps .']+~u', $sep, $string);
 
     // Transliterate.
     $string = iconv('utf-8', 'us-ascii//TRANSLIT', $string);
 
-    // Remove anything that is not a word or a number or the separator.
-    $string = preg_replace('~[^'.preg_quote($sep, '~').'\w]+~', '', $string);
+    // Remove anything that is not a word or a number or the separator(s).
+    $string = preg_replace('~[^'. $seps .'\w]+~', '', $string);
 
     // Trim excess separator chars.
-    $string = trim($string, $sep);
+    $string = trim($string, $seps);
 
     // Remove duplicate separators and lowercase.
-    $string = strtolower(preg_replace('~'.preg_quote($sep, '~').'+~', $sep, $string));
+    $string = strtolower(preg_replace('~['. $seps .']{2,}~', $sep, $string));
 
     // Empty strings are fine here.
     return $string;
+}
+
+function renderString($template, array $data = [], array $fnArgs = [])
+{
+    $fnArgs = array_values($fnArgs);
+
+    $replace = array_map(
+        static function ($value) use ($fnArgs) {
+            return is_callable($value) ? $value(...$fnArgs) : $value;
+        },
+        $data
+    );
+
+    if (false !== strpos($template, '{{#')) {
+        return LightnCandy::prepare(LightnCandy::compile($template, $replace))($data);
+    }
+
+    $search = array_map(
+        static function ($k) {
+            return '{{' . $k . '}}';
+        },
+        array_keys($data)
+    );
+
+    return str_replace($search, $replace, $template);
 }
