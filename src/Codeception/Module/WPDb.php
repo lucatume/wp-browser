@@ -2116,8 +2116,8 @@ class WPDb extends Db
      * $linkIds = $I->haveManyLinksInDatabase(3, ['link_url' => 'http://example.org/test-{{n}}']);
      * ```
      *
-     * @param int        $count     The number of links to insert.
-     * @param array|null $overrides Overrides for the default arguments.
+     * @param int $count The number of links to insert.
+     * @param array $overrides Overrides for the default arguments.
      *
      * @return array An array of inserted `link_id`s.
      */
@@ -3090,11 +3090,10 @@ class WPDb extends Db
      * $I->haveMenuItemInDatabase('test', 'Test two', 1);
      * ```
      *
-     * @param string     $menuSlug  The menu slug the item should be added to.
-     * @param string     $title     The menu item title.
-     * @param int|null   $menuOrder An optional menu order, `1` based.
-     * @param array|null $meta      An associative array that will be prefixed with `_menu_item_` for the item post
-     *                              meta.
+     * @param string $menuSlug The menu slug the item should be added to.
+     * @param string $title The menu item title.
+     * @param int|null $menuOrder An optional menu order, `1` based.
+     * @param array $meta An associative array that will be prefixed with `_menu_item_` for the item post meta.
      *
      * @return int The menu item post `ID`
      */

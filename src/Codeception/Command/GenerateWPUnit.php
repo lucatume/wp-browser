@@ -54,10 +54,12 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 
         if (! $res) {
             $output->writeln("<error>Test $filename already exists</error>");
-            exit;
+            return 1;
         }
 
         $output->writeln("<info>Test was created in $filename</info>");
+
+        return 0;
     }
 
     protected function buildPath($path, $class)
@@ -71,10 +73,10 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     }
 
     /**
-     * @param $config
-     * @param $class
+     * @param array $config The generator configuration.
+     * @param string $class The class to generate the test case for.
      *
-     * @return WPUnitGenerator
+     * @return WPUnitGenerator An instance of the test case code generator.
      */
     protected function getGenerator($config, $class)
     {

@@ -16,7 +16,7 @@ trait WPBrowserMethods
     /**
      * The admin absolute URL.
      *
-     * @var [type]
+     * @var string
      */
     protected $adminPath;
     /**

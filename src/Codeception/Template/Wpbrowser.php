@@ -12,17 +12,23 @@ class Wpbrowser extends Bootstrap
 {
 
     /**
+     * Whether to output during the bootstrap process or not.
+     *
      * @var bool
      */
     protected $quiet = false;
 
     /**
+     * Whether to bootstrap with user interaction or not.
+     *
      * @var bool
      */
     protected $noInteraction = false;
 
     /**
-     * @var
+     * The name of the environment file to use.
+     *
+     * @var string
      */
     protected $envFileName = '';
 
@@ -199,9 +205,11 @@ class Wpbrowser extends Bootstrap
     }
 
     /**
-     * @param $interactive
+     * Builds, and returns, the installation data.
      *
-     * @return array
+     * @param bool $interactive Whether to build the installation data with user interactive input or not.
+     *
+     * @return array The installation data.
      */
     protected function getInstallationData($interactive)
     {

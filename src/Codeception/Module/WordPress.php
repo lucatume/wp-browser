@@ -7,6 +7,7 @@ use Codeception\Lib\Framework;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
+use GuzzleHttp\Client;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Filesystem\Utils;
 
@@ -151,7 +152,9 @@ EOF;
     }
 
     /**
-     * @param $client
+     * Internal method to inject the client to use.
+     *
+     * @param Client $client The client object that should be used.
      */
     public function _setClient($client)
     {

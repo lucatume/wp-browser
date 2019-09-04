@@ -2,6 +2,8 @@
 
 namespace Codeception\Lib\Driver;
 
+use Codeception\Exception\ModuleException;
+
 /**
  * Extends Codeception default Db driver to return an extended version of MySql driver.
  */
@@ -13,15 +15,18 @@ class ExtendedDbDriver extends Db
      *
      * @static
      *
-     * @param $dsn
-     * @param $user
-     * @param $password
-     * @param [optional] $options
+     * @param string $dsn The data source name for the database connection.
+     * @param string $user The database access user.
+     * @param string $password The database access password.
+     * @param array|null $options An array of connection options.
+     *
+     * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
+     *
+     * @throws ModuleException If the module is not correctly configured to connect.
      *
      * @see   http://php.net/manual/en/pdo.construct.php
      * @see   http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      *
-     * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
     public static function create($dsn, $user, $password, $options = null)
     {

@@ -520,10 +520,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     /**
      * Declare an expected `_doing_it_wrong()` call from within a test.
      *
-     * @since 4.2.0
-     *
-     * @param string $deprecated Name of the function, method, or class that appears in the first argument of the
-     *                           source `_doing_it_wrong()` call.
+     * @param string $doing_it_wrong `_doing_it_wrong()` call from the test.
      */
     public function setExpectedIncorrectUsage($doing_it_wrong)
     {
@@ -692,9 +689,11 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      * expected to be false. For example, assertQueryTrue('is_single', 'is_feed') means is_single()
      * and is_feed() must be true and everything else must be false to pass.
      *
-     * @param string $prop,... Any number of WP_Query properties that are expected to be true for the current request.
+     * @param string $prop The property to check.
+     *                                  request.
+     * @param array<int, mixed> $props An array of additional properties to check.
      */
-    public function assertQueryTrue(/* ... */)
+    public function assertQueryTrue($prop, ...$props)
     {
         global $wp_query;
         $all = array(
@@ -727,9 +726,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             'is_trackback',
             'is_year',
         );
-        $true = func_get_args();
 
-        foreach ($true as $true_thing) {
+        $props = array_merge((array)$prop, ...$props);
+
+        foreach ($props as $true_thing) {
             $this->assertContains($true_thing, $all, "{$true_thing}() is not handled by assertQueryTrue().");
         }
 
@@ -737,27 +737,25 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $not_false = $not_true = array(); // properties that were not set to expected values
 
         foreach ($all as $query_thing) {
-            $result = is_callable($query_thing) ? call_user_func($query_thing) : $wp_query->$query_thing;
+            $result = is_callable($query_thing) ? $query_thing() : $wp_query->$query_thing;
 
-            if (in_array($query_thing, $true)) {
+            if (in_array($query_thing, $props, true)) {
                 if (!$result) {
-                    array_push($not_true, $query_thing);
+                    $not_true[] = $query_thing;
                     $passed = false;
                 }
-            } else {
-                if ($result) {
-                    array_push($not_false, $query_thing);
-                    $passed = false;
-                }
+            } elseif ($result) {
+                $not_false[] = $query_thing;
+                $passed = false;
             }
         }
 
         $message = '';
         if (count($not_true)) {
-            $message .= implode($not_true, ', ') . ' is expected to be true. ';
+            $message .= implode(', ', $not_true) . ' is expected to be true. ';
         }
         if (count($not_false)) {
-            $message .= implode($not_false, ', ') . ' is expected to be false.';
+            $message .= implode(', ', $not_false) . ' is expected to be false.';
         }
         $this->assertTrue($passed, $message);
     }

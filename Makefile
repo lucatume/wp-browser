@@ -89,7 +89,7 @@ composer_update: composer.json
 
 # Runs phpstan on the source files.
 phpstan:
-	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l 1
+	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l 2
 
 ci_setup_db:
 	# Start just the database container.
