@@ -806,7 +806,14 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function scandir($dir)
     {
-        foreach (scandir($dir, SCANDIR_SORT_NONE) as $path) {
+        $scandir = scandir($dir, SCANDIR_SORT_NONE);
+
+        if (false === $scandir) {
+            // And a Warning is generated.
+            return;
+        }
+
+        foreach ($scandir as $path) {
             if (0 !== strpos($path, '.') && is_dir($dir . '/' . $path)) {
                 $this->matched_dirs[] = $dir . '/' . $path;
                 $this->scandir($dir . '/' . $path);
@@ -837,7 +844,13 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
         // Save the data
         $id = wp_insert_attachment($attachment, $upload['file'], $parent_post_id);
+
+        if (!is_int($id)) {
+            throw new \RuntimeException('Attachment insert failed.');
+        }
+
         wp_update_attachment_metadata($id, wp_generate_attachment_metadata($id, $upload['file']));
+
         return $id;
     }
 

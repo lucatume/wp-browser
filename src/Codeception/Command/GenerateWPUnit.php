@@ -42,6 +42,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $suite = $input->getArgument('suite');
+        /** @var string $class */
         $class = $input->getArgument('class');
 
         $config = $this->getSuiteConfig($suite);
