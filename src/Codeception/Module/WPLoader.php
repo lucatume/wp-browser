@@ -275,6 +275,13 @@ class WPLoader extends Module
         return $this->wpRootFolder;
     }
 
+    /**
+     * Checks the *Db modules loaded in the suite to ensure their configuration is compatible with this module current
+     * one.
+     *
+     * @throws ModuleConflictException If the configuration of one *Db module is not compatible with this module
+     *                                 configuration.
+     */
     protected function ensureDbModuleCompat()
     {
         $interference_candidates = ['Db', 'WPDb'];
@@ -283,7 +290,7 @@ class WPLoader extends Module
             if (! $this->moduleContainer->hasModule($moduleName)) {
                 continue;
             }
-            /** @var \Codeception\Module $module */
+            /** @var Module $module */
             $module = $allModules[$moduleName];
             $cleanup_config = $module->_getConfig('cleanup');
             if (! empty($cleanup_config)) {

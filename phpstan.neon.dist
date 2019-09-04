@@ -20,3 +20,9 @@ parameters:
   ignoreErrors:
     # Uses func_get_args()
     - '#^Function add_query_arg invoked with [123] parameters?, 0 required\.$#'
+    # Due to a Codeception doc block issue.
+    - '~Parameter #1 \$key of method Codeception\\Module::_getConfig\(\) expects null~'
+    # Due to a Codeception doc block issue.
+    - '~Parameter #2 \$config of method Codeception\\Module::__construct\(\) expects null~'
+    # Due to a Codeception doc block issue.
+    - '~Parameter #2 \$answer of method Codeception\\InitTemplate::ask\(\) expects null~'
