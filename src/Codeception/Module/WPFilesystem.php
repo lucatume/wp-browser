@@ -1174,10 +1174,13 @@ CSS;
      * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
      * ```
      *
-     * @param int    $blogId The blog ID to get the path for.
-     * @param string $file   The path, relatitve to the blog uploads folder, to the file or folder.
-     * @param null   $date   The date that should be used to build the uploads sub-folders in the year/month format;
-     *                       a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.
+     * @param int                                      $blogId The blog ID to get the path for.
+     * @param string $file                                     The path, relatitve to the blog uploads folder, to the
+     *                                                         file or folder.
+     * @param null|string|\DateTime|\DateTimeImmutable $date   The date that should be used to build the uploads
+     *                                                         sub-folders in the year/month format; a UNIX timestamp or
+     *                                                         a string supported by the `strtotime` function; defaults
+     *                                                         to `now`.
      *
      * @return string The absolute path to a blog uploads folder or file.
      * @throws \Exception If the date is not a valid format.

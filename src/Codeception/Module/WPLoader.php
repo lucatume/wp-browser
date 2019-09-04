@@ -626,7 +626,6 @@ class WPLoader extends Module
                     . 'this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion '
                     . 'of one ore more additional config files using the `configFile` setting.'
                 );
-                continue;
             }
             require_once $path;
         }

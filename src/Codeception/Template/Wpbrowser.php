@@ -76,7 +76,7 @@ class Wpbrowser extends Bootstrap
             return;
         }
 
-        if ($interactive === null) {
+        if ($interactive === true) {
             $this->say();
             $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
             $this->say(' --- ');

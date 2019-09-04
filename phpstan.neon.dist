@@ -8,6 +8,7 @@ parameters:
     - %currentWorkingDirectory%/src/Codeception/
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase/WPXMLRPCTestCase.php
+    - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
   autoload_files:
     - %currentWorkingDirectory%/vendor/codeception/codeception/autoload.php
     - %currentWorkingDirectory%/src/includes/functions.php

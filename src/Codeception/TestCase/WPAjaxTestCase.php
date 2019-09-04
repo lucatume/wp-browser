@@ -225,7 +225,10 @@ abstract class WPAjaxTestCase extends WPTestCase
      * $this->expectException( WPAjaxDieContinueException::class, 'something contained in $message' );
      * </code>
      *
-     * @param string $message
+     * @param mixed $message The message that was sent to this handler.
+     *
+     * @throws \WPAjaxDieContinueException If the accumulated last response is not empty.
+     * @throws \WPAjaxDieStopException If the accumulated last response is empty.
      */
     public function dieHandler($message)
     {
@@ -234,12 +237,12 @@ abstract class WPAjaxTestCase extends WPTestCase
         if ('' === $this->_last_response) {
             if (is_scalar($message)) {
                 throw new \WPAjaxDieStopException((string)$message);
-            } else {
-                throw new \WPAjaxDieStopException('0');
             }
-        } else {
-            throw new \WPAjaxDieContinueException($message);
+
+            throw new \WPAjaxDieStopException('0');
         }
+
+        throw new \WPAjaxDieContinueException($message);
     }
 
     /**

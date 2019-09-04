@@ -5,6 +5,7 @@ namespace Codeception\TestCase;
 use Codeception\Exception\ModuleException;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
+use tad\WPBrowser\Compat\Compatibility;
 
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
@@ -220,8 +221,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
          * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
          * Codeception versions.
          */
-        $setupMethod =  method_exists(Unit::class, '_setUp') ? '_setup': 'setUp';
-        call_user_func([Unit::class,$setupMethod]);
+        call_user_func([Unit::class, Compatibility::setupMethodFor(Unit::class)]);
     }
 
     public function scan_user_uploads()

@@ -113,3 +113,17 @@ function renderString($template, array $data = [], array $fnArgs = [])
 
     return str_replace($search, $replace, $template);
 }
+
+/**
+ * Ensures a condition else throws an invalid argument exception.
+ *
+ * @param bool   $condition The condition to assert.
+ * @param string $message   The exception message.
+ */
+function ensure($condition, $message)
+{
+    if ($condition) {
+        return;
+    }
+    throw new \InvalidArgumentException($message);
+}

@@ -387,7 +387,7 @@ trait WPBrowserMethods
      */
     public function amEditingPostWithId($id)
     {
-        if (!is_numeric($id) && intval($id) == $id) {
+        if (!is_numeric($id) || (int)$id !== $id) {
             throw new \InvalidArgumentException('ID must be an int value');
         }
 

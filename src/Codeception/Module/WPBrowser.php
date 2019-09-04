@@ -51,7 +51,7 @@ class WPBrowser extends PhpBrowser
 
         $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));
 
-        return is_array($matchingCookies) ? $matchingCookies : null;
+        return count($matchingCookies) ? $matchingCookies : null;
     }
 
     /**

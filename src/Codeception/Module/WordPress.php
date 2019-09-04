@@ -142,7 +142,7 @@ EOF;
 
     private function setupClient($siteDomain)
     {
-        $this->client = $this->client ? $this->client : new WordPressConnector();
+        $this->client = isset($this->client) ? $this->client : new WordPressConnector();
         $this->client->setUrl($this->siteUrl);
         $this->client->setDomain($siteDomain);
         $this->client->setRootFolder($this->config['wpRootFolder']);

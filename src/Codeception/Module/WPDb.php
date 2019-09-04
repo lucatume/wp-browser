@@ -17,6 +17,7 @@ use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
+use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
 
@@ -3022,22 +3023,17 @@ class WPDb extends Db
      * @param string      $stylesheet The theme stylesheet slug, e.g. `twentysixteen`.
      * @param string|null $template   The theme template slug, e.g. `twentysixteen`, defaults to `$stylesheet`.
      *
-     * @param string|null $themeName  The theme name, e.g. `Acme`, defaults to the "title" version of `$stylesheet`.
+     * @param string|null $themeName The theme name, e.g. `Acme`, defaults to the "title" version of
+     *                                     `$stylesheet`.
      */
     public function useTheme($stylesheet, $template = null, $themeName = null)
     {
-        if (!(is_string($stylesheet))) {
-            throw new \InvalidArgumentException('Stylesheet must be a string');
-        }
-        if (!(is_string($template) || $template === null)) {
-            throw new \InvalidArgumentException('Template must either be a string or be null.');
-        }
-        if (!(is_string($themeName) || $themeName === null)) {
-            throw new \InvalidArgumentException('Current Theme must either be a string or be null.');
-        }
+        ensure(is_string($stylesheet), 'Stylesheet must be a string');
+        ensure(is_string((string)$template), 'Template must either be a string or be null.');
+        ensure(is_string((string)$themeName), 'Current Theme must either be a string or be null.');
 
         $template = $template ?: $stylesheet;
-        $themeName = $themeName ?: ucwords($stylesheet, " _");
+        $themeName = $themeName ?: ucwords($stylesheet, ' _');
 
         $this->haveOptionInDatabase('stylesheet', $stylesheet);
         $this->haveOptionInDatabase('template', $template);

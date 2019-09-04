@@ -359,53 +359,6 @@ class WPCLITest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should handle the case where the command output is not a string
-     */
-    public function it_should_handle_the_case_where_the_command_output_is_not_a_string()
-    {
-        $expected = $output = ['23', '89', '13', '45'];
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
-        $mockProcess->getStatus()->willReturn(0);
-        $mockProcess->getErrorOutput()->willReturn('');
-        $mockProcess->getOutput()->willReturn($output);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
-        $mockProcess->getExitCode()->willReturn(0);
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['post list --format=ids', "--path={$path}"]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
-
-        $this->assertEquals($expected, $cli->cliToArray('post list --format=ids'));
-    }
-
-    /**
-     * @test
-     * it should handle the case where the command output is an empty array
-     */
-    public function it_should_handle_the_case_where_the_command_output_is_an_empty_array()
-    {
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
-        $mockProcess->getStatus()->willReturn(0);
-        $mockProcess->getErrorOutput()->willReturn('');
-        $mockProcess->getOutput()->willReturn([]);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
-        $mockProcess->getExitCode()->willReturn(0);
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['post list --format=ids', "--path={$path}"]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
-
-        $this->assertEquals([], $cli->cliToArray('post list --format=ids'));
-    }
-
-    /**
-     * @test
      * it should handle the case where the command output is null
      */
     public function it_should_handle_the_case_where_the_command_output_is_null()
@@ -425,35 +378,6 @@ class WPCLITest extends \Codeception\Test\Unit
             ->willReturn($mockProcess->reveal());
 
         $this->assertEquals([], $cli->cliToArray('post list --format=ids'));
-    }
-
-    /**
-     * @test
-     * it should call the split callback even if the output is an array
-     */
-    public function it_should_call_the_split_callback_even_if_the_output_is_an_array()
-    {
-        $output = ['123foo', 'foo123', '123foo', 'bar'];
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
-        $mockProcess->getStatus()->willReturn(0);
-        $mockProcess->getErrorOutput()->willReturn('');
-        $mockProcess->getOutput()->willReturn($output);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
-        $mockProcess->getExitCode()->willReturn(0);
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand(['post list --format=ids', "--path={$path}"]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
-
-        $callback = static function ($output) {
-            return preg_split('/123\\n/', $output);
-        };
-
-        $expected = preg_split('/123\\n/', implode(PHP_EOL, $output));
-        $this->assertEquals($expected, $cli->cliToArray('post list --format=ids', $callback));
     }
 
     /**

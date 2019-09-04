@@ -170,14 +170,13 @@ class WPCLI extends Module
      * Evaluates the exit status of the command.
      *
      * @param string $output The process output.
-     * @param int    $status The process status code.
+     * @param int          $status The process status code.
      *
      * @throws ModuleException If the exit status is lt 0 and the module configuration is set to throw.
      */
     protected function evaluateStatus($output, $status)
     {
         if ((int)$status !== 0 && !empty($this->config['throw'])) {
-            $output  = is_array($output) ? json_encode($output) : $output;
             $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured "
                 . 'to throw an exception when wp-cli terminates with an error status; '
                 . 'set the `throw` parameter to `false` to avoid this.';
@@ -221,19 +220,13 @@ class WPCLI extends Module
 
         $hasSplitCallback = null !== $splitCallback;
         $originalOutput = $output;
-        if (!is_array($output) || (is_array($output) && $hasSplitCallback)) {
-            if (is_array($output)) {
-                $output = implode(PHP_EOL, $output);
-            }
-            if (!$hasSplitCallback) {
-                if (!preg_match('/[\\n]+/', $output)) {
-                    $output = preg_split('/\\s+/', $output);
-                } else {
-                    $output = preg_split('/\\s*\\n+\\s*/', $output);
-                }
-            } else {
-                $output = $splitCallback($output, $userCommand, $this);
-            }
+
+        if ($hasSplitCallback) {
+            $output = $splitCallback($output, $userCommand, $this);
+        } else {
+            $output = !preg_match('/[\\n]+/', $output) ?
+                preg_split('/\\s+/', $output)
+                : preg_split('/\\s*\\n+\\s*/', $output);
         }
 
         if (!is_array($output) && $hasSplitCallback) {
