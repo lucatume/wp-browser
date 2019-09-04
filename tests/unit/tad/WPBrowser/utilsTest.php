@@ -40,4 +40,35 @@ class utilsTest extends \Codeception\Test\Unit
             ]
         ];
     }
+
+    /**
+     * Test slugify
+     * @dataProvider slugifyDataProvider
+     */
+    public function test_slugify($input, $expected, $sep = null)
+    {
+        $this->assertEquals($expected, slug(...array_slice(func_get_args(), 1)));
+    }
+
+    public function slugifyDataProvider()
+    {
+        return [
+            'empty_string'            => [ '', '' ],
+            'one_word'                => [ 'test', 'test' ],
+            'camelcase_str'           => [ 'testStringIsSlugified', 'test-string-is-slugified' ],
+            'camelcase_str_w_numbers' => [ 'testString2IsSlugified', 'test-string-2-is-slugified' ],
+            'snake_case_str'          => [ 'test_string_is_slugified', 'test-string-is-slugified' ],
+            'snake_case_str_w_number' => [ 'test_string_2_is_slugified', 'test-string-2-is-slugified' ],
+            'words'                   => [ 'Lorem dolor sit', 'lorem-dolor-sit' ],
+            'words_and_numbers'       => [ 'Lorem dolor sit 23 et lorem 89', 'lorem-dolor-sit-23-et-lorem-89' ],
+            '_empty_string'            => [ '', '','_' ],
+            '_one_word'                => [ 'test', 'test','_' ],
+            '_camelcase_str'           => [ 'testStringIsSlugified', 'test_string_is_slugified','_' ],
+            '_camelcase_str_w_numbers' => [ 'testString2IsSlugified', 'test_string_2_is_slugified','_' ],
+            '_snake_case_str'          => [ 'test_string_is_slugified', 'test_string_is_slugified','_' ],
+            '_snake_case_str_w_number' => [ 'test_string_2_is_slugified', 'test_string_2_is_slugified','_' ],
+            '_words'                   => [ 'Lorem dolor sit', 'lorem_dolor_sit','_' ],
+            '_words_and_numbers'       => [ 'Lorem dolor sit 23 et lorem 89', 'lorem_dolor_sit_23_et_lorem_89','_' ],
+        ];
+    }
 }
