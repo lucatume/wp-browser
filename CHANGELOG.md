@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.21] 2019-09-04;
 ### Added
 - the `tad\WPBrowser\slug` function to create the slug version of a string
 - the `tad\WPBrowser\buildCommandLine` function to generate a Symfony Process compatible command line (array format) from a string one
@@ -1110,4 +1112,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.18]: https://github.com/lucatume/wp-browser/compare/2.2.17...2.2.18
 [2.2.19]: https://github.com/lucatume/wp-browser/compare/2.2.18...2.2.19
 [2.2.20]: https://github.com/lucatume/wp-browser/compare/2.2.19...2.2.20
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.20...HEAD
+[2.2.21]: https://github.com/lucatume/wp-browser/compare/2.2.20...2.2.21
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.21...HEAD
