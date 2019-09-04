@@ -1,7 +1,7 @@
 <?php
 
 
-class WPDbHandlebarsCest
+class WPDbTemplatingCest
 {
 
     public function _before(FunctionalTester $I)

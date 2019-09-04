@@ -2,30 +2,23 @@
 
 namespace tad\WPBrowser\Generators;
 
-use Handlebars\Handlebars;
+use function tad\WPBrowser\renderString;
 
 class Tables
 {
-
     /**
-     * @var Handlebars
-     */
-    protected $handlebars;
-
-    /**
+     * The absolute path to the the templates directory.
+     *
      * @var string
      */
     protected $templatesDir;
 
     /**
      * Tables constructor.
-     *
-     * @param Handlebars|null $handlebars
      */
-    public function __construct(Handlebars $handlebars = null)
+    public function __construct()
     {
-        $this->handlebars = $handlebars ?: new Handlebars();
-        $this->templatesDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'templates';
+        $this->templatesDir = __DIR__ . '/templates';
     }
 
     /**
@@ -74,12 +67,13 @@ class Tables
      */
     protected function renderQuery($table, $data)
     {
-        if (!in_array($table, $this->tables())) {
+        if (! in_array($table, $this->tables(), true)) {
             throw new \InvalidArgumentException('Table ' . $table . ' is not a multisite table name');
         }
 
         $template = $this->templates($table);
-        return $this->handlebars->render($template, $data);
+
+        return renderString($template, $data);
     }
 
     private function tables()
@@ -162,7 +156,7 @@ class Tables
             'scheme' => 'http'
         ], $data);
 
-        return $this->handlebars->render($template, $data);
+        return renderString($template, $data);
     }
 
     public function getBlogDropQuery($tablePrefix, $blogId)
@@ -173,6 +167,6 @@ class Tables
             'blog_id' => $blogId
         ];
 
-        return $this->handlebars->render($template, $data);
+        return renderString($template, $data);
     }
 }

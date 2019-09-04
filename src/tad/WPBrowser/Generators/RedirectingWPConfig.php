@@ -2,7 +2,7 @@
 
 namespace tad\WPBrowser\Generators;
 
-use Handlebars\Handlebars;
+use function tad\WPBrowser\renderString;
 
 class RedirectingWPConfig implements TemplateProviderInterface
 {
@@ -36,22 +36,17 @@ if(file_exists(\$original)){
 PHP;
 
     /**
-     * @var Handlebars
-     */
-    private $handlebars;
-    /**
      * @var array
      */
     private $data;
 
-    public function __construct(Handlebars $handlebars, array $data = [ ])
+    public function __construct(array $data = [ ])
     {
-        $this->handlebars = $handlebars;
         $this->data       = $data;
     }
 
     public function getContents()
     {
-        return $this->handlebars->render($this->template, $this->data);
+        return renderString($this->template, $this->data);
     }
 }

@@ -2,12 +2,10 @@
 
 namespace Codeception\Module;
 
-use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
-use Handlebars\Handlebars;
 use PDO;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
@@ -18,6 +16,7 @@ use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
+use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
 
 /**
@@ -114,11 +113,6 @@ class WPDb extends Db
     protected $blogId = 0;
 
     /**
-     * @var Handlebars
-     */
-    protected $handlebars;
-
-    /**
      * @var Tables
      */
     protected $tables;
@@ -163,18 +157,12 @@ class WPDb extends Db
     /**
      * Initializes the module.
      *
-     * @param Handlebars $handlebars
-     *
-     * @param Tables     $table
-     *
-     * @throws ModuleConfigException
-     * @throws \Codeception\Exception\ModuleException
+     * @param Tables $table An instance of the tables management object.
      */
-    public function _initialize(Handlebars $handlebars = null, Tables $table = null)
+    public function _initialize(Tables $table = null)
     {
         parent::_initialize();
         $this->tablePrefix = $this->config['tablePrefix'];
-        $this->handlebars = $handlebars ?: new Handlebars();
         $this->tables = $table ?: new Tables();
         $this->didInit = true;
     }
@@ -1739,15 +1727,14 @@ class WPDb extends Db
      */
     protected function replaceNumbersInString($template, $i)
     {
-        if (!is_string($template)) {
+        if (! is_string($template)) {
             return $template;
         }
-        $thisTemplateData = array_merge($this->templateData, ['n' => $i]);
-        array_walk($thisTemplateData, function (&$value) use ($i) {
-            $value = is_callable($value) ? $value($i) : $value;
-        });
 
-        return $this->handlebars->render($template, $thisTemplateData);
+        $fnArgs = [ 'n' => $i ];
+        $data   = array_merge($this->templateData, $fnArgs);
+
+        return renderString($template, $data, $fnArgs);
     }
 
     /**
