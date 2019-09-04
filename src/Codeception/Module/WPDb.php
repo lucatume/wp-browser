@@ -19,6 +19,7 @@ use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
+use function tad\WPBrowser\slug;
 
 /**
  * An extension of Codeception Db class to add WordPress database specific
@@ -3179,7 +3180,7 @@ class WPDb extends Db
         $fs = $this->getWpFilesystemModule();
 
         $pathInfo = pathinfo($file);
-        $slug = str_slug($pathInfo['filename']);
+        $slug = slug($pathInfo['filename']);
 
         $uploadedFilePath = $fs->writeToUploadedFile($pathInfo['basename'], file_get_contents($file), $date);
         $uploadUrl = $this->grabSiteUrl(str_replace($fs->getWpRootFolder(), '', $uploadedFilePath));
