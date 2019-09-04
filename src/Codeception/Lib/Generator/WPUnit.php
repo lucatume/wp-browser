@@ -51,6 +51,7 @@ EOF;
 
     public function __construct($settings, $name, $baseClass)
     {
+        parent::__construct($settings);
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
         $this->baseClass = $baseClass;

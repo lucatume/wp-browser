@@ -93,11 +93,6 @@ EOF;
     protected $siteUrl;
 
     /**
-     * @var string
-     */
-    protected $loginUrl = '';
-
-    /**
      * @var string The string that will hold the response content after each request handling.
      */
     public $response = '';

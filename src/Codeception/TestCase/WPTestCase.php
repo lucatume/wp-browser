@@ -211,11 +211,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
          * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
          * Codeception versions.
          */
-        if (method_exists(Unit::class, '_setUp')) {
-            Unit::_setup();
-        } elseif (method_exists(Unit::class, 'setUp')) {
-            Unit::setUp();
-        }
+        $setupMethod =  method_exists(Unit::class, '_setUp') ? '_setup': 'setUp';
+        call_user_func([Unit::class,$setupMethod]);
     }
 
     public function scan_user_uploads()
@@ -659,16 +656,6 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         _cleanup_query_vars();
 
         $GLOBALS['wp']->main($parts['query']);
-    }
-
-    /**
-     * Define constants after including files.
-     */
-    public function prepareTemplate(\Text_Template $template)
-    {
-        $template->setVar(array('constants' => ''));
-        $template->setVar(array('wp_constants' => \PHPUnit_Util_GlobalState::getConstantsAsString()));
-        parent::prepareTemplate($template);
     }
 
     /**

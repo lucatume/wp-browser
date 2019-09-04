@@ -38,7 +38,7 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
                     $this->assertEquals($post->post_parent, $data['parent']);
                 } else {
                     $this->assertEquals($post->post_parent, $data['parent']['id']);
-                    $this->check_get_post_response($data['parent'], get_post($data['parent']['id']), 'view-parent');
+                    $this->check_get_post_response($data['parent'], 'view-parent');
                 }
             } else {
                 $this->assertEmpty($data['parent']);

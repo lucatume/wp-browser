@@ -178,7 +178,7 @@ abstract class WPAjaxTestCase extends WPTestCase
         $_GET = array();
         unset($GLOBALS['post']);
         unset($GLOBALS['comment']);
-        remove_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1, 1);
+        remove_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1);
         remove_action('clear_auth_cookie', array($this, 'logout'));
         error_reporting($this->_error_level);
         set_current_screen('front');
@@ -199,7 +199,7 @@ abstract class WPAjaxTestCase extends WPTestCase
     /**
      * Return our callback handler
      *
-     * @return callback
+     * @return callable
      */
     public function getDieHandler()
     {

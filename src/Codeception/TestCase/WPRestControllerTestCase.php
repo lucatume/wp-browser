@@ -20,7 +20,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
     public function _tearDown()
     {
         parent::tearDown();
-        remove_filter('rest_url', array($this, 'test_rest_url_for_leading_slash'), 10, 2);
+        remove_filter('rest_url', array($this, 'test_rest_url_for_leading_slash'), 10);
         /** @var \WP_REST_Server $wp_rest_server */
         global $wp_rest_server;
         $wp_rest_server = null;
