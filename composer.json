@@ -22,7 +22,6 @@
     "ext-fileinfo": "*",
     "ext-json": "*",
     "antecedent/patchwork": "^2.0",
-    "bacon/bacon-string-utils": "~1.0",
     "codeception/codeception": "^2.5",
     "gumlet/php-image-resize": "^1.6",
     "dg/mysql-dump": "^1.3",

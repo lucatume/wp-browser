@@ -1,7 +1,5 @@
 <?php
 
-use BaconStringUtils\Slugifier;
-
 class WPDbTermsCest
 {
     /**
@@ -14,7 +12,7 @@ class WPDbTermsCest
 
         $I->seeTermInDatabase([
             'name' => 'Term one',
-            'slug' => (new Slugifier())->slugify('Term One'),
+            'slug' => slug('Term One'),
             'term_group' => 0
         ]);
         $I->seeTermInDatabase([
@@ -102,7 +100,7 @@ class WPDbTermsCest
             $criteria = [
                 'term_id' => $termIds[$i],
                 'name' => $expectedTermName,
-                'slug' => (new Slugifier())->slugify($expectedTermName)
+                'slug' => slug($expectedTermName)
             ];
             $I->seeTermInDatabase($criteria);
         }
@@ -124,7 +122,7 @@ class WPDbTermsCest
             $criteria = [
                 'term_id' => $termId,
                 'name' => $expectedTermName,
-                'slug' => (new Slugifier())->slugify($expectedTermName)
+                'slug' => slug($expectedTermName)
             ];
             $I->seeTermInDatabase($criteria);
 

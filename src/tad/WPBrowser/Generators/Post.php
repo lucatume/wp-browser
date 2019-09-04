@@ -2,7 +2,7 @@
 
     namespace tad\WPBrowser\Generators;
 
-    use BaconStringUtils\Slugifier;
+    use function tad\WPBrowser\slug;
 
     /**
      * Generates WordPress posts to be inserted in the database.
@@ -45,7 +45,7 @@ class Post
             'comment_status'        => 'open',
             'ping_status'           => 'open',
             'post_password'         => '',
-            'post_name'             => ( new Slugifier() )->slugify($title),
+            'post_name'             => slug($title),
             'to_ping'               => '',
             'pinged'                => '',
             'post_modified'         => Date::now(),

@@ -2,8 +2,7 @@
 
 namespace tad\WPBrowser\Generators;
 
-use BaconStringUtils\Filter\Slugify;
-use BaconStringUtils\Slugifier;
+use function tad\WPBrowser\slug;
 
 /**
  * Generates user entries to be inserted in a WordPress database.
@@ -53,14 +52,13 @@ class User
     /**
      * Generated the entry for the users table.
      *
-     * @param  string $user_login The user login slug
+     * @param  string $user_login The user login slug.
      *
-     * @return array             An associtive array of column/values for the "users" table.
+     * @return array             An associative array of column/values for the "users" table.
      */
     public static function generateUserTableDataFrom($user_login, array $userData = array())
     {
-        $utils              = new Slugifier();
-        $login              = $utils->slugify($user_login);
+        $login              = slug($user_login);
         $usersTableDefaults = array(
             'user_login'          => $login,
             'user_pass'           => WpPassword::instance()->make($user_login),

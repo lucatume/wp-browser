@@ -2,7 +2,6 @@
 
 namespace Codeception\Module;
 
-use BaconStringUtils\Slugifier;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
@@ -763,7 +762,7 @@ class WPDb extends Db
      */
     public function haveTermInDatabase($name, $taxonomy, array $overrides = [])
     {
-        $termDefaults = ['slug' => (new Slugifier())->slugify($name), 'term_group' => 0];
+        $termDefaults = ['slug' => slug($name), 'term_group' => 0];
 
         $hasMeta = !empty($overrides['meta']);
         $meta = [];
