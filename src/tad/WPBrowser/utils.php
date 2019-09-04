@@ -7,8 +7,6 @@
 
 namespace tad\WPBrowser;
 
-use LightnCandy\LightnCandy;
-
 /**
  * Builds an array format command line, compatible with the Symfony Process component, from a string command line.
  *
@@ -101,7 +99,7 @@ function renderString($template, array $data = [], array $fnArgs = [])
 
     if (false !== strpos($template, '{{#')) {
         /** @var \Closure $compiler */
-        $compiler = LightnCandy::prepare(LightnCandy::compile($template));
+        $compiler = \LightnCandy\LightnCandy::prepare(\LightnCandy\LightnCandy::compile($template));
 
         return $compiler($replace);
     }
