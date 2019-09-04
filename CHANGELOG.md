@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Changed
+- smaller refactorings and fixings following addition of `phpstan`, fixes #291 (thanks @szepeviktor)
 
 ## [2.2.21] 2019-09-04;
 ### Added
