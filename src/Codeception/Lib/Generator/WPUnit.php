@@ -92,7 +92,7 @@ EOF;
             $propertyName = '';
         }
 
-        if (!isset($propertyName, $actor)) {
+        if (!isset($actor)) {
             return '';
         }
 

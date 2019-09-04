@@ -148,6 +148,27 @@ class WPDb extends Db
      */
     protected $didInit = false;
 
+    /**
+     * The database driver object.
+     *
+     * @var \Codeception\Lib\Driver\Db|PDO
+     */
+    protected $driver;
+
+    /**
+     * Whether the database has been previously populated or not.
+     *
+     * @var bool
+     */
+    protected $populated;
+
+    /**
+     * WPDb constructor.
+     *
+     * @param ModuleContainer $moduleContainer The module container handling the suite modules.
+     * @param null|array            $config The module configuration
+     * @param DbDump|null     $dbDump The database dump handler.
+     */
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);

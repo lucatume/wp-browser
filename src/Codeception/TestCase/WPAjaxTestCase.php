@@ -190,7 +190,12 @@ abstract class WPAjaxTestCase extends WPTestCase
     public function logout()
     {
         unset($GLOBALS['current_user']);
-        $cookies = array(AUTH_COOKIE, SECURE_AUTH_COOKIE, LOGGED_IN_COOKIE, USER_COOKIE, PASS_COOKIE);
+        $cookies = array_filter(array_map(
+            static function ($cookieConst) {
+                return defined($cookieConst) ? constant($cookieConst) : false;
+            },
+            ['AUTH_COOKIE', 'SECURE_AUTH_COOKIE', 'LOGGED_IN_COOKIE', 'USER_COOKIE', 'PASS_COOKIE']
+        ));
         foreach ($cookies as $c) {
             unset($_COOKIE[$c]);
         }

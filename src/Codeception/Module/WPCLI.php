@@ -337,11 +337,17 @@ class WPCLI extends Module
         try {
             $process = $this->executeWpCliCommand($command, $this->timeout);
         } catch (WpCliException $e) {
-            $this->debugSection('command exception', $e->getMessage());
-        } finally {
-            if (isset($this->config['throw']) && $process->getErrorOutput()) {
-                throw new ModuleException($this, $process->getErrorOutput());
+            if (isset($this->config['throw'])) {
+                throw new ModuleException($this, $e->getMessage());
             }
+
+            $this->debugSection('command exception', $e->getMessage());
+
+            return '';
+        }
+
+        if (isset($this->config['throw']) && $process->getErrorOutput()) {
+            throw new ModuleException($this, $process->getErrorOutput());
         }
 
         $output = $process->getErrorOutput() ?: $process->getOutput();

@@ -414,7 +414,8 @@ class WPLoader extends Module
     protected function getPluginsFolder()
     {
         if (empty($this->pluginsFolder)) {
-            $path = empty($this->config['pluginsFolder']) ? WP_PLUGIN_DIR
+            $path = empty($this->config['pluginsFolder']) && defined('WP_PLUGIN_DIR') ?
+                WP_PLUGIN_DIR
                 : realpath($this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']));
 
             if (! file_exists($path)) {
