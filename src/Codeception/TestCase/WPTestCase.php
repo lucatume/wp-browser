@@ -2,6 +2,8 @@
 namespace Codeception\TestCase;
 
 // phpcs:disable
+use Codeception\Exception\ModuleException;
+use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
 
 if (!class_exists('WP_UnitTest_Factory')) {
@@ -934,10 +936,15 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     /**
      * Returns the WPQueries module instance.
      *
-     * @return \Codeception\Module\WPQueries
+     * @return WPQueries An instance of the queries module, if any.
+     *
+     * @throws ModuleException If the WPQueries module is not loaded in the suite.
      */
     public function queries()
     {
-        return $this->getModule('WPQueries');
+        /** @var WPQueries $queries */
+        $queries = $this->getModule('WPQueries');
+
+        return $queries;
     }
 }

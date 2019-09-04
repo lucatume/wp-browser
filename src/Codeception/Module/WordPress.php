@@ -154,7 +154,7 @@ EOF;
     /**
      * Internal method to inject the client to use.
      *
-     * @param Client $client The client object that should be used.
+     * @param  WordPressConnector $client The client object that should be used.
      */
     public function _setClient($client)
     {

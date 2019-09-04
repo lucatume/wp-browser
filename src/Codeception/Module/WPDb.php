@@ -3,6 +3,7 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleException;
+use Codeception\Exception\ModuleRequireException;
 use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
@@ -2788,9 +2789,15 @@ class WPDb extends Db
         $blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
         $this->scaffoldBlogTables($blogId, $domainOrPath, (bool)$subdomain);
 
-        if (($fs = $this->getWpFilesystemModule(false)) instanceof WPFilesystem) {
+        try {
+            $fs = $this->getWpFilesystemModule();
             $this->debug('Scaffolding blog uploads directories.');
             $fs->makeUploadsDir("sites/{$blogId}");
+        } catch (ModuleException $e) {
+            $this->debugSection(
+                'Filesystem',
+                'Could not scaffold blog directories: WPFilesystem module not loaded in suite.'
+            );
         }
 
         return $blogId;
@@ -2857,23 +2864,18 @@ class WPDb extends Db
     /**
      * Gets the WPFilesystem module.
      *
-     * @param bool $throw Whether to throw an exception if the WPFilesystem module is not loaded in
-     *                    the suite or just return `false`.
+     * @return WPFilesystem The filesystem module instance if loaded in the suite.
      *
-     * @return \Codeception\Module\WPFilesystem The filesytem module instance if loaded in the suite.
-     *
-     * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite.
+     * @throws ModuleException If the WPFilesystem module is not loaded in the suite.
      */
-    protected function getWpFilesystemModule($throw = true)
+    protected function getWpFilesystemModule()
     {
         try {
-            /** @noinspection PhpIncompatibleReturnTypeInspection */
-            return $this->getModule('WPFilesystem');
-        } catch (ModuleException $e) {
-            if (!$throw) {
-                return null;
-            }
+            /** @var WPFilesystem $fs */
+            $fs = $this->getModule('WPFilesystem');
 
+            return $fs;
+        } catch (ModuleException $e) {
             $message = 'This method requires the WPFilesystem module.';
             throw new ModuleException(__CLASS__, $message);
         }
@@ -2892,9 +2894,10 @@ class WPDb extends Db
      * $I->dontHaveBlogInDatabase(['domain' => 'test']);
      * ```
      *
-     * @param array $criteria      An array of search criteria to find the blog rows in the blogs table.
-     * @param bool  $removeTables  Remove the blog tables.
-     * @param bool  $removeUploads Remove the blog uploads; requires the `WPFilesystem` module.
+     * @param array $criteria An array of search criteria to find the blog rows in the blogs table.
+     * @param bool $removeTables Remove the blog tables.
+     * @param bool $removeUploads Remove the blog uploads; requires the `WPFilesystem` module.
+     * @throws \Exception
      */
     public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = true)
     {
@@ -2914,8 +2917,16 @@ class WPDb extends Db
                 }
             }
 
-            if ($removeUploads && ($fs = $this->getWpFilesystemModule(false))) {
-                $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
+            if ($removeUploads) {
+                try {
+                    $fs = $this->getWpFilesystemModule();
+                    $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
+                } catch (ModuleException $e) {
+                    $this->debugSection(
+                        'Filesystem',
+                        'Could not delete blog directories: WPFilesystem module not loaded in suite.'
+                    );
+                }
             }
 
             $this->dontHaveInDatabase($this->grabBlogsTableName(), $criteria);
@@ -3169,21 +3180,30 @@ class WPDb extends Db
      *
      * Requires the WPFilesystem module.
      *
-     * @param string     $file       The absolute path to the attachment file.
-     * @param string|int $date       Either a string supported by the `strtotime` function or a UNIX timestamp that
+     * @param string $file The absolute path to the attachment file.
+     * @param string|int $date Either a string supported by the `strtotime` function or a UNIX timestamp that
      *                               should be used to build the "year/time" uploads sub-folder structure.
-     * @param array      $overrides  An associative array of values overriding the default ones.
-     * @param array      $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to override the
+     * @param array $overrides An associative array of values overriding the default ones.
+     * @param array $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to override the
      *                               image sizes created by default.
      *
      * @return int The post ID of the inserted attachment.
      *
-     * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite.
+     * @throws ModuleException If the WPFilesystem module is not loaded in the suite.
      * @throws \Gumlet\ImageResizeException If the image resize operation fails while trying to create the image sizes.
+     * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite.
      */
     public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
     {
-        $fs = $this->getWpFilesystemModule();
+        try {
+            $fs = $this->getWpFilesystemModule();
+        } catch (ModuleException $e) {
+            throw new ModuleRequireException(
+                $this,
+                'The haveAttachmentInDatabase method requires the WPFilesystem module: update the suite ' .
+                'configuration to use it'
+            );
+        }
 
         $pathInfo = pathinfo($file);
         $slug = slug($pathInfo['filename']);
@@ -3370,7 +3390,7 @@ class WPDb extends Db
      * @param bool   $purgeMeta   If set to `true` then the meta for the attachment will be purged too.
      * @param bool   $removeFiles Remove all files too, requires the `WPFilesystem` module to be loaded in the suite.
      *
-     * @throws \Codeception\Exception\ModuleException If the WPFilesystem module is not loaded in the suite
+     * @throws ModuleException If the WPFilesystem module is not loaded in the suite
      *                                                and the `$removeFiles` argument is `true`.
      */
     public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true, $removeFiles = false)
@@ -3400,18 +3420,28 @@ class WPDb extends Db
      *
      * @param array|int $attachmentIds An attachment post ID or an array of attachment post IDs.
      *
-     * @throws \Codeception\Exception\ModuleException If the `WPFilesystem` module is not loaded in the suite.
+     * @throws ModuleRequireException If the `WPFilesystem` module is not loaded in the suite.
      */
     public function dontHaveAttachmentFilesInDatabase($attachmentIds)
     {
+        try {
+            $fs = $this->getWpFilesystemModule();
+        } catch (ModuleException $e) {
+            throw new ModuleRequireException(
+                $this,
+                'The haveAttachmentInDatabase method requires the WPFilesystem module: update the suite ' .
+                'configuration to use it'
+            );
+        }
+
         $postmeta = $this->grabPostmetaTableName();
 
         foreach ((array)$attachmentIds as $attachmentId) {
             $attachedFile = $this->grabAttachmentAttachedFile($attachmentId);
             $attachmentMetadata = $this->grabAttachmentMetadata($attachmentId);
 
-            $fs = $this->getWpFilesystemModule();
             $filesPath = Utils::untrailslashit($fs->getUploadsPath(dirname($attachedFile)));
+
 
             if (!isset($attachmentMetadata['sizes']) && is_array($attachmentMetadata['sizes'])) {
                 continue;
@@ -3656,7 +3686,7 @@ class WPDb extends Db
      * @return string The full blog table name, including the table prefix or an empty string
      *                if the table does not exist.
      *
-     * @throws \Codeception\Exception\ModuleException If no tables are found for the blog.
+     * @throws ModuleException If no tables are found for the blog.
      */
     public function grabBlogTableName($blogId, $table)
     {
