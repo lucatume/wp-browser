@@ -1,0 +1,21 @@
+includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+parameters:
+  level: max
+  inferPrivatePropertyTypeFromConstructor: true
+  paths:
+    - %currentWorkingDirectory%/src/Codeception/
+  excludes_analyse:
+    - %currentWorkingDirectory%/src/Codeception/TestCase/WPXMLRPCTestCase.php
+  autoload_files:
+    - %currentWorkingDirectory%/vendor/codeception/codeception/autoload.php
+    - %currentWorkingDirectory%/src/includes/functions.php
+    - %currentWorkingDirectory%/src/includes/utils.php
+    - %currentWorkingDirectory%/src/includes/spy-rest-server.php
+    - %currentWorkingDirectory%/src/includes/exceptions.php
+    - %currentWorkingDirectory%/src/includes/factory.php
+    - %currentWorkingDirectory%/src/includes/trac.php
+  ignoreErrors:
+    # Uses func_get_args()
+    - '#^Function add_query_arg invoked with [123] parameters?, 0 required\.$#'

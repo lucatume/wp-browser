@@ -30,7 +30,8 @@ PROJECT := $(shell basename ${CURDIR})
 	ci_script \
 	pre_commit \
 	require_codeception_2.5 \
-	require_codeception_3
+	require_codeception_3 \
+	phpstan
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -87,8 +88,8 @@ composer_update: composer.json
 	docker run --rm -v ${CURDIR}:/app composer/composer:master-php5 update
 
 # Runs phpstan on the source files.
-phpstan: src
-	docker run --rm -v ${CURDIR}:/app phpstan/phpstan analyse -l 5 /app/src/Codeception /app/src/tad
+phpstan:
+	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l 0
 
 ci_setup_db:
 	# Start just the database container.
