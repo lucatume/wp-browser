@@ -1,5 +1,7 @@
 <?php
 
+use function tad\WPBrowser\slug;
+
 class WPDbTermsCest
 {
     /**
