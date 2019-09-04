@@ -100,7 +100,10 @@ function renderString($template, array $data = [], array $fnArgs = [])
     );
 
     if (false !== strpos($template, '{{#')) {
-        return LightnCandy::prepare(LightnCandy::compile($template, $replace))($data);
+        /** @var \Closure $compiler */
+        $compiler = LightnCandy::prepare(LightnCandy::compile($template));
+
+        return $compiler($replace);
     }
 
     $search = array_map(

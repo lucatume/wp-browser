@@ -38,6 +38,13 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     protected $backupGlobals = false;
 
+    /**
+     * A buffer property, used to accumulate directories during delete operations.
+     *
+     * @var array
+     */
+    protected $matched_dirs;
+
     public static function _setUpBeforeClass()
     {
         global $wpdb;
@@ -799,7 +806,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function scandir($dir)
     {
-        foreach (scandir($dir) as $path) {
+        foreach (scandir($dir, SCANDIR_SORT_NONE) as $path) {
             if (0 !== strpos($path, '.') && is_dir($dir . '/' . $path)) {
                 $this->matched_dirs[] = $dir . '/' . $path;
                 $this->scandir($dir . '/' . $path);
@@ -880,7 +887,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     public function knownWPBug($ticket_id)
     {
-        if (WP_TESTS_FORCE_KNOWN_BUGS || in_array($ticket_id, self::$forced_tickets)) {
+        if ((defined('WP_TESTS_FORCE_KNOWN_BUGS') && WP_TESTS_FORCE_KNOWN_BUGS)
+        || in_array($ticket_id, self::$forced_tickets, true)) {
             return;
         }
         if (!\TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
@@ -893,7 +901,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     public function knownUTBug($ticket_id)
     {
-        if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('UT' . $ticket_id, self::$forced_tickets)) {
+        if ((defined('WP_TESTS_FORCE_KNOWN_BUGS')||WP_TESTS_FORCE_KNOWN_BUGS)
+        || in_array('UT' . $ticket_id, self::$forced_tickets, true)) {
             return;
         }
         if (!\TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
@@ -906,7 +915,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     public function knownPluginBug($ticket_id)
     {
-        if (WP_TESTS_FORCE_KNOWN_BUGS || in_array('Plugin' . $ticket_id, self::$forced_tickets)) {
+        if ((defined('WP_TESTS_FORCE_KNOWN_BUGS') && WP_TESTS_FORCE_KNOWN_BUGS)
+            || in_array('Plugin' . $ticket_id, self::$forced_tickets, true)) {
             return;
         }
         if (!\TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
