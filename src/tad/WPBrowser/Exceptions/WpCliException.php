@@ -101,4 +101,12 @@ class WpCliException extends \Exception
             ' package to Composer dependencies?'
         );
     }
+
+    public static function becauseACommandDidNotTerminate(Process $process)
+    {
+        return new static(sprintf(
+            'Command did not terminate when was expected to; commandline: %s',
+            $process->getCommandLine()
+        ));
+    }
 }

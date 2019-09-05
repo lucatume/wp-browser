@@ -8,6 +8,7 @@ use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
 use function tad\WPBrowser\parseUrl;
+use function tad\WPBrowser\slug;
 
 class Wpbrowser extends Bootstrap
 {
@@ -496,7 +497,7 @@ class Wpbrowser extends Bootstrap
         $envFileLines = [];
 
         foreach ($envEntries as $key => $value) {
-            $key = strtoupper(preg_replace('/([A-Z])/u', '_$1', $key));
+            $key = strtoupper(slug($key, '_'));
             if (is_bool($value)) {
                 $value ? 'true' : 'false';
             } elseif (null === $value) {
@@ -633,7 +634,7 @@ EOF;
         $this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
     }
 
-    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = null)
+    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = [])
     {
         $installationData = new Data($installationData);
         $WPDb = !empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';

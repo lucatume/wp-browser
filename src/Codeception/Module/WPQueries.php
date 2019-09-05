@@ -51,12 +51,14 @@ class WPQueries extends Module
      * @param ModuleContainer $moduleContainer
      * @param null $config
      * @param Constants|null $constants
-     * @param \wpdb|null $wpdb
+     * @param \wpdb $wpdbInstance
      */
-    public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null, $wpdb = null)
+    public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null, $wpdbInstance = null)
     {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
         $this->constants = $constants ? $constants : new Constants();
-        $this->wpdb = $wpdb;
+        $this->wpdb = $wpdbInstance ?: $wpdb;
         parent::__construct($moduleContainer, $config);
     }
 

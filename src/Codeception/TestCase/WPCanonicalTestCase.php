@@ -200,7 +200,7 @@ class WPCanonicalTestCase extends WPTestCase
             $this->knownWPBug($ticket);
         }
 
-        $ticket_ref = ($ticket > 0) ? 'Ticket #' . $ticket : null;
+        $ticket_ref = ($ticket > 0) ? 'Ticket #' . $ticket : 'n/a';
 
         if (is_string($expected)) {
             $expected = array('url' => $expected);

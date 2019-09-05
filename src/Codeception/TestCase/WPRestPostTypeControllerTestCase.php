@@ -11,6 +11,10 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
     {
         $post_type_obj = get_post_type_object($post->post_type);
 
+        if (!$post_type_obj instanceof \WP_Post_Type) {
+            throw new \RuntimeException('Cannot find the ' . $post->post_type . ' post type.');
+        }
+
         // Standard fields
         $this->assertEquals($post->ID, $data['id']);
         $this->assertEquals($post->post_name, $data['slug']);
@@ -175,6 +179,11 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
         if ($links) {
             $links = test_rest_expand_compact_links($links);
             $post_type = get_post_type_object($data['type']);
+
+            if (!$post_type instanceof \WP_Post_Type) {
+                throw new \RuntimeException('Cannot find the ' . $data['type'] . ' post type.');
+            }
+
             $this->assertEquals(
                 $links['self'][0]['href'],
                 rest_url('wp/v2/' . $post_type->rest_base . '/' . $data['id'])

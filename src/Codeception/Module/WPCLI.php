@@ -199,10 +199,10 @@ class WPCLI extends Module
             return [];
         }
 
-        $hasSplitCallback = null !== $splitCallback;
+        $hasSplitCallback = null !== $splitCallback && is_callable($splitCallback);
         $originalOutput = $output;
 
-        if ($hasSplitCallback) {
+        if (is_callable($splitCallback)) {
             $output = $splitCallback($output, $userCommand, $this);
         } else {
             $output = !preg_match('/[\\n]+/', $output) ?
@@ -372,6 +372,12 @@ class WPCLI extends Module
 
         $output = $process->getErrorOutput() ?: $process->getOutput();
         $status = $process->getExitCode();
+
+        // If the process returns `null`, then it's not terminated.
+        if ($status === null) {
+            throw new ModuleException($this,
+                'Command process did not terminate; commandline: ' . $process->getCommandLine());
+        }
 
         $this->debugSection('output', $output);
         $this->debugSection(' status', $status);

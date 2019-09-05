@@ -3203,7 +3203,7 @@ class WPDb extends Db
         $pathInfo = pathinfo($file);
         $slug = slug($pathInfo['filename']);
 
-        if(!is_readable($file)){
+        if (!is_readable($file)) {
             throw new ModuleException($this, "File [{$file}] is not readable.");
         }
 
@@ -3808,7 +3808,12 @@ class WPDb extends Db
     protected function prepareSqlDump($dump)
     {
         // Remove C-style comments (except MySQL directives).
-        $prepared = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $dump);
+        $prepared = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $dump) ?: '';
+
+        if (empty($prepared)) {
+            return '';
+        }
+
         return $this->_replaceUrlInDump($prepared);
     }
 

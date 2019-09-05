@@ -104,7 +104,7 @@ EOF;
      *
      * @param \Codeception\Lib\ModuleContainer        $moduleContainer
      * @param array                                   $config
-     * @param \tad\WPBrowser\Connector\WordPress|null $client
+     * @param \tad\WPBrowser\Connector\WordPress $client
      *
      * @throws \Codeception\Exception\ModuleConfigException
      */
@@ -113,7 +113,7 @@ EOF;
         parent::__construct($moduleContainer, $config);
         $this->ensureWpRoot();
         $this->adminPath = $this->config['adminPath'];
-        $this->client    = $client;
+        $this->client    = $client ?: new WordPressConnector();
     }
 
     private function ensureWpRoot()
@@ -306,7 +306,9 @@ EOF;
     public function getInternalDomains()
     {
         $internalDomains   = [];
-        $internalDomains[] = '/^' . preg_quote(parse_url($this->siteUrl, PHP_URL_HOST), '/') . '$/';
+        $host = parse_url($this->siteUrl, PHP_URL_HOST) ?: 'localhost';
+        $internalDomains[] = '#^' . preg_quote($host, '#') . '$#';
+
         return $internalDomains;
     }
 

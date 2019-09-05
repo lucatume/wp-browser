@@ -456,7 +456,7 @@ class WPFilesystem extends Filesystem
      *
      * @return string The absolute path to the destination file.
      *
-     * @throws \Codeception\Exception\ModuleException If the destination folder could not be created or the destination
+     * @throws ModuleException If the destination folder could not be created or the destination
      *                                                file could not be written.
      */
     public function writeToUploadedFile($filename, $data, $date = null)
@@ -971,7 +971,7 @@ class WPFilesystem extends Filesystem
      * @param string $path The path to the file to create, relative to the plugins folder.
      * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
-     * @throws \Codeception\Exception\ModuleException If the plugin folder and/or files could not be created.
+     * @throws ModuleException If the plugin folder and/or files could not be created.
      *
      */
     public function havePlugin($path, $code)
@@ -1026,7 +1026,7 @@ PHP;
      * @param string $filename The path to the file to create, relative to the plugins root folder.
      * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
-     * @throws \Codeception\Exception\ModuleException If the mu-plugin folder and/or files could not be created.
+     * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      */
     public function haveMuPlugin($filename, $code)
     {
@@ -1088,13 +1088,10 @@ PHP;
      * @param string $indexFileCode     The content of the theme index.php file with or without the opening PHP tag.
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
-     * @throws \Codeception\Exception\ModuleException If the mu-plugin folder and/or files could not be created.
+     * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      */
-    public function haveTheme(
-        $folder,
-        $indexFileCode,
-        $functionsFileCode = null
-    ) {
+    public function haveTheme($folder, $indexFileCode, $functionsFileCode = '')
+    {
         $dir = $this->config['themes'] . Utils::untrailslashit(Utils::unleadslashit($folder));
         $styleFile = $dir . DIRECTORY_SEPARATOR . 'style.css';
         $indexFile = $dir . DIRECTORY_SEPARATOR . 'index.php';
@@ -1223,7 +1220,7 @@ CSS;
      *
      * @return string The absolute path to the created folder.
      *
-     * @throws \Codeception\Exception\ModuleException
+     * @throws ModuleException
      */
     public function makeUploadsDir($path)
     {
@@ -1265,7 +1262,8 @@ CSS;
     protected function removeOpeningPhpTag($code)
     {
         // Remove the opening PHP tag if present.
-        $code = preg_replace('/^\<\?php\\s*/', '', $code);
+        $code = preg_replace('/^\<\?php\\s*/', '', $code) ?: '';
+
         return $code;
     }
 }
