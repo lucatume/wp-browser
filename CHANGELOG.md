@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.22] 2019-09-05;
+### Added
+- support for environment variables to the `WPCLI` module, fixes #299 (thanks @TimothyBJacobs)
+
 ## [2.2.21] 2019-09-04;
 ### Added
 - the `tad\WPBrowser\slug` function to create the slug version of a string
@@ -1113,4 +1117,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.19]: https://github.com/lucatume/wp-browser/compare/2.2.18...2.2.19
 [2.2.20]: https://github.com/lucatume/wp-browser/compare/2.2.19...2.2.20
 [2.2.21]: https://github.com/lucatume/wp-browser/compare/2.2.20...2.2.21
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.21...HEAD
+[2.2.22]: https://github.com/lucatume/wp-browser/compare/2.2.21...2.2.22
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.22...HEAD
