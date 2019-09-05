@@ -116,6 +116,10 @@ ci_before_install: ci_setup_db ci_setup_wp
 ci_install:
 	# Update Composer using the host machine PHP version.
 	composer require codeception/codeception:"${CODECEPTION_VERSION}"
+	# Remove phpstan dependencies on lower PHP versions.
+	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then \
+		composer remove phpstan/phpstan phpstan/phpstan-shim szepeviktor/phpstan-wordpress; \
+	fi
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
