@@ -274,7 +274,7 @@ require_codeception_3:
 	rm -rf composer.lock vendor/codeception vendor/phpunit vendor/sebastian \
 		&& composer require codeception/codeception:^3.0
 
-phpstan_levels = 0 1 2 3 4 5 6 7 8 max
+phpstan_levels = 6 7 8 max
 $(phpstan_levels): %:
 	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l $@
 # Runs phpstan on the source files at increasing levels.

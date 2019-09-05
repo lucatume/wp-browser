@@ -221,7 +221,9 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
          * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
          * Codeception versions.
          */
-        call_user_func([Unit::class, Compatibility::setupMethodFor(Unit::class)]);
+        $parentSetup = [Unit::class, Compatibility::setupMethodFor(Unit::class)];
+
+        is_callable($parentSetup) && $parentSetup();
     }
 
     public function scan_user_uploads()
@@ -304,6 +306,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     protected function reset_post_types()
     {
+        /** @var \WP_Post_Type $pt */
         foreach (get_post_types(array(), 'objects') as $pt) {
             if (empty($pt->tests_no_auto_unregister)) {
                 _unregister_post_type($pt->name);
@@ -503,6 +506,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             $message = '0';
         }
 
+        $message = is_string($message) ? $message : 'Message is not a string';
+
         throw new \WPDieException($message);
     }
 
@@ -629,7 +634,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
                 unset($GLOBALS[$v]);
             }
         }
-        $parts = parse_url($url);
+
+        // Let's cast to array if the URL is malformed to the point where `false` is returned.
+        $parts = parse_url($url) ?: [];
+
         if (isset($parts['scheme'])) {
             $req = isset($parts['path']) ? $parts['path'] : '';
             if (isset($parts['query'])) {
@@ -677,11 +685,14 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
                 break;
             }
         }
+
         if (empty($tmp_dir)) {
             $tmp_dir = '/tmp';
         }
-        $tmp_dir = realpath($tmp_dir);
-        return tempnam($tmp_dir, 'wpunit');
+
+        $tmp_dir_realpath = realpath($tmp_dir);
+
+        return tempnam($tmp_dir_realpath ?: $tmp_dir, 'wpunit');
     }
 
     /**

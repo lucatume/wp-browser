@@ -2,6 +2,8 @@
 
 namespace Codeception\TestCase;
 
+use PHPUnit\Framework\AssertionFailedError;
+
 abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
 {
 
@@ -154,9 +156,16 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
         }
 
         $taxonomies = wp_list_filter(get_object_taxonomies($post->post_type, 'objects'), array('show_in_rest' => true));
+
         foreach ($taxonomies as $taxonomy) {
             $this->assertTrue(isset($data[$taxonomy->rest_base]));
+
             $terms = wp_get_object_terms($post->ID, $taxonomy->name, array('fields' => 'ids'));
+
+            if ($terms instanceof \WP_Error) {
+                throw new AssertionFailedError('Error while fetching object terms: ' . $terms->get_error_message());
+            }
+
             sort($terms);
             sort($data[$taxonomy->rest_base]);
             $this->assertEquals($terms, $data[$taxonomy->rest_base]);
