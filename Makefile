@@ -87,10 +87,6 @@ cs_fix_n_sniff: cs_fix cs_sniff
 composer_update: composer.json
 	docker run --rm -v ${CURDIR}:/app composer/composer:master-php5 update
 
-# Runs phpstan on the source files.
-phpstan:
-	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l 6
-
 ci_setup_db:
 	# Start just the database container.
 	docker-compose -f docker/${COMPOSE_FILE} up -d db
@@ -277,3 +273,9 @@ require_codeception_2.5:
 require_codeception_3:
 	rm -rf composer.lock vendor/codeception vendor/phpunit vendor/sebastian \
 		&& composer require codeception/codeception:^3.0
+
+phpstan_levels = 0 1 2 3 4 5 6 7 8 max
+$(phpstan_levels): %:
+	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l $@
+# Runs phpstan on the source files at increasing levels.
+phpstan: $(phpstan_levels)
