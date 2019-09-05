@@ -56,10 +56,11 @@
   "autoload-dev": {
     "psr-4": {
       "tad\\Test\\" : "tests/_support/lib"
-    }
+    },
+    "files": ["tests/_support/functions.php"]
   },
   "scripts": {
     "post-install-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill",
     "post-update-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill"
-  }
+    }
 }
