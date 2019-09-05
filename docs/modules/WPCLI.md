@@ -62,6 +62,8 @@ modules:
             env:
                 # Any one of these, if provided, will be set as environment variable for the the cli command process. 
                 # See https://make.wordpress.org/cli/handbook/config/#environment-variables for information.
+                # Equivalent to `WP_CLI_STRICT_ARGS_MODE=1 wp <command>'.
+                strict-args: true
                 # Equivalent to `WP_CLI_CACHE_DIR=/tmp/wp-cli-cache wp <command>'.
                 cache-dir: '/tmp/wp-cli-cache'
                 # Equivalent to `WP_CLI_CONFIG_PATH=/app/public wp <command>'.
