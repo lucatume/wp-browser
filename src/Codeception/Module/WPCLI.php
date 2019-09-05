@@ -360,8 +360,10 @@ class WPCLI extends Module
             if (!empty($this->config['throw'])) {
                 throw new ModuleException($this, $e->getMessage());
             }
+
             $this->debugSection('command exception', $e->getMessage());
-            return;
+
+            return ['',1];
         }
 
         if (!empty($this->config['throw']) && $process->getErrorOutput()) {
