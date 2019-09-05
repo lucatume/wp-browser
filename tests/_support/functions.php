@@ -38,7 +38,7 @@ function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbH
 function getMySQLVersion()
 {
     $output = shell_exec('mysql -V');
-    preg_match('@[0-9]+\.[0-9]+\.[0-9]+@', $output, $version);
+    preg_match('@\d+\.\d+\.\d+@', $output, $version);
     return $version[0];
 }
 
