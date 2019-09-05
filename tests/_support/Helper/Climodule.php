@@ -10,7 +10,11 @@ class Climodule extends \Codeception\Module
     {
         /** @var \Codeception\Module\WPCLI $cli */
         $cli = $this->getModule('WPCLI');
+        $cliConfig = $cli->_getConfig();
+        $cliConfig['env'] = isset($cliConfig['env']) ?
+            array_merge($cliConfig['env'], [$key => $value])
+            : [$key => $value];
 
-        $cli->_reconfigure(['env' => [$key => $value]]);
+        $cli->_reconfigure($cliConfig);
     }
 }
