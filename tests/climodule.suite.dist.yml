@@ -5,6 +5,7 @@ modules:
         - WPCLI
         - WPDb
         - WPBrowser
+        - Asserts
     config:
         WPCLI:
             path: '%WP_ROOT_FOLDER%'
