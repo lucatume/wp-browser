@@ -270,7 +270,7 @@ class WPFilesystem extends Filesystem
         try {
             $date = buildDate($date);
         } catch (\Exception $e) {
-            $date = new \DateTimeImmutable('now');
+            return $date;
         }
 
         return $date->format('Y') . DIRECTORY_SEPARATOR . $date->format('m');
