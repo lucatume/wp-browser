@@ -89,6 +89,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $this->process->forCommand(
             $cli->buildFullCommand([
@@ -137,6 +138,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -178,6 +180,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -209,6 +212,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -241,6 +245,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(-1);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -275,6 +280,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(-1);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -315,6 +321,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -350,6 +357,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -415,6 +423,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -443,6 +452,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -471,6 +481,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -500,6 +511,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -535,6 +547,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(23)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -567,6 +580,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(null)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -632,6 +646,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(60)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
@@ -663,6 +678,7 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->setTimeout(60)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
         $command = $cli->buildFullCommand([
             "--path={$path}",
