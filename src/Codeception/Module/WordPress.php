@@ -10,6 +10,7 @@ use Codeception\TestInterface;
 use GuzzleHttp\Client;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Filesystem\Utils;
+use function tad\WPBrowser\parseUrl;
 
 /**
  * A module dedicated to functional testing using acceptance-like methods.
@@ -255,12 +256,14 @@ EOF;
      * ```
      *
      * @param string $page The path to the page, relative to the the root URL.
+     *
+     * @return string The page path.
      */
     public function amOnPage($page)
     {
         $this->setRequestType($page);
 
-        $parts      = parse_url($page);
+        $parts      = parseUrl($page);
         $parameters = [];
         if (!empty($parts['query'])) {
             parse_str($parts['query'], $parameters);
@@ -275,7 +278,7 @@ EOF;
         $this->setCookie('wordpress_test_cookie', 'WP Cookie check');
         $this->_loadPage('GET', $page, $parameters);
 
-        return null;
+        return $page;
     }
 
     private function setRequestType($page)

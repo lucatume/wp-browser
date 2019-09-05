@@ -7,6 +7,7 @@ use Dotenv\Dotenv;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
+use function tad\WPBrowser\parseUrl;
 
 class Wpbrowser extends Bootstrap
 {
@@ -45,19 +46,25 @@ class Wpbrowser extends Bootstrap
 
         $input = $this->input;
 
-        $this->quiet = $this->input->getOption('quiet');
-        $this->noInteraction = $this->input->getOption('no-interaction');
+        $this->quiet = (bool)$this->input->getOption('quiet');
+        $this->noInteraction = (bool)$this->input->getOption('no-interaction');
 
         if ($this->noInteraction || $this->quiet) {
             $interactive = false;
         }
 
         if ($input->getOption('namespace')) {
-            $this->namespace = trim($input->getOption('namespace'), '\\') . '\\';
+            $namespace = $input->getOption('namespace');
+            if (is_string($namespace)) {
+                $this->namespace = trim($namespace, '\\') . '\\';
+            }
         }
 
         if ($input->hasOption('actor') && $input->getOption('actor')) {
-            $this->actorSuffix = $input->getOption('actor');
+            $actor = $input->getOption('actor');
+            if (is_string($actor)) {
+                $this->actorSuffix = $actor;
+            }
         }
 
         if ($interactive) {
@@ -366,7 +373,7 @@ class Wpbrowser extends Bootstrap
             'http://wp.test'
         );
         $installationData['testSiteWpUrl'] = rtrim($installationData['testSiteWpUrl'], '/');
-        $url = parse_url($installationData['testSiteWpUrl']);
+        $url = parseUrl($installationData['testSiteWpUrl']);
         $installationData['urlScheme'] = empty($url['scheme']) ? 'http' : $url['scheme'];
         $installationData['testSiteWpDomain'] = empty($url['host']) ? 'example.com' : $url['host'];
         $installationData['urlPort'] = empty($url['port']) ? '' : ':' . $url['port'];
@@ -455,7 +462,8 @@ class Wpbrowser extends Bootstrap
 
     protected function normalizePath($path)
     {
-        $pathFrags = preg_split('/(\\/|\\\\)/u', $path);
+        $pathFrags = preg_split('#([/\\\])#u', $path) ?: [];
+
         return implode('/', $pathFrags);
     }
 
@@ -464,26 +472,26 @@ class Wpbrowser extends Bootstrap
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
 
         $envKeys = [
-            'testSiteDbHost',
-            'testSiteDbName',
-            'testSiteDbUser',
-            'testSiteDbPassword',
-            'testSiteTablePrefix',
-            'testSiteWpUrl',
-            'testSiteAdminUsername',
-            'testSiteAdminPassword',
-            'testSiteWpAdminPath',
-            'wpRootFolder',
-            'testDbName',
-            'testDbHost',
-            'testDbUser',
-            'testDbPassword',
-            'testTablePrefix',
-            'testSiteWpDomain',
-            'testSiteAdminEmail',
+            'testSiteDbHost'=>true,
+            'testSiteDbName'=>true,
+            'testSiteDbUser'=>true,
+            'testSiteDbPassword'=>true,
+            'testSiteTablePrefix'=>true,
+            'testSiteWpUrl'=>true,
+            'testSiteAdminUsername'=>true,
+            'testSiteAdminPassword'=>true,
+            'testSiteWpAdminPath'=>true,
+            'wpRootFolder'=>true,
+            'testDbName'=>true,
+            'testDbHost'=>true,
+            'testDbUser'=>true,
+            'testDbPassword'=>true,
+            'testTablePrefix'=>true,
+            'testSiteWpDomain'=>true,
+            'testSiteAdminEmail'=>true,
         ];
 
-        $envEntries = array_intersect_key($installationData, array_combine($envKeys, $envKeys));
+        $envEntries = array_intersect_key($installationData, $envKeys);
 
         $envFileLines = [];
 

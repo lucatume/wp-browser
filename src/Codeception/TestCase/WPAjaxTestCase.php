@@ -136,8 +136,11 @@ abstract class WPAjaxTestCase extends WPTestCase
 
         // Register the core actions
         foreach (array_merge(self::$_core_actions_get, self::$_core_actions_post) as $action) {
-            if (function_exists('wp_ajax_' . str_replace('-', '_', $action))) {
-                add_action('wp_ajax_' . $action, 'wp_ajax_' . str_replace('-', '_', $action), 1);
+            $callback = 'wp_ajax_' . str_replace('-', '_', $action);
+
+            if (function_exists($callback)) {
+                /** @var callable $callback */
+                add_action('wp_ajax_' . $action, $callback, 1);
             }
         }
 

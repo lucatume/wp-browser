@@ -127,3 +127,46 @@ function ensure($condition, $message)
     }
     throw new \InvalidArgumentException($message);
 }
+
+/**
+ * A safe wrapper around the `parse_url` function to ensure consistent return format.
+ *
+ * Differently from the internal implementation this one does not accept a component argument.
+ *
+ * @param     string $url The input URL.
+ *
+ * @return array An array of parsed components, or an array of default values.
+ */
+function parseUrl($url)
+{
+    return \parse_url($url) ?: [
+    'scheme' => '',
+    'host' => '',
+    'port' => 0,
+    'user' => '',
+    'pass' => '',
+    'path' => '',
+    'query' => '',
+    'fragment' => ''
+    ];
+}
+
+/**
+ * Builds a \DateTimeImmutable object from another object, timestamp or `strtotime` parsable string.
+ *
+ * @param mixed $date A dates object, timestamp or `strtotime` parsable string.
+ *
+ * @return \DateTimeImmutable The built date or `now` date if the date is not parsable by the `strtotime` function.
+ * @throws \Exception If the `$date` is a string not parsable by the `strtotime` function.
+ */
+function buildDate($date)
+{
+    if ($date instanceof \DateTimeImmutable) {
+        return $date;
+    }
+    if ($date instanceof \DateTime) {
+        return \DateTimeImmutable::createFromMutable($date);
+    }
+
+    return new \DateTimeImmutable(is_numeric($date) ? '@' . $date : $date);
+}

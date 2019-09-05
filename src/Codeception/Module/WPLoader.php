@@ -391,8 +391,7 @@ class WPLoader extends Module
     {
         $folder = $folder ?: codecept_root_dir();
         $frags = $this->config['configFile'];
-        $frags = is_array($frags) ?: [$frags];
-        foreach ($frags as $frag) {
+        foreach ((array)$frags as $frag) {
             if (! empty($frag)) {
                 $configFile = Utils::findHereOrInParent($frag, $folder);
                 if (! file_exists($configFile)) {

@@ -2,6 +2,8 @@
 
 namespace Codeception\TestCase;
 
+use function tad\WPBrowser\parseUrl;
+
 class WPCanonicalTestCase extends WPTestCase
 {
     public static $old_current_user;
@@ -214,7 +216,8 @@ class WPCanonicalTestCase extends WPTestCase
 
         // Does the redirect match what's expected?
         $can_url = $this->get_canonical($test_url);
-        $parsed_can_url = parse_url($can_url);
+        // Make sure this is an array.
+        $parsed_can_url = parseUrl($can_url);
 
         // Just test the Path and Query if present
         if (isset($expected['url'])) {

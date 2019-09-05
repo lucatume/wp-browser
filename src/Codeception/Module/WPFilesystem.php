@@ -8,6 +8,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\TestInterface;
 use PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
+use function tad\WPBrowser\buildDate;
 
 /**
  * Class WPFilesystem
@@ -172,6 +173,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param string $path The path, relative to the site uploads folder.
+     *
+     * @throws \Exception If the path is a date string and is not parsable by the `strtotime` function.
      */
     public function amInUploadsPath($path = null)
     {
@@ -183,13 +186,13 @@ class WPFilesystem extends Filesystem
                 $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . Utils::unleadslashit($path);
             } else {
                 // time based?
-                $timestamp = is_numeric($path) ? $path : strtotime($path);
+                $date = buildDate($path);
                 $path = implode(
                     DIRECTORY_SEPARATOR,
                     [
                         $this->config['uploads'],
-                        date('Y', $timestamp),
-                        date('m', $timestamp),
+                        $date->format('Y'),
+                        $date->format('m'),
                     ]
                 );
             }
@@ -231,7 +234,7 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param string $file The file path, relative to the uploads folder.
-     * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date object.
      *
      * @return string The absolute path to an uploaded file.
      */
@@ -254,21 +257,23 @@ class WPFilesystem extends Filesystem
         return $path;
     }
 
+    /** @noinspection PhpDocMissingThrowsInspection */
     /**
      * Builds the additional path fragment depending on the date.
      *
-     * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date object.
      *
      * @return string The relative path with the date path appended, if needed.
      */
     protected function buildDateFrag($date)
     {
-        $timestamp = is_numeric($date) ? $date : strtotime($date);
-        $Y = date('Y', $timestamp);
-        $m = date('m', $timestamp);
-        $dateFrag = $Y . DIRECTORY_SEPARATOR . $m;
+        try {
+            $date = buildDate($date);
+        } catch (\Exception $e) {
+            $date = new \DateTimeImmutable('now');
+        }
 
-        return $dateFrag;
+        return $date->format('Y') . DIRECTORY_SEPARATOR . $date->format('m');
     }
 
     /**
