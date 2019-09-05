@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Module\WPCLI;
 
 /**
  * Inherited Methods
@@ -19,8 +20,4 @@
 class ClimoduleTester extends \Codeception\Actor
 {
     use _generated\ClimoduleTesterActions;
-
-    /**
-     * Define custom actions here
-     */
 }

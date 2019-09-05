@@ -195,17 +195,17 @@ trait WithWpCli
      * @param array          $command   The command fragments; a mix of arguments and options.
      * @param int|float|null $timeout   The timeout, in seconds, to use for the command. Use `null` to remove the
      *                                  timeout entirely.
-     *
+     * @param array          $env An optional,associative array of environment variables to set for the process.
      * @return \Symfony\Component\Process\Process The process object that executed the command.
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
-    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60)
+    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [])
     {
-        $fullCommand   = $this->buildFullCommand($command);
-        $fullCommand[] = '--path=' . $this->wpCliWpRootDir;
+        $fullCommand   = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
         $process       = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
         $process->setTimeout($timeout);
+        count($env) && $process->setEnv(array_merge((array)$process->getEnv(), $env));
 
         try {
             $process->mustRun();
@@ -245,7 +245,7 @@ trait WithWpCli
     {
         $fullCommand = array_merge([
             PHP_BINARY,
-            $this->getWpCliBootFilePath()
+            $this->getWpCliBootFilePath(),
         ], (array)$command);
         return $fullCommand;
     }

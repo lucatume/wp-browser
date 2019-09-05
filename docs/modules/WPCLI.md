@@ -30,10 +30,20 @@ if (
 * `throw` - defaults to `true` to throw an exception when a wp-cli command does not return an exit status of `0`; if set to `false` then the exit status of the commands will be returned as is.
 * `timeout` - defaults to `60` (seconds) to set each process execution timeout to a certain value; set to `null`, `false` or `0` to disable timeout completely.
 
-Additionally the module configuration will forward any configuration parameter to `wp-cli` as a flag or option.  
-In the example configuration below the `allow-root` flag and the `some-option` option will be passed to `wp-cli` directly.
+Additionally the module configuration will forward any configuration parameter to `wp-cli` as a flag or option.
+In the example configuration below the `allow-root` flag and the `some-option` option will be passed to `wp-cli` directly **and prepended to the command as global options**.
 
-> Note: these extrac configuration flags and options will be added to **all** the commands executed by wp-cli!
+> Note: these extract configuration flags and options will be prepended to **all** commands executed by wp-cli!
+
+### Environment configuration
+
+The wp-cli binary supports [a set of enviroment variables to modify its behavior](https://make.wordpress.org/cli/handbook/config/#environment-variables).   
+
+These environment variables can be set on the commands ran by the `WPCLI` module using the optional `env` array in the module configuration.  
+The example configuration below shows all of them with some **example** values.  
+Most of the times you won't need any of these, but they are there for more fine-grained control over the module operations.  
+
+> The module is not validating the environment variables in any way! Those values will be evaluated by wp-cli at runtime and might generate errors if not correctly configured.
 
 ### Example configuration
 ```yaml
@@ -45,10 +55,27 @@ modules:
             path: /Users/Luca/Sites/wp
             throw: true
             timeout: 60
-            # This will be forwarded to the wp-cli command as the `--allow-root` flag.
+            # This will be prepended to the command, `wp --allow-root <command>`.
             allow-root: true
-            # This will be forwarded to the wp-cli command as the `--some-option=some-value` option.
+            # This will be prepended to the command, `wp --some-option=some-value <command>`.
             some-option: some-value
+            env:
+                # Any one of these, if provided, will be set as environment variable for the the cli command process. 
+                # See https://make.wordpress.org/cli/handbook/config/#environment-variables for information.
+                # Equivalent to `WP_CLI_CACHE_DIR=/tmp/wp-cli-cache wp <command>'.
+                cache-dir: '/tmp/wp-cli-cache'
+                # Equivalent to `WP_CLI_CONFIG_PATH=/app/public wp <command>'.
+                config-path: '/app/public'
+                # Equivalent to `WP_CLI_CUSTOM_SHELL=/bin/zsh wp <command>'.
+                custom-shell: '/bin/zsh'
+                # Equivalent to `WP_CLI_DISABLE_AUTO_CHECK_UPDATE=1 wp <command>'.
+                disable-auto-update: true
+                # Equivalent to `WP_CLI_PACKAGES_DIR=/wp-cli/packages wp <command>'.
+                packages-dir: '/wp-cli/packages'
+                # Equivalent to `WP_CLI_PHP=/usr/local/bin/php/7.2/php wp <command>'.
+                php: '/usr/local/bin/php/7.2/php'
+                # Equivalent to `WP_CLI_PHP_ARGS='foo=bar some=23' wp <command>'.
+                php-args: 'foo=bar some=23'
 ```
 
 <!--doc-->
