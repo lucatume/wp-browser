@@ -70,7 +70,7 @@ EOF;
         }
 
         /** @var string $phpunitSeries */
-        $voidReturnType = version_compare($phpunitSeries, '8.0', '<') ?
+        $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?
             ''
             : ': void';
 

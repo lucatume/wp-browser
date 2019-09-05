@@ -153,7 +153,7 @@ class WPDb extends Db
     /**
      * The database driver object.
      *
-     * @var \Codeception\Lib\Driver\Db|PDO
+     * @var \Codeception\Lib\Driver\Db
      */
     protected $driver;
 
@@ -2819,9 +2819,7 @@ class WPDb extends Db
      */
     public function getSiteDomain()
     {
-        $domain = last(preg_split('~//~', $this->config['url']));
-
-        return $domain;
+        return last(explode('//', $this->config['url']));
     }
 
     /**
@@ -3185,7 +3183,8 @@ class WPDb extends Db
      *
      * @return int The post ID of the inserted attachment.
      *
-     * @throws ModuleException If the WPFilesystem module is not loaded in the suite.
+     * @throws ModuleException If the WPFilesystem module is not loaded in the suite or the file to attach is not
+     *                         readable
      * @throws \Gumlet\ImageResizeException If the image resize operation fails while trying to create the image sizes.
      * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite.
      */
@@ -3204,7 +3203,17 @@ class WPDb extends Db
         $pathInfo = pathinfo($file);
         $slug = slug($pathInfo['filename']);
 
-        $uploadedFilePath = $fs->writeToUploadedFile($pathInfo['basename'], file_get_contents($file), $date);
+        if(!is_readable($file)){
+            throw new ModuleException($this, "File [{$file}] is not readable.");
+        }
+
+        $data = file_get_contents($file);
+
+        if (false === $data) {
+            throw new ModuleException($this, "File [{$file}] contents could not be read.");
+        }
+
+        $uploadedFilePath = $fs->writeToUploadedFile($pathInfo['basename'], $data, $date);
         $uploadUrl = $this->grabSiteUrl(str_replace($fs->getWpRootFolder(), '', $uploadedFilePath));
         $uploadLocation = Utils::unleadslashit(str_replace($fs->getUploadsPath(), '', $uploadedFilePath));
 
@@ -3232,8 +3241,7 @@ class WPDb extends Db
             return $id;
         }
 
-        $imageWidth = $imageInfo[0];
-        $imageHeight = $imageInfo[1];
+        list($imageWidth, $imageHeight) = $imageInfo;
 
         if ($imageSizes === null) {
             $imageSizes = [
@@ -3243,7 +3251,7 @@ class WPDb extends Db
             ];
         }
 
-        $extension = $pathInfo['extension'];
+        $extension = isset($pathInfo['extension']) ? $pathInfo['extension'] : '';
 
         $createdImages = [];
         foreach ($imageSizes as $size => $thisSizes) {

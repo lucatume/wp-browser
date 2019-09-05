@@ -269,7 +269,7 @@ class WPCLI extends Module
             throw new ModuleConfigException($this, "Timeout [{$this->config['timeout']}] is not valid.");
         }
 
-        $this->timeout = $timeout;
+        $this->timeout = is_string($timeout) ? (float)$timeout : $timeout;
     }
 
     /**
