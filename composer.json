@@ -53,6 +53,7 @@
   "autoload-dev": {
     "psr-4": {
       "tad\\Test\\" : "tests/_support/lib"
-    }
+    },
+    "files": ["tests/_support/functions.php"]
   }
 }
