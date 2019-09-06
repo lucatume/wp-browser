@@ -182,6 +182,9 @@ ci_script:
 	vendor/bin/codecept run wploader_wpdb_interaction
 	docker-compose -f test_runner.compose.yml run waiter
 	docker-compose -f test_runner.compose.yml run test_runner bash -c 'cd /project; vendor/bin/codecept run wpcli_module'
+	if [[ $${TRAVIS_PHP_VERSION:0:3} > "7.0" ]]; then \
+		STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l max; \
+	fi
 
 # Restarts the project containers.
 ci_docker_restart:
