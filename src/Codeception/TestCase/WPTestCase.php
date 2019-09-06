@@ -221,9 +221,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
          * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
          * Codeception versions.
          */
-        $parentSetup = Compatibility::setupMethodFor(Unit::class);
-
-        is_callable($parentSetup) && Unit::$parentSetup();
+        $unitSetupMethod = Compatibility::setupMethodFor(Unit::class);
+        if (method_exists(Unit::class, $unitSetupMethod)) {
+            Unit::{$unitSetupMethod}();
+        }
     }
 
     public function scan_user_uploads()
