@@ -7,7 +7,6 @@ use Codeception\Lib\Framework;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
-use GuzzleHttp\Client;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\parseUrl;
@@ -42,11 +41,6 @@ class WordPress extends Framework implements DependsOnModule
      * @var array
      */
     protected $config = ['adminPath' => '/wp-admin'];
-
-    /**
-     * @var string
-     */
-    protected $adminPath;
 
     /**
      * @var bool
@@ -112,7 +106,7 @@ EOF;
     {
         parent::__construct($moduleContainer, $config);
         $this->ensureWpRoot();
-        $this->adminPath = $this->config['adminPath'];
+        $this->setAdminPath($this->config['adminPath']);
         $this->client    = $client ?: new WordPressConnector();
     }
 
@@ -137,7 +131,7 @@ EOF;
         /** @var WPDb $wpdb */
         $wpdb          = $this->getModule('WPDb');
         $this->siteUrl = $wpdb->grabSiteUrl();
-        $this->loginUrl = '/wp-login.php';
+        $this->setLoginUrl('/wp-login.php');
         $this->setupClient($wpdb->getSiteDomain());
     }
 
@@ -221,7 +215,7 @@ EOF;
         if ($preparedPage === '/') {
             $preparedPage = 'index.php';
         }
-        $page         = $this->adminPath . '/' . $preparedPage;
+        $page         = $this->getAdminPath() . '/' . $preparedPage;
         return $this->amOnPage($page);
     }
 
@@ -292,7 +286,7 @@ EOF;
 
     private function isAdminPageRequest($page)
     {
-        return 0 === strpos($page, $this->adminPath);
+        return 0 === strpos($page, $this->getAdminPath());
     }
 
     /**
@@ -416,7 +410,7 @@ EOF;
      */
     public function loginAs($username, $password)
     {
-        $this->amOnPage($this->loginUrl);
+        $this->amOnPage($this->getLoginUrl());
         $this->submitForm('#loginform', [
         'log' =>$username,
         'pwd' => $password ,

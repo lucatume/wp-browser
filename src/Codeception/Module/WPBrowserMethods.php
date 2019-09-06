@@ -13,12 +13,14 @@ trait WPBrowserMethods
      * @var string
      */
     protected $pluginsPath;
+
     /**
      * The admin absolute URL.
      *
      * @var string
      */
     protected $adminPath;
+
     /**
      * The login screen absolute URL
      *
@@ -399,5 +401,46 @@ trait WPBrowserMethods
         if (isset($this->config['adminUrl']) && ! isset($this->config['adminPath'])) {
             $this->config['adminPath'] = $this->config['adminUrl'];
         }
+    }
+
+    /**
+     * Sets the admin path.
+     *
+     * @param string $adminPath The admin path.
+     */
+    protected function setAdminPath($adminPath)
+    {
+        $this->adminPath = $adminPath;
+    }
+
+    /**
+     * Returns the admin path.
+     *
+     * @return string The admin path.
+     *
+     */
+    protected function getAdminPath()
+    {
+        return $this->adminPath;
+    }
+
+    /**
+     * Sets the login URL.
+     *
+     * @param string $loginUrl The login URL.
+     */
+    protected function setLoginUrl($loginUrl)
+    {
+        $this->loginUrl = $loginUrl;
+    }
+
+    /**
+     * Returns the login URL.
+     *
+     * @return string The login URL.
+     */
+    private function getLoginUrl()
+    {
+        return $this->loginUrl;
     }
 }

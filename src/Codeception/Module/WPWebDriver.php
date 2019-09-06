@@ -72,7 +72,7 @@ class WPWebDriver extends WebDriver
 
         $this->debug("Trying to login, attempt {$this->loginAttempt}/{$maxAttempts}...");
 
-        $this->amOnPage($this->loginUrl);
+        $this->amOnPage($this->getLoginUrl());
 
         $this->waitForElement('#user_login', $timeout);
         $this->waitForElement('#user_pass', $timeout);
