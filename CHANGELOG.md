@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - smaller refactorings and fixings following addition of `phpstan`, fixes #291 (thanks @szepeviktor)
 
+## [2.2.23] 2019-09-06;
+### Fixed
+- smaller adjustment to `slug` function and number handling
+
 ## [2.2.22] 2019-09-05;
 ### Added
 - support for environment variables to the `WPCLI` module, fixes #299 (thanks @TimothyBJacobs)
@@ -1120,4 +1124,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.20]: https://github.com/lucatume/wp-browser/compare/2.2.19...2.2.20
 [2.2.21]: https://github.com/lucatume/wp-browser/compare/2.2.20...2.2.21
 [2.2.22]: https://github.com/lucatume/wp-browser/compare/2.2.21...2.2.22
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.22...HEAD
+[2.2.23]: https://github.com/lucatume/wp-browser/compare/2.2.22...2.2.23
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.23...HEAD

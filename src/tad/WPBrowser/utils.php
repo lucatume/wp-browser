@@ -63,10 +63,6 @@ function slug($string, $sep = '-', $let = false)
     // Prepend the separator to the first uppercase letter and trim the string.
     $string = preg_replace('/(?<![A-Z'. $seps .'])([A-Z])/u', $sep.'$1', trim($string));
 
-    // Prepend the separator to the first number not preceded by a number and trim the string.
-    $string = preg_replace('/(?<![0-9'. $seps .'])([0-9])/u', $sep.'$1', trim($string));
-
-
     // Replace non letter or digits with the separator.
     $string = preg_replace('~[^\pL\d'. $seps .']+~u', $sep, $string);
 
@@ -77,7 +73,7 @@ function slug($string, $sep = '-', $let = false)
     $string = preg_replace('~[^'. $seps .'\w]+~', '', $string);
 
     // Trim excess separator chars.
-    $string = trim($string, $seps);
+    $string = trim(trim($string), $seps);
 
     // Remove duplicate separators and lowercase.
     $string = strtolower(preg_replace('~['. $seps .']{2,}~', $sep, $string));
