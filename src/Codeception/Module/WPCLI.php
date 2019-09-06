@@ -375,8 +375,10 @@ class WPCLI extends Module
 
         // If the process returns `null`, then it's not terminated.
         if ($status === null) {
-            throw new ModuleException($this,
-                'Command process did not terminate; commandline: ' . $process->getCommandLine());
+            throw new ModuleException(
+                $this,
+                'Command process did not terminate; commandline: ' . $process->getCommandLine()
+            );
         }
 
         $this->debugSection('output', $output);

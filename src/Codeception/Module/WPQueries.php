@@ -53,8 +53,13 @@ class WPQueries extends Module
      * @param Constants|null $constants
      * @param \wpdb $wpdbInstance
      */
-    public function __construct(ModuleContainer $moduleContainer, $config, Constants $constants = null, $wpdbInstance = null)
-    {
+    public function __construct(
+        ModuleContainer $moduleContainer,
+        $config,
+        Constants
+        $constants = null,
+        $wpdbInstance = null
+    ) {
         /** @var \wpdb $wpdb */
         global $wpdb;
         $this->constants = $constants ? $constants : new Constants();

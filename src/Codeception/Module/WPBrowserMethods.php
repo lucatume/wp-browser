@@ -87,11 +87,11 @@ trait WPBrowserMethods
 
     protected function grabWordPressAuthCookie($pattern = null)
     {
-	    if (! method_exists($this, 'grabCookiesWithPattern')) {
-		    return null;
-	    }
+        if (! method_exists($this, 'grabCookiesWithPattern')) {
+            return null;
+        }
 
-	    $pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
+        $pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
 
         return empty($cookies) ? null : array_pop($cookies);

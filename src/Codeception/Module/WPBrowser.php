@@ -18,7 +18,7 @@ class WPBrowser extends PhpBrowser
      */
     protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
-	/**
+    /**
      * Returns all the cookies whose name matches a regex pattern.
      *
      * @example

@@ -171,66 +171,66 @@ class WPWebDriver extends WebDriver
         parent::validateConfig();
     }
 
-	/**
-	 * In the plugin administration screen deactivate a plugin clicking the "Deactivate" link.
-	 *
-	 * The method will **not** handle authentication and navigation to the plugins administration page.
-	 *
-	 * @example
-	 * ```php
-	 * // Deactivate one plugin.
-	 * $I->loginAsAdmin();
-	 * $I->amOnPluginsPage();
-	 * $I->deactivatePlugin('hello-dolly');
-	 * // Deactivate a list of plugins.
-	 * $I->loginAsAdmin();
-	 * $I->amOnPluginsPage();
-	 * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
-	 * ```
-	 *
-	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
-	 */
-	public function deactivatePlugin($pluginSlug)
-	{
-		foreach ((array)$pluginSlug as $plugin) {
-			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
-			$this->scrollTo($option, 0, -40);
-			$this->checkOption($option);
-		}
-		$this->scrollTo('select[name="action"]', 0, -40);
-		$this->selectOption('action', 'deactivate-selected');
-		$this->click("#doaction");
-	}
+    /**
+     * In the plugin administration screen deactivate a plugin clicking the "Deactivate" link.
+     *
+     * The method will **not** handle authentication and navigation to the plugins administration page.
+     *
+     * @example
+     * ```php
+     * // Deactivate one plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin('hello-dolly');
+     * // Deactivate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
+     * ```
+     *
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
+     */
+    public function deactivatePlugin($pluginSlug)
+    {
+        foreach ((array)$pluginSlug as $plugin) {
+            $option = '//*[@data-slug="' . $plugin . '"]/th/input';
+            $this->scrollTo($option, 0, -40);
+            $this->checkOption($option);
+        }
+        $this->scrollTo('select[name="action"]', 0, -40);
+        $this->selectOption('action', 'deactivate-selected');
+        $this->click("#doaction");
+    }
 
-	/**
-	 * In the plugin administration screen activates one or more plugins clicking the "Activate" link.
-	 *
-	 * The method will **not** handle authentication and navigation to the plugins administration page.
-	 *
-	 * @example
-	 * ```php
-	 * // Activate a plugin.
-	 * $I->loginAsAdmin();
-	 * $I->amOnPluginsPage();
-	 * $I->activatePlugin('hello-dolly');
-	 * // Activate a list of plugins.
-	 * $I->loginAsAdmin();
-	 * $I->amOnPluginsPage();
-	 * $I->activatePlugin(['hello-dolly','another-plugin']);
-	 * ```
-	 *
-	 * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-	 */
-	public function activatePlugin($pluginSlug)
-	{
-		$plugins = (array)$pluginSlug;
-		foreach ($plugins as $plugin) {
-			$option = '//*[@data-slug="' . $plugin . '"]/th/input';
-			$this->scrollTo($option, 0, -40);
-			$this->checkOption($option);
-		}
-		$this->scrollTo('select[name="action"]', 0, -40);
-		$this->selectOption('action', 'activate-selected');
-		$this->click("#doaction");
-	}
+    /**
+     * In the plugin administration screen activates one or more plugins clicking the "Activate" link.
+     *
+     * The method will **not** handle authentication and navigation to the plugins administration page.
+     *
+     * @example
+     * ```php
+     * // Activate a plugin.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin('hello-dolly');
+     * // Activate a list of plugins.
+     * $I->loginAsAdmin();
+     * $I->amOnPluginsPage();
+     * $I->activatePlugin(['hello-dolly','another-plugin']);
+     * ```
+     *
+     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     */
+    public function activatePlugin($pluginSlug)
+    {
+        $plugins = (array)$pluginSlug;
+        foreach ($plugins as $plugin) {
+            $option = '//*[@data-slug="' . $plugin . '"]/th/input';
+            $this->scrollTo($option, 0, -40);
+            $this->checkOption($option);
+        }
+        $this->scrollTo('select[name="action"]', 0, -40);
+        $this->selectOption('action', 'activate-selected');
+        $this->click("#doaction");
+    }
 }
