@@ -3,8 +3,10 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.24] 2019-09-06;
 ### Changed
-- smaller refactorings and fixings following addition of `phpstan`, fixes #291 (thanks @szepeviktor)
+- a number of refactorings and fixings following addition of `phpstan`, fixes #291 (thanks @szepeviktor)
 
 ## [2.2.23] 2019-09-06;
 ### Fixed
@@ -1125,4 +1127,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.21]: https://github.com/lucatume/wp-browser/compare/2.2.20...2.2.21
 [2.2.22]: https://github.com/lucatume/wp-browser/compare/2.2.21...2.2.22
 [2.2.23]: https://github.com/lucatume/wp-browser/compare/2.2.22...2.2.23
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.23...HEAD
+[2.2.24]: https://github.com/lucatume/wp-browser/compare/2.2.23...2.2.24
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.24...HEAD
