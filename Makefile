@@ -282,4 +282,4 @@ require_codeception_3:
 		&& composer require codeception/codeception:^3.0
 
 phpstan:
-	STATIC_ANALYSIS=1 vendor/bin/phpstan analyze -l max
+	vendor/bin/phpstan analyze -l max

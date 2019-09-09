@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Changed
+- smaller refactoring to avoid introducing `STATIC_ANALYSIS` environment var in code (thanks @szepeviktor)
 
 ## [2.2.24] 2019-09-06;
 ### Changed
