@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.25] 2019-09-13;
 ### Changed
 - smaller refactoring to avoid introducing `STATIC_ANALYSIS` environment var in code (thanks @szepeviktor)
 
@@ -1133,4 +1135,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.22]: https://github.com/lucatume/wp-browser/compare/2.2.21...2.2.22
 [2.2.23]: https://github.com/lucatume/wp-browser/compare/2.2.22...2.2.23
 [2.2.24]: https://github.com/lucatume/wp-browser/compare/2.2.23...2.2.24
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.24...HEAD
+[2.2.25]: https://github.com/lucatume/wp-browser/compare/2.2.24...2.2.25
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.25...HEAD
