@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - smaller refactoring to avoid introducing `STATIC_ANALYSIS` environment var in code (thanks @szepeviktor)
 
+### Fixed
+- restore Codeception `2.5` and `3.0` support in `composer.json` file erroneously removed in `2.2.24`
+
 ## [2.2.24] 2019-09-06;
 ### Changed
 - a number of refactorings and fixings following addition of `phpstan`, fixes #291 (thanks @szepeviktor)
