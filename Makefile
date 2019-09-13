@@ -114,10 +114,8 @@ ci_before_install: ci_setup_db ci_setup_wp
 	docker-compose -f docker/${COMPOSE_FILE} up -d chromedriver
 
 ci_conditionals:
-	# Remove phpstan dependencies on lower PHP versions. Do not update dev dependencies.
-	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then \
-		composer remove --dev --update-no-dev phpstan/phpstan phpstan/phpstan-shim szepeviktor/phpstan-wordpress; \
-	fi
+	# Remove phpstan dependencies on lower PHP versions.
+	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then sed -i '' '/phpstan/d' composer.json; fi
 	# Update Composer using the host machine PHP version.
 	composer require codeception/codeception:"${CODECEPTION_VERSION}"
 
