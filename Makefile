@@ -119,7 +119,7 @@ ci_install:
 		composer remove --dev phpstan/phpstan phpstan/phpstan-shim szepeviktor/phpstan-wordpress; \
 	fi
 	# Update Composer using the host machine PHP version.
-	composer require codeception/codeception:"${CODECEPTION_VERSION}"
+	rm composer.lock && composer require codeception/codeception:"${CODECEPTION_VERSION}"
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
