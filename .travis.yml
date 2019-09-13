@@ -67,6 +67,7 @@ before_install:
   - export PATH=vendor/bin:$PATH
 
 install:
+  - make ci_conditionals
   - make ci_install
 
 before_script:

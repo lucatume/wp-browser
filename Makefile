@@ -113,13 +113,15 @@ ci_before_install: ci_setup_db ci_setup_wp
 	WP_CONTAINER_IP=`docker inspect -f '{{ .NetworkSettings.Networks.docker_default.IPAddress }}' wpbrowser_wp` \
 	docker-compose -f docker/${COMPOSE_FILE} up -d chromedriver
 
-ci_install:
-	# Remove phpstan dependencies on lower PHP versions.
+ci_conditionals:
+	# Remove phpstan dependencies on lower PHP versions. Do not update dev dependencies.
 	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then \
-		composer remove --dev phpstan/phpstan phpstan/phpstan-shim szepeviktor/phpstan-wordpress; \
+		composer remove --dev --update-no-dev phpstan/phpstan phpstan/phpstan-shim szepeviktor/phpstan-wordpress; \
 	fi
 	# Update Composer using the host machine PHP version.
-	rm composer.lock && composer require codeception/codeception:"${CODECEPTION_VERSION}"
+	composer require codeception/codeception:"${CODECEPTION_VERSION}"
+
+ci_install:
 	# Copy over the wp-cli.yml configuration file.
 	docker cp docker/wp-cli.yml wpbrowser_wp:/var/www/html/wp-cli.yml
 	# Copy over the wp-config.php file.
