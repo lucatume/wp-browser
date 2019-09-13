@@ -115,7 +115,7 @@ ci_before_install: ci_setup_db ci_setup_wp
 
 ci_conditionals:
 	# Remove phpstan dependencies on lower PHP versions.
-	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then sed -i '' '/phpstan/d' composer.json; fi
+	if [[ $${TRAVIS_PHP_VERSION:0:3} < "7.1" ]]; then sed -i.bak '/phpstan/d' composer.json; fi
 	# Update Composer using the host machine PHP version.
 	composer require codeception/codeception:"${CODECEPTION_VERSION}"
 
