@@ -1,22 +1,16 @@
 <?php
 /**
- * Loads the correct version of the compatible test case depending on the PHPUnit version.
+ * Loads the correct version of the compatible test case depending on the Codeception version.
  */
 
-if (class_exists('PHPUnit\Runner\Version')) {
-    $phpunitSeries = \PHPUnit\Runner\Version::series();
-} elseif (class_exists('PHPUnit_Runner_Version')) {
-    $phpunitSeries = PHPUnit_Runner_Version::series();
+if (version_compare(\Codeception\Codecept::VERSION, '3.0.0', '<')) {
+    class_alias(
+        '\\tad\WPBrowser\\Compat\\Codeception\\Version2\\Unit',
+        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
+    );
 } else {
-    $phpunitSeries = '5.0';
-}
-
-putenv('WPBROWSER_PHPUNIT_SERIES=' . $phpunitSeries);
-
-if (version_compare($phpunitSeries, '8.0', '<')) {
-    require_once __DIR__ . '/Compat/PHPUnit/Base/Testcase.php';
-    require_once __DIR__ . '/Compat/PHPUnit/Base/Unit.php';
-} else {
-    require_once __DIR__ . '/Compat/PHPUnit/Version8/Testcase.php';
-    require_once __DIR__ . '/Compat/PHPUnit/Version8/Unit.php';
+    class_alias(
+        '\\Codeception\\Test\\Unit',
+        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
+    );
 }

@@ -1,17 +1,17 @@
 <?php
 /**
  * An extension of Codeception Unit TestCase to cover all methods required by the test cases to work.
- * This specific file will be loaded when the loaded version of PHPUnit is < 8.0.
+ * This specific file will be loaded when the loaded version of Codeception is < 3.0.
  *
- * @package tad\WPBrowser\Compat\Codeception
- * @since TBD
+ * @package tad\WPBrowser\Compat\Codeception\Version2
  */
 
-namespace tad\WPBrowser\Compat\Codeception;
+namespace tad\WPBrowser\Compat\Codeception\Version2;
 
 /**
  * Class Unit
- * @package tad\WPBrowser\Compat\Codeception
+ *
+ * @package tad\WPBrowser\Compat\Codeception\Version2
  */
 class Unit extends \Codeception\Test\Unit
 {
