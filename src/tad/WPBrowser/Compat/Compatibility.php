@@ -37,7 +37,7 @@ class Compatibility
      *
      * @return string The current PHPUnit version.
      */
-    public static function phpunitVersion()
+    public function phpunitVersion()
     {
         if (class_exists('PHPUnit\Runner\Version')) {
             return \PHPUnit\Runner\Version::series();

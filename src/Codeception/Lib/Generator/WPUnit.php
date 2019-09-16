@@ -4,8 +4,6 @@ namespace Codeception\Lib\Generator;
 
 use Codeception\Configuration;
 use Codeception\Lib\Generator\Shared\Classname;
-use Codeception\Module\Queue;
-use Codeception\TestCase\WPTestCase;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
 use tad\WPBrowser\Compat\Compatibility;
@@ -51,19 +49,27 @@ class {{name}}Test extends {{baseClass}}
 
 EOF;
 
+    /**
+     * The injectable compatibility layer.
+     *
+     * @var Compatibility
+     */
+    protected $compatibilityLayer;
+
     public function __construct($settings, $name, $baseClass)
     {
         parent::__construct($settings);
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
         $this->baseClass = $baseClass;
+        $this->compatibilityLayer = new Compatibility();
     }
 
     public function produce()
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-        $phpunitSeries = Compatibility::phpunitVersion();
+        $phpunitSeries = $this->compatibilityLayer->phpunitVersion();
 
         /** @var string $phpunitSeries */
         $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?
@@ -106,5 +112,15 @@ EOF;
 EOF;
 
         return ltrim($testerFrag);
+    }
+
+    /**
+     * Injects the compatibility layer object.
+     *
+     * @param Compatibility $compatibility An instance of the compatibility layer.
+     */
+    public function setCompatibilityLayer(Compatibility $compatibility)
+    {
+        $this->compatibilityLayer = $compatibility;
     }
 }

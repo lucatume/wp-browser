@@ -2,6 +2,7 @@
 
 use Codeception\TestCase\WPTestCase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
+use tad\WPBrowser\Compat\Compatibility;
 
 class WPUnitTest extends \Codeception\Test\Unit
 {
@@ -18,6 +19,8 @@ class WPUnitTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
+    protected $compatibility;
+
     /**
      * It should scaffold PHPUnit v8 compatible code on series 8
      *
@@ -30,6 +33,7 @@ class WPUnitTest extends \Codeception\Test\Unit
         $settings = ['namespace' => 'Acme'];
         $name = 'SomeClass';
         $generator = new WPUnit($settings, $name, WPTestCase::class);
+        $generator->setCompatibilityLayer($this->compatibility);
 
         $code = $generator->produce();
 
@@ -38,7 +42,9 @@ class WPUnitTest extends \Codeception\Test\Unit
 
     protected function setPhpUnitSeriesTo($series)
     {
-        putenv("WPBROWSER_PHPUNIT_SERIES={$series}");
+        $this->compatibility = $this->make(Compatibility::class, [
+            'phpunitVersion' => $series
+        ]);
     }
 
     public function phpUnitLt8Series()
