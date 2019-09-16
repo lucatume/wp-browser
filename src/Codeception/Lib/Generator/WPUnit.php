@@ -8,6 +8,7 @@ use Codeception\Module\Queue;
 use Codeception\TestCase\WPTestCase;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
+use tad\WPBrowser\Compat\Compatibility;
 
 class WPUnit extends AbstractGenerator implements GeneratorInterface
 {
@@ -62,12 +63,7 @@ EOF;
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-        $phpunitSeries = getenv('WPBROWSER_PHPUNIT_SERIES');
-
-        if (empty($phpunitSeries) && class_exists(WPTestCase::class)) {
-            // Re-run the check after the auto-loading has autoloaded the file.
-            $phpunitSeries = getenv('WPBROWSER_PHPUNIT_SERIES');
-        }
+        $phpunitSeries = Compatibility::phpunitVersion();
 
         /** @var string $phpunitSeries */
         $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?
