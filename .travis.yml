@@ -23,6 +23,10 @@ matrix:
       env: CODECEPTION_VERSION="^2.5"
     - php: '7.2'
       env: CODECEPTION_VERSION="^3.0"
+    - php: '7.3'
+      env: CODECEPTION_VERSION="^2.5"
+    - php: '7.3'
+      env: CODECEPTION_VERSION="^3.0"
 
 services:
   - docker
