@@ -4,7 +4,7 @@ namespace Acme;
 class SomeClassTest extends Codeception\TestCase\WPTestCase
 {
     
-    public function setUp(): void
+    public function setUp()
     {
         // Before...
         parent::setUp();
@@ -12,7 +12,7 @@ class SomeClassTest extends Codeception\TestCase\WPTestCase
         // Your set up methods here.
     }
 
-    public function tearDown(): void
+    public function tearDown()
     {
         // Your tear down methods here.
 
