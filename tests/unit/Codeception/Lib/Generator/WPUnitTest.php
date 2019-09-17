@@ -71,6 +71,7 @@ class WPUnitTest extends \Codeception\Test\Unit
         $settings = ['namespace' => 'Acme'];
         $name = 'SomeClass';
         $generator = new WPUnit($settings, $name, WPTestCase::class);
+        $generator->setCompatibilityLayer($this->compatibility);
 
         $code = $generator->produce();
 
@@ -88,6 +89,7 @@ class WPUnitTest extends \Codeception\Test\Unit
         $settings = ['namespace' => 'Acme', 'actor' => 'Fixer'];
         $name = 'SomeClass';
         $generator = new WPUnit($settings, $name, WPTestCase::class);
+        $generator->setCompatibilityLayer($this->compatibility);
 
         $code = $generator->produce();
 
