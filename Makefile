@@ -273,12 +273,19 @@ wp_dump:
 pre_commit: lint cs_sniff
 
 require_codeception_2.5:
-	rm -rf composer.lock vendor/codeception vendor/phpunit vendor/sebastian \
-		&& composer require codeception/codeception:^2.5
+	mv vendor/wordpress _wordpress
+	rm -rf composer.lock vendor && composer require codeception/codeception:^2.5
+	mv _wordpress vendor/wordpress
 
 require_codeception_3:
-	rm -rf composer.lock vendor/codeception vendor/phpunit vendor/sebastian \
-		&& composer require codeception/codeception:^3.0
+	mv vendor/wordpress _wordpress
+	rm -rf composer.lock vendor && composer require codeception/codeception:^3.0
+	mv _wordpress vendor/wordpress
+
+require_phpunit_8:
+	mv vendor/wordpress _wordpress
+	rm -rf composer.lock vendor && composer require codeception/codeception:^3.0 phpunit/phpunit:^8.0
+	mv _wordpress vendor/wordpress
 
 phpstan:
 	vendor/bin/phpstan analyze -l max
