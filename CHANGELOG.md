@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.26] 2019-09-17;
+### Fixed
+- double class definition issues dealing with Codeception and PHPUnit versions
+
 ## [2.2.25] 2019-09-13;
 ### Changed
 - smaller refactoring to avoid introducing `STATIC_ANALYSIS` environment var in code (thanks @szepeviktor)
@@ -1136,4 +1140,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.23]: https://github.com/lucatume/wp-browser/compare/2.2.22...2.2.23
 [2.2.24]: https://github.com/lucatume/wp-browser/compare/2.2.23...2.2.24
 [2.2.25]: https://github.com/lucatume/wp-browser/compare/2.2.24...2.2.25
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.25...HEAD
+[2.2.26]: https://github.com/lucatume/wp-browser/compare/2.2.25...2.2.26
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.26...HEAD
