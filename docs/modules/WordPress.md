@@ -52,9 +52,6 @@ if (
 <nav>
 	<ul>
 		<li>
-			<a href="#activateplugin">activatePlugin</a>
-		</li>
-		<li>
 			<a href="#ameditingpostwithid">amEditingPostWithId</a>
 		</li>
 		<li>
@@ -74,9 +71,6 @@ if (
 		</li>
 		<li>
 			<a href="#amonpluginspage">amOnPluginsPage</a>
-		</li>
-		<li>
-			<a href="#deactivateplugin">deactivatePlugin</a>
 		</li>
 		<li>
 			<a href="#dontseeplugininstalled">dontSeePluginInstalled</a>
@@ -119,24 +113,6 @@ if (
 		</li>
 	</ul>
 </nav>
-
-<h3>activatePlugin</h3>
-
-<hr>
-
-<p>In the plugin administration screen activates one or more plugins clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
-<pre><code class="language-php">    // Activate a plugin.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin('hello-dolly');
-    // Activate a list of plugins.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
-<h4>Parameters</h4>
-<ul>
-<li><code>string/array</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
-  
 
 <h3>amEditingPostWithId</h3>
 
@@ -225,24 +201,6 @@ Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 <pre><code class="language-php">    $I-&gt;loginAsAdmin();
     $I-&gt;amOnPluginsPage();
     $I-&gt;activatePlugin('hello-dolly');</code></pre>
-  
-
-<h3>deactivatePlugin</h3>
-
-<hr>
-
-<p>In the plugin administration screen deactivate a plugin clicking the &quot;Deactivate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
-<pre><code class="language-php">    // Deactivate one plugin.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;deactivatePlugin('hello-dolly');
-    // Deactivate a list of plugins.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);</code></pre>
-<h4>Parameters</h4>
-<ul>
-<li><code>string/array</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
   
 
 <h3>dontSeePluginInstalled</h3>

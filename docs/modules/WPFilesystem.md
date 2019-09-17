@@ -470,12 +470,15 @@ modules:
 <pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
     $testTodayUploads = $I-&gt;getBlogUploadsPath($blogId);
     $testLastMonthLogs = $I-&gt;getBlogUploadsPath($blogId, '/logs', '-1 month');</code></pre>
-<pre><code>                      a UNIX timestamp or a string supported by the `strtotime` function; defaults to `now`.</code></pre>
+<pre><code>                                                        file or folder.
+                                                        sub-folders in the year/month format; a UNIX timestamp or
+                                                        a string supported by the `strtotime` function; defaults
+                                                        to `now`.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID to get the path for.</li>
-<li><code>string</code> <strong>$file</strong> - The path, relatitve to the blog uploads folder, to the file or folder.</li>
-<li><code>null</code> <strong>$date</strong> - The date that should be used to build the uploads sub-folders in the year/month format;</li></ul>
+<li><code>string</code> <strong>$file</strong> - The path, relatitve to the blog uploads folder, to the</li>
+<li><code>null/string/[\DateTime](http://php.net/manual/en/class.datetime.php)/[\DateTime](http://php.net/manual/en/class.datetime.php)Immutable</code> <strong>$date</strong> - The date that should be used to build the uploads</li></ul>
   
 
 <h3>getUploadsPath</h3>
@@ -488,7 +491,7 @@ modules:
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder.</li>
-<li><code>string/int</code> <strong>$date</strong> - A string compatible with <code>strtotime</code> or a Unix timestamp.</li></ul>
+<li><code>mixed</code> <strong>$date</strong> - A string compatible with <code>strtotime</code>, a Unix timestamp or a Date object.</li></ul>
   
 
 <h3>getWpRootFolder</h3>

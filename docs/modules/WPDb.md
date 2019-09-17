@@ -1680,7 +1680,7 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of links to insert.</li>
-<li><code>array/array/null/array</code> <strong>$overrides</strong> - Overrides for the default arguments.</li></ul>
+<li><code>array</code> <strong>$overrides</strong> - Overrides for the default arguments.</li></ul>
   
 
 <h3>haveManyPostsInDatabase</h3>
@@ -1755,13 +1755,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <pre><code class="language-php">    $I-&gt;haveMenuInDatabase('test', 'sidebar');
     $I-&gt;haveMenuItemInDatabase('test', 'Test one', 0);
     $I-&gt;haveMenuItemInDatabase('test', 'Test two', 1);</code></pre>
-<pre><code>                             meta.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
 <li><code>string</code> <strong>$title</strong> - The menu item title.</li>
 <li><code>int/null</code> <strong>$menuOrder</strong> - An optional menu order, <code>1</code> based.</li>
-<li><code>array/array/null/array</code> <strong>$meta</strong> - An associative array that will be prefixed with <code>_menu_item_</code> for the item post</li></ul>
+<li><code>array</code> <strong>$meta</strong> - An associative array that will be prefixed with <code>_menu_item_</code> for the item post meta.</li></ul>
   
 
 <h3>haveOptionInDatabase</h3>
@@ -2296,11 +2295,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <pre><code class="language-php">    $I-&gt;useTheme('twentyseventeen');
     $I-&gt;useTheme('child-of-twentyseventeen', 'twentyseventeen');
     $I-&gt;useTheme('acme', 'acme', 'Acme Theme');</code></pre>
+<pre><code>                                    `$stylesheet`.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>
 <li><code>string/null</code> <strong>$template</strong> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
-<li><code>string/null</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of <code>$stylesheet</code>.</li></ul>
+<li><code>string/null</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of</li></ul>
 
 
 *This class extends \Codeception\Module\Db*
