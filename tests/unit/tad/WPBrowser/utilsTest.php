@@ -37,6 +37,10 @@ class utilsTest extends \Codeception\Test\Unit
             'case_1'=>[
             'post create --post_title="Some Post" --post_type=post' ,
                ['post','create','--post_title=Some Post','--post_type=post']
+            ],
+            'issue_310' => [
+                "post create --format=json --porcelain --post_title='Post for ALC newsletter testing'",
+                ['post', 'create', '--format=json', '--porcelain', '--post_title=Post for ALC newsletter testing']
             ]
         ];
     }

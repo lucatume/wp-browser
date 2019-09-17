@@ -30,13 +30,15 @@ function buildCommandline($command)
     }
 
     $open = false;
-    $unescapedQuotesPattern  = '/(?<!\\\\)"/u';
+    $unescapedQuotesPattern  = '/(?<!\\\\)("|\')/u';
 
     return array_reduce($commandLineFrags, static function (array $acc, $v) use (&$open, $unescapedQuotesPattern) {
-        $containsUnescapedQuotes = preg_match($unescapedQuotesPattern, $v);
-        $v                       = $open && $containsUnescapedQuotes ? array_pop($acc) . ' ' . $v : $v;
-        $open                    = ! $open && $containsUnescapedQuotes;
-        $acc[]                   = preg_replace($unescapedQuotesPattern, '', $v);
+        $containsUnescapedQuotes = preg_match_all($unescapedQuotesPattern, $v);
+        $v = $open ? array_pop($acc) . ' ' . $v : $v;
+        $open = $containsUnescapedQuotes ?
+            $containsUnescapedQuotes & 1 && (bool)$containsUnescapedQuotes !== $open
+            : $open;
+        $acc[] = preg_replace($unescapedQuotesPattern, '', $v);
 
         return $acc;
     }, []);
