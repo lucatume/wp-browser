@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.27] 2019-09-17;
+### Fixed
+- command line parsing issue in the `WPCLI` module, fixes #310
+
 ## [2.2.26] 2019-09-17;
 ### Fixed
 - double class definition issues dealing with Codeception and PHPUnit versions
@@ -1141,4 +1145,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.24]: https://github.com/lucatume/wp-browser/compare/2.2.23...2.2.24
 [2.2.25]: https://github.com/lucatume/wp-browser/compare/2.2.24...2.2.25
 [2.2.26]: https://github.com/lucatume/wp-browser/compare/2.2.25...2.2.26
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.26...HEAD
+[2.2.27]: https://github.com/lucatume/wp-browser/compare/2.2.26...2.2.27
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.27...HEAD
