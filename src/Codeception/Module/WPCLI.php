@@ -370,10 +370,6 @@ class WPCLI extends Module
             return ['',1];
         }
 
-        if (!empty($this->config['throw']) && ($process->getExitCode() !== 0)) {
-            throw new ModuleException($this, $process->getErrorOutput());
-        }
-
         $output = $process->getErrorOutput() ?: $process->getOutput();
         $status = $process->getExitCode();
 
