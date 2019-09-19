@@ -834,4 +834,58 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $this->assertEquals('5.2.2', $cli->cliToString([ 'core' ,'version' ]));
     }
+
+    /**
+     * It should not throw on 0 exit status code
+     *
+     * @test
+     */
+    public function should_not_throw_on_0_exit_status_code()
+    {
+        $this->config['throw'] = true;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'getErrorOutput' => 'stderr',
+                'getExitCode' => 0,
+                'getOutput' => 'stdout',
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+
+        $this->assertEquals('stderr', $cli->cliToString([ 'test' ]));
+    }
+
+    /**
+     * It should throw if exit code not 0 and stderr empty
+     *
+     * @test
+     */
+    public function should_throw_if_exit_code_not_0_and_stderr_empty()
+    {
+        $this->config['throw'] = true;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'getErrorOutput' => null,
+                'getExitCode' => -1,
+                'getOutput' => 'stdout',
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+
+        $this->expectException(ModuleException::class);
+
+        $cli->cliToString(['test']);
+    }
 }
