@@ -187,7 +187,7 @@ class Wpbrowser extends Bootstrap
                 'commands' => $this->getAddtionalCommands(),
             ],
             'params' => [
-                '.env.testing',
+                trim($this->envFileName),
             ],
         ];
 
