@@ -289,7 +289,7 @@ class Wpbrowser extends Bootstrap
         $this->say('---');
         $this->say();
 
-        while (strpos($this->envFileName, '.env.testing') !== 0) {
+        while (strpos($this->envFileName, '.env') !== 0) {
             $this->envFileName = $this->ask(
                 'How would you like to call the env configuration file? (Should start with ".env")',
                 '.env.testing'
