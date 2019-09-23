@@ -52,6 +52,10 @@ class Wpbrowser extends Bootstrap
 
         if ($this->noInteraction || $this->quiet) {
             $interactive = false;
+            $this->input->setInteractive(false);
+        } else {
+            $interactive = true;
+            $this->input->setInteractive(true);
         }
 
         if ($input->getOption('namespace')) {
@@ -720,5 +724,15 @@ EOF;
             exit(0);
         }
         echo PHP_EOL;
+    }
+
+    /**
+     * Sets the template working directory.
+     *
+     * @param string $workDir The path to the working directory the template should use.
+     */
+    public function setWorkDir($workDir)
+    {
+        chdir($workDir);
     }
 }

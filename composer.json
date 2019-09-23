@@ -38,7 +38,7 @@
     "phpstan/phpstan-shim": "^0.11.15",
     "szepeviktor/phpstan-wordpress": "^0.2.0",
     "erusev/parsedown": "^1.7",
-    "lucatume/codeception-snapshot-assertions": "^0.2",
+    "lucatume/codeception-snapshot-assertions": "^0.2.2",
     "mikey179/vfsstream": "^1.6",
     "squizlabs/php_codesniffer": "^3.4",
     "victorjonsson/markdowndocs": "dev-master"
@@ -55,7 +55,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "tad\\Test\\" : "tests/_support/lib"
+      "tad\\Test\\" : "tests/_support/lib",
+      "Codeception\\" : "tests/_data/classes/Codeception"
     },
     "files": ["tests/_support/functions.php"]
   },

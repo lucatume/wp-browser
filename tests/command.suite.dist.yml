@@ -1,0 +1,5 @@
+actor: CommandTester
+modules:
+    enabled:
+        - \Helper\Command
+        - Asserts
