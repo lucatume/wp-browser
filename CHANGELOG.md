@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+- `wpbrowser` template class to make sure the environment file name is respected when set to different values
+- some `wpbrowser` template text
 
 ## [2.2.28] 2019-09-19;
 ### Fixed
