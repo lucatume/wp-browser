@@ -7,7 +7,7 @@ On a high level, once WordPress is installed and configured, whatever local deve
 While there will be a section dedicated to different environments and setups I will outline below the example setup I will use, in the next section, to configure wp-browser:
 
 * WordPress is installed, on my machine, at `/Users/luca/Sites/wordpress`.
-* I'm running MySQL server locally; I can connect to the the MySQL server with the command `mysql -u root -h 127.0.0.1 -P 3306`; there is no password.
+* I'm running MySQL server locally; I can connect to the MySQL server with the command `mysql -u root -h 127.0.0.1 -P 3306`; there is no password.
 * I've created two databases, `wordpress` and `tests`, with the command:
     ```bash
     mysql -u root -h 127.0.0.1 -P 3306 -e "create database if not exists wordpress; create database if not exists tests"
