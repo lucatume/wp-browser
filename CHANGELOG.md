@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - `wpbrowser` template class to make sure the environment file name is respected when set to different values
 - some `wpbrowser` template text
+- output of `WPCLI` module when exit code is `0` and there are both `stdout` and `stderr` outputs, fixes #316
 
 ## [2.2.28] 2019-09-19;
 ### Fixed
