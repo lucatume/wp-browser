@@ -370,7 +370,7 @@ class WPCLI extends Module
             return ['',1];
         }
 
-        $output = $process->getErrorOutput() ?: $process->getOutput();
+        $output = $process->getOutput() ?: $process->getErrorOutput();
         $status = $process->getExitCode();
 
         // If the process returns `null`, then it's not terminated.
