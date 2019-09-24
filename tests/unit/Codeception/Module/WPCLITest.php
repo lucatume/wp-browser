@@ -849,9 +849,35 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
-                'getErrorOutput' => 'stderr',
                 'getExitCode' => 0,
                 'getOutput' => 'stdout',
+                'getErrorOutput' => 'stderr',
+            ]
+        );
+        $path = $this->root->url() . '/wp';
+        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
+        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+
+        $this->assertEquals('stdout', $cli->cliToString([ 'test' ]));
+    }
+
+    /**
+     * It should output stderr on 0 exit status code and wrong stdout
+     *
+     * @test
+     */
+    public function should_output_stderr_on_0_exit_status_code_and_wrong_stdout()
+    {
+        $this->config['throw'] = true;
+
+        $cli = $this->make_instance();
+
+        $mockProcess = $this->makeEmpty(
+            \Symfony\Component\Process\Process::class,
+            [
+                'getExitCode' => 0,
+                'getOutput' => '',
+                'getErrorOutput' => 'stderr'
             ]
         );
         $path = $this->root->url() . '/wp';
@@ -875,9 +901,9 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
-                'getErrorOutput' => null,
                 'getExitCode' => -1,
                 'getOutput' => 'stdout',
+                'getErrorOutput' => 'stderr'
             ]
         );
         $path = $this->root->url() . '/wp';
