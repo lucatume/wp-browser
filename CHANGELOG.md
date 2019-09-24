@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.29] 2019-09-24;
 ### Fixed
 - `wpbrowser` template class to make sure the environment file name is respected when set to different values
 - some `wpbrowser` template text
@@ -1155,4 +1157,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.26]: https://github.com/lucatume/wp-browser/compare/2.2.25...2.2.26
 [2.2.27]: https://github.com/lucatume/wp-browser/compare/2.2.26...2.2.27
 [2.2.28]: https://github.com/lucatume/wp-browser/compare/2.2.27...2.2.28
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.28...HEAD
+[2.2.29]: https://github.com/lucatume/wp-browser/compare/2.2.28...2.2.29
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.29...HEAD
