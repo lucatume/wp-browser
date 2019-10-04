@@ -229,7 +229,7 @@ This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootst
 
 In my example setup it's `admin`.  
 
-This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fil in the login details for the administrator user.  
+This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
 
 It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
@@ -237,7 +237,7 @@ It should be the same as the one that allows you to acccess the site administrat
 
 In my example setup it's `password`.  
 
-This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fil in the login details for the administrator user.  
+This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
 
 It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
