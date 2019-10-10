@@ -75,6 +75,14 @@ class WPCLI extends Module
      * @var int|float|null
      */
     protected $timeout;
+    /**
+     * @var string
+     */
+    protected $lastOutput;
+    /**
+     * @var int
+     */
+    protected $lastResultCode;
 
     /**
      * WPCLI constructor.
@@ -303,6 +311,56 @@ class WPCLI extends Module
     }
 
     /**
+     * Checks that output from last command contains text.
+     *
+     * @param string $text
+     */
+    public function seeInShellOutput($text)
+    {
+        \Codeception\PHPUnit\TestCase::assertStringContainsString($text, $this->lastOutput);
+    }
+
+    /**
+     * Checks that output from last command doesn't contain text.
+     *
+     * @param string $text
+     */
+    public function dontSeeInShellOutput($text)
+    {
+        \PHPUnit\Framework\Assert::assertNotContains($text, $this->lastOutput);
+    }
+
+    /**
+     * Checks that output from the last command matches a given regular expression.
+     *
+     * @param string $regex
+     */
+    public function seeShellOutputMatches($regex)
+    {
+        \PHPUnit\Framework\Assert::assertRegExp($regex, $this->lastOutput);
+    }
+
+    /**
+     * Checks the result code from the last command.
+     *
+     * @param int $code
+     */
+    public function seeResultCodeIs($code)
+    {
+        $this->assertEquals($this->lastResultCode, $code, "result code is $code");
+    }
+
+    /**
+     * Checks the result code from the last command.
+     *
+     * @param int $code
+     */
+    public function seeResultCodeIsNot($code)
+    {
+        $this->assertNotEquals($this->lastResultCode, $code, "result code is $code");
+    }
+
+    /**
      * Builds the process environment from the configuration options.
      *
      * @return array An associative array of environment.
@@ -367,6 +425,9 @@ class WPCLI extends Module
 
             $this->debugSection('command exception', $e->getMessage());
 
+            $this->lastOutput     = '';
+            $this->lastResultCode = 1;
+
             return ['',1];
         }
 
@@ -385,6 +446,9 @@ class WPCLI extends Module
         $this->debugSection(' status', $status);
 
         $this->evaluateStatus($output, $status);
+
+        $this->lastOutput     = $output;
+        $this->lastResultCode = $status;
 
         return [$output, $status];
     }
