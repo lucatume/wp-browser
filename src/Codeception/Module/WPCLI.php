@@ -313,7 +313,14 @@ class WPCLI extends Module
     /**
      * Checks that output from last command contains text.
      *
-     * @param string $text
+     * @param string $text The text to assert is in the output.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeInShellOutput('admin@example.org');
+     * ```
      */
     public function seeInShellOutput($text)
     {
@@ -323,7 +330,14 @@ class WPCLI extends Module
     /**
      * Checks that output from last command doesn't contain text.
      *
-     * @param string $text
+     * @param string $text The text to assert is not in the output.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('plugin list --status=active');
+     * $I->dontSeeInShellOutput('my-inactive/plugin.php');
+     * ```
      */
     public function dontSeeInShellOutput($text)
     {
@@ -333,7 +347,14 @@ class WPCLI extends Module
     /**
      * Checks that output from the last command matches a given regular expression.
      *
-     * @param string $regex
+     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeShellOutputMatches('/^\S+@\S+$/');
+     * ```
      */
     public function seeShellOutputMatches($regex)
     {
@@ -343,7 +364,14 @@ class WPCLI extends Module
     /**
      * Checks the result code from the last command.
      *
-     * @param int $code
+     * @param int $code The desired result code.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeResultCodeIs(0);
+     * ```
      */
     public function seeResultCodeIs($code)
     {
@@ -353,7 +381,14 @@ class WPCLI extends Module
     /**
      * Checks the result code from the last command.
      *
-     * @param int $code
+     * @param int $code The result code the command should not have exited with.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('invalid command');
+     * $I->seeResultCodeIsNot(0);
+     * ```
      */
     public function seeResultCodeIsNot($code)
     {
