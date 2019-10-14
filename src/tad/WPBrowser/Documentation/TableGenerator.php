@@ -69,7 +69,6 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     {
         $this->parser = new Parsedown();
         $this->exampleParser = new Parsedown();
-        $this->exampleParser->setBreaksEnabled(true);
     }
 
     /**
