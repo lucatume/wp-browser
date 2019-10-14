@@ -197,10 +197,6 @@ EOF;
      * Go to a page in the admininstration area of the site.
      *
      * @example
-     * Will this comment show up in the output?
-     * And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
-     * Or **Markdown** tags? *Please...*
-     *
      * ```php
      * $I->loginAs('user', 'password');
      * // Go to the plugins management screen.
