@@ -138,13 +138,11 @@ modules:
 
 <hr>
 
-<p>Executes a wp-cli command targeting the test WordPress installation.</p>
+<p>Executes a wp-cli command targeting the test WordPress installation. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
 <pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
     $I-&gt;cli(['plugin', 'activate', 'my-plugin']);
     // Change a user password.
     $I-&gt;cli(['user', 'update', 'luca', '--user_pass=newpassword']);</code></pre>
-<pre><code>                                 For back-compatibility purposes you can still pass the commandline as a string,
-                                 but the array format is the preferred and supported method.</code></pre>
 <h4>Parameters</h4>
 <ul>
 <li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
@@ -154,7 +152,7 @@ modules:
 
 <hr>
 
-<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
+<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
 <pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
     $inactiveThemes = $I-&gt;cliToArray(['theme', 'list', '--status=inactive', '--field=name']);
     // Get the list of installed plugins and only keep the ones starting with "foo".
@@ -165,7 +163,7 @@ modules:
     });</code></pre>
 <h4>Parameters</h4>
 <ul>
-<li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li>
+<li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus</li>
 <li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function in charge of splitting the results array.</li></ul>
   
 

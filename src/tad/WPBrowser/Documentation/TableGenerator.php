@@ -43,6 +43,15 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     protected $parser;
 
     /**
+     * The Markdown parser instance dedicated to formatting examples only.
+     *
+     * @since TBD
+     *
+     * @var \Parsedown
+     */
+    protected $exampleParser;
+
+    /**
      * An array of functions added to the output.
      *
      * @var array
@@ -59,6 +68,8 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
     public function __construct()
     {
         $this->parser = new Parsedown();
+        $this->exampleParser = new Parsedown();
+        $this->exampleParser->setBreaksEnabled(true);
     }
 
     /**
@@ -130,12 +141,13 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         $str .= $this->parser->text($func->getDescription());
 
-        if (!$func->getExample()) {
+        $rawExample = $func->getExample();
+
+        if (!$rawExample) {
             throw new RuntimeException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
         }
 
-        $rawExample = $func->getExample();
-        $example = $this->parser->text($rawExample);
+        $example = $this->exampleParser->text($rawExample);
         $str .= PHP_EOL . $example;
 
         if ($func->hasParams()) {
