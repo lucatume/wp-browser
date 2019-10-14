@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.30] 2019-10-14;
+### Added
+- `dontSeeInShellOutput`, `seeInShellOutput`, `seeResultCodeIs`, `seeResultCodeIsNot` and `seeShellOutputMatches` methods to `WPCLI` module (thanks @TimothyBJacobs)b
+
 ## [2.2.29] 2019-09-24;
 ### Fixed
 - `wpbrowser` template class to make sure the environment file name is respected when set to different values
@@ -1158,4 +1162,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.27]: https://github.com/lucatume/wp-browser/compare/2.2.26...2.2.27
 [2.2.28]: https://github.com/lucatume/wp-browser/compare/2.2.27...2.2.28
 [2.2.29]: https://github.com/lucatume/wp-browser/compare/2.2.28...2.2.29
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.29...HEAD
+[2.2.30]: https://github.com/lucatume/wp-browser/compare/2.2.29...2.2.30
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.30...HEAD

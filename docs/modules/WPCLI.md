@@ -98,6 +98,21 @@ modules:
 		<li>
 			<a href="#clitostring">cliToString</a>
 		</li>
+		<li>
+			<a href="#dontseeinshelloutput">dontSeeInShellOutput</a>
+		</li>
+		<li>
+			<a href="#seeinshelloutput">seeInShellOutput</a>
+		</li>
+		<li>
+			<a href="#seeresultcodeis">seeResultCodeIs</a>
+		</li>
+		<li>
+			<a href="#seeresultcodeisnot">seeResultCodeIsNot</a>
+		</li>
+		<li>
+			<a href="#seeshelloutputmatches">seeShellOutputMatches</a>
+		</li>
 	</ul>
 </nav>
 
@@ -166,6 +181,71 @@ modules:
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
+  
+
+<h3>dontSeeInShellOutput</h3>
+
+<hr>
+
+<p>Checks that output from last command doesn't contain text.</p>
+<pre><code class="language-php">    // Return the current site administrator email, using string command format.
+    $I-&gt;cli('plugin list --status=active');
+    $I-&gt;dontSeeInShellOutput('my-inactive/plugin.php');</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$text</strong> - The text to assert is not in the output.</li></ul>
+  
+
+<h3>seeInShellOutput</h3>
+
+<hr>
+
+<p>Checks that output from last command contains text.</p>
+<pre><code class="language-php">
+    // Return the current site administrator email, using string command format.
+    $I-&gt;cli('option get admin_email');</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$text</strong> - The text to assert is in the output.</li></ul>
+  
+
+<h3>seeResultCodeIs</h3>
+
+<hr>
+
+<p>Checks the result code from the last command.</p>
+<pre><code class="language-php">    // Return the current site administrator email, using string command format.
+    $I-&gt;cli('option get admin_email');
+    $I-&gt;seeResultCodeIs(0);</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$code</strong> - The desired result code.</li></ul>
+  
+
+<h3>seeResultCodeIsNot</h3>
+
+<hr>
+
+<p>Checks the result code from the last command.</p>
+<pre><code class="language-php">    // Return the current site administrator email, using string command format.
+    $I-&gt;cli('invalid command');
+    $I-&gt;seeResultCodeIsNot(0);</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$code</strong> - The result code the command should not have exited with.</li></ul>
+  
+
+<h3>seeShellOutputMatches</h3>
+
+<hr>
+
+<p>Checks that output from the last command matches a given regular expression.</p>
+<pre><code class="language-php">
+    // Return the current site administrator email, using string command format.
+    $I-&gt;cli('option get admin_email');</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$regex</strong> - The regex pattern, including delimiters, to assert the output matches against.</li></ul>
 
 
 *This class extends \Codeception\Module*

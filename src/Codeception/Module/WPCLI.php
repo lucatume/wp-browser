@@ -75,6 +75,14 @@ class WPCLI extends Module
      * @var int|float|null
      */
     protected $timeout;
+    /**
+     * @var string
+     */
+    protected $lastOutput;
+    /**
+     * @var int
+     */
+    protected $lastResultCode;
 
     /**
      * WPCLI constructor.
@@ -303,6 +311,91 @@ class WPCLI extends Module
     }
 
     /**
+     * Checks that output from last command contains text.
+     *
+     * @param string $text The text to assert is in the output.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeInShellOutput('admin@example.org');
+     * ```
+     */
+    public function seeInShellOutput($text)
+    {
+        \Codeception\PHPUnit\TestCase::assertStringContainsString($text, $this->lastOutput);
+    }
+
+    /**
+     * Checks that output from last command doesn't contain text.
+     *
+     * @param string $text The text to assert is not in the output.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('plugin list --status=active');
+     * $I->dontSeeInShellOutput('my-inactive/plugin.php');
+     * ```
+     */
+    public function dontSeeInShellOutput($text)
+    {
+        \PHPUnit\Framework\Assert::assertNotContains($text, $this->lastOutput);
+    }
+
+    /**
+     * Checks that output from the last command matches a given regular expression.
+     *
+     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeShellOutputMatches('/^\S+@\S+$/');
+     * ```
+     */
+    public function seeShellOutputMatches($regex)
+    {
+        \PHPUnit\Framework\Assert::assertRegExp($regex, $this->lastOutput);
+    }
+
+    /**
+     * Checks the result code from the last command.
+     *
+     * @param int $code The desired result code.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get admin_email');
+     * $I->seeResultCodeIs(0);
+     * ```
+     */
+    public function seeResultCodeIs($code)
+    {
+        $this->assertEquals($this->lastResultCode, $code, "result code is $code");
+    }
+
+    /**
+     * Checks the result code from the last command.
+     *
+     * @param int $code The result code the command should not have exited with.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('invalid command');
+     * $I->seeResultCodeIsNot(0);
+     * ```
+     */
+    public function seeResultCodeIsNot($code)
+    {
+        $this->assertNotEquals($this->lastResultCode, $code, "result code is $code");
+    }
+
+    /**
      * Builds the process environment from the configuration options.
      *
      * @return array An associative array of environment.
@@ -367,6 +460,9 @@ class WPCLI extends Module
 
             $this->debugSection('command exception', $e->getMessage());
 
+            $this->lastOutput     = '';
+            $this->lastResultCode = 1;
+
             return ['',1];
         }
 
@@ -385,6 +481,9 @@ class WPCLI extends Module
         $this->debugSection(' status', $status);
 
         $this->evaluateStatus($output, $status);
+
+        $this->lastOutput     = $output;
+        $this->lastResultCode = $status;
 
         return [$output, $status];
     }
