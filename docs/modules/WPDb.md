@@ -552,11 +552,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the number of table rows matching a criteria.</p>
-<pre><code class="language-php">    $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'draft' ]);
-    $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'private' ]);
-    // Make sure there are now the expected number of draft posts.
-    $postsTable = $I-&gt;grabPostsTableName();
-    $draftsCount = $I-&gt;countRowsInDatabase($postsTable, ['post_status' =&gt; 'draft']);</code></pre>
+```php
+$I->haveManyPostsInDatabase(3, ['post_status' => 'draft' ]);
+  $I->haveManyPostsInDatabase(3, ['post_status' => 'private' ]);
+  // Make sure there are now the expected number of draft posts.
+  $postsTable = $I->grabPostsTableName();
+  $draftsCount = $I->countRowsInDatabase($postsTable, ['post_status' => 'draft']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table to count the rows in.</li>
@@ -568,10 +571,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes all the files attached with an attachment post, it will not remove the database entries. Requires the <code>WPFilesystem</code> module to be loaded in the suite.</p>
-<pre><code class="language-php">    $posts = $I-&gt;grabPostsTableName();
-    $attachmentIds = $I-&gt;grabColumnFromDatabase($posts, 'ID', ['post_type' =&gt; 'attachment']);
-    // This will only remove the files, not the database entries.
-    $I-&gt;dontHaveAttachmentFilesInDatabase($attachmentIds);</code></pre>
+```php
+$posts = $I->grabPostsTableName();
+  $attachmentIds = $I->grabColumnFromDatabase($posts, 'ID', ['post_type' => 'attachment']);
+  // This will only remove the files, not the database entries.
+  $I->dontHaveAttachmentFilesInDatabase($attachmentIds);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/int</code> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
@@ -582,15 +588,18 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an attachment from the posts table.</p>
-<pre><code>    $postmeta = $I-&gt;grabpostmetatablename();
-    $thumbnailId = $I-&gt;grabFromDatabase($postmeta, 'meta_value', [
-         'post_id' =&gt; $id,
-         'meta_key'=&gt;'thumbnail_id'
-    ]);
-    // Remove only the database entry (including postmeta) but not the files.
-    $I-&gt;dontHaveAttachmentInDatabase($thumbnailId);
-    // Remove the database entry (including postmeta) and the files.
-    $I-&gt;dontHaveAttachmentInDatabase($thumbnailId, true, true);</code></pre>
+```php
+$postmeta = $I->grabpostmetatablename();
+  $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
+  'post_id' => $id,
+  'meta_key'=>'thumbnail_id'
+  ]);
+  // Remove only the database entry (including postmeta) but not the files.
+  $I->dontHaveAttachmentInDatabase($thumbnailId);
+  // Remove the database entry (including postmeta) and the files.
+  $I->dontHaveAttachmentInDatabase($thumbnailId, true, true);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts table.</li>
@@ -603,12 +612,15 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes one ore more blogs frome the database.</p>
-<pre><code class="language-php">    // Remove the blog, all its tables and files.
-    $I-&gt;dontHaveBlogInDatabase(['path' =&gt; 'test/one']);
-    // Remove the blog entry, not the tables though.
-    $I-&gt;dontHaveBlogInDatabase(['blog_id' =&gt; $blogId]);
-    // Remove multiple blogs.
-    $I-&gt;dontHaveBlogInDatabase(['domain' =&gt; 'test']);</code></pre>
+```php
+// Remove the blog, all its tables and files.
+  $I->dontHaveBlogInDatabase(['path' => 'test/one']);
+  // Remove the blog entry, not the tables though.
+  $I->dontHaveBlogInDatabase(['blog_id' => $blogId]);
+  // Remove multiple blogs.
+  $I->dontHaveBlogInDatabase(['domain' => 'test']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria to find the blog rows in the blogs table.</li>
@@ -621,7 +633,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the comments table.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveCommentInDatabase(['comment_post_ID' =&gt; 23, 'comment_url' =&gt; 'http://example.copm']);</code></pre>
+```php
+$I->dontHaveCommentInDatabase(['comment_post_ID' => 23, 'comment_url' => 'http://example.copm']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
@@ -633,10 +648,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a post comment meta from the database</p>
-<pre><code class="language-php">    // Remove all meta for the comment with an ID of 23.
-    $I-&gt;dontHaveCommentMetaInDatabase(['comment_id' =&gt; 23]);
-    // Remove the `count` comment meta for the comment with an ID of 23.
-    $I-&gt;dontHaveCommentMetaInDatabase(['comment_id' =&gt; 23, 'meta_key' =&gt; 'count']);</code></pre>
+```php
+// Remove all meta for the comment with an ID of 23.
+  $I->dontHaveCommentMetaInDatabase(['comment_id' => 23]);
+  // Remove the `count` comment meta for the comment with an ID of 23.
+  $I->dontHaveCommentMetaInDatabase(['comment_id' => 23, 'meta_key' => 'count']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -647,7 +665,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Deletes a database entry.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveInDatabase('custom_table', ['book_ID' =&gt; 23, 'book_genre' =&gt; 'fiction']);</code></pre>
+```php
+$I->dontHaveInDatabase('custom_table', ['book_ID' => 23, 'book_genre' => 'fiction']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table name.</li>
@@ -659,7 +680,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a link from the database.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveLinkInDatabase(['link_url' =&gt; 'http://example.com']);</code></pre>
+```php
+$I->dontHaveLinkInDatabase(['link_url' => 'http://example.com']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -670,10 +694,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the options table.</p>
-<pre><code class="language-php">    // Remove the `foo` option.
-    $I-&gt;dontHaveOptionInDatabase('foo');
-    // Remove the 'bar' option only if it has the `baz` value.
-    $I-&gt;dontHaveOptionInDatabase('bar', 'baz');</code></pre>
+```php
+// Remove the `foo` option.
+  $I->dontHaveOptionInDatabase('foo');
+  // Remove the 'bar' option only if it has the `baz` value.
+  $I->dontHaveOptionInDatabase('bar', 'baz');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The option name.</li>
@@ -685,8 +712,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the posts table.</p>
-<pre><code class="language-php">    $posts = $I-&gt;haveManyPostsInDatabase(3, ['post_title' =&gt; 'Test {{n}}']);
-    $I-&gt;dontHavePostInDatabase(['post_title' =&gt; 'Test 2']);</code></pre>
+```php
+$posts = $I->haveManyPostsInDatabase(3, ['post_title' => 'Test {{n}}']);
+  $I->dontHavePostInDatabase(['post_title' => 'Test 2']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
@@ -698,8 +728,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the postmeta table.</p>
-<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['rating' =&gt; 23]]);
-    $I-&gt;dontHavePostMetaInDatabase(['post_id' =&gt; $postId, 'meta_key' =&gt; 'rating']);</code></pre>
+```php
+$postId = $I->havePostInDatabase(['meta_input' => ['rating' => 23]]);
+  $I->dontHavePostMetaInDatabase(['post_id' => $postId, 'meta_key' => 'rating']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -710,10 +743,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a site option from the database.</p>
-<pre><code class="language-php">    // Remove the `foo_count` option.
-    $I-&gt;dontHaveSiteOptionInDatabase('foo_count');
-    // Remove the `foo_count` option only if its value is `23`.
-    $I-&gt;dontHaveSiteOptionInDatabase('foo_count', 23);</code></pre>
+```php
+// Remove the `foo_count` option.
+  $I->dontHaveSiteOptionInDatabase('foo_count');
+  // Remove the `foo_count` option only if its value is `23`.
+  $I->dontHaveSiteOptionInDatabase('foo_count', 23);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The option name.</li>
@@ -725,7 +761,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a site transient from the database.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveSiteTransientInDatabase(['my_plugin_site_buffer']);</code></pre>
+```php
+$I->dontHaveSiteTransientInDatabase(['my_plugin_site_buffer']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the transient to delete.</li></ul>
@@ -736,8 +775,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a table from the database. The case where a table does not exist is handled without raising an error.</p>
-<pre><code class="language-php">    $ordersTable = $I-&gt;grabPrefixedTableNameFor('orders');
-    $I-&gt;dontHaveTableInDatabase($ordersTable);</code></pre>
+```php
+$ordersTable = $I->grabPrefixedTableNameFor('orders');
+  $I->dontHaveTableInDatabase($ordersTable);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$fullTableName</strong> - The full table name, including the table prefix.</li></ul>
@@ -748,8 +790,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a term from the database.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveTermInDatabase(['name' =&gt; 'romance']);
-    $I-&gt;dontHaveTermInDatabase(['slug' =&gt; 'genre--romance']);</code></pre>
+```php
+$I->dontHaveTermInDatabase(['name' => 'romance']);
+  $I->dontHaveTermInDatabase(['slug' => 'genre--romance']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
@@ -761,10 +806,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a term meta from the database.</p>
-<pre><code class="language-php">    // Remove the "karma" key.
-    $I-&gt;dontHaveTermMetaInDatabase(['term_id' =&gt; $termId, 'meta_key' =&gt; 'karma']);
-    // Remove all meta for the term.
-    $I-&gt;dontHaveTermMetaInDatabase(['term_id' =&gt; $termId]);</code></pre>
+```php
+// Remove the "karma" key.
+  $I->dontHaveTermMetaInDatabase(['term_id' => $termId, 'meta_key' => 'karma']);
+  // Remove all meta for the term.
+  $I->dontHaveTermMetaInDatabase(['term_id' => $termId]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -775,10 +823,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the term_relationships table.</p>
-<pre><code class="language-php">    // Remove the relation between a post and a category.
-    $I-&gt;dontHaveTermRelationshipInDatabase(['object_id' =&gt; $postId, 'term_taxonomy_id' =&gt; $ttaxId]);
-    // Remove all terms for a post.
-    $I-&gt;dontHaveTermMetaInDatabase(['object_id' =&gt; $postId]);</code></pre>
+```php
+// Remove the relation between a post and a category.
+  $I->dontHaveTermRelationshipInDatabase(['object_id' => $postId, 'term_taxonomy_id' => $ttaxId]);
+  // Remove all terms for a post.
+  $I->dontHaveTermMetaInDatabase(['object_id' => $postId]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -789,10 +840,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the <code>term_taxonomy</code> table.</p>
-<pre><code class="language-php">    // Remove a specific term from the genre taxonomy.
-    $I-&gt;dontHaveTermTaxonomyInDatabase(['term_id' =&gt; $postId, 'taxonomy' =&gt; 'genre']);
-    // Remove all terms for a taxonomy.
-    $I-&gt;dontHaveTermTaxonomyInDatabase(['taxonomy' =&gt; 'genre']);</code></pre>
+```php
+// Remove a specific term from the genre taxonomy.
+  $I->dontHaveTermTaxonomyInDatabase(['term_id' => $postId, 'taxonomy' => 'genre']);
+  // Remove all terms for a taxonomy.
+  $I->dontHaveTermTaxonomyInDatabase(['taxonomy' => 'genre']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -803,8 +857,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a transient from the database.</p>
-<pre><code class="language-php">    // Removes the `tweets` transient from the database, if set.
-    $I-&gt;dontHaveTransientInDatabase('tweets');</code></pre>
+```php
+// Removes the `tweets` transient from the database, if set.
+  $I->dontHaveTransientInDatabase('tweets');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$transient</strong> - The name of the transient to delete.</li></ul>
@@ -815,12 +872,15 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a user from the database.</p>
-<pre><code class="language-php">    $bob = $I-&gt;haveUserInDatabase('bob');
-    $alice = $I-&gt;haveUserInDatabase('alice');
-    // Remove Bob's user and meta.
-    $I-&gt;dontHaveUserInDatabase('bob');
-    // Remove Alice's user but not meta.
-    $I-&gt;dontHaveUserInDatabase($alice);</code></pre>
+```php
+$bob = $I->haveUserInDatabase('bob');
+  $alice = $I->haveUserInDatabase('alice');
+  // Remove Bob's user and meta.
+  $I->dontHaveUserInDatabase('bob');
+  // Remove Alice's user but not meta.
+  $I->dontHaveUserInDatabase($alice);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int/string</code> <strong>$userIdOrLogin</strong> - The user ID or login name.</li>
@@ -832,8 +892,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes a user(s) from the database using the user email address.</p>
-<pre><code class="language-php">
-    $luca = $I-&gt;haveUserInDatabase('luca', 'editor', ['user_email' =&gt; 'luca@example.org']);</code></pre>
+```php
+$luca = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$userEmail</strong> - The email of the user to remove.</li>
@@ -845,10 +907,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Removes an entry from the usermeta table.</p>
-<pre><code class="language-php">    // Remove the `karma` user meta for a user.
-    $I-&gt;dontHaveUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
-    // Remove all the user meta for a user.
-    $I-&gt;dontHaveUserMetaInDatabase(['user_id' =&gt; 23]);</code></pre>
+```php
+// Remove the `karma` user meta for a user.
+  $I->dontHaveUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+  // Remove all the user meta for a user.
+  $I->dontHaveUserMetaInDatabase(['user_id' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -859,8 +924,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that an attachment is not in the database.</p>
-<pre><code class="language-php">    $url = 'https://example.org/images/foo.png';
-    $I-&gt;dontSeeAttachmentInDatabase(['guid' =&gt; $url]);</code></pre>
+```php
+$url = 'https://example.org/images/foo.png';
+  $I->dontSeeAttachmentInDatabase(['guid' => $url]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -871,8 +939,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a row is not present in the <code>blogs</code> table.</p>
-<pre><code class="language-php">    $I-&gt;haveManyBlogsInDatabase(2, ['path' =&gt; 'test-{{n}}'], false)
-    $I-&gt;dontSeeBlogInDatabase(['path' =&gt; '/test-3/'])</code></pre>
+```php
+$I->haveManyBlogsInDatabase(2, ['path' => 'test-{{n}}'], false)
+  $I->dontSeeBlogInDatabase(['path' => '/test-3/'])
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -883,10 +954,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a comment is not in the database. Will look up the &quot;comments&quot; table.</p>
-<pre><code class="language-php">    // Checks for one comment.
-    $I-&gt;dontSeeCommentInDatabase(['comment_ID' =&gt; 23]);
-    // Checks for comments from a user.
-    $I-&gt;dontSeeCommentInDatabase(['user_id' =&gt; 89]);</code></pre>
+```php
+// Checks for one comment.
+  $I->dontSeeCommentInDatabase(['comment_ID' => 23]);
+  // Checks for comments from a user.
+  $I->dontSeeCommentInDatabase(['user_id' => 89]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - The serach criteria.</li></ul>
@@ -897,10 +971,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a comment meta value is not in the database. Will look up the &quot;commentmeta&quot; table.</p>
-<pre><code class="language-php">    // Delete a comment `karma` meta.
-    $I-&gt;dontSeeCommentMetaInDatabase(['comment_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
-    // Delete all meta for a comment.
-    $I-&gt;dontSeeCommentMetaInDatabase(['comment_id' =&gt; 23]);</code></pre>
+```php
+// Delete a comment `karma` meta.
+  $I->dontSeeCommentMetaInDatabase(['comment_id' => 23, 'meta_key' => 'karma']);
+  // Delete all meta for a comment.
+  $I->dontSeeCommentMetaInDatabase(['comment_id' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -911,8 +988,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a link is not in the <code>links</code> database table.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeLinkInDatabase(['link_url' =&gt; 'http://example.com']);
-    $I-&gt;dontSeeLinkInDatabase(['link_url' =&gt; 'http://example.com', 'link_name' =&gt; 'example']);</code></pre>
+```php
+$I->dontSeeLinkInDatabase(['link_url' => 'http://example.com']);
+  $I->dontSeeLinkInDatabase(['link_url' => 'http://example.com', 'link_name' => 'example']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -923,8 +1003,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked.</p>
-<pre><code class="language-php">    $I-&gt;dontHaveOptionInDatabase('posts_per_page');
-    $I-&gt;dontSeeOptionInDatabase('posts_per_page');</code></pre>
+```php
+$I->dontHaveOptionInDatabase('posts_per_page');
+  $I->dontSeeOptionInDatabase('posts_per_page');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -935,10 +1018,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a page is not in the database.</p>
-<pre><code class="language-php">    // Assert a page with an ID does not exist.
-    $I-&gt;dontSeePageInDatabase(['ID' =&gt; 23]);
-    // Assert a page with a slug and ID.
-    $I-&gt;dontSeePageInDatabase(['post_name' =&gt; 'test', 'ID' =&gt; 23]);</code></pre>
+```php
+// Assert a page with an ID does not exist.
+  $I->dontSeePageInDatabase(['ID' => 23]);
+  // Assert a page with a slug and ID.
+  $I->dontSeePageInDatabase(['post_name' => 'test', 'ID' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -949,10 +1035,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a post is not in the database.</p>
-<pre><code class="language-php">    // Asserts a post with title 'Test' is not in the database.
-    $I-&gt;dontSeePostInDatabase(['post_title' =&gt; 'Test']);
-    // Asserts a post with title 'Test' and content 'Test content' is not in the database.
-    $I-&gt;dontSeePostInDatabase(['post_title' =&gt; 'Test', 'post_content' =&gt; 'Test content']);</code></pre>
+```php
+// Asserts a post with title 'Test' is not in the database.
+  $I->dontSeePostInDatabase(['post_title' => 'Test']);
+  // Asserts a post with title 'Test' and content 'Test content' is not in the database.
+  $I->dontSeePostInDatabase(['post_title' => 'Test', 'post_content' => 'Test content']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -963,8 +1052,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a post meta value does not exist. If the meta value is an object or an array then the check will be made on its serialized version.</p>
-<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']]);
-    $I-&gt;dontSeePostMetaInDatabase(['post_id' =&gt; $postId, 'meta_key' =&gt; 'woot']);</code></pre>
+```php
+$postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']]);
+  $I->dontSeePostMetaInDatabase(['post_id' => $postId, 'meta_key' => 'woot']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -975,15 +1067,17 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a post to term relation does not exist in the database. The method will check the &quot;term_relationships&quot; table.</p>
-<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $nonFiction = $I-&gt;haveTermInDatabase('non-fiction', 'genre');
-    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
-    $I-&gt;dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );</code></pre>
-<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
-                                        `term_taxonomy_id`.
-                                        the
-                                        term order.
-                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
+```php
+$fiction = $I->haveTermInDatabase('fiction', 'genre');
+  $nonFiction = $I->haveTermInDatabase('non-fiction', 'genre');
+  $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+  $I->dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );
+  passed this parameter will be interpreted as a `term_id`, else as a
+  the
+  term order.
+  to build a `taxonomy_term_id` from the `term_id`.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
@@ -997,9 +1091,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a table is not in the database.</p>
-<pre><code class="language-php">    $options = $I-&gt;grabPrefixedTableNameFor('options');
-    $I-&gt;dontHaveTableInDatabase($options)
-    $I-&gt;dontSeeTableInDatabase($options);</code></pre>
+```php
+$options = $I->grabPrefixedTableNameFor('options');
+  $I->dontHaveTableInDatabase($options)
+  $I->dontSeeTableInDatabase($options);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
@@ -1010,11 +1107,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Makes sure a term is not in the database. Looks up both the <code>terms</code> table and the <code>term_taxonomy</code> tables.</p>
-<pre><code class="language-php">    // Asserts a 'fiction' term is not in the database.
-    $I-&gt;dontSeeTermInDatabase(['name' =&gt; 'fiction']);
-    // Asserts a 'fiction' term with slug 'genre--fiction' is not in the database.
-    $I-&gt;dontSeeTermInDatabase(['name' =&gt; 'fiction', 'slug' =&gt; 'genre--fiction']);</code></pre>
-<pre><code>                       `term_taxonomy` tables.</code></pre>
+```php
+// Asserts a 'fiction' term is not in the database.
+  $I->dontSeeTermInDatabase(['name' => 'fiction']);
+  // Asserts a 'fiction' term with slug 'genre--fiction' is not in the database.
+  $I->dontSeeTermInDatabase(['name' => 'fiction', 'slug' => 'genre--fiction']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
@@ -1025,9 +1124,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a term meta is not in the database.</p>
-<pre><code class="language-php">    list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $I-&gt;haveTermMetaInDatabase($termId, 'rating', 4);
-    $I-&gt;dontSeeTermMetaInDatabase(['term_id' =&gt; $termId,'meta_key' =&gt; 'average_review']);</code></pre>
+```php
+list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
+  $I->haveTermMetaInDatabase($termId, 'rating', 4);
+  $I->dontSeeTermMetaInDatabase(['term_id' => $termId,'meta_key' => 'average_review']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1038,8 +1140,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a term taxonomy is not in the database.</p>
-<pre><code class="language-php">    list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $I-&gt;dontSeeTermTaxonomyInDatabase(['term_id' =&gt; $termId, 'taxonomy' =&gt; 'country']);</code></pre>
+```php
+list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
+  $I->dontSeeTermTaxonomyInDatabase(['term_id' => $termId, 'taxonomy' => 'country']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1050,10 +1155,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a user is not in the database.</p>
-<pre><code class="language-php">    // Asserts a user does not exist in the database.
-    $I-&gt;dontSeeUserInDatabase(['user_login' =&gt; 'luca']);
-    // Asserts a user with email and login is not in the database.
-    $I-&gt;dontSeeUserInDatabase(['user_login' =&gt; 'luca', 'user_email' =&gt; 'luca@theaveragedev.com']);</code></pre>
+```php
+// Asserts a user does not exist in the database.
+  $I->dontSeeUserInDatabase(['user_login' => 'luca']);
+  // Asserts a user with email and login is not in the database.
+  $I->dontSeeUserInDatabase(['user_login' => 'luca', 'user_email' => 'luca@theaveragedev.com']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1064,10 +1172,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Check that a user meta value is not in the database.</p>
-<pre><code class="language-php">    // Asserts a user does not have a 'karma' meta assigned.
-    $I-&gt;dontSeeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
-    // Asserts no user has any 'karma' meta assigned.
-    $I-&gt;dontSeeUserMetaInDatabase(['meta_key' =&gt; 'karma']);</code></pre>
+```php
+// Asserts a user does not have a 'karma' meta assigned.
+  $I->dontSeeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+  // Asserts no user has any 'karma' meta assigned.
+  $I->dontSeeUserMetaInDatabase(['meta_key' => 'karma']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1078,10 +1189,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the site domain inferred from the <code>url</code> set in the config.</p>
-<pre><code class="language-php">    $domain = $I-&gt;getSiteDomain();
-    // We should be redirected to the HTTPS version when visiting the HTTP version.
-    $I-&gt;amOnPage('http://' . $domain);
-    $I-&gt;seeCurrentUrlEquals('https://' . $domain);</code></pre>
+```php
+$domain = $I->getSiteDomain();
+  // We should be redirected to the HTTPS version when visiting the HTTP version.
+  $I->amOnPage('http://' . $domain);
+  $I->seeCurrentUrlEquals('https://' . $domain);
+```
+
   
 
 <h3>getUsersTableName</h3>
@@ -1089,11 +1203,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed users table name.</p>
-<pre><code class="language-php">    // Given a `wp_` table prefix returns `wp_users`.
-    $usersTable = $I-&gt;getUsersTableName();
-    // Given a `wp_` table prefix returns `wp_users`.
-    $I-&gt;useBlog(23);
-    $usersTable = $I-&gt;getUsersTableName();</code></pre>
+```php
+// Given a `wp_` table prefix returns `wp_users`.
+  $usersTable = $I->getUsersTableName();
+  // Given a `wp_` table prefix returns `wp_users`.
+  $I->useBlog(23);
+  $usersTable = $I->getUsersTableName();
+```
+
   
 
 <h3>grabAllFromDatabase</h3>
@@ -1101,8 +1218,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns all entries matching a criteria from the database.</p>
-<pre><code class="language-php">    $books = $I-&gt;grabPrefixedTableNameFor('books');
-    $I-&gt;grabAllFromDatabase($books, 'title', ['genre' =&gt; 'fiction']);</code></pre>
+```php
+$books = $I->grabPrefixedTableNameFor('books');
+  $I->grabAllFromDatabase($books, 'title', ['genre' => 'fiction']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table to grab the values from.</li>
@@ -1115,9 +1235,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the path, as stored in the database, of an attachment <code>_wp_attached_file</code> meta. The attached file is, usually, an attachment origal file.</p>
-<pre><code class="language-php">    $file = $I-&gt;grabAttachmentAttachedFile($attachmentId);
-    $fileInfo = new SplFileInfo($file);
-    $I-&gt;assertEquals('jpg', $fileInfo-&gt;getExtension());</code></pre>
+```php
+$file = $I->grabAttachmentAttachedFile($attachmentId);
+  $fileInfo = new SplFileInfo($file);
+  $I->assertEquals('jpg', $fileInfo->getExtension());
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
@@ -1128,8 +1251,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the metadata array for an attachment post. This is the value of the <code>_wp_attachment_metadata</code> meta.</p>
-<pre><code class="language-php">    $metadata = $I-&gt;grabAttachmentMetadata($attachmentId);
-    $I-&gt;assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);</code></pre>
+```php
+$metadata = $I->grabAttachmentMetadata($attachmentId);
+  $I->assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
@@ -1140,10 +1266,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns a blog domain given its ID.</p>
-<pre><code class="language-php">    $blogIds = $I-&gt;haveManyBlogsInDatabase(3);
-    $domains = array_map(function($blogId){
-         return $I-&gt;grabBlogDomain($blogId);
-    }, $blogIds);</code></pre>
+```php
+$blogIds = $I->haveManyBlogsInDatabase(3);
+  $domains = array_map(function($blogId){
+  return $I->grabBlogDomain($blogId);
+  }, $blogIds);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
@@ -1154,10 +1283,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Grabs a blog domain from the blogs table.</p>
-<pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
-    $path = $I-&gt;grabBlogDomain($blogId);
-    $I-&gt;amOnSubdomain($path);
-    $I-&gt;amOnPage('/');</code></pre>
+```php
+$blogId = $I->haveBlogInDatabase('test');
+  $path = $I->grabBlogDomain($blogId);
+  $I->amOnSubdomain($path);
+  $I->amOnPage('/');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
@@ -1168,7 +1300,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the full name of a table for a blog from a multisite installation database.</p>
-<pre><code class="language-php">    $blogOptionTable = $I-&gt;grabBlogTableName($blogId, 'option');</code></pre>
+```php
+$blogOptionTable = $I->grabBlogTableName($blogId, 'option');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID.</li>
@@ -1180,11 +1315,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns a list of tables for a blog ID.</p>
-<pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
-    $tables = $I-&gt;grabBlogTableNames($blogId);
-    $options = array_filter($tables, function($tableName){
-         return str_pos($tableName, 'options') !== false;
-    });</code></pre>
+```php
+$blogId = $I->haveBlogInDatabase('test');
+  $tables = $I->grabBlogTableNames($blogId);
+  $options = array_filter($tables, function($tableName){
+  return str_pos($tableName, 'options') !== false;
+  });
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The ID of the blog to fetch the tables for.</li></ul>
@@ -1195,9 +1333,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the table prefix for a blog.</p>
-<pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
-    $blogTablePrefix = $I-&gt;getBlogTablePrefix($blogId);
-    $blogOrders = $I-&gt;blogTablePrefix . 'orders';</code></pre>
+```php
+$blogId = $I->haveBlogInDatabase('test');
+  $blogTablePrefix = $I->getBlogTablePrefix($blogId);
+  $blogOrders = $I->blogTablePrefix . 'orders';
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
@@ -1208,11 +1349,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>blog_versions</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_blog_versions`.
-    $blogVersionsTable = $I-&gt;grabBlogVersionsTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_blog_versions`.
-    $blogVersionsTable = $I-&gt;grabBlogVersionsTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_blog_versions`.
+  $blogVersionsTable = $I->grabBlogVersionsTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_blog_versions`.
+  $blogVersionsTable = $I->grabBlogVersionsTableName();
+```
+
   
 
 <h3>grabBlogsTableName</h3>
@@ -1220,11 +1364,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>blogs</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_blogs`.
-    $blogVersionsTable = $I-&gt;grabBlogsTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_blogs`.
-    $blogVersionsTable = $I-&gt;grabBlogsTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_blogs`.
+  $blogVersionsTable = $I->grabBlogsTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_blogs`.
+  $blogVersionsTable = $I->grabBlogsTableName();
+```
+
   
 
 <h3>grabCommentmetaTableName</h3>
@@ -1232,9 +1379,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed comment meta table name.</p>
-<pre><code class="language-php">    // Get all the values of 'karma' for all comments.
-    $commentMeta = $I-&gt;grabCommentmetaTableName();
-    $I-&gt;grabAllFromDatabase($commentMeta, 'meta_value', ['meta_key' =&gt; 'karma']);</code></pre>
+```php
+// Get all the values of 'karma' for all comments.
+  $commentMeta = $I->grabCommentmetaTableName();
+  $I->grabAllFromDatabase($commentMeta, 'meta_value', ['meta_key' => 'karma']);
+```
+
   
 
 <h3>grabCommentsTableName</h3>
@@ -1242,11 +1392,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the comments table name.</p>
-<pre><code class="language-php">    // Will be `wp_comments`.
-    $comments = $I-&gt;grabCommentsTableName();
-    // Will be `wp_23_comments`.
-    $I-&gt;useBlog(23);
-    $comments = $I-&gt;grabCommentsTableName();</code></pre>
+```php
+// Will be `wp_comments`.
+  $comments = $I->grabCommentsTableName();
+  // Will be `wp_23_comments`.
+  $I->useBlog(23);
+  $comments = $I->grabCommentsTableName();
+```
+
   
 
 <h3>grabLatestEntryByFromDatabase</h3>
@@ -1254,10 +1407,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the id value of the last table entry.</p>
-<pre><code class="language-php">    $I-&gt;haveManyPostsInDatabase();
-    $postsTable = $I-&gt;grabPostsTableName();
-    $last = $I-&gt;grabLatestEntryByFromDatabase($postsTable, 'ID');</code></pre>
-<pre><code>                        items.</code></pre>
+```php
+$I->haveManyPostsInDatabase();
+  $postsTable = $I->grabPostsTableName();
+  $last = $I->grabLatestEntryByFromDatabase($postsTable, 'ID');
+  items.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$tableName</strong> - The table to fetch the last insertion for.</li>
@@ -1269,11 +1425,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed links table name.</p>
-<pre><code class="language-php">    // Given a `wp_` table prefix returns `wp_links`.
-    $linksTable = $I-&gt;grabLinksTableName();
-    // Given a `wp_` table prefix returns `wp_23_links`.
-    $I-&gt;useBlog(23);
-    $linksTable = $I-&gt;grabLinksTableName();</code></pre>
+```php
+// Given a `wp_` table prefix returns `wp_links`.
+  $linksTable = $I->grabLinksTableName();
+  // Given a `wp_` table prefix returns `wp_23_links`.
+  $I->useBlog(23);
+  $linksTable = $I->grabLinksTableName();
+```
+
   
 
 <h3>grabOptionFromDatabase</h3>
@@ -1281,7 +1440,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets an option value from the database.</p>
-<pre><code class="language-php">    $count = $I-&gt;grabOptionFromDatabase('foo_count');</code></pre>
+```php
+$count = $I->grabOptionFromDatabase('foo_count');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$option_name</strong> - The name of the option to grab from the database.</li></ul>
@@ -1292,7 +1454,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the value of one or more post meta values from the database.</p>
-<pre><code class="language-php">    $thumbnail_id = $I-&gt;grabPostMetaFromDatabase($postId, '_thumbnail_id', true);</code></pre>
+```php
+$thumbnail_id = $I->grabPostMetaFromDatabase($postId, '_thumbnail_id', true);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$postId</strong> - The post ID.</li>
@@ -1305,11 +1470,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed post meta table name.</p>
-<pre><code class="language-php">    // Returns 'wp_postmeta'.
-    $I-&gt;grabPostmetaTableName();
-    // Returns 'wp_23_postmeta'.
-    $I-&gt;useBlog(23);
-    $I-&gt;grabPostmetaTableName();</code></pre>
+```php
+// Returns 'wp_postmeta'.
+  $I->grabPostmetaTableName();
+  // Returns 'wp_23_postmeta'.
+  $I->useBlog(23);
+  $I->grabPostmetaTableName();
+```
+
   
 
 <h3>grabPostsTableName</h3>
@@ -1317,11 +1485,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the posts prefixed table name.</p>
-<pre><code class="language-php">    // Given a `wp_` table prefix returns `wp_posts`.
-    $postsTable = $I-&gt;grabPostsTableName();
-    // Given a `wp_` table prefix returns `wp_23_posts`.
-    $I-&gt;useBlog(23);
-    $postsTable = $I-&gt;grabPostsTableName();</code></pre>
+```php
+// Given a `wp_` table prefix returns `wp_posts`.
+  $postsTable = $I->grabPostsTableName();
+  // Given a `wp_` table prefix returns `wp_23_posts`.
+  $I->useBlog(23);
+  $postsTable = $I->grabPostsTableName();
+```
+
   
 
 <h3>grabPrefixedTableNameFor</h3>
@@ -1329,13 +1500,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. <code>users</code>) then the proper table name will be returned.</p>
-<pre><code class="language-php">    // Will return wp_users.
-    $usersTable = $I-&gt;grabPrefixedTableNameFor('users');
-    // Will return wp_options.
-    $optionsTable = $I-&gt;grabPrefixedTableNameFor('options');
-    // Use a different blog and get its options table.
-    $I-&gt;useBlog(2);
-    $blogOptionsTable = $I-&gt;grabPrefixedTableNameFor('options');</code></pre>
+```php
+// Will return wp_users.
+  $usersTable = $I->grabPrefixedTableNameFor('users');
+  // Will return wp_options.
+  $optionsTable = $I->grabPrefixedTableNameFor('options');
+  // Use a different blog and get its options table.
+  $I->useBlog(2);
+  $blogOptionsTable = $I->grabPrefixedTableNameFor('options');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$tableName</strong> - The table name, e.g. <code>options</code>.</li></ul>
@@ -1346,11 +1520,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>registration_log</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_registration_log`.
-    $blogVersionsTable = $I-&gt;grabRegistrationLogTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_registration_log`.
-    $blogVersionsTable = $I-&gt;grabRegistrationLogTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_registration_log`.
+  $blogVersionsTable = $I->grabRegistrationLogTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_registration_log`.
+  $blogVersionsTable = $I->grabRegistrationLogTableName();
+```
+
   
 
 <h3>grabSignupsTableName</h3>
@@ -1358,11 +1535,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>signups</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_signups`.
-    $blogVersionsTable = $I-&gt;grabSignupsTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_signups`.
-    $blogVersionsTable = $I-&gt;grabSignupsTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_signups`.
+  $blogVersionsTable = $I->grabSignupsTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_signups`.
+  $blogVersionsTable = $I->grabSignupsTableName();
+```
+
   
 
 <h3>grabSiteMetaTableName</h3>
@@ -1370,11 +1550,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>sitemeta</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_sitemeta`.
-    $blogVersionsTable = $I-&gt;grabSiteMetaTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_sitemeta`.
-    $blogVersionsTable = $I-&gt;grabSiteMetaTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_sitemeta`.
+  $blogVersionsTable = $I->grabSiteMetaTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_sitemeta`.
+  $blogVersionsTable = $I->grabSiteMetaTableName();
+```
+
   
 
 <h3>grabSiteOptionFromDatabase</h3>
@@ -1382,7 +1565,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets a site option from the database.</p>
-<pre><code class="language-php">    $fooCountOptionId = $I-&gt;haveSiteOptionInDatabase('foo_count','23');</code></pre>
+```php
+$fooCountOptionId = $I->haveSiteOptionInDatabase('foo_count','23');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the option to read from the database.</li></ul>
@@ -1393,11 +1579,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed <code>site</code> table name.</p>
-<pre><code class="language-php">    // Assuming a `wp_` table prefix it will return `wp_site`.
-    $blogVersionsTable = $I-&gt;grabSiteTableName();
-    $I-&gt;useBlog(23);
-    // Assuming a `wp_` table prefix it will return `wp_site`.
-    $blogVersionsTable = $I-&gt;grabSiteTableName();</code></pre>
+```php
+// Assuming a `wp_` table prefix it will return `wp_site`.
+  $blogVersionsTable = $I->grabSiteTableName();
+  $I->useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_site`.
+  $blogVersionsTable = $I->grabSiteTableName();
+```
+
   
 
 <h3>grabSiteTransientFromDatabase</h3>
@@ -1405,8 +1594,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets a site transient from the database.</p>
-<pre><code class="language-php">    $I-&gt;grabSiteTransientFromDatabase('total_comments');
-    $I-&gt;grabSiteTransientFromDatabase('api_data');</code></pre>
+```php
+$I->grabSiteTransientFromDatabase('total_comments');
+  $I->grabSiteTransientFromDatabase('api_data');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The site transient to fetch the value for, w/o the <code>_site_transient_</code> prefix.</li></ul>
@@ -1417,7 +1609,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the current site URL as specified in the module configuration.</p>
-<pre><code class="language-php">    $shopPath = $I-&gt;grabSiteUrl('/shop');</code></pre>
+```php
+$shopPath = $I->grabSiteUrl('/shop');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - A path that should be appended to the site URL.</li></ul>
@@ -1428,11 +1623,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the table prefix, namespaced for secondary blogs if selected.</p>
-<pre><code class="language-php">    // Assuming a table prefix of `wp_` it will return `wp_`;
-    $tablePrefix = $I-&gt;grabTablePrefix();
-    $I-&gt;useBlog(23);
-    // Assuming a table prefix of `wp_` it will return `wp_23_`;
-    $tablePrefix = $I-&gt;grabTablePrefix();</code></pre>
+```php
+// Assuming a table prefix of `wp_` it will return `wp_`;
+  $tablePrefix = $I->grabTablePrefix();
+  $I->useBlog(23);
+  // Assuming a table prefix of `wp_` it will return `wp_23_`;
+  $tablePrefix = $I->grabTablePrefix();
+```
+
   
 
 <h3>grabTermIdFromDatabase</h3>
@@ -1440,12 +1638,15 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets a term ID from the database. Looks up the prefixed <code>terms</code> table, e.g. <code>wp_terms</code>.</p>
-<pre><code class="language-php">    // Return the 'fiction' term 'term_id'.
-    $termId = $I-&gt;grabTermIdFromDatabase(['name' =&gt; 'fiction']);
-    // Get a term ID by more stringent criteria.
-    $termId = $I-&gt;grabTermIdFromDatabase(['name' =&gt; 'fiction', 'slug' =&gt; 'genre--fiction']);
-    // Return the 'term_id' of the first term for a group.
-    $termId = $I-&gt;grabTermIdFromDatabase(['term_group' =&gt; 23]);</code></pre>
+```php
+// Return the 'fiction' term 'term_id'.
+  $termId = $I->grabTermIdFromDatabase(['name' => 'fiction']);
+  // Get a term ID by more stringent criteria.
+  $termId = $I->grabTermIdFromDatabase(['name' => 'fiction', 'slug' => 'genre--fiction']);
+  // Return the 'term_id' of the first term for a group.
+  $termId = $I->grabTermIdFromDatabase(['term_group' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1456,11 +1657,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the terms meta table prefixed name.</p>
-<pre><code class="language-php">    // Returns 'wp_termmeta'.
-    $I-&gt;grabTermMetaTableName();
-    // Returns 'wp_23_termmeta'.
-    $I-&gt;useBlog(23);
-    $I-&gt;grabTermMetaTableName();</code></pre>
+```php
+// Returns 'wp_termmeta'.
+  $I->grabTermMetaTableName();
+  // Returns 'wp_23_termmeta'.
+  $I->useBlog(23);
+  $I->grabTermMetaTableName();
+```
+
   
 
 <h3>grabTermRelationshipsTableName</h3>
@@ -1468,7 +1672,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed term relationships table name, e.g. <code>wp_term_relationships</code>.</p>
-<pre><code class="language-php">    $I-&gt;grabTermRelationshipsTableName();</code></pre>
+```php
+$I->grabTermRelationshipsTableName();
+```
+
   
 
 <h3>grabTermTaxonomyIdFromDatabase</h3>
@@ -1476,10 +1683,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets a <code>term_taxonomy_id</code> from the database. Looks up the prefixed <code>terms_relationships</code> table, e.g. <code>wp_term_relationships</code>.</p>
-<pre><code class="language-php">    // Get the `term_taxonomy_id` for a term and a taxonomy.
-    $I-&gt;grabTermTaxonomyIdFromDatabase(['term_id' =&gt; $fictionId, 'taxonomy' =&gt; 'genre']);
-    // Get the `term_taxonomy_id` for the first term with a count of 23.
-    $I-&gt;grabTermTaxonomyIdFromDatabase(['count' =&gt; 23]);</code></pre>
+```php
+// Get the `term_taxonomy_id` for a term and a taxonomy.
+  $I->grabTermTaxonomyIdFromDatabase(['term_id' => $fictionId, 'taxonomy' => 'genre']);
+  // Get the `term_taxonomy_id` for the first term with a count of 23.
+  $I->grabTermTaxonomyIdFromDatabase(['count' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -1490,11 +1700,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed term and taxonomy table name, e.g. <code>wp_term_taxonomy</code>.</p>
-<pre><code class="language-php">    // Returns 'wp_term_taxonomy'.
-    $I-&gt;grabTermTaxonomyTableName();
-    // Returns 'wp_23_term_taxonomy'.
-    $I-&gt;useBlog(23);
-    $I-&gt;grabTermTaxonomyTableName();</code></pre>
+```php
+// Returns 'wp_term_taxonomy'.
+  $I->grabTermTaxonomyTableName();
+  // Returns 'wp_23_term_taxonomy'.
+  $I->useBlog(23);
+  $I->grabTermTaxonomyTableName();
+```
+
   
 
 <h3>grabTermsTableName</h3>
@@ -1502,11 +1715,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the prefixed terms table name, e.g. <code>wp_terms</code>.</p>
-<pre><code class="language-php">    // Returns 'wp_terms'.
-    $I-&gt;grabTermsTableName();
-    // Returns 'wp_23_terms'.
-    $I-&gt;useBlog(23);
-    $I-&gt;grabTermsTableName();</code></pre>
+```php
+// Returns 'wp_terms'.
+  $I->grabTermsTableName();
+  // Returns 'wp_23_terms'.
+  $I->useBlog(23);
+  $I->grabTermsTableName();
+```
+
   
 
 <h3>grabUserIdFromDatabase</h3>
@@ -1514,7 +1730,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets the a user ID from the database using the user login.</p>
-<pre><code class="language-php">    $userId = $I-&gt;grabUserIdFromDatabase('luca');</code></pre>
+```php
+$userId = $I->grabUserIdFromDatabase('luca');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$userLogin</strong> - The user login name.</li></ul>
@@ -1525,10 +1744,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Gets a user meta from the database.</p>
-<pre><code class="language-php">    // Returns a user 'karma' value.
-    $I-&gt;grabUserMetaFromDatabase($userId, 'karma');
-    // Returns an array, the unserialized version of the value stored in the database.
-    $I-&gt;grabUserMetaFromDatabase($userId, 'api_data');</code></pre>
+```php
+// Returns a user 'karma' value.
+  $I->grabUserMetaFromDatabase($userId, 'karma');
+  // Returns an array, the unserialized version of the value stored in the database.
+  $I->grabUserMetaFromDatabase($userId, 'api_data');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The ID of th user to get the meta for.</li>
@@ -1540,11 +1762,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed users meta table name.</p>
-<pre><code class="language-php">    // Given a `wp_` table prefix returns `wp_usermeta`.
-    $usermetaTable = $I-&gt;grabUsermetaTableName();
-    // Given a `wp_` table prefix returns `wp_usermeta`.
-    $I-&gt;useBlog(23);
-    $usermetaTable = $I-&gt;grabUsermetaTableName();</code></pre>
+```php
+// Given a `wp_` table prefix returns `wp_usermeta`.
+  $usermetaTable = $I->grabUsermetaTableName();
+  // Given a `wp_` table prefix returns `wp_usermeta`.
+  $I->useBlog(23);
+  $usermetaTable = $I->grabUsermetaTableName();
+```
+
   
 
 <h3>grabUsersTableName</h3>
@@ -1552,11 +1777,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Returns the prefixed users table name.</p>
-<pre><code class="language-php">    // Given a `wp_` table prefix returns `wp_users`.
-    $usersTable = $I-&gt;grabUsersTableName();
-    // Given a `wp_` table prefix returns `wp_users`.
-    $I-&gt;useBlog(23);
-    $usersTable = $I-&gt;grabUsersTableName();</code></pre>
+```php
+// Given a `wp_` table prefix returns `wp_users`.
+  $usersTable = $I->grabUsersTableName();
+  // Given a `wp_` table prefix returns `wp_users`.
+  $I->useBlog(23);
+  $usersTable = $I->grabUsersTableName();
+```
+
   
 
 <h3>haveAttachmentInDatabase</h3>
@@ -1564,13 +1792,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Creates the database entries representing an attachment and moves the attachment file to the right location.</p>
-<pre><code class="language-php">    $file = codecept_data_dir('images/test.png');
-    $attachmentId = $I-&gt;haveAttachmentInDatabase($file);
-    $image = codecept_data_dir('images/test-2.png');
-    $lastWeekAttachment = $I-&gt;haveAttachmentInDatabase($image, '-1 week');</code></pre>
-<pre><code>    Requires the WPFilesystem module.
-                              should be used to build the "year/time" uploads sub-folder structure.
-                              image sizes created by default.</code></pre>
+```php
+$file = codecept_data_dir('images/test.png');
+  $attachmentId = $I->haveAttachmentInDatabase($file);
+  $image = codecept_data_dir('images/test-2.png');
+  $lastWeekAttachment = $I->haveAttachmentInDatabase($image, '-1 week');
+  Requires the WPFilesystem module.
+  should be used to build the "year/time" uploads sub-folder structure.
+  image sizes created by default.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The absolute path to the attachment file.</li>
@@ -1584,11 +1815,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a blog in the <code>blogs</code> table.</p>
-<pre><code class="language-php">    // Create the `test` subdomain blog.
-    $blogId = $I-&gt;haveBlogInDatabase('test', ['administrator' =&gt; $userId]);
-    // Create the `/test` subfolder blog.
-    $blogId = $I-&gt;haveBlogInDatabase('test', ['administrator' =&gt; $userId], false);</code></pre>
-<pre><code>                                 or subfolder (`true`)</code></pre>
+```php
+// Create the `test` subdomain blog.
+  $blogId = $I->haveBlogInDatabase('test', ['administrator' => $userId]);
+  // Create the `/test` subfolder blog.
+  $blogId = $I->haveBlogInDatabase('test', ['administrator' => $userId], false);
+  or subfolder (`true`)
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$domainOrPath</strong> - The subdomain or the path to the be used for the blog.</li>
@@ -1601,7 +1835,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a comment in the database.</p>
-<pre><code class="language-php">    $I-&gt;haveCommentInDatabase($postId, ['comment_content' =&gt; 'Test Comment', 'comment_karma' =&gt; 23]);</code></pre>
+```php
+$I->haveCommentInDatabase($postId, ['comment_content' => 'Test Comment', 'comment_karma' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$comment_post_ID</strong> - The id of the post the comment refers to.</li>
@@ -1613,10 +1850,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a comment meta field in the database. Array and object meta values will be serialized.</p>
-<pre><code class="language-php">    $I-&gt;haveCommentMetaInDatabase($commentId, 'api_ID', 23);
-    // The value will be serialized.
-    $apiData = ['ID' =&gt; 23, 'user' =&gt; 89, 'origin' =&gt; 'twitter'];
-    $I-&gt;haveCommentMetaInDatabase($commentId, 'api_data', $apiData);</code></pre>
+```php
+$I->haveCommentMetaInDatabase($commentId, 'api_ID', 23);
+  // The value will be serialized.
+  $apiData = ['ID' => 23, 'user' => 89, 'origin' => 'twitter'];
+  $I->haveCommentMetaInDatabase($commentId, 'api_data', $apiData);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$comment_id</strong> - The ID of the comment to insert the meta for.</li>
@@ -1629,7 +1869,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a link in the database.</p>
-<pre><code class="language-php">    $linkId = $I-&gt;haveLinkInDatabase(['link_url' =&gt; 'http://example.org']);</code></pre>
+```php
+$linkId = $I->haveLinkInDatabase(['link_url' => 'http://example.org']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$overrides</strong> - The data to insert.</li></ul>
@@ -1640,11 +1883,14 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many blogs in the database.</p>
-<pre><code class="language-php">    $blogIds = $I-&gt;haveManyBlogsInDatabase(3, ['domain' =&gt;'test-{{n}}']);
-    foreach($blogIds as $blogId){
-         $I-&gt;useBlog($blogId);
-         $I-&gt;haveManuPostsInDatabase(3);
-    }</code></pre>
+```php
+$blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
+  foreach($blogIds as $blogId){
+  $I->useBlog($blogId);
+  $I->haveManuPostsInDatabase(3);
+  }
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of blogs to create.</li>
@@ -1657,10 +1903,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many comments in the database.</p>
-<pre><code class="language-php">    // Insert 3 random comments for a post.
-    $I-&gt;haveManyCommentsInDatabase(3, $postId);
-    // Insert 3 random comments for a post.
-    $I-&gt;haveManyCommentsInDatabase(3, $postId, ['comment_content' =&gt; 'Comment {{n}}']);</code></pre>
+```php
+// Insert 3 random comments for a post.
+  $I->haveManyCommentsInDatabase(3, $postId);
+  // Insert 3 random comments for a post.
+  $I->haveManyCommentsInDatabase(3, $postId, ['comment_content' => 'Comment {{n}}']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of comments to insert.</li>
@@ -1673,10 +1922,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many links in the database <code>links</code> table.</p>
-<pre><code class="language-php">    // Insert 3 randomly generated links in the database.
-    $linkIds = $I-&gt;haveManyLinksInDatabase(3);
-    // Inserts links in the database replacing the `n` placeholder.
-    $linkIds = $I-&gt;haveManyLinksInDatabase(3, ['link_url' =&gt; 'http://example.org/test-{{n}}']);</code></pre>
+```php
+// Insert 3 randomly generated links in the database.
+  $linkIds = $I->haveManyLinksInDatabase(3);
+  // Inserts links in the database replacing the `n` placeholder.
+  $linkIds = $I->haveManyLinksInDatabase(3, ['link_url' => 'http://example.org/test-{{n}}']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of links to insert.</li>
@@ -1688,10 +1940,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many posts in the database returning their IDs. An array of values to override the defaults. The <code>{{n}}</code> placeholder can be used to have the post count inserted in its place; e.g. <code>Post Title - {{n}}</code> will be set to <code>Post Title - 0</code> for the first post, <code>Post Title - 1</code> for the second one and so on. The same applies to meta values as well.</p>
-<pre><code class="language-php">    // Insert 3 random posts.
-    $I-&gt;haveManyPostsInDatabase(3);
-    // Insert 3 posts with generated titles.
-    $I-&gt;haveManyPostsInDatabase(3, ['post_title' =&gt; 'Test post {{n}}']);</code></pre>
+```php
+// Insert 3 random posts.
+  $I->haveManyPostsInDatabase(3);
+  // Insert 3 posts with generated titles.
+  $I->haveManyPostsInDatabase(3, ['post_title' => 'Test post {{n}}']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of posts to insert.</li>
@@ -1703,9 +1958,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many terms in the database.</p>
-<pre><code class="language-php">    $terms = $I-&gt;haveManyTermsInDatabase(3, 'genre-{{n}}', 'genre');
-    $termIds = array_column($terms, 0);
-    $termTaxonomyIds = array_column($terms, 1);</code></pre>
+```php
+$terms = $I->haveManyTermsInDatabase(3, 'genre-{{n}}', 'genre');
+  $termIds = array_column($terms, 0);
+  $termTaxonomyIds = array_column($terms, 1);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of terms to insert.</li>
@@ -1719,13 +1977,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts many users in the database.</p>
-<pre><code class="language-php">    $subscribers = $I-&gt;haveManyUsersInDatabase(5, 'user-{{n}}');
-    $editors = $I-&gt;haveManyUsersInDatabase(
-         5,
-         'user-{{n}}',
-         'editor',
-         ['user_email' =&gt; 'user-{{n}}@example.org']
-    );</code></pre>
+```php
+$subscribers = $I->haveManyUsersInDatabase(5, 'user-{{n}}');
+  $editors = $I->haveManyUsersInDatabase(
+  5,
+  'user-{{n}}',
+  'editor',
+  ['user_email' => 'user-{{n}}@example.org']
+  );
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of users to insert.</li>
@@ -1739,7 +2000,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Creates and adds a menu to a theme location in the database.</p>
-<pre><code class="language-php">    list($termId, $termTaxId) = $I-&gt;haveMenuInDatabase('test', 'sidebar');</code></pre>
+```php
+list($termId, $termTaxId) = $I->haveMenuInDatabase('test', 'sidebar');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$slug</strong> - The menu slug.</li>
@@ -1752,9 +2016,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Adds a menu element to a menu for the current theme.</p>
-<pre><code class="language-php">    $I-&gt;haveMenuInDatabase('test', 'sidebar');
-    $I-&gt;haveMenuItemInDatabase('test', 'Test one', 0);
-    $I-&gt;haveMenuItemInDatabase('test', 'Test two', 1);</code></pre>
+```php
+$I->haveMenuInDatabase('test', 'sidebar');
+  $I->haveMenuItemInDatabase('test', 'Test one', 0);
+  $I->haveMenuItemInDatabase('test', 'Test two', 1);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
@@ -1768,9 +2035,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts an option in the database.</p>
-<pre><code class="language-php">    $I-&gt;haveOptionInDatabase('posts_per_page', 23);
-    $I-&gt;haveOptionInDatabase('my_plugin_options', ['key_one' =&gt; 'value_one', 'key_two' =&gt; 89]);</code></pre>
-<pre><code>    If the option value is an object or an array then the value will be serialized.</code></pre>
+```php
+$I->haveOptionInDatabase('posts_per_page', 23);
+  $I->haveOptionInDatabase('my_plugin_options', ['key_one' => 'value_one', 'key_two' => 89]);
+  If the option value is an object or an array then the value will be serialized.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$option_name</strong> - The option name.</li>
@@ -1783,10 +2053,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a page in the database.</p>
-<pre><code class="language-php">    // Creates a test page in the database with random values.
-    $randomPageId = $I-&gt;havePageInDatabase();
-    // Creates a test page in the database defining its title.
-    $testPageId = $I-&gt;havePageInDatabase(['post_title' =&gt; 'Test page']);</code></pre>
+```php
+// Creates a test page in the database with random values.
+  $randomPageId = $I->havePageInDatabase();
+  // Creates a test page in the database defining its title.
+  $testPageId = $I->havePageInDatabase(['post_title' => 'Test page']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
@@ -1797,19 +2070,22 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a post in the database.</p>
-<pre><code class="language-php">    // Insert a post with random values in the database.
-    $randomPostId = $I-&gt;havePostInDatabase();
-    // Insert a post with specific values in the database.
-    $I-&gt;havePostInDatabase([
-            'post_type' =&gt; 'book',
-            'post_title' =&gt; 'Alice in Wonderland',
-            'meta_input' =&gt; [
-                 'readers_count' =&gt; 23
-             ],
-            'tax_input' =&gt; [
-                 ['genre' =&gt; 'fiction']
-             ]
-    ]);</code></pre>
+```php
+// Insert a post with random values in the database.
+  $randomPostId = $I->havePostInDatabase();
+  // Insert a post with specific values in the database.
+  $I->havePostInDatabase([
+  'post_type' => 'book',
+  'post_title' => 'Alice in Wonderland',
+  'meta_input' => [
+  'readers_count' => 23
+  ],
+  'tax_input' => [
+  ['genre' => 'fiction']
+  ]
+  ]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$data</strong> - An associative array of post data to override default and random generated values.</li></ul>
@@ -1820,14 +2096,17 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Adds one or more meta key and value couples in the database for a post.</p>
-<pre><code class="language-php">    // Set the post-meta for a post.
-    $I-&gt;havePostmetaInDatabase($postId, 'karma', 23);
-    // Set an array post-meta for a post, it will be serialized in the db.
-    $I-&gt;havePostmetaInDatabase($postId, 'data', ['one', 'two']);
-    // Use a loop to insert one meta per row.
-    foreach( ['one', 'two'] as $value){
-         $I-&gt;havePostmetaInDatabase($postId, 'data', $value);
-    }</code></pre>
+```php
+// Set the post-meta for a post.
+  $I->havePostmetaInDatabase($postId, 'karma', 23);
+  // Set an array post-meta for a post, it will be serialized in the db.
+  $I->havePostmetaInDatabase($postId, 'data', ['one', 'two']);
+  // Use a loop to insert one meta per row.
+  foreach( ['one', 'two'] as $value){
+  $I->havePostmetaInDatabase($postId, 'data', $value);
+  }
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$postId</strong> - The post ID.</li>
@@ -1840,7 +2119,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a site option in the database. If the value is an array or an object then the value will be serialized.</p>
-<pre><code class="language-php">    $fooCountOptionId = $I-&gt;haveSiteOptionInDatabase('foo_count','23');</code></pre>
+```php
+$fooCountOptionId = $I->haveSiteOptionInDatabase('foo_count','23');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the option to insert.</li>
@@ -1852,9 +2134,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a site transient in the database. If the value is an array or an object then the value will be serialized.</p>
-<pre><code class="language-php">    $I-&gt;haveSiteTransientInDatabase('total_comments_count', 23);
-    // This value will be serialized.
-    $I-&gt;haveSiteTransientInDatabase('api_data', ['user' =&gt; 'luca', 'token' =&gt; '11ae3ijns-j83']);</code></pre>
+```php
+$I->haveSiteTransientInDatabase('total_comments_count', 23);
+  // This value will be serialized.
+  $I->haveSiteTransientInDatabase('api_data', ['user' => 'luca', 'token' => '11ae3ijns-j83']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The key of the site transient to insert, w/o the <code>_site_transient_</code> prefix.</li>
@@ -1866,15 +2151,18 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a term in the database.</p>
-<pre><code class="language-php">    // Insert a random 'genre' term in the database.
-    $I-&gt;haveTermInDatabase('non-fiction', 'genre');
-    // Insert a term in the database with term meta.
-    $I-&gt;haveTermInDatabase('fiction', 'genre', [
-         'slug' =&gt; 'genre--fiction',
-         'meta' =&gt; [
-            'readers_count' =&gt; 23
-         ]
-    ]);</code></pre>
+```php
+// Insert a random 'genre' term in the database.
+  $I->haveTermInDatabase('non-fiction', 'genre');
+  // Insert a term in the database with term meta.
+  $I->haveTermInDatabase('fiction', 'genre', [
+  'slug' => 'genre--fiction',
+  'meta' => [
+  'readers_count' => 23
+  ]
+  ]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$name</strong> - The term name, e.g. &quot;Fuzzy&quot;.</li>
@@ -1887,13 +2175,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a term meta row in the database. Objects and array meta values will be serialized.</p>
-<pre><code class="language-php">    $I-&gt;haveTermMetaInDatabase($fictionId, 'readers_count', 23);
-    // Insert some meta that will be serialized.
-    $I-&gt;haveTermMetaInDatabase($fictionId, 'flags', [3, 4, 89]);
-    // Use a loop to insert one meta per row.
-    foreach([3, 4, 89] as $value) {
-         $I-&gt;haveTermMetaInDatabase($fictionId, 'flag', $value);
-    }</code></pre>
+```php
+$I->haveTermMetaInDatabase($fictionId, 'readers_count', 23);
+  // Insert some meta that will be serialized.
+  $I->haveTermMetaInDatabase($fictionId, 'flags', [3, 4, 89]);
+  // Use a loop to insert one meta per row.
+  foreach([3, 4, 89] as $value) {
+  $I->haveTermMetaInDatabase($fictionId, 'flag', $value);
+  }
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$term_id</strong> - The ID of the term to insert the meta for.</li>
@@ -1906,8 +2197,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Creates a term relationship in the database. No check about the consistency of the insertion is made. E.g. a post could be assigned a term from a taxonomy that's not registered for that post type.</p>
-<pre><code class="language-php">    // Assign the `fiction` term to a book.
-    $I-&gt;haveTermRelationshipInDatabase($bookId, $fictionId);</code></pre>
+```php
+// Assign the `fiction` term to a book.
+  $I->haveTermRelationshipInDatabase($bookId, $fictionId);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$object_id</strong> - A post ID, a user ID or anything that can be assigned a taxonomy term.</li>
@@ -1920,8 +2214,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a transient in the database. If the value is an array or an object then the value will be serialized. Since the transients are set in the context of tests it's not possible to set an expiration directly.</p>
-<pre><code class="language-php">    // Store an array in the `tweets` transient.
-    $I-&gt;haveTransientInDatabase('tweets', $tweets);</code></pre>
+```php
+// Store an array in the `tweets` transient.
+  $I->haveTransientInDatabase('tweets', $tweets);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$transient</strong> - The transient name.</li>
@@ -1933,10 +2230,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets a user capabilities in the database.</p>
-<pre><code class="language-php">    $blogId = $this-&gt;haveBlogInDatabase('test');
-    $editor = $I-&gt;haveUserInDatabase('luca', 'editor');
-    $capsIds = $I-&gt;haveUserCapabilitiesInDatabase($editor, [$blogId =&gt; 'editor']);</code></pre>
-<pre><code>                          for a multisite installation (e.g. `[1 =&gt; 'administrator`, 2 =&gt; 'subscriber']`).</code></pre>
+```php
+$blogId = $this->haveBlogInDatabase('test');
+  $editor = $I->haveUserInDatabase('luca', 'editor');
+  $capsIds = $I->haveUserCapabilitiesInDatabase($editor, [$blogId => 'editor']);
+  for a multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The ID of the user to set the capabilities of.</li>
@@ -1948,13 +2248,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Inserts a user and its meta in the database.</p>
-<pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase('luca', 'editor', ['user_email' =&gt; 'luca@example.org']);
-    $subscriberId = $I-&gt;haveUserInDatabase('test');
-    $userWithMeta = $I-&gt;haveUserInDatabase('luca', 'editor', [
-        'user_email' =&gt; 'luca@example.org'
-        'meta' =&gt; ['a meta_key' =&gt; 'a_meta_value']
-    ]);</code></pre>
-<pre><code>                           and "usermeta" table.</code></pre>
+```php
+$userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
+  $subscriberId = $I->haveUserInDatabase('test');
+  $userWithMeta = $I->haveUserInDatabase('luca', 'editor', [
+  'user_email' => 'luca@example.org'
+  'meta' => ['a meta_key' => 'a_meta_value']
+  ]);
+  and "usermeta" table.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
@@ -1967,10 +2270,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets the user access level meta in the database for a user.</p>
-<pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase('luca', 'editor');
-    $moreThanAnEditorLessThanAnAdmin = 8;
-    $I-&gt;haveUserLevelsInDatabase($userId, $moreThanAnEditorLessThanAnAdmin);</code></pre>
-<pre><code>                          multisite installation (e.g. `[1 =&gt; 'administrator`, 2 =&gt; 'subscriber']`).</code></pre>
+```php
+$userId = $I->haveUserInDatabase('luca', 'editor');
+  $moreThanAnEditorLessThanAnAdmin = 8;
+  $I->haveUserLevelsInDatabase($userId, $moreThanAnEditorLessThanAnAdmin);
+  multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The ID of the user to set the level for.</li>
@@ -1982,9 +2288,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets a user meta in the database.</p>
-<pre><code class="language-php">    $userId = $I-&gt;haveUserInDatabase('luca', 'editor');
-    $I-&gt;haveUserMetaInDatabase($userId, 'karma', 23);</code></pre>
-<pre><code>                          values will trigger the insertion of multiple rows.</code></pre>
+```php
+$userId = $I->haveUserInDatabase('luca', 'editor');
+  $I->haveUserMetaInDatabase($userId, 'karma', 23);
+  values will trigger the insertion of multiple rows.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The user ID.</li>
@@ -1997,9 +2306,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Import the SQL dump file if populate is enabled.</p>
-<pre><code class="language-php">    // Import a dump file passing the absolute path.
-    $I-&gt;importSqlDumpFile(codecept_data_dir('dumps/start.sql'));</code></pre>
-<pre><code>    Specifying a dump file that file will be imported.</code></pre>
+```php
+// Import a dump file passing the absolute path.
+  $I->importSqlDumpFile(codecept_data_dir('dumps/start.sql'));
+  Specifying a dump file that file will be imported.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>null/string</code> <strong>$dumpFile</strong> - The dump file that should be imported in place of the default one.</li></ul>
@@ -2010,8 +2322,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for an attachment in the database.</p>
-<pre><code class="language-php">    $url = 'https://example.org/images/foo.png';
-    $I-&gt;seeAttachmentInDatabase(['guid' =&gt; $url]);</code></pre>
+```php
+$url = 'https://example.org/images/foo.png';
+  $I->seeAttachmentInDatabase(['guid' => $url]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2022,10 +2337,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a blog in the <code>blogs</code> table.</p>
-<pre><code class="language-php">    // Search for a blog by `blog_id`.
-    $I-&gt;seeBlogInDatabase(['blog_id' =&gt; 23]);
-    // Search for all blogs on a path.
-    $I-&gt;seeBlogInDatabase(['path' =&gt; '/sub-path/']);</code></pre>
+```php
+// Search for a blog by `blog_id`.
+  $I->seeBlogInDatabase(['blog_id' => 23]);
+  // Search for all blogs on a path.
+  $I->seeBlogInDatabase(['path' => '/sub-path/']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2036,7 +2354,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a comment in the database. Will look up the &quot;comments&quot; table.</p>
-<pre><code class="language-php">    $I-&gt;seeCommentInDatabase(['comment_ID' =&gt; 23]);</code></pre>
+```php
+$I->seeCommentInDatabase(['comment_ID' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2047,10 +2368,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a comment meta value is in the database. Will look up the &quot;commentmeta&quot; table.</p>
-<pre><code class="language-php">    // Assert a specifid meta for a comment exists.
-    $I-&gt;seeCommentMetaInDatabase(['comment_ID' =&gt; $commentId, 'meta_key' =&gt; 'karma', 'meta_value' =&gt; 23]);
-    // Assert the comment has at least one meta set.
-    $I-&gt;seeCommentMetaInDatabase(['comment_ID' =&gt; $commentId]);</code></pre>
+```php
+// Assert a specifid meta for a comment exists.
+  $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
+  // Assert the comment has at least one meta set.
+  $I->seeCommentMetaInDatabase(['comment_ID' => $commentId]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2061,10 +2385,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a link in the <code>links</code> table of the database.</p>
-<pre><code class="language-php">    // Asserts a link exists by name.
-    $I-&gt;seeLinkInDatabase(['link_name' =&gt; 'my-link']);
-    // Asserts at least one link exists for the user.
-    $I-&gt;seeLinkInDatabase(['link_owner' =&gt; $userId]);</code></pre>
+```php
+// Asserts a link exists by name.
+  $I->seeLinkInDatabase(['link_name' => 'my-link']);
+  // Asserts at least one link exists for the user.
+  $I->seeLinkInDatabase(['link_owner' => $userId]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2075,10 +2402,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks if an option is in the database for the current blog. If checking for an array or an object then the serialized version will be checked for.</p>
-<pre><code class="language-php">    // Checks an option is in the database.
-    $I-&gt;seeOptionInDatabase('tables_version');
-    // Checks an option is in the database and has a specific value.
-    $I-&gt;seeOptionInDatabase('tables_version', '1.0');</code></pre>
+```php
+// Checks an option is in the database.
+  $I->seeOptionInDatabase('tables_version');
+  // Checks an option is in the database and has a specific value.
+  $I->seeOptionInDatabase('tables_version', '1.0');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2089,10 +2419,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a page in the database.</p>
-<pre><code class="language-php">    // Asserts a page with an exists in the database.
-    $I-&gt;seePageInDatabase(['ID' =&gt; 23]);
-    // Asserts a page with a slug and ID exists in the database.
-    $I-&gt;seePageInDatabase(['post_title' =&gt; 'Test Page', 'ID' =&gt; 23]);</code></pre>
+```php
+// Asserts a page with an exists in the database.
+  $I->seePageInDatabase(['ID' => 23]);
+  // Asserts a page with a slug and ID exists in the database.
+  $I->seePageInDatabase(['post_title' => 'Test Page', 'ID' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2103,10 +2436,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a post in the database.</p>
-<pre><code class="language-php">    // Assert a post exists in the database.
-    $I-&gt;seePostInDatabase(['ID' =&gt; 23]);
-    // Assert a post with a slug and ID exists in the database.
-    $I-&gt;seePostInDatabase(['post_content' =&gt; 'test content', 'ID' =&gt; 23]);</code></pre>
+```php
+// Assert a post exists in the database.
+  $I->seePostInDatabase(['ID' => 23]);
+  // Assert a post with a slug and ID exists in the database.
+  $I->seePostInDatabase(['post_content' => 'test content', 'ID' => 23]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2117,8 +2453,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the check will be made for serialized values.</p>
-<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']];
-    $I-&gt;seePostMetaInDatabase(['post_id' =&gt; '$postId', 'meta_key' =&gt; 'foo']);</code></pre>
+```php
+$postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']];
+  $I->seePostMetaInDatabase(['post_id' => '$postId', 'meta_key' => 'foo']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2129,14 +2468,16 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p>
-<pre><code class="language-php">    $fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
-    $I-&gt;seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);</code></pre>
-<pre><code>                                        passed this parameter will be interpreted as a `term_id`, else as a
-                                        `term_taxonomy_id`.
-                                        the
-                                        term order.
-                                        to build a `taxonomy_term_id` from the `term_id`.</code></pre>
+```php
+$fiction = $I->haveTermInDatabase('fiction', 'genre');
+  $postId = $I->havePostInDatabase(['tax_input' => ['genre' => ['fiction']]]);
+  $I->seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);
+  passed this parameter will be interpreted as a `term_id`, else as a
+  the
+  term order.
+  to build a `taxonomy_term_id` from the `term_id`.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
@@ -2150,10 +2491,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a site option is in the database.</p>
-<pre><code class="language-php">    // Check that the option is set in the database.
-    $I-&gt;seeSiteOptionInDatabase('foo_count');
-    // Check that the option is set and has a specific value.
-    $I-&gt;seeSiteOptionInDatabase('foo_count', 23);</code></pre>
+```php
+// Check that the option is set in the database.
+  $I->seeSiteOptionInDatabase('foo_count');
+  // Check that the option is set and has a specific value.
+  $I->seeSiteOptionInDatabase('foo_count', 23);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the otpion to check.</li>
@@ -2165,10 +2509,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a site option is in the database.</p>
-<pre><code class="language-php">    // Check a transient exists.
-    $I-&gt;seeSiteSiteTransientInDatabase('total_counts');
-    // Check a transient exists and has a specific value.
-    $I-&gt;seeSiteSiteTransientInDatabase('total_counts', 23);</code></pre>
+```php
+// Check a transient exists.
+  $I->seeSiteSiteTransientInDatabase('total_counts');
+  // Check a transient exists and has a specific value.
+  $I->seeSiteSiteTransientInDatabase('total_counts', 23);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the transient to check for, w/o the <code>_site_transient_</code> prefix.</li>
@@ -2180,8 +2527,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a table is in the database.</p>
-<pre><code class="language-php">    $options = $I-&gt;grabPrefixedTableNameFor('options');
-    $I-&gt;seeTableInDatabase($options);</code></pre>
+```php
+$options = $I->grabPrefixedTableNameFor('options');
+  $I->seeTableInDatabase($options);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
@@ -2192,9 +2542,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a term in the database. Looks up the <code>terms</code> and <code>term_taxonomy</code> prefixed tables.</p>
-<pre><code class="language-php">    $I-&gt;seeTermInDatabase(['slug' =&gt; 'genre--fiction']);
-    $I-&gt;seeTermInDatabase(['name' =&gt; 'Fiction', 'slug' =&gt; 'genre--fiction']);</code></pre>
-<pre><code>                       `term_taxonomy` tables.</code></pre>
+```php
+$I->seeTermInDatabase(['slug' => 'genre--fiction']);
+  $I->seeTermInDatabase(['name' => 'Fiction', 'slug' => 'genre--fiction']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
@@ -2205,9 +2557,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a term meta in the database.</p>
-<pre><code class="language-php">    list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $I-&gt;haveTermMetaInDatabase($termId, 'rating', 4);
-    $I-&gt;seeTermMetaInDatabase(['term_id' =&gt; $termId,'meta_key' =&gt; 'rating', 'meta_value' =&gt; 4]);</code></pre>
+```php
+list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
+  $I->haveTermMetaInDatabase($termId, 'rating', 4);
+  $I->seeTermMetaInDatabase(['term_id' => $termId,'meta_key' => 'rating', 'meta_value' => 4]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2218,8 +2573,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a term relationship in the database.</p>
-<pre><code class="language-php">    $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['category' =&gt; 'one']]);
-    $I-&gt;seeTermRelationshipInDatabase(['object_id' =&gt; $postId, 'term_taxonomy_id' =&gt; $oneTermTaxId]);</code></pre>
+```php
+$postId = $I->havePostInDatabase(['tax_input' => ['category' => 'one']]);
+  $I->seeTermRelationshipInDatabase(['object_id' => $postId, 'term_taxonomy_id' => $oneTermTaxId]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2230,8 +2588,11 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a taxonomy taxonomy in the database.</p>
-<pre><code class="language-php">    list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
-    $I-&gt;seeTermTaxonomyInDatabase(['term_id' =&gt; $termId, 'taxonomy' =&gt; 'genre']);</code></pre>
+```php
+list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
+  $I->seeTermTaxonomyInDatabase(['term_id' => $termId, 'taxonomy' => 'genre']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2242,10 +2603,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks that a user is in the database. The method will check the &quot;users&quot; table.</p>
-<pre><code class="language-php">    $I-&gt;seeUserInDatabase([
-        "user_email" =&gt; "test@example.org",
-        "user_login" =&gt; "login name"
-    ])</code></pre>
+```php
+$I->seeUserInDatabase([
+  "user_email" => "test@example.org",
+  "user_login" => "login name"
+  ])
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2256,7 +2620,10 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Checks for a user meta value in the database.</p>
-<pre><code class="language-php">    $I-&gt;seeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);</code></pre>
+```php
+$I->seeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
@@ -2267,10 +2634,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets the blog to be used. This has nothing to do with WordPress <code>switch_to_blog</code> function, this code will affect the table prefixes used.</p>
-<pre><code class="language-php">    // Switch to the blog with ID 23.
-    $I-&gt;useBlog(23);
-    // Switch back to the main blog.
-    $I-&gt;useMainBlog();</code></pre>
+```php
+// Switch to the blog with ID 23.
+  $I->useBlog(23);
+  // Switch back to the main blog.
+  $I->useMainBlog();
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The ID of the blog to use.</li></ul>
@@ -2281,10 +2651,13 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets the current blog to the main one (<code>blog_id</code> 1).</p>
-<pre><code class="language-php">    // Switch to the blog with ID 23.
-    $I-&gt;useBlog(23);
-    // Switch back to the main blog.
-    $I-&gt;useMainBlog();</code></pre>
+```php
+// Switch to the blog with ID 23.
+  $I->useBlog(23);
+  // Switch back to the main blog.
+  $I->useMainBlog();
+```
+
   
 
 <h3>useTheme</h3>
@@ -2292,10 +2665,12 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 <hr>
 
 <p>Sets the current theme options.</p>
-<pre><code class="language-php">    $I-&gt;useTheme('twentyseventeen');
-    $I-&gt;useTheme('child-of-twentyseventeen', 'twentyseventeen');
-    $I-&gt;useTheme('acme', 'acme', 'Acme Theme');</code></pre>
-<pre><code>                                    `$stylesheet`.</code></pre>
+```php
+$I->useTheme('twentyseventeen');
+  $I->useTheme('child-of-twentyseventeen', 'twentyseventeen');
+  $I->useTheme('acme', 'acme', 'Acme Theme');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>

@@ -170,7 +170,10 @@ modules:
 <hr>
 
 <p>Sets the current working folder to a folder in a mu-plugin.</p>
-<pre><code class="language-php">    $I-&gt;amInMuPluginPath('mu-plugin');</code></pre>
+```php
+$I->amInMuPluginPath('mu-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path to the folder, relative to the mu-plugins root folder.</li></ul>
@@ -181,7 +184,10 @@ modules:
 <hr>
 
 <p>Sets the current working folder to a folder in a plugin.</p>
-<pre><code class="language-php">    $I-&gt;amInPluginPath('my-plugin');</code></pre>
+```php
+$I->amInPluginPath('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The folder path, relative to the root uploads folder, to change to.</li></ul>
@@ -192,7 +198,10 @@ modules:
 <hr>
 
 <p>Sets the current working folder to a folder in a theme.</p>
-<pre><code class="language-php">    $I-&gt;amInThemePath('my-theme');</code></pre>
+```php
+$I->amInThemePath('my-theme');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path to the theme folder, relative to themes root folder.</li></ul>
@@ -203,8 +212,11 @@ modules:
 <hr>
 
 <p>Enters, changing directory, to the uploads folder in the local filesystem.</p>
-<pre><code class="language-php">    $I-&gt;amInUploadsPath('/logs');
-    $I-&gt;seeFileFound('shop.log');</code></pre>
+```php
+$I->amInUploadsPath('/logs');
+  $I->seeFileFound('shop.log');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path, relative to the site uploads folder.</li></ul>
@@ -215,7 +227,10 @@ modules:
 <hr>
 
 <p>Cleans, emptying it, a folder in a mu-plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;cleanMuPluginDir('mu-plugin1/foo');</code></pre>
+```php
+$I->cleanMuPluginDir('mu-plugin1/foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the directory, relative to the mu-plugins root folder.</li></ul>
@@ -226,7 +241,10 @@ modules:
 <hr>
 
 <p>Cleans, emptying it, a folder in a plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;cleanPluginDir('my-plugin/foo');</code></pre>
+```php
+$I->cleanPluginDir('my-plugin/foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the folder, relative to the plugins root folder.</li></ul>
@@ -237,7 +255,10 @@ modules:
 <hr>
 
 <p>Clears, emptying it, a folder in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;cleanThemeDir('my-theme/foo');</code></pre>
+```php
+$I->cleanThemeDir('my-theme/foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the folder, relative to the themese root folder.</li></ul>
@@ -248,8 +269,11 @@ modules:
 <hr>
 
 <p>Clears a folder in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;cleanUploadsDir('some/folder');
-    $I-&gt;cleanUploadsDir('some/folder', 'today');</code></pre>
+```php
+$I->cleanUploadsDir('some/folder');
+  $I->cleanUploadsDir('some/folder', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the directory to delete, relative to the uploads folder.</li>
@@ -261,7 +285,10 @@ modules:
 <hr>
 
 <p>Copies a folder to a folder in a mu-plugin.</p>
-<pre><code class="language-php">    $I-&gt;copyDirToMuPlugin(codecept_data_dir('foo'), 'mu-plugin/foo');</code></pre>
+```php
+$I->copyDirToMuPlugin(codecept_data_dir('foo'), 'mu-plugin/foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$src</strong> - The path to the source file to copy.</li>
@@ -273,8 +300,11 @@ modules:
 <hr>
 
 <p>Copies a folder to a folder in a plugin.</p>
-<pre><code class="language-php">    // Copy the 'foo' folder to the 'foo' folder in the plugin.
-    $I-&gt;copyDirToPlugin(codecept_data_dir('foo'), 'my-plugin/foo');</code></pre>
+```php
+// Copy the 'foo' folder to the 'foo' folder in the plugin.
+  $I->copyDirToPlugin(codecept_data_dir('foo'), 'my-plugin/foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$src</strong> - The path to the source directory to copy.</li>
@@ -286,7 +316,10 @@ modules:
 <hr>
 
 <p>Copies a folder in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;copyDirToTheme(codecept_data_dir('foo'), 'my-theme');</code></pre>
+```php
+$I->copyDirToTheme(codecept_data_dir('foo'), 'my-theme');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$src</strong> - The path to the source file.</li>
@@ -298,8 +331,11 @@ modules:
 <hr>
 
 <p>Copies a folder to the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo');
-    $I-&gt;copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');</code></pre>
+```php
+$I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo');
+  $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$src</strong> - The path to the source file, relative to the current uploads folder.</li>
@@ -312,7 +348,10 @@ modules:
 <hr>
 
 <p>Deletes a file in a mu-plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;deleteMuPluginFile('mu-plugin1/some-file.txt');</code></pre>
+```php
+$I->deleteMuPluginFile('mu-plugin1/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins root folder.</li></ul>
@@ -323,7 +362,10 @@ modules:
 <hr>
 
 <p>Deletes a file in a plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;deletePluginFile('my-plugin/some-file.txt');</code></pre>
+```php
+$I->deletePluginFile('my-plugin/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The folder path, relative to the plugins root folder.</li></ul>
@@ -334,7 +376,10 @@ modules:
 <hr>
 
 <p>Deletes a file in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;deleteThemeFile('my-theme/some-file.txt');</code></pre>
+```php
+$I->deleteThemeFile('my-theme/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file to delete, relative to the themes root folder.</li></ul>
@@ -345,8 +390,11 @@ modules:
 <hr>
 
 <p>Deletes a dir in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;deleteUploadedDir('folder');
-    $I-&gt;deleteUploadedDir('folder', 'today');</code></pre>
+```php
+$I->deleteUploadedDir('folder');
+  $I->deleteUploadedDir('folder', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$dir</strong> - The path to the directory to delete, relative to the uploads folder.</li>
@@ -358,8 +406,11 @@ modules:
 <hr>
 
 <p>Deletes a file in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;deleteUploadedFile('some-file.txt');
-    $I-&gt;deleteUploadedFile('some-file.txt', 'today');</code></pre>
+```php
+$I->deleteUploadedFile('some-file.txt');
+  $I->deleteUploadedFile('some-file.txt', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
@@ -371,7 +422,10 @@ modules:
 <hr>
 
 <p>Checks that a file in a mu-plugin folder does not contain a string.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');</code></pre>
+```php
+$I->dontSeeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins root folder.</li>
@@ -383,7 +437,10 @@ modules:
 <hr>
 
 <p>Checks that a file in a plugin folder does not contain a string.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeInPluginFile('my-plugin/some-file.txt', 'foo');</code></pre>
+```php
+$I->dontSeeInPluginFile('my-plugin/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
@@ -395,7 +452,10 @@ modules:
 <hr>
 
 <p>Checks that a file in a theme folder does not contain a string.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeInThemeFile('my-theme/some-file.txt', 'foo');</code></pre>
+```php
+$I->dontSeeInThemeFile('my-theme/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li>
@@ -407,8 +467,11 @@ modules:
 <hr>
 
 <p>Checks that a file in the uploads folder does contain a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeInUploadedFile('some-file.txt', 'foo');
-    $I-&gt;dontSeeInUploadedFile('some-file.txt','foo', 'today');</code></pre>
+```php
+$I->dontSeeInUploadedFile('some-file.txt', 'foo');
+  $I->dontSeeInUploadedFile('some-file.txt','foo', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
@@ -421,7 +484,10 @@ modules:
 <hr>
 
 <p>Checks that a file is not found in a mu-plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeMuPluginFileFound('mu-plugin1/some-file.txt');</code></pre>
+```php
+$I->dontSeeMuPluginFileFound('mu-plugin1/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins folder.</li></ul>
@@ -432,7 +498,10 @@ modules:
 <hr>
 
 <p>Checks that a file is not found in a plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;dontSeePluginFileFound('my-plugin/some-file.txt');</code></pre>
+```php
+$I->dontSeePluginFileFound('my-plugin/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li></ul>
@@ -443,7 +512,10 @@ modules:
 <hr>
 
 <p>Checks that a file is not found in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeThemeFileFound('my-theme/some-file.txt');</code></pre>
+```php
+$I->dontSeeThemeFileFound('my-theme/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li></ul>
@@ -454,8 +526,11 @@ modules:
 <hr>
 
 <p>Checks thata a file does not exist in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;dontSeeUploadedFileFound('some-file.txt');
-    $I-&gt;dontSeeUploadedFileFound('some-file.txt','today');</code></pre>
+```php
+$I->dontSeeUploadedFileFound('some-file.txt');
+  $I->dontSeeUploadedFileFound('some-file.txt','today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
@@ -467,13 +542,16 @@ modules:
 <hr>
 
 <p>Returns the absolute path to a blog uploads folder or file.</p>
-<pre><code class="language-php">    $blogId = $I-&gt;haveBlogInDatabase('test');
-    $testTodayUploads = $I-&gt;getBlogUploadsPath($blogId);
-    $testLastMonthLogs = $I-&gt;getBlogUploadsPath($blogId, '/logs', '-1 month');</code></pre>
-<pre><code>                                                        file or folder.
-                                                        sub-folders in the year/month format; a UNIX timestamp or
-                                                        a string supported by the `strtotime` function; defaults
-                                                        to `now`.</code></pre>
+```php
+$blogId = $I->haveBlogInDatabase('test');
+  $testTodayUploads = $I->getBlogUploadsPath($blogId);
+  $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
+  file or folder.
+  sub-folders in the year/month format; a UNIX timestamp or
+  a string supported by the `strtotime` function; defaults
+  to `now`.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$blogId</strong> - The blog ID to get the path for.</li>
@@ -486,8 +564,11 @@ modules:
 <hr>
 
 <p>Returns the path to the specified uploads file of folder. Not providing a value for <code>$file</code> and <code>$date</code> will return the uploads folder path.</p>
-<pre><code class="language-php">    $todaysPath = $I-&gt;getUploadsPath();
-    $lastWeek = $I-&gt;getUploadsPath('', '-1 week');</code></pre>
+```php
+$todaysPath = $I->getUploadsPath();
+  $lastWeek = $I->getUploadsPath('', '-1 week');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder.</li>
@@ -499,8 +580,11 @@ modules:
 <hr>
 
 <p>Returns the absolute path to WordPress root folder without trailing slash.</p>
-<pre><code class="language-php">    $rootFolder = $I-&gt;getWpRootFolder();
-    $I-&gt;assertFileExists($rootFolder . 'wp-load.php');</code></pre>
+```php
+$rootFolder = $I->getWpRootFolder();
+  $I->assertFileExists($rootFolder . 'wp-load.php');
+```
+
   
 
 <h3>haveMuPlugin</h3>
@@ -508,11 +592,14 @@ modules:
 <hr>
 
 <p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder. The code can not contain the opening '&lt;?php' tag.</p>
-<pre><code class="language-php">    $code = 'echo "Hello world!"';
-    $I-&gt;haveMuPlugin('foo-mu-plugin.php', $code);
-    // Load the code from a file.
-    $code = file_get_contents(codecept_data_dir('code/mu-plugin.php'));
-    $I-&gt;haveMuPlugin('foo-mu-plugin.php', $code);</code></pre>
+```php
+$code = 'echo "Hello world!"';
+  $I->haveMuPlugin('foo-mu-plugin.php', $code);
+  // Load the code from a file.
+  $code = file_get_contents(codecept_data_dir('code/mu-plugin.php'));
+  $I->haveMuPlugin('foo-mu-plugin.php', $code);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$filename</strong> - The path to the file to create, relative to the plugins root folder.</li>
@@ -524,11 +611,14 @@ modules:
 <hr>
 
 <p>Creates a plugin file, including plugin header, in the plugins folder. The plugin is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
-<pre><code class="language-php">    $code = 'echo "Hello world!"';
-    $I-&gt;havePlugin('foo/plugin.php', $code);
-    // Load the code from a file.
-    $code = file_get_contents(codecept_data_dir('code/plugin.php'));
-    $I-&gt;havePlugin('foo/plugin.php', $code);</code></pre>
+```php
+$code = 'echo "Hello world!"';
+  $I->havePlugin('foo/plugin.php', $code);
+  // Load the code from a file.
+  $code = file_get_contents(codecept_data_dir('code/plugin.php'));
+  $I->havePlugin('foo/plugin.php', $code);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path to the file to create, relative to the plugins folder.</li>
@@ -540,13 +630,16 @@ modules:
 <hr>
 
 <p>Creates a theme file structure, including theme style file and index, in the themes folder. The theme is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
-<pre><code class="language-php">    $code = 'sayHi();';
-    $functionsCode  = 'function sayHi(){echo "Hello world";};';
-    $I-&gt;haveTheme('foo', $indexCode, $functionsCode);
-    // Load the code from a file.
-    $indexCode = file_get_contents(codecept_data_dir('code/index.php'));
-    $functionsCode = file_get_contents(codecept_data_dir('code/functions.php'));
-    $I-&gt;haveTheme('foo', $indexCode, $functionsCode);</code></pre>
+```php
+$code = 'sayHi();';
+  $functionsCode  = 'function sayHi(){echo "Hello world";};';
+  $I->haveTheme('foo', $indexCode, $functionsCode);
+  // Load the code from a file.
+  $indexCode = file_get_contents(codecept_data_dir('code/index.php'));
+  $functionsCode = file_get_contents(codecept_data_dir('code/functions.php'));
+  $I->haveTheme('foo', $indexCode, $functionsCode);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$folder</strong> - The path to the theme to create, relative to the themes root folder.</li>
@@ -559,8 +652,11 @@ modules:
 <hr>
 
 <p>Creates an empty folder in the WordPress installation uploads folder.</p>
-<pre><code class="language-php">    $logsDir = $I-&gt;makeUploadsDir('logs/acme');</code></pre>
-<pre><code>                    to create.</code></pre>
+```php
+$logsDir = $I->makeUploadsDir('logs/acme');
+  to create.
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$path</strong> - The path, relative to the WordPress installation uploads folder, of the folder</li></ul>
@@ -571,8 +667,11 @@ modules:
 <hr>
 
 <p>Opens a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;openUploadedFile('some-file.txt');
-    $I-&gt;openUploadedFile('some-file.txt', 'time');</code></pre>
+```php
+$I->openUploadedFile('some-file.txt');
+  $I->openUploadedFile('some-file.txt', 'time');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$filename</strong> - The path to the file, relative to the current uploads folder.</li>
@@ -584,7 +683,10 @@ modules:
 <hr>
 
 <p>Checks that a file in a mu-plugin folder contains a string.</p>
-<pre><code class="language-php">    $I-&gt;seeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');</code></pre>
+```php
+$I->seeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path the file, relative to the mu-plugins root folder.</li>
@@ -596,7 +698,10 @@ modules:
 <hr>
 
 <p>Checks that a file in a plugin folder contains a string.</p>
-<pre><code class="language-php">    $I-&gt;seeInPluginFile('my-plugin/some-file.txt', 'foo');</code></pre>
+```php
+$I->seeInPluginFile('my-plugin/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
@@ -608,9 +713,12 @@ modules:
 <hr>
 
 <p>Checks that a file in a theme folder contains a string.</p>
-<pre><code class="language-php">    &lt;?php
-    $I-&gt;seeInThemeFile('my-theme/some-file.txt', 'foo');
-    ?&gt;</code></pre>
+```php
+<?php
+  $I->seeInThemeFile('my-theme/some-file.txt', 'foo');
+  ?>
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li>
@@ -622,8 +730,11 @@ modules:
 <hr>
 
 <p>Checks that a file in the uploads folder contains a string. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;seeInUploadedFile('some-file.txt', 'foo');
-    $I-&gt;seeInUploadedFile('some-file.txt','foo', 'today');</code></pre>
+```php
+$I->seeInUploadedFile('some-file.txt', 'foo');
+  $I->seeInUploadedFile('some-file.txt','foo', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The file path, relative to the uploads folder or the current folder.</li>
@@ -636,7 +747,10 @@ modules:
 <hr>
 
 <p>Checks that a file is found in a mu-plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;seeMuPluginFileFound('mu-plugin1/some-file.txt');</code></pre>
+```php
+$I->seeMuPluginFileFound('mu-plugin1/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the mu-plugins folder.</li></ul>
@@ -647,7 +761,10 @@ modules:
 <hr>
 
 <p>Checks that a file is found in a plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;seePluginFileFound('my-plugin/some-file.txt');</code></pre>
+```php
+$I->seePluginFileFound('my-plugin/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to thep plugins root folder.</li></ul>
@@ -658,7 +775,10 @@ modules:
 <hr>
 
 <p>Checks that a file is found in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;seeThemeFileFound('my-theme/some-file.txt');</code></pre>
+```php
+$I->seeThemeFileFound('my-theme/some-file.txt');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themes root folder.</li></ul>
@@ -669,9 +789,12 @@ modules:
 <hr>
 
 <p>Checks if file exists in the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;seeUploadedFileFound('some-file.txt');
-    $I-&gt;seeUploadedFileFound('some-file.txt','today');
-    ?&gt;</code></pre>
+```php
+$I->seeUploadedFileFound('some-file.txt');
+  $I->seeUploadedFileFound('some-file.txt','today');
+  ?>
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$filename</strong> - The file path, relative to the uploads folder or the current folder.</li>
@@ -683,7 +806,10 @@ modules:
 <hr>
 
 <p>Writes a file in a mu-plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;writeToMuPluginFile('mu-plugin1/some-file.txt', 'foo');</code></pre>
+```php
+$I->writeToMuPluginFile('mu-plugin1/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the destination file, relative to the mu-plugins root folder.</li>
@@ -695,7 +821,10 @@ modules:
 <hr>
 
 <p>Writes a file in a plugin folder.</p>
-<pre><code class="language-php">    $I-&gt;writeToPluginFile('my-plugin/some-file.txt', 'foo');</code></pre>
+```php
+$I->writeToPluginFile('my-plugin/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the plugins root folder.</li>
@@ -707,7 +836,10 @@ modules:
 <hr>
 
 <p>Writes a string to a file in a theme folder.</p>
-<pre><code class="language-php">    $I-&gt;writeToThemeFile('my-theme/some-file.txt', 'foo');</code></pre>
+```php
+$I->writeToThemeFile('my-theme/some-file.txt', 'foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The path to the file, relative to the themese root folder.</li>
@@ -719,8 +851,11 @@ modules:
 <hr>
 
 <p>Writes a string to a file in the the uploads folder. The date argument can be a string compatible with <code>strtotime</code> or a Unix timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
-<pre><code class="language-php">    $I-&gt;writeToUploadedFile('some-file.txt', 'foo bar');
-    $I-&gt;writeToUploadedFile('some-file.txt', 'foo bar', 'today');</code></pre>
+```php
+$I->writeToUploadedFile('some-file.txt', 'foo bar');
+  $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$filename</strong> - The path to the destination file, relative to the current uploads folder.</li>

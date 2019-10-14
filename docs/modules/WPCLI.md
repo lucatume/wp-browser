@@ -121,14 +121,17 @@ modules:
 <hr>
 
 <p>Builds the full command to run including the PHP binary and the wp-cli boot file path.</p>
-<pre><code class="language-php">    // This method is defined in the WithWpCli trait.
-    // Set the wp-cli path, `$this` is a test case.
-    $this-&gt;setUpWpCli( '/var/www/html' );
-    // Builds the full wp-cli command, including the `path` variable.
-    $fullCommand =  $this-&gt;buildFullCommand(['core', 'version']);
-    // The full command can then be used to run it with another process handler.
-    $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
-    $wpCliProcess-&gt;run();</code></pre>
+```php
+// This method is defined in the WithWpCli trait.
+  // Set the wp-cli path, `$this` is a test case.
+  $this->setUpWpCli( '/var/www/html' );
+  // Builds the full wp-cli command, including the `path` variable.
+  $fullCommand =  $this->buildFullCommand(['core', 'version']);
+  // The full command can then be used to run it with another process handler.
+  $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
+  $wpCliProcess->run();
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$command</strong> - The command to run.</li></ul>
@@ -139,10 +142,13 @@ modules:
 <hr>
 
 <p>Executes a wp-cli command targeting the test WordPress installation. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
-<pre><code class="language-php">    // Activate a plugin via wp-cli in the test WordPress site.
-    $I-&gt;cli(['plugin', 'activate', 'my-plugin']);
-    // Change a user password.
-    $I-&gt;cli(['user', 'update', 'luca', '--user_pass=newpassword']);</code></pre>
+```php
+// Activate a plugin via wp-cli in the test WordPress site.
+  $I->cli(['plugin', 'activate', 'my-plugin']);
+  // Change a user password.
+  $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
@@ -153,14 +159,17 @@ modules:
 <hr>
 
 <p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
-<pre><code class="language-php">    // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
-    $inactiveThemes = $I-&gt;cliToArray(['theme', 'list', '--status=inactive', '--field=name']);
-    // Get the list of installed plugins and only keep the ones starting with "foo".
-    $fooPlugins = $I-&gt;cliToArray(['plugin', 'list', '--field=name'], function($output){
-         return array_filter(explode(PHP_EOL, $output), function($name){
-                 return strpos(trim($name), 'foo') === 0;
-         });
-    });</code></pre>
+```php
+// Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
+  $inactiveThemes = $I->cliToArray(['theme', 'list', '--status=inactive', '--field=name']);
+  // Get the list of installed plugins and only keep the ones starting with "foo".
+  $fooPlugins = $I->cliToArray(['plugin', 'list', '--field=name'], function($output){
+  return array_filter(explode(PHP_EOL, $output), function($name){
+  return strpos(trim($name), 'foo') === 0;
+  });
+  });
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus</li>
@@ -172,10 +181,13 @@ modules:
 <hr>
 
 <p>Returns the output of a wp-cli command as a string. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
-<pre><code class="language-php">    // Return the current site administrator email, using string command format.
-    $adminEmail = $I-&gt;cliToString('option get admin_email');
-    // Get the list of active plugins in JSON format.
-    $activePlugins = $I-&gt;cliToString(['wp','option','get','active_plugins','--format=json']);</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $adminEmail = $I->cliToString('option get admin_email');
+  // Get the list of active plugins in JSON format.
+  $activePlugins = $I->cliToString(['wp','option','get','active_plugins','--format=json']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
@@ -186,9 +198,12 @@ modules:
 <hr>
 
 <p>Checks that output from last command doesn't contain text.</p>
-<pre><code class="language-php">    // Return the current site administrator email, using string command format.
-    $I-&gt;cli('plugin list --status=active');
-    $I-&gt;dontSeeInShellOutput('my-inactive/plugin.php');</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $I->cli('plugin list --status=active');
+  $I->dontSeeInShellOutput('my-inactive/plugin.php');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$text</strong> - The text to assert is not in the output.</li></ul>
@@ -199,9 +214,11 @@ modules:
 <hr>
 
 <p>Checks that output from last command contains text.</p>
-<pre><code class="language-php">
-    // Return the current site administrator email, using string command format.
-    $I-&gt;cli('option get admin_email');</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $I->cli('option get admin_email');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$text</strong> - The text to assert is in the output.</li></ul>
@@ -212,9 +229,12 @@ modules:
 <hr>
 
 <p>Checks the result code from the last command.</p>
-<pre><code class="language-php">    // Return the current site administrator email, using string command format.
-    $I-&gt;cli('option get admin_email');
-    $I-&gt;seeResultCodeIs(0);</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $I->cli('option get admin_email');
+  $I->seeResultCodeIs(0);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$code</strong> - The desired result code.</li></ul>
@@ -225,9 +245,12 @@ modules:
 <hr>
 
 <p>Checks the result code from the last command.</p>
-<pre><code class="language-php">    // Return the current site administrator email, using string command format.
-    $I-&gt;cli('invalid command');
-    $I-&gt;seeResultCodeIsNot(0);</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $I->cli('invalid command');
+  $I->seeResultCodeIsNot(0);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$code</strong> - The result code the command should not have exited with.</li></ul>
@@ -238,9 +261,11 @@ modules:
 <hr>
 
 <p>Checks that output from the last command matches a given regular expression.</p>
-<pre><code class="language-php">
-    // Return the current site administrator email, using string command format.
-    $I-&gt;cli('option get admin_email');</code></pre>
+```php
+// Return the current site administrator email, using string command format.
+  $I->cli('option get admin_email');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$regex</strong> - The regex pattern, including delimiters, to assert the output matches against.</li></ul>

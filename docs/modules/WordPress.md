@@ -119,10 +119,13 @@ if (
 <hr>
 
 <p>Go to the admin page to edit the post with the specified ID. The method will <strong>not</strong> handle authentication the admin area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $postId = $I-&gt;havePostInDatabase();
-    $I-&gt;amEditingPostWithId($postId);
-    $I-&gt;fillField('post_title', 'Post title');</code></pre>
+```php
+$I->loginAsAdmin();
+  $postId = $I->havePostInDatabase();
+  $I->amEditingPostWithId($postId);
+  $I->fillField('post_title', 'Post title');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$id</strong> - The post ID.</li></ul>
@@ -133,7 +136,10 @@ if (
 <hr>
 
 <p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request. The method will <strong>not</strong> handle authentication, nonces or authorization.</p>
-<pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23], 'nonce' =&gt; $nonce]);</code></pre>
+```php
+$I->amOnAdminAjaxPage(['action' => 'my-action', 'data' => ['id' => 23], 'nonce' => $nonce]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -144,9 +150,12 @@ if (
 <hr>
 
 <p>Go to a page in the admininstration area of the site.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    // Go to the plugins management screen.
-    $I-&gt;amOnAdminPage('/plugins.php');</code></pre>
+```php
+$I->loginAs('user', 'password');
+  // Go to the plugins management screen.
+  $I->amOnAdminPage('/plugins.php');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$page</strong> - The path, relative to the admin area URL, to the page.</li></ul>
@@ -157,8 +166,11 @@ if (
 <hr>
 
 <p>Go to the cron page to start a synchronous, and blocking, <code>GET</code> request to the cron script.</p>
-<pre><code class="language-php">    // Triggers the cron job with an optional query argument.
-    $I-&gt;amOnCronPage('/?some-query-var=some-value');</code></pre>
+```php
+// Triggers the cron job with an optional query argument.
+  $I->amOnCronPage('/?some-query-var=some-value');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -169,12 +181,15 @@ if (
 <hr>
 
 <p>Go to a page on the site. The module will try to reach the page, relative to the URL specified in the module configuration, without applying any permalink resolution.</p>
-<pre><code class="language-php">    // Go the the homepage.
-    $I-&gt;amOnPage('/');
-    // Go to the single page of post with ID 23.
-    $I-&gt;amOnPage('/?p=23');
-    // Go to search page for the string "foo".
-    $I-&gt;amOnPage('/?s=foo');</code></pre>
+```php
+// Go the the homepage.
+  $I->amOnPage('/');
+  // Go to the single page of post with ID 23.
+  $I->amOnPage('/?p=23');
+  // Go to search page for the string "foo".
+  $I->amOnPage('/?s=foo');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$page</strong> - The path to the page, relative to the the root URL.</li></ul>
@@ -185,9 +200,12 @@ if (
 <hr>
 
 <p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPagesPage();
-    $I-&gt;see('Add New');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPagesPage();
+  $I->see('Add New');
+```
+
   
 
 <h3>amOnPluginsPage</h3>
@@ -195,9 +213,12 @@ if (
 <hr>
 
 <p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin('hello-dolly');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->activatePlugin('hello-dolly');
+```
+
   
 
 <h3>dontSeePluginInstalled</h3>
@@ -205,9 +226,12 @@ if (
 <hr>
 
 <p>Assert a plugin is not installed in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;dontSeePluginInstalled('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->dontSeePluginInstalled('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -218,15 +242,18 @@ if (
 <hr>
 
 <p>Grab a cookie value from the current session, sets it in the $_COOKIE array and returns its value. This method utility is to get, in the scope of test code, the value of a cookie set during the tests.</p>
-<pre><code class="language-php">    $id = $I-&gt;haveUserInDatabase('user', 'subscriber', ['user_pass' =&gt; 'pass']);
-    $I-&gt;loginAs('user', 'pass');
-    // The cookie is now set in the `$_COOKIE` super-global.
-    $I-&gt;extractCookie(LOGGED_IN_COOKIE);
-    // Generate a nonce using WordPress methods (see WPLoader in loadOnly mode) with correctly set context.
-    wp_set_current_user($id);
-    $nonce = wp_create_nonce('wp_rest');
-    // Use the generated nonce to make a request to the the REST API.
-    $I-&gt;haveHttpHeader('X-WP-Nonce', $nonce);</code></pre>
+```php
+$id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
+  $I->loginAs('user', 'pass');
+  // The cookie is now set in the `$_COOKIE` super-global.
+  $I->extractCookie(LOGGED_IN_COOKIE);
+  // Generate a nonce using WordPress methods (see WPLoader in loadOnly mode) with correctly set context.
+  wp_set_current_user($id);
+  $nonce = wp_create_nonce('wp_rest');
+  // Use the generated nonce to make a request to the the REST API.
+  $I->haveHttpHeader('X-WP-Nonce', $nonce);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$cookie</strong> - The cookie name.</li>
@@ -238,8 +265,11 @@ if (
 <hr>
 
 <p>Returns content of the last response. This method exposes an underlying API for custom assertions.</p>
-<pre><code class="language-php">    // In test class.
-    $this-&gt;assertContains($text, $this-&gt;getResponseContent(), "foo-bar");</code></pre>
+```php
+// In test class.
+  $this->assertContains($text, $this->getResponseContent(), "foo-bar");
+```
+
   
 
 <h3>getWpRootFolder</h3>
@@ -247,8 +277,11 @@ if (
 <hr>
 
 <p>Returns the absolute path to the WordPress root folder.</p>
-<pre><code class="language-php">    $root = $I-&gt;getWpRootFolder();
-    $this-&gt;assertFileExists($root . '/someFile.txt');</code></pre>
+```php
+$root = $I->getWpRootFolder();
+  $this->assertFileExists($root . '/someFile.txt');
+```
+
   
 
 <h3>grabWordPressTestCookie</h3>
@@ -256,10 +289,13 @@ if (
 <hr>
 
 <p>Returns WordPress default test cookie object if present.</p>
-<pre><code class="language-php">    // Grab the default WordPress test cookie.
-    $wpTestCookie = $I-&gt;grabWordPressTestCookie();
-    // Grab a customized version of the test cookie.
-    $myTestCookie = $I-&gt;grabWordPressTestCookie('my_test_cookie');</code></pre>
+```php
+// Grab the default WordPress test cookie.
+  $wpTestCookie = $I->grabWordPressTestCookie();
+  // Grab a customized version of the test cookie.
+  $myTestCookie = $I->grabWordPressTestCookie('my_test_cookie');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li></ul>
@@ -270,9 +306,12 @@ if (
 <hr>
 
 <p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeElement('.admin');</code></pre>
+```php
+$I->loginAs('user', 'password');
+  $I->amOnAdminPage('/');
+  $I->seeElement('.admin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$username</strong> - The user login name.</li>
@@ -284,9 +323,12 @@ if (
 <hr>
 
 <p>Login as the administrator user using the credentials specified in the module configuration. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;see('Dashboard');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnAdminPage('/');
+  $I->see('Dashboard');
+```
+
   
 
 <h3>seeErrorMessage</h3>
@@ -294,9 +336,12 @@ if (
 <hr>
 
 <p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeErrorMessage('.my-plugin');</code></pre>
+```php
+$I->loginAsAdmin()ja
+  $I->amOnAdminPage('/');
+  $I->seeErrorMessage('.my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the notice should have other than the <code>.notice.notice-error</code> ones.</li></ul>
@@ -307,9 +352,12 @@ if (
 <hr>
 
 <p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeMessage('.missing-api-token.my-plugin');</code></pre>
+```php
+$I->loginAsAdmin()ja
+  $I->amOnAdminPage('/');
+  $I->seeMessage('.missing-api-token.my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
@@ -320,9 +368,12 @@ if (
 <hr>
 
 <p>Assert a plugin is activated in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginActivated('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginActivated('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -333,9 +384,12 @@ if (
 <hr>
 
 <p>Assert a plugin is not activated in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginDeactivated('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginDeactivated('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -346,9 +400,12 @@ if (
 <hr>
 
 <p>Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginInstalled('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginInstalled('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -359,9 +416,11 @@ if (
 <hr>
 
 <p>Checks that the current page is one generated by the <code>wp_die</code> function. The method will try to identify the page based on the default WordPress die page HTML attributes.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    $I-&gt;amOnAdminPage('/forbidden');
-    $I-&gt;seeWpDiePage();</code></pre>
+```php
+$I->loginAs('user', 'password');
+  $I->amOnAdminPage('/forbidden');
+  $I->seeWpDiePage();
+```
 
 
 *This class extends \Codeception\Lib\Framework*

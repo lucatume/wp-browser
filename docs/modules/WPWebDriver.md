@@ -79,14 +79,17 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>In the plugin administration screen activates one or more plugins clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
-<pre><code class="language-php">    // Activate a plugin.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin('hello-dolly');
-    // Activate a list of plugins.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin(['hello-dolly','another-plugin']);</code></pre>
+```php
+// Activate a plugin.
+  $I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->activatePlugin('hello-dolly');
+  // Activate a list of plugins.
+  $I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->activatePlugin(['hello-dolly','another-plugin']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
@@ -97,10 +100,13 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go to the admin page to edit the post with the specified ID. The method will <strong>not</strong> handle authentication the admin area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $postId = $I-&gt;havePostInDatabase();
-    $I-&gt;amEditingPostWithId($postId);
-    $I-&gt;fillField('post_title', 'Post title');</code></pre>
+```php
+$I->loginAsAdmin();
+  $postId = $I->havePostInDatabase();
+  $I->amEditingPostWithId($postId);
+  $I->fillField('post_title', 'Post title');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$id</strong> - The post ID.</li></ul>
@@ -111,7 +117,10 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request. The method will <strong>not</strong> handle authentication, nonces or authorization.</p>
-<pre><code class="language-php">    $I-&gt;amOnAdminAjaxPage(['action' =&gt; 'my-action', 'data' =&gt; ['id' =&gt; 23], 'nonce' =&gt; $nonce]);</code></pre>
+```php
+$I->amOnAdminAjaxPage(['action' => 'my-action', 'data' => ['id' => 23], 'nonce' => $nonce]);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -122,9 +131,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go to a page in the admininstration area of the site. This method will <strong>not</strong> handle authentication to the administration area.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    // Go to the plugins management screen.
-    $I-&gt;amOnAdminPage('/plugins.php');</code></pre>
+```php
+$I->loginAs('user', 'password');
+  // Go to the plugins management screen.
+  $I->amOnAdminPage('/plugins.php');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$page</strong> - The path, relative to the admin area URL, to the page.</li></ul>
@@ -135,8 +147,11 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go to the cron page to start a synchronous, and blocking, <code>GET</code> request to the cron script.</p>
-<pre><code class="language-php">    // Triggers the cron job with an optional query argument.
-    $I-&gt;amOnCronPage('/?some-query-var=some-value');</code></pre>
+```php
+// Triggers the cron job with an optional query argument.
+  $I->amOnCronPage('/?some-query-var=some-value');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
@@ -147,9 +162,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPagesPage();
-    $I-&gt;see('Add New');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPagesPage();
+  $I->see('Add New');
+```
+
   
 
 <h3>amOnPluginsPage</h3>
@@ -157,9 +175,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;activatePlugin('hello-dolly');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->activatePlugin('hello-dolly');
+```
+
   
 
 <h3>deactivatePlugin</h3>
@@ -167,14 +188,17 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>In the plugin administration screen deactivate a plugin clicking the &quot;Deactivate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
-<pre><code class="language-php">    // Deactivate one plugin.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;deactivatePlugin('hello-dolly');
-    // Deactivate a list of plugins.
-    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;deactivatePlugin(['hello-dolly', 'my-plugin']);</code></pre>
+```php
+// Deactivate one plugin.
+  $I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->deactivatePlugin('hello-dolly');
+  // Deactivate a list of plugins.
+  $I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
@@ -185,9 +209,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Assert a plugin is not installed in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;dontSeePluginInstalled('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->dontSeePluginInstalled('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -198,9 +225,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Returns all the cookies whose name matches a regex pattern.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('customer','password');
-    $I-&gt;amOnPage('/shop');
-    $cartCookies = $I-&gt;grabCookiesWithPattern("#^shop_cart\\.*#");</code></pre>
+```php
+$I->loginAs('customer','password');
+  $I->amOnPage('/shop');
+  $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$cookiePattern</strong> - The regular expression pattern to use for the matching.</li></ul>
@@ -211,9 +241,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Grabs the current page full URL including the query vars.</p>
-<pre><code class="language-php">    $today = date('Y-m-d');
-    $I-&gt;amOnPage('/concerts?date=' . $today);
-    $I-&gt;assertRegExp('#\\/concerts$#', $I-&gt;grabFullUrl());</code></pre>
+```php
+$today = date('Y-m-d');
+  $I->amOnPage('/concerts?date=' . $today);
+  $I->assertRegExp('#\\/concerts$#', $I->grabFullUrl());
+```
+
   
 
 <h3>grabWordPressTestCookie</h3>
@@ -221,10 +254,13 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Returns WordPress default test cookie object if present.</p>
-<pre><code class="language-php">    // Grab the default WordPress test cookie.
-    $wpTestCookie = $I-&gt;grabWordPressTestCookie();
-    // Grab a customized version of the test cookie.
-    $myTestCookie = $I-&gt;grabWordPressTestCookie('my_test_cookie');</code></pre>
+```php
+// Grab the default WordPress test cookie.
+  $wpTestCookie = $I->grabWordPressTestCookie();
+  // Grab a customized version of the test cookie.
+  $myTestCookie = $I->grabWordPressTestCookie('my_test_cookie');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li></ul>
@@ -235,9 +271,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page. Depending on the driven browser the login might be &quot;too fast&quot; and the server might have not replied with valid cookies yet; in that case the method will re-attempt the login to obtain the cookies.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;see('Dashboard');</code></pre>
+```php
+$I->loginAs('user', 'password');
+  $I->amOnAdminPage('/');
+  $I->see('Dashboard');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$username</strong> - The user login name.</li>
@@ -251,9 +290,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Login as the administrator user using the credentials specified in the module configuration. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;see('Dashboard');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnAdminPage('/');
+  $I->see('Dashboard');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$timeout</strong> - The max time, in seconds, to try to login.</li>
@@ -265,9 +307,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeErrorMessage('.my-plugin');</code></pre>
+```php
+$I->loginAsAdmin()ja
+  $I->amOnAdminPage('/');
+  $I->seeErrorMessage('.my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the notice should have other than the <code>.notice.notice-error</code> ones.</li></ul>
@@ -278,9 +323,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin()ja
-    $I-&gt;amOnAdminPage('/');
-    $I-&gt;seeMessage('.missing-api-token.my-plugin');</code></pre>
+```php
+$I->loginAsAdmin()ja
+  $I->amOnAdminPage('/');
+  $I->seeMessage('.missing-api-token.my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
@@ -291,9 +339,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Assert a plugin is activated in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginActivated('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginActivated('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -304,9 +355,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Assert a plugin is not activated in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginDeactivated('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginDeactivated('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -317,9 +371,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-<pre><code class="language-php">    $I-&gt;loginAsAdmin();
-    $I-&gt;amOnPluginsPage();
-    $I-&gt;seePluginInstalled('my-plugin');</code></pre>
+```php
+$I->loginAsAdmin();
+  $I->amOnPluginsPage();
+  $I->seePluginInstalled('my-plugin');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
@@ -330,9 +387,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Checks that the current page is one generated by the <code>wp_die</code> function. The method will try to identify the page based on the default WordPress die page HTML attributes.</p>
-<pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
-    $I-&gt;amOnAdminPage('/forbidden');
-    $I-&gt;seeWpDiePage();</code></pre>
+```php
+$I->loginAs('user', 'password');
+  $I->amOnAdminPage('/forbidden');
+  $I->seeWpDiePage();
+```
+
   
 
 <h3>waitForJqueryAjax</h3>
@@ -340,9 +400,12 @@ The module simulates a user interaction with the site **with Javascript support*
 <hr>
 
 <p>Waits for any jQuery triggered AJAX request to be resolved.</p>
-<pre><code class="language-php">    $I-&gt;amOnPage('/triggering-ajax-requests');
-    $I-&gt;waitForJqueryAjax();
-    $I-&gt;see('From AJAX');</code></pre>
+```php
+$I->amOnPage('/triggering-ajax-requests');
+  $I->waitForJqueryAjax();
+  $I->see('From AJAX');
+```
+
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$time</strong> - The max time to wait for AJAX requests to complete.</li></ul>
