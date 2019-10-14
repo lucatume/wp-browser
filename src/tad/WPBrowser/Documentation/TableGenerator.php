@@ -146,8 +146,10 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             throw new RuntimeException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
         }
 
-        $example = $this->exampleParser->text($rawExample);
-        $str .= PHP_EOL . $example;
+        $exampleLines = array_filter(array_map('trim', explode("\n", $rawExample)), static function ($line) {
+               return ! preg_match('/^`/', $line) ;
+        });
+        $str .= "\n```php\n" . implode("\n  ", $exampleLines) . "\n```\n";
 
         if ($func->hasParams()) {
             $str .= PHP_EOL . '<h4>Parameters</h4>' . PHP_EOL . '<ul>';
