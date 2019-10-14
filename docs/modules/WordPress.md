@@ -144,8 +144,8 @@ if (
 <hr>
 
 <p>Go to a page in the admininstration area of the site.</p>
-<p>Will this comment show up in the output?
-And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?
+<p>Will this comment show up in the output?<br />
+And can I use <code>HTML</code> tags? Like <em>this</em> <stron>one</strong>?<br />
 Or <strong>Markdown</strong> tags? <em>Please...</em></p>
 <pre><code class="language-php">    $I-&gt;loginAs('user', 'password');
     // Go to the plugins management screen.
