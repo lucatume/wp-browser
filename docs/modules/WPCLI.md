@@ -122,11 +122,11 @@ modules:
 
 <p>Builds the full command to run including the PHP binary and the wp-cli boot file path.</p>
 <pre><code class="language-php">    // This method is defined in the WithWpCli trait.
-        // Set the wp-cli path, `$this` is a test case.
+    // Set the wp-cli path, `$this` is a test case.
     $this-&gt;setUpWpCli( '/var/www/html' );
-        // Builds the full wp-cli command, including the `path` variable.
+    // Builds the full wp-cli command, including the `path` variable.
     $fullCommand =  $this-&gt;buildFullCommand(['core', 'version']);
-        // The full command can then be used to run it with another process handler.
+    // The full command can then be used to run it with another process handler.
     $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
     $wpCliProcess-&gt;run();</code></pre>
 <h4>Parameters</h4>

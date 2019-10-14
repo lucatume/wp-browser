@@ -230,13 +230,10 @@ trait WithWpCli
      * @example
      * ```php
      * // This method is defined in the WithWpCli trait.
-     *
      * // Set the wp-cli path, `$this` is a test case.
      * $this->setUpWpCli( '/var/www/html' );
-     *
      * // Builds the full wp-cli command, including the `path` variable.
      * $fullCommand =  $this->buildFullCommand(['core', 'version']);
-     *
      * // The full command can then be used to run it with another process handler.
      * $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
      * $wpCliProcess->run();
