@@ -175,6 +175,10 @@ ci_script:
 	vendor/bin/codecept run webdriver
 	vendor/bin/codecept run wpfunctional
 	vendor/bin/codecept g:wpunit wploadersuite UnitWrapping
+	vendor/bin/codecept g:wpunit wploadersuite WPAjaxTestCaseTest
+	vendor/bin/codecept g:wpunit wploadersuite WPCanonicalTestCaseTest
+	vendor/bin/codecept g:wpunit wploadersuite WPRestControllerTestCaseTest
+	vendor/bin/codecept g:wpunit wploadersuite WPXMLRPCTestCaseTest
 	vendor/bin/codecept run wploadersuite
 	vendor/bin/codecept run wploader_multisite
 	vendor/bin/codecept run wpmodule
