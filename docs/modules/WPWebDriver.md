@@ -1,7 +1,44 @@
-# WPBrowser module
+# WpWebDriver module
 This module should be used in acceptance tests, see [levels of testing for more information](./../levels-of-testing.md).  
+
 This module extends the [WebDriver module](https://codeception.com/docs/modules/WebDriver) adding WordPress-specific configuration parameters and methods.  
+
 The module simulates a user interaction with the site **with Javascript support**; if you don't need to test your project with Javascript support use the [WPBrowser module](WPBrowser.md).  
+
+## Configuration
+
+Due to the combination of possible browsers, capabilities and configurations, it's not possible to provide an exhaustive coverage of all the possible configuration parameteters here.  
+
+Please refer to [WebDriver documentation](https://codeception.com/docs/modules/WebDriver) for more information.
+
+* `url` *required* - Start URL of your WordPress project, e.g. `http://wp.test`.
+* `adminUsername` *required* - This is the login name, not the "nice" name, of the administrator user of the WordPress test site. This will be used to fill the username field in WordPress login page.  
+* `adminPassword` *required* - This is the the password of the administrator use of the WordPress test site. This will be used to fill the password in WordPress login page.  
+* `adminPath` *required* - The path, relative to the WordPress test site home URL, to the administration area, usually `/wp-admin`.
+* `browser` - The browser to use for the tests, e.g. `chrome` or `firefox`.
+* `capabilities` - Depending on the browser set in `browser` this is a list of browser-specific capabilities.
+
+## Example configuration
+
+```yaml
+modules:
+  enabled:
+    - WPWebDriver
+  config:
+    WPWebDriver:
+      url: 'http://wp.test'
+      adminUsername: 'admin'
+      adminPassword: 'password'
+      adminPath: '/wp-admin'
+      browser: chrome
+      host: localhost
+      port: 4444
+      window_size: false #disabled for Chrome driver
+      capabilities:
+        chromeOptions:
+          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+```
+
 <!--doc-->
 
 

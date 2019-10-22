@@ -10,7 +10,7 @@ The module simulates a user interaction with the site **without Javascript suppo
 
 Since this module extends the `PHPBrowser` module provided by Codeception, please refer to the [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for more information about the base configuration parameters.  
 
-* `url` *required* - Start URL of your WordPress project, e.g. `http://wp.localhost`.
+* `url` *required* - Start URL of your WordPress project, e.g. `http://wp.test`.
 * `headers` - Default headers are set before each test; this might be useful to simulate a specific user agent during the tests or to identify the request source.
 * `handler` (default: `curl`) - The [Guzzle handler](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html) to use. By default `curl` is used, also possible to pass `stream`, or any valid class name as Handler.
 * `middleware` - The Guzzle middlewares to add. An array of valid callables is required; see [here for more information](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html#middleware).
