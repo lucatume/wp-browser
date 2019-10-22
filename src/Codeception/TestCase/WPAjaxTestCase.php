@@ -144,7 +144,7 @@ abstract class WPAjaxTestCase extends WPTestCase
             }
         }
 
-        parent::setUpBeforeClass();
+        parent::_setUpBeforeClass();
     }
 
     /**
@@ -153,7 +153,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      */
     public function _setUp()
     {
-        parent::setUp();
+        parent::_setUp();
 
         add_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1, 1);
 
@@ -176,7 +176,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      */
     public function _tearDown()
     {
-        parent::tearDown();
+        parent::_tearDown();
         $_POST = array();
         $_GET = array();
         unset($GLOBALS['post']);

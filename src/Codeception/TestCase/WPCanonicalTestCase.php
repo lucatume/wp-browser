@@ -32,7 +32,7 @@ class WPCanonicalTestCase extends WPTestCase
 
     public function _setUp()
     {
-        parent::setUp();
+        parent::_setUp();
 
         update_option('page_comments', true);
         update_option('comments_per_page', 5);

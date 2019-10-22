@@ -9,7 +9,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
 
     public function _setUp()
     {
-        parent::setUp();
+        parent::_setUp();
         add_filter('rest_url', array($this, 'filter_rest_url_for_leading_slash'), 10, 2);
         /** @var \WP_REST_Server $wp_rest_server */
         global $wp_rest_server;
@@ -19,7 +19,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
 
     public function _tearDown()
     {
-        parent::tearDown();
+        parent::_tearDown();
         /** @var callable $function_to_remove */
         $function_to_remove = [$this, 'test_rest_url_for_leading_slash'];
         remove_filter('rest_url', $function_to_remove, 10);

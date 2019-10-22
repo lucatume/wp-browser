@@ -14,7 +14,7 @@ class WPXMLRPCTestCase extends WPTestCase
 
     public function _setUp()
     {
-        parent::setUp();
+        parent::_setUp();
 
         add_filter('pre_option_enable_xmlrpc', '__return_true');
 
@@ -27,7 +27,7 @@ class WPXMLRPCTestCase extends WPTestCase
 
         $this->remove_added_uploads();
 
-        parent::tearDown();
+        parent::_tearDown();
     }
 
     protected function make_user_by_role($role)
