@@ -3,8 +3,12 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.2.31] 2019-10-22;
 ### Fixed
 - documentation generation issue [#323]
+- missing `WPWebDriver` configuration and example configuration sections
+- `setUp`, `tearDown` and `setUpBeforeClass` issues with test cases [#325]
 
 ## [2.2.30] 2019-10-14;
 ### Added
@@ -1165,4 +1169,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.28]: https://github.com/lucatume/wp-browser/compare/2.2.27...2.2.28
 [2.2.29]: https://github.com/lucatume/wp-browser/compare/2.2.28...2.2.29
 [2.2.30]: https://github.com/lucatume/wp-browser/compare/2.2.29...2.2.30
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.30...HEAD
+[2.2.31]: https://github.com/lucatume/wp-browser/compare/2.2.30...2.2.31
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.31...HEAD
