@@ -3,7 +3,7 @@
         "ABSPATH": "vendor/wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
-        "WP_PLUGIN_DIR": "../../../tests/_data/plugins",
+        "WP_PLUGIN_DIR": "not set",
         "WP_HOME": "http://wp.test",
         "WP_SITEURL": "http://wp.test",
         "WPMU_PLUGIN_DIR": "not set",
@@ -19,20 +19,17 @@
         "table_prefix": "wp_"
     },
     "checks": {
-        "Site is multisite": "no",
-        "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
+        "Site is multisite": "yes",
+        "ABSPATH points to valid WordPress directory": "No, wp-load.php file not found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
         "Database structure as expected": "No, structure errors: could not check on the database tables.",
-        "Blog installed": "Yes, blog is installed.",
+        "Blog installed": "No, blog is not installed: database table [wp_blogs] does not contain a blog with domain [foo.bar].",
         "Theme :": {
-            "template": "twentynineteen",
-            "stylesheet": "twentynineteen",
-            "twentynineteen directory": "vendor/wordpress/wordpress/wp-content/themes/twentynineteen"
+            "template": "dummy",
+            "stylesheet": "dummy",
+            "dummy directory": "tests/_data/themes/dummy"
         },
-        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
-        "Plugins health-check:": {
-            "Inactive plugin [test]": "../../../tests/_data/plugins/test",
-            "Inactive plugin [mu-plugin-1]": "../../../tests/_data/plugins/mu-plugin-1"
-        }
+        "Must-use plugins health-check:": "Cannot check on mu-plugins as root directory is not valid.",
+        "Plugins health-check:": "Cannot check on plugins as root directory is not valid."
     }
 }

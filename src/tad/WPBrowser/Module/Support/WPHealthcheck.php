@@ -406,13 +406,19 @@ class WPHealthcheck
             return false;
         }
 
-        $template = $this->database->getOption('template', false);
-        $stylesheet = $this->database->getOption('stylesheet', false);
+        // Try to read the template and stylesheet from overriding globals if set.
+        $template   = isset($GLOBALS['wp_tests_options']['template']) ?
+            $GLOBALS['wp_tests_options']['template']
+            : $this->database->getOption('template', false);
+        $stylesheet = isset($GLOBALS['wp_tests_options']['stylesheet']) ?
+            $GLOBALS['wp_tests_options']['stylesheet']
+            : $this->database->getOption('stylesheet', false);
 
         if (false === $template) {
             $this->themeError = "Cannot find the 'template' option in the database.";
             return false;
         }
+
         $themes = [
             'template' => $template,
             'stylesheet' => $stylesheet ? $stylesheet : 'n/a',
@@ -424,9 +430,9 @@ class WPHealthcheck
             }
             $path = $this->directories->getThemesDir() . '/' . $target;
             if (!file_exists($path)) {
-                $themes["{$target} directory not found"] = $this->relative($path);
+                $themes["{$target} directory not found"] = $this->relative($path, codecept_root_dir());
             } else {
-                $themes["{$target} directory"] = $this->relative($path);
+                $themes["{$target} directory"] = $this->relative($path, codecept_root_dir());
             }
         }
 

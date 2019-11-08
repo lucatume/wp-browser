@@ -491,4 +491,98 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
 
         $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
+
+    /**
+     * Test w globally set theme template
+     */
+    public function test_w_globally_set_theme_template()
+    {
+        $env                     = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $this->constants         = new TestConstants([
+            'ABSPATH'     => codecept_root_dir('vendor/wordpress/wordpress/'),
+            'WP_HOME'     => $env->getEnvironmentVariable('WP_URL'),
+            'WP_SITEURL'  => $env->getEnvironmentVariable('WP_URL'),
+            'DB_HOST'     => $env->getEnvironmentVariable('DB_HOST'),
+            'DB_NAME'     => $env->getEnvironmentVariable('DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
+            'DB_USER'     => $env->getEnvironmentVariable('DB_USER'),
+            'MULTISITE'   => true,
+        ]);
+        $GLOBALS['table_prefix'] = 'wp_';
+        $database                = $this->prophesize(WordPressDatabase::class);
+        $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
+        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $database->getOption('siteurl', false)->willReturn('http://foo.bar');
+        $realDb = new WordPressDatabase($this->constants);
+        $realDb->checkDbConnection();
+        $statement = $realDb->query('SELECT * FROM wp_blogs WHERE 1 = 0');
+        $database->query(Argument::containingString('FROM wp_blogs'))->willReturn($statement);
+
+        // Set the template and stylesheet as WPLoader would do.
+        $GLOBALS['wp_tests_options']['template']   = 'dummy';
+        $GLOBALS['wp_tests_options']['stylesheet'] = 'dummy';
+
+        $this->directories = $this->make(WordPressDirectories::class, [
+            'constants' => new Constants(),
+            'getThemesDir' => codecept_data_dir('themes')
+        ]);
+
+        $database->getOption('template', false)->willReturn('twentynineteen');
+        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('active_plugins', false)->willReturn(serialize([]));
+        $database->getTable('blogs')->willReturn('wp_blogs');
+        $this->database = $database->reveal();
+
+        $sut = $this->make_instance();
+
+        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * Test w globally set theme template and stylesheet
+     */
+    public function test_w_globally_set_theme_template_and_stylesheet()
+    {
+        $env                     = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $this->constants         = new TestConstants([
+            'ABSPATH'     => codecept_root_dir('vendor/wordpress/wordpress/'),
+            'WP_HOME'     => $env->getEnvironmentVariable('WP_URL'),
+            'WP_SITEURL'  => $env->getEnvironmentVariable('WP_URL'),
+            'DB_HOST'     => $env->getEnvironmentVariable('DB_HOST'),
+            'DB_NAME'     => $env->getEnvironmentVariable('DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
+            'DB_USER'     => $env->getEnvironmentVariable('DB_USER'),
+            'MULTISITE'   => true,
+        ]);
+        $GLOBALS['table_prefix'] = 'wp_';
+        $database                = $this->prophesize(WordPressDatabase::class);
+        $database->getTablePrefix(Argument::type('string'))->willReturn('wp_');
+        $database->checkDbConnection(Argument::cetera())->willReturn(true);
+        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $database->getOption('siteurl', false)->willReturn('http://foo.bar');
+        $realDb = new WordPressDatabase($this->constants);
+        $realDb->checkDbConnection();
+        $statement = $realDb->query('SELECT * FROM wp_blogs WHERE 1 = 0');
+        $database->query(Argument::containingString('FROM wp_blogs'))->willReturn($statement);
+
+        // Set the template and stylesheet as WPLoader would do.
+        $GLOBALS['wp_tests_options']['template']   = 'dummy';
+        $GLOBALS['wp_tests_options']['stylesheet'] = 'test-child-theme';
+
+        $this->directories = $this->make(WordPressDirectories::class, [
+            'constants' => new Constants(),
+            'getThemesDir' => codecept_data_dir('themes')
+        ]);
+
+        $database->getOption('template', false)->willReturn('twentynineteen');
+        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('active_plugins', false)->willReturn(serialize([]));
+        $database->getTable('blogs')->willReturn('wp_blogs');
+        $this->database = $database->reveal();
+
+        $sut = $this->make_instance();
+
+        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
 }

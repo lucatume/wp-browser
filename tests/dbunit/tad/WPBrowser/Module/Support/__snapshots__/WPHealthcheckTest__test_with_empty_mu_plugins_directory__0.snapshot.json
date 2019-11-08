@@ -27,7 +27,7 @@
         "Theme :": {
             "template": "twentynineteen",
             "stylesheet": "twentynineteen",
-            "twentynineteen directory": "wp-content/themes/twentynineteen"
+            "twentynineteen directory": "vendor/wordpress/wordpress/wp-content/themes/twentynineteen"
         },
         "Must-use plugins health-check:": "No mu-plugins found in mu-plugins directory.",
         "Plugins health-check:": {

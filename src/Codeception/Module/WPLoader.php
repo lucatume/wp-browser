@@ -556,7 +556,8 @@ class WPLoader extends Module
         $GLOBALS['wp_tests_options']['template'] = $template;
         $GLOBALS['wp_tests_options']['stylesheet'] = $stylesheet;
 
-        codecept_debug('Set template to [' . $template . '] and stylesheet to [' . $stylesheet . ']');
+        codecept_debug(sprintf('Filtering option "pre_option_template" to return value "%s"', $template));
+        codecept_debug(sprintf('Filtering option "pre_option_stylesheet" to return value "%s"', $stylesheet));
     }
 
     /**
