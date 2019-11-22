@@ -3,13 +3,13 @@
 ## Requirements
 
 * A Windows machine
-* A working installation of [WAMP](!g mamp)
+* A working installation of [WAMP][5595-0001]
 * You should be able to create sites and visit them from your browser without issues.
 * [Composer](https://getcomposer.org/) installed and working on your terminal `PATH`, you should be able to run `composer --version` at the terminal and see the version correctly.
 
 ## Install and configure WAMP
 
-This walk-through starts after WAMP has been installed and is correctly running on the host machine; you can [download WAMP from the site](!g mamp download) and follow the installation instructions.  
+This walk-through starts after WAMP has been installed and is correctly running on the host machine; you can [download WAMP from the site][5595-0002] and follow the installation instructions.  
 In the context of this guide I'm installing the test WordPress installation in the `C:\wamp64\www\wp` directory.
 If your installation lies elsewhere, replace the `C:\wamp64\www\wp` path with the actual directory in each command.  
 
@@ -65,7 +65,7 @@ The plugin should now show up, activate and deactivate correctly, among the plug
 ## Installing wp-browser
 
 Open a terminal window and navigate to the plugin directory and initialize the Composer project.  
-I'm using [Cmder](!g windows cmder) as terminal emulator on Windows, but you can use the default one.
+I'm using [Cmder][5595-0003] as terminal emulator on Windows, but you can use the default one.
 
 ```bash
 cd C:\wamp64\www\wp\wp-content\plugins\my-plugin
@@ -251,3 +251,7 @@ vendor/bin/codecept run unit
 ```
  
 You're now run to customize the suites to your liking or start writing tests, run `vendor/bin/codecept.bat` to see a list of the available commands.
+
+[5595-0001]: https://www.mamp.info/
+[5595-0002]: https://www.mamp.info/en/downloads/
+[5595-0003]: https://cmder.net/
