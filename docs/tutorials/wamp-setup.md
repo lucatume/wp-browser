@@ -1,56 +1,55 @@
-## Setting up wp-browser with MAMP on Mac to test a plugin
+## Setting up wp-browser with WAMP on Windows to test a plugin
 
 ## Requirements
 
-* A Mac machine
-* A working installation of [MAMP][0967-0001]
+* A Windows machine
+* A working installation of [WAMP](!g mamp)
 * You should be able to create sites and visit them from your browser without issues.
 * [Composer](https://getcomposer.org/) installed and working on your terminal `PATH`, you should be able to run `composer --version` at the terminal and see the version correctly.
 
-> The version of MAMP used in this tutorial is the free, non PRO, one. MAMP PRO provides more features, but the setup instructions should remain valid.
+## Install and configure WAMP
 
-## Install and configure MAMP
+This walk-through starts after WAMP has been installed and is correctly running on the host machine; you can [download WAMP from the site](!g mamp download) and follow the installation instructions.  
+In the context of this guide I'm installing the test WordPress installation in the `C:\wamp64\www\wp` directory.
+If your installation lies elsewhere, replace the `C:\wamp64\www\wp` path with the actual directory in each command.  
 
-This walk-through starts after MAMP has been installed and is correctly running on the host machine; you can [download MAMP from the site][0967-0002] and follow the installation instructions.  
-In the context of this guide I'm assuming the "Document Root" directory is the default one, in the `/Applications/MAMP/htdocs` directory.  
-If your document root lies elsewhere, replace the `/Applications/MAMP/htdocs` path with the actual directory in each command.  
+![](images/wamp-virtualhost-creation-1.png)
 
-![](images/mamp-mac-ports.png)
-
-![](images/mamp-mac-dirs.png)
+![](images/wamp-virtualhost-creation-2.png)
 
 ## Creating the databases and installing WordPress
 
-Go to the `http://localhost/phpMyAdmin/` page and create two new databases:
+Go to the `http://localhost/phpmyadmin/index.php` page and create two new databases:
 
 * `wordpress` is the database you will use for WordPress
 * `tests` is the database you will use for the tests
 
-![](images/mamp-create-db.png)
+![](images/wamp-create-db.png)
 
-Unzip the the WordPress files into the `/Applications/MAMP/htdocs` and head over to `http://localhost` to install WordPress.  
+> The default database user is `root`, the default password is empty.
 
+Unzip the the WordPress files into the `C:\wamp64\www\wp` and head over to `http://localhost/wp` to install WordPress.  
 The database credentials for the installation are:
 
 * Database name: `wordpress`
 * Database user: `root`
-* Database password: `root`
+* Database password is empty
 * Database host: `localhost`
 
 Use `admin` as administrator user name and `password` as password for the administrator user.
 
-![](images/mamp-wp-installation-1.png)
+![](images/wamp-wp-installation-1.png)
 
-![](images/mamp-wp-installation-2.png)
+![](images/wp-installation-2.png)
 
-Make sure you can visit the WordPress installation at `http://localhost` and that you can correctly access the administration area at `http://localhost/wp-admin`.
+Make sure you can visit the WordPress installation at `http://localhost/wp` and that you can correctly access the administration area at `http://localhost/wp/wp-admin`.
 
 ## Scaffolding the project folder
 
 I'm assuming the scope of the development is to test the `my-plugin` plugin.  
 
 The first step is to create the bare minimum code required to make the plugin show up among the available WordPress plugins.  
-Create the main plugin file in the WordPress installation plugins directory, in the `/Applications/MAMP/htdocs/wp-content/plugins/my-plugin/my-plugin.php` file:
+Create the main plugin file in the WordPress installation plugins directory, in the `C:\wamp64\www\wp\wp-content\plugins\my-plugin\my-plugin.php` file:
 
 ```php
 <?php
@@ -59,27 +58,28 @@ Create the main plugin file in the WordPress installation plugins directory, in 
  */	
 ```
 
-The plugin should now show up, activate and deactivate correctly, among the plugins listed in the WordPress installation at `http://localhost/wp-admin/plugins.php`.  
+The plugin should now show up, activate and deactivate correctly, among the plugins listed in the WordPress installation at `http://localhost/wp/wp-admin/plugins.php`.  
 
-![](images/mamp-my-plugin-shows.png)
+![](images/wamp-my-plugin-shows.png)
 
 ## Installing wp-browser
 
-Open a terminal window and navigate to the plugin directory and initialize the Composer project:
+Open a terminal window and navigate to the plugin directory and initialize the Composer project.  
+I'm using [Cmder](!g windows cmder) as terminal emulator on Windows, but you can use the default one.
 
 ```bash
-cd /Applications/MAMP/htdocs/wp-content/plugins/my-plugin
+cd C:\wamp64\www\wp\wp-content\plugins\my-plugin
 composer init
 ```
 
-![](images/mac-composer-init.png)
+![](images/wamp-composer-init.png)
 
 Composer will ask some questions to initialize the project, for the sake of this small guide the answers are not relevant.
 Here is the `composer.json` file generated by the above answers:
 
 ```json
 {
-    "name": "acme/my-plugin",
+    "name": "wamp/my-plugin",
     "type": "wordpress-plugin",
     "require": {}
 }
@@ -95,10 +95,10 @@ Composer installs any dependency binary file, an executable file, in the project
 To check [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") is correctly installed run this command:
 
 ```bash
-vendor/bin/codecept --version
+vendor\bin\codecept.bat --version
 ```
 
-![](images/mac-codecept-version.png)
+![](images/wamp-codecept-version.png)
 
 > Since wp-browser requires Codeception, there is no need to require Codeception explicitly as a development dependency.
 
@@ -109,33 +109,33 @@ For those that might get lost while trying to set up [wp-browser](https://github
 wp-browser needs to know:
 
 * Where the WordPress installation files are located: they will be loaded in integration and "WordPress unit" tests.
-* How to connect to the WordPress site "normal" database: this is the database that stores the data of the site I would see when visiting the local installation URL at `http://localhost`.
+* How to connect to the WordPress site "normal" database: this is the database that stores the data of the site I would see when visiting the local installation URL at `http://localhost/wp`.
 * How to connect to the database dedicated to the integration and "WordPress unit" tests: this database will be used to install WordPress during integration and "WordPress unit" tests.
 
 Any test suite using a database **should never run on a database containing data of any value**; this means that your first step should be to **backup the site database**.  
 
-You can create a backup of the current site database contents using phpMyAdmin, at `http://localhost/phpMyAdmin/`, under the "Export" tab:
+You can create a backup of the current site database contents using phpMyAdmin, at `http://localhost/phpmyadmin/`, under the "Export" tab:
 
-![](images/mamp-db-export.png)
+![](images/wamp-db-export.png)
 
 At any moment you can re-import the site database dump using, again, phpMyAdmin, under the "Import" tab:
 
-![](images/mamp-db-import.png)
+![](images/wamp-db-import.png)
 
 ## Bootstrapping and configuring wp-browser
 
 After the backup is done it's time to bootstrap `wp-browser` using its interactive mode:
 
 ```bash
-cd /Applications/MAMP/htdocs/wp-content/plugins/my-plugin
-vendor/bin/codecept init wpbrowser
+cd C:\wamp64\www\wp\wp-content\plugins\my-plugin
+vendor/bin/codecept.bat init wpbrowser
 ```
 
 The initialization guide will ask a number of questions.  
 In the screenshots below are the answers I used to configure `wp-browser`.
 
-![](images/mamp-wpbrowser-init-1.png)
-![](images/mamp-wpbrowser-init-2.png)
+![](images/wamp-wpbrowser-init-1.png)
+![](images/wamp-wpbrowser-init-2.png)
 
 Below a complete list of each answer:
 
@@ -145,19 +145,19 @@ Below a complete list of each answer:
 * How would you like the functional suite to be called? `functional`
 * How would you like the WordPress unit and integration suite to be called? `wpunit`
 * How would you like to call the env configuration file? `.env.testing`
-* What is the path of the WordPress root directory? `/Applications/MAMP/htdocs`
+* What is the path of the WordPress root directory? `C:/wamp64/www/wp`
 * What is the path, relative to WordPress root URL, of the admin area of the test site? `/wp-admin`
 * What is the name of the test database used by the test site? `tests`
 * What is the host of the test database used by the test site? `localhost`
 * What is the user of the test database used by the test site? `root`
-* What is the password of the test database used by the test site? `root`
+* What is the password of the test database used by the test site? ``
 * What is the table prefix of the test database used by the test site? `wp_`
 * What is the name of the test database WPLoader should use? `tests`
 * What is the host of the test database WPLoader should use? `localhost`
 * What is the user of the test database WPLoader should use? `root`
-* What is the password of the test database WPLoader should use? `root`
+* What is the password of the test database WPLoader should use? ``
 * What is the table prefix of the test database WPLoader should use? `wp_`
-* What is the URL the test site? `http://localhost`
+* What is the URL the test site? `http://localhost/wp`
 * What is the email of the test site WordPress administrator? `admin@wp.test`
 * What is the title of the test site? `My Plugin Test`
 * What is the login of the administrator user of the test site? `admin`
@@ -178,11 +178,11 @@ In the case of a plugin the minimal, starting environment is the following:
 * WordPress using its default theme.
 * The only active plugin is the one you're testing, in this example: `my-plugin`.
 
-You should set up this fixture "manually", using the site administration UI at `http://localhost/wp-admin`.
+You should set up this fixture "manually", using the site administration UI at `http://localhost/wp/wp-admin`.
 
 > The following command will **empty the site, backup any content you care about first!**
 
-When you're done setting up the initial database fixture, export it using the "Export" tab of phpMyAdmin, at `http://localhost/phpMyAdmin/` and move the file to the `/Applications/MAMP/htdocs/wp-content/plugins/my-plugin/tests/_data/dump.sql` directory.
+When you're done setting up the initial database fixture, export it using the "Export" tab of phpMyAdmin, at `http://localhost/phpmyadmin/` and move the file to the `C:\wamp64\www\wp\wp-content\plugins\my-plugin\tests\_data\dump.sql` directory.
 
 There is one last step left to complete the setup.
 
@@ -192,14 +192,14 @@ Acceptance and functional tests will act as users, navigating to the site pages 
 
 This means that WordPress will load, and with it its `wp-config.php` file, to handle the requests made by the tests.  
 
-During the setup phase I've specified the database to be used for `acceptance` and `functional` tests as `tests` but, looking at the contents of the `/Applications/MAMP/htdocs/wp-config.php` file, the `DB_NAME` constant is set to `wordpress`.  
+During the setup phase I've specified the database to be used for `acceptance` and `functional` tests as `tests` but, looking at the contents of the `C:\wamp64\www\wp\wp-config.php` file, the `DB_NAME` constant is set to `wordpress`.  
 
 What we'll do now means:
 
 * If the request is a normal one, use the `wordpress` database.
 * If the request comes from a test, use the `tests` database.
 
-In your IDE/text-editor of choice edit the `/Applications/MAMP/htdocs/wp-config.php` and replace the line defining the `DB_NAME` constant like this:
+In your IDE/text-editor of choice edit the `C:\wamp64\www\wp\wp-config.php` and replace the line defining the `DB_NAME` constant like this:
 
 ```diff
 - define( 'DB_NAME', 'wordpress-one' );
@@ -243,14 +243,11 @@ You have created 4 suites, each suite has at least one example test to make sure
 Run each suite and make sure all tests succeed, from within the box run:
 
 ```bash
-cd /Applications/MAMP/htdocs/wp-content/plugins/my-plugin 
+cd C:\wamp64\www\wp\wp-content\plugins\my-plugin 
 vendor/bin/codecept run acceptance
 vendor/bin/codecept run functional
 vendor/bin/codecept run wpunit
 vendor/bin/codecept run unit
 ```
  
-You're now run to customize the suites to your liking or start writing tests, run `vendor/bin/codecept` to see a list of the available commands.
-
-[0967-0001]: https://www.mamp.info/
-[0967-0002]: https://www.mamp.info/en/downloads/
+You're now run to customize the suites to your liking or start writing tests, run `vendor/bin/codecept.bat` to see a list of the available commands.
