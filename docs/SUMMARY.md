@@ -10,7 +10,9 @@
     * [Setting up a minimum WordPress installation](setting-up-minimum-wordpress-installation.md)
     * [Configuration](configuration.md)
 * Tutorials
-    * [Setting up wp-browser on VVV to test a plugin](tutorials/vvv-setup-guide.md)
+    * [Automatically change database during acceptance and functional tests](tutorials/automatically-change-db-in-tests.md)
+    * [Setting up wp-browser on VVV to test a plugin](tutorials/vvv-setup.md)
+    * [Setting up wp-browser on MAMP for Mac to test a plugin](tutorials/mamp-mac-setup.md)
 * Modules
     * [WPBrowser](modules/WPBrowser.md)
     * [WPCLI](modules/WPCLI.md)

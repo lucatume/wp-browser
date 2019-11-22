@@ -1,4 +1,4 @@
-# Using a test database during acceptance and functional tests
+# Automatically change database during acceptance and functional tests
 
 **You should always back up any site you run tests on if you care about the site content.**
 
@@ -49,7 +49,7 @@ modules:
 Now that each request made by the `WPWebDriver` module contains those two headers, it's time for WordPress to check those and change the database to use accordingly.
 
 The database to use is set by the `DB_NAME` constant that is, in turn, set in the `wp-config.php` file.  
-Different setups could involve more complex configurations for the `wp-config.php` file, but, for the sake of simplicity, I assume the default WordPress `wp-config.php` file structure.  
+Different setups could involve more complex configurations for the `wp-config.php` file but, for the sake of simplicity, I assume the default WordPress `wp-config.php` file structure.  
 In the example below, the default database name is `wordpress`, while the name of the test database is `tests`.
 
 ```diff
@@ -63,13 +63,13 @@ In the example below, the default database name is `wordpress`, while the name o
 
 The diff shows the replacement done in the WordPress installation `wp-config.php` file.
 
-For copy-and-paste pleasure, replace the line starting with
+For copy-and-paste pleasure, replace the line starting with:
 
 ```php
 define( 'DB_NAME', 'default_db_name' );
 ```
 
-With:
+With this snippet:
 
 ```php
 if( isset( $_SERVER['HTTP_X_TEST_REQUEST'] ) && $_SERVER['HTTP_X_TEST_REQUEST'] ) {
@@ -78,5 +78,7 @@ if( isset( $_SERVER['HTTP_X_TEST_REQUEST'] ) && $_SERVER['HTTP_X_TEST_REQUEST'] 
       define( 'DB_NAME', 'default_db_name' );
 }
 ```
+
+Where `default_db_name` is the name of the database your test WordPress installation normally uses.
 
 Happy, and safer, testing.
