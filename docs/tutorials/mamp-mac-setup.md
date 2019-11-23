@@ -203,7 +203,7 @@ What we'll do now means:
 In your IDE/text-editor of choice edit the `/Applications/MAMP/htdocs/wp-config.php` and replace the line defining the `DB_NAME` constant like this:
 
 ```diff
-- define( 'DB_NAME', 'wordpress-one' );
+- define( 'DB_NAME', 'wordpress' );
 + if( isset( $_SERVER['HTTP_X_WPBROWSER_REQUEST'] ) && $_SERVER['HTTP_X_WPBROWSER_REQUEST'] ) { 
 +    define( 'DB_NAME', 'tests' );
 + } else {
