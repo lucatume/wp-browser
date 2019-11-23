@@ -14,6 +14,7 @@
     * [Setting up wp-browser on VVV to test a plugin](tutorials/vvv-setup.md)
     * [Setting up wp-browser on MAMP for Mac to test a plugin](tutorials/mamp-mac-setup.md)
     * [Setting up wp-browser on WAMP for Windows to test a plugin](tutorials/wamp-setup.md)
+    * [Setting up wp-browser on Local by Flywheel to test a plugin](tutorials/local-flywheel-setup.md)
 * Modules
     * [WPBrowser](modules/WPBrowser.md)
     * [WPCLI](modules/WPCLI.md)
