@@ -3,7 +3,7 @@
 ## Requirements
 
 * A Windows machine
-* A working installation of [WAMP][5595-0001]
+* A working installation of [WAMP][5595-0001].
 * You should be able to create sites and visit them from your browser without issues.
 * [Composer](https://getcomposer.org/) installed and working on your terminal `PATH`, you should be able to run `composer --version` at the terminal and see the version correctly.
 
