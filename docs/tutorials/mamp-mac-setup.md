@@ -135,6 +135,7 @@ The initialization guide will ask a number of questions.
 In the screenshots below are the answers I used to configure `wp-browser`.
 
 ![](images/mamp-wpbrowser-init-1.png)
+
 ![](images/mamp-wpbrowser-init-2.png)
 
 Below a complete list of each answer:
