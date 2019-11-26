@@ -628,6 +628,10 @@ modules:
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
             adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+            headers:
+                X_TEST_REQUEST: 1
+                X_WPBROWSER_REQUEST: 1
+
         WPFilesystem:
             wpRootFolder: '%WP_ROOT_FOLDER%'
             plugins: '/wp-content/plugins'
@@ -676,6 +680,9 @@ modules:
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
             adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+            headers:
+                X_TEST_REQUEST: 1
+                X_WPBROWSER_REQUEST: 1
 EOF;
         $this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
     }

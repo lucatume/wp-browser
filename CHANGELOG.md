@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+- `WPRestControllerTestCase` issue (thanks @TimothyBJacobs)
+
 ## [2.2.31] 2019-10-22;
 ### Fixed
 - documentation generation issue [#323]
