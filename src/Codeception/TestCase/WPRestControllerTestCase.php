@@ -14,7 +14,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
         /** @var \WP_REST_Server $wp_rest_server */
         global $wp_rest_server;
         $this->server = $wp_rest_server = new \Spy_REST_Server;
-        do_action('rest_api_init');
+        do_action('rest_api_init', $wp_rest_server);
     }
 
     public function _tearDown()
