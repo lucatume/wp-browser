@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.32] 2019-11-26;
 ### Fixed
 - `WPRestControllerTestCase` issue (thanks @TimothyBJacobs)
 - wrong theme detection in healthcheck [#328]
@@ -1175,4 +1176,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.29]: https://github.com/lucatume/wp-browser/compare/2.2.28...2.2.29
 [2.2.30]: https://github.com/lucatume/wp-browser/compare/2.2.29...2.2.30
 [2.2.31]: https://github.com/lucatume/wp-browser/compare/2.2.30...2.2.31
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.31...HEAD
+[2.2.32]: https://github.com/lucatume/wp-browser/compare/2.2.31...2.2.32
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.32...HEAD
