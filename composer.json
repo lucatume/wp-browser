@@ -31,7 +31,8 @@
     "mikemclin/laravel-wp-password": "~2.0.0",
     "vlucas/phpdotenv": "^3.0",
     "wp-cli/wp-cli-bundle": ">=2.0 <3.0.0",
-    "zordius/lightncandy": "^1.2"
+    "zordius/lightncandy": "^1.2",
+    "vria/nodiacritic": "^0.1.2"
   },
   "require-dev": {
     "phpstan/phpstan": "^0.11.15",
@@ -50,7 +51,8 @@
     },
     "files": [
       "src/tad/WPBrowser/functions.php",
-      "src/tad/WPBrowser/utils.php"
+      "src/tad/WPBrowser/utils.php",
+      "src/tad/WPBrowser/wp-polyfills.php"
     ]
   },
   "autoload-dev": {
