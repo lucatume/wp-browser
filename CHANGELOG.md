@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - `WPRestControllerTestCase` issue (thanks @TimothyBJacobs)
+- wrong theme detection in healthcheck [#328]
 
 ## [2.2.31] 2019-10-22;
 ### Fixed
