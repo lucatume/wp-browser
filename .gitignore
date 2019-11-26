@@ -25,3 +25,6 @@ composer.lock
 # Some local vim files
 tags
 *.swp
+
+# Release notes
+rel
