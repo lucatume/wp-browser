@@ -2362,7 +2362,7 @@ class WPDb extends Db
             $data = [
                 'user_id' => $userId,
                 'meta_key' => $meta_key,
-                'value' => $this->maybeSerialize($value),
+                'meta_value' => $this->maybeSerialize($value),
             ];
             $ids[] = $this->haveInDatabase($this->grabUsermetaTableName(), $data);
         }
