@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - `WPRestControllerTestCase` issue (thanks @TimothyBJacobs)
 - wrong theme detection in healthcheck [#328]
+- `WPDb::haveUserInDatabase` issue where the sanitization would be stricter than the WordPress one on user login [#332]
 
 ## [2.2.31] 2019-10-22;
 ### Fixed

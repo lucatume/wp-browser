@@ -1,6 +1,6 @@
 <?php
 
-use tad\WPBrowser\Generators\User\Roles;
+use tad\WPBrowser\Generators\User;
 
 class WPDbUserCest
 {
@@ -132,7 +132,7 @@ class WPDbUserCest
         $I->haveUserInDatabase('Luca', $blogIdsAndRoles);
         $userId = $I->grabUserIdFromDatabase('Luca');
         foreach ($blogIdsAndRoles as $blogId => $msRole) {
-            $msLevel = Roles::getLevelForRole($msRole);
+            $msLevel = User::getLevelForRole($msRole);
             $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
             $I->seeUserMetaInDatabase([
                 'user_id' => $userId,

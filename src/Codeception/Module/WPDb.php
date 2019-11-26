@@ -2357,11 +2357,12 @@ class WPDb extends Db
     {
         $ids = [];
         $meta_values = is_array($meta_value) ? $meta_value : [$meta_value];
-        foreach ($meta_values as $meta_value) {
+
+        foreach ($meta_values as $value) {
             $data = [
                 'user_id' => $userId,
                 'meta_key' => $meta_key,
-                'meta_value' => $this->maybeSerialize($meta_value),
+                'value' => $this->maybeSerialize($value),
             ];
             $ids[] = $this->haveInDatabase($this->grabUsermetaTableName(), $data);
         }
@@ -2410,7 +2411,7 @@ class WPDb extends Db
     {
         if (!is_array($role)) {
             $meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
-            $meta_value = User\Roles::getLevelForRole($role);
+            $meta_value = User::getLevelForRole($role);
 
             return $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
         }
@@ -2418,7 +2419,7 @@ class WPDb extends Db
         foreach ($role as $blogId => $_role) {
             $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
             $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
-            $meta_value = User\Roles::getLevelForRole($_role);
+            $meta_value = User::getLevelForRole($_role);
             $ids[] = $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
         }
 
