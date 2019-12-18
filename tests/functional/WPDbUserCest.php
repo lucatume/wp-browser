@@ -11,7 +11,7 @@ class WPDbUserCest
         'author' => 2,
         'editor' => 7,
         'administrator' => 10,
-        '' => 0 // no role for the site
+        '' => 0 // No role for the site.
     ];
 
     public function _before(FunctionalTester $I)
@@ -79,7 +79,7 @@ class WPDbUserCest
         $criteria = [
             'user_id' => $userId,
             'meta_key' => $I->grabPrefixedTableNameFor('capabilities'),
-            'meta_value' => serialize(['subscriber' => 1]),
+            'meta_value' => serialize(['subscriber' => true]),
         ];
         $I->seeUserMetaInDatabase($criteria);
     }
@@ -112,7 +112,7 @@ class WPDbUserCest
             $I->seeUserMetaInDatabase([
                 'user_id' => $userId,
                 'meta_key' => $I->grabPrefixedTableNameFor('capabilities'),
-                'meta_value' => serialize([$role => 1]),
+                'meta_value' => serialize([$role => true])
             ]);
             $I->seeUserMetaInDatabase([
                 'user_id' => $userId,
@@ -128,16 +128,19 @@ class WPDbUserCest
      */
     public function it_should_allow_setting_the_user_role_on_a_blog_base(FunctionalTester $I)
     {
-        $blogIdsAndRoles = array_keys($this->rolesAndLevels);
+        $blogIdsAndRoles = array_combine(
+            range(1, count($this->rolesAndLevels)),
+            array_keys($this->rolesAndLevels)
+        );
         $I->haveUserInDatabase('Luca', $blogIdsAndRoles);
         $userId = $I->grabUserIdFromDatabase('Luca');
         foreach ($blogIdsAndRoles as $blogId => $msRole) {
             $msLevel = User::getLevelForRole($msRole);
-            $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
+            $blogIdAndPrefix = $blogId == 1 ? '' : $blogId . '_';
             $I->seeUserMetaInDatabase([
                 'user_id' => $userId,
                 'meta_key' => $I->grabPrefixedTableNameFor($blogIdAndPrefix . 'capabilities'),
-                'meta_value' => serialize([$msRole => 1]),
+                'meta_value' => serialize([$msRole => true]),
             ]);
             $I->seeUserMetaInDatabase([
                 'user_id' => $userId,
@@ -436,5 +439,69 @@ class WPDbUserCest
         $I->dontHaveUserInDatabaseWithEmail('luca@theaveragedev.com');
 
         $I->assertCount(0, $I->grabAllFromDatabase($I->grabUsersTableName(), 'ID', ['user_email' => 'luca@theaveragedev.com']));
+    }
+
+    /**
+     * It should allow assigning a user multiple roles during creation
+     *
+     * @test
+     */
+    public function should_allow_assigning_a_user_multiple_roles_during_creation(FunctionalTester $I)
+    {
+        $user_id = $I->haveUserInDatabase('test_user', ['author', 'editor']);
+
+        $I->seeUserInDatabase(['ID' => $user_id]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_user_level',
+            'meta_value' => User::getLevelForRole('author')
+        ]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_capabilities',
+            'meta_value' => ['author' => true, 'editor' => true]
+        ]);
+    }
+
+    /**
+     * It should allow overriding the user role set during creation
+     *
+     * @test
+     */
+    public function should_allow_overriding_the_user_role_set_during_creation(FunctionalTester $I)
+    {
+        $user_id = $I->haveUserInDatabase('test_user', 'administrator');
+
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_capabilities',
+            'meta_value' => ['administrator' => true]
+        ]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_user_level',
+            'meta_value' => User::getLevelForRole('administrator')
+        ]);
+
+        $I->haveUserCapabilitiesInDatabase($user_id, 'editor');
+
+        $I->seeNumRecords(1, $I->grabPrefixedTableNameFor('usermeta'), [
+            'user_id' => $user_id,
+            'meta_key' => 'wp_capabilities'
+        ]);
+        $I->seeNumRecords(1, $I->grabPrefixedTableNameFor('usermeta'), [
+            'user_id' => $user_id,
+            'meta_key' => 'wp_user_level'
+        ]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_capabilities',
+            'meta_value' => ['editor' => true]
+        ]);
+        $I->seeUserMetaInDatabase([
+            'user_id' => $user_id,
+            'meta_key' => 'wp_user_level',
+            'meta_value' => User::getLevelForRole('editor')
+        ]);
     }
 }

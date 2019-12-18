@@ -96,8 +96,7 @@ PHP;
      *
      * @test
      */
-    public function should_remove_temp_files_after_each_test(AcceptanceTester $I
-    )
+    public function should_remove_temp_files_after_each_test(AcceptanceTester $I)
     {
         $I->dontSeePluginFileFound('foo');
         $I->dontSeeMuPluginFileFound('bar');

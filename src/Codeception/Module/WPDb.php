@@ -1079,6 +1079,9 @@ class WPDb extends Db
     public function seeCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->grabPrefixedTableNameFor('commentmeta');
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = serialize($criteria['meta_value']);
+        }
         $this->seeInDatabase($tableName, $criteria);
     }
 
@@ -1100,6 +1103,9 @@ class WPDb extends Db
     public function dontSeeCommentMetaInDatabase(array $criteria)
     {
         $tableName = $this->grabPrefixedTableNameFor('commentmeta');
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
+        }
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
@@ -1116,6 +1122,9 @@ class WPDb extends Db
     public function seeUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->grabPrefixedTableNameFor('usermeta');
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
+        }
         $this->seeInDatabase($tableName, $criteria);
     }
 
@@ -1135,6 +1144,9 @@ class WPDb extends Db
     public function dontSeeUserMetaInDatabase(array $criteria)
     {
         $tableName = $this->grabPrefixedTableNameFor('usermeta');
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
+        }
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
@@ -2223,20 +2235,48 @@ class WPDb extends Db
      *
      * @example
      * ```php
+     * // Create an editor user in blog 1 w/ specific email.
      * $userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
-     * $subscriberId = $I->haveUserInDatabase('test');
-     * $userWithMeta = $I->haveUserInDatabase('luca', 'editor', [
-     *     'user_email' => 'luca@example.org'
-     *     'meta' => ['a meta_key' => 'a_meta_value']
-     * ]);
+     *
+     * // Create a subscriber user in blog 1.
+     * $subscriberId = $I->haveUserInDatabase('subscriber');
+     *
+     * // Create a user editor in blog 1, author in blog 2, administrator in blog 3.
+     * $userWithMeta = $I->haveUserInDatabase('luca',
+     *      [
+     *          1 => 'editor',
+     *          2 => 'author',
+     *          3 => 'administrator'
+     *      ], [
+     *          'user_email' => 'luca@example.org'
+     *          'meta' => ['a meta_key' => 'a_meta_value']
+     *      ]
+     * );
+     *
+     * // Create editor in blog 1 w/ `edit_themes` cap, author in blog 2, admin in blog 3 w/o `manage_options` cap.
+     * $userWithMeta = $I->haveUserInDatabase('luca',
+     *      [
+     *          1 => ['editor', 'edit_themes'],
+     *          2 => 'author',
+     *          3 => ['administrator' => true, 'manage_options' => false]
+     *      ]
+     * );
+     *
+     * // Create a user w/o role.
+     * $userId = $I->haveUserInDatabase('luca', '');
      * ```
      *
-     * @param  string $user_login The user login name.
-     * @param  string $role       The user role slug, e.g. "administrator"; defaults to "subscriber".
-     * @param  array  $overrides  An associative array of column names and values overridind defaults in the "users"
-     *                            and "usermeta" table.
+     * @param string               $user_login The user login name.
+     * @param string|array<string> $role       The user role slug(s), e.g. `administrator` or `['author', 'editor']`;
+     *                                         defaults to `subscriber`. If more than one role is specified, then the
+     *                                         first role in the list will be the user primary role and the
+     *                                         `wp_user_level` will be set to that role.
+     * @param array $overrides                 An associative array of column names and values overriding defaults in
+     *                                         the `users` and `usermeta` table.
      *
      * @return int The inserted user ID.
+     *
+     * @see WPDb::haveUserCapabilitiesInDatabase() for the roles and caps options.
      */
     public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = [])
     {
@@ -2252,7 +2292,6 @@ class WPDb extends Db
         $userId = $this->haveInDatabase($this->grabUsersTableName(), $userTableData);
 
         $this->haveUserCapabilitiesInDatabase($userId, $role);
-        $this->haveUserLevelsInDatabase($userId, $role);
 
         if ($hasMeta) {
             foreach ($meta as $key => $value) {
@@ -2307,34 +2346,52 @@ class WPDb extends Db
      *
      * @example
      * ```php
-     * $blogId = $this->haveBlogInDatabase('test');
+     * // Assign one user a role in a blog.
+     * $blogId = $I->haveBlogInDatabase('test');
      * $editor = $I->haveUserInDatabase('luca', 'editor');
      * $capsIds = $I->haveUserCapabilitiesInDatabase($editor, [$blogId => 'editor']);
+     *
+     * // Assign a user two roles in blog 1.
+     * $capsIds = $I->haveUserCapabilitiesInDatabase($userId, ['editor', 'subscriber']);
+     *
+     * // Assign one user different roles in different blogs.
+     * $capsIds = $I->haveUserCapabilitiesInDatabase($userId, [$blogId1 => 'editor', $blogId2 => 'author']);
+     *
+     * // Assign a user a role and an additional capability in blog 1.
+     * $I->haveUserCapabilitiesInDatabase($userId, ['editor' => true, 'edit_themes' => true]);
+     *
+     * // Assign a user a mix of roles and capabilities in different blogs.
+     * $capsIds = $I->haveUserCapabilitiesInDatabase(
+     *      $userId,
+     *      [
+     *          $blogId1 => ['editor' => true, 'edit_themes' => true],
+     *          $blogId2 => ['administrator' => true, 'edit_themes' => false]
+     *      ]
+     * );
      * ```
      *
-     * @param int          $userId The ID of the user to set the capabilities of.
-     * @param string|array $role Either a role string (e.g. `administrator`) or an associative array of blog IDs/roles
-     *                           for a multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
+     * @param int                                        $userId The ID of the user to set the capabilities of.
+     * @param string|array<string|bool>|array<int,array> $role   Either a role string (e.g. `administrator`),an
+     *                                                           associative array of blog IDs/roles for a multisite
+     *                                                           installation (e.g. `[1 => 'administrator`, 2 =>
+     *                                                           'subscriber']`).
      *
-     * @return array An array of inserted `meta_id`.
+     * @return array<int> An array of inserted `meta_id`.
      */
     public function haveUserCapabilitiesInDatabase($userId, $role)
     {
-        if (!is_array($role)) {
-            $meta_key = $this->grabPrefixedTableNameFor() . 'capabilities';
-            $meta_value = serialize([$role => 1]);
+        $insert = User::buildCapabilities($role);
 
-            return $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-        }
-        $ids = [];
-        foreach ($role as $blogId => $_role) {
-            $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-            $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'capabilities';
-            $meta_value = serialize([$_role => 1]);
-            $ids[] = array_merge($ids, $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value));
+        $roleIds = [];
+        foreach ($insert as $meta_key => $meta_value) {
+            // Delete pre-existing values, if any.
+            $this->dontHaveUserMetaInDatabase(['user_id' => $userId, 'meta_key' => $meta_key]);
+            $roleIds[] = $this->haveUserMetaInDatabase($userId, $meta_key, serialize($meta_value));
         }
 
-        return $ids;
+        $levelIds = $this->haveUserLevelsInDatabase($userId, $role);
+
+        return array_merge($roleIds, $levelIds);
     }
 
     /**
@@ -2409,18 +2466,16 @@ class WPDb extends Db
      */
     public function haveUserLevelsInDatabase($userId, $role)
     {
-        if (!is_array($role)) {
-            $meta_key = $this->grabPrefixedTableNameFor() . 'user_level';
-            $meta_value = User::getLevelForRole($role);
+        $roles = User::buildCapabilities($role);
 
-            return $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
-        }
         $ids = [];
-        foreach ($role as $blogId => $_role) {
-            $blogIdAndPrefix = $blogId == 0 ? '' : $blogId . '_';
-            $meta_key = $this->grabPrefixedTableNameFor() . $blogIdAndPrefix . 'user_level';
-            $meta_value = User::getLevelForRole($_role);
-            $ids[] = $this->haveUserMetaInDatabase($userId, $meta_key, $meta_value);
+        foreach ($roles as $roleMetaKey => $roleMetaValue) {
+            $levelMetaKey = preg_replace('/capabilities$/', 'user_level', $roleMetaKey);
+            $this->dontHaveUserMetaInDatabase(['user_id' => $userId, 'meta_key' => $levelMetaKey]);
+            $blogRoles = array_keys((array)$roleMetaValue);
+            $blogPrimaryRole = reset($blogRoles);
+            $level = $blogPrimaryRole ? User::getLevelForRole($blogPrimaryRole) : 0;
+            $ids[] = $this->haveUserMetaInDatabase($userId, $levelMetaKey, $level);
         }
 
         return $ids;
@@ -2509,6 +2564,9 @@ class WPDb extends Db
      */
     public function seeTermMetaInDatabase(array $criteria)
     {
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
+        }
         $this->seeInDatabase($this->grabTermMetaTableName(), $criteria);
     }
 
@@ -2526,6 +2584,9 @@ class WPDb extends Db
      */
     public function dontSeeTermMetaInDatabase(array $criteria)
     {
+        if (!empty($criteria['meta_value'])) {
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
+        }
         $this->dontSeeInDatabase($this->grabTermMetaTableName(), $criteria);
     }
 

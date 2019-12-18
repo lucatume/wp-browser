@@ -2231,16 +2231,33 @@ $I->haveTermMetaInDatabase($fictionId, 'readers_count', 23);
 
 <p>Sets a user capabilities in the database.</p>
 ```php
-$blogId = $this->haveBlogInDatabase('test');
+// Assign one user a role in a blog.
+  $blogId = $I->haveBlogInDatabase('test');
   $editor = $I->haveUserInDatabase('luca', 'editor');
   $capsIds = $I->haveUserCapabilitiesInDatabase($editor, [$blogId => 'editor']);
-  for a multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
+  // Assign a user two roles in blog 1.
+  $capsIds = $I->haveUserCapabilitiesInDatabase($userId, ['editor', 'subscriber']);
+  // Assign one user different roles in different blogs.
+  $capsIds = $I->haveUserCapabilitiesInDatabase($userId, [$blogId1 => 'editor', $blogId2 => 'author']);
+  // Assign a user a role and an additional capability in blog 1.
+  $I->haveUserCapabilitiesInDatabase($userId, ['editor' => true, 'edit_themes' => true]);
+  // Assign a user a mix of roles and capabilities in different blogs.
+  $capsIds = $I->haveUserCapabilitiesInDatabase(
+  $userId,
+  [
+  $blogId1 => ['editor' => true, 'edit_themes' => true],
+  $blogId2 => ['administrator' => true, 'edit_themes' => false]
+  ]
+  );
+  associative array of blog IDs/roles for a multisite
+  installation (e.g. `[1 => 'administrator`, 2 =>
+  'subscriber']`).
 ```
 
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The ID of the user to set the capabilities of.</li>
-<li><code>string/array</code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an associative array of blog IDs/roles</li></ul>
+<li><code>string/\Codeception\Module\array<string/\Codeception\Module\bool>/\Codeception\Module\array<int,array></code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>),an</li></ul>
   
 
 <h3>haveUserInDatabase</h3>
@@ -2249,20 +2266,41 @@ $blogId = $this->haveBlogInDatabase('test');
 
 <p>Inserts a user and its meta in the database.</p>
 ```php
-$userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
-  $subscriberId = $I->haveUserInDatabase('test');
-  $userWithMeta = $I->haveUserInDatabase('luca', 'editor', [
+// Create an editor user in blog 1 w/ specific email.
+  $userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
+  // Create a subscriber user in blog 1.
+  $subscriberId = $I->haveUserInDatabase('subscriber');
+  // Create a user editor in blog 1, author in blog 2, administrator in blog 3.
+  $userWithMeta = $I->haveUserInDatabase('luca',
+  [
+  1 => 'editor',
+  2 => 'author',
+  3 => 'administrator'
+  ], [
   'user_email' => 'luca@example.org'
   'meta' => ['a meta_key' => 'a_meta_value']
-  ]);
-  and "usermeta" table.
+  ]
+  );
+  // Create editor in blog 1 w/ `edit_themes` cap, author in blog 2, admin in blog 3 w/o `manage_options` cap.
+  $userWithMeta = $I->haveUserInDatabase('luca',
+  [
+  1 => ['editor', 'edit_themes'],
+  2 => 'author',
+  3 => ['administrator' => true, 'manage_options' => false]
+  ]
+  );
+  // Create a user w/o role.
+  $userId = $I->haveUserInDatabase('luca', '');
+  defaults to `subscriber`. If more than one role is specified, then the
+  first role in the list will be the user primary role and the
+  the `users` and `usermeta` table.
 ```
 
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
-<li><code>string</code> <strong>$role</strong> - The user role slug, e.g. &quot;administrator&quot;; defaults to &quot;subscriber&quot;.</li>
-<li><code>array</code> <strong>$overrides</strong> - An associative array of column names and values overridind defaults in the &quot;users&quot;</li></ul>
+<li><code>string/string/\Codeception\Module\array<string></code> <strong>$role</strong> - The user role slug(s), e.g. <code>administrator</code> or <code>['author', 'editor']</code>;</li>
+<li><code>array</code> <strong>$overrides</strong> - An associative array of column names and values overriding defaults in</li></ul>
   
 
 <h3>haveUserLevelsInDatabase</h3>
