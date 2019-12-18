@@ -1080,7 +1080,7 @@ class WPDb extends Db
     {
         $tableName = $this->grabPrefixedTableNameFor('commentmeta');
         if (!empty($criteria['meta_value'])) {
-            $criteria['meta_value'] = serialize($criteria['meta_value']);
+            $criteria['meta_value'] = $this->maybeSerialize($criteria['meta_value']);
         }
         $this->seeInDatabase($tableName, $criteria);
     }
