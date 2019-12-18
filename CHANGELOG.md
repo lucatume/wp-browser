@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.2.33] 2019-12-18;
 
 ### Fixed
-- 'WPDb::haveUserCapabilitiesInDatabase' to make sure entries are not duplicated when called on same user [#335]
+- `WPDb::haveUserCapabilitiesInDatabase` to make sure entries are not duplicated when called on same user [#335]
 
 ### Updated
 - `WPDb::haveUserInDatabase` and `WPDb::haveUserCapabilitiesInDatabase` methods to support more complex user role assignment [#336]
