@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.33] 2019-12-18;
+
+### Fixed
+- 'WPDb::haveUserCapabilitiesInDatabase' to make sure entries are not duplicated when called on same user [#335]
+
+### Updated
+- `WPDb::haveUserInDatabase` and `WPDb::haveUserCapabilitiesInDatabase` methods to support more complex user role assignment [#336]
+
 ## [2.2.32] 2019-11-26;
 ### Fixed
 - `WPRestControllerTestCase` issue (thanks @TimothyBJacobs)
@@ -1177,4 +1185,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.30]: https://github.com/lucatume/wp-browser/compare/2.2.29...2.2.30
 [2.2.31]: https://github.com/lucatume/wp-browser/compare/2.2.30...2.2.31
 [2.2.32]: https://github.com/lucatume/wp-browser/compare/2.2.31...2.2.32
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.32...HEAD
+[2.2.33]: https://github.com/lucatume/wp-browser/compare/2.2.32...2.2.33
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.33...HEAD
