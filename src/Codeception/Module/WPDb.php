@@ -2471,6 +2471,9 @@ class WPDb extends Db
         $ids = [];
         foreach ($roles as $roleMetaKey => $roleMetaValue) {
             $levelMetaKey = preg_replace('/capabilities$/', 'user_level', $roleMetaKey);
+            if ($levelMetaKey === null) {
+                $levelMetaKey = $this->grabTablePrefix() . 'user_level';
+            }
             $this->dontHaveUserMetaInDatabase(['user_id' => $userId, 'meta_key' => $levelMetaKey]);
             $blogRoles = array_keys((array)$roleMetaValue);
             $blogPrimaryRole = reset($blogRoles);
