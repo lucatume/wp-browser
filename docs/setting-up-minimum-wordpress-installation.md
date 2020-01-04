@@ -29,7 +29,7 @@ While there will be a section dedicated to different environments and setups I w
     
     require_once ABSPATH . 'wp-settings.php';
     ```
-* To serve the site I'm usign PHP built-in server with the command:
+* To serve the site I'm using PHP built-in server with the command:
     ```bash
     (cd /Users/luca/Sites/wordpress; php -S localhost:8080)
     ```
