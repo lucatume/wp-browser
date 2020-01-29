@@ -126,8 +126,14 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $wp_object_cache->group_ops = array();
         $wp_object_cache->stats = array();
         $wp_object_cache->memcache_debug = array();
-        $wp_object_cache->cache = array();
-        if (method_exists($wp_object_cache, '__remoteset')) {
+
+        if ( $wp_object_cache instanceof \WP_Object_Cache ) {
+        	$wp_object_cache->flush();
+        } else if ( isset( $wp_object_cache->cache ) ) {
+	        $wp_object_cache->cache = [];
+        }
+
+	    if (method_exists($wp_object_cache, '__remoteset')) {
             $wp_object_cache->__remoteset();
         }
         wp_cache_flush();
