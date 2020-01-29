@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.34] 2020-01-29;
+
+### Fixed
+
+- cache flushing issue in `WPTestCase` (thanks @mitogh)
+
 ## [2.2.33] 2019-12-18;
 
 ### Fixed
@@ -192,7 +198,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - the requirement of the `lucatume/wp-snaphot-assertions` package
 - the `\tad\WPBrowser\Snapshot\WPHtmlOutputDriver` class
 - the `wpcept` binaries
-- `lucatume/wp-snapshot-assertions` dependency 
+- `lucatume/wp-snapshot-assertions` dependency
 - `tad\WPBrowser\Snapshot\WPHtmlOutputDriver` proxy class and  the `lucatume/wp-snapshot-assertions` dependency
 - `wpcept` and `wpcept.bat` deprecated binaries
 - `Codeception\Command\DbSnapshot` command
@@ -339,7 +345,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.22.0] 2018-01-26;
 ### Fixed
-- added wait operation to `WPBrowserMethods` to try and tackle the missing login form issue () 
+- added wait operation to `WPBrowserMethods` to try and tackle the missing login form issue ()
 - replace `eventviva/php-image-resize` dependency with `gumlet/php-image-resize`
 - added the `WPHtmlOutputDriver` class to allow comparison of WordPress specific HTML output using the `spatie/phpunit-snapshot-assertions` library
 
@@ -476,7 +482,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - locked `codeception/codeception` version at `~2.2.0` while support for version `2.3` is developed
 - moved the `codeception/codeception` requirement to the `require` section
 - updated the code of `dontHaveInDatabase` type methods of `WPDb` to remove meta of handled objects by default
- 
+
 ## [1.20.0] 2017-05-15
 ### Added
 - added support for "just loading WordPress" to the WPLoader module using the `loadOnly` parameter
@@ -579,7 +585,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - support for the `theme` configuration parameter in the `WPLoader` module configuration
 
 ### Fixed
-- plugin activation/deactivation in `WPBrowser` module, thanks [Ippey](https://github.com/Ippey) 
+- plugin activation/deactivation in `WPBrowser` module, thanks [Ippey](https://github.com/Ippey)
 
 ## [1.16.0] 2016-09-05
 ### Added
@@ -722,8 +728,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.10.3] 2016-02-22
 ### Added
 - `WPBrowserMethods::amOnAdminPage` method, applies to WPWebDriver and WPBrowser modules
-- `WPBootstrapper::setPermalinkStructureAndFlush` method 
-- `WPBootstrapper::loadWpComponent` method 
+- `WPBootstrapper::setPermalinkStructureAndFlush` method
+- `WPBootstrapper::loadWpComponent` method
 
 ## [1.10.0] 2016-02-18
 ### Modified
@@ -740,7 +746,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ###Added
 - the `wpunit` test suite to the ones scaffolded by default when using the `bootstrap:pyramid` command
 
-## [1.9.4] 2016-01-20 
+## [1.9.4] 2016-01-20
 ### Fixed
 - proper name of `WPAjaxTestCase` class
 
@@ -866,7 +872,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - some `seeInDatabase` method syntax
 
-## [1.7.16a] 2015-11-18 
+## [1.7.16a] 2015-11-18
 ### Fixed
 - the `_delete_all_posts` function in the automated tests bootstrap file now runs without any filters/actions hooked
 
@@ -1186,4 +1192,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.31]: https://github.com/lucatume/wp-browser/compare/2.2.30...2.2.31
 [2.2.32]: https://github.com/lucatume/wp-browser/compare/2.2.31...2.2.32
 [2.2.33]: https://github.com/lucatume/wp-browser/compare/2.2.32...2.2.33
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.33...HEAD
+[2.2.34]: https://github.com/lucatume/wp-browser/compare/2.2.33...2.2.34
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.34...HEAD
