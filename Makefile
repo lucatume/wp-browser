@@ -169,6 +169,7 @@ ci_script:
 	vendor/bin/codecept run acceptance
 	vendor/bin/codecept run cli
 	vendor/bin/codecept run climodule
+	vendor/bin/codecept run command
 	vendor/bin/codecept run functional
 	vendor/bin/codecept run muloader
 	vendor/bin/codecept run unit
