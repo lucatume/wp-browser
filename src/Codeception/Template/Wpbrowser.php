@@ -32,7 +32,7 @@ class Wpbrowser extends Bootstrap
      *
      * @var string
      */
-    protected $envFileName = '';
+    protected $envFileName = '.env.testing';
 
     /**
      * @param bool $interactive
