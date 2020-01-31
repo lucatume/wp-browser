@@ -32,7 +32,7 @@ class Wpbrowser extends Bootstrap
      *
      * @var string
      */
-    protected $envFileName = '.env.testing';
+    protected $envFileName = '';
 
     /**
      * @param bool $interactive
@@ -78,8 +78,6 @@ class Wpbrowser extends Bootstrap
 
         $this->say("<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n");
 
-        $this->createGlobalConfig();
-
         $this->say("File codeception.yml created       <- global configuration");
 
         $this->createDirs();
@@ -99,6 +97,7 @@ class Wpbrowser extends Bootstrap
         $installationData = $this->getInstallationData($interactive);
 
         try {
+            $this->createGlobalConfig();
             $this->creatEnvFile($installationData);
             $this->loadEnvFile();
             $this->createUnitSuite();
@@ -668,9 +667,9 @@ modules:
             password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true 
+            populate: true
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true 
+            cleanup: true
             waitlock: 10
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above

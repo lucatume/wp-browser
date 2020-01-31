@@ -18,6 +18,23 @@ class WpbrowserTest extends \Codeception\Test\Unit
      */
     protected $process;
 
+    public function excludeGeneratedFiles($filePath, $fileContents)
+    {
+        return true;
+    }
+
+    public static function removeHashLines(array $expected, array $current, $file)
+    {
+        $removeHashLine = static function ($line) {
+            return preg_replace('/\\s*\\/\\/\\s*\\[STAMP].*$/uim', '', $line);
+        };
+        $arr = [
+            array_map($removeHashLine, $expected),
+            array_map($removeHashLine, $current)
+        ];
+        return $arr;
+    }
+
     public function test_non_interactive_setup()
     {
         $process = $this->buildProcess(['--no-interaction']);
@@ -25,7 +42,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
 
         $this->assertEquals(0, $process->getExitCode());
 
-        $this->assertMatchesDirectorySnapshot($this->workDir);
+        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
     }
 
     protected function buildProcess(array $args = [])
@@ -80,7 +97,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $input->close();
         $process->wait();
 
-        $this->assertMatchesDirectorySnapshot($this->workDir);
+        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
     }
 
     public function test_changing_env_file_name()
@@ -124,7 +141,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $input->close();
         $process->wait();
 
-        $this->assertMatchesDirectorySnapshot($this->workDir);
+        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
     }
 
     protected function _before()
