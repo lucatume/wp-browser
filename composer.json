@@ -39,7 +39,7 @@
     "phpstan/phpstan-shim": "^0.11.15",
     "szepeviktor/phpstan-wordpress": "^0.2.0",
     "erusev/parsedown": "^1.7",
-    "lucatume/codeception-snapshot-assertions": "^0.2.2",
+    "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
     "squizlabs/php_codesniffer": "^3.4",
     "victorjonsson/markdowndocs": "dev-master"
