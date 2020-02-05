@@ -42,7 +42,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
 
         $this->assertEquals(0, $process->getExitCode());
 
-        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
+        $this->assertMatchesDirectorySnapshot($this->workDir, [static::class,'removeHashLines']);
     }
 
     protected function buildProcess(array $args = [])
@@ -97,7 +97,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $input->close();
         $process->wait();
 
-        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
+        $this->assertMatchesDirectorySnapshot($this->workDir, [static::class,'removeHashLines']);
     }
 
     public function test_changing_env_file_name()
@@ -141,7 +141,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $input->close();
         $process->wait();
 
-        $this->assertMatchesDirectorySnapshot($this->workDir,[static::class,'removeHashLines']);
+        $this->assertMatchesDirectorySnapshot($this->workDir, [static::class,'removeHashLines']);
     }
 
     protected function _before()
