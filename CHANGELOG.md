@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.35] 2020-02-13;
+
+### Fixed
+
+- issue with setup default values where the default environment file name would be empty or the file would be missing
+
 ## [2.2.34] 2020-01-29;
 
 ### Fixed
@@ -1193,4 +1199,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.32]: https://github.com/lucatume/wp-browser/compare/2.2.31...2.2.32
 [2.2.33]: https://github.com/lucatume/wp-browser/compare/2.2.32...2.2.33
 [2.2.34]: https://github.com/lucatume/wp-browser/compare/2.2.33...2.2.34
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.34...HEAD
+[2.2.35]: https://github.com/lucatume/wp-browser/compare/2.2.34...2.2.35
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.35...HEAD
