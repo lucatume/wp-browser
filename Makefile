@@ -169,8 +169,8 @@ ci_script:
 	vendor/bin/codecept run acceptance
 	vendor/bin/codecept run cli
 	vendor/bin/codecept run climodule
-	if [[ $${TRAVIS_PHP_VERSION:0:3} == "7.0" && $${CODECEPTION_VERSION:0:2} != "2.5" ]]; then \
-		vendor/bin/codecept run command
+	if [[ $${TRAVIS_PHP_VERSION:0:3} > "5.6" && $${CODECEPTION_VERSION:0:2} > "2.5" ]]; then \
+		vendor/bin/codecept run command; \
 	fi
 	vendor/bin/codecept run functional
 	vendor/bin/codecept run muloader
