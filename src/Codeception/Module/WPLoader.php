@@ -216,7 +216,7 @@ class WPLoader extends Module
 
         if ($loadOnly) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            $this->addAction(Events::SUITE_INIT, [$this, '_loadWordpress'], 10);
+            $this->addAction(Events::SUITE_BEFORE, [$this, '_loadWordpress'], -10);
 
             return;
         } else {
@@ -732,18 +732,6 @@ class WPLoader extends Module
         }
 
         $output->writeln('<error>' . implode(PHP_EOL, $lines) . '</error>');
-    }
-
-    protected function loadWordPressAfterDb()
-    {
-        $matchingModule = null;
-
-        $this->debug(sprintf(
-            'Module WPLoader will initialize after module %s initialized',
-            $matchingModule
-        ));
-
-        $this->_loadWordpress();
     }
 
     public function _wordPressRedirectHandler($location, $status)
