@@ -2,7 +2,6 @@
 
 namespace Codeception\Module;
 
-use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Lib\ModuleContainer;
@@ -13,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
-use tad\WPBrowser\Module\Traits\EventListener;
+use tad\WPBrowser\Module\Traits\WithEvents;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 
 /**
@@ -32,7 +31,7 @@ use tad\WPBrowser\Module\WPLoader\FactoryStore;
 class WPLoader extends Module
 {
 
-    use EventListener;
+    use WithEvents;
 
     public static $includeInheritedActions = true;
 
@@ -216,7 +215,7 @@ class WPLoader extends Module
 
         if ($loadOnly) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            $this->addAction(Events::SUITE_BEFORE, [$this, '_loadWordpress'], -10);
+            $this->addAction(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
 
             return;
         } else {

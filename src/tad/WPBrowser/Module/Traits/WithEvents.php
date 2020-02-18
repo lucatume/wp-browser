@@ -18,7 +18,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @package tad\WPBrowser\Module\Traits
  * @property \Codeception\Lib\ModuleContainer $moduleContainer
  */
-trait EventListener
+trait WithEvents
 {
 
     /**

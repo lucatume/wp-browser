@@ -8,6 +8,8 @@ use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use PDO;
+use tad\WPBrowser\Events\Event;
+use tad\WPBrowser\Events\ModuleEvent;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
@@ -17,6 +19,7 @@ use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
+use tad\WPBrowser\Module\Traits\WithEvents;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
@@ -27,6 +30,10 @@ use function tad\WPBrowser\slug;
  */
 class WPDb extends Db
 {
+
+    use WithEvents;
+
+    const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
 
     /**
      * @var \tad\WPBrowser\Module\Support\DbDump
@@ -135,13 +142,6 @@ class WPDb extends Db
      *            by the module.
      */
     protected $scaffoldedBlogIds;
-
-    /**
-     * Whether the current database belongs to a multisite installation or not.
-     *
-     * @var bool
-     */
-    protected $isMultisite;
 
     /**
      * Whether the module did init already or not.
@@ -3990,5 +3990,19 @@ class WPDb extends Db
         }
 
         $this->dontSeeInDatabase($tableName, $criteria);
+    }
+
+    /**
+     * Overrides the base module implementation to fire an ModuleEvent.
+     *
+     * @param array<string,mixed> $settings The suite settings.
+     *
+     * @throws ModuleException If there's any issue getting hold of the current Codeception global dispatcher.
+     */
+    public function _beforeSuite($settings = [])
+    {
+        parent::_beforeSuite($settings);
+
+        $this->getEventDispatcher()->dispatch(new ModuleEvent($this), static::EVENT_BEFORE_SUITE);
     }
 }
