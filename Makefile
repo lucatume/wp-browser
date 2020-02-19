@@ -15,7 +15,15 @@ TRAVIS_WP_SUBDOMAIN_2_TITLE ?= "Test Subdomain 2"
 TRAVIS_WP_VERSION ?= "latest"
 COMPOSE_FILE ?= docker-compose.yml
 CODECEPTION_VERSION ?= "^2.5"
-PROJECT := $(shell basename ${CURDIR})
+
+# If you see pwd_unknown showing up, this is why. Re-calibrate your system.
+PWD ?= pwd_unknown
+
+# PROJECT_NAME defaults to name of the current directory.
+PROJECT_NAME = $(notdir $(PWD))
+
+# Suppress makes own output.
+.SILENT:
 
 .PHONY: wp_dump \
 	cs_sniff \
@@ -31,7 +39,8 @@ PROJECT := $(shell basename ${CURDIR})
 	pre_commit \
 	require_codeception_2.5 \
 	require_codeception_3 \
-	phpstan
+	phpstan \
+	php56
 
 define wp_config_extra
 if ( filter_has_var( INPUT_SERVER, 'HTTP_HOST' ) ) {
@@ -262,15 +271,15 @@ gitbook_build: docker/gitbook/id duplicate_gitbook_files module_docs gitbook_ins
 	rm -rf ${CURDIR}/docs/site/bin
 
 remove_hosts_entries:
-	echo "Removing project ${PROJECT} hosts entries (and backing up /etc/hosts to /etc/hosts.orig...)"
-	sudo sed -i.orig '/^## ${PROJECT} project - Start ##/,/## ${PROJECT} project - End ##$$/d' /etc/hosts
+	echo "Removing project ${PROJECT_NAME} hosts entries (and backing up /etc/hosts to /etc/hosts.orig...)"
+	sudo sed -i.orig '/^## ${PROJECT_NAME} project - Start ##/,/## ${PROJECT_NAME} project - End ##$$/d' /etc/hosts
 
 sync_hosts_entries: remove_hosts_entries
 	echo "Adding project ${project} hosts entries..."
 	set -o allexport &&  source .env.testing &&  set +o allexport && \
-	sudo -- sh -c "echo '## ${PROJECT} project - Start ##' >> /etc/hosts" && \
+	sudo -- sh -c "echo '## ${PROJECT_NAME} project - Start ##' >> /etc/hosts" && \
 	sudo -- sh -c "echo '127.0.0.1 $${TEST_HOSTS}' >> /etc/hosts" && \
-	sudo -- sh -c "echo '## ${PROJECT} project - End ##' >> /etc/hosts"
+	sudo -- sh -c "echo '## ${PROJECT_NAME} project - End ##' >> /etc/hosts"
 
 # Export a dump of WordPressdatabase to the _data folder of the project.
 wp_dump:
@@ -296,3 +305,61 @@ require_phpunit_8:
 
 phpstan:
 	vendor/bin/phpstan analyze -l max
+
+clean:
+	rm -rf *.bak
+	rm -rf *.ready
+	find tests/_containers -name 'id_*' -print0 | xargs -0 rm -v
+
+tests/_containers/composer/id_5.6:
+	docker build \
+		--build-arg PHP_VERSION=5.6 \
+		--iidfile tests/_containers/composer/id_5.6 \
+		--tag composer_5.6 \
+		tests/_containers/composer
+
+5.6.cc.3.0.ready: tests/_containers/composer/id_5.6
+	# Backup the current vendor and Composer files.
+	test -d vendor && mv vendor vendor.bak ||  echo "No vendor to backup."
+	test -f composer.lock && mv composer.lock composer.lock.bak || echo "No composer.lock to backup."
+	test -f composer.json && cp composer.json composer.json.bak || (echo "composer.json file not found, stopping."; exit 1)
+	# Remove scripts entries.
+	docker run --rm -v "${PWD}:/project" stedolan/jq 'del(.scripts)' /project/composer.json > composer.json.tmp
+	rm composer.json && mv composer.json.tmp composer.json
+	# Remove phpstan dependencies on lower PHP versions.
+	sed -i.bak '/phpstan/d' composer.json
+	# Update composer dependencies using PHP 5.6.
+	docker run --rm  \
+		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
+		-v "${PWD}:/project" \
+		composer_5.6 require codeception/codeception:^3.0
+	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
+	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
+	docker-compose --project-name php_5.6_cc_3.0 down
+	touch 5.6.cc.3.0.ready
+
+5.6.cc.2.5.ready: tests/_containers/composer/id_5.6
+	# Backup the current vendor and Composer files.
+	test -d vendor && mv vendor vendor.bak ||  echo "No vendor to backup."
+	test -f composer.lock && mv composer.lock composer.lock.bak || echo "No composer.lock to backup."
+	test -f composer.json && cp composer.json composer.json.bak || (echo "composer.json file not found, stopping."; exit 1)
+	# Remove scripts entries.
+	docker run --rm -v "${PWD}:/project" stedolan/jq 'del(.scripts)' /project/composer.json > composer.json.tmp
+	rm composer.json && mv composer.json.tmp composer.json
+	# Remove phpstan dependencies on lower PHP versions.
+	sed -i.bak '/phpstan/d' composer.json
+	# Update composer dependencies using PHP 5.6.
+	docker run --rm  \
+		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
+		-v "${PWD}:/project" \
+		composer_5.6 require codeception/codeception:^3.0
+	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
+	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
+	docker-compose --project-name php_5.6_cc_2.5 down
+	touch 5.6.cc.2.5.ready
+
+php_5.6_cc_3.0: 5.6.cc.3.0.ready
+	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
+
+php_5.6_cc_2.5: 5.6.cc.2.5.ready
+	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug

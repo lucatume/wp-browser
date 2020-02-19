@@ -1,0 +1,65 @@
+version: "3"
+
+networks:
+  test:
+  utils:
+
+services:
+
+  db:
+    networks:
+      - test
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+
+  wordpress:
+    networks:
+      - test
+    image: wordpress
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_NAME: test
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: password
+    volumes:
+      - ./vendor/wordpress/wordpress:/var/www/html
+
+  chrome:
+    networks:
+      - test
+    image: selenium/standalone-chrome:3.141.59-oxygen
+
+  codeception:
+    networks:
+      - test
+    build:
+      context: tests/_containers/codeception
+      args:
+        CODECEPTION_CONTAINER_VERSION: "${CODECEPTION_CONTAINER_VERSION:-3.1.0}"
+    image: "wpbrowser_cc_${CODECEPTION_CONTAINER_VERSION:-3.1.0}"
+    environment:
+      WORDPRESS_DB_NAME: test
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: password
+      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser}"
+      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser} remote_enable=${XDR:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+    depends_on:
+      - wordpress
+      - chrome
+    volumes:
+    - .:/project
+
+  composer:
+   image: "composer_${PHP_VERSION:-7.2}"
+   networks:
+     - utils
+   build:
+     context: ./tests/_containers/composer
+     args:
+       PHP_VERSION: "${PHP_VERSION:-7.2}"
+   volumes:
+      - .:/project
