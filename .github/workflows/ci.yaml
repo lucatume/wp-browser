@@ -1,0 +1,27 @@
+name: CI
+
+on: [push]
+
+jobs:
+
+  php_56_cc_25:
+    name: PHP 5.6, CC 2.5
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare
+        run: make 5.6.cc.2.5.ready
+      - name: Run tests
+        run: make php_5.6_cc_2.5
+
+  php_56_cc_30:
+    name: PHP 5.6, CC 3.0
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare
+        run: make 5.6.cc.3.0.ready
+      - name: Run tests
+        run: make php_5.6_cc_3.0
