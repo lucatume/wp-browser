@@ -32,3 +32,6 @@ rel
 
 # Backup files and folders
 *.bak
+
+# Ready files
+tests/_containers/**/*.ready
