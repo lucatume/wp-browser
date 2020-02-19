@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.36] 2020-02-19;
+
+### Fixed
+
+- issue with `WPDb` and `WPLoader` module in `loadOnly` mode that would cause WPLoader to load WordPress before the correct database setup
+
 ## [2.2.35] 2020-02-13;
 
 ### Fixed
@@ -1200,4 +1206,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.33]: https://github.com/lucatume/wp-browser/compare/2.2.32...2.2.33
 [2.2.34]: https://github.com/lucatume/wp-browser/compare/2.2.33...2.2.34
 [2.2.35]: https://github.com/lucatume/wp-browser/compare/2.2.34...2.2.35
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.35...HEAD
+[2.2.36]: https://github.com/lucatume/wp-browser/compare/2.2.35...2.2.36
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.36...HEAD
