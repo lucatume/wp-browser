@@ -330,9 +330,12 @@ tests/_containers/composer/id_5.6:
 	sed -i.bak '/phpstan/d' composer.json
 	# Update composer dependencies using PHP 5.6.
 	docker run --rm  \
+		--user $$(id -u):$$(id -g) \
 		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
 		-v "${PWD}:/project" \
 		composer_5.6 require codeception/codeception:^3.0
+	whoami
+	ls -la vendor
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
 	docker-compose --project-name php_5.6_cc_3.0 down
@@ -350,9 +353,12 @@ tests/_containers/composer/id_5.6:
 	sed -i.bak '/phpstan/d' composer.json
 	# Update composer dependencies using PHP 5.6.
 	docker run --rm  \
+		--user $$(id -u):$$(id -g) \
 		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
 		-v "${PWD}:/project" \
 		composer_5.6 require codeception/codeception:^3.0
+	whoami
+	ls -la vendor
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
 	docker-compose --project-name php_5.6_cc_2.5 down
