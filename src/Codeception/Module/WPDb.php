@@ -9,7 +9,6 @@ use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use PDO;
 use tad\WPBrowser\Events\Event;
-use tad\WPBrowser\Events\ModuleEvent;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
@@ -4003,6 +4002,6 @@ class WPDb extends Db
     {
         parent::_beforeSuite($settings);
 
-        $this->getEventDispatcher()->dispatch(new ModuleEvent($this), static::EVENT_BEFORE_SUITE);
+        $this->getEventDispatcher()->dispatch(static::EVENT_BEFORE_SUITE);
     }
 }

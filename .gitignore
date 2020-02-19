@@ -20,6 +20,7 @@ src/includes/patchwork.json
 docs/node_modules
 docs/_book
 tests/_support/_generated
+tests/_containers/id_*
 composer.lock
 
 # Some local vim files
@@ -28,3 +29,6 @@ tags
 
 # Release notes
 rel
+
+# Backup files and folders
+*.bak
