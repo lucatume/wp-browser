@@ -10,8 +10,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Cache vendor dir
+        uses: actions/cache@v1
+        with:
+          path: vendor
+          key: ${{ runner.OS }}-build-php-56-cc-25-${{ hashFiles('**/composer.json') }}
       - name: Prepare
-        run: make 5.6.cc.2.5.ready
+        run: test -d vendor || make 5.6.cc.2.5.ready
       - name: Run tests
         run: make php_5.6_cc_2.5
 
@@ -21,7 +26,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Cache vendor dir
+        uses: actions/cache@v1
+        with:
+          path: vendor
+          key: ${{ runner.OS }}-build-php-56-cc-30-${{ hashFiles('**/composer.json') }}
       - name: Prepare
-        run: make 5.6.cc.3.0.ready
+        run: test -d vendor || make 5.6.cc.3.0.ready
       - name: Run tests
         run: make php_5.6_cc_3.0
