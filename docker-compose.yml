@@ -35,11 +35,7 @@ services:
   codeception:
     networks:
       - test
-    build:
-      context: tests/_containers/codeception
-      args:
-        CODECEPTION_CONTAINER_VERSION: "${CODECEPTION_CONTAINER_VERSION:-3.1.0}"
-    image: "wpbrowser_cc_${CODECEPTION_CONTAINER_VERSION:-3.1.0}"
+    image: lucatume/codeception:cc3.1.0
     environment:
       WORDPRESS_DB_NAME: test
       WORDPRESS_DB_HOST: db
@@ -52,14 +48,3 @@ services:
       - chrome
     volumes:
     - .:/project
-
-  composer:
-   image: "composer_${PHP_VERSION:-7.2}"
-   networks:
-     - utils
-   build:
-     context: ./tests/_containers/composer
-     args:
-       PHP_VERSION: "${PHP_VERSION:-7.2}"
-   volumes:
-      - .:/project

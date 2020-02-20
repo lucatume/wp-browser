@@ -309,16 +309,8 @@ phpstan:
 clean:
 	rm -rf *.bak
 	rm -rf *.ready
-	find tests/_containers -name 'id_*' -print0 | xargs -0 rm -v
 
-tests/_containers/composer/id_5.6:
-	docker build \
-		--build-arg PHP_VERSION=5.6 \
-		--iidfile tests/_containers/composer/id_5.6 \
-		--tag composer_5.6 \
-		tests/_containers/composer
-
-5.6.cc.3.0.ready: tests/_containers/composer/id_5.6
+5.6.cc.3.0.ready:
 	# Backup the current vendor and Composer files.
 	test -d vendor && mv vendor vendor.bak ||  echo "No vendor to backup."
 	test -f composer.lock && mv composer.lock composer.lock.bak || echo "No composer.lock to backup."
@@ -333,15 +325,13 @@ tests/_containers/composer/id_5.6:
 		--user $$(id -u):$$(id -g) \
 		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
 		-v "${PWD}:/project" \
-		composer_5.6 require codeception/codeception:^3.0
-	whoami
-	ls -la vendor
+		lucatume/composer:php5.6 require codeception/codeception:^3.0
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
 	docker-compose --project-name php_5.6_cc_3.0 down
 	touch 5.6.cc.3.0.ready
 
-5.6.cc.2.5.ready: tests/_containers/composer/id_5.6
+5.6.cc.2.5.ready:
 	# Backup the current vendor and Composer files.
 	test -d vendor && mv vendor vendor.bak ||  echo "No vendor to backup."
 	test -f composer.lock && mv composer.lock composer.lock.bak || echo "No composer.lock to backup."
@@ -356,16 +346,14 @@ tests/_containers/composer/id_5.6:
 		--user $$(id -u):$$(id -g) \
 		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
 		-v "${PWD}:/project" \
-		composer_5.6 require codeception/codeception:^3.0
-	whoami
-	ls -la vendor
+		lucatume/composer:php5.6 require codeception/codeception:^3.0
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
 	docker-compose --project-name php_5.6_cc_2.5 down
 	touch 5.6.cc.2.5.ready
 
 php_5.6_cc_3.0: 5.6.cc.3.0.ready
-	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_3.0 run --rm lucatume/codeception run wploader_wpdb_interaction --debug
 
 php_5.6_cc_2.5: 5.6.cc.2.5.ready
-	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_2.5 run --rm lucatume/codeception run wploader_wpdb_interaction --debug
