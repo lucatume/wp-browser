@@ -353,7 +353,7 @@ clean:
 	touch 5.6.cc.2.5.ready
 
 php_5.6_cc_3.0: 5.6.cc.3.0.ready
-	docker-compose --project-name php_5.6_cc_3.0 run --rm lucatume/codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
 
 php_5.6_cc_2.5: 5.6.cc.2.5.ready
-	docker-compose --project-name php_5.6_cc_2.5 run --rm lucatume/codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug
