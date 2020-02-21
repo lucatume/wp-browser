@@ -169,12 +169,12 @@ ci_script:
 	vendor/bin/codecept run acceptance
 	vendor/bin/codecept run cli
 	vendor/bin/codecept run climodule
-	if [[ $${TRAVIS_PHP_VERSION:0:3} > "5.6" && $${CODECEPTION_VERSION:0:2} > "2.5" ]]; then \
+	if [[ $${TRAVIS_PHP_VERSION:0:3} > "5.6" && $${CODECEPTION_VERSION:0:2} > "^2.5" ]]; then \
 		vendor/bin/codecept run command; \
 	fi
 	vendor/bin/codecept run functional
 	vendor/bin/codecept run muloader
-	if [[ $${CODECEPTION_VERSION:0:2} == "2.5" ]]; then \
+	if [[ $${CODECEPTION_VERSION:0:2} == "^2.5" ]]; then \
 		rm tests/unit/tad/WPBrowser/Traits/WithEventsTest.php; \
 	fi
 	vendor/bin/codecept run unit
