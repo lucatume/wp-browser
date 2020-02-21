@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.2.37] 2020-02-21;
+
+### Fixed
+
+- issue in the `WithEvents` trait that would cause issues in the `console` command
+
 ## [2.2.36] 2020-02-19;
 
 ### Fixed
@@ -1207,4 +1213,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.34]: https://github.com/lucatume/wp-browser/compare/2.2.33...2.2.34
 [2.2.35]: https://github.com/lucatume/wp-browser/compare/2.2.34...2.2.35
 [2.2.36]: https://github.com/lucatume/wp-browser/compare/2.2.35...2.2.36
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.36...HEAD
+[2.2.37]: https://github.com/lucatume/wp-browser/compare/2.2.36...2.2.37
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.37...HEAD
