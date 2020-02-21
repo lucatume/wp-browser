@@ -174,6 +174,9 @@ ci_script:
 	fi
 	vendor/bin/codecept run functional
 	vendor/bin/codecept run muloader
+	if [[ $${CODECEPTION_VERSION:0:2} == "2.5" ]]; then \
+		rm tests/unit/tad/WPBrowser/Traits/WithEventsTest.php; \
+	fi
 	vendor/bin/codecept run unit
 	vendor/bin/codecept run webdriver
 	vendor/bin/codecept run wpfunctional
