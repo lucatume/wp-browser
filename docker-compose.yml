@@ -6,16 +6,20 @@ networks:
 services:
 
   db:
+    image: mariadb
     networks:
       - test
-    image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: password
 
   wordpress:
-    networks:
-      - test
     image: wordpress
+    networks:
+      test:
+        aliases:
+          - "wordpress.localhost"
+          - "test1.wordpress.localhost"
+          - "test2.wordpress.localhost"
     depends_on:
       - db
     environment:
@@ -23,18 +27,27 @@ services:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Multisite */
+        define( 'WP_ALLOW_MULTISITE', true );
+        define( 'MULTISITE', true );
+        define( 'SUBDOMAIN_INSTALL', true );
+        define( 'DOMAIN_CURRENT_SITE', 'wordpress.localhost' );
+        define( 'PATH_CURRENT_SITE', '/' );
+        define( 'SITE_ID_CURRENT_SITE', 1 );
+        define( 'BLOG_ID_CURRENT_SITE', 1 );
     volumes:
       - ./vendor/wordpress/wordpress:/var/www/html
 
   chrome:
+    image: selenium/standalone-chrome:3.141.59-oxygen
     networks:
       - test
-    image: selenium/standalone-chrome:3.141.59-oxygen
 
   codeception:
+    image: lucatume/codeception:cc3.1.0
     networks:
       - test
-    image: lucatume/codeception:cc3.1.0
     environment:
       WORDPRESS_DB_NAME: test
       WORDPRESS_DB_HOST: db

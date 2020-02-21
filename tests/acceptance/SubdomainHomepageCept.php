@@ -1,11 +1,21 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('access the homepage of a subdomain site');
-$I->amOnSubdomain(getenv('WP_SUBDOMAIN_1') ?: 'test1');
+
+$I->useBlog(2);
+$I->havePostInDatabase(['post_title' => 'Post test1']);
+
+$I->amOnSubdomain('test1');
 $I->amOnPage('/');
+
 $I->seeElement('body.home');
-$I->seeInTitle(getenv('WP_SUBDOMAIN_1_TITLE') ?: 'Test Subdomain 1');
-$I->amOnSubdomain(getenv('WP_SUBDOMAIN_2') ?: 'test2');
+$I->see('Post test1');
+
+$I->useBlog(3);
+$I->havePostInDatabase(['post_title' => 'Post test2']);
+
+$I->amOnSubdomain('test2');
 $I->amOnPage('/');
+
 $I->seeElement('body.home');
-$I->seeInTitle(getenv('WP_SUBDOMAIN_2_TITLE') ?: 'Test Subdomain 2');
+$I->see('Post test2');
