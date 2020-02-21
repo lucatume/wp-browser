@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
-use tad\WPBrowser\Module\Traits\WithEvents;
+use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 
 /**

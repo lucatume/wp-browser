@@ -18,7 +18,7 @@ use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
-use tad\WPBrowser\Module\Traits\WithEvents;
+use tad\WPBrowser\Traits\WithEvents;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
