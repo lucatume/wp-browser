@@ -35,4 +35,4 @@ rel
 
 # Ready and id files
 tests/_containers/**/id_*
-tests/_containers/**/*.ready
+*.ready
