@@ -51,6 +51,9 @@ services:
       - "wordpress.localhost:172.28.1.1"
       - "test1.wordpress.localhost:172.28.1.1"
       - "test2.wordpress.localhost:172.28.1.1"
+      - "blog0.wordpress.localhost:172.28.1.1"
+      - "blog1.wordpress.localhost:172.28.1.1"
+      - "blog2.wordpress.localhost:172.28.1.1"
 
   codeception:
     image: lucatume/codeception:cc3.1.0
@@ -61,6 +64,9 @@ services:
       - "wordpress.localhost:172.28.1.1"
       - "test1.wordpress.localhost:172.28.1.1"
       - "test2.wordpress.localhost:172.28.1.1"
+      - "blog0.wordpress.localhost:172.28.1.1"
+      - "blog1.wordpress.localhost:172.28.1.1"
+      - "blog2.wordpress.localhost:172.28.1.1"
     environment:
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
