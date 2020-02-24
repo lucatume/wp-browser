@@ -15,7 +15,7 @@ modules:
             cleanup: true
             reconnect: false
             url: '%WORDPRESS_URL%'
-            tablePrefix: 'wp_'
+            tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
         WPLoader:
             loadOnly: true
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
@@ -23,3 +23,4 @@ modules:
             dbHost: %WORDPRESS_DB_HOST%
             dbUser: %WORDPRESS_DB_USER%
             dbPassword: %WORDPRESS_DB_PASSWORD%
+            domain: %WORDPRESS_DOMAIN%
