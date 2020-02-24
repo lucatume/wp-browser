@@ -331,7 +331,7 @@ clean:
 		lucatume/composer:php5.6 require codeception/codeception:^3.0
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
-	docker-compose --project-name php_5.6_cc_3.0 down
+	docker-compose down
 	touch 5.6.cc.3.0.ready
 
 5.6.cc.2.5.ready:
@@ -352,13 +352,39 @@ clean:
 		lucatume/composer:php5.6 require codeception/codeception:^3.0
 	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
 	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
-	docker-compose --project-name php_5.6_cc_2.5 down
+	docker-compose down
 	touch 5.6.cc.2.5.ready
 
 php_5.6_cc_3.0:
-	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
-	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run acceptance --debug
+	docker-compose php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose php_5.6_cc_3.0 run --rm codeception run acceptance --debug
+	docker-compose php_5.6_cc_3.0 run --rm codeception run climodule --debug
 
 php_5.6_cc_2.5:
-	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug
-	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run acceptance --debug
+	docker-compose php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose php_5.6_cc_2.5 run --rm codeception run acceptance --debug
+	docker-compose php_5.6_cc_2.5 run --rm codeception run climodule --debug
+
+7.2.cc.3.0.ready:
+	# Backup the current vendor and Composer files.
+	test -d vendor && mv vendor vendor.bak ||  echo "No vendor to backup."
+	test -f composer.lock && mv composer.lock composer.lock.bak || echo "No composer.lock to backup."
+	test -f composer.json && cp composer.json composer.json.bak || (echo "composer.json file not found, stopping."; exit 1)
+	# Update composer dependencies using PHP 7.2.
+	docker run --rm  \
+		--user $$(id -u):$$(id -g) \
+		-v "$${HOME}/.composer/auth.json:/root/.composer/auth.json" \
+		-v "${PWD}:/project" \
+		lucatume/composer:php7.2 require codeception/codeception:^3.0
+	test -d vendor/wordpress/wordpress || mkdir -p vendor/wordpress/wordpress
+	test $(find . -name *.ready) && rm *.ready || echo "No .ready files found."
+	docker-compose down
+	touch 7.2.cc.3.0.ready
+
+php_7.2_cc_3.0:
+	docker-compose run --rm codeception run acceptance --debug
+	docker-compose run --rm codeception run cli --debug
+	docker-compose run --rm codeception run climodule --debug
+	docker-compose run --rm codeception run command --debug
+	docker-compose run --rm codeception run dbunit --debug
+	docker-compose run --rm codeception run wploader_wpdb_interaction --debug
