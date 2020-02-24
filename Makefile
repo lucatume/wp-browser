@@ -357,6 +357,8 @@ clean:
 
 php_5.6_cc_3.0:
 	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_3.0 run --rm codeception run acceptance --debug
 
 php_5.6_cc_2.5:
 	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose --project-name php_5.6_cc_2.5 run --rm codeception run acceptance --debug
