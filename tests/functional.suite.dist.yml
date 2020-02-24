@@ -13,20 +13,20 @@ modules:
       - WPFilesystem
     config:
       WPDb:
-        dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
-        user: %DB_USER%
-        password: %DB_PASSWORD%
+        dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
+        user: %WORDPRESS_DB_USER%
+        password: %WORDPRESS_DB_PASSWORD%
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
         reconnect: false
-        url: '%WP_URL%'
+        url: '%WORDPRESS_URL%'
         tablePrefix: 'wp_'
         databases:
           multisite-subdir:
-            dsn: 'mysql:host=%DB_HOST%;dbname=%MU_SUBDIR_DB_NAME%'
-            user: %DB_USER%
-            password: %DB_PASSWORD%
+            dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%MU_SUBDIR_WORDPRESS_DB_NAME%'
+            user: %WORDPRESS_DB_USER%
+            password: %WORDPRESS_DB_PASSWORD%
             dump: 'tests/_data/mu-subdir-dump.sql'
             populate: true
             cleanup: true
@@ -34,9 +34,9 @@ modules:
             url: '%MU_WP_SUBDIR_URL%'
             tablePrefix: 'wp_'
           multisite-subdomain:
-            dsn: 'mysql:host=%DB_HOST%;dbname=%MU_SUBDOMAIN_DB_NAME%'
-            user: %DB_USER%
-            password: %DB_PASSWORD%
+            dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%MU_SUBDOMAIN_WORDPRESS_DB_NAME%'
+            user: %WORDPRESS_DB_USER%
+            password: %WORDPRESS_DB_PASSWORD%
             dump: 'tests/_data/mu-subdomain-dump.sql'
             populate: true
             cleanup: true
@@ -44,4 +44,4 @@ modules:
             url: '%MU_WP_SUBDIR_URL%'
             tablePrefix: 'wp_'
       WPFilesystem:
-        wpRootFolder: %WP_ROOT_FOLDER%
+        wpRootFolder: %WORDPRESS_ROOT_DIR%

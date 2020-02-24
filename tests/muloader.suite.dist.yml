@@ -6,13 +6,13 @@ modules:
     config:
         WPLoader:
             multisite: true
-            wpRootFolder: '%WP_ROOT_FOLDER%'
-            dbName: %TEST_DB_NAME%
-            dbHost: '%DB_HOST%'
-            dbUser: %DB_USER%
-            dbPassword: %DB_PASSWORD%
+            wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+            dbName: %TEST_WORDPRESS_DB_NAME%
+            dbHost: '%WORDPRESS_DB_HOST%'
+            dbUser: %WORDPRESS_DB_USER%
+            dbPassword: %WORDPRESS_DB_PASSWORD%
             wpDebug: true
-            tablePrefix: wp_
+            tablePrefix: %WORDPRESS_TABLE_PREFIX%
             domain: '%WP_DOMAIN%'
             adminEmail: 'admin@%WP_DOMAIN%'
             title: 'Test'

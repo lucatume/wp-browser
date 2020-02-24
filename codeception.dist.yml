@@ -18,16 +18,16 @@ coverage:
         - src/tad/scripts/*
         - src/data/*
         - src/includes/*
-wpFolder: '%WP_ROOT_FOLDER%'
+wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
         - tad\WPBrowser\Extension\Copier
     config:
         tad\WPBrowser\Extension\Copier:
             files:
-               'tests/_data/themes/dummy': '%WP_ROOT_FOLDER%/wp-content/themes/dummy'
-               'tests/_data/plugins/mu-plugin-1': '%WP_ROOT_FOLDER%/wp-content/plugins/mu-plugin-1'
-               'tests/_data/plugins/test': '%WP_ROOT_FOLDER%/wp-content/plugins/test'
+               'tests/_data/themes/dummy': '%WORDPRESS_ROOT_DIR%/wp-content/themes/dummy'
+               'tests/_data/plugins/mu-plugin-1': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/mu-plugin-1'
+               'tests/_data/plugins/test': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/test'
     commands:
         - "Codeception\\Command\\GenerateWPUnit"
         - "Codeception\\Command\\GenerateWPRestApi"

@@ -5,9 +5,9 @@ class WPDbMultisiteSubdomainCest
 
     /**
      * @test
-     * it should allow seing posts from different blogs
+     * it should allow seeing posts from different blogs
      */
-    public function it_should_allow_seing_posts_from_different_blogs(AcceptanceTester $I)
+    public function it_should_allow_seeing_posts_from_different_blogs(AcceptanceTester $I)
     {
         $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' => 'blog{{n}}.' . $I->getSiteDomain()]);
 

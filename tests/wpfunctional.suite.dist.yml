@@ -8,24 +8,24 @@ modules:
         - Asserts
     config:
       WPDb:
-        dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
-        user: %DB_USER%
-        password: %DB_PASSWORD%
+        dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
+        user: %WORDPRESS_DB_USER%
+        password: %WORDPRESS_DB_PASSWORD%
         dump: 'tests/_data/dump.sql'
         populate: true
         cleanup: true
         reconnect: false
-        url: '%WP_URL%'
-        tablePrefix: wp_
+        url: '%WORDPRESS_URL%'
+        tablePrefix: %WORDPRESS_TABLE_PREFIX%
       WordPress:
         depends: WPDb
-        wpRootFolder: '%WP_ROOT_FOLDER%'
+        wpRootFolder: '%WORDPRESS_ROOT_DIR%'
         adminUsername: admin
         adminPassword: admin
       WPLoader:
         loadOnly: true
-        wpRootFolder: '%WP_ROOT_FOLDER%'
-        dbName: %DB_NAME%
-        dbHost: %DB_HOST%
-        dbUser: %DB_USER%
-        dbPassword: %DB_PASSWORD%
+        wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+        dbName: %WORDPRESS_DB_NAME%
+        dbHost: %WORDPRESS_DB_HOST%
+        dbUser: %WORDPRESS_DB_USER%
+        dbPassword: %WORDPRESS_DB_PASSWORD%

@@ -1,60 +1,70 @@
+# This file relies on a .env.testing configuration file to work.
+# Debug this file values using the `docker-compose config` command and see what variable substitution would end up with.
+
 version: "3"
 
 networks:
   test:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 services:
 
   db:
     image: mariadb
+    env_file: .env.testing.docker
     networks:
       - test
-    environment:
-      MYSQL_ROOT_PASSWORD: password
 
   wordpress:
     image: wordpress
+    env_file: .env.testing.docker
     networks:
       test:
-        aliases:
-          - "wordpress.localhost"
-          - "test1.wordpress.localhost"
-          - "test2.wordpress.localhost"
+        ipv4_address: 172.28.1.1
     depends_on:
       - db
     environment:
-      WORDPRESS_DB_NAME: test
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: password
       WORDPRESS_CONFIG_EXTRA: |
         /* Multisite */
+        define( 'DOMAIN_CURRENT_SITE', '${WORDPRESS_URL:-wordpress.localhost}' );
         define( 'WP_ALLOW_MULTISITE', true );
         define( 'MULTISITE', true );
         define( 'SUBDOMAIN_INSTALL', true );
-        define( 'DOMAIN_CURRENT_SITE', 'wordpress.localhost' );
         define( 'PATH_CURRENT_SITE', '/' );
         define( 'SITE_ID_CURRENT_SITE', 1 );
         define( 'BLOG_ID_CURRENT_SITE', 1 );
+      # Configure this to debug the tests with XDebug.
+      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_wp}"
+      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_wp} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     volumes:
-      - ./vendor/wordpress/wordpress:/var/www/html
+      - ${WORDPRESS_ROOT_DIR:-./vendor/wordpress/wordpress}:/var/www/html
 
   chrome:
     image: selenium/standalone-chrome:3.141.59-oxygen
+    env_file: .env.testing.docker
     networks:
       - test
+    extra_hosts:
+      - "wordpress.localhost:172.28.1.1"
+      - "test1.wordpress.localhost:172.28.1.1"
+      - "test2.wordpress.localhost:172.28.1.1"
 
   codeception:
     image: lucatume/codeception:cc3.1.0
+    env_file: .env.testing.docker
     networks:
       - test
+    extra_hosts:
+      - "wordpress.localhost:172.28.1.1"
+      - "test1.wordpress.localhost:172.28.1.1"
+      - "test2.wordpress.localhost:172.28.1.1"
     environment:
-      WORDPRESS_DB_NAME: test
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: password
-      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser}"
-      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser} remote_enable=${XDR:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+      # Configure this to debug the tests with XDebug.
+      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
+      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     depends_on:
       - wordpress
       - chrome
