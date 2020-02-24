@@ -155,6 +155,7 @@ An example configuration for the module in this mode is this one:
               dbHost: "localhost"
               dbUser: "root"
               dbPassword: "root"
+              domain: "wordpress.localhost"
 ```
 
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
