@@ -4,12 +4,12 @@
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
-        "WP_HOME": "http://wp.test",
-        "WP_SITEURL": "http://wp.test",
+        "WP_HOME": "http://wordpress.localhost",
+        "WP_SITEURL": "http://wordpress.localhost",
         "WPMU_PLUGIN_DIR": "not set",
-        "DB_HOST": "127.0.0.1:3307",
-        "DB_NAME": "test_site",
-        "DB_PASSWORD": "",
+        "DB_HOST": "db",
+        "DB_NAME": "test",
+        "DB_PASSWORD": "password",
         "DB_USER": "root",
         "CUSTOM_USER_TABLE": "not set",
         "CUSTOM_USER_META_TABLE": "not set",
@@ -33,7 +33,6 @@
         "Plugins health-check:": {
             "Inactive plugin [test]": "wp-content/plugins/test",
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
-            "Inactive plugin [airplane-mode]": "wp-content/plugins/airplane-mode",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1"
         }
     }

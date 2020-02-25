@@ -9,12 +9,25 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\Test\Constants as TestConstants;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Generators\Tables;
+use function tad\WPBrowser\Tests\Support\importDump;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 
 class WPHealthcheckTest extends \Codeception\Test\Unit
 {
     use SnapshotAssertions;
+
+    protected static $subdirDbCreated =false;
+    protected static $subdomainDbCreated = false;
+    protected static $emptyDbCreated = false;
+
+    public function _before()
+    {
+        parent::_before();
+        $this->setupSubDirDb();
+        $this->setupSubDomainDb();
+        $this->setupEmptyDb();
+    }
 
     /**
      * @var \UnitTester
@@ -23,6 +36,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
     protected $constants;
     protected $database;
     protected $directories;
+    protected $envFile  = '.env.testing.docker';
 
     /**
      * @test
@@ -70,8 +84,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_set_ABSPATH()
     {
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/')
         ]);
         $sut = $this->make_instance();
 
@@ -83,36 +98,36 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_working_installation()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
-        $GLOBALS['table_prefix'] = 'wp_';
+        $GLOBALS['table_prefix'] = $env->getEnvironmentVariable('WORDPRESS_TABLE_PREFIX');
         $sut = $this->make_instance();
 
         $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
-     * Test with working multisite installation
+     * Test with working multisite subdir installation
      */
-    public function test_with_working_multisite_installation()
+    public function test_with_working_multisite_subdir_installation()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('MU_SUBDIR_WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('MU_SUBDIR_WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('MU_SUBDIR_DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_SUBDIR_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_SUBDIR_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_SUBDIR_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'MULTISITE' => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -122,19 +137,19 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
     }
 
     /**
-     * Test with working subdomain installation
+     * Test with working multisite subdomain installation
      */
-    public function test_with_working_subdomain_installation()
+    public function test_with_working_multisite_subdomain_installation()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('MU_SUBDIR_WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('MU_SUBDIR_WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('MU_SUBDIR_DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_SUBDOMAIN_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_SUBDOMAIN_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_SUBDOMAIN_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'SUBDOMAIN_INSTALL' => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -148,15 +163,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_broken_pdo_connection()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
@@ -178,15 +193,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_no_tables_in_db()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('EMPTY_DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_WP_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_WP_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_EMPTY_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $sut = $this->make_instance();
@@ -199,15 +214,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_no_tables_for_prefix()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORDt'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'not_existing_';
         $sut = $this->make_instance();
@@ -220,15 +235,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_available_wpdb_global()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $GLOBALS['wpdb'] = new \wpdb();
@@ -242,15 +257,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_diff_set_of_tables_specified_from_wpdb_global()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER')
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $wpdb = new \wpdb();
@@ -266,15 +281,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_mu_plugins_dir_constant_set()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'WPMU_PLUGIN_DIR' => codecept_root_dir('vendor/wordpress/wordpress/wp-content/plugins')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -288,15 +303,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_empty_mu_plugins_directory()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'WP_PLUGIN_DIR' => codecept_data_dir('empty'),
             'WPMU_PLUGIN_DIR' => codecept_data_dir('empty')
         ]);
@@ -311,15 +326,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_empty_plugins_folder()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'WP_PLUGIN_DIR' => codecept_data_dir('empty')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -333,15 +348,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_empty_and_missing_template_and_stylesheet_files()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
@@ -366,15 +381,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_inactive_plugins()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'WP_PLUGIN_DIR' => codecept_data_dir('plugins')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -397,15 +412,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_missing_siteurl_option()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
         $database = $this->prophesize(WordPressDatabase::class);
@@ -428,15 +443,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_multisite_with_missing_blogs_entry_for_site()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'MULTISITE' => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -461,15 +476,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_with_no_results_in_blogs_for_blog_domain()
     {
-        $env = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants = new TestConstants([
-            'ABSPATH' => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME' => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL' => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST' => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME' => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER' => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH' => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL' => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST' => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME' => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER' => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'MULTISITE' => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -497,15 +512,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_w_globally_set_theme_template()
     {
-        $env                     = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env                     = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants         = new TestConstants([
-            'ABSPATH'     => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME'     => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL'  => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST'     => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME'     => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER'     => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH'     => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME'     => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL'  => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST'     => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME'     => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER'     => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'MULTISITE'   => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -544,15 +559,15 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
      */
     public function test_w_globally_set_theme_template_and_stylesheet()
     {
-        $env                     = new Loader([codecept_root_dir('.env.testing')], new DotenvFactory());
+        $env                     = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
         $this->constants         = new TestConstants([
-            'ABSPATH'     => codecept_root_dir('vendor/wordpress/wordpress/'),
-            'WP_HOME'     => $env->getEnvironmentVariable('WP_URL'),
-            'WP_SITEURL'  => $env->getEnvironmentVariable('WP_URL'),
-            'DB_HOST'     => $env->getEnvironmentVariable('DB_HOST'),
-            'DB_NAME'     => $env->getEnvironmentVariable('DB_NAME'),
-            'DB_PASSWORD' => $env->getEnvironmentVariable('DB_PASSWORD'),
-            'DB_USER'     => $env->getEnvironmentVariable('DB_USER'),
+            'ABSPATH'     => codecept_root_dir($env->getEnvironmentVariable('WORDPRESS_ROOT_DIR') . '/'),
+            'WP_HOME'     => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'WP_SITEURL'  => $env->getEnvironmentVariable('WORDPRESS_URL'),
+            'DB_HOST'     => $env->getEnvironmentVariable('WORDPRESS_DB_HOST'),
+            'DB_NAME'     => $env->getEnvironmentVariable('WORDPRESS_DB_NAME'),
+            'DB_PASSWORD' => $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD'),
+            'DB_USER'     => $env->getEnvironmentVariable('WORDPRESS_DB_USER'),
             'MULTISITE'   => true,
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
@@ -584,5 +599,76 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    protected function setupSubDirDb()
+    {
+        if(static::$subdirDbCreated === true){
+            return;
+        }
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
+        $host = $env->getEnvironmentVariable('WORDPRESS_DB_HOST');
+        $user = $env->getEnvironmentVariable('WORDPRESS_DB_USER');
+        $pass = $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD');
+        $pdo = new \PDO("mysql:host={$host}", $user, $pass);
+        $muDb = $env->getEnvironmentVariable('WORDPRESS_SUBDIR_DB_NAME');
+        $created = $pdo->exec("CREATE DATABASE IF NOT EXISTS {$muDb}");
+        if (false === $created) {
+            throw new \RuntimeException('Could not create the subdir db; ' . json_encode([
+                    'host' => $host,
+                    'user' => $user,
+                    'pass' => $pass,
+                    'db' => $muDb
+                ], JSON_PRETTY_PRINT));
+        }
+        importDump(codecept_data_dir('mu-subdir-dump.sql'), $muDb, $user, $pass, $host);
+        static::$subdirDbCreated = true;
+    }
+
+    protected function setupSubDomainDb()
+    {
+        if(static::$subdomainDbCreated === true){
+            return;
+        }
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
+        $host = $env->getEnvironmentVariable('WORDPRESS_DB_HOST');
+        $user = $env->getEnvironmentVariable('WORDPRESS_DB_USER');
+        $pass = $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD');
+        $pdo = new \PDO("mysql:host={$host}", $user, $pass);
+        $db = $env->getEnvironmentVariable('WORDPRESS_SUBDOMAIN_DB_NAME');
+        $created = $pdo->exec("CREATE DATABASE IF NOT EXISTS {$db}");
+        if (false === $created) {
+            throw new \RuntimeException('Could not create the subdomain db; ' . json_encode([
+                    'host' => $host,
+                    'user' => $user,
+                    'pass' => $pass,
+                    'db' => $db
+                ], JSON_PRETTY_PRINT));
+        }
+        importDump(codecept_data_dir('mu-subdomain-dump.sql'), $db, $user, $pass, $host);
+        static::$subdomainDbCreated = true;
+    }
+
+    protected function setupEmptyDb()
+    {
+        if(static::$emptyDbCreated === true){
+            return;
+        }
+        $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
+        $host = $env->getEnvironmentVariable('WORDPRESS_DB_HOST');
+        $user = $env->getEnvironmentVariable('WORDPRESS_DB_USER');
+        $pass = $env->getEnvironmentVariable('WORDPRESS_DB_PASSWORD');
+        $pdo = new \PDO("mysql:host={$host}", $user, $pass);
+        $db = $env->getEnvironmentVariable('WORDPRESS_EMPTY_DB_NAME');
+        $created = $pdo->exec("CREATE DATABASE IF NOT EXISTS {$db}");
+        if (false === $created) {
+            throw new \RuntimeException('Could not create the empty db; ' . json_encode([
+                    'host' => $host,
+                    'user' => $user,
+                    'pass' => $pass,
+                    'db' => $db
+                ], JSON_PRETTY_PRINT));
+        }
+        static::$emptyDbCreated = true;
     }
 }
