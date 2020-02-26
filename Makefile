@@ -387,4 +387,8 @@ php_7.2_cc_3.0:
 	docker-compose run --rm codeception run climodule --debug
 	docker-compose run --rm codeception run command --debug
 	docker-compose run --rm codeception run dbunit --debug
+	docker-compose run --rm codeception run functional --debug
+	docker-compose run --rm codeception run muloader --debug
+	docker-compose run --rm codeception run unit --debug
+	docker-compose run --rm codeception run webdriver --debug
 	docker-compose run --rm codeception run wploader_wpdb_interaction --debug

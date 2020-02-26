@@ -7,14 +7,14 @@ modules:
         WPLoader:
             multisite: true
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            dbName: %TEST_WORDPRESS_DB_NAME%
+            dbName: '%WORDPRESS_DB_NAME%'
             dbHost: '%WORDPRESS_DB_HOST%'
-            dbUser: %WORDPRESS_DB_USER%
-            dbPassword: %WORDPRESS_DB_PASSWORD%
+            dbUser: '%WORDPRESS_DB_USER%'
+            dbPassword: '%WORDPRESS_DB_PASSWORD%'
             wpDebug: true
-            tablePrefix: %WORDPRESS_TABLE_PREFIX%
-            domain: '%WP_DOMAIN%'
-            adminEmail: 'admin@%WP_DOMAIN%'
+            tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
+            domain: '%WORDPRESS_DOMAIN%'
+            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
             title: 'Test'
             theme: dummy
             plugins: ['mu-plugin-1/plugin.php']
