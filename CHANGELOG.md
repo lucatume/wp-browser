@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- an issue that would prevent the site URL from being correctly replaced during `WPDb` module dump imports
+- sanity checks on the `Copier` extension
+
+### Added
+
+- the `originalUrl` to the `WPDb` module configuration; this can help in some instances where `urlReplacement` is active but is not working correctly
+
 ## [2.2.37] 2020-02-21;
 
 ### Fixed
