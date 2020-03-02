@@ -106,6 +106,7 @@ class WPDb extends Db
         'dump' => null,
         'populator' => null,
         'urlReplacement' => true,
+        'originalUrl' => null,
         'waitlock' => 10,
     ];
 

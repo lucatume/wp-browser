@@ -115,6 +115,7 @@ modules:
 * `populate` - defaults to `true` to empty the target database and import the SQL dump specified in the `dump` argument once, before any test starts.
 * `cleanup` - defaults to `true` empty the target database and import the SQL dump specified in the `dump` argument before each test starts. 
 * `urlReplacement` - defaults to `true` to replace, while using the built-in, PHP-based, dump import solution the hard-coded WordPress URL in the database with the specified one.
+* `originalUrl` - specifies the original URL hard-coded into the version controlled SQL dump files. This can help prevent some URL replacement issues when the `urlReplacement` configuration parameter is set to `true`.
 * `populator` - defaults to `null`, if set to an executable shell command then that command will be used to populate the database in place of the built-in PHP solution; URL replacement will not apply in this case. Read more about this [on Codeception documentation](https://codeception.com/docs/modules/Db#Populator).
 * `reconnect` - defaults to `true` to force the module to reconnect to the database before each test in place of only connecting at the start of the tests.
 * `waitlock` - defaults to `10`; wait lock (in seconds) that the database session should use for DDL statements.
