@@ -9,6 +9,7 @@ use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use PDO;
 use tad\WPBrowser\Events\Event;
+use tad\WPBrowser\Exceptions\DumpException;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
@@ -3887,6 +3888,8 @@ class WPDb extends Db
      * @param string|array $sql The SQL dump string or strings.
      *
      * @return array|string The SQL dump string, or strings, with the hard-coded URL replaced.
+     *
+     * @throws ModuleException If there's an issue while processing the SQL dump file.
      */
     public function _replaceUrlInDump($sql)
     {
@@ -3897,12 +3900,20 @@ class WPDb extends Db
         $this->dbDump->setTablePrefix($this->config['tablePrefix']);
         $this->dbDump->setUrl($this->config['url']);
 
-        if (\is_array($sql)) {
-            $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
-            $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
-        } else {
-            $sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
-            $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
+        if (!empty($this->config['originalUrl'])) {
+            $this->dbDump->setOriginalUrl($this->config['originalUrl']);
+        }
+
+        try {
+            if (\is_array($sql)) {
+                $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
+                $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
+            } else {
+                $sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
+                $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
+            }
+        } catch (DumpException $e) {
+            throw new ModuleException($this, $e->getMessage());
         }
 
         return $sql;
