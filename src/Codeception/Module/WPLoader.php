@@ -14,6 +14,7 @@ use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
+use tad\WPBrowser\Traits\WithWordPressFilters;
 
 /**
  * Class WPLoader
@@ -32,6 +33,7 @@ class WPLoader extends Module
 {
 
     use WithEvents;
+    use WithWordPressFilters;
 
     public static $includeInheritedActions = true;
 
