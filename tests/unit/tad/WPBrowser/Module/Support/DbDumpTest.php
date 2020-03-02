@@ -12,27 +12,6 @@ class DbDumpTest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should not replace the site domain if home is not set in dump
-     */
-    public function it_should_not_replace_the_site_domain_if_home_is_not_set_in_dump()
-    {
-        $sut = $this->make_instance();
-
-        $sql = <<< SQL
-LOCK TABLES `wp_options` WRITE;
-/*!40000 ALTER TABLE `wp_options` DISABLE KEYS */;
--- noinspection SqlNoDataSourceInspection
-INSERT INTO `wp_options` VALUES (1,'siteurl','http://original.dev/wp','yes'),(3,'blogname','Tribe Premium Plugins','yes'),(4,'blogdescription','Just another WordPress site','yes'),(5,'users_can_register','0','yes'),(6,'admin_email','admin@original.dev','yes'),(7,'start_of_week','1','yes'),(8,'use_balanceTags','0','yes'),(9,'use_smilies','1','yes'),(10,'require_name_email','1','yes'),(11,'comments_notify','1','yes'),(12,'posts_per_rss','10','yes'),(13,'rss_use_excerpt','0','yes'),(14,'mailserver_url','mail.example.com','yes'),(15,'mailserver_login','login@example.com','yes'),(16,'mailserver_pass','password','yes'),(17,'mailserver_port','110','yes'),(18,'default_category','1','yes'),(19,'default_comment_status','open','yes'),(20,'default_ping_status','open','yes'),(21,'default_pingback_flag','0','yes'),(22,'posts_per_page','10','yes'),(23,'date_format','F j, Y','yes'),(24,'time_format','g:i a','yes'),(25,'links_updated_date_format','F j, Y g:i a','yes'),(26,'comment_moderation','0','yes'),(27,'moderation_notify','1','yes'),(28,'permalink_structure','/%year%/%monthnum%/%day%/%postname%/','yes'),'alabar_last_save_post','1465471896','yes');SQL;
-SQL;
-
-        $sql = $sut->replaceSiteDomainInSqlString($sql);
-
-        $this->assertRegExp('~.*original.dev/wp.*~', $sql);
-        $this->assertNotRegExp('/.*some-wp.dev.*/', $sql);
-    }
-
-    /**
-     * @test
      * it should not replace the site domain if site domain is same
      */
     public function it_should_not_replace_the_site_domain_if_site_domain_is_same()
@@ -80,7 +59,9 @@ SQL;
      */
     public function it_should_replace_https_schema_with_http()
     {
+        $this->url = 'http://some-wp.dev';
         $sut = $this->make_instance();
+        $sut->setOriginalUrl('original.dev/wp');
 
         $sql = <<< SQL
 LOCK TABLES `wp_options` WRITE;
@@ -103,6 +84,7 @@ SQL;
     {
         $this->url = 'https://some-wp.dev';
         $sut       = $this->make_instance();
+        $sut->setOriginalUrl('original.dev/wp');
 
         $sql = <<< SQL
 LOCK TABLES `wp_options` WRITE;
@@ -125,6 +107,7 @@ SQL;
     {
         $this->url = 'https://original.dev/wp';
         $sut       = $this->make_instance();
+        $sut->setOriginalUrl('original.dev/wp');
 
         $sql = <<< SQL
 LOCK TABLES `wp_blogs` WRITE;
@@ -157,6 +140,7 @@ SQL;
     {
         $this->url = 'https://some-wp.dev';
         $sut       = $this->make_instance();
+        $sut->setOriginalUrl('https://original.dev/wp/');
 
         $sql = <<< SQL
 LOCK TABLES `wp_blogs` WRITE;
@@ -190,20 +174,21 @@ SQL;
     public function it_should_replace_the_site_domain_in_an_array_sql_dump()
     {
         $sql = [
-            "LOCK TABLES `wp_options` WRITE;",
-            "/*!40000 ALTER TABLE `wp_options` DISABLE KEYS */;",
+            'LOCK TABLES `wp_options` WRITE;',
+            '/*!40000 ALTER TABLE `wp_options` DISABLE KEYS */;',
             "INSERT INTO `wp_options` VALUES (1,'siteurl','http://original.dev/wp','yes'),(2,'home','http://original.dev/wp','yes'),(3,'blogname','Tribe Premium Plugins','yes'),(4,'blogdescription','Just another WordPress site','yes'),(5,'users_can_register','0','yes'),(6,'admin_email','admin@original.dev','yes'),(7,'start_of_week','1','yes'),(8,'use_balanceTags','0','yes'),(9,'use_smilies','1','yes'),(10,'require_name_email','1','yes'),(11,'comments_notify','1','yes'),(12,'posts_per_rss','10','yes'),(13,'rss_use_excerpt','0','yes'),(14,'mailserver_url','mail.example.com','yes'),(15,'mailserver_login','login@example.com','yes'),(16,'mailserver_pass','password','yes'),(17,'mailserver_port','110','yes'),(18,'default_category','1','yes'),(19,'default_comment_status','open','yes'),(20,'default_ping_status','open','yes'),(21,'default_pingback_flag','0','yes'),(22,'posts_per_page','10','yes'),(23,'date_format','F j, Y','yes'),(24,'time_format','g:i a','yes'),(25,'links_updated_date_format','F j, Y g:i a','yes'),(26,'comment_moderation','0','yes'),(27,'moderation_notify','1','yes'),(28,'permalink_structure','/%year%/%monthnum%/%day%/%postname%/','yes'),'alabar_last_save_post','1465471896','yes');",
         ];
 
         $expectedSql = [
-            "LOCK TABLES `wp_options` WRITE;",
-            "/*!40000 ALTER TABLE `wp_options` DISABLE KEYS */;",
+            'LOCK TABLES `wp_options` WRITE;',
+            '/*!40000 ALTER TABLE `wp_options` DISABLE KEYS */;',
             "INSERT INTO `wp_options` VALUES (1,'siteurl','http://some-wp.dev','yes'),(2,'home','http://some-wp.dev','yes'),(3,'blogname','Tribe Premium Plugins','yes'),(4,'blogdescription','Just another WordPress site','yes'),(5,'users_can_register','0','yes'),(6,'admin_email','admin@original.dev','yes'),(7,'start_of_week','1','yes'),(8,'use_balanceTags','0','yes'),(9,'use_smilies','1','yes'),(10,'require_name_email','1','yes'),(11,'comments_notify','1','yes'),(12,'posts_per_rss','10','yes'),(13,'rss_use_excerpt','0','yes'),(14,'mailserver_url','mail.example.com','yes'),(15,'mailserver_login','login@example.com','yes'),(16,'mailserver_pass','password','yes'),(17,'mailserver_port','110','yes'),(18,'default_category','1','yes'),(19,'default_comment_status','open','yes'),(20,'default_ping_status','open','yes'),(21,'default_pingback_flag','0','yes'),(22,'posts_per_page','10','yes'),(23,'date_format','F j, Y','yes'),(24,'time_format','g:i a','yes'),(25,'links_updated_date_format','F j, Y g:i a','yes'),(26,'comment_moderation','0','yes'),(27,'moderation_notify','1','yes'),(28,'permalink_structure','/%year%/%monthnum%/%day%/%postname%/','yes'),'alabar_last_save_post','1465471896','yes');",
         ];
 
         $sut      = $this->make_instance();
+        $sut->setOriginalUrl('original.dev/wp');
         $replaced = $sut->replaceSiteDomainInSqlArray($sql);
-        
+
         $this->assertEquals($expectedSql, $replaced);
     }
 
@@ -280,9 +265,40 @@ SQL;
         $this->assertEquals([], $sut->replaceSiteDomainInMultisiteSqlArray([]));
     }
 
+    /**
+     * @return DbDump
+     */
     protected function make_instance()
     {
         $dbOperations = new DbDump($this->url, 'wp_');
         return $dbOperations;
+    }
+
+    /**
+     * It should correctly replace subdomain URLs in multisite installations
+     *
+     * @test
+     */
+    public function should_correctly_replace_subdomain_urls_in_multisite_installations()
+    {
+        $inputFile = codecept_data_dir('dump-test/mu-01-input.sql');
+        $inputFileHandle = fopen($inputFile,'rb');
+        $expectedFileHandle = fopen(codecept_data_dir('dump-test/mu-01-expected.sql'),'rb');
+
+        $dbDump = $this->make_instance();
+        $dbDump->setUrl('http://wordpress.localhost');
+        $dbDump->setOriginalUrl($dbDump->getOriginalUrlFromSqlString(file_get_contents($inputFile)));
+        $lineNumber = 0;
+        while(!feof($inputFileHandle)){
+            if(feof($expectedFileHandle)){
+                $this->fail('The input file has still lines while the expected output file does not.');
+            }
+            $lineNumber++;
+            $inputLine = fgets($inputFileHandle);
+            $expectedLine = fgets($expectedFileHandle);
+            $replaced = $dbDump->replaceSiteDomainInSqlString($inputLine);
+            $replaced = $dbDump->replaceSiteDomainInMultisiteSqlString($replaced);
+            $this->assertEquals($expectedLine, $replaced, 'Error at line number ' . $lineNumber);
+        }
     }
 }
