@@ -391,4 +391,9 @@ php_7.2_cc_3.0:
 	docker-compose run --rm codeception run muloader --debug
 	docker-compose run --rm codeception run unit --debug
 	docker-compose run --rm codeception run webdriver --debug
+	docker-compose run --rm codeception run wpcli_module --debug
+	docker-compose run --rm codeception run wpfunctional --debug
+	docker-compose run --rm codeception run wploader_multisite --debug
 	docker-compose run --rm codeception run wploader_wpdb_interaction --debug
+	docker-compose run --rm codeception run wploadersuite --debug
+	docker-compose run --rm codeception run wpmodule --debug
