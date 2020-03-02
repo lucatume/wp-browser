@@ -113,7 +113,7 @@ EOF;
     private function ensureWpRoot()
     {
         $wpRootFolder = $this->getWpRootFolder();
-        if (!file_exists($wpRootFolder . '/wp-settings.php')) {
+        if (!file_exists(Utils::untrailslashit($wpRootFolder) . '/wp-settings.php')) {
             throw new ModuleConfigException(
                 __CLASS__,
                 "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
@@ -316,13 +316,13 @@ EOF;
     public function getWpRootFolder()
     {
         if (empty($this->wpRootFolder)) {
-            // allow me not to bother with trailing slashes
+            // Allow me not to bother with trailing slashes.
             $wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
 
-            // maybe the user is using the `~` symbol for home?
+            // Maybe the user is using the `~` symbol for home?
             $this->wpRootFolder = Utils::homeify($wpRootFolder);
 
-            // remove `\ ` spaces in folder paths
+            // Remove `\ ` spaces in folder paths.
             $this->wpRootFolder = str_replace('\ ', ' ', $this->wpRootFolder);
         }
 
