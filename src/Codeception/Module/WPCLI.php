@@ -363,8 +363,9 @@ class WPCLI extends Module
      * ```php
      * // Return the current site administrator email, using string command format.
      * $adminEmail = $I->cliToString('option get admin_email');
-     * // Get the list of active plugins in JSON format.
-     * $activePlugins = $I->cliToString(['wp','option','get','active_plugins','--format=json']);
+     * // Get the list of active plugins in JSON format, two ways.
+     * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
+     * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      */
     public function cliToString($userCommand)
