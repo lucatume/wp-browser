@@ -11,10 +11,9 @@ Text Domain: test
 add_action('rest_api_init', function () {
     register_rest_route('test', '/whoami/', [
         'methods'  => 'GET',
-        'callback' => function () {
+        'callback' => static function () {
             $login = wp_get_current_user()->user_login;
-            echo $login;
-            die(200);
+            die($login);
         },
     ]);
 });
