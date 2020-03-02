@@ -7,12 +7,12 @@ modules:
     config:
         WPLoader:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            dbName: %TEST_WORDPRESS_DB_NAME%
-            dbHost: %WORDPRESS_DB_HOST%
-            dbUser: %WORDPRESS_DB_USER%
-            dbPassword: %WORDPRESS_DB_PASSWORD%
+            dbName: '%WORDPRESS_DB_NAME%'
+            dbHost: '%WORDPRESS_DB_HOST%'
+            dbUser: '%WORDPRESS_DB_USER%'
+            dbPassword: '%WORDPRESS_DB_PASSWORD%'
             wpDebug: true
-            tablePrefix: %WORDPRESS_TABLE_PREFIX%
+            tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
             domain: '%WP_DOMAIN%'
             adminEmail: 'admin@%WP_DOMAIN%'
             title: Test

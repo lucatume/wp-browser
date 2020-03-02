@@ -6,6 +6,6 @@ modules:
         - Asserts
     config:
         WPCLI:
-            path: /var/www/html
+            path: '%WORDPRESS_ROOT_DIR%'
             allow-root: true
             throw: false
