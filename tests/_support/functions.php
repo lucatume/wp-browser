@@ -21,7 +21,7 @@ function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbH
     $command = sprintf($commandTemplate, $dbHost, $dbUser, $dbPassEntry, $dbName, $dumpFile);
     exec($command, $output, $status);
 
-    return $status === false;
+    return (int)$status === 0;
 }
 
 
