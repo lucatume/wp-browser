@@ -38,12 +38,19 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
      */
     protected static function getDbAccessCredentials()
     {
-        $dbName = getenv('TEST_DB_NAME') ?: 'codeception-tests';
-        $dbUser = getenv('DB_USER') ?: 'root';
-        $dbPass = getenv('DB_PASSWORD') ?: '';
-        $dbHost = getenv('DB_HOST') ?: 'localhost';
 
-        return array($dbName, $dbUser, $dbPass, $dbHost);
+        $creds = [
+            getenv('WORDPRESS_DB_NAME'),
+            getenv('WORDPRESS_DB_USER'),
+            getenv('WORDPRESS_DB_PASSWORD') ?: '',
+            getenv('WORDPRESS_DB_HOST')
+        ];
+
+        if (count(array_filter($creds)) < 3) {
+            throw new \RuntimeException('Could not fetch database credentials.');
+        }
+
+        return $creds;
     }
 
     /**
