@@ -344,7 +344,7 @@ class WPCLI extends Module
             );
         }
 
-        return empty($output) ? [] : array_map('trim', $output);
+        return empty($output) ? [] : array_map('trim', array_filter($output));
     }
 
     /**
