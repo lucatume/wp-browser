@@ -83,11 +83,11 @@ lint: docker/parallel-lint/id
 		--colors \
 		/app/src
 
-cs_sniff:
-	vendor/bin/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
+sniff:
+	docker run --rm -v ${PWD}:/data cytopia/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
 
-cs_fix:
-	vendor/bin/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests
+fix:
+	docker run --rm -v ${PWD}:/data cytopia/phpcbf --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts -s src tests
 
 cs_fix_n_sniff: cs_fix cs_sniff
 
