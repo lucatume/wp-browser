@@ -1,16 +1,18 @@
 includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
-  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+  - /composer/vendor/szepeviktor/phpstan-wordpress/extension.neon
 parameters:
   level: max
   inferPrivatePropertyTypeFromConstructor: true
   reportUnmatchedIgnoredErrors: false
   paths:
     - %currentWorkingDirectory%/src/Codeception/
+    - %currentWorkingDirectory%/src/tad/
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase/WPXMLRPCTestCase.php
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
   autoload_files:
+    - %currentWorkingDirectory%/vendor/autoload.php
     - %currentWorkingDirectory%/vendor/codeception/codeception/autoload.php
     - %currentWorkingDirectory%/src/includes/functions.php
     - %currentWorkingDirectory%/src/includes/utils.php

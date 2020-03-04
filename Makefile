@@ -306,9 +306,6 @@ require_phpunit_8:
 	rm -rf composer.lock vendor && composer require codeception/codeception:^3.0 phpunit/phpunit:^8.0
 	mv _wordpress vendor/wordpress
 
-phpstan:
-	vendor/bin/phpstan analyze -l max
-
 clean:
 	rm -rf *.bak
 	rm -rf *.ready
@@ -381,7 +378,13 @@ php_5.6_cc_2.5:
 	docker-compose down
 	touch 7.2.cc.3.0.ready
 
-php_7.2_cc_3.0:
+php_7.2_cc_3.0_prepare:
+	# If there is no vendor, then try to prepare it.
+	if [ ! -d "${PWD}/vendor" ]; then \
+  		bash ${PWD}/_build/vendor_prepare.sh 7.2 3.0 \
+ 	fi
+
+php_7.2_cc_3.0_run: php_7.2_cc_3.0_prepare
 	docker-compose run --rm codeception run acceptance --debug
 	docker-compose run --rm codeception run cli --debug
 	docker-compose run --rm codeception run climodule --debug
@@ -397,3 +400,7 @@ php_7.2_cc_3.0:
 	docker-compose run --rm codeception run wploader_wpdb_interaction --debug
 	docker-compose run --rm codeception run wploadersuite --debug
 	docker-compose run --rm codeception run wpmodule --debug
+
+phpstan:
+	docker run --rm -v $(pwd):/project lucatume/wpstan analyze -l max
+
