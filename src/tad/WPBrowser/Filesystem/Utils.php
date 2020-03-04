@@ -112,17 +112,16 @@ class Utils
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $destination));
         }
 
-        $iterator = new \FilesystemIterator( $source, \FilesystemIterator::SKIP_DOTS );
+        $iterator = new \FilesystemIterator($source, \FilesystemIterator::SKIP_DOTS);
 
-        foreach ($iterator as $file){
+        foreach ($iterator as $file) {
             if ($file->isDir()) {
-                if(!static::recurseCopy($file->getPathname(), $destination . '/' . $file->getBasename())){
+                if (!static::recurseCopy($file->getPathname(), $destination . '/' . $file->getBasename())) {
                     return false;
                 }
-            } elseif(!copy($file->getPathname(), $destination . '/' . $file->getBasename())){
+            } elseif (!copy($file->getPathname(), $destination . '/' . $file->getBasename())) {
                 return false;
             }
-
         }
 
         return true;
@@ -140,13 +139,13 @@ class Utils
             return true;
         }
 
-        $iterator = new \FilesystemIterator($target,\FilesystemIterator::SKIP_DOTS);
-        foreach ($iterator as $file){
+        $iterator = new \FilesystemIterator($target, \FilesystemIterator::SKIP_DOTS);
+        foreach ($iterator as $file) {
             if (is_dir($file->getPathname())) {
                 if (!static::recurseRemoveDir($file->getPathname())) {
                     return false;
                 }
-            } elseif(!unlink($file->getPathname())){
+            } elseif (!unlink($file->getPathname())) {
                 return false;
             }
         }

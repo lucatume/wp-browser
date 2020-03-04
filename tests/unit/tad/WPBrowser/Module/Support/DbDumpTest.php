@@ -282,15 +282,15 @@ SQL;
     public function should_correctly_replace_subdomain_urls_in_multisite_installations()
     {
         $inputFile = codecept_data_dir('dump-test/mu-01-input.sql');
-        $inputFileHandle = fopen($inputFile,'rb');
-        $expectedFileHandle = fopen(codecept_data_dir('dump-test/mu-01-expected.sql'),'rb');
+        $inputFileHandle = fopen($inputFile, 'rb');
+        $expectedFileHandle = fopen(codecept_data_dir('dump-test/mu-01-expected.sql'), 'rb');
 
         $dbDump = $this->make_instance();
         $dbDump->setUrl('http://wordpress.localhost');
         $dbDump->setOriginalUrl($dbDump->getOriginalUrlFromSqlString(file_get_contents($inputFile)));
         $lineNumber = 0;
-        while(!feof($inputFileHandle)){
-            if(feof($expectedFileHandle)){
+        while (!feof($inputFileHandle)) {
+            if (feof($expectedFileHandle)) {
                 $this->fail('The input file has still lines while the expected output file does not.');
             }
             $lineNumber++;

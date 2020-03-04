@@ -81,7 +81,7 @@ class DbDump
             $this->originalUrl = $this->getOriginalUrlFromSqlString($sql);
         }
 
-        if($this->originalUrl === false){
+        if ($this->originalUrl === false) {
             throw new DumpException(
                 'Could not find, or could not parse, the original site URL; you can set the "originalUrl" ' .
                 'parameter in the module configuration to skip this step and fix this error.'

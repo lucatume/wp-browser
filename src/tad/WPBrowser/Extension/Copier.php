@@ -127,7 +127,7 @@ class Copier extends Extension
         }
 
         if (!is_dir($destination)) {
-            if(!unlink($destination)){
+            if (!unlink($destination)) {
                 throw new ExtensionException(
                     $this,
                     sprintf('Removal of [%s] failed.', $destination)
@@ -136,8 +136,8 @@ class Copier extends Extension
             return;
         }
 
-        if(!Utils::recurseRemoveDir($destination)){
-           throw new ExtensionException(
+        if (!Utils::recurseRemoveDir($destination)) {
+            throw new ExtensionException(
                 $this,
                 sprintf('Removal of [%s] failed.', $destination)
             );

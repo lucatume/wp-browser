@@ -95,7 +95,7 @@ trait WithEvents
      */
     protected function getAppEventDispatcher(Application $app = null)
     {
-        if($app === null){
+        if ($app === null) {
             global $app;
         }
 

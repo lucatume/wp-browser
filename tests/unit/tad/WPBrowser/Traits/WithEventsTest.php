@@ -30,7 +30,7 @@ class WithEventsTest extends \Codeception\Test\Unit
 
     protected function _after()
     {
-        if($this->appBackup !== null){
+        if ($this->appBackup !== null) {
             global $app;
             $app = $this->appBackup;
             unset($this->appBackup);
@@ -67,7 +67,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
         $theDispatcher = new EventDispatcher();
-        $codecept = $this->makeEmpty(Codecept::class,[
+        $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => $theDispatcher
         ]);
         $props = new ReflectionPropertyAccessor();
@@ -79,8 +79,8 @@ class WithEventsTest extends \Codeception\Test\Unit
 
         $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
         $this->assertInstanceOf(EventDispatcher::class, $appDispatcher);
-        $this->assertSame($eventDispatcher,$appDispatcher);
-        $this->assertSame($eventDispatcher,$theDispatcher);
+        $this->assertSame($eventDispatcher, $appDispatcher);
+        $this->assertSame($eventDispatcher, $theDispatcher);
     }
 
     /**
@@ -96,7 +96,7 @@ class WithEventsTest extends \Codeception\Test\Unit
 
         $eventDispatcher = $this->getEventDispatcher();
 
-        $this->assertInstanceOf(EventDispatcher::class,$eventDispatcher);
+        $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
         $this->assertNull($this->getAppEventDispatcher());
     }
 
@@ -159,7 +159,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         $this->appBackup = $app;
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
-        $codecept = $this->makeEmpty(Codecept::class,[
+        $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => new stdClass()
         ]);
         $props = new ReflectionPropertyAccessor();
@@ -185,7 +185,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         global $app;
         $this->appBackup = $app;
         $calledTimes = 0;
-        $this->addAction('test_event',static function()use(&$calledTimes){
+        $this->addAction('test_event', static function () use (&$calledTimes) {
             $calledTimes++;
         });
 
@@ -209,7 +209,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
         $theDispatcher = new EventDispatcher();
-        $codecept = $this->makeEmpty(Codecept::class,[
+        $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => $theDispatcher
         ]);
         $props = new ReflectionPropertyAccessor();

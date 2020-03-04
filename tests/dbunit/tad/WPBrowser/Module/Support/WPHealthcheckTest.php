@@ -603,7 +603,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
 
     protected function setupSubDirDb()
     {
-        if(static::$subdirDbCreated === true){
+        if (static::$subdirDbCreated === true) {
             return;
         }
         $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
@@ -627,7 +627,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
 
     protected function setupSubDomainDb()
     {
-        if(static::$subdomainDbCreated === true){
+        if (static::$subdomainDbCreated === true) {
             return;
         }
         $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
@@ -651,7 +651,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
 
     protected function setupEmptyDb()
     {
-        if(static::$emptyDbCreated === true){
+        if (static::$emptyDbCreated === true) {
             return;
         }
         $env = new Loader([codecept_root_dir($this->envFile)], new DotenvFactory());
