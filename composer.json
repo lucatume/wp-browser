@@ -35,9 +35,6 @@
     "vria/nodiacritic": "^0.1.2"
   },
   "require-dev": {
-    "phpstan/phpstan": "^0.11.15",
-    "phpstan/phpstan-shim": "^0.11.15",
-    "szepeviktor/phpstan-wordpress": "^0.2.0",
     "erusev/parsedown": "^1.7",
     "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
