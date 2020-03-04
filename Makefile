@@ -73,15 +73,8 @@ docker_pull:
 		docker pull "$$image"; \
 	done;
 
-# Builds the Docker-based parallel-lint util.
-docker/parallel-lint/id:
-	docker build --force-rm --iidfile docker/parallel-lint/id docker/parallel-lint --tag lucatume/parallel-lint:5.6
-
-# Lints the source files with PHP Parallel Lint, requires the parallel-lint:5.6 image to be built.
-lint: docker/parallel-lint/id
-	docker run --rm -v ${CURDIR}:/app lucatume/parallel-lint:5.6 \
-		--colors \
-		/app/src
+lint:
+	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 --colors /project/src
 
 sniff:
 	docker run --rm -v ${PWD}:/data cytopia/phpcs --colors -p --standard=phpcs.xml $(SRC) --ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat -s src
