@@ -160,27 +160,4 @@ test:
 
 # Prins a list of files that will be exported from the project on package pull.
 check_exports:
-	ignored_files=$$(git status --ignored --porcelain \
-		| grep -E '^!!' \
-		| awk -F' ' '{ print $$2 }' \
-		| sed -E 's#\/$$##g'); \
-	echo "Ignored files (local and global .gitignore file):"; \
-	echo "================================================="; \
-	echo "$${ignored_files}"; \
-	excluded_files=$$(echo "$${ignored_files}" | tr '\n' ',' | sed -e 's/,[^,]*$$//g'); \
-	ignore_pattern="(\.$$|$$(echo "$${excluded_files}" | sed -e 's/,/|/g' ))"; \
-	vcs_files=$$(ls -a -1 "${PWD}" | grep -Ev "$${ignore_pattern}" | sort); \
-	echo ""; \
-	echo "VCS files (these will be pushed to the repository):"; \
-	echo "==================================================="; \
-	echo "$${vcs_files}"; \
-	export_ignored_files=$$(grep -E '\s+export-ignore' ${PWD}/.gitattributes | awk -F' ' '{ print $$1 }' | sort); \
-	echo ""; \
-	echo "Export ignored files (export-ignore):"; \
-	echo "====================================="; \
-	echo "$${export_ignored_files}"; \
-	exported_vcs_files=$$(comm -23 <(echo "$${vcs_files}") <(echo "$${export_ignored_files}")); \
-	echo ""; \
-	echo "The following files will be exported:"; \
-	echo "====================================="; \
-	echo "$${exported_vcs_files}"
+	bash ./_build/check_exports.sh
