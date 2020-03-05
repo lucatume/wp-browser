@@ -96,6 +96,8 @@ clean:
 	docker network rm $$(docker network ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
 		&& echo "Networks removed." \
 		|| echo "No networks found".
+	rm *.bak
+	rm .ready
 
 # Produces the Modules documentation in the docs/modules folder.
 docs: composer.lock src/Codeception/Module
@@ -155,3 +157,12 @@ php_7.2_cc_3.0_run: php_7.2_cc_3.0_prepare
 
 test:
 	docker-compose run --rm codeception run unit --debug
+
+# Checks only files in a specific whitelist will are not exported.
+check_exports:
+	excluded_files=$$(git check-ignore $$(ls -1 .) | tr '\n' ',' | sed -e 's/,[^,]*$$//g'); \
+	ignore_pattern="(\.$$|$$(echo "$${excluded_files}" | sed -e 's/,/|/g' ))"; \
+	vcs_files=$$(ls -a -1 "${PWD}" | grep -Ev "$${ignore_pattern}"); \
+	echo "VCS files: $${vcs_files}"; \
+	export_ignored_files=$$(grep -E '\s+export-ignore' ${PWD}/.gitattributes | awk -F' ' '{ print $$1 }'); \
+	echo "Export ignored files: $${export_ignored_files}"
