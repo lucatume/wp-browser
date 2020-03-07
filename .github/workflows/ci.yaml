@@ -3,10 +3,13 @@ name: CI
 on: [push]
 
 jobs:
-
-  php_56_cc_25:
-    name: PHP 5.6, CC 2.5
+  test:
+    name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ codeception_version }}
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php_version: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4' ]
+        codeception_version: [ '2.5', '3.0' ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -14,24 +17,11 @@ jobs:
         uses: actions/cache@v1
         with:
           path: vendor
-          key: ${{ runner.OS }}-build-php-56-cc-25-${{ hashFiles('**/composer.json') }}
-      - name: Prepare
-        run: test -d vendor || make 5.6.cc.2.5.ready
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}
+      - name: Prepare Composer dependencies
+        run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Run tests
-        run: make php_5.6_cc_2.5
-
-  php_56_cc_30:
-    name: PHP 5.6, CC 3.0
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache dir
-        uses: actions/cache@v1
-        with:
-          path: vendor
-          key: ${{ runner.OS }}-build-php-56-cc-30-${{ hashFiles('**/composer.json') }}
-      - name: Prepare
-        run: test -d vendor || make 5.6.cc.3.0.ready
-      - name: Run tests
-        run: make php_5.6_cc_3.0
+        env:
+          CI_PHP_VERSION: ${{ strategy.php_version }}
+          CI_CODECEPTION_VERSION: ${{ strategy.codeception_version }}
+        run: make test

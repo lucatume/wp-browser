@@ -125,14 +125,16 @@ docs: composer.lock src/Codeception/Module
 	done;
 	cp ${PWD}/docs/welcome.md ${PWD}/docs/README.md
 
-php_7.2_cc_3.0_prepare:
-	${PWD}/_build/vendor_prepare.sh 7.2 3.0
+# Prints a list of files that will be exported from the project on package pull.
+check_exports:
+	bash ./_build/check_exports.sh
 
-php_7.2_cc_3.0_run: php_7.2_cc_3.0_prepare
+test:
 	docker-compose run codeception run acceptance --debug
 	docker-compose run codeception run cli --debug
 	docker-compose run codeception run climodule --debug
-	docker-compose run codeception run command --debug
+	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
+		|| docker-compose run codeception run command --debug
 	docker-compose run codeception run dbunit --debug
 	docker-compose run codeception run functional --debug
 	docker-compose run codeception run muloader --debug
@@ -144,10 +146,3 @@ php_7.2_cc_3.0_run: php_7.2_cc_3.0_prepare
 	docker-compose run codeception run wploader_wpdb_interaction --debug
 	docker-compose run codeception run wploadersuite --debug
 	docker-compose run codeception run wpmodule --debug
-
-test:
-	docker-compose run --rm codeception run unit --debug
-
-# Prins a list of files that will be exported from the project on package pull.
-check_exports:
-	bash ./_build/check_exports.sh
