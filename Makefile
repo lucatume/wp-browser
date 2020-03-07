@@ -125,16 +125,6 @@ docs: composer.lock src/Codeception/Module
 	done;
 	cp ${PWD}/docs/welcome.md ${PWD}/docs/README.md
 
-# Build the Docker-based markdown-toc util.
-docker/markdown-toc/id:
-	docker build --force-rm \
-		--iidfile build/_containers/markdown-toc/id build/_containers/markdown-toc
-		--tag lucatume/md-toc:latest
-
-# Re-build the Readme ToC.
-toc: docker/markdown-toc/id
-	docker run --rm -it -v ${PWD}:/project lucatume/md-toc markdown-toc -i /project/README.md
-
 php_7.2_cc_3.0_prepare:
 	${PWD}/_build/vendor_prepare.sh 7.2 3.0
 
