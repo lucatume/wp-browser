@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ codeception_version }}
+    name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
     runs-on: ubuntu-18.04
     strategy:
       matrix:
@@ -24,6 +24,6 @@ jobs:
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Run tests
         env:
-          CI_PHP_VERSION: ${{ strategy.php_version }}
-          CI_CODECEPTION_VERSION: ${{ strategy.codeception_version }}
+          CI_PHP_VERSION: ${{ matrix.php_version }}
+          CI_CODECEPTION_VERSION: ${{ matrix.codeception_version }}
         run: make test
