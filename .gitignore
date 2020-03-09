@@ -17,10 +17,6 @@ tests/*.suite.yml
 cache/*
 src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
-docs/node_modules
-docs/_book
-tests/_support/_generated
-tests/_containers/id_*
 composer.lock
 
 # Some local vim files
@@ -33,6 +29,5 @@ rel
 # Backup files and folders
 *.bak
 
-# Ready and id files
-tests/_containers/**/id_*
+# Ready files
 *.ready

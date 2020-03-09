@@ -130,19 +130,19 @@ check_exports:
 	bash ./_build/check_exports.sh
 
 test:
-	docker-compose run codeception run acceptance --debug
-	docker-compose run codeception run cli --debug
-	docker-compose run codeception run climodule --debug
+	docker-compose run codeception run acceptance
+	docker-compose run codeception run cli
+	docker-compose run codeception run climodule
 	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
-		|| docker-compose run codeception run command --debug
-	docker-compose run codeception run dbunit --debug
-	docker-compose run codeception run functional --debug
-	docker-compose run codeception run muloader --debug
-	docker-compose run codeception run unit --debug
-	docker-compose run codeception run webdriver --debug
-	docker-compose run codeception run wpcli_module --debug
-	docker-compose run codeception run wpfunctional --debug
-	docker-compose run codeception run wploader_multisite --debug
-	docker-compose run codeception run wploader_wpdb_interaction --debug
-	docker-compose run codeception run wploadersuite --debug
-	docker-compose run codeception run wpmodule --debug
+		|| docker-compose run codeception run command
+	docker-compose run codeception run dbunit
+	docker-compose run codeception run functional
+	docker-compose run codeception run muloader
+	docker-compose run codeception run unit
+	docker-compose run codeception run webdriver
+	docker-compose run codeception run wpcli_module
+	docker-compose run codeception run wpfunctional
+	docker-compose run codeception run wploader_multisite
+	docker-compose run codeception run wploader_wpdb_interaction
+	docker-compose run codeception run wploadersuite
+	docker-compose run codeception run wpmodule
