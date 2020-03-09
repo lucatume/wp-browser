@@ -3900,6 +3900,7 @@ class WPDb extends Db
 
         $this->dbDump->setTablePrefix($this->config['tablePrefix']);
         $this->dbDump->setUrl($this->config['url']);
+        $this->dbDump->setOriginalUrl(null);
 
         if (!empty($this->config['originalUrl'])) {
             $this->dbDump->setOriginalUrl($this->config['originalUrl']);

@@ -168,3 +168,17 @@ function buildDate($date)
 
     return new \DateTimeImmutable(is_numeric($date) ? '@' . $date : $date);
 }
+
+/**
+ * Converts the `preg_last_error` code into human-readable format.
+ *
+ * @param int $error The `preg_last_error` error code.
+ *
+ * @return string The `preg_last_error` message, translated in a human-readable form.
+ */
+function pregErrorMessage($error)
+{
+    return array_flip(array_filter(get_defined_constants(true)['pcre'], static function ($value) {
+        return substr($value, -6) === '_ERROR';
+    }, ARRAY_FILTER_USE_KEY))[preg_last_error()];
+}

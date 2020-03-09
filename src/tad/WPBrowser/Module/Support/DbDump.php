@@ -4,9 +4,16 @@ namespace tad\WPBrowser\Module\Support;
 
 use Symfony\Component\Yaml\Exception\DumpException;
 use tad\WPBrowser\Filesystem\Utils;
+use function tad\WPBrowser\pregErrorMessage;
 
 class DbDump
 {
+    /**
+     * A static array cache implementation to store database dumps replaced in the context of this request.
+     *
+     * @var array<string,string>
+     */
+    protected static $urlReplacementCache = [];
 
     /**
      * @var string
@@ -77,6 +84,12 @@ class DbDump
      */
     public function replaceSiteDomainInSqlString($sql, $debug = false)
     {
+        $cacheKey = md5($sql) . '-' . md5($this->url) . '-single' ;
+
+        if (isset(static::$urlReplacementCache[$cacheKey])) {
+            return static::$urlReplacementCache[$cacheKey];
+        }
+
         if ($this->originalUrl === null) {
             $this->originalUrl = $this->getOriginalUrlFromSqlString($sql);
         }
@@ -90,7 +103,7 @@ class DbDump
 
         $originalFrags = parse_url($this->originalUrl);
         $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path']));
-        $originalHostAndPath = implode('', array_merge(['host' => '', 'path' => ''], $originalFrags));
+        $originalHostAndPath = rtrim(implode('', array_merge(['host' => '', 'path' => ''], $originalFrags)), '/');
         $replaceScheme = parse_url($this->url, PHP_URL_SCHEME);
         $replaceHost = parse_url($this->url, PHP_URL_HOST);
 
@@ -98,20 +111,29 @@ class DbDump
             return $sql;
         }
 
-        $sql = preg_replace(
-            '#(?:https?)://(?<subdomain>.*?)' . preg_quote($originalHostAndPath, '#') . '(?<end>$|/|"|\')#uis',
-            $replaceScheme . '://$1' . $replaceHost . '$2',
-            $sql
-        );
+        $urlPattern = '~' .
+            '(?<scheme>https?)://' .
+            '(?<subdomain>[A-z0-9_-]+\\.)*' .
+            preg_quote($originalHostAndPath, '~') . '(?!\\.)' .
+            '(?<path>/+[A-z0-9/_-]*)*' .
+            '~u';
+        $replacement = $replaceScheme . '://$2' . $replaceHost . '$3';
+
+        $sql = preg_replace($urlPattern, $replacement, $sql);
+
+        preg_match($urlPattern,$sql,$m);
 
         if ($sql === null) {
             throw new DumpException(
-                'There was an error while trying to replace the URL in the dump file.' .
+                'There was an error while trying to replace the URL in the dump file: ' .
+                pregErrorMessage(preg_last_error()) .
                 "\n\n" .
                 'Either manually replace it and set the "urlReplacement" module parameter to "false" or check the ' .
                 'dump file integrity.'
             );
         }
+
+        static::$urlReplacementCache[$cacheKey] = $sql;
 
         codecept_debug('Dump file host [' . $originalHostAndPath . '] replaced with [' . $replaceHost . ']');
 
@@ -121,12 +143,18 @@ class DbDump
     /**
      * Replaces the site domain in the multisite tables of a SQL dump.
      *
-     * @param string $sql
+     * @param string $sql The SQL code to apply the replacements to.
      *
-     * @return string
+     * @return string The SQL code, with the URL replaced in it.
      */
     public function replaceSiteDomainInMultisiteSqlString($sql, $debug = false)
     {
+        $cacheKey = md5($sql) . '-' . md5($this->url) . '-multisite' ;
+
+        if (isset(static::$urlReplacementCache[$cacheKey])) {
+            return static::$urlReplacementCache[$cacheKey];
+        }
+
         if ($this->originalUrl === null) {
             $this->originalUrl = $this->getOriginalUrlFromSqlString($sql);
         }
@@ -173,6 +201,8 @@ class DbDump
 
             $sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
         }
+
+        static::$urlReplacementCache[$cacheKey] = $sql;
 
         return $sql;
     }
@@ -244,10 +274,16 @@ class DbDump
     /**
      * Sets the original dump URL, the one that should be replaced in the dump.
      *
-     * @param string $originalUrl The site URL that should be replaced in the dump.
+     * @param string|null $originalUrl The site URL that should be replaced in the dump, or `null` to unset the
+     *                                 property.
      */
-    public function setOriginalUrl($originalUrl)
+    public function setOriginalUrl($originalUrl = null)
     {
+        if($originalUrl === null){
+            $this->originalUrl = null;
+            return;
+        }
+
         $originalUrl = trim($originalUrl);
         $originalUrlFrags = parse_url($originalUrl);
         $originalUrlFrags['scheme'] = isset($originalUrlFrags['scheme']) ? $originalUrlFrags['scheme'] : 'http';
