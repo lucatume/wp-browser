@@ -22,8 +22,7 @@ services:
       - test
 
   wordpress:
-    build:
-      context: tests/_containers/wordpress
+    image: wordpress:latest
     env_file: .env.testing.docker
     networks:
       test:
