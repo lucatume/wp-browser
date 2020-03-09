@@ -29,7 +29,7 @@ modules:
             password: %WORDPRESS_DB_PASSWORD%
             dump: 'tests/_data/mu-subdir-dump.sql'
             populate: true
-            cleanup: true
+            cleanup: false
             reconnect: false
             url: '%WORDPRESS_SUBDIR_URL%'
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
