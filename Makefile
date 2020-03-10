@@ -96,8 +96,8 @@ clean:
 	docker network rm $$(docker network ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
 		&& echo "Networks removed." \
 		|| echo "No networks found".
-	rm *.bak
-	rm .ready
+	rm -f *.bak
+	rm -f .ready
 
 # Produces the Modules documentation in the docs/modules folder.
 docs: composer.lock src/Codeception/Module
@@ -130,19 +130,19 @@ check_exports:
 	bash ./_build/check_exports.sh
 
 test:
-	docker-compose run codeception run acceptance
-	docker-compose run codeception run cli
-	docker-compose run codeception run climodule
+	docker-compose --project-name=acceptance codeception --project-name=suite acceptance
+	docker-compose --project-name=cli codeception --project-name=suite cli
+	docker-compose --project-name=climodule codeception --project-name=suite climodule
 	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
-		|| docker-compose run codeception run command
-	docker-compose run codeception run dbunit
-	docker-compose run codeception run functional
-	docker-compose run codeception run muloader
-	docker-compose run codeception run unit
-	docker-compose run codeception run webdriver
-	docker-compose run codeception run wpcli_module
-	docker-compose run codeception run wpfunctional
-	docker-compose run codeception run wploader_multisite
-	docker-compose run codeception run wploader_wpdb_interaction
-	docker-compose run codeception run wploadersuite
-	docker-compose run codeception run wpmodule
+		|| docker-compose --project-name=command codeception --project-name=suite command
+	docker-compose --project-name=dbunit codeception --project-name=suite dbunit
+	docker-compose --project-name=functional codeception --project-name=suite functional
+	docker-compose --project-name=muloader codeception --project-name=suite muloader
+	docker-compose --project-name=unit codeception --project-name=suite unit
+	docker-compose --project-name=webdriver codeception --project-name=suite webdriver
+	docker-compose --project-name=wpcli_module codeception --project-name=suite wpcli_module
+	docker-compose --project-name=wpfunctional codeception --project-name=suite wpfunctional
+	docker-compose --project-name=wploader_multisite codeception --project-name=suite wploader_multisite
+	docker-compose --project-name=wploader_wpdb_interaction codeception --project-name=suite wploader_wpdb_interaction
+	docker-compose --project-name=wploadersuite codeception --project-name=suite wploadersuite
+	docker-compose --project-name=wpmodule codeception --project-name=suite wpmodule
