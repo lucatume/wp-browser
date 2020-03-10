@@ -546,14 +546,15 @@ class WPHealthcheck
             }
         }
 
+        ksort($foundPlugins);
+        ksort($inactivePlugins);
+
         if (count($pluginErrors)) {
             $this->pluginsErrors = array_merge($pluginErrors, $foundPlugins, $inactivePlugins);
             return false;
         }
 
-        ksort($foundPlugins);
-        ksort($inactivePlugins);
-        $this->plugins = $foundPlugins + $inactivePlugins;
+        $this->plugins = array_merge($foundPlugins, $inactivePlugins);
 
         return true;
     }
