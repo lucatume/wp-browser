@@ -146,6 +146,3 @@ test:
 	TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction run --rm ccf run wploader_wpdb_interaction
 	TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm ccf run wploadersuite
 	TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf run wpmodule
-
-test_dbunit:
-	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run dbunit
