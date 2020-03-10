@@ -96,8 +96,9 @@ clean:
 	docker network rm $$(docker network ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
 		&& echo "Networks removed." \
 		|| echo "No networks found".
-	rm -f *.bak
-	rm -f .ready
+	echo "Removing .bak files." && rm -f *.bak
+	echo "Removing .ready files." && rm -f .ready
+	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output
 
 # Produces the Modules documentation in the docs/modules folder.
 docs: composer.lock src/Codeception/Module
@@ -130,19 +131,19 @@ check_exports:
 	bash ./_build/check_exports.sh
 
 test:
-	TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance run --rm codeception run acceptance
-	TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm codeception run cli
-	TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm codeception run climodule
+	TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance run --rm ccf run acceptance
+	TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm ccu run cli
+	TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf run climodule
 	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
-		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm codeception run command
-	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm codeception run dbunit
-	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm codeception run functional
-	TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm codeception run muloader
-	TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm codeception run unit
+		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccu run command
+	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run dbunit
+	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional
+	TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf run muloader
+	TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu run unit
 	TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception run webdriver
-	TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module run --rm codeception run wpcli_module
-	TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional run --rm codeception run wpfunctional
-	TEST_SUBNET=38 docker-compose --project-name=${PROJECT_NAME}_wploader_multisite run --rm codeception run wploader_multisite
-	TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction run --rm codeception run wploader_wpdb_interaction
-	TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm codeception run wploadersuite
-	TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm codeception run wpmodule
+	TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module run --rm ccf run wpcli_module
+	TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional run --rm ccf run wpfunctional
+	TEST_SUBNET=38 docker-compose --project-name=${PROJECT_NAME}_wploader_multisite run --rm ccf run wploader_multisite
+	TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction run --rm ccf run wploader_wpdb_interaction
+	TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm ccf run wploadersuite
+	TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf run wpmodule
