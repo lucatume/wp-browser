@@ -47,7 +47,7 @@ class WPHealthcheck
     /**
      * The current mu-plugins information, if any.
      *
-     * @var string
+     * @var array<string>
      */
     protected $muPlugins;
 
@@ -60,7 +60,7 @@ class WPHealthcheck
     /**
      * The current plugins information, if any.
      *
-     * @var string
+     * @var array<string,string>
      */
     protected $plugins;
 
@@ -80,6 +80,7 @@ class WPHealthcheck
 
     /**
      * Whether to use relative paths or not.
+     *
      * @var bool
      */
     protected $useRelative = false;
@@ -550,9 +551,9 @@ class WPHealthcheck
             return false;
         }
 
-        asort($foundPlugins);
-        asort($inactivePlugins);
-        $this->plugins = array_merge($foundPlugins, $inactivePlugins);
+        ksort($foundPlugins);
+        ksort($inactivePlugins);
+        $this->plugins = $foundPlugins + $inactivePlugins;
 
         return true;
     }
