@@ -138,7 +138,7 @@ test:
 		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccf run command
 	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional
 	TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf run muloader
-	TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu run unit
+	TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccf run unit
 	TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception run webdriver
 	TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module run --rm ccf run wpcli_module
 	TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional run --rm ccf run wpfunctional
