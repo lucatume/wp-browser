@@ -98,7 +98,6 @@ class Tables
             return $table_prefix . $table;
         }, [
             'blogs',
-            'blog_versions',
             'sitemeta',
             'site',
             'signups',
