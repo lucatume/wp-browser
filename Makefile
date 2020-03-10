@@ -133,8 +133,8 @@ test:
 	TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance run --rm codeception run acceptance
 	TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm codeception run cli
 	TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm codeception run climodule
-	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
-		|| TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_command run --rm codeception run command
+	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
+		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm codeception run command
 	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm codeception run dbunit
 	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm codeception run functional
 	TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm codeception run muloader
