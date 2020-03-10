@@ -374,7 +374,7 @@ class WPHealthcheck
 
             if ($blogId === false) {
                 $this->blogNotInstalledError = sprintf(
-                    "Cannot query table [%s] for blog with domain [%s].",
+                    'cannot query table [%s] for blog with domain [%s].',
                     $sitesTable,
                     $domain
                 );
@@ -383,7 +383,7 @@ class WPHealthcheck
 
             if ($blogId->rowCount() === 0) {
                 $this->blogNotInstalledError = sprintf(
-                    "database table [%s] does not contain a blog with domain [%s].",
+                    'database table [%s] does not contain a blog with domain [%s].',
                     $sitesTable,
                     $domain
                 );
