@@ -121,7 +121,7 @@ class DbDump
 
         $sql = preg_replace($urlPattern, $replacement, $sql);
 
-        preg_match($urlPattern,$sql,$m);
+        preg_match($urlPattern, $sql, $m);
 
         if ($sql === null) {
             throw new DumpException(
@@ -135,7 +135,7 @@ class DbDump
 
         static::$urlReplacementCache[$cacheKey] = $sql;
 
-        codecept_debug('Dump file host [' . $originalHostAndPath . '] replaced with [' . $replaceHost . ']');
+        codecept_debug('Dump file URL [' . $originalHostAndPath . '] replaced with [' . $replaceHost . ']');
 
         return $sql;
     }
@@ -196,7 +196,7 @@ class DbDump
             }
 
             if ($debug) {
-                codecept_debug('Dump file domain [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
+                codecept_debug('Dump file URL [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
             }
 
             $sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
@@ -279,7 +279,7 @@ class DbDump
      */
     public function setOriginalUrl($originalUrl = null)
     {
-        if($originalUrl === null){
+        if ($originalUrl === null) {
             $this->originalUrl = null;
             return;
         }

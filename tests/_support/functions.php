@@ -69,8 +69,9 @@ function db($host, $user, $pass)
  *
  * @return string The name of the environment file to load in tests.
  */
-function envFile(){
-   return '.env.testing.docker';
+function envFile()
+{
+    return '.env.testing.docker';
 }
 
 /**
