@@ -39,9 +39,6 @@ services:
         define( 'PATH_CURRENT_SITE', '/' );
         define( 'SITE_ID_CURRENT_SITE', 1 );
         define( 'BLOG_ID_CURRENT_SITE', 1 );
-      # Configure this to debug the tests with XDebug.
-      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_wp}"
-      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_wp} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     volumes:
       - wordpress:/var/www/html
 
