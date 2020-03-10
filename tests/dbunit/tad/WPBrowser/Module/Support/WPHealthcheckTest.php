@@ -111,7 +111,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $sut = $this->make_instance();
 
         $run = $sut->run();
-        codecept_debug($run);
+        codecept_debug(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
