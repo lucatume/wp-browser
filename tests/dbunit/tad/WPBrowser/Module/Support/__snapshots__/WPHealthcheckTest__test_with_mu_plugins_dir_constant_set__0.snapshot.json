@@ -30,8 +30,8 @@
             "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": [
-            "index.php",
-            "hello.php"
+            "hello.php",
+            "index.php"
         ],
         "Plugins health-check:": {
             "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] does not exist.",

@@ -478,6 +478,8 @@ class WPHealthcheck
             $fileBasenames[] = $file->getBasename();
         }
 
+        sort($fileBasenames);
+
         $this->muPlugins = $fileBasenames;
 
         return true;
@@ -548,6 +550,8 @@ class WPHealthcheck
             return false;
         }
 
+        ksort($foundPlugins);
+        ksort($inactivePlugins);
         $this->plugins = array_merge($foundPlugins, $inactivePlugins);
 
         return true;
