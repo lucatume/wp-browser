@@ -132,7 +132,7 @@ check_exports:
 
 test:
 	TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance run --rm ccf run acceptance
-	TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm ccu run cli
+	TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm ccf run cli
 	TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf run climodule
 	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
 		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccu run command
