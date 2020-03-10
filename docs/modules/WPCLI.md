@@ -184,8 +184,9 @@ modules:
 ```php
 // Return the current site administrator email, using string command format.
   $adminEmail = $I->cliToString('option get admin_email');
-  // Get the list of active plugins in JSON format.
-  $activePlugins = $I->cliToString(['wp','option','get','active_plugins','--format=json']);
+  // Get the list of active plugins in JSON format, two ways.
+  $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
+  $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
 ```
 
 <h4>Parameters</h4>
