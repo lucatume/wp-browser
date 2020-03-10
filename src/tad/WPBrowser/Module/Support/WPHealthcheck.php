@@ -550,8 +550,8 @@ class WPHealthcheck
             return false;
         }
 
-        ksort($foundPlugins);
-        ksort($inactivePlugins);
+        asort($foundPlugins);
+        asort($inactivePlugins);
         $this->plugins = array_merge($foundPlugins, $inactivePlugins);
 
         return true;
