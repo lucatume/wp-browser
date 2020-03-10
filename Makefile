@@ -148,5 +148,4 @@ test:
 	TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf run wpmodule
 
 test_dbunit:
-	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run \
-		tests/dbunit/tad/WPBrowser/Module/Support/WPHealthcheckTest.php --debug
+	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run dbunit
