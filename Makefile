@@ -136,7 +136,6 @@ test:
 	TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf run climodule
 	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
 		|| TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccu run command
-	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run dbunit
 	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional
 	TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf run muloader
 	TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu run unit
@@ -147,3 +146,6 @@ test:
 	TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction run --rm ccf run wploader_wpdb_interaction
 	TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm ccf run wploadersuite
 	TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf run wpmodule
+
+test_dbunit:
+	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf run dbunit --debug

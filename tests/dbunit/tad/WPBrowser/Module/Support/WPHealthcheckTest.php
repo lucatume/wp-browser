@@ -68,7 +68,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $this->constants = new TestConstants();
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -81,7 +83,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         ]);
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     protected function env($name)
@@ -106,7 +110,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = $this->env('WORDPRESS_TABLE_PREFIX');
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -127,7 +133,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -148,7 +156,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -177,7 +187,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $this->database = $database->reveal();
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -197,7 +209,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'wp_';
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -217,7 +231,9 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $GLOBALS['table_prefix'] = 'not_existing_';
         $sut = $this->make_instance();
 
-        $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $run = $sut->run();
+        codecept_debug($run);
+        $this->assertMatchesJsonSnapshot(json_encode($run, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     /**
