@@ -8,7 +8,7 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.28.0.0/16
+        - subnet: "172.${TEST_SUBNET:-28}.0.0/16"
 
 volumes:
   wordpress:
@@ -26,7 +26,7 @@ services:
     env_file: .env.testing.docker
     networks:
       test:
-        ipv4_address: 172.28.1.1
+        ipv4_address: 172.${TEST_SUBNET:-28}.1.1
     depends_on:
       - db
     environment:
@@ -48,12 +48,12 @@ services:
     networks:
       - test
     extra_hosts:
-      - "wordpress.localhost:172.28.1.1"
-      - "test1.wordpress.localhost:172.28.1.1"
-      - "test2.wordpress.localhost:172.28.1.1"
-      - "blog0.wordpress.localhost:172.28.1.1"
-      - "blog1.wordpress.localhost:172.28.1.1"
-      - "blog2.wordpress.localhost:172.28.1.1"
+      - "wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
 
   codeception:
     image: lucatume/codeception:cc3.1.0
@@ -61,12 +61,12 @@ services:
     networks:
       - test
     extra_hosts:
-      - "wordpress.localhost:172.28.1.1"
-      - "test1.wordpress.localhost:172.28.1.1"
-      - "test2.wordpress.localhost:172.28.1.1"
-      - "blog0.wordpress.localhost:172.28.1.1"
-      - "blog1.wordpress.localhost:172.28.1.1"
-      - "blog2.wordpress.localhost:172.28.1.1"
+      - "wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
     environment:
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
