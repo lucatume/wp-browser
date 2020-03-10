@@ -211,7 +211,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             'WP_SITEURL' => $this->env('WORDPRESS_URL'),
             'DB_HOST' => $this->env('WORDPRESS_DB_HOST'),
             'DB_NAME' => $this->env('WORDPRESS_DB_NAME'),
-            'DB_PASSWORD' => $this->env('WORDPRESS_DB_PASSWORDt'),
+            'DB_PASSWORD' => $this->env('WORDPRESS_DB_PASSWORD'),
             'DB_USER' => $this->env('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'not_existing_';

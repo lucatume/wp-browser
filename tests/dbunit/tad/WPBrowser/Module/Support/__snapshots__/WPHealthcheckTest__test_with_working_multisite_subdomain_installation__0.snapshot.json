@@ -23,16 +23,17 @@
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
         "Database structure as expected": "Yes, as expected.",
-        "Blog installed": "No, blog is not installed: database table [wp_blogs] does not contain a blog with domain [mu-subdomain.test].",
+        "Blog installed": "Yes, blog is installed.",
         "Theme :": {
-            "template": "twentynineteen",
-            "stylesheet": "twentynineteen",
-            "twentynineteen directory": "vendor/wordpress/wordpress/wp-content/themes/twentynineteen"
+            "template": "twentytwenty",
+            "stylesheet": "twentytwenty",
+            "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
-            "Inactive plugin [test]": "wp-content/plugins/test",
+            "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] does not exist.",
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
+            "Inactive plugin [test]": "wp-content/plugins/test",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1"
         }
     }
