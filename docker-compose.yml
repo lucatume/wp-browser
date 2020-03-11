@@ -32,7 +32,7 @@ services:
     environment:
       WORDPRESS_CONFIG_EXTRA: |
         /* Multisite */
-        define( 'DOMAIN_CURRENT_SITE', '${WORDPRESS_URL:-wordpress.localhost}' );
+        define( 'DOMAIN_CURRENT_SITE', '${WORDPRESS_URL:-wordpress.test}' );
         define( 'WP_ALLOW_MULTISITE', true );
         define( 'MULTISITE', true );
         define( 'SUBDOMAIN_INSTALL', true );
@@ -48,12 +48,12 @@ services:
     networks:
       - test
     extra_hosts:
-      - "wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog0.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
 
   codeception:
     image: lucatume/codeception:cc3.1.0
@@ -61,12 +61,12 @@ services:
     networks:
       - test
     extra_hosts:
-      - "wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog0.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
+      - "wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
     environment:
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
@@ -85,14 +85,13 @@ services:
     networks:
       - test
     extra_hosts:
-      - "wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "test2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog0.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog1.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-      - "blog2.wordpress.localhost:172.${TEST_SUBNET:-28}.1.1"
-    environment:
-      # Configure this to debug the tests with XDebug.
+      - "wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+    environment: # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     depends_on:
