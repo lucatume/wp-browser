@@ -16,7 +16,7 @@ $import = static function (array $filesMap) {
     }
 };
 
-$import (
+$import(
     [
         'dump.sql' => 'WORDPRESS_DB_NAME',
         'mu-subdir-dump.sql' => 'WORDPRESS_SUBDIR_DB_NAME',
