@@ -160,8 +160,8 @@ class DbDump
         }
 
         $tables = [
-            'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*'(.*)',/uiU",
-            'site'  => "VALUES\\s+\\(\\d+,\\s*'(.*)',/uiU",
+            'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*)'(.*)',/uiU",
+            'site'  => "VALUES\\s+\\(\\d+,\\s*)'(.*)',/uiU",
         ];
 
         $thisSiteUrl = preg_replace('~https?:\\/\\/~', '', $this->url);
@@ -169,7 +169,8 @@ class DbDump
         foreach ($tables as $table => $pattern) {
             $currentTable = $this->tablePrefix . $table;
             $matches      = [];
-            preg_match("/INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}", $sql, $matches);
+            $fullPattern = "/(INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}";
+            preg_match($fullPattern, $sql, $matches);
 
             if (empty($matches) || empty($matches[1])) {
                 if ($debug) {
@@ -179,7 +180,7 @@ class DbDump
                 continue;
             }
 
-            $dumpSiteUrl = $matches[1];
+            $dumpSiteUrl = $matches[2];
             if (empty($dumpSiteUrl)) {
                 if ($debug) {
                     codecept_debug('Dump file does not contain dump of [domain] option, not replacing.');
@@ -199,7 +200,11 @@ class DbDump
                 codecept_debug('Dump file URL [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
             }
 
-            $sql = str_replace($dumpSiteUrl, $thisSiteUrl, $sql);
+            $sql = preg_replace(
+                '#([\'"])([A-z0-9_-]+\\.)*' . preg_quote($dumpSiteUrl, '#') . '(/[^\'"])*([\'"])#',
+                '$1$2' . $thisSiteUrl . '$3$4',
+                $sql
+            );
         }
 
         static::$urlReplacementCache[$cacheKey] = $sql;
