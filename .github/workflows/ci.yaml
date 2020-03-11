@@ -34,8 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache
-        uses: actions/cache@v1
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1.0.3
         with:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}
