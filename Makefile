@@ -125,7 +125,7 @@ test:
 		run cli
 	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf \
 		run climodule
-	XDE=0 TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf \
+	XDE=0 TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf \
 		run dbunit
 	XDE=0 TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf \
 		run functional
