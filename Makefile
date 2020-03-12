@@ -139,6 +139,7 @@ test:
 	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf run climodule
 	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
 		|| XDE=0 TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccf run command
+	XDE=0 TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run dbunit
 	XDE=0 TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional
 	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf run muloader
 	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccf run unit
@@ -152,6 +153,8 @@ test:
 
 # A variable target to debug issues.
 debug:
-	TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm \
-		codeception run tests/webdriver/HomepageCept.php --debug
-
+	TEST_SUBNET=89 docker-compose --project-name=${PROJECT_NAME}_debug \
+		-f docker-compose.yml \
+		-f debug.yml \
+		run --entrypoint=bash --rm \
+		codeception
