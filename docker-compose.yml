@@ -75,8 +75,8 @@ services:
       - wordpress
       - chrome
     volumes:
-    - .:/project
-    - wordpress:/project/vendor/wordpress/wordpress
+      - .:/project
+      - wordpress:/project/vendor/wordpress/wordpress
 
   # Functional version of the Codeception container, w/o Chrome.
   ccf:
