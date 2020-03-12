@@ -22,7 +22,7 @@ modules:
         depends: WPDb
         wpRootFolder: '%WORDPRESS_ROOT_DIR%'
         adminUsername: '%WORDPRESS_ADMIN_USER%'
-        adminPassword: '$WORDPRESS_ADMIN_PASSWORD$'
+        adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
       WPLoader:
         loadOnly: true
         domain: '%WORDPRESS_DOMAIN%'
