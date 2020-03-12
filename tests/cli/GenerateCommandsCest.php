@@ -22,7 +22,7 @@ class GenerateCommandsCest extends BaseCommandCest
      */
     public function it_should_scaffold_wpunit_like_tests(CliTester $I, \Codeception\Example $data)
     {
-        $I->runCodecept("generate:{$data[0]} unit Some");
+        $I->runCodecept("generate:{$data[0]} unit Some", $I->sandboxPath());
 
         $I->seeFileFound('tests/unit/SomeTest.php');
     }

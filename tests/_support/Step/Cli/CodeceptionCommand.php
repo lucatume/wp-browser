@@ -9,7 +9,13 @@ class CodeceptionCommand extends \CliTester
 
     public function createSandbox()
     {
-        mkdir($this->sandboxPath(), 0777, true);
+        if (!is_dir($this->sandboxPath()) &&
+            !mkdir($concurrentDirectory = $this->sandboxPath(), 0777, true) &&
+            !is_dir($concurrentDirectory)
+        ) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+
         $this->runCodecept('bootstrap', $this->sandboxPath());
         $config = $this->sandboxPath('codeception.yml');
         $parsed = Yaml::parse(file_get_contents($config));
@@ -39,16 +45,11 @@ class CodeceptionCommand extends \CliTester
     {
         $codecept = wpbrowser_vendor_path('bin/codecept');
 
-        $command = trim("{$codecept} {$subCommand} {$path}");
+        if (!empty($path)) {
+            chdir($path);
+        }
 
-        $this->runShellCommand($command, true);
-    }
-
-    public function runWpcept($subCommand, $path = '')
-    {
-        $wpcept = codecept_root_dir('wpcept');
-
-        $command = trim("{$wpcept} {$subCommand} {$path}");
+        $command = trim("{$codecept} {$subCommand}");
 
         $this->runShellCommand($command, true);
     }
