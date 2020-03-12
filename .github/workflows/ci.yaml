@@ -23,12 +23,12 @@ jobs:
         run: make sniff
 
   test:
-    name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
-    runs-on: ubuntu-18.04
     strategy:
       matrix:
-        php_version: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4' ]
+        php_version: [ '5.6', '7.3' ]
         codeception_version: [ '2.5', '3.0' ]
+    name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
