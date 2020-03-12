@@ -13,6 +13,6 @@ class InvalidStatusCest
     {
         $exit_status = $I->cli('invalid');
 
-        $I->assertEquals(1, $exit_status);
+        $I->assertEquals(255, $exit_status);
     }
 }

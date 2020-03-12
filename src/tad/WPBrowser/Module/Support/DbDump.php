@@ -249,7 +249,9 @@ class DbDump
     }
 
     /**
-     * @param string $url
+     * Sets the URL that should replace the original URL in the SQL dump file.
+     *
+     * @param string $url The URL that should replace the original URL in the SQL dump file.
      */
     public function setUrl($url)
     {

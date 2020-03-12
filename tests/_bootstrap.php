@@ -15,3 +15,8 @@ $db = db($host, $user, $pass);
 $db("CREATE DATABASE IF NOT EXISTS {$subfolderDb}");
 $db("CREATE DATABASE IF NOT EXISTS {$subdomainDb}");
 $db("CREATE DATABASE IF NOT EXISTS {$emptyDb}");
+
+// If the `uopz` extension is installed, then allow `exit` and `die` to work normally.
+if (function_exists('uopz_allow_exit')) {
+    uopz_allow_exit(true);
+}

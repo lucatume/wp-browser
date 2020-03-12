@@ -58,5 +58,10 @@ if (!empty($env['headers'])) {
 // Disable CRON tasks to avoid parallel processes running on an empty database.
 define('DISABLE_WP_CRON', true);
 
-// Set an environment variable to singnal the context of the request.
+// Set an environment variable to signal the context of the request.
 putenv('WPBROWSER_HOST_REQUEST=1');
+
+// If the `uopz` extension is installed, then allow `exit` and `die` to work normally.
+if (function_exists('uopz_allow_exit')) {
+    uopz_allow_exit(true);
+}

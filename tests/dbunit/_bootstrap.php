@@ -7,7 +7,7 @@ $import = static function (array $filesMap) {
     $env = env();
     foreach ($filesMap as $file => $dbNameEnvVar) {
         importDump(
-            codecept_data_dir('dump.sql'),
+            codecept_data_dir($file),
             $env($dbNameEnvVar),
             $env('WORDPRESS_DB_USER'),
             $env('WORDPRESS_DB_PASSWORD'),
