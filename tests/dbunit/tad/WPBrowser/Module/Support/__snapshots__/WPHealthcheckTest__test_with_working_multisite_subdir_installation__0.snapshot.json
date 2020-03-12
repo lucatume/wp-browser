@@ -4,8 +4,8 @@
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
-        "WP_HOME": "http://wordpress.localhost/subdir-one",
-        "WP_SITEURL": "http://wordpress.localhost/subdir-one",
+        "WP_HOME": "http://wordpress.test/subdir-one",
+        "WP_SITEURL": "http://wordpress.test/subdir-one",
         "WPMU_PLUGIN_DIR": "not set",
         "DB_HOST": "db",
         "DB_NAME": "test_subdir",
@@ -25,13 +25,12 @@
         "Database structure as expected": "Yes, as expected.",
         "Blog installed": "Yes, blog is installed.",
         "Theme :": {
-            "template": "twentytwenty",
-            "stylesheet": "twentytwenty",
-            "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
+            "template": "twentynineteen",
+            "stylesheet": "twentynineteen",
+            "twentynineteen directory": "vendor/wordpress/wordpress/wp-content/themes/twentynineteen"
         },
         "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
-            "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] does not exist.",
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1",
             "Inactive plugin [test]": "wp-content/plugins/test"
