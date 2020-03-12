@@ -11,22 +11,7 @@ PROJECT_NAME = $(notdir $(PWD))
 .SILENT:
 
 # Define what targets should always run.
-.PHONY: wp_dump \
-	cs_sniff \
-	cs_fix  \
-	cs_fix_n_sniff  \
-	ci_before_install  \
-	ci_before_script \
-	ci_docker_restart \
-	ci_install  \
-	ci_local_prepare \
-	ci_run  \
-	ci_script \
-	pre_commit \
-	require_codeception_2.5 \
-	require_codeception_3 \
-	phpstan \
-	php56
+.PHONY: docker_pull lint sniff fix fix_n_sniff phpstan pre_commit clean docs check_exports build_suites test debug
 
 # PUll all the Docker images this repository will use in building images or running processes.
 docker_pull:
