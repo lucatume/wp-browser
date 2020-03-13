@@ -317,11 +317,11 @@ function os()
 /**
  * Returns the path to the MySQL binary, aware of the current Operating System.
  *
- * @return string
+ * @return string The name, and path, to the MySQL binary.
  */
 function mysqlBin()
 {
-    return os() === 'Windows' ? 'mysql' : '/usr/bin/env mysql';
+    return'mysql';
 }
 
 /**
@@ -365,12 +365,15 @@ function process($cmd = [], $cwd = null, $env = null)
         switch ($what) {
             case PROC_WRITE:
                 return fwrite($pipes[0], reset($args));
+                break;
             case PROC_READ:
                 $length = isset($args[0]) ? (int)$args[0] : null;
-                return fgets($pipes[1], $length);
+                return $length !== null ? fgets($pipes[1], $length) : fgets($pipes[1]);
+                break;
             case PROC_ERROR:
                 $length = isset($args[0]) ? (int)$args[0] : null;
-                return fgets($pipes[2], $length);
+                return $length !== null ? fgets($pipes[2], $length) : fgets($pipes[2]);
+                break;
             case PROC_CLOSE:
             case PROC_STATUS:
             default:
@@ -388,6 +391,7 @@ function process($cmd = [], $cwd = null, $env = null)
                 }
 
                 return proc_close($proc);
+                break;
         }
     };
 }
