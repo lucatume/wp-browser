@@ -6,13 +6,14 @@ use function tad\WPBrowser\db;
 use function tad\WPBrowser\envFile;
 use function tad\WPBrowser\mysqlBin;
 use function tad\WPBrowser\process;
+use const tad\WPBrowser\PROC_ERROR;
 use const tad\WPBrowser\PROC_STATUS;
 
 /**
  * Imports a dump file using the `mysql` binary.
  *
- * @param        string $dumpFile The path to the SQL dump file to import.
- * @param       string $dbName The name of the database to import the SQL dump file to.
+ * @param string $dumpFile The path to the SQL dump file to import.
+ * @param string $dbName   The name of the database to import the SQL dump file to.
  * @param string $dbUser
  * @param string $dbPass
  * @param string $dbHost
@@ -39,7 +40,14 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 
     $import = process($command);
 
-    return $import(PROC_STATUS) === 0;
+    $error = $import(PROC_ERROR);
+    $status = $import(PROC_STATUS);
+
+    if ($status !== 0) {
+        codecept_debug('Import error: ' . $error);
+    }
+
+    return $status === 0;
 }
 
 /**
