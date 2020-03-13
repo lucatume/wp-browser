@@ -82,7 +82,6 @@ clean:
 		&& echo "Networks removed." \
 		|| echo "No networks found".
 	echo "Removing .bak files." && rm -f *.bak
-	echo "Removing .ready files." && rm -f .ready
 	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output
 
 # Produces the Modules documentation in the docs/modules folder.
@@ -158,3 +157,7 @@ debug:
 		-f debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
+
+test_1:
+	TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf \
+		run dbunit --debug
