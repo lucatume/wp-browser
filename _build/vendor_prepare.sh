@@ -40,7 +40,7 @@ if [ ${ready} != 0 ] && [ ${ready} != "${php_version}.cc.${codeception_version}"
   mv "${PWD}"/composer.lock "${vendor_cache}/composer.lock" || \
     (echo -e "\033[91mCould not move composer.lock to ${vendor_cache}/composer.lock\033[0m"; exit 1)
 
-  rm "${PWD}"/composer.lock
+  rm -f "${PWD}"/composer.lock
 
   echo -e "\033[32mVendor directory cached to ${vendor_cache}\033[0m"
 fi
