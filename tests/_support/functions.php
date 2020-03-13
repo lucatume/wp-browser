@@ -2,29 +2,44 @@
 
 namespace tad\WPBrowser\Tests\Support;
 
-use Dotenv\Environment\DotenvFactory;
-use Dotenv\Loader;
+use function tad\WPBrowser\db;
+use function tad\WPBrowser\envFile;
+use function tad\WPBrowser\mysqlBin;
+use function tad\WPBrowser\process;
+use const tad\WPBrowser\PROC_STATUS;
 
-function importDump($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
+/**
+ * Imports a dump file using the `mysql` binary.
+ *
+ * @param        string $dumpFile The path to the SQL dump file to import.
+ * @param       string $dbName The name of the database to import the SQL dump file to.
+ * @param string $dbUser
+ * @param string $dbPass
+ * @param string $dbHost
+ * @return bool
+ */
+function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
+    $dbPort = false;
     if (strpos($dbHost, ':') > 0) {
         list($dbHost, $dbPort) = explode(':', $dbHost);
-        $dbHost = sprintf('%s -P %d', $dbHost, $dbPort);
     }
 
-    $commandTemplate = 'mysql -h %s -u %s %s %s < %s';
-    $dbPassEntry = $dbPass ? '-p' . $dbPass : '';
-
-    $sql = file_get_contents($dumpFile);
-
-    if (false === $sql) {
-        return false;
+    $command = [mysqlBin(), '-h', $dbHost, '-u', $dbUser];
+    if (!empty($dbPass)) {
+        $command[] = '-p';
+        $command[] = $dbPass;
+    }
+    if (!empty($dbPort)) {
+        $command[] = '-P';
+        $command[] = $dbPort;
     }
 
-    $command = sprintf($commandTemplate, $dbHost, $dbUser, $dbPassEntry, $dbName, $dumpFile);
-    exec($command, $output, $status);
+    $command = array_merge($command, [$dbName, '<', $dumpFile]);
 
-    return (int)$status === 0;
+    $import = process($command);
+
+    return $import(PROC_STATUS) === 0;
 }
 
 /**
@@ -39,52 +54,54 @@ function normalizeNewLine($str)
 }
 
 /**
- * Open a database connection and returns a callable to run queries on it.
- *
- * @param string $host The database host.
- * @param string $user The database user.
- * @param string $pass The database password.
- * @return \Closure A callable to run queries on the database.
- */
-function db($host, $user, $pass)
-{
-    $pdo = new \PDO("mysql:host={$host}", $user, $pass);
-    return static function ($query) use ($pdo, $host, $user, $pass) {
-        $result = $pdo->exec($query);
-        if (false === $result) {
-            throw new \RuntimeException('Could not create the subdir db; ' . json_encode([
-                    'host' => $host,
-                    'user' => $user,
-                    'pass' => $pass,
-                    'query' => $query
-                ], JSON_PRETTY_PRINT));
-        }
-
-        return $result;
-    };
-}
-
-/**
  * Returns the name of the environment file to load in tests.
  *
  * @return string The name of the environment file to load in tests.
  */
-function envFile()
+function testEnvFile()
 {
     return '.env.testing.docker';
 }
 
 /**
- * Returns a closure to get the value of an environment variable, loading a specific env file first.
- *
- * @param string|null $file The name of the environment file to load, or `null` to use the default one.
- * @return \Closure A closure taking one argument, the environment variable name, to return it.
+ * Creates the databases required by the tests, if they do not exist.
  */
-function env($file = null)
+function createTestDatabasesIfNotExist()
 {
-    $envFile = $file ?: envFile();
-    $env = new Loader([codecept_root_dir($envFile)], new DotenvFactory());
-    return static function ($name) use ($env) {
-        return $env->getEnvironmentVariable($name);
+    $env = envFile(testEnvFile());
+    $host = $env('WORDPRESS_DB_HOST');
+    $user = $env('WORDPRESS_DB_USER');
+    $pass = $env('WORDPRESS_DB_PASSWORD');
+    $db = db($host, $user, $pass);
+    $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDIR_DB_NAME'));
+    $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDOMAIN_DB_NAME'));
+    $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_EMPTY_DB_NAME'));
+}
+
+/**
+ * Imports the dumps into the test databases.
+ */
+function importTestDatabasesDumps()
+{
+    createTestDatabasesIfNotExist();
+    $import = static function (array $filesMap) {
+        $env = envFile(testEnvFile());
+        foreach ($filesMap as $file => $dbNameEnvVar) {
+            importDumpWithMysqlBin(
+                codecept_data_dir($file),
+                $env($dbNameEnvVar),
+                $env('WORDPRESS_DB_USER'),
+                $env('WORDPRESS_DB_PASSWORD'),
+                $env('WORDPRESS_DB_HOST')
+            );
+        }
     };
+
+    $import(
+        [
+            'dump.sql' => 'WORDPRESS_DB_NAME',
+            'mu-subdir-dump.sql' => 'WORDPRESS_SUBDIR_DB_NAME',
+            'mu-subdomain-dump.sql' => 'WORDPRESS_SUBDOMAIN_DB_NAME'
+        ]
+    );
 }
