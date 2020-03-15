@@ -355,6 +355,12 @@ function process($cmd = [], $cwd = null, $env = null)
         2 => ['pipe', 'w'],
     ];
 
+    if(is_string($escapedCommand)){
+        codecept_debug('Running command: ' . $escapedCommand);
+    } else {
+        codecept_debug('Running command: ' . implode(' ',$escapedCommand));
+    }
+
     $proc = proc_open($escapedCommand, $descriptors, $pipes, $cwd, $env);
 
     if (!is_resource($proc)) {
