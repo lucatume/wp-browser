@@ -7,6 +7,7 @@ use function tad\WPBrowser\envFile;
 use function tad\WPBrowser\mysqlBin;
 use function tad\WPBrowser\process;
 use const tad\WPBrowser\PROC_ERROR;
+use const tad\WPBrowser\PROC_READ;
 use const tad\WPBrowser\PROC_STATUS;
 
 /**
@@ -40,12 +41,12 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 
     $import = process($command);
 
-    $error = $import(PROC_ERROR);
+    codecept_debug('Import output:' . $import(PROC_READ));
+    codecept_debug('Import error:' . $import(PROC_ERROR));
+
     $status = $import(PROC_STATUS);
 
-    if ($status !== 0) {
-        codecept_debug('Import error: ' . $error);
-    }
+    codecept_debug('Import status: ' . $status);
 
     return $status === 0;
 }
