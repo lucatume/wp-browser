@@ -357,10 +357,10 @@ function process($cmd = [], $cwd = null, $env = null)
         2 => ['pipe', 'w'],
     ];
 
-    if(is_string($escapedCommand)){
+    if (is_string($escapedCommand)) {
         codecept_debug('Running command: ' . $escapedCommand);
     } else {
-        codecept_debug('Running command: ' . implode(' ',$escapedCommand));
+        codecept_debug('Running command: ' . implode(' ', $escapedCommand));
     }
 
     $proc = proc_open($escapedCommand, $descriptors, $pipes, $cwd, $env);
@@ -427,7 +427,7 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
         $command[] = '--password=' . escapeshellarg($dbPass);
     }
     if (!empty($dbPort)) {
-        $command[] = '--port=' . escapeshellarg( $dbPort);
+        $command[] = '--port=' . escapeshellarg($dbPort);
     }
 
     $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
