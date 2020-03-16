@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\AssertionFailedError;
-use function tad\WPBrowser\Tests\Support\importDumpWithMysqlBin;
+use function tad\WPBrowser\importDumpWithMysqlBin;
 
 class TablePrefixTest extends \Codeception\TestCase\WPTestCase
 {

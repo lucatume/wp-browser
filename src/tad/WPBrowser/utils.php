@@ -327,7 +327,9 @@ function mysqlBin()
 /**
  * Opens a process handle, starting the process, and returns a closure to read, write or terminate the process.
  *
- * @param array|string             $cmd The command to run, unescaped.
+ * The command is NOT escaped and should be escaped before being input into this function.
+ *
+ * @param array|string             $cmd The command to run, escaped if required..
  * @param string|string            $cwd The process working directory, or `null` to use the current one.
  * @param array<string,mixed>|null $env A map of the process environment variables; or `null` to use the current ones.
  *
@@ -339,7 +341,7 @@ function mysqlBin()
 function process($cmd = [], $cwd = null, $env = null)
 {
     if (PHP_VERSION_ID < 70400) {
-        $escapedCommand = implode(' ', array_map('escapeshellarg', $cmd));
+        $escapedCommand = implode(' ', $cmd);
     } else {
         // PHP 7.4 has introduced support for array commands and will handle the escaping.
         $escapedCommand = $cmd;
@@ -400,4 +402,58 @@ function process($cmd = [], $cwd = null, $env = null)
                 break;
         }
     };
+}
+
+/**
+ * Imports a dump file using the `mysql` binary.
+ *
+ * @param string $dumpFile The path to the SQL dump file to import.
+ * @param string $dbName   The name of the database to import the SQL dump file to.
+ * @param string $dbUser The database user to use to import the dump.
+ * @param string $dbPass The database password to use to import the dump.
+ * @param string $dbHost The database host to use to import the dump.
+ *
+ * @return bool Whether the import was successful, exit status `0`, or not.
+ */
+function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
+{
+    $dbPort = false;
+    if (strpos($dbHost, ':') > 0) {
+        list($dbHost, $dbPort) = explode(':', $dbHost);
+    }
+
+    $command = [mysqlBin(), '--host=' . escapeshellarg($dbHost), '--user='. escapeshellarg($dbUser)];
+    if (!empty($dbPass)) {
+        $command[] = '--password=' . escapeshellarg($dbPass);
+    }
+    if (!empty($dbPort)) {
+        $command[] = '--port=' . escapeshellarg( $dbPort);
+    }
+
+    $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
+
+    $import = process($command);
+
+    codecept_debug('Import output:' . $import(PROC_READ));
+    codecept_debug('Import error:' . $import(PROC_ERROR));
+
+    $status = $import(PROC_STATUS);
+
+    codecept_debug('Import status: ' . $status);
+
+    return $status === 0;
+}
+
+/**
+ * Normalizes a string new line bytecode for comparison through Unix and Windows environments.
+ *
+ * @param string $str The string to normalize.
+ *
+ * @return string The normalized string.
+ *
+ * @see https://stackoverflow.com/a/7836692/2056484
+ */
+function normalizeNewLine($str)
+{
+    return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
 }

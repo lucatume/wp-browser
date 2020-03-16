@@ -7,7 +7,7 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
-use function tad\WPBrowser\Tests\Support\normalizeNewLine;
+use function tad\WPBrowser\normalizeNewLine;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
