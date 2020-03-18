@@ -159,5 +159,4 @@ debug:
 		codeception
 
 test_1:
-	TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm ccf \
-		run wploadersuite --debug
+	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional --debug

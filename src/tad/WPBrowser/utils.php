@@ -7,11 +7,13 @@
 
 namespace tad\WPBrowser;
 
+use tad\WPBrowser\Utils\Map;
 const PROC_CLOSE = 'proc_close';
 const PROC_STATUS = 'proc_status';
 const PROC_WRITE = 'proc_write';
 const PROC_READ = 'proc_read';
 const PROC_ERROR = 'proc_error';
+const PROC_REALTIME = 'proc_realtime';
 
 /**
  * A function that does nothing, safe return when closures are expected.
@@ -25,6 +27,36 @@ function noop($return = null)
     return static function () use ($return) {
         return $return;
     };
+}
+
+function isDebug($activate = null){
+    static $isDebug;
+    if($activate === null){
+        return (bool)$isDebug;
+    }
+
+    $isDebug = (bool)$activate;
+}
+
+/**
+ * Prints a debug message using Codeception `codecept_debug` function if available.
+ *
+ * @param string|mixed $message Either a string message or an other value that will be printed JSON encoded.
+ */
+function debug($message)
+{
+    if (function_exists('codecept_debug')) {
+        codecept_debug($message);
+        return;
+    }
+
+    if(!isDebug()){
+        return;
+    }
+
+    $message = is_string($message) ? $message : json_encode($message);
+
+    echo "\033[34m[Debug] " . $message . "\033[0m\n";
 }
 
 /**
@@ -321,7 +353,7 @@ function os()
  */
 function mysqlBin()
 {
-    return'mysql';
+    return 'mysql';
 }
 
 /**
@@ -358,9 +390,9 @@ function process($cmd = [], $cwd = null, $env = null)
     ];
 
     if (is_string($escapedCommand)) {
-        codecept_debug('Running command: ' . $escapedCommand);
+        debug('Running command: ' . $escapedCommand);
     } else {
-        codecept_debug('Running command: ' . implode(' ', $escapedCommand));
+        debug('Running command: ' . implode(' ', $escapedCommand));
     }
 
     $proc = proc_open($escapedCommand, $descriptors, $pipes, $cwd, $env);
@@ -376,12 +408,24 @@ function process($cmd = [], $cwd = null, $env = null)
                 break;
             case PROC_READ:
                 $length = isset($args[0]) ? (int)$args[0] : null;
-                return $length !== null ? fgets($pipes[1], $length) : fgets($pipes[1]);
+                return processReadPipe(1, $length);
                 break;
             case PROC_ERROR:
                 $length = isset($args[0]) ? (int)$args[0] : null;
-                return $length !== null ? fgets($pipes[2], $length) : fgets($pipes[2]);
+                return processReadPipe(2, $length);
                 break;
+            /** @noinspection PhpMissingBreakStatementInspection */
+            case PROC_REALTIME:
+                $callback = $args[0];
+                if (!is_callable($callback)) {
+                    throw new \InvalidArgumentException('Realtime callback should be callable.');
+                }
+                do {
+                    $currentStatus = processStatus($proc);
+                    foreach ([1 => PROC_READ, 2 => PROC_ERROR] as $pipe => $type) {
+                        $callback($type, processReadPipe($pipes[$pipe]));
+                    }
+                } while ($currentStatus('running', false));
             case PROC_CLOSE:
             case PROC_STATUS:
             default:
@@ -409,9 +453,9 @@ function process($cmd = [], $cwd = null, $env = null)
  *
  * @param string $dumpFile The path to the SQL dump file to import.
  * @param string $dbName   The name of the database to import the SQL dump file to.
- * @param string $dbUser The database user to use to import the dump.
- * @param string $dbPass The database password to use to import the dump.
- * @param string $dbHost The database host to use to import the dump.
+ * @param string $dbUser   The database user to use to import the dump.
+ * @param string $dbPass   The database password to use to import the dump.
+ * @param string $dbHost   The database host to use to import the dump.
  *
  * @return bool Whether the import was successful, exit status `0`, or not.
  */
@@ -422,7 +466,7 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
         list($dbHost, $dbPort) = explode(':', $dbHost);
     }
 
-    $command = [mysqlBin(), '--host=' . escapeshellarg($dbHost), '--user='. escapeshellarg($dbUser)];
+    $command = [mysqlBin(), '--host=' . escapeshellarg($dbHost), '--user=' . escapeshellarg($dbUser)];
     if (!empty($dbPass)) {
         $command[] = '--password=' . escapeshellarg($dbPass);
     }
@@ -434,12 +478,12 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 
     $import = process($command);
 
-    codecept_debug('Import output:' . $import(PROC_READ));
-    codecept_debug('Import error:' . $import(PROC_ERROR));
+    debug('Import output:' . $import(PROC_READ));
+    debug('Import error:' . $import(PROC_ERROR));
 
     $status = $import(PROC_STATUS);
 
-    codecept_debug('Import status: ' . $status);
+    debug('Import status: ' . $status);
 
     return $status === 0;
 }
@@ -456,4 +500,62 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 function normalizeNewLine($str)
 {
     return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
+}
+
+/**
+ * Converts a string DSN into a map of values..
+ *
+ * @param string $dsnString The string DSN to convert.
+ *
+ * @return Map The map of the parsed values.
+ */
+function dsnToArr($dsnString)
+{
+    $frags = array_map(static function ($frag) {
+        return explode('=', $frag);
+    }, explode(';', (string)preg_replace('/^[^:]*:/', '', $dsnString)));
+
+    $map = array_combine(
+        array_column($frags, 0),
+        array_column($frags, 1)
+    );
+
+    return new Map($map);
+}
+
+/**
+ * Returns a map to check on a process status.
+ *
+ * @param resource $proc_handle The process handle.
+ *
+ * @return \Closure A function to check and return the process status map.
+ */
+function processStatus($proc_handle)
+{
+    return static function ($what, $default = null) use ($proc_handle) {
+        $map = new Map(proc_get_status($proc_handle));
+        $value = $map($what, $default);
+        unset($map);
+        return $value;
+    };
+}
+
+/**
+ * Reads the whole content of a process pipe.
+ *
+ * @param resource $pipe   The pipe to read from.
+ * @param int|null $length Either the length of the string to read, or `null` to read the whole pipe contents.
+ *
+ * @return string The string read from the pipe.
+ */
+function processReadPipe($pipe, $length = null)
+{
+    $read = [];
+    while (false !== $line = fgets($pipe)) {
+        $read[] = $line;
+    }
+
+    $readString = implode('', $read);
+
+    return $length ? (string)substr($readString, 0, $length) : $readString;
 }

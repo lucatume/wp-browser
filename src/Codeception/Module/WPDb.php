@@ -20,6 +20,8 @@ use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
+use function tad\WPBrowser\db;
+use function tad\WPBrowser\dsnToArr;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
@@ -34,6 +36,8 @@ class WPDb extends Db
     use WithEvents;
 
     const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
+    const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
+    const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
 
     /**
      * @var \tad\WPBrowser\Module\Support\DbDump
@@ -185,10 +189,17 @@ class WPDb extends Db
      */
     public function _initialize(Tables $table = null)
     {
+        $this->getEventDispatcher()->dispatch(static::EVENT_BEFORE_INITIALIZE);
+
+        $this->createDatabasesIfNotExist($this->config);
+
         parent::_initialize();
+
         $this->tablePrefix = $this->config['tablePrefix'];
         $this->tables = $table ?: new Tables();
         $this->didInit = true;
+
+        $this->getEventDispatcher()->dispatch(static::EVENT_AFTER_INITIALIZE);
     }
 
     /**
@@ -4005,7 +4016,7 @@ class WPDb extends Db
     }
 
     /**
-     * Overrides the base module implementation to fire an ModuleEvent.
+     * Overrides the base module implementation to fire a ModuleEvent.
      *
      * @param array<string,mixed> $settings The suite settings.
      *
@@ -4016,5 +4027,52 @@ class WPDb extends Db
         parent::_beforeSuite($settings);
 
         $this->getEventDispatcher()->dispatch(static::EVENT_BEFORE_SUITE);
+    }
+
+    /**
+     * Creates any database that is flagged, in the config, with the `createIfNotExists` flag.
+     *
+     * @param array<string,mixed> $config The current module configuration.
+     *
+     * @throws ModuleException If there's any issue processing or reading the database DSN information.
+     */
+    protected function createDatabasesIfNotExist(array $config)
+    {
+        $createIfNotExist = [];
+        if(!empty($config['createIfNotExists'])){
+            $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
+        }
+
+        if(!empty($config['databases']) && is_array($config['databases'])){
+            foreach ($config['databases'] as $config) {
+                if(!empty($config['createIfNotExists'])){
+                    $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
+                }
+            }
+        }
+
+        if (!empty($createIfNotExist)) {
+            foreach ($createIfNotExist as $dsn => list($user, $pass)) {
+                $dsnArr = dsnToArr($dsn);
+
+                if (!isset($dsnArr['dbname'])) {
+                    throw new ModuleException(
+                        $this,
+                        sprintf('Failed to create database; DSN "%s" does not contain the database name.', $dsn)
+                    );
+                }
+
+                $host = $dsnArr('host', 'localhost');
+
+                try {
+                    db($host, $user, $pass)('CREATE DATABASE IF NOT EXISTS ' . $dsnArr('dbname'));
+                } catch (\Exception $e) {
+                    throw new ModuleException(
+                        $this,
+                        sprintf('Failed to create database; error: .' . $e->getMessage() )
+                    );
+                }
+            }
+        }
     }
 }
