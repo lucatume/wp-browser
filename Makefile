@@ -146,7 +146,7 @@ test:
 		run wploadersuite
 	XDE=0 TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf \
 		run wpmodule
-	test "$${CI_PHP_VERSION:0:3}" < 7.1 && echo "Skipping command suite." \
+	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
 		|| XDE=0 TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccf \
 			run command
 
