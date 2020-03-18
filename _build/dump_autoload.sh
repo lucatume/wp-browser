@@ -16,7 +16,6 @@ fi
 php_version="$1"
 project="$(basename "${PWD}")"
 
-git checkout "${PWD}/composer.json"
 docker run --rm \
   --user ${UID}:${GID} \
   -v "${HOME}/.composer/auth.json:/composer/auth.json" \
