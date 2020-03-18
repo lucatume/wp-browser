@@ -39,6 +39,8 @@ jobs:
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}
       - name: Prepare Composer dependencies
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
+      - name: Dump autoload
+        run: _build/dump_autoload.sh ${{ matrix.php_version }}
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}

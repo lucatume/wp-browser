@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "$#" -lt 2 ]; then
-  echo -e "\033[1mPrepare the vendor directory (or restore it from cache) for a specific PHP and Codeception version combination.\033[0m"
+  echo -e "\033[1mPrepares the vendor directory (or restore it from cache) for a specific PHP and Codeception version combination.\033[0m"
   echo ""
   echo -e "\033[32mUsage:\033[0m"
   echo "  vendor_prepare.sh <php_version> <codeception_version> [<cache_directory>:/tmp]"
@@ -73,6 +73,7 @@ if [ ! -f "${PWD}/.ready" ] || [ ! -d "${PWD}/vendor" ]; then
       --user ${UID}:${GID} \
       -v "${HOME}/.composer/auth.json:/composer/auth.json" \
       -v "${PWD}:/project" \
+      -t \
       lucatume/composer:php"${php_version}" require codeception/codeception:^"${codeception_version}"
 
     docker-compose down
