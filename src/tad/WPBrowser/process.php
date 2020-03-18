@@ -9,11 +9,11 @@ namespace tad\WPBrowser;
 
 use tad\WPBrowser\Utils\Map;
 
-const PROC_CLOSE = 'proc_close';
-const PROC_STATUS = 'proc_status';
-const PROC_WRITE = 'proc_write';
-const PROC_READ = 'proc_read';
-const PROC_ERROR = 'proc_error';
+const PROC_CLOSE    = 'proc_close';
+const PROC_STATUS   = 'proc_status';
+const PROC_WRITE    = 'proc_write';
+const PROC_READ     = 'proc_read';
+const PROC_ERROR    = 'proc_error';
 const PROC_REALTIME = 'proc_realtime';
 
 /**
@@ -26,9 +26,10 @@ const PROC_REALTIME = 'proc_realtime';
 function processStatus($proc_handle)
 {
     return static function ($what, $default = null) use ($proc_handle) {
-        $map = new Map(proc_get_status($proc_handle));
+        $map   = new Map(proc_get_status($proc_handle));
         $value = $map($what, $default);
         unset($map);
+
         return $value;
     };
 }
@@ -50,7 +51,7 @@ function processReadPipe($pipe, $length = null)
 
     $readString = implode('', $read);
 
-    return $length ? (string)substr($readString, 0, $length) : $readString;
+    return $length ? (string) substr($readString, 0, $length) : $readString;
 }
 
 /**
@@ -79,11 +80,11 @@ function process($cmd = [], $cwd = null, $env = null)
     // `0` is STDIN, `1` is STDOUT, `2` is STDERR.
     $descriptors = [
         // Read from STDIN.
-        0 => ['pipe', 'r'],
+        0 => [ 'pipe', 'r' ],
         // Write to STDOUT.
-        1 => ['pipe', 'w'],
+        1 => [ 'pipe', 'w' ],
         // Write to STDERR.
-        2 => ['pipe', 'w'],
+        2 => [ 'pipe', 'w' ],
     ];
 
     if (is_string($escapedCommand)) {
@@ -94,7 +95,7 @@ function process($cmd = [], $cwd = null, $env = null)
 
     $proc = proc_open($escapedCommand, $descriptors, $pipes, $cwd, $env);
 
-    if (!is_resource($proc)) {
+    if (! is_resource($proc)) {
         throw new \RuntimeException('Process `' . $cmd . '` could not be started.');
     }
 
@@ -104,39 +105,41 @@ function process($cmd = [], $cwd = null, $env = null)
                 return fwrite($pipes[0], reset($args));
                 break;
             case PROC_READ:
-                $length = isset($args[0]) ? (int)$args[0] : null;
-                return processReadPipe(1, $length);
+                $length = isset($args[0]) ? (int) $args[0] : null;
+
+                return processReadPipe($pipes[1], $length);
                 break;
             case PROC_ERROR:
-                $length = isset($args[0]) ? (int)$args[0] : null;
-                return processReadPipe(2, $length);
+                $length = isset($args[0]) ? (int) $args[0] : null;
+
+                return processReadPipe($pipes[2], $length);
                 break;
             /** @noinspection PhpMissingBreakStatementInspection */
             case PROC_REALTIME:
                 $callback = $args[0];
-                if (!is_callable($callback)) {
+                if (! is_callable($callback)) {
                     throw new \InvalidArgumentException('Realtime callback should be callable.');
                 }
                 do {
                     $currentStatus = processStatus($proc);
-                    foreach ([1 => PROC_READ, 2 => PROC_ERROR] as $pipe => $type) {
-                        $callback($type, processReadPipe($pipes[$pipe]));
+                    foreach ([ 2 => PROC_ERROR, 1 => PROC_READ ] as $pipe => $type) {
+                        $callback($type, processReadPipe($pipes[ $pipe ]));
                     }
                 } while ($currentStatus('running', false));
-                // Let the process close after realtime.
+            // Let the process close after realtime.
             case PROC_CLOSE:
             case PROC_STATUS:
             default:
                 $stdinClosed = fclose($pipes[0]);
-                if (!$stdinClosed) {
+                if (! $stdinClosed) {
                     throw new \RuntimeException('Could not close the process STDIN pipe.');
                 }
                 $stdinClosed = fclose($pipes[1]);
-                if (!$stdinClosed) {
+                if (! $stdinClosed) {
                     throw new \RuntimeException('Could not close the process STDOUT pipe.');
                 }
                 $stderrClosed = fclose($pipes[2]);
-                if (!$stderrClosed) {
+                if (! $stderrClosed) {
                     throw new \RuntimeException('Could not close the process STDERR pipe.');
                 }
 
@@ -158,26 +161,26 @@ function process($cmd = [], $cwd = null, $env = null)
 function buildCommandline($command)
 {
     if (empty($command) || is_array($command)) {
-        return array_filter((array)$command);
+        return array_filter((array) $command);
     }
 
-    $escapedCommandLine = (new \Symfony\Component\Process\Process($command))->getCommandLine();
-    $commandLineFrags = explode(' ', $escapedCommandLine);
+    $escapedCommandLine = ( new \Symfony\Component\Process\Process($command) )->getCommandLine();
+    $commandLineFrags   = explode(' ', $escapedCommandLine);
 
     if (count($commandLineFrags) === 1) {
         return $commandLineFrags;
     }
 
-    $open = false;
+    $open                   = false;
     $unescapedQuotesPattern = '/(?<!\\\\)("|\')/u';
 
     return array_reduce($commandLineFrags, static function (array $acc, $v) use (&$open, $unescapedQuotesPattern) {
         $containsUnescapedQuotes = preg_match_all($unescapedQuotesPattern, $v);
-        $v = $open ? array_pop($acc) . ' ' . $v : $v;
-        $open = $containsUnescapedQuotes ?
-            $containsUnescapedQuotes & 1 && (bool)$containsUnescapedQuotes !== $open
+        $v                       = $open ? array_pop($acc) . ' ' . $v : $v;
+        $open                    = $containsUnescapedQuotes ?
+            $containsUnescapedQuotes & 1 && (bool) $containsUnescapedQuotes !== $open
             : $open;
-        $acc[] = preg_replace($unescapedQuotesPattern, '', $v);
+        $acc[]                   = preg_replace($unescapedQuotesPattern, '', $v);
 
         return $acc;
     }, []);
