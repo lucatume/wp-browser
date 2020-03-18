@@ -4039,13 +4039,13 @@ class WPDb extends Db
     protected function createDatabasesIfNotExist(array $config)
     {
         $createIfNotExist = [];
-        if(!empty($config['createIfNotExists'])){
+        if (!empty($config['createIfNotExists'])) {
             $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
         }
 
-        if(!empty($config['databases']) && is_array($config['databases'])){
+        if (!empty($config['databases']) && is_array($config['databases'])) {
             foreach ($config['databases'] as $config) {
-                if(!empty($config['createIfNotExists'])){
+                if (!empty($config['createIfNotExists'])) {
                     $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
                 }
             }
@@ -4069,7 +4069,7 @@ class WPDb extends Db
                 } catch (\Exception $e) {
                     throw new ModuleException(
                         $this,
-                        sprintf('Failed to create database; error: .' . $e->getMessage() )
+                        sprintf('Failed to create database; error: .' . $e->getMessage())
                     );
                 }
             }

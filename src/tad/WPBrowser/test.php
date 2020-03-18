@@ -74,4 +74,3 @@ function pregErrorMessage($error)
         return substr($value, -6) === '_ERROR';
     }, ARRAY_FILTER_USE_KEY))[preg_last_error()];
 }
-

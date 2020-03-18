@@ -141,4 +141,3 @@ function db($host, $user, $pass, $dbName = null)
         return $result;
     };
 }
-

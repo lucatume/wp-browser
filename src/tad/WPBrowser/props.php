@@ -89,7 +89,9 @@ function setPrivateProperties($object, array $props)
 function readPrivateProperty($object, $prop)
 {
     if (!$object || !is_object($object)) {
-        throw new \InvalidArgumentException('Cannot get property "' . $prop . '" of "' . gettype($object) . '", expecting object');
+        throw new \InvalidArgumentException(
+            sprintf('Cannot get property "%s" of "%s", expecting object', $prop, gettype($object))
+        );
     }
     $class = get_class($object);
     do {
@@ -101,5 +103,7 @@ function readPrivateProperty($object, $prop)
         }
         $class = get_parent_class($class);
     } while ($class);
-    throw new \InvalidArgumentException('Property "' . $prop . '" does not exists in class "' . get_class($object) . '" and its parents');
+    throw new \InvalidArgumentException(
+        sprintf('Property "%s" does not exists in class "%s" and its parents', $prop, get_class($object))
+    );
 }

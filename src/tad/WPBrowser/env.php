@@ -67,4 +67,3 @@ function os()
 
     return isset($map[$osSlug]) ? $map[$osSlug] : 'Unknown';
 }
-

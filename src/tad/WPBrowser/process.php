@@ -8,6 +8,7 @@
 namespace tad\WPBrowser;
 
 use tad\WPBrowser\Utils\Map;
+
 const PROC_CLOSE = 'proc_close';
 const PROC_STATUS = 'proc_status';
 const PROC_WRITE = 'proc_write';
@@ -122,6 +123,7 @@ function process($cmd = [], $cwd = null, $env = null)
                         $callback($type, processReadPipe($pipes[$pipe]));
                     }
                 } while ($currentStatus('running', false));
+                // Let the process close after realtime.
             case PROC_CLOSE:
             case PROC_STATUS:
             default:
@@ -180,4 +182,3 @@ function buildCommandline($command)
         return $acc;
     }, []);
 }
-
