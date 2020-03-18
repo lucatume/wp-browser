@@ -33,7 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: whoami
-        run: id && echo "UID: ${UID}" && echo "GID: ${GID}"
+        run: echo "UID: ${UID}; GID: ${GID}"
       - name: Set src directory hash
         run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
       - name: Cache Composer dependencies
