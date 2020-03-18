@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: whoami
+        run: id
       - name: Set src directory hash
         run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
       - name: Cache Composer dependencies
