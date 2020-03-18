@@ -32,11 +32,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set src directory hash
+        run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
       - name: Cache Composer dependencies
         uses: gerbal/always-cache@v1.0.3
         with:
           path: vendor
-          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-{{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Dump autoload
