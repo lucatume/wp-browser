@@ -10,10 +10,10 @@ namespace tad\WPBrowser\Traits;
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Exception\TestRuntimeException;
-use Codeception\Util\ReflectionHelper;
 use Symfony\Component\Console\Application as SymfonyApp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use function tad\WPBrowser\readPrivateProperty;
 
 /**
  * Trait EventListener
@@ -104,7 +104,7 @@ trait WithEvents
         }
 
         try {
-            $runningCommand = ReflectionHelper::readPrivateProperty($app, 'runningCommand', SymfonyApp::class);
+            $runningCommand = readPrivateProperty($app, 'runningCommand', SymfonyApp::class);
 
             if (!$runningCommand instanceof Command) {
                 throw new TestRuntimeException(
@@ -113,7 +113,7 @@ trait WithEvents
                 );
             }
 
-            $codecept = ReflectionHelper::readPrivateProperty($runningCommand, 'codecept');
+            $codecept = readPrivateProperty($runningCommand, 'codecept');
 
             if (!$codecept instanceof Codecept) {
                 throw new TestRuntimeException(

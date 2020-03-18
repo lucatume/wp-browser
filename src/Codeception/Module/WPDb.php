@@ -21,7 +21,7 @@ use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
 use function tad\WPBrowser\db;
-use function tad\WPBrowser\dsnToArr;
+use function tad\WPBrowser\dsnToMap;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
@@ -4053,7 +4053,7 @@ class WPDb extends Db
 
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
-                $dsnArr = dsnToArr($dsn);
+                $dsnArr = dsnToMap($dsn);
 
                 if (!isset($dsnArr['dbname'])) {
                     throw new ModuleException(

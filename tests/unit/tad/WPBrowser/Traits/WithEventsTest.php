@@ -4,10 +4,9 @@ use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
-use Codeception\Util\ReflectionPropertyAccessor;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use tad\WPBrowser\Traits\WithEvents;
+use function tad\WPBrowser\setPrivateProperties;
 
 class WithEventsTest extends \Codeception\Test\Unit
 {
@@ -70,9 +69,8 @@ class WithEventsTest extends \Codeception\Test\Unit
         $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => $theDispatcher
         ]);
-        $props = new ReflectionPropertyAccessor();
-        $props->setProperties($runningCommand, ['codecept' => $codecept]);
-        $props->setProperties($app, ['runningCommand' => $runningCommand]);
+        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
+        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
 
         $eventDispatcher = $this->getEventDispatcher();
         $appDispatcher = $this->getAppEventDispatcher();
@@ -111,8 +109,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         $this->appBackup = $app;
         $app = $this->makeEmpty(Application::class);
         $runningCommand = new stdClass();
-        $props = new ReflectionPropertyAccessor();
-        $props->setProperties($app, ['runningCommand' => $runningCommand]);
+        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
 
         $this->expectException(TestRuntimeException::class);
 
@@ -135,9 +132,8 @@ class WithEventsTest extends \Codeception\Test\Unit
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
         $codecept = new stdClass();
-        $props = new ReflectionPropertyAccessor();
-        $props->setProperties($runningCommand, ['codecept' => $codecept]);
-        $props->setProperties($app, ['runningCommand' => $runningCommand]);
+        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
+        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
 
         $this->expectException(TestRuntimeException::class);
 
@@ -162,9 +158,8 @@ class WithEventsTest extends \Codeception\Test\Unit
         $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => new stdClass()
         ]);
-        $props = new ReflectionPropertyAccessor();
-        $props->setProperties($runningCommand, ['codecept' => $codecept]);
-        $props->setProperties($app, ['runningCommand' => $runningCommand]);
+        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
+        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
 
         $this->expectException(TestRuntimeException::class);
 
@@ -212,8 +207,7 @@ class WithEventsTest extends \Codeception\Test\Unit
         $codecept = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => $theDispatcher
         ]);
-        $props = new ReflectionPropertyAccessor();
-        $props->setProperties($runningCommand, ['codecept' => $codecept]);
+        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
 
         $this->expectException(TestRuntimeException::class);
 
