@@ -4065,7 +4065,8 @@ class WPDb extends Db
                 $host = $dsnArr('host', 'localhost');
 
                 try {
-                    db($host, $user, $pass)('CREATE DATABASE IF NOT EXISTS ' . $dsnArr('dbname'));
+                    $db = db($host, $user, $pass);
+                    $db('CREATE DATABASE IF NOT EXISTS ' . $dsnArr('dbname'));
                 } catch (\Exception $e) {
                     throw new ModuleException(
                         $this,
