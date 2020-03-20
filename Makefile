@@ -130,10 +130,10 @@ test:
 		run functional
 	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf \
 		run muloader
-	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccf \
+	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu \
 		run unit
 	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception \
-		run webdriver
+		run webdriver --debug
 	XDE=0 TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module run --rm ccf \
 		run wpcli_module
 	XDE=0 TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional run --rm ccf \
@@ -159,4 +159,5 @@ debug:
 		codeception
 
 test_1:
-	TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf run functional --debug
+	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu \
+		run unit
