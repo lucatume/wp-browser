@@ -12,6 +12,7 @@ networks:
 
 volumes:
   wordpress:
+  wordpress_src:
 
 services:
 
@@ -41,6 +42,24 @@ services:
         define( 'BLOG_ID_CURRENT_SITE', 1 );
     volumes:
       - wordpress:/var/www/html
+      # Populate a second volume with WordPress source files.
+      # See: https://github.com/docker-library/wordpress/blob/master/Dockerfile-debian.template
+      - wordpress_src:/usr/src/wordpress
+
+  # This container will not start any web-server and will not try to configure WordPress database access: its sole
+  # function is to provide WordPress source files.
+  wordpress_src:
+    image: wordpress:latest
+    env_file: .env.testing.docker
+    networks:
+      test:
+        ipv4_address: 172.${TEST_SUBNET:-28}.1.1
+    # Immediately exit after initialization, the `wordpress_src` volume has been populated at this point.
+    entrypoint: [ "php", "-r", "'exit(0);'" ]
+    volumes:
+      # Populate the volume with WordPress source files.
+      # See: https://github.com/docker-library/wordpress/blob/master/Dockerfile-debian.template
+      - wordpress_src:/usr/src/wordpress
 
   chrome:
     image: selenium/standalone-chrome:3.141.59-oxygen
@@ -106,12 +125,17 @@ services:
     env_file: .env.testing.docker
     networks:
       - test
+    depends_on:
+      # This container does not need a running installation of WordPress, just its source files.
+      - wordpress_src
     environment:
-      # Empty the env var to skip the db checks.
-      WORDPRESS_DB_HOST: ''
+      # Do not run any checks for the database or the web-server before running the tests.
+      CODECEPTION_SKIP_DB_CHECK: 1
+      CODECEPTION_SKIP_URL_CHECK: 1
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     volumes:
       - .:/project
-      - wordpress:/project/vendor/wordpress/wordpress
+      # The unit tests will require the WordPress source files (to test extensions), pull then from the source files.
+      - wordpress_src:/project/vendor/wordpress/wordpress
