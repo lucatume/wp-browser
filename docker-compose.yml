@@ -54,8 +54,8 @@ services:
     networks:
       test:
         ipv4_address: 172.${TEST_SUBNET:-28}.1.1
-    # Immediately exit after initialization, the `wordpress_src` volume has been populated at this point.
-    entrypoint: [ "php", "-r", "'exit(0);'" ]
+    # Make the WordPress files source directory world writeable, readable and executable.
+    entrypoint: [ "chmod", "-R" ,"a+rwx", "/usr/src/wordpress" ]
     volumes:
       # Populate the volume with WordPress source files.
       # See: https://github.com/docker-library/wordpress/blob/master/Dockerfile-debian.template
