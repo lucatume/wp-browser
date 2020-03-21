@@ -5,9 +5,6 @@
 # Composer files.
 vendor/
 
-# Local test folders.
-tests/_output
-
 # Local test configuration files.
 codeception.yml
 tests/*.suite.yml
