@@ -120,9 +120,9 @@ build_suites:
 test:
 	XDE=0 TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance \
 		run --rm ccf run acceptance
-	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli
+	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli \
 		run --rm ccf run cli
-	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule
+	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule \
 		run --rm ccf run climodule
 	XDE=0 TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit \
 		run --rm ccf run dbunit
