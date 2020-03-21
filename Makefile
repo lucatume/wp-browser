@@ -118,37 +118,37 @@ build_suites:
 	XDE=0 TEST_SUBNET=27 docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
 
 test:
-	XDE=0 TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance run --rm ccf \
-		run acceptance
-	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli run --rm ccf \
-		run cli
-	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule run --rm ccf \
-		run climodule
-	XDE=0 TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit run --rm ccf \
-		run dbunit
-	XDE=0 TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional run --rm ccf \
-		run functional
-	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader run --rm ccf \
-		run muloader
-	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu \
-		run unit
-	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception \
-		run webdriver --debug
-	XDE=0 TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module run --rm ccf \
-		run wpcli_module
-	XDE=0 TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional run --rm ccf \
-		run wpfunctional
-	XDE=0 TEST_SUBNET=38 docker-compose --project-name=${PROJECT_NAME}_wploader_multisite run --rm ccf \
-		run wploader_multisite
-	XDE=0 TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction run --rm ccf \
-		run wploader_wpdb_interaction
-	XDE=0 TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite run --rm ccf \
-		run wploadersuite
-	XDE=0 TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule run --rm ccf \
-		run wpmodule
+	XDE=0 TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance \
+		run --rm ccf run acceptance
+	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli
+		run --rm ccf run cli
+	XDE=0 TEST_SUBNET=30 docker-compose --project-name=${PROJECT_NAME}_climodule
+		run --rm ccf run climodule
+	XDE=0 TEST_SUBNET=31 docker-compose --project-name=${PROJECT_NAME}_dbunit \
+		run --rm ccf run dbunit
+	XDE=0 TEST_SUBNET=32 docker-compose --project-name=${PROJECT_NAME}_functional \
+		run --rm ccf run functional
+	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader \
+		run --rm ccf run muloader
+	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm ccu run unit
+	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver \
+		run --rm codeception run webdriver --debug
+	XDE=0 TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
+		run --rm ccf run wpcli_module
+	XDE=0 TEST_SUBNET=37 docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
+		run --rm ccf run wpfunctional
+	XDE=0 TEST_SUBNET=38 docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
+		run --rm ccf run wploader_multisite
+	XDE=0 TEST_SUBNET=39 docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
+		run --rm ccf run wploader_wpdb_interaction
+	XDE=0 TEST_SUBNET=40 docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
+		run --rm ccf run wploadersuite
+	XDE=0 TEST_SUBNET=41 docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm ccf run wpmodule
 	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
-		|| XDE=0 TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command run --rm ccf \
-			run command
+		|| XDE=0 TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command \
+			run --rm ccf run command
 
 # A variable target to debug issues.
 debug:
@@ -159,5 +159,5 @@ debug:
 		codeception
 
 test_1:
-	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception \
-		run webdriver --debug
+	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver \
+		run --rm codeception run webdriver --debug
