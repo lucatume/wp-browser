@@ -45,10 +45,8 @@ jobs:
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Dump autoload
         run: _build/dump_autoload.sh ${{ matrix.php_version }}
-      - name: Print ownership of tests
-        run: ls -la tests
-      - name: Print ownership of tests from within codeception container
-        run: docker-compose run --rm --entrypoint bash codeception ls -la /project/tests
+      - name: Ensure tests/_output
+        run: mkdir -p tests/_output && chmod a+rwx tests/_output
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
