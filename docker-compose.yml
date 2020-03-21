@@ -105,6 +105,8 @@ services:
       - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
       - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
     environment:
+      # Add an arbitrary wait before launching the tests to wait for the database.
+      CODECEPTION_WAIT: ${CODECEPTION_WAIT:-3}
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
@@ -129,6 +131,8 @@ services:
       - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
       - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
     environment: # Configure this to debug the tests with XDebug.
+      # Add an arbitrary wait before launching the tests to wait for the database.
+      CODECEPTION_WAIT: ${CODECEPTION_WAIT:-3}
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
     depends_on:
