@@ -159,5 +159,5 @@ debug:
 		codeception
 
 test_1:
-	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit run --rm ccu \
-		run unit
+	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver run --rm codeception \
+		run webdriver --debug
