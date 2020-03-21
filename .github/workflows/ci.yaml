@@ -4,29 +4,31 @@ on: [push]
 
 jobs:
 
-  lint:
-    name: Lint source files for PHP 5.6 compat
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Lint files
-        run: make lint
-
-  sniff:
-    name: Sniff source files
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Sniff files
-        run: make sniff
+#  lint:
+#    name: Lint source files for PHP 5.6 compat
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Lint files
+#        run: make lint
+#
+#  sniff:
+#    name: Sniff source files
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Sniff files
+#        run: make sniff
 
   test:
     strategy:
       matrix:
-        php_version: [ '5.6', '7.3' ]
-        codeception_version: [ '2.5', '3.0' ]
+        php_version: [ '7.3' ]
+        codeception_version: [ '3.0' ]
+#        php_version: [ '5.6', '7.3' ]
+#        codeception_version: [ '2.5', '3.0' ]
     name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
     runs-on: ubuntu-18.04
     steps:
@@ -43,6 +45,10 @@ jobs:
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Dump autoload
         run: _build/dump_autoload.sh ${{ matrix.php_version }}
+      - name: Print ownership of tests
+        run: ls -la tests
+      - name: Print ownership of tests from within codeception container
+        run: docker-compose run --rm --entrypoint bash codeception ls -la /project/tests
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
