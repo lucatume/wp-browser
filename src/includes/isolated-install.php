@@ -35,7 +35,12 @@ function wpbrowser_write_patchwork_config(array $configuration) {
 
 	if ($configExists) {
 		if (!is_readable($patchworkConfigFile)) {
-			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchworkConfigFile] exists but is not readable.");
+			throw new RuntimeException(
+				sprintf(
+					'WPLoader: Patchwork configuration file [%s] exists but is not readable.',
+					$patchworkConfigFile
+				)
+			);
 		}
 		$existingPatchworkFileConfigContents = file_get_contents($patchworkConfigFile);
 	}
