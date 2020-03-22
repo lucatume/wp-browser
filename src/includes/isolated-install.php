@@ -41,8 +41,10 @@ function wpbrowser_write_patchwork_config(array $configuration) {
 	}
 
 	if (!$configExists || $existingPatchworkFileConfigContents !== $patchworkConfig) {
-		if (!is_writable(dirname($patchwordConfigFile))) {
-			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchwordConfigFile] cannot be written.");
+		if ( ! is_writable( dirname( $patchwordConfigFile ) ) ) {
+			throw new RuntimeException(
+				sprintf( 'WPLoader: Patchwork configuration file [%s] cannot be written.', $patchwordConfigFile )
+			);
 		}
 		file_put_contents($patchwordConfigFile, $patchworkConfig);
 	}
