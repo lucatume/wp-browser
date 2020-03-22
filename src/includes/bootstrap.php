@@ -8,7 +8,7 @@ if (!function_exists('tad_functions')) {
 }
 
 /*
- * Globalize some WordPress variables, because PHPUnit loads this file inside a function
+ * Globalize some WordPress variables, because PHPUnit loads this file inside a function.
  * See: https://github.com/sebastianbergmann/phpunit/issues/325
  */
 global $wpdb, $current_site, $current_blog, $wp_rewrite, $shortcode_tags, $wp, $phpmailer;
@@ -162,11 +162,13 @@ if (isset($GLOBALS['wp_tests_options'])) {
 	}
 }
 
-// Load WordPress: "untrailingslash" ABSPATH first of all to avoid double slashes in filepath,
-// while still working if ABSPATH did not include a trailing slash
+/*
+ * Load WordPress: "untrailingslash" ABSPATH first of all to avoid double slashes in filepath,
+ * while still working if ABSPATH did not include a trailing slash.
+ */
 require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
 
-// Delete any default posts & related data
+// Delete any default posts & related data.
 _without_filters('_delete_all_posts');
 
 include_once __DIR__ . '/exceptions.php';
