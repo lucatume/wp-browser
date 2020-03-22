@@ -12,12 +12,12 @@
 function wpbrowser_write_patchwork_config(array $configuration) {
 	$patchworkConfig = [
 		'blacklist' => [
-			// exclude the whole WordPress folder by default
+			// Exclude the whole WordPress folder by default.
 			rtrim($configuration['constants']['ABSPATH'], '/'),
-			// exclude the project root folder too
+			// Exclude the project root folder too.
 			rtrim($configuration['root'], '/'),
 		],
-		// but include the `wp-includes/load.php` file that defines the function we need to redefine
+		// But include the `wp-includes/load.php` file that defines the function we need to redefine.
 		'whitelist' => [$configuration['constants']['ABSPATH'] . 'wp-includes/load.php'],
 	];
 
