@@ -210,7 +210,7 @@ class WPLoader extends Module
     {
         $this->ensureWPRoot($this->getWpRootFolder());
 
-        // WordPress  will deal with database connection errors
+        // WordPress  will deal with database connection errors.
         $this->wpBootstrapFile = dirname(dirname(__DIR__)) . '/includes/bootstrap.php';
 
         $loadOnly = ! empty($this->config['loadOnly']);
@@ -220,12 +220,12 @@ class WPLoader extends Module
             $this->addAction(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
 
             return;
-        } else {
-            // Any *Db Module should either not be running or properly configured if this has to run alongside it.
-            $this->ensureDbModuleCompat();
         }
 
-        $this->_loadWordpress();
+		// Any *Db Module should either not be running or properly configured if this has to run alongside it.
+	    $this->ensureDbModuleCompat();
+
+	    $this->_loadWordpress();
     }
 
     /**
