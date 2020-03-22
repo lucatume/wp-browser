@@ -47,6 +47,8 @@ jobs:
         run: _build/dump_autoload.sh ${{ matrix.php_version }}
       - name: Ensure tests/_output
         run: mkdir -p tests/_output && chmod a+rwx tests/_output
+      - name: prints ownership of /src/includes dir from host
+        run: ls -la src/includes
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
