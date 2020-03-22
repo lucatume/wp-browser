@@ -51,4 +51,4 @@ jobs:
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
           CI_CODECEPTION_VERSION: ${{ matrix.codeception_version }}
-        run: make test
+        run: make test_1
