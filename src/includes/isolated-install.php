@@ -29,24 +29,24 @@ function wpbrowser_write_patchwork_config(array $configuration) {
 
 	$patchworkConfig = json_encode($patchworkConfig);
 
-	$patchwordConfigFile                 = __DIR__ . '/patchwork.json';
+	$patchworkConfigFile                 = __DIR__ . '/patchwork.json';
 	$existingPatchworkFileConfigContents = '';
-	$configExists                        = file_exists($patchwordConfigFile);
+	$configExists                        = file_exists($patchworkConfigFile);
 
 	if ($configExists) {
-		if (!is_readable($patchwordConfigFile)) {
-			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchwordConfigFile] exists but is not readable.");
+		if (!is_readable($patchworkConfigFile)) {
+			throw new RuntimeException('WPLoader', "Patchwork configuration file [$patchworkConfigFile] exists but is not readable.");
 		}
-		$existingPatchworkFileConfigContents = file_get_contents($patchwordConfigFile);
+		$existingPatchworkFileConfigContents = file_get_contents($patchworkConfigFile);
 	}
 
 	if (!$configExists || $existingPatchworkFileConfigContents !== $patchworkConfig) {
-		if ( ! is_writable( dirname( $patchwordConfigFile ) ) ) {
+		if ( ! is_writable( dirname( $patchworkConfigFile ) ) ) {
 			throw new RuntimeException(
-				sprintf( 'WPLoader: Patchwork configuration file [%s] cannot be written.', $patchwordConfigFile )
+				sprintf( 'WPLoader: Patchwork configuration file [%s] cannot be written.', $patchworkConfigFile )
 			);
 		}
-		file_put_contents($patchwordConfigFile, $patchworkConfig);
+		file_put_contents($patchworkConfigFile, $patchworkConfig);
 	}
 }
 
