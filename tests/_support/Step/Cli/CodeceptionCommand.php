@@ -4,6 +4,7 @@ namespace Step\Cli;
 
 use Symfony\Component\Yaml\Yaml;
 use function tad\WPBrowser\rrmdir;
+use function tad\WPBrowser\vendorDir;
 
 class CodeceptionCommand extends \CliTester
 {
@@ -44,7 +45,7 @@ class CodeceptionCommand extends \CliTester
 
     public function runCodecept($subCommand, $path = '')
     {
-        $codecept = wpbrowser_vendor_path('bin/codecept');
+        $codecept = vendorDir('bin/codecept');
 
         if (!empty($path)) {
             chdir($path);

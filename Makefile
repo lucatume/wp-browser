@@ -159,5 +159,5 @@ debug:
 		codeception
 
 test_1:
-	XDE=0 TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance \
-		run --rm ccf run acceptance -f
+	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli \
+		run --rm ccf run cli
