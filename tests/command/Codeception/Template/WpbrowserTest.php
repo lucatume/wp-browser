@@ -6,6 +6,7 @@ use Codeception\Util\Debug;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
+use function tad\WPBrowser\rrmdir;
 
 class WpbrowserTest extends \Codeception\Test\Unit
 {
