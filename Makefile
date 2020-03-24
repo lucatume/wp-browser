@@ -82,7 +82,7 @@ clean:
 		&& echo "Networks removed." \
 		|| echo "No networks found".
 	echo "Removing .bak files." && rm -f *.bak
-	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output
+	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output && echo "*" > tests/_output/.gitignore
 
 # Produces the Modules documentation in the docs/modules folder.
 docs: composer.lock src/Codeception/Module
@@ -131,7 +131,7 @@ test:
 	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm ccf run muloader
 	XDE=0 TEST_SUBNET=34 docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm ccu run unit
+		run --rm ccf run unit
 	XDE=0 TEST_SUBNET=35 docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm codeception run webdriver --debug
 	XDE=0 TEST_SUBNET=36 docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
@@ -159,5 +159,5 @@ debug:
 		codeception
 
 test_1:
-	XDE=0 TEST_SUBNET=29 docker-compose --project-name=${PROJECT_NAME}_cli \
-		run --rm ccf run cli
+	TEST_SUBNET=42 docker-compose --project-name=${PROJECT_NAME}_command \
+		run --rm ccf run command
