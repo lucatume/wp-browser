@@ -159,5 +159,5 @@ debug:
 		codeception
 
 test_1:
-	XDE=0 TEST_SUBNET=33 docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm ccf run muloader --debug
+	XDE=0 TEST_SUBNET=28 docker-compose --project-name=${PROJECT_NAME}_acceptance \
+		run --rm ccf run acceptance -f
