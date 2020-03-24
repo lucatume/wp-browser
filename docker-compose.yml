@@ -160,3 +160,10 @@ services:
       - .:/project
       # The unit tests will require the WordPress source files (to test extensions), pull then from the source files.
       - wordpress_src:/project/vendor/wordpress/wordpress
+
+  busybox:
+    image: busybox
+    volumes:
+      - ${GITHUB_WORKSPACE:-.}:/project
+      - wordpress:/project/vendor/wordpress/wordpress
+
