@@ -1,6 +1,8 @@
 <?php
 
 
+use function tad\WPBrowser\rrmdir;
+
 class WPDbAttachmentCest
 {
 

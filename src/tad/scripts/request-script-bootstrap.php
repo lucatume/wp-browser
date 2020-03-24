@@ -1,9 +1,9 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
-include dirname(__FILE__) . '/support-functions.php';
-include dirname(__FILE__) . '/filters.php';
-include dirname(__FILE__) . '/pluggable-functions-override.php';
+include __DIR__ . '/support-functions.php';
+include __DIR__ . '/filters.php';
+include __DIR__ . '/pluggable-functions-override.php';
 
 $indexFile = $argv[1];
 

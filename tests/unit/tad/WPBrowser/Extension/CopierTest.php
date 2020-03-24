@@ -4,6 +4,7 @@ namespace tad\WPBrowser\Extension;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use org\bovigo\vfs\vfsStream;
+use function tad\WPBrowser\rrmdir;
 
 class CopierTest extends \Codeception\Test\Unit
 {

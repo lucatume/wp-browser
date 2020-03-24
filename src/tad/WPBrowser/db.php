@@ -1,6 +1,6 @@
 <?php
 /**
- * Database related functions..
+ * Database related functions.
  *
  * @package tad\WPBrowser
  */

@@ -8,6 +8,7 @@ use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\normalizeNewLine;
+use function tad\WPBrowser\rrmdir;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {

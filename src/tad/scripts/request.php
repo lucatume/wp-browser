@@ -1,5 +1,5 @@
 <?php
-include 'request-script-bootstrap.php';
+include __DIR__ . '/request-script-bootstrap.php';
 
 function wpbrowser_handle_shutdown()
 {

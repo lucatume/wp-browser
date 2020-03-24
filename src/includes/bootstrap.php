@@ -3,6 +3,8 @@
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */
 
+use function tad\WPBrowser\vendorDir;
+
 if (!function_exists('tad_functions')) {
 	require_once __DIR__ . '/tad-functions.php';
 }
@@ -80,7 +82,7 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
 
 	$environment = [
 		'root' => codecept_root_dir(),
-		'autoload' => wpbrowser_vendor_path('autoload.php'),
+		'autoload' => vendorDir('autoload.php'),
 		'installationFilters' => $wploaderInstallationFilters,
 		'constants' => [
 			'ABSPATH' => ABSPATH,

@@ -4,69 +4,19 @@
  *
  */
 
-/**
- * Writes, or overwrites, the Patchwork configuration file if needed.
- *
- * @throws \Codeception\Exception\ModuleException
- */
-function wpbrowser_write_patchwork_config(array $configuration) {
-	$patchworkConfig = [
-		'blacklist' => [
-			// Exclude the whole WordPress folder by default.
-			rtrim($configuration['constants']['ABSPATH'], '/'),
-			// Exclude the project root folder too.
-			rtrim($configuration['root'], '/'),
-		],
-		// But include the `wp-includes/load.php` file that defines the function we need to redefine.
-		'whitelist' => [$configuration['constants']['ABSPATH'] . 'wp-includes/load.php'],
-	];
-
-	foreach (['WP_PLUGIN_DIR', 'WP_CONTENT_DIR', 'WPMU_PLUGIN_DIR', 'WP_TEMP_DIR'] as $const) {
-		if (isset($configuration['constants'][$const]) && file_exists($configuration['constants'][$const])) {
-			$patchworkConfig['blacklist'][] = rtrim($configuration['constants'][$const], '/');
-		}
-	}
-
-	$patchworkConfig = json_encode($patchworkConfig);
-
-	$patchworkConfigFile                 = __DIR__ . '/patchwork.json';
-	$existingPatchworkFileConfigContents = '';
-	$configExists                        = file_exists($patchworkConfigFile);
-
-	if ($configExists) {
-		if (!is_readable($patchworkConfigFile)) {
-			throw new RuntimeException(
-				sprintf(
-					'WPLoader: Patchwork configuration file [%s] exists but is not readable.',
-					$patchworkConfigFile
-				)
-			);
-		}
-		$existingPatchworkFileConfigContents = file_get_contents($patchworkConfigFile);
-	}
-
-	if (!$configExists || $existingPatchworkFileConfigContents !== $patchworkConfig) {
-		if ( ! is_writable( dirname( $patchworkConfigFile ) ) ) {
-			throw new RuntimeException(
-				sprintf( 'WPLoader: Patchwork configuration file [%s] cannot be written.', $patchworkConfigFile )
-			);
-		}
-		file_put_contents($patchworkConfigFile, $patchworkConfig);
-	}
-}
-
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 $configuration = unserialize(base64_decode($argv[1]));
 
 $multisite = !empty($argv[2]) ? $argv[2] : false;
 
-// require_once 'vendor/autoload.php';
+// Require the autoload file as passed from the configuration.
 require_once $configuration['autoload'];
 
 if (!empty($multisite)) {
-	wpbrowser_write_patchwork_config($configuration);
-	wpbrowser_include_patchwork();
+	tad\WPBrowser\configurePatchwork(
+		tad\WPBrowser\isolatedInstallPatchworkConfig( $configuration )
+	);
 
 	Patchwork\redefine('is_multisite', function () {
 		global $_is_multisite;
@@ -104,8 +54,8 @@ foreach ($configuration['constants'] as $key => $value) {
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 
 define('WP_INSTALLING', true);
-//require_once $config_file_path;
-require_once dirname(__FILE__) . '/functions.php';
+
+require_once __DIR__ . '/functions.php';
 
 tests_reset__SERVER();
 
@@ -118,7 +68,7 @@ require_once ABSPATH . '/wp-includes/wp-db.php';
 
 // Override the PHPMailer
 global $phpmailer;
-require_once(dirname(__FILE__) . '/mock-mailer.php');
+require_once( __DIR__ . '/mock-mailer.php');
 $phpmailer = new MockPHPMailer();
 
 /*

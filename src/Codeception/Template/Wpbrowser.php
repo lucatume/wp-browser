@@ -8,6 +8,7 @@ use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
 use function tad\WPBrowser\parseUrl;
+use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\slug;
 
 class Wpbrowser extends Bootstrap

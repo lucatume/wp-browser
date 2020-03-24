@@ -9,6 +9,7 @@ use Codeception\TestInterface;
 use PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\buildDate;
+use function tad\WPBrowser\rrmdir;
 
 /**
  * Class WPFilesystem

@@ -46,7 +46,6 @@
       "tad\\": "src/tad"
     },
     "files": [
-      "src/tad/WPBrowser/functions.php",
       "src/tad/WPBrowser/utils.php",
       "src/tad/WPBrowser/wp-polyfills.php"
     ]
