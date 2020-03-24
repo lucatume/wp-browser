@@ -14,10 +14,11 @@ namespace tad\WPBrowser;
  *
  * @return string The absolute path to the package root directory or to a path from it.
  */
-function rootDir($path = '') {
-	$root = dirname( dirname( dirname( __DIR__ ) ) );
+function rootDir($path = '')
+{
+    $root = dirname(dirname(dirname(__DIR__)));
 
-	return $path ? $root . DIRECTORY_SEPARATOR . ltrim($path,'\\/') : $root;
+    return $path ? $root . DIRECTORY_SEPARATOR . ltrim($path, '\\/') : $root;
 }
 
 /**
@@ -27,19 +28,20 @@ function rootDir($path = '') {
  *
  * @return string The absolute path to the file.
  */
-function vendorDir( $path = '' ) {
-	$root = rootDir();
+function vendorDir($path = '')
+{
+    $root = rootDir();
 
-	if ( file_exists( $root . '/vendor' ) ) {
-		// We're in the wp-browser package itself context.
-		$vendorDir = $root . '/vendor';
-	} else {
-		$vendorDir = dirname( $root );
-	}
+    if (file_exists($root . '/vendor')) {
+        // We're in the wp-browser package itself context.
+        $vendorDir = $root . '/vendor';
+    } else {
+        $vendorDir = dirname($root);
+    }
 
-	return empty( $path ) ?
-		$vendorDir
-		: $vendorDir . DIRECTORY_SEPARATOR . ltrim( $path, '\\/' );
+    return empty($path) ?
+        $vendorDir
+        : $vendorDir . DIRECTORY_SEPARATOR . ltrim($path, '\\/');
 }
 
 /**
@@ -49,10 +51,11 @@ function vendorDir( $path = '' ) {
  *
  * @return string The absolute path to the package `includes` directory.
  */
-function includesDir( $path = '' ) {
-	$includesDir = rootDir( '/src/includes' );
+function includesDir($path = '')
+{
+    $includesDir = rootDir('/src/includes');
 
-	return empty( $path ) ?
-		$includesDir
-		: $includesDir . DIRECTORY_SEPARATOR . ltrim( $path, '\\/' );
+    return empty($path) ?
+        $includesDir
+        : $includesDir . DIRECTORY_SEPARATOR . ltrim($path, '\\/');
 }

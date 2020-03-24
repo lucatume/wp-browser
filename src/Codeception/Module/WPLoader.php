@@ -222,10 +222,10 @@ class WPLoader extends Module
             return;
         }
 
-		// Any *Db Module should either not be running or properly configured if this has to run alongside it.
-	    $this->ensureDbModuleCompat();
+        // Any *Db Module should either not be running or properly configured if this has to run alongside it.
+        $this->ensureDbModuleCompat();
 
-	    $this->_loadWordpress();
+        $this->_loadWordpress();
     }
 
     /**
