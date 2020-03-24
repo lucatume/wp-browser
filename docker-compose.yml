@@ -164,6 +164,6 @@ services:
   busybox:
     image: busybox
     volumes:
-      - ${GITHUB_WORKSPACE:-.}:/project
+      - .:/project
       - wordpress:/project/vendor/wordpress/wordpress
 
