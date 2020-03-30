@@ -4,31 +4,29 @@ on: [push]
 
 jobs:
 
-#  lint:
-#    name: Lint source files for PHP 5.6 compat
-#    runs-on: ubuntu-18.04
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Lint files
-#        run: make lint
-#
-#  sniff:
-#    name: Sniff source files
-#    runs-on: ubuntu-18.04
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Sniff files
-#        run: make sniff
+  lint:
+    name: Lint source files for PHP 5.6 compat
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Lint files
+        run: make lint
+
+  sniff:
+    name: Sniff source files
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Sniff files
+        run: make sniff
 
   test:
     strategy:
       matrix:
-        php_version: [ '7.3' ]
-        codeception_version: [ '3.0' ]
-#        php_version: [ '5.6', '7.3' ]
-#        codeception_version: [ '2.5', '3.0' ]
+        php_version: [ '5.6', '7.3' ]
+        codeception_version: [ '2.5', '3.0' ]
     name: Run tests on PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
     runs-on: ubuntu-18.04
     steps:
@@ -36,11 +34,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Set src directory hash
         run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
-#      - name: Cache Composer dependencies
-#        uses: gerbal/always-cache@v1.0.3
-#        with:
-#          path: vendor
-#          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1.0.3
+        with:
+          path: vendor
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Dump autoload
