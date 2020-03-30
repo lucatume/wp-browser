@@ -1,4 +1,0 @@
-parameters:
-    tasks:
-        make:
-            task: pre_commit
