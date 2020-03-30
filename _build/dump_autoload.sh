@@ -16,8 +16,8 @@ fi
 php_version="$1"
 
 docker run --rm \
-  -e DOCKER_RUN_USER "$(id -u)" \
-  -e DOCKER_RUN_GROUP "$(id -g)" \
+  -e DOCKER_RUN_USER="$(id -u)" \
+  -e DOCKER_RUN_GROUP="$(id -g)" \
   -v "${HOME}/.composer/auth.json:/composer/auth.json" \
   -v "${PWD}:/project" \
   -t \
