@@ -115,7 +115,8 @@ check_exports:
 	bash ./_build/check_exports.sh
 
 build_suites:
-	XDE=0 TEST_SUBNET=27 docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=27 \
+		docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
 
 test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=28 \
