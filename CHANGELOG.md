@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.3.1] 2020-03-29;
+
 ### Fixed
 
 - absolute paths handling in the `pluginsFolder` parameter of `WPLoader` configuration
@@ -1238,4 +1240,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.36]: https://github.com/lucatume/wp-browser/compare/2.2.35...2.2.36
 [2.2.37]: https://github.com/lucatume/wp-browser/compare/2.2.36...2.2.37
 [2.3.0]: https://github.com/lucatume/wp-browser/compare/2.2.37...2.3.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.0...HEAD
+[2.3.1]: https://github.com/lucatume/wp-browser/compare/2.3.0...2.3.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.1...HEAD
