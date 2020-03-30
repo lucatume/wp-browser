@@ -161,20 +161,17 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=41 \
 		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
 		run --rm ccf run wpmodule
-	test "$${CI_PHP_VERSION:0:3}" < "7.1" && echo "Skipping command suite." \
-		|| DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=42 \
-			docker-compose --project-name=${PROJECT_NAME}_command \
-			run --rm ccf run command
 
 # A variable target to debug issues.
 debug:
-	TEST_SUBNET=89 docker-compose --project-name=${PROJECT_NAME}_debug \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) TEST_SUBNET=89 \
+		docker-compose --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.yml \
 		-f docker-compose.debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
 
 test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$(id -g) XDE=0 TEST_SUBNET=34 \
-	docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm ccf run unit
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=42 \
+			docker-compose --project-name=${PROJECT_NAME}_command \
+			run --rm ccf run command

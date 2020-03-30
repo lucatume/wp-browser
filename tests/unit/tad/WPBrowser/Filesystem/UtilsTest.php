@@ -178,4 +178,16 @@ class UtilsTest extends TestCase
         $this->assertEquals($path, Utils::findHereOrInParent('../../foo.php', dirname(__FILE__)));
         unlink($path);
     }
+
+    /**
+     * It should find absolute file here or in parent
+     *
+     * @test
+     */
+    public function should_find_absolute_file_here_or_in_parent()
+    {
+        $file = __FILE__;
+
+        $this->assertEquals(__FILE__, Utils::findHereOrInParent($file, codecept_output_dir()));
+    }
 }

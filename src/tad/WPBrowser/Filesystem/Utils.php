@@ -31,6 +31,10 @@ class Utils
             throw new  \InvalidArgumentException('Frag must be a string');
         }
 
+        if (file_exists($frag)) {
+            return $frag;
+        }
+
         if (!is_string($start)) {
             throw new  \InvalidArgumentException('Start must be a string');
         }

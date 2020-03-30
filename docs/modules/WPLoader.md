@@ -196,6 +196,9 @@ modules:
 			<a href="#factory">factory</a>
 		</li>
 		<li>
+			<a href="#getpluginsfolder">getPluginsFolder</a>
+		</li>
+		<li>
 			<a href="#startwpfiltersdebug">startwpfiltersdebug</a>
 		</li>
 		<li>
@@ -286,6 +289,21 @@ $postId = $I->factory()->post->create();
   $userId = $I->factory()->user->create(['role' => 'administrator']);
 ```
 
+  
+
+<h3>getPluginsFolder</h3>
+
+<hr>
+
+<p>Returns the absolute path to the plugins directory. The value will first look at the <code>WP_PLUGIN_DIR</code> constant, then the <code>pluginsFolder</code> configuration parameter and will, finally, look in the default path from the WordPress root directory.</p>
+```php
+$plugins = $this->getPluginsFolder();
+  $hello = $this->getPluginsFolder('hello.php');
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$path</strong> - A relative path to append to te plugins directory absolute path.</li></ul>
   
 
 <h3>startwpfiltersdebug</h3>
