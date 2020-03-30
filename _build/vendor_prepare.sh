@@ -70,7 +70,8 @@ if [ ! -f "${PWD}/.ready" ] || [ ! -d "${PWD}/vendor" ]; then
     echo -e "\033[91mVendor directory cache not found, updating.\033[0m"
     git checkout "${PWD}/composer.json"
     docker run --rm \
-      --user "$(id -u):$(id -g)" \
+      -e DOCKER_RUN_USER "$(id -u)"  \
+      -e DOCKER_RUN_GROUP "$(id -g)"  \
       -v "${HOME}/.composer/auth.json:/composer/auth.json" \
       -v "${PWD}:/project" \
       -t \

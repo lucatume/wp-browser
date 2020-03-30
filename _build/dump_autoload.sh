@@ -14,10 +14,10 @@ if [ "$#" -lt 1 ]; then
 fi
 
 php_version="$1"
-project="$(basename "${PWD}")"
 
 docker run --rm \
-  --user "$(id -u):$(id -g)" \
+  -e DOCKER_RUN_USER "$(id -u)" \
+  -e DOCKER_RUN_GROUP "$(id -g)" \
   -v "${HOME}/.composer/auth.json:/composer/auth.json" \
   -v "${PWD}:/project" \
   -t \
