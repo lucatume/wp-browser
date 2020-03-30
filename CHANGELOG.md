@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- absolute paths handling in the `pluginsFolder` parameter of `WPLoader` configuration
+
 ## [2.3.0] 2020-03-29;
 
 ### Added

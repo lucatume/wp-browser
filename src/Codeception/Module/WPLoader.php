@@ -12,8 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
-use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
+use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 
 /**
@@ -122,7 +122,7 @@ class WPLoader extends Module
             'phpBinary'        => 'php',
             'language'         => '',
             'configFile'       => '',
-            'pluginsFolder'    => '',
+            'pluginsFolder'    => 'wp-content/plugins',
             'plugins'          => '',
             'activatePlugins'  => '',
             'bootstrapActions' => '',
@@ -415,27 +415,58 @@ class WPLoader extends Module
     }
 
     /**
-     * @return string
-     * @throws ModuleConfigException
+     * Returns the absolute path to the plugins directory.
+     *
+     * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
+     * and will, finally, look in the default path from the WordPress root directory.
+     *
+     * @example
+     * ```php
+     * $plugins = $this->getPluginsFolder();
+     * $hello = $this->getPluginsFolder('hello.php');
+     * ```
+     *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
+     *
+     * @throws ModuleConfigException If the path to the plugins folder does not exist.
      */
-    protected function getPluginsFolder()
+    public function getPluginsFolder($path = '')
     {
-        if (empty($this->pluginsFolder)) {
-            $path = empty($this->config['pluginsFolder']) && defined('WP_PLUGIN_DIR') ?
-                WP_PLUGIN_DIR
-                : realpath($this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']));
-
-            if (! file_exists($path)) {
-                throw new ModuleConfigException(
-                    __CLASS__,
-                    "The path to the plugins folder ('{$path}') doesn't exist."
-                );
-            }
-
-            $this->pluginsFolder = Utils::untrailslashit($path);
+        if (! empty($this->pluginsFolder)) {
+            return empty($path) ? $this->pluginsFolder : $this->pluginsFolder . '/' . ltrim($path, '\\/');
         }
 
-        return $this->pluginsFolder;
+        $candidate = $this->config['pluginsFolder'];
+
+        if (is_dir($candidate)) {
+            // Maybe an absolute path?
+            $pluginsPath = $candidate;
+        } else {
+            // Maybe a relative path?
+            $pluginsPath = defined('WP_PLUGIN_DIR') ?
+                WP_PLUGIN_DIR
+                : $this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']);
+        }
+
+        $realpath = realpath($pluginsPath);
+
+        if ($realpath !== false) {
+            $pluginsPath = $realpath;
+        }
+
+        if (! file_exists($pluginsPath)) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                "The path to the plugins folder ('{$pluginsPath}') doesn't exist."
+            );
+        }
+
+        $this->pluginsFolder = Utils::untrailslashit($pluginsPath);
+
+        return empty($path) ? $this->pluginsFolder : $this->pluginsFolder . '/' . ltrim($path, '\\/');
     }
 
     protected function bootstrapWP()

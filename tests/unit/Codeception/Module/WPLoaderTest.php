@@ -2,6 +2,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
@@ -181,5 +182,84 @@ class WPLoaderTest extends \Codeception\Test\Unit
             'dbPassword' => 'somePass',
         ];
         $this->wp = $this->prophesize(WP::class);
+    }
+
+    /**
+     * It should accept absolute paths in the pluginsDir parameter
+     *
+     * @test
+     */
+    public function should_accept_absolute_paths_in_the_plugins_dir_parameter()
+    {
+        $pluginsRoot = vfsStream::setup();
+        $pluginsDir  = vfsStream::newDirectory('plugins');
+        $pluginsRoot->addChild($pluginsDir);
+
+        $this->config['pluginsFolder'] = $pluginsRoot->url() . '/plugins';
+
+        $wpLoader = $this->make_instance();
+
+        $this->assertEquals($pluginsRoot->url() . '/plugins', $wpLoader->getPluginsFolder());
+        $this->assertEquals($pluginsRoot->url() . '/plugins/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
+    }
+
+    /**
+     * It should throw if absolute path for pluginsFolder does not exist
+     *
+     * @test
+     */
+    public function should_throw_if_absolute_path_for_plugins_folder_does_not_exist()
+    {
+        $pluginsRoot = vfsStream::setup();
+
+        $this->config['pluginsFolder'] = $pluginsRoot->url() . '/plugins';
+
+        $wpLoader = $this->make_instance();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpLoader->getPluginsFolder();
+    }
+
+
+    /**
+     * It should throw if WP_PLUGINS_DIR does not exist
+     *
+     * @test
+     */
+    public function should_throw_if_wp_plugins_dir_does_not_exist()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test cannot run without the uopz extension');
+        }
+
+        uopz_redefine('WP_PLUGIN_DIR', '/foo/bar/baz');
+
+        $wpLoader = $this->make_instance();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpLoader->getPluginsFolder();
+    }
+
+    /**
+     * It should correctly build paths when the WP_PLUGIN_DIR constant is defined
+     *
+     * @test
+     */
+    public function should_correctly_build_paths_when_the_wp_plugin_dir_const_is_defined()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test cannot run without the uopz extension');
+        }
+        $pluginsRoot = vfsStream::setup();
+        $pluginsDir  = vfsStream::newDirectory('plugins');
+        $pluginsRoot->addChild($pluginsDir);
+        uopz_redefine('WP_PLUGIN_DIR', $pluginsRoot->url() . '/plugins');
+
+        $wpLoader = $this->make_instance();
+
+        $this->assertEquals($pluginsRoot->url() . '/plugins', $wpLoader->getPluginsFolder());
+        $this->assertEquals($pluginsRoot->url() . '/plugins/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
     }
 }
