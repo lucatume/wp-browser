@@ -390,19 +390,8 @@ class WPLoader extends Module
      */
     protected function loadConfigFile($folder = null)
     {
-        $folder = $folder ?: codecept_root_dir();
-        $frags = $this->config['configFile'];
-        foreach ((array)$frags as $frag) {
-            if (! empty($frag)) {
-                $configFile = Utils::findHereOrInParent($frag, $folder);
-                if (! file_exists($configFile)) {
-                    throw new ModuleConfigException(
-                        __CLASS__,
-                        "\nConfig file `{$frag}` could not be found in WordPress root folder or above."
-                    );
-                }
-                require_once $configFile;
-            }
+        foreach ($this->_getConfigFiles($folder) as $configFile) {
+            require_once $configFile;
         }
     }
 
@@ -799,5 +788,38 @@ class WPLoader extends Module
     protected function setupFactoryStore()
     {
         $this->factoryStore = new FactoryStore();
+    }
+
+    /**
+     * Returns an array of the configuration files specified with the `configFile` parameter of the module configuarion.
+     *
+     * @param string|null $folder The start directory to search for configuration files. If not found in the starting
+     *                            directory, then files will be searched in the directory parents.
+     *
+     * @return array<string> An array of configuration files absolute paths.
+     *
+     * @throws ModuleConfigException If a specified configuration file does not exist.
+     */
+    public function _getConfigFiles($folder = null)
+    {
+        $folder = $folder ?: codecept_root_dir();
+
+        $frags = $this->config['configFile'];
+        $configFiles = [];
+
+        foreach ((array)$frags as $frag) {
+            if (! empty($frag)) {
+                $configFile = Utils::findHereOrInParent($frag, $folder);
+                if (! file_exists($configFile)) {
+                    throw new ModuleConfigException(
+                        __CLASS__,
+                        "\nConfig file `{$frag}` could not be found in WordPress root folder or above."
+                    );
+                }
+                $configFiles[] = $configFile;
+            }
+        }
+
+        return array_unique($configFiles);
     }
 }
