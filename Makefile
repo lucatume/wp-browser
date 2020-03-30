@@ -170,7 +170,7 @@ test:
 debug:
 	TEST_SUBNET=89 docker-compose --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.yml \
-		-f debug.yml \
+		-f docker-compose.debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
 
