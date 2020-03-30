@@ -52,13 +52,18 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "tad\\Test\\" : "tests/_support/lib",
-      "Codeception\\" : "tests/_data/classes/Codeception"
+      "tad\\Test\\": "tests/_support/lib",
+      "Codeception\\": "tests/_data/classes/Codeception"
     },
-    "files": ["tests/_support/functions.php"]
+    "files": [
+      "tests/_support/functions.php"
+    ]
   },
   "scripts": {
     "post-install-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill",
     "post-update-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill"
-    }
+  },
+  "extra": {
+    "_hash": "d24e211bad4bbc8a95cdce7a7cb0577f"
+  }
 }
