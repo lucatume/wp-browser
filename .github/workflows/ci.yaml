@@ -45,14 +45,6 @@ jobs:
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
       - name: Dump autoload
         run: _build/dump_autoload.sh ${{ matrix.php_version }}
-      - name: Ensure tests/_output
-        run: mkdir -p tests/_output && chmod a+rwx tests/_output
-      - name: List files in project
-        run: ls -la $(pwd)
-      - name: List files in project/tests
-        run: ls -la tests
-      - name: List files in _data
-        run: ls -la tests/_data
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
