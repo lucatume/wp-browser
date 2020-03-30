@@ -69,19 +69,18 @@ if [ ! -f "${PWD}/.ready" ] || [ ! -d "${PWD}/vendor" ]; then
   else
     echo -e "\033[91mVendor directory cache not found, updating.\033[0m"
     git checkout "${PWD}/composer.json"
-    DOCKER_RUN_USER="$(id -u)" \
-    DOCKER_RUN_GROUP="$(id -u)" \
     docker run --rm \
+      --user "$(id -u):$(id -g)" \
       -v "${HOME}/.composer/auth.json:/composer/auth.json" \
       -v "${PWD}:/project" \
       -t \
       lucatume/composer:php"${php_version}" require codeception/codeception:^"${codeception_version}"
 
-    docker-compose down
-
     echo -e "\033[32mVendor directory ready for PHP ${php_version} and Codeception ${codeception_version}.\033[0m"
   fi
 fi
+
+test -d "${PWD}/vendor" || { echo "${PWD}/vendor directory not found."; exit 1; }
 
 echo "${php_version}.cc.${codeception_version}" > "${PWD}/.ready"
 

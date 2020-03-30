@@ -15,12 +15,11 @@ fi
 
 php_version="$1"
 
-DOCKER_RUN_USER="$(id -u)" \
-DOCKER_RUN_GROUP="$(id -u)" \
 docker run --rm \
+  --user "$(id -u):$(id -g)" \
   -v "${HOME}/.composer/auth.json:/composer/auth.json" \
   -v "${PWD}:/project" \
   -t \
   lucatume/composer:php"${php_version}" dump-autoload
 
-docker-compose down
+test -f "${PWD}/vendor/autoload.php" || { echo "${PWD}/vendor/autoload.php file not found."; exit 1; }
