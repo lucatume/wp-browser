@@ -181,10 +181,100 @@ modules:
 <nav>
 	<ul>
 		<li>
+			<a href="#debugwpactionfinal">debugWpActionFinal</a>
+		</li>
+		<li>
+			<a href="#debugwpactioninitial">debugWpActionInitial</a>
+		</li>
+		<li>
+			<a href="#debugwpfilterfinal">debugWpFilterFinal</a>
+		</li>
+		<li>
+			<a href="#debugwpfilterinitial">debugWpFilterInitial</a>
+		</li>
+		<li>
 			<a href="#factory">factory</a>
+		</li>
+		<li>
+			<a href="#startwpfiltersdebug">startwpfiltersdebug</a>
+		</li>
+		<li>
+			<a href="#stopwpfiltersdebug">stopWpFiltersDebug</a>
 		</li>
 	</ul>
 </nav>
+
+<h3>debugWpActionFinal</h3>
+
+<hr>
+
+<p>Debugs a single WordPress action final call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+```php
+// Start debugging all WordPress actions final value.
+  add_action('all', [$this,'debugWpActionFinal']);
+  // Run some code firing actions and debug them.
+  // Stop debugging all WordPress actions final value.
+  remove_action('all', [$this,'debugWpActionFinal']);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+  
+
+<h3>debugWpActionInitial</h3>
+
+<hr>
+
+<p>Debugs a single WordPress action initial call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+```php
+// Start debugging all WordPress actions initial value.
+  add_action('all', [$this,'debugWpActionInitial']);
+  // Run some code firing actions and debug them.
+  // Stop debugging all WordPress actions initial value.
+  remove_action('all', [$this,'debugWpActionInitial']);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+  
+
+<h3>debugWpFilterFinal</h3>
+
+<hr>
+
+<p>Debugs a single WordPress filter final call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+```php
+// Start debugging all WordPress filters final value.
+  add_filter('all', [$this,'debugWpFilterFinal']);
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters final value.
+  remove_filter('all', [$this,'debugWpFilterFinal']);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+  
+
+<h3>debugWpFilterInitial</h3>
+
+<hr>
+
+<p>Debugs a single WordPress filter initial call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+```php
+// Start debugging all WordPress filters initial value.
+  add_filter('all', [$this,'debugWpFilterInitial']);
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters initial value.
+  remove_filter('all', [$this,'debugWpFilterInitial']);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+  
 
 <h3>factory</h3>
 
@@ -194,6 +284,40 @@ modules:
 ```php
 $postId = $I->factory()->post->create();
   $userId = $I->factory()->user->create(['role' => 'administrator']);
+```
+
+  
+
+<h3>startwpfiltersdebug</h3>
+
+<hr>
+
+<p>Starts the debug of all WordPress filters and actions. The method hook on <code>all</code> filters and actions to debug their value.</p>
+```php
+// Start debugging all WordPress filters and action final and initial values.
+  $this->startWpFiltersDebug();
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters and action final and initial values.
+  $this->stopWpFiltersDebug();
+  the array of arguments as input.
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>\callable</code> <strong>$format</strong> - A callback function to format the arguments debug output; the callback will receive</li></ul>
+  
+
+<h3>stopWpFiltersDebug</h3>
+
+<hr>
+
+<p>Stops the debug of all WordPress filters and actions.</p>
+```php
+// Start debugging all WordPress filters and action final and initial values.
+  $this->startWpFiltersDebug();
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters and action final and initial values.
+  $this->stopWpFiltersDebug();
 ```
 
 

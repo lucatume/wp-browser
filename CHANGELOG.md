@@ -4,14 +4,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.3.0] 2020-03-29;
+
+### Added
+
+- the `originalUrl` to the `WPDb` module configuration; this can help in some instances where `urlReplacement` is active but is not working correctly.
+- the `tad\WPBrowser\Traits\WithWordPressFilters` trait to provide methods, for test cases, to debug WordPress actions and filter initial and final values.
+- use the `tad\WPBrowser\Traits\WithWordPressFilters` trait in the `WPLoader` module to debug WordPress actions and filter initial and final values.
+
 ### Fixed
 
 - an issue that would prevent the site URL from being correctly replaced during `WPDb` module dump imports
 - sanity checks on the `Copier` extension
 
-### Added
 
-- the `originalUrl` to the `WPDb` module configuration; this can help in some instances where `urlReplacement` is active but is not working correctly
+### Changed
+
+- refactoring of utility functions
+- the build system from Travis CI to GitHub Actions, based on Docker
 
 ## [2.2.37] 2020-02-21;
 
@@ -1223,4 +1233,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.2.35]: https://github.com/lucatume/wp-browser/compare/2.2.34...2.2.35
 [2.2.36]: https://github.com/lucatume/wp-browser/compare/2.2.35...2.2.36
 [2.2.37]: https://github.com/lucatume/wp-browser/compare/2.2.36...2.2.37
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.2.37...HEAD
+[2.3.0]: https://github.com/lucatume/wp-browser/compare/2.2.37...2.3.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.0...HEAD
