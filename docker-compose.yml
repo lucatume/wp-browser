@@ -25,6 +25,22 @@ services:
   wordpress:
     image: wordpress:latest
     env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
+    sysctls:
+      # Allow any user to bind ports <= 1024.
+      # This is required as we're running the container as the host user and that user might not be in the root
+      # wheel in the container.
+      net.ipv4.ip_unprivileged_port_start: 0
+    entrypoint:
+      # Modify the ENTRYPOINT, and as a consequence the COMMAND too, to create the `docker` user.
+      # Apache will run as the user specified in the `user` parameter of the service.
+      - /bin/bash
+      - -c
+      - |
+        addgroup --gid 1000 docker
+        adduser --uid 1000 --ingroup docker --home /home/docker --shell /bin/sh --disabled-password --gecos "" docker
+        docker-entrypoint.sh apache2-foreground
     networks:
       test:
         ipv4_address: 172.${TEST_SUBNET:-28}.1.1
@@ -40,24 +56,6 @@ services:
         define( 'PATH_CURRENT_SITE', '/' );
         define( 'SITE_ID_CURRENT_SITE', 1 );
         define( 'BLOG_ID_CURRENT_SITE', 1 );
-      # These will be read in the `docker-entrypoint.sh` script to make sure the owner of the `/var/www/html`
-      # is not the `www-data` user, but the `docker` one.
-      # The `codeception` and `composer` containers will run as `docker` user and would not be able to modify the
-      # WordPress installation files otherwise.
-      # Since env vars defined in the .env files are not loaded at this point, the value is hard-coded.
-      APACHE_RUN_USER: docker
-      APACHE_RUN_GROUP: docker
-    entrypoint:
-      # Modify the ENTRYPOINT, and as a consequence the COMMAND too, to create the `docker` user and start Apache.
-      # The business as usual and just run the existing docker-entrypoint.sh to start Apache.
-      # It would be nice to be able to set the `docker` user and group using a var defined in the .env file, but
-      # variable substitution does not work here.
-      - /bin/bash
-      - -c
-      - |
-        addgroup --gid 1000 docker
-        adduser --uid 1000 --ingroup docker --home /home/docker --shell /bin/sh --disabled-password --gecos "" docker
-        docker-entrypoint.sh apache2-foreground
     volumes:
       - wordpress:/var/www/html
       # Populate a second volume with WordPress source files.
@@ -69,10 +67,12 @@ services:
   wordpress_src:
     image: wordpress:latest
     env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
     networks:
       test:
         ipv4_address: 172.${TEST_SUBNET:-28}.1.1
-    # Make the WordPress files source directory world writeable, readable and executable.
+    # Make the WordPress files source directory world writeable, readable and executable, then exit.
     entrypoint: [ "chmod", "-R" ,"a+rwx", "/usr/src/wordpress" ]
     volumes:
       # Populate the volume with WordPress source files.
@@ -95,6 +95,8 @@ services:
   codeception:
     image: lucatume/codeception:cc3.1.0
     env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
     networks:
       - test
     extra_hosts:
@@ -121,6 +123,8 @@ services:
   ccf:
     image: lucatume/codeception:cc3.1.0
     env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
     networks:
       - test
     extra_hosts:
@@ -144,6 +148,8 @@ services:
   ccu:
     image: lucatume/codeception:cc3.1.0
     env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
     networks:
       - test
     depends_on:
@@ -163,6 +169,8 @@ services:
 
   busybox:
     image: busybox
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
     volumes:
       - .:/project
       - wordpress:/project/vendor/wordpress/wordpress
