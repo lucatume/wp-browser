@@ -64,9 +64,6 @@ fix_n_sniff: fix sniff
 phpstan:
 	docker run --rm -v ${PWD}:/project lucatume/wpstan analyze -l max
 
-# Run a set of checks on the code before commit.
-pre_commit: lint sniff phpstan
-
 # Clean the project Docker containers, volumes and networks.
 clean:
 	docker stop $$(docker ps -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
@@ -167,6 +164,10 @@ ready:
 
 composer_hash_bump:
 	sh "${PWD}/_build/composer-hash.sh"
+
+
+# Run a set of checks on the code before commit.
+pre_commit: lint fix sniff docs
 
 # A variable target to debug issues.
 debug:
