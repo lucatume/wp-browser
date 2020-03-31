@@ -6,6 +6,7 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Traits\WithWpCli;
@@ -406,7 +407,7 @@ class WPCLI extends Module
      */
     public function dontSeeInShellOutput($text)
     {
-        \PHPUnit\Framework\Assert::assertNotContains($text, $this->lastOutput);
+        Assert::assertStringNotContainsString($text, $this->lastOutput);
     }
 
     /**
