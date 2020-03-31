@@ -92,8 +92,8 @@ trait WithEvents
      *
      * @param Application|null $app Either the specific application, or `null` to default to the global one.
      *
-     * @return SymfonyEventDispatcher|null Either the event dispatcher used by the global application, or `null` if the
-     *                                     global application is not defined.
+     * @return SymfonyEventDispatcher|null Either the event dispatcher used by the global application, or `null`
+     *                                     if the global application is not defined.
      *
      * @throws TestRuntimeException If the global application, or one of its expected properties, are not the expected
      *                              type.

@@ -4,7 +4,8 @@ use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use tad\WPBrowser\Events\EventDispatcherAdapter as EventDispatcher;
 use tad\WPBrowser\Traits\WithEvents;
 use function tad\WPBrowser\setPrivateProperties;
 
@@ -65,20 +66,18 @@ class WithEventsTest extends \Codeception\Test\Unit
         $this->appBackup = $app;
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
-        $theDispatcher = new EventDispatcher();
+        $mockSymfonyEventDispatcher = $this->makeEmpty(SymfonyEventDispatcher::class);
         $codecept = $this->makeEmpty(Codecept::class, [
-            'getDispatcher' => $theDispatcher
+            'getDispatcher' => $mockSymfonyEventDispatcher
         ]);
-        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
-        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
+        setPrivateProperties($runningCommand, [ 'codecept' => $codecept ]);
+        setPrivateProperties($app, [ 'runningCommand' => $runningCommand ]);
 
         $eventDispatcher = $this->getEventDispatcher();
-        $appDispatcher = $this->getAppEventDispatcher();
+        $appDispatcher   = $this->getAppEventDispatcher();
 
         $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
-        $this->assertInstanceOf(EventDispatcher::class, $appDispatcher);
-        $this->assertSame($eventDispatcher, $appDispatcher);
-        $this->assertSame($eventDispatcher, $theDispatcher);
+        $this->assertInstanceOf(SymfonyEventDispatcher::class, $appDispatcher);
     }
 
     /**
@@ -203,9 +202,9 @@ class WithEventsTest extends \Codeception\Test\Unit
         $this->appBackup = $app;
         $app = $this->makeEmpty(Application::class);
         $runningCommand = $this->makeEmpty(Run::class);
-        $theDispatcher = new EventDispatcher();
+        $mockSymfonyEventDispatcher = $this->makeEmpty(SymfonyEventDispatcher::class);
         $codecept = $this->makeEmpty(Codecept::class, [
-            'getDispatcher' => $theDispatcher
+            'getDispatcher' => $mockSymfonyEventDispatcher
         ]);
         setPrivateProperties($runningCommand, ['codecept' => $codecept]);
 

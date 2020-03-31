@@ -106,4 +106,14 @@ class EventDispatcherAdapter
 
         return static::$dispatchWithObject;
     }
+
+    /**
+     * Returns the original Symfony Event Dispatcher wrapped by the adapter.
+     *
+     * @return SymfonyEventDispatcher The original Symfony Event Dispatcher wrapped by the adapter.
+     */
+    public function getOriginalEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
 }
