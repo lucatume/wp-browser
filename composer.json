@@ -69,6 +69,6 @@
     "post-update-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill"
   },
   "extra": {
-    "_hash": "63928f14bd97aadd7da820e0356ed204"
+    "_hash": "3799a726d780c81d18a2881006eef0bf"
   }
 }
