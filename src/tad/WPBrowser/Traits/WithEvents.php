@@ -12,7 +12,8 @@ use Codeception\Codecept;
 use Codeception\Exception\TestRuntimeException;
 use Symfony\Component\Console\Application as SymfonyApp;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use tad\WPBrowser\Events\EventDispatcherAdapter;
 use function tad\WPBrowser\readPrivateProperty;
 
 /**
@@ -24,9 +25,10 @@ trait WithEvents
 {
 
     /**
-     * The running command event dispatcher or the global one built and shared among all instances.
+     * The running command event dispatcher or the global one built and shared among all instances, wrapped by the
+     * EventDispatcher adapter class.
      *
-     * @var EventDispatcher
+     * @var EventDispatcherAdapter
      */
     protected static $dispatcher;
 
@@ -50,7 +52,7 @@ trait WithEvents
      * If no command is currently running, then a shared event dispatcher is built and will be returned to all
      * the classes using the trait.
      *
-     * @return EventDispatcher The event dispatcher instance used by the running command or one created ad-hoc.
+     * @return EventDispatcherAdapter The event dispatcher instance used by the running command or one created ad-hoc.
      *                         The event dispatcher instance is shared by all instances implementing the trait.
      *
      * @throws TestRuntimeException If the global application instance is not a Codeception\Application instance; if the
@@ -59,25 +61,28 @@ trait WithEvents
      */
     protected function getEventDispatcher()
     {
-        if (static::$dispatcher instanceof EventDispatcher) {
+        if (static::$dispatcher instanceof EventDispatcherAdapter) {
             return static::$dispatcher;
         }
 
         global $app;
 
+        $appEventDispatcher = null;
         if ($app instanceof Application) {
-            static::$dispatcher = $this->getAppEventDispatcher($app);
-        } elseif (!static::$dispatcher instanceof EventDispatcher) {
-            static::$dispatcher = new EventDispatcher();
+            $appEventDispatcher = $this->getAppEventDispatcher($app);
+        } elseif (!static::$dispatcher instanceof SymfonyEventDispatcher) {
+            $appEventDispatcher = new SymfonyEventDispatcher();
         }
 
-        if (!static::$dispatcher instanceof EventDispatcher) {
+        if (!$appEventDispatcher instanceof SymfonyEventDispatcher) {
             throw new TestRuntimeException(sprintf(
                 '\\Codeception\\Codecept::$eventDispatcher property is not an instance of %s; value is instead: %s',
-                EventDispatcher::class,
+                SymfonyEventDispatcher::class,
                 print_r(static::$dispatcher, true)
             ));
         }
+
+        static::$dispatcher = new EventDispatcherAdapter($appEventDispatcher);
 
         return static::$dispatcher;
     }
@@ -85,10 +90,10 @@ trait WithEvents
     /**
      * Returns the global Codeception application event dispatcher.
      *
-     * @param Application|null $app Either the specific applicatio, or `null` to default to the global one.
+     * @param Application|null $app Either the specific application, or `null` to default to the global one.
      *
-     * @return EventDispatcher|null Either the event dispatcher used by the global application, or `null` if the glaobal
-     *                              application is not defined.
+     * @return SymfonyEventDispatcher|null Either the event dispatcher used by the global application, or `null` if the
+     *                                     global application is not defined.
      *
      * @throws TestRuntimeException If the global application, or one of its expected properties, are not the expected
      *                              type.

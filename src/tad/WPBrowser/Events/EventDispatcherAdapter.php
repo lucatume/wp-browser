@@ -14,61 +14,96 @@ use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
  *
  * @package tad\WPBrowser\Events
  */
-class EventDispatcherAdapter {
-	/**
-	 * The wrapped Symfony Event Dispatcher instance.
-	 * @var SymfonyEventDispatcher
-	 */
-	protected $eventDispatcher;
-	protected $dispatchWithObject;
+class EventDispatcherAdapter
+{
+    /**
+     * Whether events should be dispatched using an event object as first argument (newer Symfony versions) or not.
+     * @var bool
+     */
+    protected static $dispatchWithObject;
+    /**
+     * The wrapped Symfony Event Dispatcher instance.
+     * @var SymfonyEventDispatcher
+     */
+    protected $eventDispatcher;
 
-	/**
-	 * EventDispatcherAdapter constructor.
-	 *
-	 * @param SymfonyEventDispatcher $eventDispatcher The Symfony Event Dispatcher instance to wrap.
-	 */
-	public function __construct( SymfonyEventDispatcher $eventDispatcher ) {
-		$this->eventDispatcher = $eventDispatcher;
-	}
+    /**
+     * EventDispatcherAdapter constructor.
+     *
+     * @param SymfonyEventDispatcher $eventDispatcher The Symfony Event Dispatcher instance to wrap.
+     */
+    public function __construct(SymfonyEventDispatcher $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
-	public function addListener( $eventName, callable $listener, $priority ) {
-		$this->eventDispatcher->addListener( $eventName, $listener, $priority );
-	}
+    /**
+     * Adds a listener to the current event dispatcher for a specific event.
+     *
+     * @param string   $eventName   The name of the event to add a listener for.
+     * @param callable $listener    A callable closure or method that will be called when the event is dispatched. The
+     *                              listener will receive the following arguments: object `$event`, string `$eventName`
+     *                              and `$eventDispatcher` as last argument.
+     * @param int      $priority    A priority to attach the listener at. Differently from WordPress listeners added at
+     *                              higher priorities are called first.
+     */
+    public function addListener($eventName, callable $listener, $priority)
+    {
+        $this->eventDispatcher->addListener($eventName, $listener, $priority);
+    }
 
-	public function dispatch( $eventName, $origin = null, array $context = [] ) {
-		$eventObject = new WpbrowserEvent( $eventName, $origin, $context );
+    /**
+     * Dispatches an event using the correct parameter order depending on the current Symfony component version.
+     *
+     * @param string      $name       The event name or handle.
+     * @param object|null $dispatcher The event dispatcher.
+     * @param array       $context    Additional context or data for the event.
+     */
+    public function dispatch($eventName, $origin = null, array $context = [])
+    {
+        $eventObject = new WpbrowserEvent($eventName, $origin, $context);
 
-		if ( $this->dispatchWithObject() ) {
-			$this->eventDispatcher->dispatch( $eventObject, $eventName );
+        if ($this->dispatchWithObject()) {
+            $this->eventDispatcher->dispatch($eventObject, $eventName);
 
-			return;
-		}
+            return;
+        }
 
-		$this->eventDispatcher->dispatch( $eventName, $eventObject );
-	}
+        $this->eventDispatcher->dispatch($eventName, $eventObject);
+    }
 
-	protected function dispatchWithObject() {
-		if ( $this->dispatchWithObject !== null ) {
-			return $this->dispatchWithObject;
-		}
+    /**
+     * Returns whether the adapter will dispatch events with an object first argument or not.
+     *
+     * The choice is done at run-time depending on the signature of the
+     * `Symfony\Component\EventDispatcher\EventDispatcher::dispatch` method.
+     * The results is then statically cached.
+     *
+     * @return bool Whether events will be dispatched with an object first arguments (newer Symfony versions) or not.
+     */
+    public static function dispatchWithObject()
+    {
+        if (static::$dispatchWithObject !== null) {
+            return static::$dispatchWithObject;
+        }
 
-		try {
-			$methodReflection = new \ReflectionMethod( $this->eventDispatcher, 'dispatch' );
-		} catch ( \ReflectionException $e ) {
-			$this->dispatchWithObject = false;
+        try {
+            $methodReflection = new \ReflectionMethod(SymfonyEventDispatcher::class, 'dispatch');
+        } catch (\ReflectionException $e) {
+            static::$dispatchWithObject = false;
 
-			return $this->dispatchWithObject;
-		}
+            return static::$dispatchWithObject;
+        }
 
-		$methodArguments          = $methodReflection->getParameters();
-		$firstArgument            = count( $methodArguments ) ? reset( $methodArguments ) : false;
-		$this->dispatchWithObject = $firstArgument instanceof \ReflectionParameter
-		                            && $firstArgument->getType() === 'object';
+        $methodArguments            = $methodReflection->getParameters();
+        $firstArgument              = count($methodArguments) ? reset($methodArguments) : false;
+        static::$dispatchWithObject =  false;
 
-		return $this->dispatchWithObject;
-	}
+        if ($firstArgument instanceof \ReflectionParameter) {
+            $type                       = $firstArgument->getType();
+            static::$dispatchWithObject = $type !== null && $type->__toString() === 'object';
+        }
 
-	public function setDispatchWithObject( $dispatchWithObject ) {
-		$this->dispatchWithObject = (bool) $dispatchWithObject;
-	}
+        return static::$dispatchWithObject;
+    }
 }
