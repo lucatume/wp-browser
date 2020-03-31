@@ -165,6 +165,9 @@ test:
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
 
+composer_hash_bump:
+	sh "${PWD}/_build/composer-hash.sh"
+
 # A variable target to debug issues.
 debug:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) TEST_SUBNET=89 \

@@ -11,6 +11,6 @@
 namespace tad\WPBrowser\Events;
 
 
-class EventDispatcher {
+class WpbrowserEvent {
 
 }
