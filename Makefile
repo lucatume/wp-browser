@@ -162,6 +162,9 @@ test:
 		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
 		run --rm ccf run wpmodule
 
+ready:
+	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
+
 # A variable target to debug issues.
 debug:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) TEST_SUBNET=89 \
