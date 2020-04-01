@@ -7,6 +7,8 @@
 
 namespace tad\WPBrowser\Adapters\PHPUnit\Framework;
 
+use PHPUnit\Framework\Assert as PHPUnitAssert;
+
 /**
  * Class Assert
  *
@@ -22,10 +24,10 @@ class Assert
      */
     public static function assertStringNotContainsString($needle, $haystack)
     {
-        if (method_exists(Assert::class, 'assertStringNotContainsString')) {
-            \PHPUnit\Framework\Assert::assertStringNotContainsString($needle, $haystack);
+        if (method_exists(PHPUnitAssert::class, 'assertStringNotContainsString')) {
+	        PHPUnitAssert::assertStringNotContainsString($needle, $haystack);
         } else {
-            \PHPUnit\Framework\Assert::assertNotContains($needle, $haystack);
+	        PHPUnitAssert::assertNotContains($needle, $haystack);
         }
     }
 }
