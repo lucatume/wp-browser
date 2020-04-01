@@ -36,7 +36,7 @@ function vendorDir($path = '')
         // We're in the wp-browser package itself context.
         $vendorDir = $root . '/vendor';
     } else {
-        $vendorDir = dirname($root);
+        $vendorDir = dirname(dirname($root));
     }
 
     return empty($path) ?

@@ -13,6 +13,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - the event listener and dispatcher system to work consistently across Codeception versions
 
+## [2.3.3] 2020-04-01;
+
+### Fixed
+
+- `tad\WPBrowser\vendorDir` issue that would cause the function to return wrong value
+
 ## [2.3.2] 2020-03-29;
 
 ### Fixed
@@ -1257,4 +1263,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.3.0]: https://github.com/lucatume/wp-browser/compare/2.2.37...2.3.0
 [2.3.1]: https://github.com/lucatume/wp-browser/compare/2.3.0...2.3.1
 [2.3.2]: https://github.com/lucatume/wp-browser/compare/2.3.1...2.3.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.2...HEAD
+[2.3.3]: https://github.com/lucatume/wp-browser/compare/2.3.2...2.3.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.3...HEAD

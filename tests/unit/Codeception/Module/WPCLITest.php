@@ -256,9 +256,15 @@ class WPCLITest extends \Codeception\Test\Unit
             ->willReturn($mockProcess->reveal());
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessageRegExp('/'.preg_quote($error, '/').'/');
 
-        $cli->cli('core version');
+	    $pattern = '/' . preg_quote( $error, '/' ) . '/';
+	    if (method_exists($this,'expectExceptionMessageMatches')) {
+		    $this->expectExceptionMessageMatches( $pattern );
+	    }else{
+		    $this->expectExceptionMessageRegExp( $pattern );
+	    }
+
+	    $cli->cli('core version');
     }
 
     /**
