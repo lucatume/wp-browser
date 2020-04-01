@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.3.3] 2020-04-01;
+
+### Fixed
+
+- `tad\WPBrowser\vendorDir` issue that would cause the function to return wrong value
+
 ## [2.3.2] 2020-03-29;
 
 ### Fixed
