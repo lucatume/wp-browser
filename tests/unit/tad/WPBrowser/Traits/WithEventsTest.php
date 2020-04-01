@@ -3,9 +3,8 @@
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
-use Codeception\Exception\TestRuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use tad\WPBrowser\Events\EventDispatcherAdapter as EventDispatcher;
+use tad\WPBrowser\Events\EventDispatcherAdapter;
 use tad\WPBrowser\Traits\WithEvents;
 use function tad\WPBrowser\setPrivateProperties;
 
@@ -25,7 +24,7 @@ class WithEventsTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        static::$dispatcher = null;
+        EventDispatcherAdapter::resetSharedInstance();
     }
 
     protected function _after()
@@ -49,10 +48,8 @@ class WithEventsTest extends \Codeception\Test\Unit
         $app = null;
 
         $eventDispatcher = $this->getEventDispatcher();
-        $appDispatcher = $this->getAppEventDispatcher();
 
-        $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
-        $this->assertNull($appDispatcher);
+        $this->assertInstanceOf(EventDispatcherAdapter::class, $eventDispatcher);
     }
 
     /**
@@ -74,99 +71,9 @@ class WithEventsTest extends \Codeception\Test\Unit
         setPrivateProperties($app, [ 'runningCommand' => $runningCommand ]);
 
         $eventDispatcher = $this->getEventDispatcher();
-        $appDispatcher   = $this->getAppEventDispatcher();
 
-        $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
-        $this->assertInstanceOf(SymfonyEventDispatcher::class, $appDispatcher);
-    }
-
-    /**
-     * It should throw if global app is not correct type
-     *
-     * @test
-     */
-    public function should_throw_if_global_app_is_not_correct_type()
-    {
-        global $app;
-        $this->appBackup = $app;
-        $app = new stdClass();
-
-        $eventDispatcher = $this->getEventDispatcher();
-
-        $this->assertInstanceOf(EventDispatcher::class, $eventDispatcher);
-        $this->assertNull($this->getAppEventDispatcher());
-    }
-
-    /**
-     * It should throw if running app command is not correct type
-     *
-     * @test
-     */
-    public function should_throw_if_running_app_command_is_not_correct_type()
-    {
-        global $app;
-        $this->appBackup = $app;
-        $app = $this->makeEmpty(Application::class);
-        $runningCommand = new stdClass();
-        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getEventDispatcher();
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getAppEventDispatcher();
-    }
-
-    /**
-     * It should throw if running command codecept is not correct type
-     *
-     * @test
-     */
-    public function should_throw_if_running_command_codecept_is_not_correct_type()
-    {
-        global $app;
-        $this->appBackup = $app;
-        $app = $this->makeEmpty(Application::class);
-        $runningCommand = $this->makeEmpty(Run::class);
-        $codecept = new stdClass();
-        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
-        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getEventDispatcher();
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getAppEventDispatcher();
-    }
-
-    /**
-     * It should throw if event dispatcher is not correct type
-     *
-     * @test
-     */
-    public function should_throw_if_event_dispatcher_is_not_correct_type()
-    {
-        global $app;
-        $this->appBackup = $app;
-        $app = $this->makeEmpty(Application::class);
-        $runningCommand = $this->makeEmpty(Run::class);
-        $codecept = $this->makeEmpty(Codecept::class, [
-            'getDispatcher' => new stdClass()
-        ]);
-        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
-        setPrivateProperties($app, ['runningCommand' => $runningCommand]);
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getEventDispatcher();
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getAppEventDispatcher();
+        $this->assertInstanceOf(EventDispatcherAdapter::class, $eventDispatcher);
+        $this->assertSame($mockSymfonyEventDispatcher, $eventDispatcher->getOriginalEventDispatcher());
     }
 
     /**
@@ -189,31 +96,5 @@ class WithEventsTest extends \Codeception\Test\Unit
         $dispatcher->dispatch('test_event');
 
         $this->assertEquals(3, $calledTimes);
-    }
-
-    /**
-     * It should throw if expected prop not set
-     *
-     * @test
-     */
-    public function should_throw_if_expected_prop_not_set()
-    {
-        global $app;
-        $this->appBackup = $app;
-        $app = $this->makeEmpty(Application::class);
-        $runningCommand = $this->makeEmpty(Run::class);
-        $mockSymfonyEventDispatcher = $this->makeEmpty(SymfonyEventDispatcher::class);
-        $codecept = $this->makeEmpty(Codecept::class, [
-            'getDispatcher' => $mockSymfonyEventDispatcher
-        ]);
-        setPrivateProperties($runningCommand, ['codecept' => $codecept]);
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getEventDispatcher();
-
-        $this->expectException(TestRuntimeException::class);
-
-        $this->getAppEventDispatcher();
     }
 }

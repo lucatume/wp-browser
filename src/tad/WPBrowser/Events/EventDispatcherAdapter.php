@@ -7,7 +7,13 @@
 
 namespace tad\WPBrowser\Events;
 
+use Codeception\Application;
+use Codeception\Codecept;
+use Codeception\Exception\TestRuntimeException;
+use Symfony\Component\Console\Application as SymfonyApp;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use function tad\WPBrowser\readPrivateProperty;
 
 /**
  * Class EventDispatcherAdapter
@@ -21,6 +27,61 @@ class EventDispatcherAdapter
      * @var bool
      */
     protected static $dispatchWithObject;
+
+    /**
+     * The shared instance of the adapter.
+     *
+     * @var static
+     */
+    protected static $sharedInstance;
+
+    /**
+     * Whether using this API to attach listeners to Codeception default events is allowed or not.
+     *
+     * @var bool
+     */
+    protected static $allowCodeceptionHooks;
+    /**
+     * A list of Codeception events, compiled at run-time.
+     *
+     * @var array<string>
+     */
+    protected static $compiledCodeceptionEvents;
+
+    /**
+     * A list of all the possible Codeception events.
+     *
+     * @var array<string>
+     */
+    protected static $allCodeceptionEvents = [
+        '\Codeception\Events::MODULE_INIT',
+        '\Codeception\Events::TEST_BEFORE',
+        '\Codeception\Events::TEST_START',
+        '\Codeception\Events::SUITE_BEFORE',
+        '\Codeception\Events::STEP_BEFORE',
+        '\Codeception\Events::SUITE_INIT',
+        '\Codeception\Events::RESULT_PRINT_AFTER',
+        '\Codeception\Events::STEP_AFTER',
+        '\Codeception\Events::SUITE_AFTER',
+        '\Codeception\Events::TEST_AFTER',
+        '\Codeception\Events::TEST_END',
+        '\Codeception\Events::TEST_ERROR',
+        '\Codeception\Events::TEST_FAIL',
+        '\Codeception\Events::TEST_FAIL_PRINT',
+        '\Codeception\Events::TEST_INCOMPLETE',
+        '\Codeception\Events::TEST_PARSED',
+        '\Codeception\Events::TEST_SKIPPED',
+        '\Codeception\Events::TEST_SUCCESS',
+        '\Codeception\Events::TEST_WARNING'
+    ];
+
+    /**
+     * Whether the fallback provided by the Events extension to attach listeners to Codeception 4.0+ events is available
+     * or not.
+     * @var bool
+     */
+    protected static $fallbackAvailable = false;
+
     /**
      * The wrapped Symfony Event Dispatcher instance.
      * @var SymfonyEventDispatcher
@@ -38,6 +99,116 @@ class EventDispatcherAdapter
     }
 
     /**
+     * Returns the shared instance of the event dispatcher that will be shared by all classes dispatching and listening
+     * for events.
+     *
+     * @return static The shared instance of this class.
+     */
+    public static function getEventDispatcher()
+    {
+        if (static::$sharedInstance !== null) {
+            return static::$sharedInstance;
+        }
+
+        global $app;
+
+        $appEventDispatcher = null;
+        if ($app instanceof Application) {
+            static::$allowCodeceptionHooks = true;
+            $appEventDispatcher            = static::getAppEventDispatcher($app);
+        } else {
+            static::$allowCodeceptionHooks = false;
+            $appEventDispatcher            = new SymfonyEventDispatcher();
+        }
+
+        if (! $appEventDispatcher instanceof SymfonyEventDispatcher) {
+            throw new TestRuntimeException(sprintf(
+                '\\Codeception\\Codecept::$eventDispatcher property is not an instance of %s; value is instead: %s',
+                SymfonyEventDispatcher::class,
+                print_r($appEventDispatcher, true)
+            ));
+        }
+
+        static::$sharedInstance = new static($appEventDispatcher);
+
+        return static::$sharedInstance;
+    }
+
+    /**
+     * Returns the global Codeception application event dispatcher.
+     *
+     * @param Application|null $app Either the specific application, or `null` to default to the global one.
+     *
+     * @return SymfonyEventDispatcher|null Either the event dispatcher used by the global application, or `null`
+     *                                     if the global application is not defined.
+     *
+     * @throws TestRuntimeException If the global application, or one of its expected properties, are not the expected
+     *                              type.
+     */
+    protected static function getAppEventDispatcher(Application $app = null)
+    {
+        if ($app === null) {
+            global $app;
+        }
+
+        if (! $app instanceof Application) {
+            return null;
+        }
+
+        try {
+            $runningCommand = readPrivateProperty($app, 'runningCommand', SymfonyApp::class);
+
+            if (! $runningCommand instanceof Command) {
+                throw new TestRuntimeException(
+                    'Running command is empty or not an instance of the ' .
+                    'Symfony\Component\Console\Command\Command class.'
+                );
+            }
+
+            $codecept = readPrivateProperty($runningCommand, 'codecept');
+
+            if (! $codecept instanceof Codecept) {
+                throw new TestRuntimeException(
+                    'Running command $codecept property is not set or not the correct type.'
+                );
+            }
+
+            $appDispatcher = $codecept->getDispatcher();
+        } catch (\ReflectionException $e) {
+            throw new TestRuntimeException(
+                'Could not get the value of the command $codecept property, message:' .
+                $e->getMessage()
+            );
+        }
+
+        return $appDispatcher;
+    }
+
+    /**
+     * Resets the shared instance.
+     */
+    public static function resetSharedInstance()
+    {
+        static::$sharedInstance = null;
+    }
+
+    /**
+     * Returns a list of all the available Codeception events, compiled at run-time and cached.
+     *
+     * @return array<string> A list of all the available Codeception events.
+     */
+    public static function codeceptionEvents($index = null)
+    {
+        if (null === static::$compiledCodeceptionEvents) {
+            static::$compiledCodeceptionEvents = array_filter(array_map(static function ($const) {
+                return defined($const) ? constant($const) : null;
+            }, static::$allCodeceptionEvents));
+        }
+
+        return static::$compiledCodeceptionEvents;
+    }
+
+    /**
      * Adds a listener to the current event dispatcher for a specific event.
      *
      * @param string   $eventName   The name of the event to add a listener for.
@@ -46,10 +217,83 @@ class EventDispatcherAdapter
      *                              and `$eventDispatcher` as last argument.
      * @param int      $priority    A priority to attach the listener at. Differently from WordPress listeners added at
      *                              higher priorities are called first.
+     *
+     * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
+     *                                   Codeception default events due to the Codeception version.
      */
-    public function addListener($eventName, callable $listener, $priority)
+    public function addListener($eventName, callable $listener, $priority = 0)
     {
+        static::checkEventName($eventName);
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     *
+     *
+     * @since TBD
+     *
+     * @param string $eventName The name of the event to check.
+     *
+     * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
+     *                                   Codeception default events due to the Codeception version.
+     */
+    protected static function checkEventName($eventName)
+    {
+        if (static::isCodeceptionEvent($eventName)
+            && !( static::$allowCodeceptionHooks || static::$fallbackAvailable )
+        ) {
+            $message = <<< OUT
+Cannot attach listeners to '{$eventName}'; this version of Codeception does not allow it.
+
+If you need to attach listeners to Codeception events you can:
+
+  1. Create a custom module: https://codeception.com/docs/06-ModulesAndHelpers#Hooks
+  2. Create a custom extension: https://codeception.com/extensions
+  3. Add the '\tad\WPBrowser\Extension\Events' extension to Codeception configuration file:
+    ```
+    extensions:
+      enabled:
+        - tad\WPBrowser\Extension\Events
+    ```
+OUT;
+
+            throw new \InvalidArgumentException($message);
+        }
+    }
+
+    /**
+     * Checks whether an event is a Codeception event or not.
+     *
+     * @param string $eventName The name of the event to check.
+     *
+     * @return bool Whether an event is a Codeception event or not.
+     */
+    public static function isCodeceptionEvent($eventName)
+    {
+        return in_array($eventName, static::codeceptionEvents(), true);
+    }
+
+    /**
+     * Returns whether an alternative way to attach listeners to the Codeception application events is available or
+     * not.
+     *
+     * @return bool Whether an alternative way to attach listeners to the Codeception application events is available or
+     *              not.
+     */
+    protected static function fallbackAvailable()
+    {
+        return static::$fallbackAvailable;
+    }
+
+    /**
+     * Sets whether the fallback to attache listeners to Codeception 4.0+ events is available or not.
+     *
+     * @param bool $fallbackAvailable Whether the fallback to attache listeners to Codeception 4.0+ events is available
+     *                                or not.
+     */
+    public static function setFallbackAvailable($fallbackAvailable)
+    {
+        static::$fallbackAvailable = (bool) $fallbackAvailable;
     }
 
     /**
@@ -63,7 +307,7 @@ class EventDispatcherAdapter
     {
         $eventObject = new WpbrowserEvent($eventName, $origin, $context);
 
-        if ($this->dispatchWithObject()) {
+        if (static::dispatchWithObject()) {
             $this->eventDispatcher->dispatch($eventObject, $eventName);
 
             return;
@@ -83,28 +327,28 @@ class EventDispatcherAdapter
      */
     public static function dispatchWithObject()
     {
-        if (static::$dispatchWithObject !== null) {
-            return static::$dispatchWithObject;
+        if (self::$dispatchWithObject !== null) {
+            return self::$dispatchWithObject;
         }
 
         try {
             $methodReflection = new \ReflectionMethod(SymfonyEventDispatcher::class, 'dispatch');
         } catch (\ReflectionException $e) {
-            static::$dispatchWithObject = false;
+            self::$dispatchWithObject = false;
 
-            return static::$dispatchWithObject;
+            return self::$dispatchWithObject;
         }
 
-        $methodArguments            = $methodReflection->getParameters();
-        $firstArgument              = count($methodArguments) ? reset($methodArguments) : false;
-        static::$dispatchWithObject =  false;
+        $methodArguments          = $methodReflection->getParameters();
+        $firstArgument            = count($methodArguments) ? reset($methodArguments) : false;
+        self::$dispatchWithObject = false;
 
         if ($firstArgument instanceof \ReflectionParameter) {
-            $type                       = $firstArgument->getType();
-            static::$dispatchWithObject = $type !== null && $type->__toString() === 'object';
+            $type                     = $firstArgument->getType();
+            self::$dispatchWithObject = $type !== null && $type->__toString() === 'object';
         }
 
-        return static::$dispatchWithObject;
+        return self::$dispatchWithObject;
     }
 
     /**
