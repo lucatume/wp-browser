@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- compatibility with Codeception 4.0
+- the `tad\WPBrowser\Extension\Events` extension to enable subscribing to Codeception 4.0 events
+
+### Fixed
+
+- the event listener and dispatcher system to work consistently across Codeception versions
+
 ## [2.3.2] 2020-03-29;
 
 ### Fixed
