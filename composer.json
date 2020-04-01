@@ -23,7 +23,7 @@
     "ext-json": "*",
     "ext-iconv": "*",
     "antecedent/patchwork": "^2.0",
-    "codeception/codeception": "^4.0",
+    "codeception/codeception": "^2.5 || ^3.0",
     "gumlet/php-image-resize": "^1.6",
     "dg/mysql-dump": "^1.3",
     "symfony/filesystem": "^3.0",
@@ -32,12 +32,7 @@
     "vlucas/phpdotenv": "^3.0",
     "wp-cli/wp-cli-bundle": ">=2.0 <3.0.0",
     "zordius/lightncandy": "^1.2",
-    "vria/nodiacritic": "^0.1.2",
-    "codeception/module-asserts": "^1.0",
-    "codeception/module-phpbrowser": "^1.0",
-    "codeception/module-webdriver": "^1.0",
-    "codeception/module-db": "^1.0",
-    "codeception/module-filesystem": "^1.0"
+    "vria/nodiacritic": "^0.1.2"
   },
   "require-dev": {
     "erusev/parsedown": "^1.7",
@@ -69,6 +64,6 @@
     "post-update-cmd": "PHPStan\\WordPress\\Composer\\FixWpStubs::php73Polyfill"
   },
   "extra": {
-    "_hash": "667ae19c26dd1e8190d4c9a645e24e25"
+    "_hash": "484f861f69198089cab0e642f27e5653"
   }
 }
