@@ -71,8 +71,14 @@ if [ ! -f "${PWD}/.ready" ] || [ ! -d "${PWD}/vendor" ]; then
     echo -e "\033[91mVendor directory cache not found, updating.\033[0m"
     git checkout "${PWD}/composer.json"
     test -f "${cwd}/required-packages-${codeception_version}" \
-      && required_packages="$(<"${cwd}/required-packages-${codeception_version}")" \
-      || required_packages="codeception/codeception:^${codeception_version}"
+      && { \
+        echo "Reading packages from file ${cwd}/required-packages-${codeception_version}"; \
+        required_packages="$(<"${cwd}/required-packages-${codeception_version}")"; \
+        } \
+      || { \
+        echo "File ${cwd}/required-packages-${codeception_version} not found, requiring codeception/codeception:^${codeception_version}"; \
+        required_packages="codeception/codeception:^${codeception_version}"; \
+        }
     docker run --rm \
       --user "$(id -u):$(id -g)" \
       -v "${HOME}/.composer/auth.json:/composer/auth.json" \
