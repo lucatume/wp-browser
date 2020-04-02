@@ -3,6 +3,7 @@
 * [Welcome](welcome.md)	
     * [Frequently asked questions](faq.md)	
     * [Codeception, PHPUnit and wp-browser](codeception-phpunit-and-wpbrowser.md)	
+* [Using wp-browser with Codeception 4.0](codeception-4-suport.md)
 * [Levels of testing](levels-of-testing.md)	
 * Getting started	
     * [Requirements](requirements.md)	
