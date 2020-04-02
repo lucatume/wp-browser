@@ -158,6 +158,9 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=41 \
 		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
 		run --rm ccf run wpmodule
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=42 \
+		docker-compose --project-name=${PROJECT_NAME}_events \
+		run --rm ccf run events
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
