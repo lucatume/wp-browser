@@ -116,46 +116,46 @@ build_suites:
 		docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
 
 test:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=28 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=28 \
 		docker-compose --project-name=${PROJECT_NAME}_acceptance \
 		run --rm ccf run acceptance
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=29 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=29 \
 		docker-compose --project-name=${PROJECT_NAME}_cli \
 		run --rm ccf run cli
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=30 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=30 \
 		docker-compose --project-name=${PROJECT_NAME}_climodule \
 		run --rm ccf run climodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=31 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=31 \
 		docker-compose --project-name=${PROJECT_NAME}_dbunit \
 		run --rm ccf run dbunit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=32 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=32 \
 		docker-compose --project-name=${PROJECT_NAME}_functional \
 		run --rm ccf run functional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=33 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=33 \
 		docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm ccf run muloader
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=34 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=34 \
 		docker-compose --project-name=${PROJECT_NAME}_unit \
 		run --rm ccf run unit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=35 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=35 \
 		docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm codeception run webdriver --debug
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=36 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=36 \
 		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
 		run --rm ccf run wpcli_module
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=37 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=37 \
 		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
 		run --rm ccf run wpfunctional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=38 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=38 \
 		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
 		run --rm ccf run wploader_multisite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=39 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=39 \
 		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
 		run --rm ccf run wploader_wpdb_interaction
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=40 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=40 \
 		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
 		run --rm ccf run wploadersuite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=41 \
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=41 \
 		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
 		run --rm ccf run wpmodule
 
@@ -179,6 +179,6 @@ debug:
 		codeception
 
 test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=42 \
-			docker-compose --project-name=${PROJECT_NAME}_command \
-			run --rm ccf run command
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=34 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm ccf run unit
