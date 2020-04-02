@@ -25,9 +25,9 @@ class Assert
     public static function assertStringNotContainsString($needle, $haystack)
     {
         if (method_exists(PHPUnitAssert::class, 'assertStringNotContainsString')) {
-	        PHPUnitAssert::assertStringNotContainsString($needle, $haystack);
+            PHPUnitAssert::assertStringNotContainsString($needle, $haystack);
         } else {
-	        PHPUnitAssert::assertNotContains($needle, $haystack);
+            PHPUnitAssert::assertNotContains($needle, $haystack);
         }
     }
 }

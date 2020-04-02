@@ -11,6 +11,14 @@ use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Process\Process;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
 
+// phpcs:disable
+/**
+ * Triggers the autoload of the InnerBrowser class, if not already loaded, to make sure the Symfony component
+ * aliases are set up by the Codeception library layer.
+ */
+class_exists( 'Codeception\Lib\InnerBrowser', true );
+// phpcs:enable
+
 class WordPress extends Universal
 {
     /**

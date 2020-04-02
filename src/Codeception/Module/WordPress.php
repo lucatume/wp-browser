@@ -23,7 +23,7 @@ class WordPress extends Framework implements DependsOnModule
     use WPBrowserMethods;
 
     /**
-     * @var \tad\WPBrowser\Connector\WordPress
+     * @var WordPressConnector
      */
     public $client;
 
@@ -96,18 +96,22 @@ EOF;
     /**
      * WordPress constructor.
      *
-     * @param \Codeception\Lib\ModuleContainer        $moduleContainer
-     * @param array                                   $config
-     * @param \tad\WPBrowser\Connector\WordPress $client
+     * @param \Codeception\Lib\ModuleContainer $moduleContainer The module container this module is loaded from.
+     * @param array<string,string|int|bool>    $config          The module configuration
+     * @param WordPressConnector               $client          The client connector that will process the requests.
      *
      * @throws \Codeception\Exception\ModuleConfigException
      */
-    public function __construct(ModuleContainer $moduleContainer, $config = [], WordPressConnector $client = null)
-    {
+    public function __construct(
+        ModuleContainer $moduleContainer,
+        $config = [],
+        WordPressConnector $client = null
+    ) {
         parent::__construct($moduleContainer, $config);
+
         $this->ensureWpRoot();
         $this->setAdminPath($this->config['adminPath']);
-        $this->client    = $client ?: new WordPressConnector();
+        $this->client = $client ?: $this->buildConnector();
     }
 
     private function ensureWpRoot()
@@ -135,9 +139,14 @@ EOF;
         $this->setupClient($wpdb->getSiteDomain());
     }
 
+    /**
+     * Sets up the client/connector for the request.
+     *
+     * @param string $siteDomain The current site domain, e.g. 'wordpress.test'.
+     */
     private function setupClient($siteDomain)
     {
-        $this->client = isset($this->client) ? $this->client : new WordPressConnector();
+        $this->client = isset($this->client) ? $this->client : $this->buildConnector();
         $this->client->setUrl($this->siteUrl);
         $this->client->setDomain($siteDomain);
         $this->client->setRootFolder($this->config['wpRootFolder']);
@@ -149,7 +158,7 @@ EOF;
     /**
      * Internal method to inject the client to use.
      *
-     * @param  WordPressConnector $client The client object that should be used.
+     * @param WordPressConnector $client The client object that should be used.
      */
     public function _setClient($client)
     {
@@ -215,18 +224,19 @@ EOF;
         return $this->amOnPage($page);
     }
 
+    /**
+     * Prepares the page path for the request.
+     *
+     * @param string $page The input page path.
+     *
+     * @return string The prepared page path.
+     */
     private function preparePage($page)
     {
-        $page = $this->untrailslashIt($page);
+        $page = Utils::untrailslashIt($page);
         $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
 
         return $page;
-    }
-
-    private function untrailslashIt($path)
-    {
-        $path = preg_replace('~\\/?$~', '', $path);
-        return $path;
     }
 
     /**
@@ -413,5 +423,17 @@ EOF;
         'testcookie' => '1',
         'redirect_to' => ''
         ], '#wp-submit');
+    }
+
+    /**
+     * Builds and returns an instance of the WordPress connector.
+     *
+     * The method will trigger the load of required Codeception library polyfills.
+     *
+     * @return WordPressConnector
+     */
+    protected function buildConnector()
+    {
+        return new WordPressConnector();
     }
 }
