@@ -166,3 +166,20 @@ codecept run acceptance --env dist
 ```
 
 Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
+
+### Events
+
+Due to some internal changes in Codeception `4.0`, the internal API (really a collection of low-level hacks on my part) that allowed `wp-browser` to dispatch, and listen for, events in the modules has been removed.
+
+If you want to leverage [the event system wp-browser provides] with Codeception default events (e.g. `suite.init` or `test.before`), then you will need to use this extension.
+
+You will **not** need this extension if you're not using Codeception version `4.0`.
+
+The extension has no configuration and all you need to do is just to enable it in your Codeception configuration file (e.g. `codeception.dist.yml`):
+
+```yaml
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Events
+```
+[4]: events-api.md

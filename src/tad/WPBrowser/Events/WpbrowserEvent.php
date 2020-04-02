@@ -49,4 +49,18 @@ class WpbrowserEvent extends SymfonyEvent
         $this->dispatcher = $dispatcher;
         $this->context    = $context;
     }
+
+    /**
+     * Returns a context value or a default value if teh context does not have an element for that key.
+     *
+     * @param string $key The context key to return the value for.
+     * @param mixed $default The default value to return if the context value for the key is not defined.
+     *
+     * @return mixed|null The context value for the specified key, or the default value if the context does not have
+     *                    a value for the specified key.
+     */
+    public function get($key, $default = null)
+    {
+        return isset($this->context[ $key ]) ? $this->context[ $key ] : $default;
+    }
 }
