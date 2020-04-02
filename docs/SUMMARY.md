@@ -24,6 +24,7 @@
     * [WPLoader](modules/WPLoader.md)	
     * [WPQueries](modules/WPQueries.md)	
     * [WPWebDriver](modules/WPWebDriver.md)	
+* [Events API](events-api.md)
 * [Commands](commands.md)	
 * [Extensions](extensions.md)	
 * [Contributing](contributing.md)	
