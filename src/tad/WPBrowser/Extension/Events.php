@@ -8,6 +8,7 @@
 namespace tad\WPBrowser\Extension;
 
 use Codeception\Extension;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use tad\WPBrowser\Events\EventDispatcherAdapter;
 
 /**
@@ -56,9 +57,20 @@ class Events extends Extension
      */
     public function __call($name, $args)
     {
-        // 'suite_before' to 'suite.before'.
-        $eventName = str_replace('_', '.', $name);
-        call_user_func_array([ $this, 'dispatchEvent' ], array_merge($eventName, $args));
+        if (! isset($args[0], $args[1])) {
+            codecept_debug("Cannot dispatch malformed event:\n" . json_encode($args, JSON_PRETTY_PRINT));
+
+            return;
+        }
+
+        $eventName = isset($args[0]) && $args[0] instanceof SymfonyEvent ? $args[1] : $args[0];
+        $event = isset($args[0]) && $args[0] instanceof SymfonyEvent ? $args[0] : $args[1];
+        $context = [];
+        $args = [
+            $eventName,$event,$context
+        ];
+
+        call_user_func_array([ $this, 'dispatchEvent' ], $args);
     }
 
     /**

@@ -48,6 +48,20 @@ class WpbrowserEvent extends SymfonyEvent
         $this->name       = $name;
         $this->dispatcher = $dispatcher;
         $this->context    = $context;
+
+        /*
+         * Assign each context key as property of the event to keep the reference count of object contexts up and avoid
+         * garbage collection of objects passed in the context.
+         */
+        foreach ($context as $key => $value) {
+            if (is_object($context[ $key ]) && method_exists($context[ $key ], '__destruct')) {
+                codecept_debug(
+                    "Object '{$key}' has a __destruct method and will NOT be garbage collected until " .
+                    "the event dispatch completed.\n"
+                );
+            }
+            $this->{$key} = $value;
+        }
     }
 
     /**

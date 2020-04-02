@@ -1,0 +1,29 @@
+actor: EventsTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - \Helper\Events
+        - WPDb
+        - WPLoader
+    config:
+        WPDb:
+            dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
+            user: %WORDPRESS_DB_USER%
+            password: %WORDPRESS_DB_PASSWORD%
+            dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: false
+            reconnect: false
+            url: '%WORDPRESS_URL%'
+            tablePrefix: 'wp_'
+        WPLoader:
+            loadOnly: true
+            wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+            dbName: %WORDPRESS_DB_NAME%
+            dbHost: %WORDPRESS_DB_HOST%
+            dbUser: %WORDPRESS_DB_USER%
+            dbPassword: %WORDPRESS_DB_PASSWORD%
+            domain: %WORDPRESS_DOMAIN%
+extensions:
+    enabled:
+        - tad\WPBrowser\Extension\Events
