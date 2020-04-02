@@ -112,6 +112,8 @@ services:
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+      # Setting this value to `1` will disable the XDebug extension completely.
+      XDEBUG_DISABLE: ${XDEBUG_DISABLE:-0}
     depends_on:
       - wordpress
       - chrome
@@ -138,6 +140,8 @@ services:
       # Add an arbitrary wait before launching the tests to wait for the database.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+      # Setting this value to `1` will disable the XDebug extension completely.
+      XDEBUG_DISABLE: ${XDEBUG_DISABLE:-0}
     depends_on:
       - wordpress
     volumes:
@@ -162,6 +166,8 @@ services:
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+      # Setting this value to `1` will disable the XDebug extension completely.
+      XDEBUG_DISABLE: ${XDEBUG_DISABLE:-0}
     volumes:
       - .:/project
       # The unit tests will require the WordPress source files (to test extensions), pull then from the source files.
