@@ -8,7 +8,6 @@ use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use PDO;
-use tad\WPBrowser\Events\Event;
 use tad\WPBrowser\Exceptions\DumpException;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
