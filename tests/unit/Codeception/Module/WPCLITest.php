@@ -257,14 +257,14 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $this->expectException(ModuleException::class);
 
-	    $pattern = '/' . preg_quote( $error, '/' ) . '/';
-	    if (method_exists($this,'expectExceptionMessageMatches')) {
-		    $this->expectExceptionMessageMatches( $pattern );
-	    }else{
-		    $this->expectExceptionMessageRegExp( $pattern );
-	    }
+        $pattern = '/' . preg_quote($error, '/') . '/';
+        if (method_exists($this, 'expectExceptionMessageMatches')) {
+            $this->expectExceptionMessageMatches($pattern);
+        } else {
+            $this->expectExceptionMessageRegExp($pattern);
+        }
 
-	    $cli->cli('core version');
+        $cli->cli('core version');
     }
 
     /**
