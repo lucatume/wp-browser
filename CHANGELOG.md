@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.3.4] 2020-04-03;
+
+### Fixed
+
+- add deprecated functions handling for functions moved in version `2.3`
+- mark `rrmdir` function as deprecated
+
 ## [2.3.3] 2020-04-01;
 
 ### Fixed
@@ -1255,4 +1262,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.3.1]: https://github.com/lucatume/wp-browser/compare/2.3.0...2.3.1
 [2.3.2]: https://github.com/lucatume/wp-browser/compare/2.3.1...2.3.2
 [2.3.3]: https://github.com/lucatume/wp-browser/compare/2.3.2...2.3.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.3...HEAD
+[2.3.4]: https://github.com/lucatume/wp-browser/compare/2.3.3...2.3.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.4...HEAD
