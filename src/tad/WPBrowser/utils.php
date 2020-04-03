@@ -18,3 +18,4 @@ require_once __DIR__ . '/wp-browser.php';
 require_once __DIR__ . '/patchwork.php';
 require_once __DIR__ . '/filesystem.php';
 require_once __DIR__ . '/events.php';
+require_once __DIR__ . '/deprecated.php';
