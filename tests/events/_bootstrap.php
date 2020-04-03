@@ -1,7 +1,5 @@
 <?php
 
-use tad\WPBrowser\Events\WpbrowserEvent;
-
 $registerPostsCleanup = static function (tad\WPBrowser\Events\WpbrowserEvent $event) {
     $ids = $event->get('ids', []);
     /** @var \EventsTester $db */
@@ -10,7 +8,7 @@ $registerPostsCleanup = static function (tad\WPBrowser\Events\WpbrowserEvent $ev
     // When tests are done, then remove all the posts we've created at the start of the test, if any.
     tad\WPBrowser\addListener(
         Codeception\Events::TEST_AFTER,
-        static function (WpbrowserEvent $event) use ($ids, $db) {
+        static function () use ($ids, $db) {
             foreach ($ids as $id) {
                 $db->dontHavePostInDatabase([ 'ID' => $id ], true);
                 // Ensure the clean up did happen correctly.

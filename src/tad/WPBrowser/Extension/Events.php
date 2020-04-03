@@ -8,8 +8,8 @@
 namespace tad\WPBrowser\Extension;
 
 use Codeception\Extension;
-use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use tad\WPBrowser\Events\EventDispatcherAdapter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
 
 /**
  * Class Events
@@ -26,6 +26,12 @@ class Events extends Extension
     protected static $subscribedEvents;
 
     /**
+     * Whether the event dispatcher was set on the Event Dispatcher Adapter or not.
+     * @var bool
+     */
+    protected static $dispatcherSet = false;
+
+    /**
      * Returns a map of all Codeception events, each calling the `__call` magic method.
      *
      * @return array<string,string> A map of all Codeception events to the magic `__call` proxy.
@@ -37,10 +43,7 @@ class Events extends Extension
 
             static::$subscribedEvents = array_combine(
                 $codeceptionEvents,
-                array_map(static function ($eventName) {
-                    // 'suite.before' to 'suite_before'.
-                    return str_replace('.', '_', $eventName);
-                }, $codeceptionEvents)
+                array_fill(0, count($codeceptionEvents), 'onEvent')
             );
         }
 
@@ -50,40 +53,17 @@ class Events extends Extension
     }
 
     /**
-     * Implementation of the magic method to proxy calls ot methods like `suite_before` to the `dispatchEvent` method.
-     *
-     * @param string $name The name of the called method.
-     * @param array  $args The method call arguments.
+     * Fires on each events dispatched by Codeception to capture the current Symfony event dispatcher instance.
      */
-    public function __call($name, $args)
+    public function onEvent()
     {
-        if (! isset($args[0], $args[1])) {
-            codecept_debug("Cannot dispatch malformed event:\n" . json_encode($args, JSON_PRETTY_PRINT));
-
-            return;
+        $callArgs = func_get_args();
+        foreach ($callArgs as $callArg) {
+            if ($callArg instanceof SymfonyEventDispatcher) {
+                EventDispatcherAdapter::setWrappedEventDispatcher($callArg);
+                static::$dispatcherSet = true;
+                return;
+            }
         }
-
-        $eventName = isset($args[0]) && $args[0] instanceof SymfonyEvent ? $args[1] : $args[0];
-        $event = isset($args[0]) && $args[0] instanceof SymfonyEvent ? $args[0] : $args[1];
-        $context = [];
-        $args = [
-            $eventName,$event,$context
-        ];
-
-        call_user_func_array([ $this, 'dispatchEvent' ], $args);
-    }
-
-    /**
-     * Dispatches the event using the shared event dispatcher instance.
-     *
-     * @since TBD
-     *
-     * @param string      $eventName The name of the event to dispatch.
-     * @param object|null $event     The event object being dispatched.
-     * @param mixed|null Additional context for the dispatch.
-     */
-    public function dispatchEvent($eventName, $event = null, $context = null)
-    {
-        EventDispatcherAdapter::getEventDispatcher()->dispatch($eventName, $event, $context);
     }
 }

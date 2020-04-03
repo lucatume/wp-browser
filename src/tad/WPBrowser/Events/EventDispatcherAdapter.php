@@ -12,7 +12,9 @@ use Codeception\Codecept;
 use Codeception\Exception\TestRuntimeException;
 use Symfony\Component\Console\Application as SymfonyApp;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcherInterface;
 use function tad\WPBrowser\readPrivateProperty;
 
 /**
@@ -91,9 +93,9 @@ class EventDispatcherAdapter
     /**
      * EventDispatcherAdapter constructor.
      *
-     * @param SymfonyEventDispatcher $eventDispatcher The Symfony Event Dispatcher instance to wrap.
+     * @param EventDispatcherInterface $eventDispatcher The Symfony Event Dispatcher instance to wrap.
      */
-    public function __construct(SymfonyEventDispatcher $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -190,6 +192,22 @@ class EventDispatcherAdapter
     public static function resetSharedInstance()
     {
         static::$sharedInstance = null;
+    }
+
+    /**
+     * Sets the event dispatcher the shared instance should use.
+     *
+     * @param EventDispatcherInterface $eventDispatcher The event dispatcher to set on the shared instance.
+     */
+    public static function setWrappedEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        if (static::$sharedInstance === null) {
+            static::$sharedInstance = new static($eventDispatcher);
+
+            return;
+        }
+
+        static::$sharedInstance->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -299,21 +317,24 @@ OUT;
     /**
      * Dispatches an event using the correct parameter order depending on the current Symfony component version.
      *
-     * @param string      $name       The event name or handle.
-     * @param object|null $dispatcher The event dispatcher.
-     * @param array       $context    Additional context or data for the event.
+     * @param string                   $eventName     The event name or handle.
+     * @param object|SymfonyEvent|null $originOrEvent The event origin or, in the case of events dispatched by
+     *                                                Codeception, the original dispatched event.
+     * @param array                    $context       Additional context or data for the event.
      */
-    public function dispatch($eventName, $origin = null, array $context = [])
+    public function dispatch($eventName, $originOrEvent = null, array $context = [])
     {
-        $eventObject = new WpbrowserEvent($eventName, $origin, $context);
+        // Only create a new event if the origin is not already itself an event.
+        $eventObject = $originOrEvent instanceof SymfonyEvent ?
+            $originOrEvent
+            : new WpbrowserEvent($eventName, $originOrEvent, $context);
 
-        if (static::dispatchWithObject()) {
-            $this->eventDispatcher->dispatch($eventObject, $eventName);
+        // Depending on the Symfony Event Dispatcher version, change the order of the dispatch arguments.
+        $dispatchArgs = static::dispatchWithObject() ?
+            [ $eventObject, $eventName ]
+            : [ $eventName, $eventObject ];
 
-            return;
-        }
-
-        $this->eventDispatcher->dispatch($eventName, $eventObject);
+        $this->eventDispatcher->dispatch(...$dispatchArgs);
     }
 
     /**
