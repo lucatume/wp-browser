@@ -8,8 +8,8 @@
 namespace tad\WPBrowser\Extension;
 
 use Codeception\Extension;
-use tad\WPBrowser\Events\EventDispatcherAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
+use tad\WPBrowser\Events\EventDispatcherAdapter;
 
 /**
  * Class Events
@@ -43,7 +43,7 @@ class Events extends Extension
 
             static::$subscribedEvents = array_combine(
                 $codeceptionEvents,
-                array_fill(0, count($codeceptionEvents), 'onEvent')
+	            array_fill( 0, count( $codeceptionEvents ), [ 'onEvent', PHP_INT_MIN ] )
             );
         }
 
@@ -57,7 +57,12 @@ class Events extends Extension
      */
     public function onEvent()
     {
+    	if(static::$dispatcherSet){
+    		return;
+	    }
+
         $callArgs = func_get_args();
+
         foreach ($callArgs as $callArg) {
             if ($callArg instanceof SymfonyEventDispatcher) {
                 EventDispatcherAdapter::setWrappedEventDispatcher($callArg);

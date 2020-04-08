@@ -22,6 +22,7 @@ wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
         - tad\WPBrowser\Extension\Copier
+        - tad\WPBrowser\Extension\Events
     config:
         tad\WPBrowser\Extension\Copier:
             files:

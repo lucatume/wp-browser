@@ -24,6 +24,3 @@ modules:
             dbUser: %WORDPRESS_DB_USER%
             dbPassword: %WORDPRESS_DB_PASSWORD%
             domain: %WORDPRESS_DOMAIN%
-extensions:
-    enabled:
-        - tad\WPBrowser\Extension\Events
