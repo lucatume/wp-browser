@@ -43,7 +43,7 @@ class Events extends Extension
 
             static::$subscribedEvents = array_combine(
                 $codeceptionEvents,
-	            array_fill( 0, count( $codeceptionEvents ), [ 'onEvent', PHP_INT_MIN ] )
+                array_fill(0, count($codeceptionEvents), [ 'onEvent', PHP_INT_MIN ])
             );
         }
 
@@ -57,9 +57,9 @@ class Events extends Extension
      */
     public function onEvent()
     {
-    	if(static::$dispatcherSet){
-    		return;
-	    }
+        if (static::$dispatcherSet) {
+            return;
+        }
 
         $callArgs = func_get_args();
 
