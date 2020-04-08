@@ -120,3 +120,19 @@ function parseUrl($url)
         'fragment' => ''
     ];
 }
+
+/**
+ * Checks whether a string is a regular expression or not.
+ *
+ * @param string $string The candidate regular expression to check.
+ *
+ * @return bool Whether a string is a regular expression or not.
+ */
+function isRegex($string)
+{
+    try {
+        return preg_match($string, null) !== false;
+    } catch (\Exception $e) {
+        return false;
+    }
+}

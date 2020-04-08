@@ -7,9 +7,11 @@ use Codeception\Exception\ExtensionException;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Exception\IOException;
 use tad\WPBrowser\Filesystem\Filesystem;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class SymlinkerTest extends \Codeception\TestCase\Test
 {
+    use WithStubProphecy;
 
     protected $backupGlobals = false;
 
@@ -47,11 +49,11 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     protected function _before()
     {
         $this->filename   = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $this->filesystem = $this->stubProphecy('tad\WPBrowser\Filesystem\Filesystem');
         $this->filesystem->is_dir(__DIR__)->willReturn(true);
         $this->filesystem->is_writeable(__DIR__)->willReturn(true);
-        $this->event      = $this->prophesize('\Codeception\Event\SuiteEvent');
-        $this->printEvent = $this->prophesize('\Codeception\Event\PrintResultEvent');
+        $this->event      = $this->stubProphecy('\Codeception\Event\SuiteEvent');
+        $this->printEvent = $this->stubProphecy('\Codeception\Event\PrintResultEvent');
     }
 
     /**
@@ -570,7 +572,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
         $this->event->getSettings()->willReturn($settings);
 
-        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $this->filesystem = $this->stubProphecy('tad\WPBrowser\Filesystem\Filesystem');
         foreach ($this->config['rootFolder'] as $env => $folder) {
             $this->filesystem->is_dir($folder)->willReturn(true);
             $this->filesystem->is_readable($folder)->willReturn(true);
@@ -608,7 +610,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
         $this->event->getSettings()->willReturn($settings);
 
-        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $this->filesystem = $this->stubProphecy('tad\WPBrowser\Filesystem\Filesystem');
         foreach ($this->config['rootFolder'] as $env => $folder) {
             $this->filesystem->is_dir($folder)->willReturn(true);
             $this->filesystem->is_readable($folder)->willReturn(true);
@@ -647,7 +649,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
         $this->event->getSettings()->willReturn($settings);
 
-        $this->filesystem = $this->prophesize('tad\WPBrowser\Filesystem\Filesystem');
+        $this->filesystem = $this->stubProphecy('tad\WPBrowser\Filesystem\Filesystem');
         foreach ($this->config['rootFolder'] as $env => $folder) {
             $this->filesystem->is_dir($folder)->willReturn(true);
             $this->filesystem->is_readable($folder)->willReturn(true);

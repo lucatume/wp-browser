@@ -122,4 +122,24 @@ class stringTest extends \Codeception\Test\Unit
             ]
         ];
     }
+
+    public function isRegexDataProvider()
+    {
+        return [
+            'empty' => [ '', false ],
+            'simple_string' => [ 'foo-bar', false ],
+            'simple_regex' => [ '/foo-bar/', true ],
+            'complex_regex' => [ '#^\\s{4}\\[\\d]#im', true ],
+        ];
+    }
+
+    /**
+     * Test isRegex
+     *
+     * @dataProvider isRegexDataProvider
+     */
+    public function test_is_regex($candidate, $expected)
+    {
+        $this->assertEquals($expected, isRegex($candidate));
+    }
 }

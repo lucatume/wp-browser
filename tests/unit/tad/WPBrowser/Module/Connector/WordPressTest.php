@@ -7,9 +7,11 @@ use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use tad\WPBrowser\Connector\WordPress;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
     protected $backupGlobals = false;
     /**
      * @var \UnitTester
@@ -165,9 +167,9 @@ class WordPressTest extends \Codeception\Test\Unit
     protected function _before()
     {
         $this->server = [];
-        $this->history = $this->prophesize(History::class);
-        $this->cookieJar = $this->prophesize(CookieJar::class);
-        $this->uriToIndexMapper = $this->prophesize(UriToIndexMapper::class);
+        $this->history = $this->stubProphecy(History::class);
+        $this->cookieJar = $this->stubProphecy(CookieJar::class);
+        $this->uriToIndexMapper = $this->stubProphecy(UriToIndexMapper::class);
 
         $this->root = vfsStream::setup();
     }

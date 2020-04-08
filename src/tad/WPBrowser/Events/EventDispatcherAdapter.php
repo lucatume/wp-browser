@@ -321,6 +321,8 @@ OUT;
      * @param object|SymfonyEvent|null $originOrEvent The event origin or, in the case of events dispatched by
      *                                                Codeception, the original dispatched event.
      * @param array                    $context       Additional context or data for the event.
+     *
+     * @return object The passed $event MUST be returned
      */
     public function dispatch($eventName, $originOrEvent = null, array $context = [])
     {
@@ -334,7 +336,7 @@ OUT;
             [ $eventObject, $eventName ]
             : [ $eventName, $eventObject ];
 
-        $this->eventDispatcher->dispatch(...$dispatchArgs);
+        return $this->eventDispatcher->dispatch(...$dispatchArgs);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace tad\WPBrowser\Iterators\Filters;
 
 use Iterator;
+use function tad\WPBrowser\isRegex;
 
 class MainStatementQueriesFilter extends \FilterIterator
 {
@@ -32,20 +33,11 @@ class MainStatementQueriesFilter extends \FilterIterator
     public function accept()
     {
         $query = $this->getInnerIterator()->current();
-        $pattern = $this->isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
+        $pattern = isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
         if (!preg_match($pattern, $query[0])) {
             return false;
         }
 
         return true;
-    }
-
-    private function isRegex($statement)
-    {
-        try {
-            return preg_match($statement, null) !== false;
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 }

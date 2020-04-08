@@ -4,9 +4,12 @@ namespace Codeception\Module;
 use Codeception\Lib\ModuleContainer;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Environment\Constants;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPQueriesTest extends \Codeception\TestCase\Test
 {
+    use WithStubProphecy;
+
     protected $backupGlobals = false;
     /**
      * @var \UnitTester
@@ -837,9 +840,9 @@ class WPQueriesTest extends \Codeception\TestCase\Test
 
     protected function _before()
     {
-        $this->moduleContainer = $this->prophesize('Codeception\Lib\ModuleContainer');
+        $this->moduleContainer = $this->stubProphecy('Codeception\Lib\ModuleContainer');
         $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
-        $this->constants = $this->prophesize('tad\WPBrowser\Environment\Constants');
+        $this->constants = $this->stubProphecy('tad\WPBrowser\Environment\Constants');
         $this->wpdb = (object)['queries' => []];
     }
 }

@@ -7,12 +7,15 @@ use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
-use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
+use tad\WPBrowser\StubProphecy\Arg;
+use tad\WPBrowser\Traits\WithStubProphecy;
 use function tad\WPBrowser\setPrivateProperties;
 
 class EventDispatcherAdapterTest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
+
     /**
      * @var \UnitTester
      */
@@ -35,9 +38,10 @@ class EventDispatcherAdapterTest extends \Codeception\Test\Unit
     {
         $listener                   = static function () {
         };
-        $mockSymfonyEventDispatcher = $this->prophesize(SymfonyEventDispatcher::class);
-        $mockSymfonyEventDispatcher->dispatch(Argument::type(WpbrowserEvent::class), 'test/event')
-                                   ->shouldBeCalledOnce();
+        $mockSymfonyEventDispatcher = $this->stubProphecy(SymfonyEventDispatcher::class);
+        $mockSymfonyEventDispatcher->dispatch(Arg::type(WpbrowserEvent::class), 'test/event')
+                                   ->shouldBeCalledOnce()
+                                   ->willReturn(new WpbrowserEvent('test'));
         $mockSymfonyEventDispatcher->addListener('test/event', $listener, 23)
                                    ->shouldBeCalledOnce();
 
@@ -62,9 +66,10 @@ class EventDispatcherAdapterTest extends \Codeception\Test\Unit
     {
         $listener                   = static function () {
         };
-        $mockSymfonyEventDispatcher = $this->prophesize(SymfonyEventDispatcher::class);
-        $mockSymfonyEventDispatcher->dispatch('test/event', Argument::type(WpbrowserEvent::class))
-                                   ->shouldBeCalledOnce();
+        $mockSymfonyEventDispatcher = $this->stubProphecy(SymfonyEventDispatcher::class);
+        $mockSymfonyEventDispatcher->dispatch('test/event', Arg::type(WpbrowserEvent::class))
+                                   ->shouldBeCalledOnce()
+        ->willReturn(new WpbrowserEvent('test'));
         $mockSymfonyEventDispatcher->addListener('test/event', $listener, 23)
                                    ->shouldBeCalledOnce();
 

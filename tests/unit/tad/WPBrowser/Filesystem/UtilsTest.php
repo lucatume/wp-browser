@@ -3,9 +3,11 @@ namespace tad\WPBrowser\Filesystem;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class UtilsTest extends TestCase
 {
+    use WithStubProphecy;
     /**
      * @test
      * it should throw if path is not a string
@@ -54,7 +56,7 @@ class UtilsTest extends TestCase
      */
     public function it_should_return_replaced_home_symbol($path, $expected, $home)
     {
-        $filesystem = $this->prophesize('\tad\WPBrowser\Filesystem\Filesystem');
+        $filesystem = $this->stubProphecy('\tad\WPBrowser\Filesystem\Filesystem');
         $filesystem->getUserHome()->willReturn($home);
         $this->assertEquals($expected, Utils::homeify($path, $filesystem->reveal()));
     }

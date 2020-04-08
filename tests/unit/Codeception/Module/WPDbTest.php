@@ -8,10 +8,12 @@ use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use tad\WPBrowser\Module\Support\DbDump;
+use tad\WPBrowser\StubProphecy\Arg;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPDbTest extends \Codeception\Test\Unit
 {
-
+    use WithStubProphecy;
     protected $backupGlobals = false;
 
     /**
@@ -67,7 +69,7 @@ class WPDbTest extends \Codeception\Test\Unit
         $root->addChild($dumpFle);
         $path = $root->url() . '/foo.sql';
 
-        $driver = $this->prophesize(ExtendedMySql::class);
+        $driver = $this->stubProphecy(ExtendedMySql::class);
         $driver->load($path)->shouldBeCalled();
 
         $sut = $this->make_instance();
@@ -84,7 +86,7 @@ class WPDbTest extends \Codeception\Test\Unit
     {
         $path = __DIR__ . '/foo.sql';
 
-        $driver = $this->prophesize(ExtendedMySql::class);
+        $driver = $this->stubProphecy(ExtendedMySql::class);
         $driver->load($path)->shouldNotBeCalled();
 
         $this->expectException(\InvalidArgumentException::class);
@@ -107,7 +109,7 @@ class WPDbTest extends \Codeception\Test\Unit
         $root->addChild($dumpFle);
         $path = $root->url() . '/foo.sql';
 
-        $driver = $this->prophesize(ExtendedMySql::class);
+        $driver = $this->stubProphecy(ExtendedMySql::class);
         $driver->load($path)->shouldNotBeCalled();
 
         $this->expectException(\InvalidArgumentException::class);
@@ -120,7 +122,7 @@ class WPDbTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->config          = [
             'dsn'         => 'some-dsn',
             'user'        => 'some-user',
@@ -128,7 +130,7 @@ class WPDbTest extends \Codeception\Test\Unit
             'url'         => 'http://some-wp.dev',
             'tablePrefix' => 'wp_',
         ];
-        $this->dbDump = $this->prophesize(DbDump::class);
+        $this->dbDump = $this->stubProphecy(DbDump::class);
     }
 
     /**
@@ -149,8 +151,8 @@ class WPDbTest extends \Codeception\Test\Unit
             'populate'       => true,
         ];
 
-        $this->dbDump->replaceSiteDomainInSqlString(Argument::any(), Argument::any())->shouldNotBeCalled();
-        $this->dbDump->replaceSiteDomainInMultisiteSqlString(Argument::any(), Argument::any())->shouldNotBeCalled();
+        $this->dbDump->replaceSiteDomainInSqlString(Arg::any(), Arg::any())->shouldNotBeCalled();
+        $this->dbDump->replaceSiteDomainInMultisiteSqlString(Arg::any(), Arg::any())->shouldNotBeCalled();
 
         $sut = $this->make_instance();
 

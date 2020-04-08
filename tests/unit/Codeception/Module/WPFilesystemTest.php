@@ -7,12 +7,14 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Filesystem\Utils;
+use tad\WPBrowser\Traits\WithStubProphecy;
 use function tad\WPBrowser\normalizeNewLine;
 use function tad\WPBrowser\rrmdir;
+use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
-
+    use WithStubProphecy;
     /**
      * @var \Codeception\Lib\ModuleContainer
      */
@@ -29,7 +31,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
     public function _before()
     {
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
     }
 
     /**
@@ -412,7 +414,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteUploadedFile('file.txt');
 
         $sut->dontSeeUploadedFileFound('file.txt');
-        $this->assertFileNotExists($uploadsPath . '/file.txt');
+        Assert::assertFileDoesNotExist($uploadsPath . '/file.txt');
     }
 
     /**
@@ -431,7 +433,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteUploadedFile('file.txt', 'now');
 
         $sut->dontSeeUploadedFileFound('file.txt', 'now');
-        $this->assertFileNotExists($this->nowUploads . '/file.txt');
+        Assert::assertFileDoesNotExist($this->nowUploads . '/file.txt');
     }
 
     /**
@@ -454,11 +456,11 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->cleanUploadsDir('folder1');
 
         $this->assertFileExists($folder);
-        $this->assertFileNotExists($file);
+        Assert::assertFileDoesNotExist($file);
 
         $sut->cleanUploadsDir();
 
-        $this->assertFileNotExists($folder);
+        Assert::assertFileDoesNotExist($folder);
     }
 
     /**
@@ -481,11 +483,11 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->cleanUploadsDir('folder1', 'now');
 
         $this->assertFileExists($folder);
-        $this->assertFileNotExists($file);
+        Assert::assertFileDoesNotExist($file);
 
         $sut->cleanUploadsDir();
 
-        $this->assertFileNotExists($folder);
+        Assert::assertFileDoesNotExist($folder);
     }
 
     /**
@@ -501,7 +503,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder2';
 
         $this->assertFileExists($src);
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->copyDirToUploads($src, 'folder2');
 
@@ -522,7 +524,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $dest = $this->nowUploads . '/folder2';
 
         $this->assertFileExists($src);
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->copyDirToUploads($src, 'folder2', 'today');
 
@@ -541,7 +543,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
 
@@ -560,7 +562,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $dest = $this->nowUploads . '/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
 
@@ -579,7 +581,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
         $sut->openUploadedFile('some-file.txt');
@@ -599,7 +601,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $dest = $this->nowUploads . '/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        Assert::assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
         $sut->openUploadedFile('some-file.txt', 'today');
@@ -640,7 +642,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deletePluginFile('plugin1/some-file.txt');
 
-        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
         $sut->dontSeePluginFileFound('plugin1/some-file.txt');
 
         $sut->copyDirToPlugin(codecept_data_dir('folder-structures/folder1'), 'plugin1/folder1');
@@ -655,7 +657,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanPluginDir('plugin1');
 
-        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
     }
 
     /**
@@ -690,7 +692,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deleteThemeFile('theme1/some-file.txt');
 
-        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
         $sut->dontSeeThemeFileFound('theme1/some-file.txt');
 
         $sut->copyDirToTheme(codecept_data_dir('folder-structures/folder1'), 'theme1/folder1');
@@ -705,7 +707,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanThemeDir('theme1');
 
-        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
     }
 
     /**
@@ -740,7 +742,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deleteMuPluginFile('muplugin1/some-file.txt');
 
-        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
         $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
 
         $sut->copyDirToMuPlugin(codecept_data_dir('folder-structures/folder1'), 'muplugin1/folder1');
@@ -755,7 +757,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanMuPluginDir('muplugin1');
 
-        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+        Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
     }
 
     protected function _after()
@@ -793,10 +795,10 @@ echo 'Hello world';
 PHP;
         $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($pluginFile);
-        $this->assertFileNotExists($pluginFolder);
+        Assert::assertFileDoesNotExist($pluginFile);
+        Assert::assertFileDoesNotExist($pluginFolder);
     }
 
 
@@ -829,9 +831,9 @@ PHP;
 
         $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($muPluginFile);
+        Assert::assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -870,10 +872,10 @@ PHP;
         $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
         $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
+        Assert::assertFileDoesNotExist($themeStyleFile);
+        Assert::assertFileDoesNotExist($themeIndexFile);
     }
 
     /**
@@ -913,11 +915,11 @@ PHP;
         $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
         $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
-        $this->assertFileNotExists($themeFunctionsFile);
+        Assert::assertFileDoesNotExist($themeStyleFile);
+        Assert::assertFileDoesNotExist($themeIndexFile);
+        Assert::assertFileDoesNotExist($themeFunctionsFile);
     }
 
     /**
@@ -949,10 +951,10 @@ echo 'Hello world';
 PHP;
         $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($pluginFile);
-        $this->assertFileNotExists($pluginFolder);
+        Assert::assertFileDoesNotExist($pluginFile);
+        Assert::assertFileDoesNotExist($pluginFolder);
     }
 
     /**
@@ -985,9 +987,9 @@ PHP;
 
         $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($muPluginFile);
+        Assert::assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -1029,10 +1031,10 @@ PHP;
         $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
         $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after($this->prophesize(TestInterface::class)->reveal());
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
-        $this->assertFileNotExists($themeFunctionsFile);
+        Assert::assertFileDoesNotExist($themeStyleFile);
+        Assert::assertFileDoesNotExist($themeIndexFile);
+        Assert::assertFileDoesNotExist($themeFunctionsFile);
     }
 }

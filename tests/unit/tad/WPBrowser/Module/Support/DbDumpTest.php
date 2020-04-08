@@ -2,6 +2,8 @@
 
 namespace tad\WPBrowser\Module\Support;
 
+use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
+
 class DbDumpTest extends \Codeception\Test\Unit
 {
 
@@ -28,8 +30,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*original.dev.*~', $sql);
-        $this->assertNotRegExp('/.*some-wp.dev.*/', $sql);
+        Assert::assertMatchesRegularExpression('~.*original.dev.*~', $sql);
+        Assert::assertDoesNotMatchRegularExpression('/.*some-wp.dev.*/', $sql);
     }
 
     /**
@@ -49,8 +51,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('/.*some-wp.dev.*/', $sql);
-        $this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
+        Assert::assertMatchesRegularExpression('/.*some-wp.dev.*/', $sql);
+        Assert::assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -72,8 +74,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*http:\\/\\/some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        Assert::assertMatchesRegularExpression('~.*http:\\/\\/some-wp.dev.*~', $sql);
+        Assert::assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -95,8 +97,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*https:\\/\\/some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        Assert::assertMatchesRegularExpression('~.*https:\\/\\/some-wp.dev.*~', $sql);
+        Assert::assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -129,7 +131,7 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        $this->assertRegExp('~.*original.dev/wp.*~', $sql);
+        Assert::assertMatchesRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -162,8 +164,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        $this->assertRegExp('~.*some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
+        Assert::assertMatchesRegularExpression('~.*some-wp.dev.*~', $sql);
+        Assert::assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**

@@ -7,11 +7,13 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use Prophecy\Argument;
 use tad\WPBrowser\Connector\WordPress as Connector;
+use tad\WPBrowser\Traits\WithStubProphecy;
+use tad\WPBrowser\StubProphecy\Arg;
 
 class WordPressTest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
     protected $backupGlobals = false;
     /**
      * @var \UnitTester
@@ -65,7 +67,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -82,7 +84,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/?some=var';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -99,7 +101,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/some/pretty/permalink';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -116,7 +118,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
@@ -134,7 +136,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin/some-page.php';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
@@ -152,7 +154,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-admin/some/pretty/permalink';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
@@ -168,7 +170,7 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_point_to_ajax_file_when_requesting_ajax_page()
     {
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $this->config['adminPath'] = '/wp-admin';
         $sut = $this->make_instance();
@@ -186,7 +188,7 @@ class WordPressTest extends \Codeception\Test\Unit
     {
         $page = '/wp-cron.php';
 
-        $this->client->setHeaders(Argument::type('array'))->shouldBeCalled();
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_isMockRequest(true);
@@ -232,14 +234,14 @@ class WordPressTest extends \Codeception\Test\Unit
 
         $this->root = $root;
 
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->config = [
             'wpRootFolder' => $root->url(),
             'adminUsername' => 'admin',
             'adminPassword' => 'admin'
         ];
 
-        $this->client = $this->prophesize(Connector::class);
+        $this->client = $this->stubProphecy(Connector::class);
     }
 
     protected function _after()

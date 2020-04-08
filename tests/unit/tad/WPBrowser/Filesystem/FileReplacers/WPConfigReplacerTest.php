@@ -3,10 +3,12 @@ namespace tad\WPBrowser\Filesystem\FileReplacers;
 
 use Codeception\Exception\ModuleConfigException;
 use org\bovigo\vfs\vfsStream;
+use tad\WPBrowser\Traits\WithStubProphecy;
+use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 
 class WPConfigReplacerTest extends \Codeception\TestCase\Test
 {
-
+    use WithStubProphecy;
     /**
      * @var \UnitTester
      */
@@ -165,7 +167,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
         $sut->restoreOriginal();
 
         $file = vfsStream::url('root') . '/wordpress/original-wp-config.php';
-        $this->assertFileNotExists($file);
+        Assert::assertFileDoesNotExist($file);
     }
 
     /**
@@ -173,7 +175,7 @@ class WPConfigReplacerTest extends \Codeception\TestCase\Test
      */
     protected function contentsProvider()
     {
-        $wpconfigContents = $this->prophesize('\tad\WPBrowser\Generators\RedirectingWPConfig');
+        $wpconfigContents = $this->stubProphecy('\tad\WPBrowser\Generators\RedirectingWPConfig');
         $wpconfigContents->getContents()->willReturn('modified');
         return $wpconfigContents;
     }

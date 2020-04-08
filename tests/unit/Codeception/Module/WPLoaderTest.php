@@ -9,9 +9,12 @@ use Prophecy\Argument;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\Adapters\WP;
+use tad\WPBrowser\StubProphecy\Arg;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
     use SnapshotAssertions;
 
     protected $backupGlobals = false;
@@ -127,7 +130,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
     public function it_should_not_switch_to_theme_if_not_set()
     {
         unset($this->config['theme']);
-        $this->wp->switch_theme(Argument::type('string'))->shouldNotBeCalled();
+        $this->wp->switch_theme(Arg::type('string'))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
         $sut->_switchTheme();
@@ -173,7 +176,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $wpFolder->addChild($wpLoadFile);
         $root->addChild($wpFolder);
 
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->config = [
             'wpRootFolder' => $root->url().'/wp',
             'dbName' => 'someDb',
@@ -181,7 +184,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
             'dbUser' => 'somePass',
             'dbPassword' => 'somePass',
         ];
-        $this->wp = $this->prophesize(WP::class);
+        $this->wp = $this->stubProphecy(WP::class);
     }
 
     /**

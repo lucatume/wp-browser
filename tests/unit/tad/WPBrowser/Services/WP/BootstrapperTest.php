@@ -4,9 +4,11 @@ namespace tad\WPBrowser\Services\WP;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\BrowserKit\Cookie;
 use tad\WPBrowser\Environment\System;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class BootstrapperTest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
 
     /**
      * @var \UnitTester
@@ -74,13 +76,13 @@ class BootstrapperTest extends \Codeception\Test\Unit
      */
     public function it_should_exec_bootstrap_script_with_request()
     {
-        $sut = $this->make_instance();
-        $sut->setBootstrapScriptFilePath('foo');
         $request = ['some' => 'request'];
 
         $this->system->system(PHP_BINARY . ' ' . escapeshellarg('foo') . ' ' . escapeshellarg($this->wpLoadPath) . ' ' . escapeshellarg(serialize($request)))
             ->willReturn(serialize(['some' => 'output']));
 
+        $sut = $this->make_instance();
+        $sut->setBootstrapScriptFilePath('foo');
         $sut->bootstrapWpAndExec($request);
     }
 
@@ -90,8 +92,6 @@ class BootstrapperTest extends \Codeception\Test\Unit
      */
     public function it_should_exec_bootstrap_with_proper_parameters_when_requesting_nonces()
     {
-        $sut = $this->make_instance();
-        $sut->setBootstrapScriptFilePath('foo');
         $credentials = [
             'username' => 'foo',
             'password' => 'bar',
@@ -111,9 +111,11 @@ class BootstrapperTest extends \Codeception\Test\Unit
                 'login' => 'bar'
             ]
         ];
-        $this->system->system(PHP_BINARY . ' ' . escapeshellarg('foo') . ' ' . escapeshellarg($this->wpLoadPath) . ' ' . escapeshellarg(serialize($request)))
-            ->willReturn(serialize(['some' => 'output']));
+        $system  = $this->system->system(PHP_BINARY . ' ' . escapeshellarg('foo') . ' ' . escapeshellarg($this->wpLoadPath) . ' ' . escapeshellarg(serialize($request)));
+        $system ->willReturn(serialize(['some' => 'output']));
 
+        $sut = $this->make_instance();
+        $sut->setBootstrapScriptFilePath('foo');
         $sut->createNonce('some_action', $credentials);
     }
 
@@ -124,10 +126,6 @@ class BootstrapperTest extends \Codeception\Test\Unit
         $wpLoadFile->setContent('foo');
         $wp->addChild($wpLoadFile);
         $this->wpLoadPath = $wp->url() . '/wp-load.php';
-        $this->system = $this->prophesize(System::class);
-    }
-
-    protected function _after()
-    {
+        $this->system = $this->stubProphecy(System::class);
     }
 }

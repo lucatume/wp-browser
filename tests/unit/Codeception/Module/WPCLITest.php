@@ -10,9 +10,13 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use tad\WPBrowser\Adapters\Process;
+use tad\WPBrowser\StubProphecy\StubProphecy;
+use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPCLITest extends \Codeception\Test\Unit
 {
+    use WithStubProphecy;
+
     protected $backupGlobals = false;
     /**
      * @var \UnitTester
@@ -38,7 +42,7 @@ class WPCLITest extends \Codeception\Test\Unit
     /**
      * A mock of the process handler.
      *
-     * @var \Prophecy\Prophecy\ObjectProphecy|Process
+     * @var StubProphecy|Process
      */
     protected $process;
 
@@ -58,7 +62,10 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     private function make_instance()
     {
-        return new WPCLI($this->moduleContainer->reveal(), $this->config, $this->process->reveal());
+        $mockModuleContainer = $this->moduleContainer->reveal();
+        $mockProcessAdapter  = $this->process->reveal();
+
+        return new WPCLI($mockModuleContainer, $this->config, $mockProcessAdapter);
     }
 
     /**
@@ -80,28 +87,21 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_call_the_process_with_proper_parameters()
     {
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $this->process->forCommand(
-            $cli->buildFullCommand([
-                "--path={$path}",
-                'core',
-                'version'
-            ]),
+            $this->buildExpectedCommand([ 'core', 'version' ]),
             $this->root->url() . '/wp'
         )
             ->willReturn($mockProcess->reveal());
 
-        $cliStatus = $cli->cli('core version');
+        $cliStatus = $this->make_instance()->cli('core version');
 
         $this->assertEquals(0, $cliStatus);
     }
@@ -129,27 +129,21 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config[$option] = $optionValue;
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            "--{$option}={$optionValue}",
-            'core',
-            'version'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand([ "--{$option}={$optionValue}", 'core', 'version' ]),
+            $path
+        )->willReturn($mockProcess->reveal());
 
-        $cli->cli('core version');
+        $this->make_instance()->cli('core version');
     }
 
     public function skippedOptions()
@@ -171,26 +165,19 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config[$option] = true;
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'core',
-            'version'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand($this->buildExpectedCommand([ 'core', 'version' ]), $path)
+                      ->willReturn($mockProcess->reveal());
 
-        $cli->cli('core version');
+        $this->make_instance()->cli('core version');
     }
 
     /**
@@ -203,27 +190,21 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->config[$option] = $optionValue;
         $overrideValue = 'another-' . $option . '-value';
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('1.2.3');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'core',
-            'version',
-            "--{$option}={$overrideValue}"
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand([ 'core', 'version', "--{$option}={$overrideValue}" ]),
+            $path
+        )->willReturn($mockProcess->reveal());
 
-        $cli->cli("core version --{$option}={$overrideValue}");
+        $this->make_instance()->cli("core version --{$option}={$overrideValue}");
     }
 
     /**
@@ -234,26 +215,21 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $cli = $this->make_instance();
-
         $error = md5(time());
 
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(-1);
         $mockProcess->getErrorOutput()->willReturn($error);
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(-1);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'core',
-            'version'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand(['core','version']),
+            $path
+        ) ->willReturn($mockProcess->reveal());
 
         $this->expectException(ModuleException::class);
 
@@ -264,7 +240,7 @@ class WPCLITest extends \Codeception\Test\Unit
             $this->expectExceptionMessageRegExp($pattern);
         }
 
-        $cli->cli('core version');
+        $this->make_instance()->cli('core version');
     }
 
     /**
@@ -275,28 +251,23 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = false;
 
-        $cli = $this->make_instance();
-
         $error = md5(time());
 
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(-1);
         $mockProcess->getErrorOutput()->willReturn($error);
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(-1);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'core',
-            'version'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand(['core','version']),
+            $path
+        )->willReturn($mockProcess->reveal());
 
-        $cli->cli('core version');
+        $this->make_instance()->cli('core version');
     }
 
     public function cliReturnValues()
@@ -318,27 +289,25 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_not_cast_output_to_any_format($raw, $expected)
     {
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn($raw);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'post',
-            'list',
-            '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand([
+                'post',
+                'list',
+                '--format=ids'
+            ]),
+            $path
+        )->willReturn($mockProcess->reveal());
 
-        $ids = $cli->cliToArray('post list --format=ids');
+        $ids = $this->make_instance()->cliToArray('post list --format=ids');
 
         $this->assertEquals($expected, $ids);
     }
@@ -354,27 +323,25 @@ class WPCLITest extends \Codeception\Test\Unit
             return $expected;
         };
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn('23 12');
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'post',
-            'list',
-            '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        $this->process->forCommand(
+            $this->buildExpectedCommand([
+                'post',
+                'list',
+                '--format=ids'
+            ]),
+            $path
+        )->willReturn($mockProcess->reveal());
 
-        $ids = $cli->cliToArray('post list --format=ids', $splitCallback);
+        $ids = $this->make_instance()->cliToArray('post list --format=ids', $splitCallback);
 
         $this->assertEquals($expected, $ids);
     }
@@ -389,8 +356,6 @@ class WPCLITest extends \Codeception\Test\Unit
             return 'foo';
         };
 
-        $cli = $this->make_instance();
-
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
@@ -399,18 +364,17 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $path        = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
+
             'post',
             'list',
             '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
+        ]), $path)
                       ->willReturn($mockProcess);
 
         $this->expectException(ModuleException::class);
 
-        $cli->cliToArray('post list --format=ids', $splitCallback);
+        $this->make_instance()->cliToArray('post list --format=ids', $splitCallback);
     }
 
     /**
@@ -419,27 +383,22 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_handle_the_case_where_the_command_output_is_an_empty_array()
     {
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn([]);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'post',
             'list',
             '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        ]), $path)->willReturn($mockProcess->reveal());
 
-        $this->assertEquals([], $cli->cliToArray('post list --format=ids'));
+        $this->assertEquals([], $this->make_instance()->cliToArray('post list --format=ids'));
     }
 
     /**
@@ -448,27 +407,23 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_handle_the_case_where_the_command_output_is_null()
     {
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
+
             'post',
             'list',
             '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-            ->willReturn($mockProcess->reveal());
+        ]), $path) ->willReturn($mockProcess->reveal());
 
-        $this->assertEquals([], $cli->cliToArray('post list --format=ids'));
+        $this->assertEquals([], $this->make_instance()->cliToArray('post list --format=ids'));
     }
 
     /**
@@ -479,27 +434,24 @@ class WPCLITest extends \Codeception\Test\Unit
     public function should_allow_setting_a_timeout_in_the_configuration()
     {
         $this->config['timeout'] = 23;
-        $cli = $this->make_instance();
 
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(23)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'post',
             'list',
             '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
+        ]), $path)
             ->willReturn($mockProcess->reveal());
 
-        $cli->cliToArray('post list --format=ids');
+        $this->make_instance()->cliToArray('post list --format=ids');
     }
 
     /**
@@ -512,27 +464,23 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['timeout'] = $timeoutValue;
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
         $mockProcess->setTimeout(null)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'post',
             'list',
             '--format=ids'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
+        ]), $path)
             ->willReturn($mockProcess->reveal());
 
-        $cli->cliToArray('post list --format=ids');
+        $this->make_instance()->cliToArray('post list --format=ids');
     }
 
     /**
@@ -561,12 +509,12 @@ class WPCLITest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        $this->moduleContainer = $this->prophesize(ModuleContainer::class);
+        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->root = vfsStream::setup('root');
         $wpDir = vfsStream::newDirectory('wp');
         $this->root->addChild($wpDir);
         $this->config = ['path' => $this->root->url() . '/wp'];
-        $this->process = $this->prophesize(Process::class);
+        $this->process = $this->stubProphecy(Process::class);
     }
 
     /**
@@ -578,27 +526,22 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['allow-root'] = true;
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(60)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             '--allow-root',
             'core',
             'version',
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-                      ->willReturn($mockProcess->reveal());
+        ]), $path) ->willReturn($mockProcess->reveal());
 
-        $cli->cli(['core','version']);
+        $this->make_instance()->cli(['core','version']);
     }
 
     /**
@@ -610,27 +553,22 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['some-option'] = 'some-value';
 
-        $cli = $this->make_instance();
-
-        $mockProcess = $this->prophesize(\Symfony\Component\Process\Process::class);
+        $mockProcess = $this->stubProphecy(\Symfony\Component\Process\Process::class);
         $mockProcess->getStatus()->willReturn(0);
         $mockProcess->getErrorOutput()->willReturn('');
         $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(60)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled();
+        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             '--some-option=some-value',
             'core',
             'version'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')
-                      ->willReturn($mockProcess->reveal());
+        ]), $path) ->willReturn($mockProcess->reveal());
 
-        $cli->cli(['core','version']);
+        $this->make_instance()->cli(['core','version']);
     }
 
     /**
@@ -642,8 +580,6 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $adminEmail = 'luca@theaveragedev.com';
 
-        $cli = $this->make_instance();
-
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
@@ -654,15 +590,13 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'option',
             'get',
             'admin_email'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+        ]), $path) ->willReturn($mockProcess);
 
-        $this->assertEquals($adminEmail, $cli->cliToString([ 'option','get','admin_email' ]));
+        $this->assertEquals($adminEmail, $this->make_instance()->cliToString([ 'option','get','admin_email' ]));
     }
 
     /**
@@ -673,8 +607,6 @@ class WPCLITest extends \Codeception\Test\Unit
     public function should_handle_exceptions_thrown_by_the_process_by_throwing()
     {
         $this->config['throw'] = true;
-
-        $cli = $this->make_instance();
 
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
@@ -696,16 +628,13 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getErrorOutput'      => 'error!',
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'invalid'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+        ]), $this->root->url() . '/wp') ->willReturn($mockProcess);
 
         $this->expectException(ModuleException::class);
 
-        $cli->cliToString([ 'invalid' ]);
+        $this->make_instance()->cliToString([ 'invalid' ]);
     }
 
     /**
@@ -716,8 +645,6 @@ class WPCLITest extends \Codeception\Test\Unit
     public function should_handle_exceptions_thrown_by_the_process()
     {
         $this->config['throw'] = false;
-
-        $cli = $this->make_instance();
 
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
@@ -740,14 +667,12 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getExitCode' => 1
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
-            'invalid'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp') ->willReturn($mockProcess);
+        $this->process->forCommand($this->buildExpectedCommand([
 
-        $this->assertEquals('error!', $cli->cliToString([ 'invalid' ]));
+            'invalid'
+        ]), $this->root->url() . '/wp') ->willReturn($mockProcess);
+
+        $this->assertEquals('error!', $this->make_instance()->cliToString([ 'invalid' ]));
     }
 
     /**
@@ -758,8 +683,6 @@ class WPCLITest extends \Codeception\Test\Unit
     public function should_support_the_wp_cli_strict_args_mode_env_argument()
     {
         $this->config['env']['strict-args'] = true;
-
-        $cli = $this->make_instance();
 
         $output = 'Success: Added widget to sidebar.';
         $verifyEnvCall = function (array $env) {
@@ -776,18 +699,16 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([
-            "--path={$path}",
+        $this->process->forCommand($this->buildExpectedCommand([
             'widget',
             'add',
             'rss',
             'sidebar',
             '--title=My feedx',
             '--url="https://wordpress.org/news/feed/"'
-        ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+        ]), $this->root->url() . '/wp')->willReturn($mockProcess);
 
-        $this->assertEquals($output, $cli->cliToString([
+        $this->assertEquals($output, $this->make_instance()->cliToString([
             'widget',
             'add',
             'rss',
@@ -819,8 +740,6 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['env'][$envKey] = $envValue;
 
-        $cli = $this->make_instance();
-
         $verifyEnvCall = function (array $env) use ($expectedEnvName, $expectedEnvValue) {
             $this->assertArrayHasKey($expectedEnvName, $env);
             $this->assertEquals($expectedEnvValue, $env[$expectedEnvName]);
@@ -834,11 +753,11 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getOutput' => '5.2.2',
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([ "--path={$path}", 'core','version' ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+        $this->process->forCommand($this->buildExpectedCommand([
+            'core'  ,'version'
+        ]), $this->root->url() . '/wp')->willReturn($mockProcess);
 
-        $this->assertEquals('5.2.2', $cli->cliToString([ 'core' ,'version' ]));
+        $this->assertEquals('5.2.2', $this->make_instance()->cliToString([ 'core' ,'version' ]));
     }
 
     /**
@@ -850,8 +769,6 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $cli = $this->make_instance();
-
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
@@ -860,11 +777,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getErrorOutput' => 'stderr',
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
+        $command = $this->buildExpectedCommand([ 'test' ]);
         $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
 
-        $this->assertEquals('stdout', $cli->cliToString([ 'test' ]));
+        $this->assertEquals('stdout', $this->make_instance()->cliToString([ 'test' ]));
     }
 
     /**
@@ -876,8 +792,6 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $cli = $this->make_instance();
-
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
@@ -886,11 +800,9 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getErrorOutput' => 'stderr'
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+        $this->process->forCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($mockProcess);
 
-        $this->assertEquals('stderr', $cli->cliToString([ 'test' ]));
+        $this->assertEquals('stderr', $this->make_instance()->cliToString([ 'test' ]));
     }
 
     /**
@@ -902,8 +814,6 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $cli = $this->make_instance();
-
         $mockProcess = $this->makeEmpty(
             \Symfony\Component\Process\Process::class,
             [
@@ -912,12 +822,19 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getErrorOutput' => 'stderr'
             ]
         );
-        $path = $this->root->url() . '/wp';
-        $command = $cli->buildFullCommand([ "--path={$path}", 'test' ]);
-        $this->process->forCommand($command, $this->root->url() . '/wp')->willReturn($mockProcess);
+        $this->process->forCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($mockProcess);
 
         $this->expectException(ModuleException::class);
 
-        $cli->cliToString(['test']);
+        $this->make_instance()->cliToString(['test']);
+    }
+
+    protected function buildExpectedCommand(array $arr)
+    {
+        return array_merge([
+            PHP_BINARY,
+            codecept_root_dir('vendor/wp-cli/wp-cli/php/boot-fs.php'),
+            '--path=' . $this->root->url() . '/wp'
+        ], $arr);
     }
 }

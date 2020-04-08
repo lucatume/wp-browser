@@ -1,0 +1,9 @@
+{
+  "methodCalls": [
+    {
+      "class": "\\tad\\WPBrowser\\Traits\\WithStubProphecy",
+      "method": "stubProphecy",
+      "position": 0
+    }
+  ]
+}
