@@ -175,12 +175,18 @@ If you want to leverage [the event system wp-browser provides] with Codeception 
 
 You will **not** need this extension if you're not using Codeception version `4.0`.
 
-The extension has no configuration and you will need to enable it in your Codeception **main** configuration file (e.g. `codeception.dist.yml`):  
+You will need to enable it in your Codeception **main** configuration file (e.g. `codeception.dist.yml`).
 
 ```yaml
 extensions:
     enabled:
         - tad\WPBrowser\Extension\Events
+    config:
+      tad\WPBrowser\Extension\Events:
+        suites: ['acceptance']
 ```
+
+The extension only configuration is the `suites` parameter that allows specifying the suites the extension should apply to.  
+If the `suites` parameter is not specified, then the extension will apply to all suites.  
 
 [4]: events-api.md

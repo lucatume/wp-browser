@@ -7,6 +7,7 @@
 
 namespace tad\WPBrowser\Extension;
 
+use Codeception\Event\SuiteEvent;
 use Codeception\Extension;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
 use tad\WPBrowser\Events\EventDispatcherAdapter;
@@ -30,6 +31,12 @@ class Events extends Extension
      * @var bool
      */
     protected static $dispatcherSet = false;
+
+    /**
+     * Whether the event dispatcher should be captured or not for the current suite.
+     * @var bool
+     */
+    protected static $doNotCapture = false;
 
     /**
      * Returns a map of all Codeception events, each calling the `__call` magic method.
@@ -57,11 +64,21 @@ class Events extends Extension
      */
     public function onEvent()
     {
-        if (static::$dispatcherSet) {
+        if (static::$dispatcherSet || static::$doNotCapture) {
             return;
         }
 
         $callArgs = func_get_args();
+
+        $event = $callArgs[0];
+
+        $suites = (array) $this->config['suites'];
+        if ($event instanceof SuiteEvent && ! empty($suites)) {
+            if (! in_array($event->getSuite()->getName(), $suites, true)) {
+                static::$doNotCapture = true;
+                return;
+            }
+        }
 
         foreach ($callArgs as $callArg) {
             if ($callArg instanceof SymfonyEventDispatcher) {
