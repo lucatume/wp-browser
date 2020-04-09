@@ -6,11 +6,13 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
+use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Traits\WithStubProphecy;
 use function tad\WPBrowser\normalizeNewLine;
+use function tad\WPBrowser\readPrivateProperty;
 use function tad\WPBrowser\rrmdir;
-use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
+use function tad\WPBrowser\setPrivateProperties;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
@@ -645,8 +647,6 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
 
-        $this->expectWarning();
-
         $sut->dontSeePluginFileFound('plugin1/some-file.txt');
 
         $sut->copyDirToPlugin(codecept_data_dir('folder-structures/folder1'), 'plugin1/folder1');
@@ -697,7 +697,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteThemeFile('theme1/some-file.txt');
 
         Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
-        $this->expectWarning();
+
         $sut->dontSeeThemeFileFound('theme1/some-file.txt');
 
         $sut->copyDirToTheme(codecept_data_dir('folder-structures/folder1'), 'theme1/folder1');
@@ -748,7 +748,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteMuPluginFile('muplugin1/some-file.txt');
 
         Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
-        $this->expectWarning();
+
         $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
 
         $sut->copyDirToMuPlugin(codecept_data_dir('folder-structures/folder1'), 'muplugin1/folder1');
@@ -771,6 +771,24 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         if (! empty($this->sandbox) && file_exists($this->sandbox)) {
             rrmdir($this->sandbox);
         }
+    }
+
+    /**
+     * Cleans up the warnings for deprecated PHPUnit methods.
+     *
+     * This is not ideal, but it's required to keep back compoat.
+     *
+     * @postCondition
+     */
+    public function cleanupDeprecatedPHPUnitMethodsWarnings()
+    {
+        $currentWarnings = readPrivateProperty($this, 'warnings');
+
+        $warnings = array_filter($currentWarnings, static function ($warning) {
+            return strpos($warning, 'assertFileNotExists() is deprecated') === false;
+        });
+
+        setPrivateProperties($this, [ 'warnings' => $warnings ]);
     }
 
     /**
