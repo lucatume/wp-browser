@@ -174,14 +174,13 @@ pre_commit: lint fix sniff docs
 
 # A variable target to debug issues.
 debug:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) TEST_SUBNET=89 \
+	[ "$${OSTYPE:0:5}" == 'linux' ] && FIXUID=1 || FIXUID==0 \
+	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_USER=$$(id -u) ||  DOCKER_RUN_USER= \
+	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_GROUP=$$(id -u) ||  DOCKER_RUN_GROUP= \
+	TEST_SUBNET=89 \
 		docker-compose --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.yml \
 		-f docker-compose.debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
 
-test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=34 \
-		docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm ccf run unit
