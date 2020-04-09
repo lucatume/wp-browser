@@ -29,6 +29,11 @@ class EventDispatcherAdapterTest extends \Codeception\Test\Unit
      */
     protected $adapter;
 
+    protected function _before()
+    {
+        EventDispatcherAdapter::resetSharedInstance();
+    }
+
     /**
      * It should dispatch with object if dispatch method takes obj first argument
      *
