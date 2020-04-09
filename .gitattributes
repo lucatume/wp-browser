@@ -11,6 +11,7 @@ composer.lock 			    export-ignore
 docker                  	export-ignore
 docker-compose.yml          export-ignore
 docker-compose.debug.yml    export-ignore
+dynamicReturnTypeMeta.json  export-ignore
 docs                    	export-ignore
 Makefile                    export-ignore
 phpcs.xml			        export-ignore
