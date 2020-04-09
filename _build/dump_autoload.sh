@@ -13,13 +13,24 @@ if [ "$#" -lt 1 ]; then
   exit 0
 fi
 
+test "${OSTYPE}" == "linux-gnu" && export FIXUID=1 || export FIXUID=0
 php_version="$1"
 
-docker run --rm \
-  --user "$(id -u):$(id -g)" \
-  -v "${HOME}/.composer/auth.json:/composer/auth.json" \
-  -v "${PWD}:/project" \
-  -t \
-  lucatume/composer:php"${php_version}" dump-autoload
+if [ "${FIXUID}" == 1 ]; then
+  docker run --rm \
+    --user "$(id -u):$(id -g)" \
+    -e FIXUID=1 \
+    -v "${HOME}/.composer/auth.json:/composer/auth.json" \
+    -v "${PWD}:/project" \
+    -t \
+    lucatume/composer:php"${php_version}" dump-autoload
+else
+  docker run --rm \
+    -e FIXUID= \
+    -v "${HOME}/.composer/auth.json:/composer/auth.json" \
+    -v "${PWD}:/project" \
+    -t \
+    lucatume/composer:php"${php_version}" dump-autoload
+fi
 
 test -f "${PWD}/vendor/autoload.php" || { echo "${PWD}/vendor/autoload.php file not found."; exit 1; }

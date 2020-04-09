@@ -16,6 +16,7 @@ if [ "$#" -lt 2 ]; then
   exit 0
 fi
 
+test "${OSTYPE}" == "linux-gnu" && export FIXUID=1 || export FIXUID=0
 php_version="$1"
 codeception_version="$2"
 cache_dir="${3:-/tmp}"
@@ -31,6 +32,8 @@ fi
 
 if [ ${ready} != 0 ] && [ ${ready} != "${php_version}.cc.${codeception_version}" ] && [ -d "${PWD}/vendor" ]; then
   vendor_cache="${cache_dir}/vendor-${project}-${ready}"
+
+  test -d "${vendor_cache}" && rm -rf "${vendor_cache}"
 
   mv "${PWD}"/vendor "${vendor_cache}" || \
     (echo -e "\033[91mCould not move vendor directory to ${vendor_cache}\033[0m"; exit 1)
@@ -79,12 +82,23 @@ if [ ! -f "${PWD}/.ready" ] || [ ! -d "${PWD}/vendor" ]; then
         echo "File ${cwd}/required-packages-${codeception_version} not found, requiring codeception/codeception:^${codeception_version}"; \
         required_packages="codeception/codeception:^${codeception_version}"; \
         }
-    docker run --rm \
-      --user "$(id -u):$(id -g)" \
-      -v "${HOME}/.composer/auth.json:/composer/auth.json" \
-      -v "${PWD}:/project" \
-      -t \
-      lucatume/composer:php"${php_version}" require $required_packages
+
+    if [ "${FIXUID}" == 1 ]; then
+      docker run --rm \
+        --user "$(id -u):$(id -g)" \
+        -e FIXUID=1 \
+        -v "${HOME}/.composer/auth.json:/composer/auth.json" \
+        -v "${PWD}:/project" \
+        -t \
+        lucatume/composer:php"${php_version}" require $required_packages
+    else
+      docker run --rm \
+        -e FIXUID=0 \
+        -v "${HOME}/.composer/auth.json:/composer/auth.json" \
+        -v "${PWD}:/project" \
+        -t \
+        lucatume/composer:php"${php_version}" require $required_packages
+    fi
 
     echo -e "\033[32mVendor directory ready for PHP ${php_version} and Codeception ${codeception_version}.\033[0m"
   fi
