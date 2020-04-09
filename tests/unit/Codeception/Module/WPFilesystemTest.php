@@ -289,6 +289,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
 
         $sut->seeUploadedFileFound(str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads) . '/file.txt');
+
         $sut->dontSeeUploadedFileFound('file.txt');
 
         $this->expectException(AssertionFailedError::class);
@@ -643,6 +644,9 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deletePluginFile('plugin1/some-file.txt');
 
         Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
+
+        $this->expectWarning();
+
         $sut->dontSeePluginFileFound('plugin1/some-file.txt');
 
         $sut->copyDirToPlugin(codecept_data_dir('folder-structures/folder1'), 'plugin1/folder1');
@@ -693,6 +697,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteThemeFile('theme1/some-file.txt');
 
         Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
+        $this->expectWarning();
         $sut->dontSeeThemeFileFound('theme1/some-file.txt');
 
         $sut->copyDirToTheme(codecept_data_dir('folder-structures/folder1'), 'theme1/folder1');
@@ -743,6 +748,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->deleteMuPluginFile('muplugin1/some-file.txt');
 
         Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
+        $this->expectWarning();
         $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
 
         $sut->copyDirToMuPlugin(codecept_data_dir('folder-structures/folder1'), 'muplugin1/folder1');
