@@ -15,6 +15,7 @@ use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
+use tad\WPBrowser\Utils\Configuration;
 
 /**
  * Class WPLoader
@@ -109,24 +110,25 @@ class WPLoader extends Module
      */
     protected $config
         = [
-            'loadOnly'         => false,
-            'isolatedInstall'  => true,
-            'wpDebug'          => true,
-            'multisite'        => false,
-            'dbCharset'        => 'utf8',
-            'dbCollate'        => '',
-            'tablePrefix'      => 'wptests_',
-            'domain'           => 'example.org',
-            'adminEmail'       => 'admin@example.org',
-            'title'            => 'Test Blog',
-            'phpBinary'        => 'php',
-            'language'         => '',
-            'configFile'       => '',
-            'pluginsFolder'    => 'wp-content/plugins',
-            'plugins'          => '',
-            'activatePlugins'  => '',
-            'bootstrapActions' => '',
-            'theme'            => '',
+            'loadOnly'                  => false,
+            'isolatedInstall'           => true,
+            'installationTableHandling' => 'empty',
+            'wpDebug'                   => true,
+            'multisite'                 => false,
+            'dbCharset'                 => 'utf8',
+            'dbCollate'                 => '',
+            'tablePrefix'               => 'wptests_',
+            'domain'                    => 'example.org',
+            'adminEmail'                => 'admin@example.org',
+            'title'                     => 'Test Blog',
+            'phpBinary'                 => 'php',
+            'language'                  => '',
+            'configFile'                => '',
+            'pluginsFolder'             => 'wp-content/plugins',
+            'plugins'                   => '',
+            'activatePlugins'           => '',
+            'bootstrapActions'          => '',
+            'theme'                     => '',
         ];
 
     /**
@@ -531,6 +533,12 @@ class WPLoader extends Module
             );
             tests_add_filter('plugins_loaded', [$this, '_switchTheme']);
         }
+
+        $installationConfiguration = new Configuration([
+            'tablesHandling' => isset($this->config['installationTableHandling']) ?
+                $this->config['installationTableHandling']
+                : 'empty'
+        ]);
 
         require_once $this->wpBootstrapFile;
 

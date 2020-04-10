@@ -7,6 +7,8 @@
 
 namespace tad\WPBrowser;
 
+use Codeception\Configuration;
+
 /**
  * Returns the wp-browser package root directory.
  *

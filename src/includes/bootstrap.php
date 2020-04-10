@@ -1,6 +1,8 @@
 <?php
 /**
  * Installs WordPress for running the tests and loads WordPress and the test libraries
+ *
+ * @var tad\WPBrowser\Utils\Configuration $installationConfiguration The current installation configuration.
  */
 
 use function tad\WPBrowser\vendorDir;
@@ -100,6 +102,7 @@ if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
 			'WP_PHP_BINARY' => WP_PHP_BINARY,
 			'WPLANG' => WPLANG,
 		],
+		'tablesHandling' => $installationConfiguration->get('tablesHandling','empty'),
 	];
 
 	$dirConstants = [

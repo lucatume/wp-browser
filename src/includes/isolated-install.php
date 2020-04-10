@@ -84,7 +84,7 @@ else {
 $wpdb->select(DB_NAME, $wpdb->dbh);
 
 /**
- * Before dropping the tables include the active plugins as those might define
+ * Before dropping/emptying the tables include the active plugins as those might define
  * additional tables that should be dropped.
  **/
 foreach ($activePlugins as $activePlugin) {
@@ -96,26 +96,39 @@ foreach ($activePlugins as $activePlugin) {
 	include_once $path;
 }
 
-echo "\nThe following tables will be dropped: ", "\n\t- ", implode("\n\t- ", $wpdb->tables), "\n";
-
-echo "\nInstalling WordPress...\n";
-
 $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
 
-foreach ($wpdb->tables() as $table => $prefixed_table) {
-	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
+// By default empty the tables, do not drop them.
+$tables_handling = isset( $configuration['tablesHandling'] ) ?
+	$configuration['tablesHandling']
+	: 'empty';
+
+switch ( $tables_handling ) {
+	default;
+	case 'drop':
+		echo "\nThe following tables will be dropped: ", "\n\t- ", implode( "\n\t- ", $wpdb->tables ), "\n";
+		tad\WPBrowser\dropWpTables( $wpdb );
+		break;
+	case 'empty':
+		echo "\nThe following tables will be emptied: ", "\n\t- ", implode( "\n\t- ", $wpdb->tables ), "\n";
+		tad\WPBrowser\emptyWpTables( $wpdb );
+		break;
+	case 'let':
+		echo "\nTables will not be touched.\n";
+		// Do nothing, just let the tables be.
+		break;
 }
 
-foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
-	$wpdb->query("DROP TABLE IF EXISTS $prefixed_table");
-
+foreach ( $wpdb->tables( 'ms_global' ) as $table => $prefixed_table ) {
 	// We need to create references to ms global tables.
-	if ($multisite) {
+	if ( $multisite ) {
 		$wpdb->$table = $prefixed_table;
 	}
 }
 
-$wpdb->query("SET FOREIGN_KEY_CHECKS = 1");
+$wpdb->query( "SET FOREIGN_KEY_CHECKS = 1" );
+
+echo "\n\nInstalling WordPress...\n";
 
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
 add_action('populate_options', '_set_default_permalink_structure_for_tests');

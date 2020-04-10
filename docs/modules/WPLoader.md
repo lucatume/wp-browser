@@ -19,6 +19,7 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 * `dbPassword` *required* - The password of the database used by the WordPress installation, same as `DB_PASSWORD` constant.
 * `loadOnly` - defaults to `false`; whether to only load WordPress, without bootstrapping a fresh installation for tests or not. Read more in the ["Using WPLoader in acceptance and functional tests"](#using-wploader-in-acceptance-and-functional-tests) section. If this parameter is set to `true` the following parameters will not apply.
 * `isolatedInstall` - defaults to `true`, whether to install and bootstrap the WordPress installation in a secondary PHP thread for thread safety or not. Maintained for back-compatibility purposes with wp-browser first versions: to get a replica of the bootstrap process used by [WordPress Core PHPUnit tests]() leave this to `true`.
+* `installationTableHandling` - defaults to `empty`; it controls how tables created by WordPress and plugins will be handled during the installation of WordPress during tests. By default tables will be emptied of any content, but some plugins might require tables to be dropped before WordPress is installed and after plugins are activated (this used to be the default behavior). Supported values are `drop` to drop the tables, `empty` to just empty the tables and `let` to do nothing about the tables. If you get errors from database queries while the `WPLoader` module installs the tests, then try changing this parameter value. 
 * `wpDebug` - defaults to `true`, the value the `WP_DEBUG` constant will be set to.
 * `multisite` - defaults to `false`, the value the `MULTISITE` constant will be set to.
 * `dbCharset` - defaults to `utf8`, the value the `DB_CHARSET` constant will be set to.
@@ -70,6 +71,7 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
               dbUser: "root"
               dbPassword: "password"
               isolatedInstall: true
+              installationTableHandling: drop
               tablePrefix: "wptests_"
               domain: "wordrpess.localhost"
               adminEmail: "admin@wordpress.localhost"

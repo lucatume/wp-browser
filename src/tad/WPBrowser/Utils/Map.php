@@ -97,4 +97,18 @@ class Map implements \ArrayAccess
     {
         $this->map = $map;
     }
+
+    /**
+     * Returns a value defined in the map, falling back to a default if the value is not defined.
+     *
+     * @param string     $offset  The name of the value to return from the map.
+     * @param null|mixed $default A default value to return if the value associated with the key is not set in the map.
+     *
+     * @return mixed|null The value associated with the key in the map, or a default value if the key is not set in
+     *                    the map.
+     */
+    public function get($offset, $default = null)
+    {
+        return isset($this->map[ $offset ]) ? $this->map[ $offset ] : $default;
+    }
 }

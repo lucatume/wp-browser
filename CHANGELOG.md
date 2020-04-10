@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- an issue where tables created by plugins during the WordPress installation managed by the `WPLoader` module would be dropped; default behaviour changed to emptying the tables, fixes #356
+
 ## [2.4.0] 2020-04-10;
 
 ### Added
