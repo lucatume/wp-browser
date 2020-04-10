@@ -24,7 +24,6 @@ documentation][1].
 ## Using wp-browser with Codeception 4.0
 
 Codeception version `4.0`, while still being compatible with PHP `5.6` and wp-browser, did break its structure into discrete modules.  
-To keep back-compatibility 
 
 If you want to use wp-browser with Codeception version `4.0+` you will need to make sure you've got all the required packages.  
 Add the following requirements in your `composer.json` file, in the `require-dev` section:
