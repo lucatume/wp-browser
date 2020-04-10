@@ -8,16 +8,18 @@ namespace tad\WPBrowser\Generators;
 class User
 {
     /**
-     * Generated the entry for the users table.
+     * Generates the entry for the users table.
      *
-     * @param string $user_login The user login slug.
+     * @param string              $user_login The user login slug.
+     * @param array<string,mixed> $userData   An array of user data to override the default values. It should NOT
+     *                                        include `meta` and `meta_input` keys.
      *
-     * @return array             An associative array of column/values for the "users" table.
+     * @return array<string,string>             An associative array of column/values for the "users" table.
      */
     public static function generateUserTableDataFrom($user_login, array $userData = array())
     {
         $login = \tad\WPBrowser\sanitize_user($user_login, true);
-        $usersTableDefaults = array(
+        $usersTableDefaults = [
             'user_login' => $login,
             'user_pass' => WpPassword::instance()->make($user_login),
             'user_nicename' => $user_login,
@@ -27,7 +29,7 @@ class User
             'user_activation_key' => '',
             'user_status' => '0',
             'display_name' => $user_login
-        );
+        ];
         if (!empty($userData['user_pass'])) {
             $userData['user_pass'] = WpPassword::instance()->make($userData['user_pass']);
         }
@@ -97,5 +99,39 @@ class User
             "'edit_themes' => true ]`) or the 'array<int,array>' format to setup roles for diff. blogs (e.g. " .
             "`[1 => ['author'=> true], 2 => ['editor' => true]]`."
         );
+    }
+
+    /**
+     * Generates the default meta values for a user.
+     *
+     * The values DO NOT include the meta keys related to the user capabilities (`wp_capabilities` and `wp_user_level`).
+     * To set those see the `buildCapabilities` method.
+     *
+     * @param       string $user_login The user login name, slug form.
+     * @param array<string,mixed> $overrides A map of the user meta values to override and add to the default values.
+     *
+     * @return array<string,mixed> The user meta keys and values, with overrides applied.
+     */
+    public static function generateUserMetaTableDataFrom($user_login, array $overrides = [])
+    {
+        $login = \tad\WPBrowser\sanitize_user($user_login, true);
+
+        $usersMetaTableDefaults = [
+            'nickname'              => $login,
+            'first_name'            => '',
+            'last_name'             => '',
+            'description'           => '',
+            'rich_editing'          => true,
+            'syntax_highlighting'   => true,
+            'comment_shortcuts'     => false,
+            'admin_color'           => 'fresh',
+            'use_ssl'               => 0,
+            'show_admin_bar_front'  => true,
+            'locale'                => '',
+            'dismissed_wp_pointers' => '',
+            'show_welcome_panel'    => 0,
+        ];
+
+        return array_merge($usersMetaTableDefaults, $overrides);
     }
 }

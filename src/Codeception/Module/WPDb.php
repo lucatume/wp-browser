@@ -2291,23 +2291,25 @@ class WPDb extends Db
      */
     public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = [])
     {
-        $hasMeta = !empty($overrides['meta']);
+        // Support `meta` and `meta_input` for compatibility w/ format used by Core user factory.
+        $hasMeta = !empty($overrides['meta']) || !empty($overrides['meta_input']);
         $meta = [];
         if ($hasMeta) {
-            $meta = $overrides['meta'];
-            unset($overrides['meta']);
+            $meta = isset($overrides['meta']) ? $overrides['meta'] : $overrides['meta_input'];
+            unset($overrides['meta'], $overrides['meta_input']);
         }
 
         $userTableData = User::generateUserTableDataFrom($user_login, $overrides);
         $this->debugSection('Generated users table data', json_encode($userTableData));
         $userId = $this->haveInDatabase($this->grabUsersTableName(), $userTableData);
 
+        // Handle the user capabilities and associated meta values.
         $this->haveUserCapabilitiesInDatabase($userId, $role);
 
-        if ($hasMeta) {
-            foreach ($meta as $key => $value) {
-                $this->haveUserMetaInDatabase($userId, $key, $value);
-            }
+        // Set up the user meta, apply the user-set overrides.
+        $userMetaTableDataFrom = User::generateUserMetaTableDataFrom($user_login, $meta);
+        foreach ($userMetaTableDataFrom as $key => $value) {
+            $this->haveUserMetaInDatabase($userId, $key, $value);
         }
 
         return $userId;
