@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.3.4] 2020-04-10;
+
 ### Added
 
 - compatibility with Codeception 4.0
@@ -12,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - the event listener and dispatcher system to work consistently across Codeception versions
+- issue where `WPDb::haveUserInDatabase` method would not create all the user meta #359
 
 ## [2.3.4] 2020-04-03;
 
@@ -1272,4 +1275,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.3.2]: https://github.com/lucatume/wp-browser/compare/2.3.1...2.3.2
 [2.3.3]: https://github.com/lucatume/wp-browser/compare/2.3.2...2.3.3
 [2.3.4]: https://github.com/lucatume/wp-browser/compare/2.3.3...2.3.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.3.4...HEAD
+[2.4.0]: https://github.com/lucatume/wp-browser/compare/2.3.4...2.4.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.0...HEAD
