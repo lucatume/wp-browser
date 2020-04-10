@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.1] 2020-04-10;
+
 ### Changed
 
 - an issue where tables created by plugins during the WordPress installation managed by the `WPLoader` module would be dropped; default behaviour changed to emptying the tables, fixes #356
@@ -1280,4 +1282,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.3.3]: https://github.com/lucatume/wp-browser/compare/2.3.2...2.3.3
 [2.3.4]: https://github.com/lucatume/wp-browser/compare/2.3.3...2.3.4
 [2.4.0]: https://github.com/lucatume/wp-browser/compare/2.3.4...2.4.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.0...HEAD
+[2.4.1]: https://github.com/lucatume/wp-browser/compare/2.4.0...2.4.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.1...HEAD
