@@ -12,7 +12,7 @@ trait Wploader_multisiteTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -23,7 +23,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('create_a_post', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -50,7 +50,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -73,7 +73,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -100,7 +100,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startwpfiltersdebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -122,7 +122,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -150,7 +150,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -178,7 +178,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -204,7 +204,7 @@ trait Wploader_multisiteTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *

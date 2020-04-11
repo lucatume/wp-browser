@@ -24,6 +24,8 @@ use function tad\WPBrowser\dsnToMap;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\slug;
+use function tad\WPBrowser\unleadslashit;
+use function tad\WPBrowser\untrailslashit;
 
 /**
  * An extension of Codeception Db class to add WordPress database specific
@@ -188,7 +190,7 @@ class WPDb extends Db
      */
     public function _initialize(Tables $table = null)
     {
-        $this->getEventDispatcher()->dispatch(static::EVENT_BEFORE_INITIALIZE);
+        $this->doAction(static::EVENT_BEFORE_INITIALIZE, $this);
 
         $this->createDatabasesIfNotExist($this->config);
 
@@ -198,7 +200,7 @@ class WPDb extends Db
         $this->tables = $table ?: new Tables();
         $this->didInit = true;
 
-        $this->getEventDispatcher()->dispatch(static::EVENT_AFTER_INITIALIZE);
+        $this->doAction(static::EVENT_AFTER_INITIALIZE, $this);
     }
 
     /**
@@ -2862,7 +2864,7 @@ class WPDb extends Db
 
         // Make sure the path is in the `/path/` format.
         if (isset($data['path']) && $data['path'] !== '/') {
-            $data['path'] = '/' . Utils::unleadslashit(Utils::untrailslashit($data['path'])) . '/';
+            $data['path'] = '/' . unleadslashit(untrailslashit($data['path'])) . '/';
         }
 
         $blogId = $this->haveInDatabase($this->grabBlogsTableName(), $data);
@@ -3293,7 +3295,7 @@ class WPDb extends Db
 
         $uploadedFilePath = $fs->writeToUploadedFile($pathInfo['basename'], $data, $date);
         $uploadUrl = $this->grabSiteUrl(str_replace($fs->getWpRootFolder(), '', $uploadedFilePath));
-        $uploadLocation = Utils::unleadslashit(str_replace($fs->getUploadsPath(), '', $uploadedFilePath));
+        $uploadLocation = unleadslashit(str_replace($fs->getUploadsPath(), '', $uploadedFilePath));
 
         $mimeType = mime_content_type($file);
 
@@ -3415,7 +3417,7 @@ class WPDb extends Db
         $url = $this->config['url'];
 
         if ($path !== null) {
-            return Utils::untrailslashit($this->config['url']) . DIRECTORY_SEPARATOR . Utils::unleadslashit($path);
+            return untrailslashit($this->config['url']) . DIRECTORY_SEPARATOR . unleadslashit($path);
         }
 
         return $url;
@@ -3522,7 +3524,7 @@ class WPDb extends Db
             $attachedFile = $this->grabAttachmentAttachedFile($attachmentId);
             $attachmentMetadata = $this->grabAttachmentMetadata($attachmentId);
 
-            $filesPath = Utils::untrailslashit($fs->getUploadsPath(dirname($attachedFile)));
+            $filesPath = untrailslashit($fs->getUploadsPath(dirname($attachedFile)));
 
 
             if (!isset($attachmentMetadata['sizes']) && is_array($attachmentMetadata['sizes'])) {
@@ -4027,7 +4029,7 @@ class WPDb extends Db
     {
         parent::_beforeSuite($settings);
 
-        $this->getEventDispatcher()->dispatch(static::EVENT_BEFORE_SUITE);
+        $this->doAction(static::EVENT_BEFORE_SUITE, $this);
     }
 
     /**

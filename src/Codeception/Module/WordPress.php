@@ -8,8 +8,9 @@ use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
-use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\parseUrl;
+use function tad\WPBrowser\resolvePath;
+use function tad\WPBrowser\untrailslashit;
 
 /**
  * A module dedicated to functional testing using acceptance-like methods.
@@ -109,20 +110,9 @@ EOF;
     ) {
         parent::__construct($moduleContainer, $config);
 
-        $this->ensureWpRoot();
+        $this->getWpRootFolder();
         $this->setAdminPath($this->config['adminPath']);
         $this->client = $client ?: $this->buildConnector();
-    }
-
-    private function ensureWpRoot()
-    {
-        $wpRootFolder = $this->getWpRootFolder();
-        if (!file_exists(Utils::untrailslashit($wpRootFolder) . '/wp-settings.php')) {
-            throw new ModuleConfigException(
-                __CLASS__,
-                "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
-            );
-        }
     }
 
     /**
@@ -233,7 +223,7 @@ EOF;
      */
     private function preparePage($page)
     {
-        $page = Utils::untrailslashIt($page);
+        $page = untrailslashIt($page);
         $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
 
         return $page;
@@ -322,18 +312,28 @@ EOF;
      * ```
      *
      * @return string The absolute path to the WordPress root folder, without a trailing slash.
+     *
+     * @throws \InvalidArgumentException If the WordPress root folder is not valid.
      */
     public function getWpRootFolder()
     {
         if (empty($this->wpRootFolder)) {
-            // Allow me not to bother with trailing slashes.
-            $wpRootFolder = Utils::untrailslashit($this->config['wpRootFolder']) . DIRECTORY_SEPARATOR;
-
-            // Maybe the user is using the `~` symbol for home?
-            $this->wpRootFolder = Utils::homeify($wpRootFolder);
-
-            // Remove `\ ` spaces in folder paths.
-            $this->wpRootFolder = str_replace('\ ', ' ', $this->wpRootFolder);
+            try {
+                $this->wpRootFolder = resolvePath($this->config['wpRootFolder']);
+            } catch (\Exception $e) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "\nThe path `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress " .
+                    'installation folder: directory not found.'
+                );
+            }
+            if (!file_exists(untrailslashit($this->wpRootFolder) . '/wp-settings.php')) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "\nThe `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress installation " .
+                    'folder: wp-settings.php file not found.'
+                );
+            }
         }
 
         return $this->wpRootFolder;

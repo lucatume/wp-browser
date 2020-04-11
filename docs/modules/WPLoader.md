@@ -31,7 +31,8 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 * `phpBinary` - defaults to `php`, the PHP binary the host machine will have to use to bootstrap and load the test WordPress installation.
 * `language` - defaults to an empty string, the language of the WordPress installation to scaffold.
 * `configFile` - defaults to an empty string, an additional configuration file to include **before** loading WordPress. Any instruction in this fill will run **before** any WordPress file is included.
-* `pluginsFolder` - defaults to an empty string; the relative path to the plugins folder from the `wpRootFolder` if different from the default one or the one defined by the `WP_PLUGIN_DIR` constant; if the `WP_PLUGIN_DIR` constant is defined in a config file (see the `configFile` parameter) this will be ignored.
+* `contentFolder` - defaults to an empty string; the path, relative to the `wpRootFolder` or absolute, to the content folder if different from the default one or the one defined by the `WP_CONTENT_DIR` constant; if the `WP_CONTENT_DIR` constant is defined in a config file (see the `configFile` parameter) this will be ignored.
+* `pluginsFolder` - defaults to an empty string; the path, relative to the `wpRootFolder` or absolute, to the plugins folder from the `wpRootFolder` if different from the default one or the one defined by the `WP_PLUGIN_DIR` constant; if the `WP_PLUGIN_DIR` constant is defined in a config file (see the `configFile` parameter) this will be ignored.
 * `plugins` - defaults to an empty string; a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `activatePlugins` - defaults to an empty string, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format; when the `multisite` option is set to `true` the plugins will be **network activated** during the installation.
 * `bootstrapActions` - defaults to an empty string, a list of actions or **static functions** that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
@@ -198,6 +199,9 @@ modules:
 			<a href="#factory">factory</a>
 		</li>
 		<li>
+			<a href="#getcontentfolder">getContentFolder</a>
+		</li>
+		<li>
 			<a href="#getpluginsfolder">getPluginsFolder</a>
 		</li>
 		<li>
@@ -291,6 +295,22 @@ $postId = $I->factory()->post->create();
   $userId = $I->factory()->user->create(['role' => 'administrator']);
 ```
 
+  
+
+<h3>getContentFolder</h3>
+
+<hr>
+
+<p>Returns the absolute path to the WordPress content directory.</p>
+```php
+$content = $this->getContentFolder();
+  $themes = $this->getContentFolder('themes');
+  $twentytwenty = $this->getContentFolder('themes/twentytwenty');
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$path</strong> - An optional path to append to the content directory absolute path.</li></ul>
   
 
 <h3>getPluginsFolder</h3>

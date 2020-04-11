@@ -5,8 +5,6 @@ require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
 use tad\WPBrowser\Connector\WordPress as Connector;
 use tad\WPBrowser\Traits\WithStubProphecy;
 use tad\WPBrowser\StubProphecy\Arg;
@@ -29,11 +27,6 @@ class WordPressTest extends \Codeception\Test\Unit
      * @var array
      */
     protected $config;
-
-    /**
-     * @var vfsStreamDirectory
-     */
-    protected $root;
 
     /**
      * @var Connector
@@ -216,9 +209,7 @@ class WordPressTest extends \Codeception\Test\Unit
      */
     public function it_should_throw_if_specified_wp_root_folder_does_not_contain_wp_settings_php_file()
     {
-        $root = vfsStream::setup();
-
-        $this->config['wpRootFolder'] = $root->url();
+        $this->config['wpRootFolder'] = __DIR__;
 
         $this->expectException(ModuleConfigException::class);
 
@@ -227,16 +218,9 @@ class WordPressTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        $root = vfsStream::setup();
-        $wpLoadFile = vfsStream::newFile('wp-settings.php');
-        $wpLoadFile->setContent('wp-settings.php content');
-        $root->addChild($wpLoadFile);
-
-        $this->root = $root;
-
         $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->config = [
-            'wpRootFolder' => $root->url(),
+            'wpRootFolder' => codecept_data_dir('folder-structures/default-wp'),
             'adminUsername' => 'admin',
             'adminPassword' => 'admin'
         ];

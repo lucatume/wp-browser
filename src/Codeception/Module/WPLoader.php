@@ -10,12 +10,15 @@ use Codeception\Util\Debug;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
-use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
+use function tad\WPBrowser\findHereOrInParent;
+use function tad\WPBrowser\resolvePath;
+use function tad\WPBrowser\unleadslashit;
+use function tad\WPBrowser\untrailslashit;
 
 /**
  * Class WPLoader
@@ -124,7 +127,8 @@ class WPLoader extends Module
             'phpBinary'                 => 'php',
             'language'                  => '',
             'configFile'                => '',
-            'pluginsFolder'             => 'wp-content/plugins',
+            'contentFolder'             => '',
+            'pluginsFolder'             => '',
             'plugins'                   => '',
             'activatePlugins'           => '',
             'bootstrapActions'          => '',
@@ -144,9 +148,16 @@ class WPLoader extends Module
     protected $wpRootFolder;
 
     /**
-     * @var string The absolute path to the plugins folder
+     * The absolute path to the plugins directory.
+     * @var string
      */
-    protected $pluginsFolder;
+    protected $pluginDir;
+
+    /**
+     * The absolute path to the content directory.
+     * @var string
+     */
+    protected $contentDir;
 
     /**
      * @var \tad\WPBrowser\Module\WPLoader\FactoryStore
@@ -208,8 +219,21 @@ class WPLoader extends Module
         $this->initialize();
     }
 
+    /**
+     * Initializes the module making some initial checks and setting up the paths.
+     *
+     * @throws ModuleConfigException If the WordPress root directory specified in the configuration is not valid.
+     * @throws ModuleConflictException If a *Db module is loaded alongside this one and the settings of each are not
+     *                                 compatible with each other.
+     */
     protected function initialize()
     {
+        $this->config = new Configuration($this->config, [
+            'wpRootDir' => 'wpRootFolder',
+            'pluginsDir' => 'pluginsFolder',
+            'contentDir' => 'contentFolder'
+        ]);
+
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors.
@@ -257,14 +281,18 @@ class WPLoader extends Module
     }
 
     /**
-     * @return string
+     * Parses and validates the WordPress root directory path from the configuration.
+     *
+     * @param string $path An optional path to append to the WordPress root folder path.
+     *
+     * @return string The absolute path to the WordPress root directory.
      */
-    protected function getWpRootFolder()
+    protected function getWpRootFolder($path = '')
     {
         if (empty($this->wpRootFolder)) {
             $wpRootFolder = $this->config['wpRootFolder'];
             // Maybe the user is using the `~` symbol for home?
-            $wpRootFolder = Utils::homeify($wpRootFolder);
+            $wpRootFolder = resolvePath($wpRootFolder);
             // Remove `\ ` spaces in folder paths.
             $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
             // Resolve to real path if relative or symlinked.
@@ -272,10 +300,10 @@ class WPLoader extends Module
                 $wpRootFolder = $realPath;
             }
             // Allow me not to bother with trailing slashes.
-            $this->wpRootFolder = Utils::untrailslashit($wpRootFolder) . DIRECTORY_SEPARATOR;
+            $this->wpRootFolder = untrailslashit($wpRootFolder) . '/';
         }
 
-        return $this->wpRootFolder;
+        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . unleadslashit($path);
     }
 
     /**
@@ -312,7 +340,8 @@ class WPLoader extends Module
      */
     public function _loadWordpress()
     {
-        $this->defineGlobals();
+        $this->loadConfigFile();
+        $this->defineConstants($this->_getConstants());
 
         if ($this->config['multisite']) {
             $this->debug('Running as multisite');
@@ -345,16 +374,17 @@ class WPLoader extends Module
      * The method replaces the "wp-tests-config.php" file the original
      * testing workflow included to allow run-time customization of the
      * globals in a Codeception friendly way.
+     *
+     * @return array<string,string|int> The map of the defined constants.
+     *
+     * @throws ModuleConfigException If a `configFile` parameter is defined in the configuration, but cannot be found.
      */
-    protected function defineGlobals()
+    public function _getConstants()
     {
         $wpRootFolder = $this->getWpRootFolder();
 
-        // load an extra config file if any
-        $this->loadConfigFile();
-
         $constants = [
-            // by default install WordPress in an isolated process
+            // By default install WordPress in an isolated process.
             'WPCEPT_ISOLATED_INSTALL' => $this->requiresIsolatedInstallation(),
             'ABSPATH'                 => $wpRootFolder,
             'DB_NAME'                 => $this->config['dbName'],
@@ -373,22 +403,23 @@ class WPLoader extends Module
             'WP_TESTS_MULTISITE'      => $this->config['multisite'],
         ];
 
-        foreach ($constants as $key => $value) {
-            if (! defined($key)) {
-                define($key, $value);
-            }
+        if (! defined('WP_PLUGIN_DIR') && ! empty($this->config['pluginsFolder'])) {
+            $constants['WP_PLUGIN_DIR'] =  $this->getPluginsFolder();
         }
 
-        if (! defined('WP_PLUGIN_DIR') && ! empty($this->config['pluginsFolder'])) {
-            define('WP_PLUGIN_DIR', $this->getPluginsFolder());
+        if (! defined('WP_CONTENT_DIR') && ! empty($this->config['contentFolder'])) {
+            $constants['WP_CONTENT_DIR'] =  $this->getContentFolder();
         }
+
+        return $constants;
     }
 
     /**
-     * @param  string  $folder  = null The absolute path to the WordPress root
-     *                          installation folder.
+     * Loads an extra configuration file, if specified in the user configuration.
      *
-     * @throws ModuleConfigException
+     * @param null|string $folder The directory to load configuration files from.
+     *
+     * @throws ModuleConfigException If the specified configuration file cannot be found.
      */
     protected function loadConfigFile($folder = null)
     {
@@ -426,51 +457,49 @@ class WPLoader extends Module
      */
     public function getPluginsFolder($path = '')
     {
-        if (! empty($this->pluginsFolder)) {
-            return empty($path) ? $this->pluginsFolder : $this->pluginsFolder . '/' . ltrim($path, '\\/');
+        if (! empty($this->pluginDir)) {
+            return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
         }
 
-        $candidate = $this->config['pluginsFolder'];
-
-        if (is_dir($candidate)) {
-            // Maybe an absolute path?
-            $pluginsPath = $candidate;
+        if (defined('WP_PLUGIN_DIR')) {
+            $candidate = WP_PLUGIN_DIR;
+        } elseif (! empty($this->config['pluginsFolder'])) {
+            $candidate = $this->config['pluginsFolder'];
         } else {
-            // Maybe a relative path?
-            $pluginsPath = defined('WP_PLUGIN_DIR') ?
-                WP_PLUGIN_DIR
-                : $this->getWpRootFolder() . Utils::unleadslashit($this->config['pluginsFolder']);
+            $candidate = $this->getContentFolder('plugins');
         }
 
-        $realpath = realpath($pluginsPath);
-
-        if ($realpath !== false) {
-            $pluginsPath = $realpath;
-        }
-
-        if (! file_exists($pluginsPath)) {
+        try {
+            $resolved = resolvePath($candidate, $this->getWpRootFolder());
+        } catch (\Exception $e) {
             throw new ModuleConfigException(
                 __CLASS__,
-                "The path to the plugins folder ('{$pluginsPath}') doesn't exist."
+                "The path to the plugins directory ('{$candidate}') doesn't exist."
             );
         }
 
-        $this->pluginsFolder = Utils::untrailslashit($pluginsPath);
+        $this->pluginDir = untrailslashit($resolved);
 
-        return empty($path) ? $this->pluginsFolder : $this->pluginsFolder . '/' . ltrim($path, '\\/');
+        return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
     }
 
+    /**
+     * Bootstraps the WordPress installation using the same steps taken by the Core PHPUnit test suite.
+     */
     protected function bootstrapWP()
     {
         $this->ensureServerVars();
 
         $this->setupLoadWatchers();
-        include_once Utils::untrailslashit($this->wpRootFolder) . '/wp-load.php';
+        include_once untrailslashit($this->wpRootFolder) . '/wp-load.php';
         $this->removeLoadWatchers();
 
         $this->setupCurrentSite();
     }
 
+    /**
+     * Sets up the required `$_SERVER` variables to ensure the WordPress installation will work correctly.
+     */
     protected function ensureServerVars()
     {
         $serverDefaults = [
@@ -801,27 +830,27 @@ class WPLoader extends Module
     /**
      * Returns an array of the configuration files specified with the `configFile` parameter of the module configuarion.
      *
-     * @param string|null $folder The start directory to search for configuration files. If not found in the starting
+     * @param string|null $root   The start directory to search for configuration files. If not found in the starting
      *                            directory, then files will be searched in the directory parents.
      *
      * @return array<string> An array of configuration files absolute paths.
      *
      * @throws ModuleConfigException If a specified configuration file does not exist.
      */
-    public function _getConfigFiles($folder = null)
+    public function _getConfigFiles($root = null)
     {
-        $folder = $folder ?: codecept_root_dir();
+        $root = $root ?: codecept_root_dir();
 
-        $frags = $this->config['configFile'];
+        $candidates  = $this->config['configFile'];
         $configFiles = [];
 
-        foreach ((array)$frags as $frag) {
-            if (! empty($frag)) {
-                $configFile = Utils::findHereOrInParent($frag, $folder);
+        foreach ((array)$candidates as $candidate) {
+            if (! empty($candidate)) {
+                $configFile = findHereOrInParent($candidate, $root);
                 if (! file_exists($configFile)) {
                     throw new ModuleConfigException(
                         __CLASS__,
-                        "\nConfig file `{$frag}` could not be found in WordPress root folder or above."
+                        "\nConfig file `{$candidate}` could not be found in WordPress root folder or above."
                     );
                 }
                 $configFiles[] = $configFile;
@@ -829,5 +858,63 @@ class WPLoader extends Module
         }
 
         return array_unique($configFiles);
+    }
+
+    /**
+     * Defines the constants required to set up the WordPress installation.
+     *
+     * @param array<string,int|string> $constants The map of the constants to define.
+     */
+    protected function defineConstants(array $constants = [])
+    {
+        foreach ($constants as $key => $value) {
+            if (! defined($key)) {
+                define($key, $value);
+            }
+        }
+    }
+
+    /**
+     * Returns the absolute path to the WordPress content directory.
+     *
+     * @example
+     * ```php
+     * $content = $this->getContentFolder();
+     * $themes = $this->getContentFolder('themes');
+     * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
+     * ```
+     *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
+     *
+     * @throws ModuleConfigException If the path to the content directory cannot be resolved.
+     */
+    public function getContentFolder($path = '')
+    {
+        if (! empty($this->contentDir)) {
+            return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
+        }
+
+        if (defined('WP_CONTENT_DIR')) {
+            $candidate = WP_CONTENT_DIR ;
+        } elseif (!empty($this->config['contentFolder'])) {
+            $candidate = $this->config['contentFolder'];
+        } else {
+            $candidate = $this->getWpRootFolder('wp-content');
+        }
+
+        try {
+            $resolved = resolvePath($candidate, $this->getWpRootFolder());
+        } catch (\Exception $e) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                "The path to the content directory ('{$candidate}') doesn't exist."
+            );
+        }
+
+        $this->contentDir = untrailslashit($resolved);
+
+        return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
     }
 }

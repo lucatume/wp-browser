@@ -4,7 +4,6 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
-use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\Adapters\WP;
@@ -169,15 +168,9 @@ class WPLoaderTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        $root = vfsStream::setup();
-        $wpFolder = vfsStream::newDirectory('wp');
-        $wpLoadFile = vfsStream::newFile('wp-load.php', 0777);
-        $wpFolder->addChild($wpLoadFile);
-        $root->addChild($wpFolder);
-
         $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
         $this->config = [
-            'wpRootFolder' => $root->url().'/wp',
+            'wpRootFolder' => codecept_data_dir('folder-structures/default-wp'),
             'dbName' => 'someDb',
             'dbHost' => 'localhost',
             'dbUser' => 'somePass',
@@ -193,16 +186,12 @@ class WPLoaderTest extends \Codeception\Test\Unit
      */
     public function should_accept_absolute_paths_in_the_plugins_dir_parameter()
     {
-        $pluginsRoot = vfsStream::setup();
-        $pluginsDir  = vfsStream::newDirectory('plugins');
-        $pluginsRoot->addChild($pluginsDir);
-
-        $this->config['pluginsFolder'] = $pluginsRoot->url() . '/plugins';
+        $this->config['pluginsFolder'] = __DIR__;
 
         $wpLoader = $this->make_instance();
 
-        $this->assertEquals($pluginsRoot->url() . '/plugins', $wpLoader->getPluginsFolder());
-        $this->assertEquals($pluginsRoot->url() . '/plugins/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
+        $this->assertEquals(__DIR__, $wpLoader->getPluginsFolder());
+        $this->assertEquals(__DIR__ . '/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
     }
 
     /**
@@ -212,9 +201,9 @@ class WPLoaderTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_absolute_path_for_plugins_folder_does_not_exist()
     {
-        $pluginsRoot = vfsStream::setup();
+        $pluginsRoot = __DIR__ . '/foo/bar';
 
-        $this->config['pluginsFolder'] = $pluginsRoot->url() . '/plugins';
+        $this->config['pluginsFolder'] = $pluginsRoot . '/plugins';
 
         $wpLoader = $this->make_instance();
 
@@ -254,15 +243,12 @@ class WPLoaderTest extends \Codeception\Test\Unit
         if (!extension_loaded('uopz')) {
             $this->markTestSkipped('This test cannot run without the uopz extension');
         }
-        $pluginsRoot = vfsStream::setup();
-        $pluginsDir  = vfsStream::newDirectory('plugins');
-        $pluginsRoot->addChild($pluginsDir);
-        uopz_redefine('WP_PLUGIN_DIR', $pluginsRoot->url() . '/plugins');
+        uopz_redefine('WP_PLUGIN_DIR', __DIR__);
 
         $wpLoader = $this->make_instance();
 
-        $this->assertEquals($pluginsRoot->url() . '/plugins', $wpLoader->getPluginsFolder());
-        $this->assertEquals($pluginsRoot->url() . '/plugins/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
+        $this->assertEquals(__DIR__, $wpLoader->getPluginsFolder());
+        $this->assertEquals(__DIR__. '/foo/bar', $wpLoader->getPluginsFolder('foo/bar'));
     }
 
     /**
@@ -301,5 +287,124 @@ class WPLoaderTest extends \Codeception\Test\Unit
             __FILE__,
             reset($filesHere)
         ], $wpLoader->_getConfigFiles(__DIR__));
+    }
+
+    /**
+     * It should allow setting the content folder from the module configuration
+     *
+     * @test
+     */
+    public function should_allow_setting_the_content_folder_from_the_module_configuration()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        uopz_undefine('WP_CONTENT_DIR');
+        uopz_undefine('WP_PLUGIN_DIR');
+
+        $wpRootDir     = codecept_data_dir('folder-structures/wp-root-folder-2/wp');
+        $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
+
+        $this->config['wpRootFolder '] = $wpRootDir;
+        $this->config['contentFolder'] = $contentDir;
+
+        $wpLoader  = $this->make_instance();
+        $constants = $wpLoader->_getConstants();
+
+        $this->assertArrayHasKey('WP_CONTENT_DIR', $constants);
+        $this->assertArrayNotHasKey('WP_PLUGIN_DIR', $constants);
+        $this->assertEquals($contentDir, $constants['WP_CONTENT_DIR']);
+        $this->assertEquals($contentDir . '/plugins', $wpLoader->getPluginsFolder());
+    }
+
+    /**
+     * It should get the content directory path from constant if set
+     *
+     * @test
+     */
+    public function should_get_the_content_directory_path_from_constant_if_set()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
+
+        uopz_redefine('WP_CONTENT_DIR', $contentDir);
+        uopz_undefine('WP_PLUGIN_DIR');
+
+        $wpRootDir     = codecept_data_dir('folder-structures/wp-root-folder-2/wp');
+
+        $this->config['wpRootFolder '] = $wpRootDir;
+        $this->config['contentFolder'] = $contentDir;
+
+        $wpLoader  = $this->make_instance();
+        $constants = $wpLoader->_getConstants();
+
+        $this->assertArrayNotHasKey('WP_CONTENT_DIR', $constants);
+        $this->assertArrayNotHasKey('WP_PLUGIN_DIR', $constants);
+        $this->assertEquals($contentDir, $wpLoader->getContentFolder());
+        $this->assertEquals($contentDir . '/plugins', $wpLoader->getPluginsFolder());
+    }
+
+    /**
+     * It should allow setting content and pluging dir independently
+     *
+     * @test
+     */
+    public function should_allow_setting_content_and_pluging_dir_independently()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        uopz_undefine('WP_CONTENT_DIR');
+        uopz_undefine('WP_PLUGIN_DIR');
+
+        $wpRootDir     = codecept_data_dir('folder-structures/wp-root-folder-2/wp');
+        $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
+        $pluginsDir = __DIR__;
+
+        $this->config['wpRootFolder '] = $wpRootDir;
+        $this->config['contentFolder'] = $contentDir;
+        $this->config['pluginsFolder'] = $pluginsDir;
+
+        $wpLoader  = $this->make_instance();
+        $constants = $wpLoader->_getConstants();
+
+        $this->assertArrayHasKey('WP_CONTENT_DIR', $constants);
+        $this->assertArrayHasKey('WP_PLUGIN_DIR', $constants);
+        $this->assertEquals($contentDir, $wpLoader->getContentFolder());
+        $this->assertEquals($pluginsDir, $wpLoader->getPluginsFolder());
+    }
+
+    /**
+     * It should allow setting content and plugin dir w/ constants
+     *
+     * @test
+     */
+    public function should_allow_setting_content_and_plugin_dir_w_constants()
+    {
+        if (!extension_loaded('uopz')) {
+            $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        $wpRootDir     = codecept_data_dir('folder-structures/wp-root-folder-2/wp');
+        $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
+        $pluginsDir = __DIR__;
+
+        uopz_redefine('WP_CONTENT_DIR', $contentDir);
+        uopz_redefine('WP_PLUGIN_DIR', $pluginsDir);
+
+        $this->config['wpRootFolder '] = $wpRootDir;
+
+        $wpLoader  = $this->make_instance();
+        $constants = $wpLoader->_getConstants();
+
+        $this->assertArrayNotHasKey('WP_CONTENT_DIR', $constants);
+        $this->assertArrayNotHasKey('WP_PLUGIN_DIR', $constants);
+        $this->assertEquals($contentDir, $wpLoader->getContentFolder());
+        $this->assertEquals($pluginsDir, $wpLoader->getPluginsFolder());
     }
 }

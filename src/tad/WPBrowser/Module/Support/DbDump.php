@@ -5,6 +5,7 @@ namespace tad\WPBrowser\Module\Support;
 use Symfony\Component\Yaml\Exception\DumpException;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\pregErrorMessage;
+use function tad\WPBrowser\untrailslashit;
 
 class DbDump
 {
@@ -300,6 +301,6 @@ class DbDump
             . $originalUrlFrags['host'] .
             $originalUrlFrags['path'];
 
-        $this->originalUrl = Utils::untrailslashit($originalUrl);
+        $this->originalUrl = untrailslashit($originalUrl);
     }
 }

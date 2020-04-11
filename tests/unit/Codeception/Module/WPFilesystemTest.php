@@ -13,6 +13,7 @@ use function tad\WPBrowser\normalizeNewLine;
 use function tad\WPBrowser\readPrivateProperty;
 use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\setPrivateProperties;
+use function tad\WPBrowser\untrailslashit;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
@@ -123,7 +124,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->_initialize();
 
         $moduleConfig = $sut->_getConfig();
-        $this->assertEquals(Utils::untrailslashit($wpRoot) . '/', $moduleConfig['wpRootFolder']);
+        $this->assertEquals(untrailslashit($wpRoot) . '/', $moduleConfig['wpRootFolder']);
         $this->assertEquals($wpRoot . '/wp-content/themes/', $moduleConfig['themes']);
         $this->assertEquals($wpRoot . '/wp-content/plugins/', $moduleConfig['plugins']);
         $this->assertEquals($wpRoot . '/wp-content/mu-plugins/', $moduleConfig['mu-plugins']);

@@ -18,7 +18,9 @@ use tad\WPBrowser\Events\EventDispatcherAdapter;
 trait WithEvents
 {
     /**
-     * Adds a callback to be performed on a global runner event..
+     * Adds a callback to be performed on a global runner event.
+     *
+     * The method name recalls the WordPress framework `add_action` function as it works pretty muche the same.
      *
      * @param string   $eventName The event to run the callback on.
      * @param callable $listener  The callback to run on the event.
@@ -29,6 +31,21 @@ trait WithEvents
     protected function addAction($eventName, $listener, $priority = 0)
     {
         $this->getEventDispatcher()->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * Dispatches an action using the global event dispatcher.
+     *
+     * The method name recalls the WordPress framework `do_action` function as it works pretty muche the same.
+     *
+     * @param string              $eventName The name of the event to dispatch.
+     * @param mixed|null          $origin    The event origin: an object, a string or null.
+     * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
+     *                                       event.
+     */
+    protected function doAction($eventName, $origin = null, $context = [])
+    {
+        $this->getEventDispatcher()->dispatch($eventName, $origin, $context);
     }
 
     /**

@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- support for the `contentFolder` parameter in the `WPLoader` configuration. This is the equivalent of setting the `WP_CONTENT_DIR` constant in a custom configuration file, fixed #342
+
+### Removed
+
+- internal `tad\WPBrowser\Filesystem\Utils` class in favour of `filesystem` functions
+
 ## [2.4.1] 2020-04-10;
 
 ### Changed

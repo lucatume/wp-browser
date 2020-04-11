@@ -34,13 +34,23 @@ class Map implements \ArrayAccess
     protected $map = [];
 
     /**
+     * A map of the aliases, aliases to sources.
+     *
+     * @var array<string,string>
+     */
+    protected $aliases;
+
+
+    /**
      * Map constructor.
      *
      * @param array<string,mixed> $map The map of values underlying this map.
+     * @param array<string,mixed> $aliases The map of aliases for the map.
      */
-    public function __construct(array $map)
+    public function __construct(array $map, array $aliases = [])
     {
         $this->map = $map;
+        $this->aliases = $aliases;
     }
 
     /**
@@ -52,6 +62,7 @@ class Map implements \ArrayAccess
      */
     public function __invoke($key, $default = null)
     {
+        $key = $this->redirectAlias($key);
         return isset($this->map[$key]) ? $this->map[$key] : $default;
     }
 
@@ -61,6 +72,7 @@ class Map implements \ArrayAccess
      */
     public function offsetExists($offset)
     {
+        $offset = $this->redirectAlias($offset);
         return isset($this->map[$offset]);
     }
 
@@ -69,6 +81,7 @@ class Map implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
+        $offset = $this->redirectAlias($offset);
         return isset($this->map[$offset]) ? $this->map[$offset] : null;
     }
 
@@ -77,6 +90,7 @@ class Map implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
+        $offset = $this->redirectAlias($offset);
         $this->map[$offset] = $value;
     }
 
@@ -85,6 +99,7 @@ class Map implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
+        $offset = $this->redirectAlias($offset);
         unset($this->map[$offset]);
     }
 
@@ -109,6 +124,38 @@ class Map implements \ArrayAccess
      */
     public function get($offset, $default = null)
     {
+        $offset = $this->redirectAlias($offset);
         return isset($this->map[ $offset ]) ? $this->map[ $offset ] : $default;
+    }
+
+    /**
+     * Redirects an offset to the real one if the specified offset is an alias.
+     *
+     * @param string $offset The offset to redirect.
+     *
+     * @return string The real offset key.
+     */
+    protected function redirectAlias($offset)
+    {
+        if (array_key_exists($offset, $this->aliases)) {
+            $offset = $this->aliases[ $offset ];
+        }
+
+        return $offset;
+    }
+
+    /**
+     * Sets aliases that will allow calling a value with a different key.
+     *
+     * @param array<string,string> $aliases  A map of each alias and the source key.
+     * @param bool                 $override Whether previous aliases should be overridden or not.
+     */
+    public function setAliases(array $aliases, $override = true)
+    {
+        if ($override) {
+            $this->aliases = $aliases;
+        } else {
+            $this->aliases = array_merge($this->aliases, $aliases);
+        }
     }
 }
