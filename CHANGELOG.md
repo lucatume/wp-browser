@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.2] 2020-04-11;
+
 ### Added
 
 - support for the `contentFolder` parameter in the `WPLoader` configuration. This is the equivalent of setting the `WP_CONTENT_DIR` constant in a custom configuration file, fixed #342
@@ -1291,4 +1293,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.3.4]: https://github.com/lucatume/wp-browser/compare/2.3.3...2.3.4
 [2.4.0]: https://github.com/lucatume/wp-browser/compare/2.3.4...2.4.0
 [2.4.1]: https://github.com/lucatume/wp-browser/compare/2.4.0...2.4.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.1...HEAD
+[2.4.2]: https://github.com/lucatume/wp-browser/compare/2.4.1...2.4.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.2...HEAD
