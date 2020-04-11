@@ -5,7 +5,6 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
-use Prophecy\Argument;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\Adapters\WP;

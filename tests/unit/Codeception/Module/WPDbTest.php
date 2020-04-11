@@ -2,11 +2,9 @@
 
 namespace Codeception\Module;
 
-use cli\Arguments;
 use Codeception\Lib\Driver\ExtendedMySql;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
-use Prophecy\Argument;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\StubProphecy\Arg;
 use tad\WPBrowser\Traits\WithStubProphecy;
