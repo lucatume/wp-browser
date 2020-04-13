@@ -72,7 +72,7 @@ class Events extends Extension
 
         $event = $callArgs[0];
 
-        $suites = (array) $this->config['suites'];
+        $suites = isset($this->config['suites']) ? (array) $this->config['suites'] : false;
         if ($event instanceof SuiteEvent && ! empty($suites)) {
             if (! in_array($event->getSuite()->getName(), $suites, true)) {
                 static::$doNotCapture = true;

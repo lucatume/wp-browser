@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.3] 2020-04-13;
+
+### Fixed
+
+- suites configuration parameter handling in the `tad\WPBrowser\Extension\Events` extension.
+
 ## [2.4.2] 2020-04-11;
 
 ### Added
@@ -1294,4 +1300,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.0]: https://github.com/lucatume/wp-browser/compare/2.3.4...2.4.0
 [2.4.1]: https://github.com/lucatume/wp-browser/compare/2.4.0...2.4.1
 [2.4.2]: https://github.com/lucatume/wp-browser/compare/2.4.1...2.4.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.2...HEAD
+[2.4.3]: https://github.com/lucatume/wp-browser/compare/2.4.2...2.4.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.3...HEAD
