@@ -12,7 +12,11 @@ class wpbrowserTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_a_module_requirement_is_not_satisfied()
     {
-        $this->expectException(ConfigurationException::class);
+	    if (! property_exists(ModuleContainer::class, 'packages')) {
+		    $this->markTestSkipped('This test will require Codeception 4.0+');
+	    }
+
+	    $this->expectException(ConfigurationException::class);
 
         requireCodeceptionModules('TestModule', ['NotExisting']);
     }
@@ -25,7 +29,11 @@ class wpbrowserTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_one_of_required_modules_is_not_present()
     {
-        $this->expectException(ConfigurationException::class);
+	    if (! property_exists(ModuleContainer::class, 'packages')) {
+		    $this->markTestSkipped('This test will require Codeception 4.0+');
+	    }
+
+	    $this->expectException(ConfigurationException::class);
 
         requireCodeceptionModules('TestModule', ['NotExisting', 'Filesystem']);
     }
@@ -37,6 +45,10 @@ class wpbrowserTest extends \Codeception\Test\Unit
      */
     public function should_throw_message_with_information_about_all_missing_requirements()
     {
+	    if (! property_exists(ModuleContainer::class, 'packages')) {
+		    $this->markTestSkipped('This test will require Codeception 4.0+');
+	    }
+
         ModuleContainer::$packages['ModuleOne'] = 'lucatume/module-one';
         ModuleContainer::$packages['ModuleTwo'] = 'lucatume/module-two';
 
@@ -53,6 +65,10 @@ class wpbrowserTest extends \Codeception\Test\Unit
      */
     public function should_not_throw_if_module_requirements_are_met()
     {
-        requireCodeceptionModules('TestModule', [ 'Db', 'Filesystem' ]);
+	    if (! property_exists(ModuleContainer::class, 'packages')) {
+	    	$this->markTestSkipped('This test will require Codeception 4.0+');
+	    }
+
+	    requireCodeceptionModules('TestModule', [ 'Db', 'Filesystem' ]);
     }
 }
