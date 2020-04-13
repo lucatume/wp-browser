@@ -9,7 +9,6 @@ use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use PDO;
 use tad\WPBrowser\Exceptions\DumpException;
-use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
 use tad\WPBrowser\Generators\Links;
@@ -23,9 +22,14 @@ use function tad\WPBrowser\db;
 use function tad\WPBrowser\dsnToMap;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
+use function tad\WPBrowser\requireCodeceptionModules;
 use function tad\WPBrowser\slug;
 use function tad\WPBrowser\unleadslashit;
 use function tad\WPBrowser\untrailslashit;
+
+//phpcs:disable
+requireCodeceptionModules('WPDb', [ 'Db' ]);
+//phpcs:enable
 
 /**
  * An extension of Codeception Db class to add WordPress database specific

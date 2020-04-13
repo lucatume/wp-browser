@@ -136,3 +136,35 @@ function isRegex($string)
         return false;
     }
 }
+
+/**
+ * Builds the string list using `and` for the last element.
+ *
+ * @param array<string> $elements The list elements.
+ *
+ * @return string The list in string format.
+ */
+function andList(array $elements)
+{
+    $list  = '';
+    $count = count($elements);
+
+    if ($count === 0) {
+        return $list;
+    }
+
+    if ($count === 1) {
+        return reset($elements);
+    }
+
+    for ($i = 0; $i < $count; $i ++) {
+        if ($i === 0) {
+            $list .= $elements[$i];
+            continue;
+        }
+        $glue = $i === $count - 1 ? ' and ' : ', ';
+        $list .= $glue . $elements[$i];
+    }
+
+    return $list;
+}

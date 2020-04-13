@@ -4,6 +4,16 @@ This module extends the [Filesystem module](https://codeception.com/docs/modules
 The module provides methods to read, write and update the WordPress filesystem **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 This module also provides methods to scaffold plugins and themes on the fly in the context of tests and auto-remove them after each test.
 
+## Module requirements for Codeception 4.0+
+
+This module requires the `codeception/module-filesystem` Composer package to work when wp-browser is used with Codeception 4.0.  
+
+To install the package run: 
+
+```bash
+composer require --dev codeception/module-filesystem:^1.0
+```
+
 ## Configuration
 
 * `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.

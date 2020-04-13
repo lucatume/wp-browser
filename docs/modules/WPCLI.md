@@ -3,6 +3,16 @@ This module should be used in acceptance and functional tests to setup, or verif
 This module allows invoking any supported [WP-CLI](https://wp-cli.org/) command, refer to the official site for more information.  
 The module will use **its own** version of wp-cli, not the one installed in the machine running the tests to grant isolation from local settings.  
 
+## Module requirements for Codeception 4.0+
+
+This module requires the `codeception/module-cli` Composer package to work when wp-browser is used with Codeception 4.0.  
+
+To install the package run: 
+
+```bash
+composer require --dev codeception/module-cli:^1.0
+```
+
 ## Detecting requests coming from this module 
 When it runs this module will set the `WPBROWSER_HOST_REQUEST` environment variable.  
 You can detect and use that information to, as an example, use the correct database in your test site `wp-config.php` file:

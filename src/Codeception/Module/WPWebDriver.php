@@ -3,6 +3,11 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleException;
+use function tad\WPBrowser\requireCodeceptionModules;
+
+//phpcs:disable
+requireCodeceptionModules('WPWebDriver', [ 'WebDriver' ]);
+//phpcs:enable
 
 /**
  * An extension of Codeception WebDriver module offering specific WordPress browsing methods.

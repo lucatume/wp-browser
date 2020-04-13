@@ -142,4 +142,23 @@ class stringTest extends \Codeception\Test\Unit
     {
         $this->assertEquals($expected, isRegex($candidate));
     }
+
+    public function andListDataProvider()
+    {
+        return [
+        'empty' => [[],''],
+        'one_el' => [['foo'],'foo'],
+        'two_els' => [['foo','bar'],'foo and bar'],
+        'three_els' => [['foo','bar','baz'],'foo, bar and baz'],
+        'four_els' => [['foo','bar','baz','woot'],'foo, bar, baz and woot'],
+        ];
+    }
+    /**
+     * Test andList
+     * @dataProvider andListDataProvider
+     */
+    public function test_and_list($input, $expected)
+    {
+        $this->assertEquals($expected, andList($input));
+    }
 }

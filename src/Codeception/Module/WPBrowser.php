@@ -3,6 +3,11 @@
 namespace Codeception\Module;
 
 use Symfony\Component\BrowserKit\Cookie;
+use function tad\WPBrowser\requireCodeceptionModules;
+
+//phpcs:disable
+requireCodeceptionModules('WPBrowser', [ 'PhpBrowser' ]);
+//phpcs:enable
 
 /**
  * A Codeception module offering specific WordPress browsing methods.

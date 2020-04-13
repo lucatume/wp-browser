@@ -6,6 +6,16 @@ It allows to interact with WordPress on a very high level, using methods like `$
 Due to WordPress reliance on constants, globals and side-effects this module will make requests to WordPress in an insualted manner and reproduce WordPress environment (globals and super-globals) after each response in the tests variable scope.
 The module simulates a user interaction with the site **without Javascript support**, use the [WPWebDriver module](WPWebDriver.md) for any kind of testing that requires Javascript-based interaction with the site.
 
+## Module requirements for Codeception 4.0+
+
+This module requires the `codeception/lib-innerbrowser` Composer package to work when wp-browser is used with Codeception 4.0.  
+
+To install the package run: 
+
+```bash
+composer require --dev codeception/lib-innerbrowser:^1.0
+```
+
 ## Detecting requests coming from this module 
 When it runs this module will set the `WPBROWSER_HOST_REQUEST` environment variable.  
 You can detect and use that information to, as an example, use the correct database in your test site `wp-config.php` file:

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- clearer messaging for missing Codeception 4.0 modules in wp-browser modules requiring it, fixes #365
+
 ## [2.4.3] 2020-04-13;
 
 ### Fixed

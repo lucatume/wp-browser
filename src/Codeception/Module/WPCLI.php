@@ -11,6 +11,11 @@ use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Traits\WithWpCli;
 use function tad\WPBrowser\buildCommandline;
+use function tad\WPBrowser\requireCodeceptionModules;
+
+//phpcs:disable
+requireCodeceptionModules('WPCLI', [ 'Cli' ]);
+//phpcs:enable
 
 /**
  * Class WPCLI

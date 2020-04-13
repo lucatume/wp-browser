@@ -6,6 +6,16 @@ This module extends the [PHPBrowser module](https://codeception.com/docs/modules
 
 The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver.md).  
 
+## Module requirements for Codeception 4.0+
+
+This module requires the `codeception/module-phpbrowser` Composer package to work when wp-browser is used with Codeception 4.0.  
+
+To install the package run: 
+
+```bash
+composer require --dev codeception/module-phpbrowser:^1.0
+```
+
 ## Configuration
 
 Since this module extends the `PHPBrowser` module provided by Codeception, please refer to the [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for more information about the base configuration parameters.  

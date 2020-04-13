@@ -3,6 +3,16 @@ This module should be used in acceptance and functional tests, see [levels of te
 This module extends the [Db module](https://codeception.com/docs/modules/Db) adding WordPress-specific configuration parameters and methods.  
 The module provides methods to read, write and update the WordPress database **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 
+## Module requirements for Codeception 4.0+
+
+This module requires the `codeception/module-db` Composer package to work when wp-browser is used with Codeception 4.0.  
+
+To install the package run: 
+
+```bash
+composer require --dev codeception/module-db:^1.0
+```
+
 ## Backup your content
 This module, like the [Codeception Db](https://codeception.com/docs/modules/Db) one it extends, by default **will load a databse dump in the database it's using.**  
 This means that **the database contents will be replaced by the dump contents** on each run of a suite using the module.  

@@ -7,7 +7,7 @@
 
 namespace tad\WPBrowser;
 
-use Codeception\Configuration;
+use Codeception\Lib\ModuleContainer;
 
 /**
  * Returns the wp-browser package root directory.
@@ -60,4 +60,55 @@ function includesDir($path = '')
     return empty($path) ?
         $includesDir
         : $includesDir . DIRECTORY_SEPARATOR . ltrim($path, '\\/');
+}
+
+/**
+ * Checks the requirements of a wp-browser module to make sure the required Codeception modules are present.
+ *
+ * @param string        $module          The name of the module name this check is for, this will be used to build the
+ *                                       error message if the module requiremnents are not satisfied.
+ * @param array<string> $requiredModules The list of Codeception modules, or components, required by the wp-browser
+ *                                       module
+ *
+ * @throws \Codeception\Exception\ConfigurationException If one or more requirements for a wp-browser module are not
+ *                                                       satisfied.
+ */
+function requireCodeceptionModules($module, array $requiredModules = [])
+{
+    if (! property_exists(ModuleContainer::class, 'packages')) {
+        return;
+    }
+
+    $additionalPackages = [
+        'Framework' => 'codeception/lib-innerbrowser'
+    ];
+
+    $packages = array_merge(ModuleContainer::$packages, $additionalPackages);
+    $missing  = [];
+
+    foreach ($requiredModules as $moduleName) {
+        if (! class_exists(ModuleContainer::MODULE_NAMESPACE . $moduleName)) {
+            $modulePackage          = isset($packages[ $moduleName ]) ? $packages[ $moduleName ] : 'unknown package';
+            $missing[ $moduleName ] = $modulePackage;
+            continue;
+        }
+    }
+
+    if (!count($missing)) {
+        return;
+    }
+        $missingModulesNames  = array_keys($missing);
+        $missingModulesString = andList($missingModulesNames);
+
+        $message = sprintf(
+            'The %1$s module requires the %2$s Codeception module%3$s.' . PHP_EOL .
+            'Use Composer to install the corresponding package%3$s:' . PHP_EOL .
+            '"composer require %4$s --dev"',
+            $module,
+            $missingModulesString,
+            count($missing) > 1 ? 's' : '',
+            implode(' ', $missing)
+        );
+
+        throw new \Codeception\Exception\ConfigurationException($message);
 }

@@ -9,8 +9,13 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use function tad\WPBrowser\parseUrl;
+use function tad\WPBrowser\requireCodeceptionModules;
 use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\untrailslashit;
+
+//phpcs:disable
+requireCodeceptionModules('WordPress', [ 'Framework' ]);
+//phpcs:enable
 
 /**
  * A module dedicated to functional testing using acceptance-like methods.

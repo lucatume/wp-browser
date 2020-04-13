@@ -10,9 +10,14 @@ use PHPUnit\Framework\Assert as PHPUnitAssert;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\buildDate;
+use function tad\WPBrowser\requireCodeceptionModules;
 use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\unleadslashit;
 use function tad\WPBrowser\untrailslashit;
+
+//phpcs:disable
+requireCodeceptionModules('WPFilesystem', [ 'Filesystem' ]);
+//phpcs:enable
 
 /**
  * Class WPFilesystem
