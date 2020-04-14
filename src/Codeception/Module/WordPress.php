@@ -14,7 +14,7 @@ use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\untrailslashit;
 
 //phpcs:disable
-requireCodeceptionModules('WordPress', [ 'Framework' ]);
+requireCodeceptionModules('WordPress', [ '\\Codeception\\Lib\\Framework' ]);
 //phpcs:enable
 
 /**

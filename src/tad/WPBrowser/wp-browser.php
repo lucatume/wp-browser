@@ -80,14 +80,14 @@ function requireCodeceptionModules($module, array $requiredModules = [])
     }
 
     $additionalPackages = [
-        'Framework' => 'codeception/lib-innerbrowser'
+        '\\Codeception\\Lib\\Framework' => 'codeception/lib-innerbrowser'
     ];
 
     $packages = array_merge(ModuleContainer::$packages, $additionalPackages);
     $missing  = [];
 
     foreach ($requiredModules as $moduleName) {
-        if (! class_exists(ModuleContainer::MODULE_NAMESPACE . $moduleName)) {
+        if (! (class_exists(ModuleContainer::MODULE_NAMESPACE . $moduleName) || class_exists($moduleName))) {
             $modulePackage          = isset($packages[ $moduleName ]) ? $packages[ $moduleName ] : 'unknown package';
             $missing[ $moduleName ] = $modulePackage;
             continue;
@@ -101,7 +101,7 @@ function requireCodeceptionModules($module, array $requiredModules = [])
         $missingModulesString = andList($missingModulesNames);
 
         $message = sprintf(
-            'The %1$s module requires the %2$s Codeception module%3$s.' . PHP_EOL .
+            'The %1$s module requires the %2$s Codeception module%3$s or component%3$s.' . PHP_EOL .
             'Use Composer to install the corresponding package%3$s:' . PHP_EOL .
             '"composer require %4$s --dev"',
             $module,
