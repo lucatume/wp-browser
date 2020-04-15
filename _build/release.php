@@ -93,7 +93,7 @@ switch ( $releaseType ) {
 		break;
 }
 
-$releaseNotesHeader = "## {$releaseVersion}\n\n";
+$releaseNotesHeader = "{$releaseVersion}\n\n";
 $fullReleaseNotes   = $releaseNotesHeader . $changelog( 'notes' );
 
 echo "Latest release: \e[32m" . $changelog( 'latestVersion' ) . "\e[0m\n";
@@ -109,7 +109,7 @@ $releaseCommand = 'hub release create -F .rel ' . $releaseVersion;
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
 if ( $notInteractive || preg_match( '/y/i', readline( 'Do you want to proceed? ' ) ) ) {
-	shell_exec( $releaseCommand );
+	passthru( $releaseCommand );
 } else {
 	echo "Canceling\n";
 }
