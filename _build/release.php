@@ -109,8 +109,7 @@ $releaseCommand = 'git release create -F .rel ' . $releaseVersion;
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
 if ( $notInteractive || preg_match( '/y/i', readline( 'Do you want to proceed? ' ) ) ) {
-	echo "Doing";
-//	shell_exec( $releaseCommand );
+	shell_exec( $releaseCommand );
 } else {
 	echo "Canceling\n";
 }
