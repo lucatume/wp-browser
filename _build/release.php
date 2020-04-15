@@ -104,7 +104,7 @@ echo "\n\n";
 
 file_put_contents( $root . '/.rel', $fullReleaseNotes );
 
-$releaseCommand = 'git release create -F .rel ' . $releaseVersion;
+$releaseCommand = 'hub release create -F .rel ' . $releaseVersion;
 
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
