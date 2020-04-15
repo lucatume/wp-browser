@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- set the `admin_email_lifespan` option value to prevent showing the administration email verification in the `WPDb` module, after the database is imported; fixes #358
+- `WPDb::EVENT_AFTER_DB_PREPARE` action after an imported datababse is prepared by applying quality-of-testing-life "patches" to the database
+
 ## [2.4.4] 2020-04-14;
 
 ### Added

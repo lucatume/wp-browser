@@ -18,6 +18,7 @@ use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
+use tad\WPBrowser\Traits\WithWordPressDatabase;
 use function tad\WPBrowser\db;
 use function tad\WPBrowser\dsnToMap;
 use function tad\WPBrowser\ensure;
@@ -37,12 +38,13 @@ requireCodeceptionModules('WPDb', [ 'Db' ]);
  */
 class WPDb extends Db
 {
-
     use WithEvents;
 
     const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
     const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
     const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
+    const EVENT_AFTER_DB_PREPARE =  'WPDb.after_db_prepare';
+    const ADMIN_EMAIL_LIFESPAN = 2533080438;
 
     /**
      * @var \tad\WPBrowser\Module\Support\DbDump
@@ -194,6 +196,11 @@ class WPDb extends Db
      */
     public function _initialize(Tables $table = null)
     {
+        /**
+         * Dispatches an event before the WPDb module initializes.
+         *
+         * @param WPDb $this The current module instance.
+         */
         $this->doAction(static::EVENT_BEFORE_INITIALIZE, $this);
 
         $this->createDatabasesIfNotExist($this->config);
@@ -204,6 +211,11 @@ class WPDb extends Db
         $this->tables = $table ?: new Tables();
         $this->didInit = true;
 
+        /**
+         * Dispatches an event after the WPDb module has initialized.
+         *
+         * @param WPDb $this The current module instance.
+         */
         $this->doAction(static::EVENT_AFTER_INITIALIZE, $this);
     }
 
@@ -3969,6 +3981,12 @@ class WPDb extends Db
         parent::loadDumpUsingDriver($databaseKey);
     }
 
+    public function _loadDump($databaseKey = null, $databaseConfig = null)
+    {
+        parent::_loadDump($databaseKey, $databaseConfig);
+        $this->prepareDd($databaseConfig);
+    }
+
     /**
      * Checks that a post to term relation does not exist in the database.
      *
@@ -4033,6 +4051,11 @@ class WPDb extends Db
     {
         parent::_beforeSuite($settings);
 
+        /**
+         * Dispatches an event after the WPDb module handled the BEFORE_SUITE event.
+         *
+         * @param WPDb $this The current module instance.
+         */
         $this->doAction(static::EVENT_BEFORE_SUITE, $this);
     }
 
@@ -4082,5 +4105,23 @@ class WPDb extends Db
                 }
             }
         }
+    }
+
+    /**
+     * Prepares the WordPress database with some test-quality-of-life-improvements.
+     */
+    protected function prepareDd()
+    {
+        if (empty($this->config['letAdminEmailVerification'])) {
+            $this->haveOptionInDatabase('admin_email_lifespan', self::ADMIN_EMAIL_LIFESPAN);
+        }
+
+        /**
+         * Dispatches an event after the database has been prepared.
+         *
+         * @param WPDb $origin This objects.
+         * @param array<string,mixed> $config The current WPDb module configuration.
+         */
+        $this->doAction(static::EVENT_AFTER_DB_PREPARE, $this, $this->config);
     }
 }

@@ -36,7 +36,7 @@ else {
 	$activePlugins = [];
 }
 
-// If Cron is not disable it's disabled here.
+// If Cron is not disabled, then disable it now.
 if ( ! isset( $configuration['constants']['DISABLE_WP_CRON'] ) ) {
     print( "Disabling cron\n" );
     $configuration['constants']['DISABLE_WP_CRON'] = true;
