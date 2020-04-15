@@ -21,7 +21,7 @@ tags
 *.swp
 
 # Release notes
-rel
+.rel
 
 # Backup files and folders
 *.bak

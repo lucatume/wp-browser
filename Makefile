@@ -11,7 +11,7 @@ PROJECT_NAME = $(notdir $(PWD))
 .SILENT:
 
 # Define what targets should always run.
-.PHONY: docker_pull lint sniff fix fix_n_sniff phpstan pre_commit clean docs check_exports build_suites test debug
+.PHONY: docker_pull lint sniff fix fix_n_sniff phpstan pre_commit clean docs check_exports build_suites test debug major minor patch
 
 # PUll all the Docker images this repository will use in building images or running processes.
 docker_pull:
@@ -53,7 +53,7 @@ fix:
 		-p \
 		-s \
 		--standard=phpcs.xml $(SRC) \
-		--ignore=src/data,src/includes,src/tad/scripts \
+		--ignore=src/data,src/includes,src/tad/scripts,_build \
 		src tests
 
 # Fix the PHP code, then sniff it.
@@ -164,6 +164,15 @@ test:
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
+
+major:
+	_build/release.php major
+
+minor:
+	_build/release.php minor
+
+patch:
+	_build/release.php patch
 
 composer_hash_bump:
 	sh "${PWD}/_build/composer-hash.sh"
