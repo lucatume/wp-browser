@@ -1,0 +1,4 @@
+actor: InitTester
+modules:
+    enabled:
+        - \Helper\Init

@@ -158,4 +158,20 @@ class Map implements \ArrayAccess
             $this->aliases = array_merge($this->aliases, $aliases);
         }
     }
+
+    /**
+     * Outputs the map in array format, including aliases.
+     *
+     * @return array<string,mixed> The map in array format, including aliases.
+     */
+    public function toArray()
+    {
+        $map = $this->map;
+
+        foreach ($this->aliases as $alias => $source) {
+            $map[ $alias ] = $this->map[ $source ];
+        }
+
+        return $map;
+    }
 }

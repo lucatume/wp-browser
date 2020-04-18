@@ -20,7 +20,7 @@ use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressDatabase;
 use function tad\WPBrowser\db;
-use function tad\WPBrowser\dsnToMap;
+use function tad\WPBrowser\dbDsnMap;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\requireCodeceptionModules;
@@ -4083,20 +4083,20 @@ class WPDb extends Db
 
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
-                $dsnArr = dsnToMap($dsn);
+                $dsnMap = dbDsnMap($dsn);
 
-                if (!isset($dsnArr['dbname'])) {
+                if (!isset($dsnMap['dbname'])) {
                     throw new ModuleException(
                         $this,
                         sprintf('Failed to create database; DSN "%s" does not contain the database name.', $dsn)
                     );
                 }
 
-                $host = $dsnArr('host', 'localhost');
+                $host = $dsnMap('host', 'localhost');
 
                 try {
                     $db = db($host, $user, $pass);
-                    $db('CREATE DATABASE IF NOT EXISTS ' . $dsnArr('dbname'));
+                    $db('CREATE DATABASE IF NOT EXISTS ' . $dsnMap('dbname'));
                 } catch (\Exception $e) {
                     throw new ModuleException(
                         $this,

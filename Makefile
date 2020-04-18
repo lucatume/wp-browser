@@ -161,6 +161,9 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=42 \
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm ccf run events
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=43 \
+		docker-compose --project-name=${PROJECT_NAME}_init \
+		run --rm ccf run init
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
@@ -192,4 +195,3 @@ debug:
 		-f docker-compose.debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
-

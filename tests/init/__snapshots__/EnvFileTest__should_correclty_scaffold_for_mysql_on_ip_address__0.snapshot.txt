@@ -1,0 +1,16 @@
+TEST_SITE_DSN=mysql:host=1.2.3.4;dbname=test
+TEST_SITE_DB_USER=root
+TEST_SITE_DB_PASSWORD=password
+TEST_SITE_TABLE_PREFIX=wp_
+TEST_SITE_ADMIN_USERNAME=admin
+TEST_SITE_ADMIN_PASSWORD=password
+TEST_SITE_WP_ADMIN_PATH=/wp-admin
+WP_ROOT_FOLDER=/var/www/html
+TEST_DB_NAME=test
+TEST_DB_HOST=1.2.3.4
+TEST_DB_USER=root
+TEST_DB_PASSWORD=password
+TEST_TABLE_PREFIX=wp_
+TEST_SITE_WP_URL=http://wordpress.test
+TEST_SITE_WP_DOMAIN=wordpress.test
+TEST_SITE_ADMIN_EMAIL=admin@wordpress.test

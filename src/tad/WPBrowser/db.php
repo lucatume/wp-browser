@@ -10,50 +10,6 @@ namespace tad\WPBrowser;
 use tad\WPBrowser\Utils\Map;
 
 /**
- * Converts a string DSN into a map of values.
- *
- * @param string $dsnString The string DSN to convert.
- *
- * @return Map The map of the parsed values.
- */
-function dsnToMap($dsnString)
-{
-    preg_match('/^(?:(?<prefix>[^:]*):)?(?<data>.*)$/um', $dsnString, $m);
-
-    $type = !empty($m['prefix']) ? $m['prefix'] : 'unknown';
-
-    switch ($type) {
-        case 'sqlite':
-        case 'sqlite2':
-            $map = [
-                'file' => isset($m['data']) ? $m['data'] : null,
-                'memory' => isset($m['data']) && $m['data'] === ':memory:'
-            ];
-            break;
-        default:
-        case 'mysql':
-            if (isset($m['data'])) {
-                if (strpos($m['data'], ';')) {
-                    $frags = array_map(static function ($frag) {
-                        return explode('=', $frag);
-                    }, explode(';', (string)preg_replace('/^[^:]*:/', '', $dsnString)));
-
-                    $map = array_combine(
-                        array_column($frags, 0),
-                        array_column($frags, 1)
-                    );
-                }
-            }
-            break;
-    }
-
-    $map['type'] = $type;
-    $map['prefix'] = $type;
-
-    return new Map($map);
-}
-
-/**
  * Imports a dump file using the `mysql` binary.
  *
  * @param string $dumpFile The path to the SQL dump file to import.
@@ -140,4 +96,168 @@ function db($host, $user, $pass, $dbName = null)
 
         return $result;
     };
+}
+
+/**
+ * Identifies the database host type used from host string for the purpose of using it to build a database connection
+ * dsn string.
+ *
+ * @param string $dbHost The database host to map.
+ *
+ * @return Map The database DSN connection `host`, `port` and `socket` map.
+ */
+function dbDsnMap($dbHost)
+{
+    $map = new Map([]);
+
+    if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHost, $m)) {
+        $map['dbname'] = $m['dbname'];
+        $dbHost        = str_replace($m[0], '', $dbHost);
+    }
+
+    $dbHost = rtrim($dbHost, ';');
+
+    $frags = array_replace([ '', '' ], explode(':', $dbHost));
+
+    $mask =
+        // It's an IP Address or `localhost`
+        preg_match('/(localhost|((\\d+\\.){3}\\d+))/', $frags[0])
+        // It's a port number.
+        + 2 * is_numeric($frags[1])
+        // It's a unix socket.
+        + 4 * ( preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHost, $unixSocketMatches) )
+        // It's a sqlite database file.
+        + 8 * ( preg_match(
+            '/^((?<version>sqlite(\\d)*):)*((?<file>(\\/.*(\\.sq(\\w)*))))$/um',
+            $dbHost,
+            $sqliteFileMatches
+        ) )
+        // It's a sqlite in-memory database.
+        + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
+
+    switch ($mask) {
+        default:
+            // Empty?
+            $map['type'] = 'mysql';
+            $map['host'] = 'localhost';
+            break;
+        case 1:
+            // IP Address.
+            $map['type'] = 'mysql';
+            $map['host'] = $frags[0];
+            break;
+        case 2:
+            // Just a port number, assume host is `localhost`.
+            $map['type'] = 'mysql';
+            $map['host'] = 'localhost';
+            $map['port'] = $frags[0];
+            break;
+        case 3:
+            // IP Address or `localhost` and port.
+            $map['type'] = 'mysql';
+            $map['host'] = $frags[0];
+            $map['port'] = $frags[1];
+            break;
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
+            $map['type'] = 'mysql';
+            $map['unix_socket'] = $unixSocketMatches['socket'];
+            break;
+        case 8:
+            // sqlite file.
+            $map['type'] = 'sqlite';
+            $map['version'] = $sqliteFileMatches['version'];
+            $map['file'] = $sqliteFileMatches['file'];
+            break;
+        case 16:
+            // sqlite in-memory db.
+            $map['type'] = 'sqlite';
+            $map['version'] = $sqliteMemoryMatches['version'];
+            $map['memory'] = true;
+    }
+
+    return $map;
+}
+
+/**
+ * Builds a map of the dsn, user and password credentials to connect to a database.
+ *
+ * @param Map        $dsn    The dsn map.
+ * @param string      $dbuser The database user.
+ * @param string      $dbpass The database password for the user.
+ * @param null|string $dbname The optional database name.
+ *
+ * @return Map The database credentials map: dsn string, user and password.
+ */
+function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null)
+{
+    $dbname = $dsn->get('dbname', $dbname);
+    $dbuser = empty($dbuser) ? 'root' : $dbuser;
+    $dbpass = empty($dbpass) ? 'password' : $dbpass;
+
+    $dsnFrags = [
+        $dsn('host') ? 'host=' . $dsn('host') : null,
+        $dsn('port') ? 'port=' . $dsn('port') : null,
+        $dsn('unix_socket') ? 'unix_socket=' . $dsn('unix_socket') : null,
+        $dbname ? 'dbname=' . $dbname : null
+    ];
+
+    $type = $dsn('type', 'mysql');
+
+    $dsnString = $type . ':' . implode(';', array_filter($dsnFrags));
+
+    return new Map([
+        'dsn'      => $dsnString,
+        'user'     => $dbuser,
+        'password' => $dbpass
+    ]);
+}
+
+/**
+ * Builds the database DSN string from a database DSN map.
+ *
+ * @param Map  $dbDsnMap    The database DSN map.
+ * @param bool $forDbHost   Whether to format for `DB_HOST`, or similar, use or not.
+ *
+ * @throws \InvalidArgumentException If the database type is not supported or is not set.
+ */
+function dbDsnString(Map $dbDsnMap, $forDbHost = false)
+{
+    $type = $dbDsnMap('type', 'mysql');
+
+    if ($type === 'mysql') {
+        $dsn = $forDbHost ? '' : 'mysql:';
+        $dbname = $dbDsnMap('dbname');
+
+        if ($dbDsnMap('unix_socket')) {
+            $dsn .= $forDbHost ?
+                $dbDsnMap('host', 'localhost') . ':' . $dbDsnMap('unix_socket')
+                : 'unix_socket=' . $dbDsnMap('unix_socket');
+
+            return $dbname && !$forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
+        }
+
+        $dsn .= $forDbHost ?
+            $dbDsnMap('host', 'localhost')
+            : 'host=' . $dbDsnMap('host', 'localhost');
+
+        $port = $dbDsnMap('port');
+
+        if ($port) {
+            $dsn .= $forDbHost ? ':' . $port : ';port=' . $dbDsnMap('port');
+        }
+
+        return $dbname && ! $forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
+    }
+
+    if ($type === 'sqlite') {
+        $dsn = $forDbHost ?
+            $dbDsnMap('file')
+            : $dbDsnMap('version') . ':' . $dbDsnMap('file');
+    }
+
+    return $dsn;
 }

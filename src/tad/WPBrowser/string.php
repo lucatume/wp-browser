@@ -109,16 +109,16 @@ function renderString($template, array $data = [], array $fnArgs = [])
  */
 function parseUrl($url)
 {
-    return \parse_url($url) ?: [
-        'scheme' => '',
-        'host' => '',
-        'port' => 0,
-        'user' => '',
-        'pass' => '',
-        'path' => '',
-        'query' => '',
+    return array_merge([
+        'scheme'   => '',
+        'host'     => '',
+        'port'     => 0,
+        'user'     => '',
+        'pass'     => '',
+        'path'     => '',
+        'query'    => '',
         'fragment' => ''
-    ];
+    ], \parse_url($url));
 }
 
 /**
@@ -167,4 +167,23 @@ function andList(array $elements)
     }
 
     return $list;
+}
+
+/**
+ * Returns the domain from the full URL.
+ *
+ * @param string $fullUrl The full URL to build the domain from.
+ *
+ * @return string The domain built from the full URL.
+ */
+function urlDomain($fullUrl)
+{
+    $frags = parseUrl($fullUrl);
+
+    return sprintf(
+        '%s%s%s',
+        $frags['host'],
+        $frags['port'] ? ':' . $frags['port'] : '',
+        $frags['path']
+    );
 }

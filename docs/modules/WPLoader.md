@@ -14,7 +14,7 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 ## Configuration
 * `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
 * `dbName` *required* - The name of the database used by the WordPress installation, same as the `DB_NAME` constant.
-* `dbHost` *required* - The host of the database used by the WordPress installation, same as the `DB_HOST` constant.
+* `dbHost` *required* - The host of the database used by the WordPress installation, same as the `DB_HOST` constant. If the database is accessible (as is the case on the latest version of [Local by Flywheel][http://localwp.com]) **via unix socket**, then the string to insert here should look like this `localhost:/path/to/the/mysql.sock`.
 * `dbUser` *required* - The user of the database used by the WordPress installation, same as the `DB_USER` constant.
 * `dbPassword` *required* - The password of the database used by the WordPress installation, same as `DB_PASSWORD` constant.
 * `loadOnly` - defaults to `false`; whether to only load WordPress, without bootstrapping a fresh installation for tests or not. Read more in the ["Using WPLoader in acceptance and functional tests"](#using-wploader-in-acceptance-and-functional-tests) section. If this parameter is set to `true` the following parameters will not apply.

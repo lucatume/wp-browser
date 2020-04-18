@@ -1,5 +1,7 @@
 ## Setting up wp-browser with Local by Flywheel to test a plugin
 
+**Note**: the original version of this guide used, on Mac, the version of Local by Flywheel based on VirtualBox and Docker containers. That version has been replaced by a new one that will not use any virtualization layer. The UI is almost the same but, for back-compatibility purposes, I've not removed the references to the previous version; I have, instead, pointed out where the set up values and procedures might differ due to the changes.
+
 ## Requirements
 
 * A Mac or Windows machine
@@ -129,7 +131,7 @@ The initialization guide will ask a number of questions.
 
 In the screenshots below are the answers I used to configure `wp-browser` on Windows.
 
-Note that I've set up the database host using the values provided by Local UI, yours might differ.
+Note that I've set up the database host using the values provided by Local UI, yours might differ depending on the version of Local you're using:
 
 ![](images/local-flywheel-win-db-creds.png)
 
@@ -174,6 +176,10 @@ In the screenshots below are the answers I used to configure `wp-browser` on Mac
 
 Note that I've set up the database host using the values provided by Local UI, yours might differ.
 
+![](images/local-lite-mac-db-creds.png)
+
+This screenshot is from the previous version of Local, the one based on VirtualBox and Docker:
+
 ![](images/local-flywheel-mac-db-creds.png)
 
 ![](images/local-flywheel-mac-wpbrowser-init-1.png)
@@ -191,12 +197,12 @@ Below a complete list of each answer:
 * What is the path of the WordPress root directory? `~/Local Sites/myplugin/app/public`
 * What is the path, relative to WordPress root URL, of the admin area of the test site? `/wp-admin`
 * What is the name of the test database used by the test site? `tests`
-* What is the host of the test database used by the test site? `192.168.95.100:4055`
+* What is the host of the test database used by the test site? `/Users/lucatume/Library/Application Support/Local/run/FjKWfVMGd/mysql/mysqld.sock` ( or `192.168.95.100:4055` on an older version of Local)
 * What is the user of the test database used by the test site? `root`
 * What is the password of the test database used by the test site? `root`
 * What is the table prefix of the test database used by the test site? `wp_`
 * What is the name of the test database WPLoader should use? `tests`
-* What is the host of the test database WPLoader should use? `192.168.95.100:4055`
+* What is the host of the test database WPLoader should use? `/Users/lucatume/Library/Application Support/Local/run/FjKWfVMGd/mysql/mysqld.sock` (or `192.168.95.100:4055` on an older version of Local)
 * What is the user of the test database WPLoader should use? `root`
 * What is the password of the test database WPLoader should use? `root`
 * What is the table prefix of the test database WPLoader should use? `wp_`
@@ -295,4 +301,4 @@ vendor/bin/codecept run unit
  
 You're now run to customize the suites to your liking or start writing tests, run `vendor/bin/codecept` to see a list of the available commands.
 
-[0967-0003]: https://localbyflywheel.com/
+[0967-0003]: https://localwp.com/

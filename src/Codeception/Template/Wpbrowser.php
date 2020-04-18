@@ -7,9 +7,13 @@ use Dotenv\Dotenv;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
+use tad\WPBrowser\Utils\Map;
+use function tad\WPBrowser\dbCredentials;
+use function tad\WPBrowser\dbDsnMap;
+use function tad\WPBrowser\dbDsnString;
 use function tad\WPBrowser\parseUrl;
 use function tad\WPBrowser\rrmdir;
-use function tad\WPBrowser\slug;
+use function tad\WPBrowser\urlDomain;
 
 class Wpbrowser extends Bootstrap
 {
@@ -30,10 +34,31 @@ class Wpbrowser extends Bootstrap
 
     /**
      * The name of the environment file to use.
-     *
      * @var string
      */
     protected $envFileName = '';
+
+    /**
+     * A map of the installation data either pre-set or compiled from the user answers.
+     * @var Map
+     */
+    protected $installationData;
+    /**
+     * Whether to create the suites helpers or not.
+     * @var bool
+     */
+    protected $createHelpers = true;
+    /**
+     * Whether to create the suite actors or not.
+     * @var bool
+     */
+    protected $createActors = true;
+
+    /**
+     * Whether to create the suites configuration files or not.
+     * @var bool
+     */
+    protected $createSuiteConfigFiles = true;
 
     /**
      * @param bool $interactive
@@ -96,25 +121,26 @@ class Wpbrowser extends Bootstrap
         }
 
         $installationData = $this->getInstallationData($interactive);
+        $arrayInstallationData = $installationData->toArray();
 
         try {
             $this->createGlobalConfig();
-            $this->creatEnvFile($installationData);
+            $this->writeEnvFile($installationData);
             $this->loadEnvFile();
             $this->createUnitSuite();
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $installationData);
+            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $arrayInstallationData);
             $this->say("tests/{$installationData['wpunitSuiteSlug']} created               "
                        . '<- WordPress unit and integration tests');
             $this->say("tests/{$installationData['wpunitSuiteSlug']}.suite.yml written     "
                        . '<- WordPress unit and integration tests suite configuration');
-            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $installationData);
+            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $arrayInstallationData);
             $this->say("tests/{$installationData['functionalSuiteSlug']} created           "
                        . "<- {$installationData['functionalSuiteSlug']} tests");
             $this->say("tests/{$installationData['functionalSuiteSlug']}.suite.yml written "
                        . "<- {$installationData['functionalSuiteSlug']} tests suite configuration");
-            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $installationData);
+            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $arrayInstallationData);
             $this->say("tests/{$installationData['acceptanceSuiteSlug']} created           "
                        . "<- {$installationData['acceptanceSuiteSlug']} tests");
             $this->say("tests/{$installationData['acceptanceSuiteSlug']}.suite.yml written "
@@ -221,45 +247,21 @@ class Wpbrowser extends Bootstrap
      *
      * @param bool $interactive Whether to build the installation data with user interactive input or not.
      *
-     * @return array The installation data.
+     * @return Map The installation data.
      */
     protected function getInstallationData($interactive)
     {
-        if (!$interactive) {
-            $installationData = [
-                'acceptanceSuite' => 'acceptance',
-                'functionalSuite' => 'functional',
-                'wpunitSuite' => 'wpunit',
-                'acceptanceSuiteSlug' => 'acceptance',
-                'functionalSuiteSlug' => 'functional',
-                'wpunitSuiteSlug' => 'wpunit',
-                'testSiteDbHost' => 'localhost',
-                'testSiteDbName' => 'wp',
-                'testSiteDbUser' => 'root',
-                'testSiteDbPassword' => '',
-                'testSiteTablePrefix' => 'wp_',
-                'testSiteWpUrl' => 'http://wp.test',
-                'testSiteWpDomain' => 'wp.test',
-                'testSiteAdminUsername' => 'admin',
-                'testSiteAdminPassword' => 'password',
-                'testSiteAdminEmail' => 'admin@wp.test',
-                'testSiteWpAdminPath' => '/wp-admin',
-                'wpRootFolder' => '/var/www/html',
-                'testDbName' => 'wpTests',
-                'testDbHost' => 'localhost',
-                'testDbUser' => 'root',
-                'testDbPassword' => '',
-                'testTablePrefix' => 'wp_',
-                'title' => 'WP Test',
-                // deactivate all modules that could trigger exceptions when initialized with sudo values
-                'activeModules' => ['WPDb' => false, 'WordPress' => false, 'WPLoader' => false],
-            ];
-            $this->envFileName = '.env.testing';
+        if ($this->installationData !== null) {
+            return $this->installationData;
+        }
+
+        if (! $interactive) {
+            $installationData = $this->getDefaultInstallationData();
         } else {
             $installationData = $this->askForInstallationData();
         }
 
-        return $installationData;
+        return $installationData instanceof Map ? $installationData : new Map($installationData);
     }
 
     protected function askForInstallationData()
@@ -273,19 +275,9 @@ class Wpbrowser extends Bootstrap
             ],
         ];
 
-        $installationData['acceptanceSuite'] = $this->ask(
-            'How would you like the acceptance suite to be called?',
-            'acceptance'
-        );
-        $installationData['functionalSuite'] = $this->ask(
-            'How would you like the functional suite to be called?',
-            'functional'
-        );
-        $installationData['wpunitSuite'] = $this->ask(
-            'How would you like the WordPress unit and integration suite to be called?',
-            'wpunit'
-        );
-
+        $installationData['acceptanceSuite']  = 'acceptance';
+        $installationData['functionalSuite'] = 'functional';
+        $installationData['wpunitSuite'] = 'wpunit';
         $installationData['acceptanceSuiteSlug'] = strtolower($installationData['acceptanceSuite']);
         $installationData['functionalSuiteSlug'] = strtolower($installationData['functionalSuite']);
         $installationData['wpunitSuiteSlug'] = strtolower($installationData['wpunitSuite']);
@@ -293,12 +285,7 @@ class Wpbrowser extends Bootstrap
         $this->say('---');
         $this->say();
 
-        while (strpos($this->envFileName, '.env') !== 0) {
-            $this->envFileName = $this->ask(
-                'How would you like to call the env configuration file? (Should start with ".env")',
-                '.env.testing'
-            );
-        }
+		$this->envFileName = '.env.testing';
 
         $this->checkEnvFileExistence();
 
@@ -308,7 +295,7 @@ class Wpbrowser extends Bootstrap
 
         $installationData['wpRootFolder'] = $this->normalizePath($this->ask(
             'Where is WordPress installed?',
-            '/var/www/wp'
+            '/var/www/html'
         ));
         $installationData['testSiteWpAdminPath'] = $this->ask(
             'What is the path, relative to WordPress root URL, of the admin area of the test site?',
@@ -321,12 +308,13 @@ class Wpbrowser extends Bootstrap
         echo PHP_EOL;
         $installationData['testSiteDbName'] = $this->ask(
             'What is the name of the test database used by the test site?',
-            'wp_test_site'
+            'test'
         );
         $installationData['testSiteDbHost'] = $this->ask(
             'What is the host of the test database used by the test site?',
             'localhost'
         );
+
         $installationData['testSiteDbUser'] = $this->ask(
             'What is the user of the test database used by the test site?',
             'root'
@@ -355,12 +343,13 @@ class Wpbrowser extends Bootstrap
 
         $installationData['testDbName'] = $this->ask(
             'What is the name of the test database WPLoader should use?',
-            'wp_test_integration'
+            'test'
         );
         $installationData['testDbHost'] = $this->ask(
             'What is the host of the test database WPLoader should use?',
             'localhost'
         );
+
         $installationData['testDbUser'] = $this->ask(
             'What is the user of the test database WPLoader should use?',
             'root'
@@ -375,14 +364,10 @@ class Wpbrowser extends Bootstrap
         );
         $installationData['testSiteWpUrl'] = $this->ask(
             'What is the URL the test site?',
-            'http://wp.test'
+            'http://wordpress.test'
         );
         $installationData['testSiteWpUrl'] = rtrim($installationData['testSiteWpUrl'], '/');
-        $url = parseUrl($installationData['testSiteWpUrl']);
-        $installationData['urlScheme'] = empty($url['scheme']) ? 'http' : $url['scheme'];
-        $installationData['testSiteWpDomain'] = empty($url['host']) ? 'example.com' : $url['host'];
-        $installationData['urlPort'] = empty($url['port']) ? '' : ':' . $url['port'];
-        $installationData['urlPath'] = empty($url['path']) ? '' : $url['path'];
+	    $installationData['testSiteWpDomain'] = urlDomain($installationData['testSiteWpUrl']);
         $adminEmailCandidate = "admin@{$installationData['testSiteWpDomain']}";
         $installationData['testSiteAdminEmail'] = $this->ask(
             'What is the email of the test site WordPress administrator?',
@@ -472,48 +457,23 @@ class Wpbrowser extends Bootstrap
         return implode('/', $pathFrags);
     }
 
-    protected function creatEnvFile(array $installationData = [])
+    /**
+     * Writes the testing environment configuration file.
+     *
+     * @param Map $installationData The installation data to use to build the env file contents.
+     */
+    public function writeEnvFile(Map $installationData)
     {
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
+        $envVars  = $this->getEnvFileVars($installationData);
 
-        $envKeys = [
-            'testSiteDbHost'=>true,
-            'testSiteDbName'=>true,
-            'testSiteDbUser'=>true,
-            'testSiteDbPassword'=>true,
-            'testSiteTablePrefix'=>true,
-            'testSiteWpUrl'=>true,
-            'testSiteAdminUsername'=>true,
-            'testSiteAdminPassword'=>true,
-            'testSiteWpAdminPath'=>true,
-            'wpRootFolder'=>true,
-            'testDbName'=>true,
-            'testDbHost'=>true,
-            'testDbUser'=>true,
-            'testDbPassword'=>true,
-            'testTablePrefix'=>true,
-            'testSiteWpDomain'=>true,
-            'testSiteAdminEmail'=>true,
-        ];
+        $envFileLines = implode("\n", array_map(static function ($key, $value) {
+            return "{$key}={$value}";
+        }, array_keys($envVars), $envVars));
 
-        $envEntries = array_intersect_key($installationData, $envKeys);
+        $put = file_put_contents($filename, $envFileLines . "\n");
 
-        $envFileLines = [];
-
-        foreach ($envEntries as $key => $value) {
-            $key = strtoupper(slug($key, '_'));
-            if (is_bool($value)) {
-                $value ? 'true' : 'false';
-            } elseif (null === $value) {
-                $value = 'null';
-            } else {
-                $value = '"' . trim($value) . '"';
-            }
-            $envFileLines[] = "{$key}={$value}";
-        }
-        $envFileContents = implode("\n", $envFileLines);
-        $written = file_put_contents($filename, $envFileContents);
-        if (!$written) {
+        if (! $put) {
             $this->removeCreatedFiles();
             throw new RuntimeException("Could not write {$this->envFileName} file!");
         }
@@ -589,6 +549,27 @@ EOF;
         $this->createSuite($installationData['wpunitSuiteSlug'], $actor, $suiteConfig);
     }
 
+    /**
+     * Overrides the base implementation to control what should be created.
+     *
+     * @param string  $suite The name of the suite to create.
+     * @param string $actor The name of the suite actor to create.
+     * @param array<string,mixed> $config The suie configuration.
+     */
+    protected function createSuite($suite, $actor, $config)
+    {
+        $this->createDirectoryFor("tests/$suite", "$suite.suite.yml");
+        if ($this->createHelpers) {
+            $this->createHelper($actor, $this->supportDir);
+        }
+        if ($this->createActors) {
+            $this->createActor($actor . $this->actorSuffix, $this->supportDir, Yaml::parse($config));
+        }
+        if ($this->createSuiteConfigFiles) {
+            $this->createFile('tests' . DIRECTORY_SEPARATOR . "$suite.suite.yml", $config);
+        }
+    }
+
     protected function createFunctionalSuite($actor = 'Functional', array $installationData = [])
     {
         $installationData = new Data($installationData);
@@ -613,7 +594,7 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
+            dsn: '%TEST_SITE_DB_DSN%'
             user: '%TEST_SITE_DB_USER%'
             password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
@@ -663,7 +644,7 @@ modules:
         - \\{$this->namespace}Helper\\{$actor}
     config:
         WPDb:
-            dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
+            dsn: '%TEST_SITE_DB_DSN%'
             user: '%TEST_SITE_DB_USER%'
             password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
@@ -685,21 +666,6 @@ modules:
                 X_WPBROWSER_REQUEST: 1
 EOF;
         $this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
-    }
-
-    protected function getDefaultInstallationData()
-    {
-        return [];
-    }
-
-    protected function parseEnvName()
-    {
-        $envFileName = trim($this->envFileName);
-        if (strpos($envFileName, '.env') !== 0) {
-            $message = 'Please specify an env file name starting with ".env", e.g. ".env.testing" or '
-                .'".env.development"';
-            throw new RuntimeException($message);
-        }
     }
 
     protected function askForAcknowledgment()
@@ -741,5 +707,129 @@ EOF;
     public function setWorkDir($workDir)
     {
         chdir($workDir);
+    }
+
+    /**
+     * Sets the installation data the template should use.
+     *
+     * @param array<string,string> $installationData The installation data map.
+     */
+    public function setInstallationData(array $installationData)
+    {
+        $this->installationData = new Map($installationData);
+    }
+
+    /**
+     * Returns the default installation data.
+     *
+     * @return array<string,string> The template default installation data.
+     */
+    public function getDefaultInstallationData()
+    {
+        $installationData  = [
+            'acceptanceSuite'       => 'acceptance',
+            'functionalSuite'       => 'functional',
+            'wpunitSuite'           => 'wpunit',
+            'acceptanceSuiteSlug'   => 'acceptance',
+            'functionalSuiteSlug'   => 'functional',
+            'wpunitSuiteSlug'       => 'wpunit',
+            'testSiteDbHost'        => 'localhost',
+            'testSiteDbName'        => 'test',
+            'testSiteDbUser'        => 'root',
+            'testSiteDbPassword'    => 'password',
+            'testSiteTablePrefix'   => 'wp_',
+            'testSiteWpUrl'         => 'http://wordpress.test',
+            'testSiteWpDomain'      => 'wordpress.test',
+            'testSiteAdminUsername' => 'admin',
+            'testSiteAdminPassword' => 'password',
+            'testSiteAdminEmail'    => 'admin@wordpress.test',
+            'testSiteWpAdminPath'   => '/wp-admin',
+            'wpRootFolder'          => '/var/www/html',
+            'testDbName'            => 'test',
+            'testDbHost'            => 'localhost',
+            'testDbUser'            => 'root',
+            'testDbPassword'        => 'password',
+            'testTablePrefix'       => 'wp_',
+            'title'                 => 'WP Test',
+            // deactivate all modules that could trigger exceptions when initialized with sudo values
+            'activeModules'         => [ 'WPDb' => false, 'WordPress' => false, 'WPLoader' => false ],
+        ];
+        $this->envFileName = '.env.testing';
+
+        return $installationData;
+    }
+
+    /**
+     * Returns the env file lines that should be written in the env file given the current installation data.
+     *
+     * @param Map $installationData The installation data to generate the environment variables from.
+     */
+    public function getEnvFileVars(Map $installationData)
+    {
+        $testSiteDsnMap           = dbDsnMap($installationData['testSiteDbHost']);
+        $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
+        $testDbDsnMap = dbDsnMap($installationData['testDbHost']);
+        $envVars          = [
+            'TEST_SITE_DSN'            => dbDsnString($testSiteDsnMap),
+            'TEST_SITE_DB_USER'        => $installationData['testSiteDbUser'],
+            'TEST_SITE_DB_PASSWORD'    => $installationData['testSiteDbPassword'],
+            'TEST_SITE_TABLE_PREFIX'   => $installationData['testSiteTablePrefix'],
+            'TEST_SITE_ADMIN_USERNAME' => $installationData['testSiteAdminUsername'],
+            'TEST_SITE_ADMIN_PASSWORD' => $installationData['testSiteAdminPassword'],
+            'TEST_SITE_WP_ADMIN_PATH'  => $installationData['testSiteWpAdminPath'],
+            'WP_ROOT_FOLDER'           => $installationData['wpRootFolder'],
+            'TEST_DB_NAME'             => $installationData['testDbName'],
+            'TEST_DB_HOST'             => dbDsnString($testDbDsnMap, true),
+            'TEST_DB_USER'             => $installationData['testDbUser'],
+            'TEST_DB_PASSWORD'         => $installationData['testDbPassword'],
+            'TEST_TABLE_PREFIX'        => $installationData['testTablePrefix'],
+            'TEST_SITE_WP_URL'         => $installationData['testSiteWpUrl'],
+            'TEST_SITE_WP_DOMAIN'      => urlDomain($installationData['testSiteWpUrl']),
+            'TEST_SITE_ADMIN_EMAIL'    => $installationData['testSiteAdminEmail'],
+        ];
+
+        return $envVars;
+    }
+
+    /**
+     * Sets whether suite helpers should be created or not.
+     *
+     * @param bool $createHelpers Whether suite helpers should be created or not.
+     *
+     * @return Wpbrowser For chaining.
+     */
+    public function setCreateHelpers($createHelpers)
+    {
+        $this->createHelpers = $createHelpers;
+
+        return $this;
+    }
+
+    /**
+     * Sets whether suite actors should be created or not.
+     *
+     * @param bool $createActors Whether suite actors should be created or not.
+     *
+     * @return Wpbrowser For chaining.
+     */
+    public function setCreateActors($createActors)
+    {
+        $this->createActors = $createActors;
+
+        return $this;
+    }
+
+    /**
+     * Sets whether suite configuration files should be created or not.
+     *
+     * @param bool $createSuiteConfigFiles Whether suite configuration files should be created or not.
+     *
+     * @return Wpbrowser For chaining.
+     */
+    public function setCreateSuiteConfigFiles($createSuiteConfigFiles)
+    {
+        $this->createSuiteConfigFiles = $createSuiteConfigFiles;
+
+        return $this;
     }
 }

@@ -117,7 +117,7 @@ modules:
 
 ## Configuration
 
-* `dsn` *required* - the database POD DSN connection details; read more [on PHP PDO documentation](https://secure.php.net/manual/en/ref.pdo-mysql.connection.php).
+* `dsn` *required* - the database POD DSN connection details; read more [on PHP PDO documentation](https://secure.php.net/manual/en/ref.pdo-mysql.connection.php). If the database is accessible (as is the case on the latest version of [Local by Flywheel][http://localwp.com]) **via unix socket**, then the string to insert here should look like this `mysql:unix_socket=/path/to/the/mysql.sock;dbname=wordpress`.
 * `user` *required* - the database user.
 * `password` *required* - the database password.
 * `url` *required* - the full URL, including the HTTP scheme, of the website whose database is being accessed. WordPress uses hard-codece URLs in the databas, that URL will be set by this module when applying the SQL dump file during population or cleanup.
