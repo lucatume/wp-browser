@@ -2,7 +2,7 @@
 
 namespace tad\WPBrowser\Extension;
 
-use Codeception\Events;
+use Codeception\Events as CodeceptionEvents;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,8 +12,8 @@ use tad\WPBrowser\Filesystem\Filesystem;
 class Symlinker extends Extension
 {
     public static $events = [
-        Events::MODULE_INIT => 'symlink',
-        Events::SUITE_AFTER => 'unlink',
+        CodeceptionEvents::MODULE_INIT => 'symlink',
+        CodeceptionEvents::SUITE_AFTER => 'unlink',
     ];
 
     /**

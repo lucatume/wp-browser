@@ -177,6 +177,37 @@ services:
       # The unit tests will require the WordPress source files (to test extensions), pull then from the source files.
       - wordpress_src:/project/vendor/wordpress/wordpress
 
+  # The Codeception on PHP 5.6 container.
+  cc56:
+    image: lucatume/codeception-php-5.6
+    env_file: .env.testing.docker
+    # Run as the current user.
+    user: ${DOCKER_RUN_USER}:${DOCKER_RUN_GROUP}
+    networks:
+      - test
+    extra_hosts:
+      - "wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "test2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog0.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog1.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+      - "blog2.wordpress.test:172.${TEST_SUBNET:-28}.1.1"
+    environment:
+      FIXUID: "${FIXUID:-1}"
+      # Add an arbitrary wait before launching the tests to wait for the database.
+      CODECEPTION_WAIT: ${CODECEPTION_WAIT:-3}
+      # Configure this to debug the tests with XDebug.
+      PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
+      XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
+      # Setting this value to `1` will disable the XDebug extension completely.
+      XDEBUG_DISABLE: ${XDEBUG_DISABLE:-0}
+    depends_on:
+      - wordpress
+      - chrome
+    volumes:
+      - .:/project
+      - wordpress:/project/vendor/wordpress/wordpress
+
   busybox:
     image: busybox
     # Run as the current user.
@@ -184,4 +215,3 @@ services:
     volumes:
       - .:/project
       - wordpress:/project/vendor/wordpress/wordpress
-

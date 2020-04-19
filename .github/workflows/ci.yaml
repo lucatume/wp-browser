@@ -25,7 +25,7 @@ jobs:
   test:
     strategy:
       matrix:
-         php_version: [ '5.6', '7.3' ]
+         php_version: [ '7.3' ]
          codeception_version: [ '2.5', '3.0', '4.0' ]
     name: PHP ${{ matrix.php_version }} + CC ${{ matrix.codeception_version }}
     runs-on: ubuntu-18.04
@@ -48,3 +48,30 @@ jobs:
           CI_PHP_VERSION: ${{ matrix.php_version }}
           CI_CODECEPTION_VERSION: ${{ matrix.codeception_version }}
         run: make test
+
+
+  test_56:
+    strategy:
+      matrix:
+        codeception_version: [ '2.5', '3.0', '4.0' ]
+    name: PHP 5.6 + CC ${{ matrix.codeception_version }}
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set src directory hash
+        run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1.0.3
+        with:
+          path: vendor
+          key: composer-5.6-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - name: Prepare Composer dependencies
+        run: test -d vendor || _build/vendor_prepare.sh 5.6 ${{ matrix.codeception_version }}
+      - name: Dump autoload
+        run: _build/dump_autoload.sh 5.6
+      - name: Run tests
+        env:
+          CI_PHP_VERSION: 5.6
+          CI_CODECEPTION_VERSION: ${{ matrix.codeception_version }}
+        run: make test_56

@@ -367,8 +367,7 @@ OUT;
         self::$dispatchWithObject = false;
 
         if ($firstArgument instanceof \ReflectionParameter) {
-            $type                     = $firstArgument->getType();
-            self::$dispatchWithObject = $type !== null && $type->__toString() === 'object';
+            self::$dispatchWithObject = $firstArgument->getName() !== 'eventName';
         }
 
         return self::$dispatchWithObject;
