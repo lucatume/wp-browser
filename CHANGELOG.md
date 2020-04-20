@@ -4,8 +4,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [2.4.6] 2020-04-20;
-
 ### Fixed
 
 - PHP 5.6 incompatibility issues introduced in version `2.4.0`, fixes #372
