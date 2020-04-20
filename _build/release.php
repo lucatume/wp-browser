@@ -133,6 +133,7 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
         )
     ) {
         file_put_contents($changelog, $changelogContents);
+        passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
     }
 }
 
@@ -169,7 +170,6 @@ echo "\n\n";
 
 if ($args('changelogUpdate', false)) {
     updateChangelog($changelogFile, $releaseVersion, $args);
-    exit(0);
 }
 
 if ($args('checkDiff', true) && !$dryRun) {
