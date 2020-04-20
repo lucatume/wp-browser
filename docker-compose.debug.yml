@@ -26,3 +26,8 @@ services:
       - .:/project
       - ./vendor/wordpress/wordpress:/project/vendor/wordpress/wordpress
 
+  cc56:
+    volumes:
+      - .:/project
+      - ./vendor/wordpress/wordpress:/project/vendor/wordpress/wordpress
+
