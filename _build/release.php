@@ -129,12 +129,12 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
     if (!$args('dryRun', false)
         && (
             $args('notInteractive', false)
-            || preg_match('/^y/i', readline("\nWould you like to proceed? "))
-        )
+            || confirm("Would you like to proceed?"))
+    )
     ) {
-        file_put_contents($changelog, $changelogContents);
-        passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
-    }
+    file_put_contents($changelog, $changelogContents);
+    passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
+}
 }
 
 $changelog = changelog($changelogFile);
@@ -180,11 +180,17 @@ if ($args('checkDiff', true) && !$dryRun) {
     }
 }
 
+function confirm($question)
+{
+    $question = "\n{$question} ";
+    return preg_match('/y/i', readline($question));
+}
+
 if ($args('checkUnpushed', true) && !$dryRun) {
     $gitDiff = trim(shell_exec('git log origin/master..HEAD'));
     if (!empty($gitDiff)) {
         echo "\e[31mYou have unpushed changes.\e[0m\n";
-        if (preg_match('/y/i', readline('Would you like to push them now? '))) {
+        if (confirm('Would you like to push them now?')) {
             passthru('git push');
         } else {
             exit(1);
@@ -198,7 +204,7 @@ $releaseCommand = 'hub release create -F .rel ' . $releaseVersion;
 
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
-if ($dryRun || $args('notInteractive', false) || preg_match('/y/i', readline('Do you want to proceed? '))) {
+if ($dryRun || $args('notInteractive', false) || confirm('Do you want to proceed?'))) {
     if (!$dryRun) {
         passthru($releaseCommand);
     }
