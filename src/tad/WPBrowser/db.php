@@ -83,19 +83,19 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 
     $import = process($command);
 
-	$importOutput = $import( PROC_READ );
-	$importError = $import( PROC_ERROR );
+    $importOutput = $import(PROC_READ);
+    $importError = $import(PROC_ERROR);
 
-	debug( 'Import output:' . $importOutput );
-	debug( 'Import error:' . $importError );
+    debug('Import output:' . $importOutput);
+    debug('Import error:' . $importError);
 
     $status = $import(PROC_STATUS);
 
     debug('Import status: ' . $status);
 
-	if ( $status !== 0 ) {
-		throw new \RuntimeException( 'Import failed: ' . $importError );
-	}
+    if ($status !== 0) {
+        throw new \RuntimeException('Import failed: ' . $importError);
+    }
 }
 
 /**
