@@ -40,12 +40,12 @@ $changelogFile = $root . '/CHANGELOG.md';
 
 function args()
 {
-    $options = getopt('q', ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'changelog-update'],
+    $options = getopt('q', ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
         $optind);
     $map = [
         'releaseType' => isset($argv[$optind]) ? $argv[$optind] : 'patch',
         'notInteractive' => isset($options['q']) || isset($options['not-interactive']),
-        'changelogUpdate' => isset($options['changelog-update']),
+        'noChangelogUpdate' => isset($options['no-changelog-update']),
         'checkDiff' => empty($options['no-diff-check']),
         'checkUnpushed' => empty($options['no-unpushed-check']),
         'dryRun' => isset($options['dry-run']),
@@ -168,7 +168,7 @@ echo "Next release: \e[32m" . $releaseVersion . "\e[0m\n";
 echo "Release notes:\n\n---\n" . $fullReleaseNotes . "\n---\n";
 echo "\n\n";
 
-if ($args('changelogUpdate', false)) {
+if (!$args('noChangelogUpdate', false)) {
     updateChangelog($changelogFile, $releaseVersion, $args);
 }
 
