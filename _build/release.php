@@ -184,7 +184,11 @@ if ($args('checkUnpushed', true) && !$dryRun) {
     $gitDiff = trim(shell_exec('git log origin/master..HEAD'));
     if (!empty($gitDiff)) {
         echo "\e[31mYou have unpushed changes.\e[0m\n";
-        exit(1);
+        if (preg_match('/y/i', readline('Would you like to push them now? '))) {
+            passthru('git push');
+        } else {
+            exit(1);
+        }
     }
 }
 
