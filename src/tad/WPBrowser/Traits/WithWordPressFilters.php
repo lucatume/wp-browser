@@ -49,6 +49,11 @@ trait WithWordPressFilters
             throw new \RuntimeException('Function "add_action" is not defined; is WordPress loaded?');
         }
         $this->wpFiltersFormatCallback = $format;
+
+        if (!defined('PHP_INT_MIN')) {
+            // The `PHP_INT_MIN` constant is is defined on PHP 7.0, define it here if not defined.
+            define('PHP_INT_MIN', ~PHP_INT_MAX);
+        }
         add_filter('all', [$this, 'debugWpFilterInitial'], PHP_INT_MIN, 99);
         add_action('all', [$this, 'debugWpActionInitial'], PHP_INT_MIN, 99);
         add_filter('all', [$this, 'debugWpFilterFinal'], PHP_INT_MAX, 99);
@@ -77,6 +82,12 @@ trait WithWordPressFilters
         if (!function_exists('remove_action')) {
             throw new \RuntimeException('Function "remove_action" is not defined; is WordPress loaded?');
         }
+
+        if (!defined('PHP_INT_MIN')) {
+            // The `PHP_INT_MIN` constant is is defined on PHP 7.0, define it here if not defined.
+            define('PHP_INT_MIN', ~PHP_INT_MAX);
+        }
+
         remove_filter('all', [$this, 'debugWpFilterInitial'], PHP_INT_MIN);
         remove_action('all', [$this, 'debugWpActionInitial'], PHP_INT_MIN);
         remove_filter('all', [$this, 'debugWpFilterFinal'], PHP_INT_MAX);
