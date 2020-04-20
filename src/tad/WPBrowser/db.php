@@ -62,7 +62,7 @@ function dsnToMap($dsnString)
  * @param string $dbPass   The database password to use to import the dump.
  * @param string $dbHost   The database host to use to import the dump.
  *
- * @return bool Whether the import was successful, exit status `0`, or not.
+ * @throws \RuntimeException If there's an error while importing the database.
  */
 function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
@@ -83,14 +83,19 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 
     $import = process($command);
 
-    debug('Import output:' . $import(PROC_READ));
-    debug('Import error:' . $import(PROC_ERROR));
+	$importOutput = $import( PROC_READ );
+	$importError = $import( PROC_ERROR );
+
+	debug( 'Import output:' . $importOutput );
+	debug( 'Import error:' . $importError );
 
     $status = $import(PROC_STATUS);
 
     debug('Import status: ' . $status);
 
-    return $status === 0;
+	if ( $status !== 0 ) {
+		throw new \RuntimeException( 'Import failed: ' . $importError );
+	}
 }
 
 /**
