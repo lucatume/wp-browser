@@ -5,14 +5,15 @@ use Wpcli_moduleTester as Tester;
 class InvalidStatusCest
 {
     /**
-     * It should handle a non-zero exit status correctly.
+     * It should handle a non-zero exit status correctly
      *
      * @test
      */
-    public function should_handle_a_non_zero_exit_status_correctly_(Tester $I)
+    public function should_handle_a_non_zero_exit_status_correctly(Tester $I)
     {
         $exit_status = $I->cli('invalid');
 
-        $I->assertEquals(255, $exit_status);
+        // Depending on the PHP version the error status might be `1` or `255`.
+        $I->assertNotEquals(0, $exit_status);
     }
 }
