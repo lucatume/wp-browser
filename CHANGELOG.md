@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.6] 2020-04-20;
+
 ### Fixed
 
 - PHP 5.6 incompatibility issues introduced in version `2.4.0`, fixes #372
@@ -1320,4 +1322,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.3]: https://github.com/lucatume/wp-browser/compare/2.4.2...2.4.3
 [2.4.4]: https://github.com/lucatume/wp-browser/compare/2.4.3...2.4.4
 [2.4.5]: https://github.com/lucatume/wp-browser/compare/2.4.4...2.4.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.5...HEAD
+[2.4.6]: https://github.com/lucatume/wp-browser/compare/2.4.5...2.4.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.6...HEAD
