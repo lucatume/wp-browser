@@ -1,12 +1,25 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Release a major, minor or patch update w/ release notes from the CHANGELOG.md file.
+ *
+ * Usage:
+ *
+ *  _build/release.php patch
+ *  _build/release.php minor
+ *  _build/release.php major
+ *
+ * Release w/o prompt confirmation:
+ *
+ *  _build/release.php patch -q
+ *  _build/release.php minor --no-interactive
+ */
 
 namespace tad\WPBrowser;
 
 use tad\WPBrowser\Utils\Map;
 
 $root = dirname( __DIR__ );
-
 
 require_once $root . '/vendor/autoload.php';
 
@@ -72,6 +85,14 @@ function changelog( $changelog ) {
 	return new Map( [ 'notes' => trim( $notes ), 'latestVersion' => $latestVersion ] );
 }
 
+function updateChangelog( $changelog, $version, $date = null ) {
+	$date                 = $date === null ? date( 'Y-m-d' ) : $date;
+	$changelogVersionLine = sprintf( "\n\n## [%s] %s;\n\n", $version, $date );
+	$currentContents      = file_get_contents( $changelog );
+	$changelogContents    = str_replace( '## [unreleased] Unreleased', $changelogVersionLine, $currentContents );
+	file_put_contents( $changelog, $changelogContents );
+}
+
 $changelog = changelog( $changelogFile );
 
 switch ( $releaseType ) {
@@ -109,7 +130,8 @@ $releaseCommand = 'hub release create -F .rel ' . $releaseVersion;
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
 if ( $notInteractive || preg_match( '/y/i', readline( 'Do you want to proceed? ' ) ) ) {
-	passthru( $releaseCommand );
+//	passthru( $releaseCommand );
+	updateChangelog($changelog,$releaseVersion);
 } else {
 	echo "Canceling\n";
 }
