@@ -285,7 +285,7 @@ class Wpbrowser extends Bootstrap
         $this->say('---');
         $this->say();
 
-		$this->envFileName = '.env.testing';
+        $this->envFileName = '.env.testing';
 
         $this->checkEnvFileExistence();
 
@@ -367,7 +367,7 @@ class Wpbrowser extends Bootstrap
             'http://wordpress.test'
         );
         $installationData['testSiteWpUrl'] = rtrim($installationData['testSiteWpUrl'], '/');
-	    $installationData['testSiteWpDomain'] = urlDomain($installationData['testSiteWpUrl']);
+        $installationData['testSiteWpDomain'] = urlDomain($installationData['testSiteWpUrl']);
         $adminEmailCandidate = "admin@{$installationData['testSiteWpDomain']}";
         $installationData['testSiteAdminEmail'] = $this->ask(
             'What is the email of the test site WordPress administrator?',

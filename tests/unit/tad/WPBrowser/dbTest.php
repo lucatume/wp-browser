@@ -171,12 +171,12 @@ class dbTest extends \Codeception\Test\Unit
                 ]
             ],
             'container_name' => [
-	            'mysql:host=db;dbname=test',
-	            [
-		            'type'   => 'mysql',
-		            'host'   => 'db',
-		            'dbname' => 'test'
-	            ]
+                'mysql:host=db;dbname=test',
+                [
+                    'type'   => 'mysql',
+                    'host'   => 'db',
+                    'dbname' => 'test'
+                ]
             ]
         ];
     }
@@ -359,14 +359,14 @@ class dbTest extends \Codeception\Test\Unit
      * Test dbDsnToMap
      * @dataProvider dbDsnToMapDataProvider
      */
-    public function test_db_dsn_to_map($input,$expected)
+    public function test_db_dsn_to_map($input, $expected)
     {
         $this->assertEquals($expected, dbDsnToMap($input)->toArray());
     }
 
     public function dbDsnToMapBadInputDataProvider()
     {
-       return [
+        return [
            'empty' => [''],
            'localhost' => ['localhost'],
            'localhost and port' => ['localhost:23'],
@@ -374,8 +374,8 @@ class dbTest extends \Codeception\Test\Unit
            'ip address and port' => ['1.2.3.4:2389'],
            'mysql unix socket' => ['/var/mysql.sock'],
            'sqlite file' => ['/var/db.sqlite'],
-       ] ;
-}
+        ] ;
+    }
     /**
      * Test dbDsnToMap will throw if string is not DSN string
      * @dataProvider dbDsnToMapBadInputDataProvider

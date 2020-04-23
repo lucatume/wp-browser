@@ -107,37 +107,39 @@ function db($dsn, $user, $pass, $dbName = null)
  * Identifies the database host type used from host string for the purpose of using it to build a database connection
  * dsn string.
  *
- * @param string $dbHostOrDsnString The database host to build the DSN map from, e.g. `localhost` or `unix_socket=/var/mysock.sql`.
+ * @param string $dbHost The database host string to build the DSN map from, e.g. `localhost` or
+ *                       `unix_socket=/var/mysock.sql`. This input can be a DSN string too, but, knowing that before
+ *                       hand, it would be better to use `dbDsnToMap` function.
  *
  * @return Map The database DSN connection `host`, `port` and `socket` map.
  */
-function dbDsnMap($dbHostOrDsnString)
+function dbDsnMap($dbHost)
 {
-    if (isDsnString($dbHostOrDsnString)) {
-        return dbDsnToMap($dbHostOrDsnString);
+    if (isDsnString($dbHost)) {
+        return dbDsnToMap($dbHost);
     }
 
     $map = new Map();
 
-    if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHostOrDsnString, $m)) {
+    if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHost, $m)) {
         // If the `dbname` is specified in the DSN, then use it.
         $map['dbname'] = $m['dbname'];
-        $dbHostOrDsnString = str_replace($m[0], '', $dbHostOrDsnString);
+        $dbHost = str_replace($m[0], '', $dbHost);
     }
 
     $type = null;
 
-    if (preg_match('/^(?<type>(mysql|sqlite)[23]*):.*(?!host=)/um', $dbHostOrDsnString, $typeMatches)) {
+    if (preg_match('/^(?<type>(mysql|sqlite)[23]*):.*(?!host=)/um', $dbHost, $typeMatches)) {
         // Handle dbHost strings that are, actually, DSN strings.
         $type = $typeMatches['type'];
         // Remove only for MySQL types.
-        $dbHostOrDsnString = $type === 'mysql' ? preg_replace('/^' . $type . ':/', '', $dbHostOrDsnString) : $dbHostOrDsnString;
+        $dbHost = $type === 'mysql' ? preg_replace('/^' . $type . ':/', '', $dbHost) : $dbHost;
         $typeInInput = true;
     }
 
-    $dbHostOrDsnString = rtrim($dbHostOrDsnString, ';');
+    $dbHost = rtrim($dbHost, ';');
 
-    $frags = array_replace(['', ''], explode(':', $dbHostOrDsnString));
+    $frags = array_replace(['', ''], explode(':', $dbHost));
 
     $mask =
         // It's an IP Address, `localhost` or a hostname (e.g. 'db' in the context of Docker containers) for MySQL.
@@ -145,15 +147,15 @@ function dbDsnMap($dbHostOrDsnString)
         // It's a port number.
         + 2 * is_numeric($frags[1])
         // It's a unix socket.
-        + 4 * (preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHostOrDsnString, $unixSocketMatches))
+        + 4 * (preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHost, $unixSocketMatches))
         // It's a sqlite database file.
         + 8 * (preg_match(
             '/^((?<version>sqlite(\\d)*):)*((?<file>(\\/.*(\\.sq(\\w)*))))$/um',
-            $dbHostOrDsnString,
+            $dbHost,
             $sqliteFileMatches
         ))
         // It's a sqlite in-memory database.
-        + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHostOrDsnString, $sqliteMemoryMatches);
+        + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
 
     $extract = static function ($frag, $key) {
         return str_replace($key . '=', '', $frag);

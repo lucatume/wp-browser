@@ -4084,8 +4084,9 @@ class WPDb extends Db
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
                 $dsnMap = dbDsnToMap($dsn);
+                $dbname = $dsnMap('dbname', '');
 
-                if (!isset($dsnMap['dbname'])) {
+                if (empty($dbname)) {
                     throw new ModuleException(
                         $this,
                         sprintf('Failed to create database; DSN "%s" does not contain the database name.', $dsn)
@@ -4093,8 +4094,10 @@ class WPDb extends Db
                 }
 
                 try {
+                    // Since the database might not exist at this point, remove the `dbname` from the DSN string.
+                    unset($dsnMap['dbname']);
                     $db = db(dbDsnString($dsnMap), $user, $pass);
-                    $db('CREATE DATABASE IF NOT EXISTS ' . $dsnMap('dbname'));
+                    $db('CREATE DATABASE IF NOT EXISTS ' . $dbname);
                 } catch (\Exception $e) {
                     throw new ModuleException(
                         $this,
