@@ -32,9 +32,10 @@ class EventsTest extends \Codeception\Test\Unit
      */
     public function should_correctly_build_the_event_name()
     {
-        $firstEvent = ( EventDispatcherAdapter::codeceptionEvents() )[0];
-        $dispatcher = EventDispatcherAdapter::getEventDispatcher();
-        $called     = false;
+        $codeceptionEvents = EventDispatcherAdapter::codeceptionEvents();
+        $firstEvent        = $codeceptionEvents[0];
+        $dispatcher        = EventDispatcherAdapter::getEventDispatcher();
+        $called            = false;
         $dispatcher->addListener(
             $firstEvent,
             function ($event, $eventName, $eventDispatcher) use ($firstEvent, &$called, $dispatcher) {

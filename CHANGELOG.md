@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.6] 2020-04-20;
+
+### Fixed
+
+- PHP 5.6 incompatibility issues introduced in version `2.4.0`, fixes #372
+
+## [2.4.5] 2020-04-15;
+
 ### Added
 
 - set the `admin_email_lifespan` option value to prevent showing the administration email verification in the `WPDb` module, after the database is imported; fixes #358
@@ -1312,5 +1320,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.1]: https://github.com/lucatume/wp-browser/compare/2.4.0...2.4.1
 [2.4.2]: https://github.com/lucatume/wp-browser/compare/2.4.1...2.4.2
 [2.4.3]: https://github.com/lucatume/wp-browser/compare/2.4.2...2.4.3
-[2.4.4]: https://github.com/lucatume/wp-browser/compare/2.4.2...2.4.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.4...HEAD
+[2.4.4]: https://github.com/lucatume/wp-browser/compare/2.4.3...2.4.4
+[2.4.5]: https://github.com/lucatume/wp-browser/compare/2.4.4...2.4.5
+[2.4.6]: https://github.com/lucatume/wp-browser/compare/2.4.5...2.4.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.6...HEAD

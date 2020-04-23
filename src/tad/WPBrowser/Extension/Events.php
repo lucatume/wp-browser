@@ -48,6 +48,11 @@ class Events extends Extension
         if (static::$subscribedEvents === null) {
             $codeceptionEvents = EventDispatcherAdapter::codeceptionEvents();
 
+            if (!defined('PHP_INT_MIN')) {
+                // The `PHP_INT_MIN` constant is is defined on PHP 7.0, define it here if not defined.
+                define('PHP_INT_MIN', ~PHP_INT_MAX);
+            }
+
             static::$subscribedEvents = array_combine(
                 $codeceptionEvents,
                 array_fill(0, count($codeceptionEvents), [ 'onEvent', PHP_INT_MIN ])

@@ -180,7 +180,6 @@ patch:
 composer_hash_bump:
 	sh "${PWD}/_build/composer-hash.sh"
 
-
 # Run a set of checks on the code before commit.
 pre_commit: lint fix sniff docs
 
@@ -195,3 +194,62 @@ debug:
 		-f docker-compose.debug.yml \
 		run --entrypoint=bash --rm \
 		codeception
+
+test_56:
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
+		docker-compose --project-name=${PROJECT_NAME}_acceptance \
+		run --rm cc56 run acceptance
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=90 \
+		docker-compose --project-name=${PROJECT_NAME}_cli \
+		run --rm cc56 run cli
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
+		docker-compose --project-name=${PROJECT_NAME}_climodule \
+		run --rm cc56 run climodule
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=92 \
+		docker-compose --project-name=${PROJECT_NAME}_dbunit \
+		run --rm cc56 run dbunit
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=93 \
+		docker-compose --project-name=${PROJECT_NAME}_functional \
+		run --rm cc56 run functional
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
+		docker-compose --project-name=${PROJECT_NAME}_muloader \
+		run --rm cc56 run muloader
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm cc56 run unit
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
+		docker-compose --project-name=${PROJECT_NAME}_webdriver \
+		run --rm cc56 run webdriver --debug
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=97 \
+		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
+		run --rm cc56 run wpcli_module
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=98 \
+		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
+		run --rm cc56 run wpfunctional
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=99 \
+		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
+		run --rm cc56 run wploader_multisite
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=100 \
+		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
+		run --rm cc56 run wploader_wpdb_interaction
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=101 \
+		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
+		run --rm cc56 run wploadersuite
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
+		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm cc56 run wpmodule
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
+		docker-compose --project-name=${PROJECT_NAME}_events \
+		run --rm cc56 run events
+
+# A variable target to debug issues in the PHP 5.6 container.
+debug_56:
+	[ "$${OSTYPE:0:5}" == 'linux' ] && FIXUID=1 || FIXUID==0 \
+	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_USER=$$(id -u) ||  DOCKER_RUN_USER= \
+	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_GROUP=$$(id -u) ||  DOCKER_RUN_GROUP= \
+	TEST_SUBNET=104 \
+		docker-compose --project-name=${PROJECT_NAME}_debug \
+		-f docker-compose.yml \
+		-f docker-compose.debug.yml \
+		run --rm \
+		cc56 bash
