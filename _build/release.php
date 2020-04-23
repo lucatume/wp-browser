@@ -129,12 +129,12 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
     if (!$args('dryRun', false)
         && (
             $args('notInteractive', false)
-            || confirm("Would you like to proceed?"))
-    )
+            || confirm("Would you like to proceed?")
+        )
     ) {
-    file_put_contents($changelog, $changelogContents);
-    passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
-}
+        file_put_contents($changelog, $changelogContents);
+        passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
+    }
 }
 
 $changelog = changelog($changelogFile);
@@ -204,7 +204,7 @@ $releaseCommand = 'hub release create -F .rel ' . $releaseVersion;
 
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
-if ($dryRun || $args('notInteractive', false) || confirm('Do you want to proceed?'))) {
+if ($dryRun || $args('notInteractive', false) || confirm('Do you want to proceed?')) {
     if (!$dryRun) {
         passthru($releaseCommand);
     }

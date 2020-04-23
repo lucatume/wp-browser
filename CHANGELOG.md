@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- support for Unix sockets in `WPDB` and `WPLoader` modules
+
+### Changed
+
+- the `codecept init wpbrowser` will now scaffold the suites to support both classic MySQL hosts like `1.2.3.4:3306`, container-type hosts like `db` and Unix socket hosts like `localhost:/var/mysql.sock`
+
 ## [2.4.6] 2020-04-20;
 
 ### Fixed
