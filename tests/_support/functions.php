@@ -25,8 +25,8 @@ function createTestDatabasesIfNotExist()
     $host = $env('WORDPRESS_DB_HOST');
     $user = $env('WORDPRESS_DB_USER');
     $pass = $env('WORDPRESS_DB_PASSWORD');
-    $db = db($host, $user, $pass);
-    $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDIR_DB_NAME'));
+	$db = db( 'mysql:host=' . $host, $user, $pass );
+	$db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDIR_DB_NAME'));
     $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDOMAIN_DB_NAME'));
     $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_EMPTY_DB_NAME'));
 }

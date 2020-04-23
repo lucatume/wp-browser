@@ -47,7 +47,7 @@ class Map implements \ArrayAccess
      * @param array<string,mixed> $map The map of values underlying this map.
      * @param array<string,mixed> $aliases The map of aliases for the map.
      */
-    public function __construct(array $map, array $aliases = [])
+    public function __construct(array $map = [], array $aliases = [])
     {
         $this->map = $map;
         $this->aliases = $aliases;

@@ -18,9 +18,9 @@ use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
-use tad\WPBrowser\Traits\WithWordPressDatabase;
 use function tad\WPBrowser\db;
-use function tad\WPBrowser\dbDsnMap;
+use function tad\WPBrowser\dbDsnString;
+use function tad\WPBrowser\dbDsnToMap;
 use function tad\WPBrowser\ensure;
 use function tad\WPBrowser\renderString;
 use function tad\WPBrowser\requireCodeceptionModules;
@@ -4083,7 +4083,7 @@ class WPDb extends Db
 
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
-                $dsnMap = dbDsnMap($dsn);
+                $dsnMap = dbDsnToMap($dsn);
 
                 if (!isset($dsnMap['dbname'])) {
                     throw new ModuleException(
@@ -4092,10 +4092,8 @@ class WPDb extends Db
                     );
                 }
 
-                $host = $dsnMap('host', 'localhost');
-
                 try {
-                    $db = db($host, $user, $pass);
+                    $db = db(dbDsnString($dsnMap), $user, $pass);
                     $db('CREATE DATABASE IF NOT EXISTS ' . $dsnMap('dbname'));
                 } catch (\Exception $e) {
                     throw new ModuleException(

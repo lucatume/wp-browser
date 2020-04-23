@@ -13,10 +13,10 @@ use tad\WPBrowser\Utils\Map;
  * Imports a dump file using the `mysql` binary.
  *
  * @param string $dumpFile The path to the SQL dump file to import.
- * @param string $dbName   The name of the database to import the SQL dump file to.
- * @param string $dbUser   The database user to use to import the dump.
- * @param string $dbPass   The database password to use to import the dump.
- * @param string $dbHost   The database host to use to import the dump.
+ * @param string $dbName The name of the database to import the SQL dump file to.
+ * @param string $dbUser The database user to use to import the dump.
+ * @param string $dbPass The database password to use to import the dump.
+ * @param string $dbHost The database host to use to import the dump.
  *
  * @throws \RuntimeException If there's an error while importing the database.
  */
@@ -67,9 +67,9 @@ function mysqlBin()
 /**
  * Open a database connection and returns a callable to run queries on it.
  *
- * @param string      $host   The database host.
- * @param string      $user   The database user.
- * @param string      $pass   The database password.
+ * @param string $dsn The database DSN string.
+ * @param string $user The database user.
+ * @param string $pass The database password.
  * @param string|null $dbName The optional name of the database to use.
  *
  * @return \Closure A callable to run queries on the database; the function will return the query result
@@ -77,21 +77,21 @@ function mysqlBin()
  *
  * @throws \PDOException If the database connection attempt fails.
  */
-function db($host, $user, $pass, $dbName = null)
+function db($dsn, $user, $pass, $dbName = null)
 {
-    $dsn = "mysql:host={$host}";
-
     if ($dbName !== null) {
+        // If a dbname is specified, then let's use that and not the one (maybe) specified in the dsn string.
+        $dsn = preg_replace('/;*dbname=[^;]+/', '', $dsn);
         $dsn .= ';dbname=' . $dbName;
     }
 
     $pdo = new \PDO($dsn, $user, $pass);
 
-    return static function ($query) use ($pdo, $host, $user, $pass) {
+    return static function ($query) use ($pdo, $dsn, $user, $pass) {
         $result = $pdo->query($query);
         if (!$result instanceof \PDOStatement) {
             throw new \RuntimeException('Query failed: ' . json_encode([
-                    'host' => $host,
+                    'dsn' => $dsn,
                     'user' => $user,
                     'pass' => $pass,
                     'query' => $query,
@@ -107,59 +107,78 @@ function db($host, $user, $pass, $dbName = null)
  * Identifies the database host type used from host string for the purpose of using it to build a database connection
  * dsn string.
  *
- * @param string $dbHost The database host to map.
+ * @param string $dbHostOrDsnString The database host to build the DSN map from, e.g. `localhost` or `unix_socket=/var/mysock.sql`.
  *
  * @return Map The database DSN connection `host`, `port` and `socket` map.
  */
-function dbDsnMap($dbHost)
+function dbDsnMap($dbHostOrDsnString)
 {
-    $map = new Map([]);
-
-    if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHost, $m)) {
-        $map['dbname'] = $m['dbname'];
-        $dbHost        = str_replace($m[0], '', $dbHost);
+    if (isDsnString($dbHostOrDsnString)) {
+        return dbDsnToMap($dbHostOrDsnString);
     }
 
-    $dbHost = rtrim($dbHost, ';');
+    $map = new Map();
 
-    $frags = array_replace([ '', '' ], explode(':', $dbHost));
+    if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHostOrDsnString, $m)) {
+        // If the `dbname` is specified in the DSN, then use it.
+        $map['dbname'] = $m['dbname'];
+        $dbHostOrDsnString = str_replace($m[0], '', $dbHostOrDsnString);
+    }
+
+    $type = null;
+
+    if (preg_match('/^(?<type>(mysql|sqlite)[23]*):.*(?!host=)/um', $dbHostOrDsnString, $typeMatches)) {
+        // Handle dbHost strings that are, actually, DSN strings.
+        $type = $typeMatches['type'];
+        // Remove only for MySQL types.
+        $dbHostOrDsnString = $type === 'mysql' ? preg_replace('/^' . $type . ':/', '', $dbHostOrDsnString) : $dbHostOrDsnString;
+        $typeInInput = true;
+    }
+
+    $dbHostOrDsnString = rtrim($dbHostOrDsnString, ';');
+
+    $frags = array_replace(['', ''], explode(':', $dbHostOrDsnString));
 
     $mask =
-        // It's an IP Address or `localhost`
-        preg_match('/(localhost|((\\d+\\.){3}\\d+))/', $frags[0])
+        // It's an IP Address, `localhost` or a hostname (e.g. 'db' in the context of Docker containers) for MySQL.
+        preg_match('/(localhost|((\\d+\\.){3}\\d+)|\\w+)/', $frags[0])
         // It's a port number.
         + 2 * is_numeric($frags[1])
         // It's a unix socket.
-        + 4 * ( preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHost, $unixSocketMatches) )
+        + 4 * (preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHostOrDsnString, $unixSocketMatches))
         // It's a sqlite database file.
-        + 8 * ( preg_match(
+        + 8 * (preg_match(
             '/^((?<version>sqlite(\\d)*):)*((?<file>(\\/.*(\\.sq(\\w)*))))$/um',
-            $dbHost,
+            $dbHostOrDsnString,
             $sqliteFileMatches
-        ) )
+        ))
         // It's a sqlite in-memory database.
-        + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
+        + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHostOrDsnString, $sqliteMemoryMatches);
+
+    $extract = static function ($frag, $key) {
+        return str_replace($key . '=', '', $frag);
+    };
 
     switch ($mask) {
         default:
             // Empty?
-            $map['type'] = 'mysql';
+            $map['type'] = $type ?: 'mysql';
             $map['host'] = 'localhost';
             break;
         case 1:
             // IP Address.
-            $map['type'] = 'mysql';
+            $map['type'] = $type ?: 'mysql';
             $map['host'] = $frags[0];
             break;
         case 2:
             // Just a port number, assume host is `localhost`.
-            $map['type'] = 'mysql';
+            $map['type'] = $type ?: 'mysql';
             $map['host'] = 'localhost';
             $map['port'] = $frags[0];
             break;
         case 3:
             // IP Address or `localhost` and port.
-            $map['type'] = 'mysql';
+            $map['type'] = $type ?: 'mysql';
             $map['host'] = $frags[0];
             $map['port'] = $frags[1];
             break;
@@ -168,18 +187,19 @@ function dbDsnMap($dbHost)
         case 6:
         case 7:
             // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
-            $map['type'] = 'mysql';
+            $map['type'] = $type ?: 'mysql';
             $map['unix_socket'] = $unixSocketMatches['socket'];
             break;
         case 8:
+        case 9:
             // sqlite file.
-            $map['type'] = 'sqlite';
+            $map['type'] = $type ?: 'sqlite';
             $map['version'] = $sqliteFileMatches['version'];
             $map['file'] = $sqliteFileMatches['file'];
             break;
         case 16:
             // sqlite in-memory db.
-            $map['type'] = 'sqlite';
+            $map['type'] = $type ?: 'sqlite';
             $map['version'] = $sqliteMemoryMatches['version'];
             $map['memory'] = true;
     }
@@ -190,9 +210,9 @@ function dbDsnMap($dbHost)
 /**
  * Builds a map of the dsn, user and password credentials to connect to a database.
  *
- * @param Map        $dsn    The dsn map.
- * @param string      $dbuser The database user.
- * @param string      $dbpass The database password for the user.
+ * @param Map $dsn The dsn map.
+ * @param string $dbuser The database user.
+ * @param string $dbpass The database password for the user.
  * @param null|string $dbname The optional database name.
  *
  * @return Map The database credentials map: dsn string, user and password.
@@ -215,8 +235,8 @@ function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null)
     $dsnString = $type . ':' . implode(';', array_filter($dsnFrags));
 
     return new Map([
-        'dsn'      => $dsnString,
-        'user'     => $dbuser,
+        'dsn' => $dsnString,
+        'user' => $dbuser,
         'password' => $dbpass
     ]);
 }
@@ -224,8 +244,8 @@ function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null)
 /**
  * Builds the database DSN string from a database DSN map.
  *
- * @param Map  $dbDsnMap    The database DSN map.
- * @param bool $forDbHost   Whether to format for `DB_HOST`, or similar, use or not.
+ * @param Map $dbDsnMap The database DSN map.
+ * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
  *
  * @throws \InvalidArgumentException If the database type is not supported or is not set.
  */
@@ -255,7 +275,7 @@ function dbDsnString(Map $dbDsnMap, $forDbHost = false)
             $dsn .= $forDbHost ? ':' . $port : ';port=' . $dbDsnMap('port');
         }
 
-        return $dbname && ! $forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
+        return $dbname && !$forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
     }
 
     if ($type === 'sqlite') {
@@ -265,4 +285,58 @@ function dbDsnString(Map $dbDsnMap, $forDbHost = false)
     }
 
     return $dsn;
+}
+
+/**
+ * Whether a string is a DSN string or not.
+ *
+ * @param string $string The string to check.
+ *
+ * @return bool Whether a string represents a DSN or not.
+ */
+function isDsnString($string)
+{
+    return (bool)preg_match('/^(mysql|sqlite(\\d)*):/', $string);
+}
+
+/**
+ * Builds a Map from a DSN string.
+ *
+ * @param string $dsnString The DSN string to process and break down.
+ *
+ * @return Map The Map built from the DSN string.
+ *
+ * @throws \InvalidArgumentException If the input string is not a valid DSN string.
+ */
+function dbDsnToMap($dsnString)
+{
+    if (!isDsnString($dsnString)) {
+        throw new \InvalidArgumentException("The string '{$dsnString}' is not a valid DSN string.");
+    }
+
+    $version = null;
+    if (preg_match('/^(?<type>(mysql|sqlite(?<version>\\d)*)):/', $dsnString, $m)) {
+        $type = isset($m['type']) ? $m['type'] : 'mysql';
+        $version = isset($m['version']) ? $m['version'] : null;
+        $dsnString = str_replace($type . ':', '', $dsnString);
+    }
+
+    $map = [];
+    if ($type === 'mysql') {
+        $frags = explode(';', $dsnString);
+        foreach ($frags as $frag) {
+            list($key, $value) = explode('=', $frag);
+            $map [$key] = $value;
+        }
+    } else {
+        $memory = $dsnString === ':memory:';
+        $map = array_filter([
+            'type' => 'sqlite',
+            'version' => 'sqlite' . $version,
+            'file' => $memory ? null : $dsnString,
+            'memory' => $memory
+        ]);
+    }
+
+    return new Map(array_replace(['type' => 'mysql', 'host' => 'localhost'], $map));
 }

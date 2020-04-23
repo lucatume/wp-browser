@@ -103,7 +103,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite:/opt/databases/mydb.sq3'             => [
                 'sqlite:/opt/databases/mydb.sq3',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -114,7 +114,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite:/opt/databases/mydb.sqlite'          => [
                 'sqlite:/opt/databases/mydb.sqlite',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -125,7 +125,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite::memory:'                            => [
                 'sqlite::memory:',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -137,7 +137,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite2:/opt/databases/mydb.sq2'            => [
                 'sqlite2:/opt/databases/mydb.sq2',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -149,7 +149,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite2:/opt/databases/mydb.sqlite'         => [
                 'sqlite2:/opt/databases/mydb.sqlite',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -161,7 +161,7 @@ class dbTest extends \Codeception\Test\Unit
             'sqlite2::memory:'                           => [
                 'sqlite2::memory:',
                 [
-                    'host'        => null,
+                    'host'        => 'localhost',
                     'port'        => null,
                     'unix_socket' => null,
                     'type'        => 'sqlite',
@@ -170,6 +170,14 @@ class dbTest extends \Codeception\Test\Unit
                     'memory'      => true,
                 ]
             ],
+            'container_name' => [
+	            'mysql:host=db;dbname=test',
+	            [
+		            'type'   => 'mysql',
+		            'host'   => 'db',
+		            'dbname' => 'test'
+	            ]
+            ]
         ];
     }
 
@@ -329,5 +337,53 @@ class dbTest extends \Codeception\Test\Unit
     public function test_dbDsnString($inputMap, $forDbHost, $expected)
     {
         $this->assertEquals($expected, dbDsnString(new Map($inputMap), $forDbHost));
+    }
+
+    public function dbDsnToMapDataProvider()
+    {
+        return [
+            'mysql on localhost' => ['mysql:host=localhost', ['type' => 'mysql', 'host' => 'localhost']],
+            'mysql on ip address' => ['mysql:host=1.2.3.4', ['type' => 'mysql', 'host' => '1.2.3.4']],
+            'mysql from container' => ['mysql:host=db', ['type' => 'mysql', 'host' => 'db']],
+            'mysql from container 2' => ['mysql:host=mysql', ['type' => 'mysql', 'host' => 'mysql']],
+            'mysql on unix socket' => ['mysql:unix_socket=/var/mysql.sock', ['type' => 'mysql', 'host' => 'localhost', 'unix_socket' => '/var/mysql.sock']],
+            'sqlite file' => ['sqlite:/var/db.sqlite', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite', 'file' => '/var/db.sqlite']],
+            'sqlite memory' => ['sqlite::memory:', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite', 'memory' => true]],
+            'sqlite 2 file' => ['sqlite2:/var/db.sqlite', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite2', 'file' => '/var/db.sqlite']],
+            'sqlite 2 memory' => ['sqlite2::memory:', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite2', 'memory' => true]],
+            'sqlite 3 file' => ['sqlite3:/var/db.sqlite', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite3', 'file' => '/var/db.sqlite']],
+            'sqlite 3 memory' => ['sqlite3::memory:', ['type' => 'sqlite', 'host' => 'localhost', 'version' => 'sqlite3', 'memory' => true]],
+        ];
+    }
+    /**
+     * Test dbDsnToMap
+     * @dataProvider dbDsnToMapDataProvider
+     */
+    public function test_db_dsn_to_map($input,$expected)
+    {
+        $this->assertEquals($expected, dbDsnToMap($input)->toArray());
+    }
+
+    public function dbDsnToMapBadInputDataProvider()
+    {
+       return [
+           'empty' => [''],
+           'localhost' => ['localhost'],
+           'localhost and port' => ['localhost:23'],
+           'ip address' => ['1.2.3.4'],
+           'ip address and port' => ['1.2.3.4:2389'],
+           'mysql unix socket' => ['/var/mysql.sock'],
+           'sqlite file' => ['/var/db.sqlite'],
+       ] ;
+}
+    /**
+     * Test dbDsnToMap will throw if string is not DSN string
+     * @dataProvider dbDsnToMapBadInputDataProvider
+     */
+    public function test_db_dsn_to_map_will_throw_if_string_is_not_dsn_string($input)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        dbDsnToMap($input);
     }
 }
