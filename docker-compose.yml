@@ -57,10 +57,10 @@ services:
         define( 'SITE_ID_CURRENT_SITE', 1 );
         define( 'BLOG_ID_CURRENT_SITE', 1 );
     volumes:
-      - wordpress:/var/www/html
+      - wordpress:/var/www/html:cached
       # Populate a second volume with WordPress source files.
       # See: https://github.com/docker-library/wordpress/blob/master/Dockerfile-debian.template
-      - wordpress_src:/usr/src/wordpress
+      - wordpress_src:/usr/src/wordpress:cached
 
   # This container will not start any web-server and will not try to configure WordPress database access: its sole
   # function is to provide WordPress source files.
@@ -77,7 +77,7 @@ services:
     volumes:
       # Populate the volume with WordPress source files.
       # See: https://github.com/docker-library/wordpress/blob/master/Dockerfile-debian.template
-      - wordpress_src:/usr/src/wordpress
+      - wordpress_src:/usr/src/wordpress:cached
 
   chrome:
     image: selenium/standalone-chrome:3.141.59-oxygen
@@ -119,8 +119,8 @@ services:
       - wordpress
       - chrome
     volumes:
-      - .:/project
-      - wordpress:/project/vendor/wordpress/wordpress
+      - .:/project:cached
+      - wordpress:/project/vendor/wordpress/wordpress:cached
 
   # Functional version of the Codeception container, w/o Chrome.
   ccf:
@@ -148,8 +148,8 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - .:/project
-      - wordpress:/project/vendor/wordpress/wordpress
+      - .:/project:cached
+      - wordpress:/project/vendor/wordpress/wordpress:cached
 
   # The unit version of the Codeception container.
   ccu:
@@ -173,9 +173,9 @@ services:
       # Setting this value to `1` will disable the XDebug extension completely.
       XDEBUG_DISABLE: ${XDEBUG_DISABLE:-0}
     volumes:
-      - .:/project
+      - .:/project:cached
       # The unit tests will require the WordPress source files (to test extensions), pull then from the source files.
-      - wordpress_src:/project/vendor/wordpress/wordpress
+      - wordpress_src:/project/vendor/wordpress/wordpress:cached
 
   # The Codeception on PHP 5.6 container.
   cc56:
@@ -205,13 +205,13 @@ services:
       - wordpress
       - chrome
     volumes:
-      - .:/project
-      - wordpress:/project/vendor/wordpress/wordpress
+      - .:/project:cached
+      - wordpress:/project/vendor/wordpress/wordpress:cached
 
   busybox:
     image: busybox
     # Run as the current user.
     user: ${DOCKER_RUN_USER:-}:${DOCKER_RUN_GROUP:-}
     volumes:
-      - .:/project
-      - wordpress:/project/vendor/wordpress/wordpress
+      - .:/project:cached
+      - wordpress:/project/vendor/wordpress/wordpress:cached
