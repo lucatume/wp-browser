@@ -192,8 +192,8 @@ debug:
 		docker-compose --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.yml \
 		-f docker-compose.debug.yml \
-		run --entrypoint=bash --rm \
-		codeception
+		run --rm \
+		codeception bash
 
 test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
