@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- initialization environment vars in the `Wpbrowser` template providing functions for the `codecept init wpbrowser` command
+
 ## [2.4.7] 2020-04-23;
 
 ### Fixed

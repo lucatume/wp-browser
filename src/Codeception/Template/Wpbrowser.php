@@ -770,22 +770,24 @@ EOF;
         $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
         $testDbDsnMap = dbDsnMap($installationData['testDbHost']);
         $envVars          = [
-            'TEST_SITE_DSN'            => dbDsnString($testSiteDsnMap),
-            'TEST_SITE_DB_USER'        => $installationData['testSiteDbUser'],
-            'TEST_SITE_DB_PASSWORD'    => $installationData['testSiteDbPassword'],
-            'TEST_SITE_TABLE_PREFIX'   => $installationData['testSiteTablePrefix'],
+            'TEST_SITE_DB_DSN' => dbDsnString($testSiteDsnMap),
+            'TEST_SITE_DB_HOST' => dbDsnString($testDbDsnMap, true),
+            'TEST_SITE_DB_NAME' => $testSiteDsnMap('dbname', 'wordpress'),
+            'TEST_SITE_DB_USER' => $installationData['testSiteDbUser'],
+            'TEST_SITE_DB_PASSWORD' => $installationData['testSiteDbPassword'],
+            'TEST_SITE_TABLE_PREFIX' => $installationData['testSiteTablePrefix'],
             'TEST_SITE_ADMIN_USERNAME' => $installationData['testSiteAdminUsername'],
             'TEST_SITE_ADMIN_PASSWORD' => $installationData['testSiteAdminPassword'],
-            'TEST_SITE_WP_ADMIN_PATH'  => $installationData['testSiteWpAdminPath'],
-            'WP_ROOT_FOLDER'           => $installationData['wpRootFolder'],
-            'TEST_DB_NAME'             => $installationData['testDbName'],
-            'TEST_DB_HOST'             => dbDsnString($testDbDsnMap, true),
-            'TEST_DB_USER'             => $installationData['testDbUser'],
-            'TEST_DB_PASSWORD'         => $installationData['testDbPassword'],
-            'TEST_TABLE_PREFIX'        => $installationData['testTablePrefix'],
-            'TEST_SITE_WP_URL'         => $installationData['testSiteWpUrl'],
-            'TEST_SITE_WP_DOMAIN'      => urlDomain($installationData['testSiteWpUrl']),
-            'TEST_SITE_ADMIN_EMAIL'    => $installationData['testSiteAdminEmail'],
+            'TEST_SITE_WP_ADMIN_PATH' => $installationData['testSiteWpAdminPath'],
+            'WP_ROOT_FOLDER' => $installationData['wpRootFolder'],
+            'TEST_DB_NAME' => $installationData['testDbName'],
+            'TEST_DB_HOST' => dbDsnString($testDbDsnMap, true),
+            'TEST_DB_USER' => $installationData['testDbUser'],
+            'TEST_DB_PASSWORD' => $installationData['testDbPassword'],
+            'TEST_TABLE_PREFIX' => $installationData['testTablePrefix'],
+            'TEST_SITE_WP_URL' => $installationData['testSiteWpUrl'],
+            'TEST_SITE_WP_DOMAIN' => urlDomain($installationData['testSiteWpUrl']),
+            'TEST_SITE_ADMIN_EMAIL' => $installationData['testSiteAdminEmail'],
         ];
 
         return $envVars;

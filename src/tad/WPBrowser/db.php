@@ -249,11 +249,14 @@ function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null)
  * @param Map $dbDsnMap The database DSN map.
  * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
  *
+ * @return string The database DSN string in the format required.
+ *
  * @throws \InvalidArgumentException If the database type is not supported or is not set.
  */
 function dbDsnString(Map $dbDsnMap, $forDbHost = false)
 {
     $type = $dbDsnMap('type', 'mysql');
+    $dsn = '';
 
     if ($type === 'mysql') {
         $dsn = $forDbHost ? '' : 'mysql:';

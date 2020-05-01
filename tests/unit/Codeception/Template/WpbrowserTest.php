@@ -12,7 +12,9 @@ class WpbrowserTest extends \Codeception\Test\Unit
         yield 'default' => [
             [],
             [
-                'TEST_SITE_DSN'         => 'mysql:host=localhost;dbname=test',
+                'TEST_SITE_DB_DSN'         => 'mysql:host=localhost;dbname=test',
+                'TEST_SITE_DB_HOST'         => 'localhost',
+                'TEST_SITE_DB_NAME'         => 'test',
                 'TEST_SITE_DB_USER'     => 'root',
                 'TEST_SITE_DB_PASSWORD' => 'password',
                 'TEST_DB_HOST'          => 'localhost',
@@ -33,7 +35,9 @@ class WpbrowserTest extends \Codeception\Test\Unit
             'testDbPassword'     => '',
             ],
             [
-                'TEST_SITE_DSN'         => 'mysql:host=localhost;dbname=wp',
+                'TEST_SITE_DB_DSN'         => 'mysql:host=localhost;dbname=wp',
+                'TEST_SITE_DB_HOST'         => 'localhost',
+                'TEST_SITE_DB_NAME'         => 'wp',
                 'TEST_SITE_DB_USER'     => 'root',
                 'TEST_SITE_DB_PASSWORD' => '',
                 'TEST_DB_HOST'          => 'localhost',
@@ -54,7 +58,9 @@ class WpbrowserTest extends \Codeception\Test\Unit
                 'testDbPassword'     => '',
             ],
             [
-                'TEST_SITE_DSN'         => 'mysql:host=1.2.3.4;dbname=wp',
+                'TEST_SITE_DB_DSN'         => 'mysql:host=1.2.3.4;dbname=wp',
+                'TEST_SITE_DB_HOST'         => '1.2.3.4',
+                'TEST_SITE_DB_NAME'         => 'wp',
                 'TEST_SITE_DB_USER'     => 'root',
                 'TEST_SITE_DB_PASSWORD' => '',
                 'TEST_DB_HOST'          => '1.2.3.4',
@@ -75,7 +81,9 @@ class WpbrowserTest extends \Codeception\Test\Unit
                 'testDbPassword'     => 'password',
             ],
             [
-                'TEST_SITE_DSN'         => 'mysql:host=1.2.3.4;port=8989;dbname=wp',
+                'TEST_SITE_DB_DSN'         => 'mysql:host=1.2.3.4;port=8989;dbname=wp',
+                'TEST_SITE_DB_HOST'         => '1.2.3.4:8989',
+                'TEST_SITE_DB_NAME'         => 'wp',
                 'TEST_SITE_DB_USER'     => 'root',
                 'TEST_SITE_DB_PASSWORD' => 'password',
                 'TEST_DB_HOST'          => '1.2.3.4:8989',
@@ -96,7 +104,9 @@ class WpbrowserTest extends \Codeception\Test\Unit
                 'testDbPassword'     => 'password',
             ],
             [
-                'TEST_SITE_DSN'         => 'mysql:unix_socket=/var/mysql.sock;dbname=tests',
+                'TEST_SITE_DB_DSN'         => 'mysql:unix_socket=/var/mysql.sock;dbname=tests',
+                'TEST_SITE_DB_HOST'         => 'localhost:/var/mysql.sock',
+                'TEST_SITE_DB_NAME'         => 'tests',
                 'TEST_SITE_DB_USER'     => 'root',
                 'TEST_SITE_DB_PASSWORD' => 'password',
                 'TEST_DB_HOST'          => 'localhost:/var/mysql.sock',
@@ -104,17 +114,6 @@ class WpbrowserTest extends \Codeception\Test\Unit
                 'TEST_DB_PASSWORD'      => 'password'
             ]
         ];
-
-//      $dbInstallationData = [
-//          'testSiteDbHost'     => 'localhost',
-//          'testSiteDbName'     => 'wp',
-//          'testSiteDbUser'     => 'root',
-//          'testSiteDbPassword' => '',
-//          'testDbHost'         => 'localhost',
-//          'testDbName'         => 'wpTests',
-//          'testDbUser'         => 'root',
-//          'testDbPassword'     => '',
-//      ];
     }
 
     /**
@@ -133,7 +132,11 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $envVars = $template->getEnvFileVars(new Map($installationData));
 
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $envVars[ $key ]);
+            $this->assertEquals(
+                $value,
+                $envVars[$key],
+                "Expected {$key} value: '{$value}', got '{$envVars[$key]}' instead."
+            );
         }
     }
 }
