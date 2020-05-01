@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.4.8] 2020-05-01;
+
 ### Fixed
 
 - initialization environment vars in the `Wpbrowser` template providing functions for the `codecept init wpbrowser` command
@@ -1338,4 +1340,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.5]: https://github.com/lucatume/wp-browser/compare/2.4.4...2.4.5
 [2.4.6]: https://github.com/lucatume/wp-browser/compare/2.4.5...2.4.6
 [2.4.7]: https://github.com/lucatume/wp-browser/compare/2.4.6...2.4.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.7...HEAD
+[2.4.8]: https://github.com/lucatume/wp-browser/compare/2.4.7...2.4.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.8...HEAD
