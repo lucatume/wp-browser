@@ -1,4 +1,6 @@
-TEST_SITE_DSN=mysql:host=1.2.3.4;port=2389;dbname=test
+TEST_SITE_DB_DSN=mysql:host=1.2.3.4;port=2389;dbname=test
+TEST_SITE_DB_HOST=1.2.3.4:2389
+TEST_SITE_DB_NAME=test
 TEST_SITE_DB_USER=root
 TEST_SITE_DB_PASSWORD=password
 TEST_SITE_TABLE_PREFIX=wp_

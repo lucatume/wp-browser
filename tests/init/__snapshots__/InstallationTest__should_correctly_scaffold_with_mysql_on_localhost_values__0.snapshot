@@ -1,5 +1,7 @@
 >>> /.env.testing >>>
-TEST_SITE_DSN=mysql:host=localhost;dbname=wordpress
+TEST_SITE_DB_DSN=mysql:host=localhost;dbname=wordpress
+TEST_SITE_DB_HOST=localhost
+TEST_SITE_DB_NAME=wordpress
 TEST_SITE_DB_USER=root
 TEST_SITE_DB_PASSWORD=secret
 TEST_SITE_TABLE_PREFIX=wp_

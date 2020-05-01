@@ -1,5 +1,7 @@
 >>> /.env.testing >>>
-TEST_SITE_DSN=mysql:host=1.2.3.4;port=4022;dbname=wordpress
+TEST_SITE_DB_DSN=mysql:host=1.2.3.4;port=4022;dbname=wordpress
+TEST_SITE_DB_HOST=1.2.3.4:4022
+TEST_SITE_DB_NAME=wordpress
 TEST_SITE_DB_USER=root
 TEST_SITE_DB_PASSWORD=secret
 TEST_SITE_TABLE_PREFIX=wp_
