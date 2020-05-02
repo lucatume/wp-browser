@@ -365,9 +365,9 @@ trait WPBrowserMethods
      */
     public function amOnCronPage($queryVars = null)
     {
-        $path = '/wp-cron.php';
+        $path = 'wp-cron.php';
         if ($queryVars !== null) {
-            $path = '/' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '/'));
+            $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
         }
         return $this->amOnPage($path);
     }
