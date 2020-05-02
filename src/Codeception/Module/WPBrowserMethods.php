@@ -347,7 +347,7 @@ trait WPBrowserMethods
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
-            $path = '/' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '/'));
+            $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
         }
         return $this->amOnAdminPage($path);
     }
