@@ -187,16 +187,16 @@ class WordPressTest extends \Codeception\Test\Unit
         $sut->_isMockRequest(true);
 
         $array_single = $sut->amOnAdminAjaxPage(['action' => 'foo_action']);
-        $this->assertEquals('/wp-admin/admin-ajax.php?foo_action', $array_single);
+        $this->assertEquals('/wp-admin/admin-ajax.php?action=foo_action', $array_single);
 
         $array_multiple = $sut->amOnAdminAjaxPage(['action' => 'foo_action', 'data' => 'bar_data', 'nonce' => 'baz_nonce']);
-        $this->assertEquals('/wp-admin/admin-ajax.php?foo_action&bar_data&baz_nonce', $array_multiple);
+        $this->assertEquals('/wp-admin/admin-ajax.php?action=foo_action&data=bar_data&nonce=baz_nonce', $array_multiple);
 
-        $string = $sut->amOnAdminAjaxPage('foo_action&bar_data&baz_nonce');
-        $this->assertEquals('/wp-admin/admin-ajax.php?foo_action&bar_data&baz_nonce', $string);
+        $string = $sut->amOnAdminAjaxPage('action=foo_action&data=bar_data&nonce=baz_nonce');
+        $this->assertEquals('/wp-admin/admin-ajax.php?action=foo_action&data=bar_data&nonce=baz_nonce', $string);
 
-        $string_with_question_mark = $sut->amOnAdminAjaxPage('?foo_action&bar_data&baz_nonce');
-        $this->assertEquals('/wp-admin/admin-ajax.php?foo_action&bar_data&baz_nonce', $string_with_question_mark);
+        $string_with_question_mark = $sut->amOnAdminAjaxPage('?action=foo_action&data=bar_data&nonce=baz_nonce');
+        $this->assertEquals('/wp-admin/admin-ajax.php?action=foo_action&data=bar_data&nonce=baz_nonce', $string_with_question_mark);
     }
 
     /**
