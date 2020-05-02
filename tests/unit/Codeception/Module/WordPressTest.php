@@ -176,7 +176,7 @@ class WordPressTest extends \Codeception\Test\Unit
 
     /**
      * @test
-     * it should point to ajax file when requesting ajax page
+     * it should point to ajax file when requesting ajax page with query vars
      */
     public function it_should_point_to_ajax_file_when_requesting_ajax_page_with_query_vars()
     {
