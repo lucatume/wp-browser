@@ -34,18 +34,14 @@ if (!empty($env['request'])) {
 }
 
 if (!empty($env['get'])) {
-    if (!empty($env['get'])) {
-        foreach ($env['get'] as $key => $value) {
-            $_GET[$key] = $value;
-        }
+    foreach ($env['get'] as $key => $value) {
+        $_GET[$key] = $value;
     }
 }
 
 if (!empty($env['post'])) {
-    if (!empty($env['post'])) {
-        foreach ($env['post'] as $key => $value) {
-            $_POST[$key] = $value;
-        }
+    foreach ($env['post'] as $key => $value) {
+        $_POST[$key] = $value;
     }
 }
 
