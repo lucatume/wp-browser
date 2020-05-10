@@ -37,7 +37,7 @@ jobs:
       - name: Cache Composer dependencies
         uses: gerbal/always-cache@v1.0.3
         with:
-          path: vendor
+          path: ~/.composer/cache
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
         run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }}
@@ -64,7 +64,7 @@ jobs:
       - name: Cache Composer dependencies
         uses: gerbal/always-cache@v1.0.3
         with:
-          path: vendor
+          path: ~/.composer/cache
           key: composer-5.6-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
         run: test -d vendor || _build/vendor_prepare.sh 5.6 ${{ matrix.codeception_version }}
