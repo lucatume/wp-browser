@@ -69,6 +69,6 @@ $I->see('Test post 2');
 
 This is just a bite though, find out more in [the documentation][1].
 
-[1]: https://wpbrowser.wptestkit.dev
+[1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
-[3]: https://wpbrowser.wptestkit.dev/summary/modules
+[3]: https://wpbrowser.wptestkit.dev/modules
