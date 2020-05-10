@@ -2,7 +2,7 @@ wp-browser
 ==========
 Easy acceptance, functional, integration and unit testing for WordPress plugins, themes and sites using Codeception.
 
-[![Build Status](https://travis-ci.org/lucatume/wp-browser.svg?branch=master)](https://travis-ci.org/lucatume/wp-browser)
+![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)
 
 wp-browser provides a [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") based solution to
  test WordPress plugins, themes and whole sites at all levels of testing.  
