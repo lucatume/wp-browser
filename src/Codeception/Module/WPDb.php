@@ -3984,7 +3984,7 @@ class WPDb extends Db
     public function _loadDump($databaseKey = null, $databaseConfig = null)
     {
         parent::_loadDump($databaseKey, $databaseConfig);
-        $this->prepareDd($databaseConfig);
+        $this->prepareDd();
     }
 
     /**
