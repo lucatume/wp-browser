@@ -28,7 +28,6 @@
     "symfony/filesystem": "^3.0",
     "symfony/process": ">=2.7 <5.0",
     "mikemclin/laravel-wp-password": "~2.0.0",
-    "vlucas/phpdotenv": "^3.0",
     "wp-cli/wp-cli-bundle": ">=2.0 <3.0.0",
     "zordius/lightncandy": "^1.2",
     "vria/nodiacritic": "^0.1.2"
@@ -74,6 +73,7 @@
     "codeception/module-filesystem": "Codeception 4.0 compatibility; required by the WPFilesystem module.",
     "codeception/module-cli": "Codeception 4.0 compatibility; required by the WPCLI module.",
     "codeception/util-universalframework": "Codeception 4.0 compatibility; required by the WordPress framework module.",
-    "gumlet/php-image-resize": "To handle runtime image modification in the WPDb::haveAttachmentInDatabase method."
+    "gumlet/php-image-resize": "To handle runtime image modification in the WPDb::haveAttachmentInDatabase method.",
+    "vlucas/phpdotenv": "To manage env file based configuration of the suites."
   }
 }

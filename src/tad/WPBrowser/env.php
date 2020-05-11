@@ -7,12 +7,14 @@
 
 namespace tad\WPBrowser;
 
+use tad\WPBrowser\Utils\Map;
+
 /**
  * Returns a closure to get the value of an environment variable, loading a specific env file first.
  *
  * @param string $file The name of the environment file to load.
- * @return \Closure A closure taking one argument, the environment variable name, to return its value or `null` if the
- *                     value is not defined.
+ *
+ * @return Map The map of the read environment variables.
  *
  * @throws \RuntimeException If the env file does not exist or is not readable.
  */
@@ -41,9 +43,7 @@ function envFile($file)
         return $lines;
     }, []);
 
-    return static function ($key) use ($vars) {
-        return isset($vars[$key]) ? $vars[$key] : null;
-    };
+    return new Map($vars);
 }
 
 /**
@@ -66,4 +66,18 @@ function os()
     ];
 
     return isset($map[$osSlug]) ? $map[$osSlug] : 'Unknown';
+}
+
+/**
+ * Loads a Map to the environment.
+ *
+ * @param Map $map The map of environment variables to load.
+ *
+ * @see envFile() For the function to load to generate a Map from an environment file.
+ */
+function loadEnvMap(Map $map)
+{
+    foreach ($map->toArray() as $key => $value) {
+        putenv("{$key}={$value}");
+    }
 }

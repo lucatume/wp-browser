@@ -3,15 +3,14 @@
 namespace Codeception\Template;
 
 use Codeception\Exception\ModuleConfigException;
-use Dotenv\Dotenv;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Template\Data;
 use tad\WPBrowser\Utils\Map;
-use function tad\WPBrowser\dbCredentials;
 use function tad\WPBrowser\dbDsnMap;
 use function tad\WPBrowser\dbDsnString;
-use function tad\WPBrowser\parseUrl;
+use function tad\WPBrowser\envFile;
+use function tad\WPBrowser\loadEnvMap;
 use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\urlDomain;
 
@@ -126,7 +125,7 @@ class Wpbrowser extends Bootstrap
         try {
             $this->createGlobalConfig();
             $this->writeEnvFile($installationData);
-            $this->loadEnvFile();
+            loadEnvMap(envFile($this->envFileName));
             $this->createUnitSuite();
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
@@ -493,12 +492,6 @@ class Wpbrowser extends Bootstrap
                 rrmdir(getcwd() . '/' . $dir);
             }
         }
-    }
-
-    protected function loadEnvFile()
-    {
-        $dotEnv = Dotenv::create($this->workDir, $this->envFileName);
-        $dotEnv->load();
     }
 
     protected function createWpUnitSuite($actor = 'Wpunit', array $installationData = [])
