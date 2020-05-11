@@ -3281,11 +3281,21 @@ class WPDb extends Db
      *
      * @throws ModuleException If the WPFilesystem module is not loaded in the suite or the file to attach is not
      *                         readable
+     *
      * @throws \Gumlet\ImageResizeException If the image resize operation fails while trying to create the image sizes.
-     * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite.
+     *
+     * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite or if the
+     *                                'gumlet/php-image-resize:^1.6' package is not installed.
      */
     public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
     {
+        if (!class_exists('\\Gumlet\\ImageResize')) {
+            $message = 'The "haveAttachmentInDatabase" method requires the "gumlet/php-image-resize:^1.6" package.' .
+                PHP_EOL .
+                'Please install it using the command "composer require --dev gumlet/php-image-resize:^1.6"';
+            throw new ModuleRequireException($this, $message);
+        }
+
         try {
             $fs = $this->getWpFilesystemModule();
         } catch (ModuleException $e) {

@@ -112,3 +112,7 @@ function requireCodeceptionModules($module, array $requiredModules = [])
 
         throw new \Codeception\Exception\ConfigurationException($message);
 }
+
+function requireComposerPackage($package,$version = '*'){
+
+}
