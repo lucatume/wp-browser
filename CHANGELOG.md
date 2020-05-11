@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+* `README.md` file updates (thanks @szepevictor)
+* `src/tad/scripts` fixes and refactorings (thanks @szepevictor)
+
 ## [2.4.8] 2020-05-01;
 
 ### Fixed
