@@ -40,8 +40,11 @@ $changelogFile = $root . '/CHANGELOG.md';
 
 function args()
 {
+    global $argv;
+
     $options = getopt('q', ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
         $optind);
+
     $map = [
         'releaseType' => isset($argv[$optind]) ? $argv[$optind] : 'patch',
         'notInteractive' => isset($options['q']) || isset($options['not-interactive']),
