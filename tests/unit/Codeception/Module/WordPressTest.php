@@ -190,6 +190,35 @@ class WordPressTest extends \Codeception\Test\Unit
         $this->assertEquals('/wp-cron.php', $page);
     }
 
+        /**
+     * @test
+     * it should point to ajax file when requesting ajax page with query vars
+     */
+    public function it_should_point_to_cron_file_when_requesting_cron_page_with_query_vars()
+    {
+        $page = 'wp-cron.php';
+
+        $this->client->setHeaders(Arg::type('array'))->shouldBeCalled();
+
+        $sut = $this->make_instance();
+        $sut->_isMockRequest(true);
+        $page = $sut->amOnCronPage();
+
+        $this->assertEquals('wp-cron.php', $page);
+
+        $array_single = $sut->amOnCronPage(['action' => 'foo_action']);
+        $this->assertEquals('wp-cron.php?action=foo_action', $array_single);
+
+        $array_multiple = $sut->amOnCronPage(['action' => 'foo_action', 'data' => 'bar_data', 'nonce' => 'baz_nonce']);
+        $this->assertEquals('wp-cron.php?action=foo_action&data=bar_data&nonce=baz_nonce', $array_multiple);
+
+        $string = $sut->amOnCronPage('action=foo_action&data=bar_data&nonce=baz_nonce');
+        $this->assertEquals('wp-cron.php?action=foo_action&data=bar_data&nonce=baz_nonce', $string);
+
+        $string_with_question_mark = $sut->amOnCronPage('?action=foo_action&data=bar_data&nonce=baz_nonce');
+        $this->assertEquals('wp-cron.php?action=foo_action&data=bar_data&nonce=baz_nonce', $string_with_question_mark);
+    }
+
     /**
      * @test
      * it should throw if specified wpRootFolder does not exist
