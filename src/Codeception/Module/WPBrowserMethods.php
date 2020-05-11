@@ -15,11 +15,11 @@ trait WPBrowserMethods
     protected $pluginsPath;
 
     /**
-     * The admin absolute URL.
+     * The admin UI path, relative to the WordPress installation root URL.
      *
      * @var string
      */
-    protected $adminPath;
+    protected $adminPath = '/wp-admin';
 
     /**
      * The login screen absolute URL
