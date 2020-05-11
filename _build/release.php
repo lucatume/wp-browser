@@ -65,12 +65,14 @@ if (!in_array($args('releaseType'), ['major', 'minor', 'patch'], true)) {
 
 $dryRun = $args('dryRun', false);
 
-$currentGitBranch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
-if ($currentGitBranch !== 'master') {
-    echo "\e[31mCan release only from master branch.\e[0m\n";
-    exit(1);
+if (!$dryRun) {
+    $currentGitBranch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
+    if ($currentGitBranch !== 'master') {
+        echo "\e[31mCan release only from master branch.\e[0m\n";
+        exit(1);
+    }
+    echo "Current git branch: \e[32m" . $currentGitBranch . "\e[0m\n";
 }
-echo "Current git branch: \e[32m" . $currentGitBranch . "\e[0m\n";
 
 /**
  * Parses the changelog to get the latest notes and the latest, released, version.
