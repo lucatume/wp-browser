@@ -35,7 +35,7 @@ jobs:
       - name: Set src directory hash
         run: echo "::set-env name=SRC_HASH::$(_build/dir_hash.sh src)"
       - name: Cache Composer dependencies
-        uses: gerbal/always-cache@v1.0.3
+        uses: gerbal/always-cache@v1
         with:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
