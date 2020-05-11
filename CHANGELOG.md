@@ -8,8 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* `README.md` file updates (thanks @szepevictor)
-* `src/tad/scripts` fixes and refactorings (thanks @szepevictor)
+* `README.md` file updates (thanks @szepeviktor)
+* `src/tad/scripts` fixes and refactorings (thanks @szepeviktor)
 * cron and admin AJAX query vars handling (thanks @Luc45)
 
 ### Removed
