@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * `README.md` file updates (thanks @szepevictor)
 * `src/tad/scripts` fixes and refactorings (thanks @szepevictor)
+* cron and admin AJAX query vars handling (thanks @Luc45)
 
 ## [2.4.8] 2020-05-01;
 
