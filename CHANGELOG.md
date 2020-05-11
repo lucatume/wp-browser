@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.0] 2020-05-11;
+
 ### Fixed
 
 * `README.md` file updates (thanks @szepevictor)
@@ -1352,4 +1354,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.6]: https://github.com/lucatume/wp-browser/compare/2.4.5...2.4.6
 [2.4.7]: https://github.com/lucatume/wp-browser/compare/2.4.6...2.4.7
 [2.4.8]: https://github.com/lucatume/wp-browser/compare/2.4.7...2.4.8
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.4.8...HEAD
+[2.5.0]: https://github.com/lucatume/wp-browser/compare/2.4.8...2.5.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.0...HEAD
