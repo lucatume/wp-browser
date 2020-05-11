@@ -183,18 +183,6 @@ composer_hash_bump:
 # Run a set of checks on the code before commit.
 pre_commit: lint fix sniff docs
 
-# A variable target to debug issues.
-debug:
-	[ "$${OSTYPE:0:5}" == 'linux' ] && FIXUID=1 || FIXUID==0 \
-	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_USER=$$(id -u) ||  DOCKER_RUN_USER= \
-	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_GROUP=$$(id -u) ||  DOCKER_RUN_GROUP= \
-	TEST_SUBNET=89 \
-		docker-compose --project-name=${PROJECT_NAME}_debug \
-		-f docker-compose.yml \
-		-f docker-compose.debug.yml \
-		run --rm \
-		codeception bash
-
 test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
 		docker-compose --project-name=${PROJECT_NAME}_acceptance \
@@ -242,14 +230,18 @@ test_56:
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm cc56 run events
 
-# A variable target to debug issues in the PHP 5.6 container.
-debug_56:
-	[ "$${OSTYPE:0:5}" == 'linux' ] && FIXUID=1 || FIXUID==0 \
-	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_USER=$$(id -u) ||  DOCKER_RUN_USER= \
-	[ "$${OSTYPE:0:5}" == 'linux' ] && DOCKER_RUN_GROUP=$$(id -u) ||  DOCKER_RUN_GROUP= \
+# A variable target to debug issues in a PHP 5.6 environment.
+debug:
 	TEST_SUBNET=104 \
-		docker-compose --project-name=${PROJECT_NAME}_debug \
-		-f docker-compose.yml \
+		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.debug.yml \
 		run --rm \
 		cc56 bash
+
+# A variable target to debug issues in a PHP 7.2 environment.
+debug_7:
+	TEST_SUBNET=89 \
+		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
+		-f docker-compose.debug.yml \
+		run --rm \
+		codeception bash
