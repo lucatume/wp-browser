@@ -1,15 +1,14 @@
-wp-browser
-==========
-Easy acceptance, functional, integration and unit testing for WordPress plugins, themes and sites using Codeception.
+# wp-browser
 
 [![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
 
-wp-browser provides a [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") based solution to
- test WordPress plugins, themes and whole sites at all levels of testing.  
+wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and sites
+using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
 
-[Find out more here in the documentation](https://wpbrowser.wptestkit.dev).
+Find out more in [the documentation](https://wpbrowser.wptestkit.dev).
 
 ## Installation and setup - the really fast version
+
 Using [Composer](https://getcomposer.org/) require `wp-browser` as a development dependency:
 
 ```bash
