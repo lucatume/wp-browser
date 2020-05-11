@@ -10,6 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * `src/tad/scripts` fixes and refactorings (thanks @szepevictor)
 * cron and admin AJAX query vars handling (thanks @Luc45)
 
+### Removed
+
+* `gumlet/php-image-resize` package requirement; runtime image modification in the `WPDb::haveAttachmentInDatabase` method will require it at runtime.
+* `vlucas/phpdotenv` package requirement; `wp-browser` will not use it internally, but Codeception will keep requiring it for dynamic parameter configuration.
+
 ## [2.4.8] 2020-05-01;
 
 ### Fixed
