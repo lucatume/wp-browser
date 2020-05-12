@@ -29,7 +29,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run PHPStan static analysis
-        uses: PHPSTAN_LEVEL=0 make phpstan
+        run: make phpstan
+        env:
+          PHPSTAN_LEVEL: 0
+
 
   test:
     strategy:
