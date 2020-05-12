@@ -21,6 +21,7 @@ parameters:
     - %currentWorkingDirectory%/src/includes/exceptions.php
     - %currentWorkingDirectory%/src/includes/factory.php
     - %currentWorkingDirectory%/src/includes/trac.php
+    - %currentWorkingDirectory%/vendor/antecedent/patchwork/Patchwork.php
   ignoreErrors:
     # Uses func_get_args()
     - '#^Function add_query_arg invoked with [123] parameters?, 0 required\.$#'
