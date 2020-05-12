@@ -23,7 +23,7 @@ jobs:
         run: make sniff
 
   phpstsan:
-    name: Run phpstan on source files
+    name: Run PHPStan static analysis
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
