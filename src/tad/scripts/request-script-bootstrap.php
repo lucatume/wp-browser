@@ -5,6 +5,8 @@ include __DIR__ . '/support-functions.php';
 include __DIR__ . '/filters.php';
 include __DIR__ . '/pluggable-functions-override.php';
 
+global $argv;
+
 $indexFile = $argv[1];
 
 $env = unserialize(base64_decode($argv[2]));
