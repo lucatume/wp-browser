@@ -61,7 +61,7 @@ class Arg implements ArgInterface
      */
     public static function any()
     {
-        return new static(
+        return new self(
             static function () {
                 return true;
             },
@@ -85,7 +85,7 @@ class Arg implements ArgInterface
      */
     public static function that(callable $callback)
     {
-        $argExpectation = new static($callback);
+        $argExpectation = new self($callback);
         $argExpectation->setOnFail(static function () use ($argExpectation) {
             return $argExpectation->checkException instanceof \Exception ?
                 $argExpectation->checkException->getMessage()
@@ -97,7 +97,7 @@ class Arg implements ArgInterface
 
     public static function containingString($string)
     {
-        return new static(
+        return new self(
             function ($input) use ($string) {
                 if (isRegex($string)) {
                     return (bool) preg_match($string, $input);
@@ -152,7 +152,7 @@ class Arg implements ArgInterface
     public static function type($type)
     {
         if (in_array($type, [ 'string', 'array', 'bool', 'int', 'float', 'resource' ])) {
-            return new static(
+            return new self(
                 static function ($input) use ($type) {
                     return call_user_func("is_{$type}", $input);
                 },
@@ -162,7 +162,7 @@ class Arg implements ArgInterface
             );
         }
 
-        return new static(
+        return new self(
             static function ($input) use ($type) {
                 if (trait_exists($type)) {
                     return in_array($type, class_uses($type));

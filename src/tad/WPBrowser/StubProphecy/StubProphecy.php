@@ -61,6 +61,12 @@ class StubProphecy
     protected $revealed;
 
     /**
+     * The test case instance used by the stub prophecy.
+     * @var TestCase
+     */
+    protected $testCase;
+
+    /**
      * StubProphecy constructor.
      *
      * @param string   $class    The fully qualified name of the class to build a stub prophecy for.
