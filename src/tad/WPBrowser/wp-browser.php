@@ -70,6 +70,8 @@ function includesDir($path = '')
  * @param array<string> $requiredModules The list of Codeception modules, or components, required by the wp-browser
  *                                       module
  *
+ * @return void
+ *
  * @throws \Codeception\Exception\ConfigurationException If one or more requirements for a wp-browser module are not
  *                                                       satisfied.
  */
@@ -116,8 +118,4 @@ function requireCodeceptionModules($module, array $requiredModules = [])
         );
 
         throw new \Codeception\Exception\ConfigurationException($message);
-}
-
-function requireComposerPackage($package, $version = '*')
-{
 }

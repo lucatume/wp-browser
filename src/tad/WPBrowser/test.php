@@ -30,6 +30,8 @@ function isDebug($activate = null)
  * Prints a debug message using Codeception `codecept_debug` function if available.
  *
  * @param string|mixed $message Either a string message or an other value that will be printed JSON encoded.
+ *
+ * @return void
  */
 function debug($message)
 {
@@ -52,6 +54,10 @@ function debug($message)
  *
  * @param bool   $condition The condition to assert.
  * @param string $message   The exception message.
+ *
+ * @return void
+ *
+ * @throws \InvalidArgumentException If the condition is not met.
  */
 function ensure($condition, $message)
 {
