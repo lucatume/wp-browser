@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: phpstan
+      - name: Run PHPStan static analysis
         uses: PHPSTAN_LEVEL=0 make phpstan
 
   test:
