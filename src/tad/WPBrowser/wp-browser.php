@@ -83,7 +83,12 @@ function requireCodeceptionModules($module, array $requiredModules = [])
         '\\Codeception\\Lib\\Framework' => 'codeception/lib-innerbrowser'
     ];
 
-    $packages = array_merge(ModuleContainer::$packages, $additionalPackages);
+    if (property_exists(ModuleContainer::class, 'packages')) {
+        $packages = array_merge(ModuleContainer::$packages, $additionalPackages);
+    } else {
+        $packages = $additionalPackages;
+    }
+
     $missing  = [];
 
     foreach ($requiredModules as $moduleName) {
