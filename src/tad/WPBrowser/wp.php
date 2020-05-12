@@ -7,41 +7,55 @@
 
 namespace tad\WPBrowser;
 
+/**
+ * Drops the WordPress installation tables registered on the global `$wpdb` instance.
+ *
+ * @param \wpdb $wpdb The global WordPress database handler instance.
+ * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be dropped.
+ *
+ * @return array<string> The list of dropped tables.
+ */
 function dropWpTables(\wpdb $wpdb, array $tables = null)
 {
     $allTables = $wpdb->tables('all');
+    $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
+    $droppedTables = [];
 
-    foreach ($allTables as $table => $prefixedTable) {
-        if (!in_array($prefixedTable, $tables, true)) {
-            continue;
-        }
-        $dropped = $wpdb->query("DROP TABLE {$prefixedTable} IF EXISTS ");
+    foreach ($tablesList as $table => $prefixedTable) {
+        $dropped = $wpdb->query("DROP TABLE {$prefixedTable} IF EXISTS");
 
-        if ($dropped!== true) {
+        if ($dropped !== true) {
             throw new \RuntimeException("Could not DROP table {$prefixedTable}: " . $wpdb->last_error);
         }
+
+        $droppedTables[] = $prefixedTable;
     }
+
+    return $droppedTables;
 }
 
+/**
+ * Empties the WordPress installation tables registered on the global `$wpdb` instance.
+ *
+ * @param \wpdb $wpdb The global WordPress database handler instance.
+ * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be emptied.
+ *
+ * @return array<string> The list of emptied tables.
+ */
 function emptyWpTables(\wpdb $wpdb, array $tables = null)
 {
-    // Make sure we start from empty tables.
-    $dropList = $wpdb->get_col("show tables like '{$wpdb->prefix}%'");
-    if ($tables !== null) {
-        $dropList = array_intersect($dropList, $tables);
-    }
+    $allTables = $wpdb->tables('all');
+    $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
+    $emptiedTables = [];
 
-    if (! empty($dropList)) {
-        $allTables = $wpdb->tables('all');
-        foreach ($allTables as $table => $prefixedTable) {
-            if (! in_array($prefixedTable, $dropList, true)) {
-                continue;
-            }
-            $deleted = $wpdb->query("DELETE FROM {$prefixedTable} WHERE 1=1");
+    foreach ($tablesList as $table => $prefixedTable) {
+        $deleted = $wpdb->query("DELETE FROM {$prefixedTable} WHERE 1=1");
 
-            if ($deleted === false) {
-                throw new \RuntimeException("Could not empty table {$prefixedTable}: " . $wpdb->last_error);
-            }
+        if ($deleted === false) {
+            throw new \RuntimeException("Could not empty table {$prefixedTable}: " . $wpdb->last_error);
         }
+        $emptiedTables[] = $prefixedTable;
     }
+
+    return $emptiedTables;
 }

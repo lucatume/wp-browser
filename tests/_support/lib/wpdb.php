@@ -13,4 +13,8 @@ class wpdb
     {
         return $this->tables;
     }
+
+    public function query($query)
+    {
+    }
 }
