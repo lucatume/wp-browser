@@ -27,7 +27,6 @@ function includePatchwork()
 function configurePatchwork($config)
 {
     includePatchwork();
-    ;
     \Patchwork\Config\set($config, __FILE__);
 }
 
