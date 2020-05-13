@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.1] 2020-05-13;
+
 ### Fixed
 
 - add `function_exists` check to avoid redefinition issues when wp-browser is used in two related packages (thanks @cliffordp)
@@ -1359,4 +1361,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.7]: https://github.com/lucatume/wp-browser/compare/2.4.6...2.4.7
 [2.4.8]: https://github.com/lucatume/wp-browser/compare/2.4.7...2.4.8
 [2.5.0]: https://github.com/lucatume/wp-browser/compare/2.4.8...2.5.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.0...HEAD
+[2.5.1]: https://github.com/lucatume/wp-browser/compare/2.5.0...2.5.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.1...HEAD
