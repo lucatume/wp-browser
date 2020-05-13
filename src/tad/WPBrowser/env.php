@@ -69,7 +69,7 @@ function os()
 }
 
 /**
- * Loads a Map to the environment.
+ * Loads a Map of environment variables into `getenv()`, `$_ENV` and `$_SERVER`.
  *
  * @param Map $map The map of environment variables to load.
  *
@@ -77,7 +77,17 @@ function os()
  */
 function loadEnvMap(Map $map)
 {
+    if (empty($_SERVER)) {
+        $_SERVER = [];
+    }
+
+    if (empty($_ENV)) {
+        $_ENV = [];
+    }
+
     foreach ($map->toArray() as $key => $value) {
         putenv("{$key}={$value}");
+        $_SERVER[$key] = $value;
+        $_ENV[$key] = $value;
     }
 }

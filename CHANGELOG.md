@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- added `Dotenv\Dotenv` polyfill class to avoid back-compatibility issues w/ projects not requiring `vlucas/phpdotenv` explicitly and using env files for tests configuration.
+
 ## [2.5.1] 2020-05-13;
 
 ### Fixed

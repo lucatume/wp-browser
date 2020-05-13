@@ -245,3 +245,12 @@ debug_7:
 		-f docker-compose.debug.yml \
 		run --rm \
 		codeception bash
+
+# Populate the vendor/wordpres/wordpress directory.
+setup_wp:
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=200 \
+		docker-compose \
+		-f docke-compose.yml \
+		-f docker-compose.debug.yml \
+		--project-name=${PROJECT_NAME}_setup_wordpress \
+		up -d wordpress
