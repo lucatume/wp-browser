@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.2] 2020-05-13;
+
 ### Fixed
 
 - added `Dotenv\Dotenv` polyfill class to avoid back-compatibility issues w/ projects not requiring `vlucas/phpdotenv` explicitly and using env files for tests configuration.
@@ -1366,4 +1368,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.8]: https://github.com/lucatume/wp-browser/compare/2.4.7...2.4.8
 [2.5.0]: https://github.com/lucatume/wp-browser/compare/2.4.8...2.5.0
 [2.5.1]: https://github.com/lucatume/wp-browser/compare/2.5.0...2.5.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.1...HEAD
+[2.5.2]: https://github.com/lucatume/wp-browser/compare/2.5.1...2.5.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.2...HEAD
