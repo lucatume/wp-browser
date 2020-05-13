@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- add `function_exists` check to avoid redefinition issues when wp-browser is used in two related packages (thanks @cliffordp)
+
 ## [2.5.0] 2020-05-11;
 
 ### Fixed
