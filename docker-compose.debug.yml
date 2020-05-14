@@ -7,6 +7,10 @@ version: "3"
 
 services:
 
+  db:
+    ports:
+    - "9006:3306"
+
   wordpress:
     image: wp-browser/wordpress_debug:latest
     build:
