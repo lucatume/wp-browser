@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowe to spawn during tests or not (new default).
+
+### Fixed
+
+- the `WPDb` module will set up the database to prevent `wp-cron` requests from being spawned during tests, fixes #363.
+
+### Changed
+
+- following changes to how the `WPDb` module sets up the database at the start of tests (and between tests), `wp-cron` process will not be spawned during tests unless the `WPDb.letCron` configuration parameter is set to `true`.
+
 ## [2.5.2] 2020-05-13;
 
 ### Fixed
