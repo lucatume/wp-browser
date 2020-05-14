@@ -131,6 +131,7 @@ modules:
 * `waitlock` - defaults to `10`; wait lock (in seconds) that the database session should use for DDL statements.
 * `tablePrefix` - defaults to `wp_`; sets the prefix of the tables that the module will manipulate.
 * `letAdminEmailVerification` - defaults to an empty value to remove the Administrator Email Verification screen introduced in WordPress 5.3. Set to `true` to not remove the screen and show it when an administrator user first logs in.
+* `letCron` - defaults to an empty value to avoid `wp-cron` from being spawned during tests. Setting this to `true` will let `wp-cron` requests to fire during tests.
 
 ### Example configuration
 ```yaml
