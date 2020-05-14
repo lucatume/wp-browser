@@ -17,6 +17,10 @@ modules:
             adminUsername: '%WORDPRESS_ADMIN_USER%'
             adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
             adminPath: '/wp-admin'
+            headers:
+                X_WPBROWSER_REQUEST: 1
+                X_TEST_REQUEST: 1
+                X_APM_REQUEST: 1
         WPDb:
             dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
             user: %WORDPRESS_DB_USER%
