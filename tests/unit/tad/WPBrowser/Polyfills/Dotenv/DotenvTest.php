@@ -17,7 +17,7 @@ class DotenvTest extends \Codeception\Test\Unit
             'TEST_ENV_2_VAR_FLOAT'                        => 23.89,
             'TEST_ENV_2_VAR_SINGLE_STRING'                => 'lorem',
             'TEST_ENV_2_VAR_SINGLE_MULTI_STRING'          => 'lorem dolor sit',
-            'TEST_ENV_2_VAR_SINGLE_MULTI_STRING_W_QUOTES' => '"lorem dolor sit"'
+            'TEST_ENV_2_VAR_SINGLE_MULTI_STRING_W_QUOTES' => 'lorem dolor sit'
         ];
 
         foreach ($expected as $key => $value) {

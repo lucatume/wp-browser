@@ -33,15 +33,29 @@ function envFile($file)
         throw new \InvalidArgumentException('Could not read ' . $file . ' contents.');
     }
 
-    $vars = array_reduce(array_filter(explode(PHP_EOL, $envFileContents)), static function (array $lines, $line) {
-        if (preg_match('/^\\s*#/', $line)) {
-            return $lines;
-        }
+    $pattern = '/^(?<key>.*?)=("(?<q_value>.*)(?<!\\\\)"|(?<value>.*?))([\\s]*#.*)*$/ui';
 
-        list($key, $value) = explode('=', $line);
-        $lines[$key] = $value;
-        return $lines;
-    }, []);
+    $vars = array_reduce(
+        array_filter(explode(PHP_EOL, $envFileContents)),
+        static function (array $lines, $line) use ($pattern) {
+            if (strpos($line, '#') === 0) {
+                return $lines;
+            }
+
+            if (! preg_match($pattern, $line, $m)) {
+                return $lines;
+            }
+
+            $value = ! empty($m['q_value']) ? $m['q_value'] : trim($m['value']);
+            // Replace escaped double quotes.
+            $value = str_replace('\\"', '"', $value);
+
+            $lines[ $m['key'] ] = $value;
+
+            return $lines;
+        },
+        []
+    );
 
     return new Map($vars);
 }

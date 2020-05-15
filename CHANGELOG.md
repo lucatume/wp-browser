@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - the `WPDb` module will set up the database to prevent `wp-cron` requests from being spawned during tests, fixes #363.
+- env file parsing issues reported, fixes #398.
 
 ### Changed
 
