@@ -46,7 +46,7 @@ class WPDb extends Db
     const EVENT_AFTER_DB_PREPARE =  'WPDb.after_db_prepare';
     const ADMIN_EMAIL_LIFESPAN = 2533080438;
 
-	/**
+    /**
      * @var \tad\WPBrowser\Module\Support\DbDump
      */
     protected $dbDump;
@@ -4123,18 +4123,18 @@ class WPDb extends Db
      */
     protected function prepareDb()
     {
-	    if ( empty( $this->config['letAdminEmailVerification'] ) ) {
-		    // Skip the admin email verification screen.
-		    $this->haveOptionInDatabase( 'admin_email_lifespan', self::ADMIN_EMAIL_LIFESPAN );
-	    }
+        if (empty($this->config['letAdminEmailVerification'])) {
+            // Skip the admin email verification screen.
+            $this->haveOptionInDatabase('admin_email_lifespan', self::ADMIN_EMAIL_LIFESPAN);
+        }
 
-	    if ( empty( $this->config['letCron'] ) ) {
-		    // Avoid spawning cron.
-		    $this->haveTransientInDatabase( 'doing_cron', strtotime( '+9 minutes' ) );
-	    }
+        if (empty($this->config['letCron'])) {
+            // Avoid spawning cron.
+            $this->haveTransientInDatabase('doing_cron', strtotime('+9 minutes'));
+        }
 
-	    /**
-	     * Dispatches an event after the database has been prepared.
+        /**
+         * Dispatches an event after the database has been prepared.
          *
          * @param WPDb $origin This objects.
          * @param array<string,mixed> $config The current WPDb module configuration.
