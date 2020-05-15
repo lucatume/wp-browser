@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.3] 2020-05-15;
+
 ### Added
 
 - the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowe to spawn during tests or not (new default).
@@ -1382,4 +1384,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.0]: https://github.com/lucatume/wp-browser/compare/2.4.8...2.5.0
 [2.5.1]: https://github.com/lucatume/wp-browser/compare/2.5.0...2.5.1
 [2.5.2]: https://github.com/lucatume/wp-browser/compare/2.5.1...2.5.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.2...HEAD
+[2.5.3]: https://github.com/lucatume/wp-browser/compare/2.5.2...2.5.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.3...HEAD
