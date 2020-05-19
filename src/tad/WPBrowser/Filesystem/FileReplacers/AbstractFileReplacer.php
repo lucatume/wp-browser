@@ -12,6 +12,7 @@ class AbstractFileReplacer
      * @var string
      */
     protected $original;
+
     /**
      * @var string
      */
@@ -24,6 +25,13 @@ class AbstractFileReplacer
      * @var TemplateProviderInterface
      */
     protected $contentsProvider;
+
+    /**
+     * The absolute path to the target file.
+     *
+     * @var string
+     */
+    protected $targetFile;
 
     /**
      * WPConfigFileReplacer constructor.

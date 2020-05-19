@@ -38,7 +38,7 @@ class Filters
 
     public static function format(array $filters)
     {
-        $instance = new static($filters);
+        $instance = new self($filters);
 
         return $instance->toArray();
     }

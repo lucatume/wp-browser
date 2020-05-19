@@ -17,26 +17,26 @@ class Unit extends \Codeception\Test\Unit
 {
     public static function setUpBeforeClass()
     {
-        if (method_exists(get_called_class(), '_setUpBeforeClass')) {
+        if (method_exists(static::class, '_setUpBeforeClass')) {
             static::_setUpBeforeClass();
         }
     }
 
     public static function tearDownAfterClass()
     {
-        if (method_exists(get_called_class(), '_tearDownAfterClass')) {
+        if (method_exists(static::class, '_tearDownAfterClass')) {
             static::_tearDownAfterClass();
         }
     }
     protected function assertPreConditions()
     {
-        if (method_exists(get_called_class(), '_assertPreConditions')) {
+        if (method_exists(static::class, '_assertPreConditions')) {
             static::_assertPreConditions();
         }
     }
     protected function assertPostConditions()
     {
-        if (method_exists(get_called_class(), '_assertPostConditions')) {
+        if (method_exists(static::class, '_assertPostConditions')) {
             static::_assertPostConditions();
         }
     }

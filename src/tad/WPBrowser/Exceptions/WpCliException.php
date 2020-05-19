@@ -26,7 +26,7 @@ class WpCliException extends \Exception
      */
     public static function becauseTypeCannotBeSet($type, array $supportedTypes)
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'Cannot set this type of value [%s]; supported types are [%s])',
             $type,
             implode(', ', $supportedTypes)
@@ -40,7 +40,7 @@ class WpCliException extends \Exception
      */
     public static function becauseConfiguratorClassCannotBeFound()
     {
-        return new static('Could not find the path to embedded WPCLI Configurator class');
+        return new self('Could not find the path to embedded WPCLI Configurator class');
     }
 
     /**
@@ -52,7 +52,7 @@ class WpCliException extends \Exception
      */
     public static function becauseACommandFailed(Process $commandProcess)
     {
-        return new static(sprintf(
+        return new self(sprintf(
             "Command failed with status %s.\nOutput: %s\nError: %s",
             $commandProcess->getStatus(),
             $commandProcess->getOutput(),
@@ -67,7 +67,7 @@ class WpCliException extends \Exception
      */
     public static function becauseCommandRequiresSetUp()
     {
-        return new static(
+        return new self(
             'This command requires wp-cli to be set up for a specific directory:'
             . ' did you call the `setUpWpCli` method first?'
         );
@@ -80,7 +80,7 @@ class WpCliException extends \Exception
      */
     public static function becauseServerCommandClassWasNotFound()
     {
-        return new static(
+        return new self(
             'The `\Server_Command` class could not be loaded or does not exist:'
             . ' did you add the `wp-cli/server-command` package as a Composer requirement?' .
             'Did you run `composer dump-autoload` to solve autoload file issues?'
@@ -96,7 +96,7 @@ class WpCliException extends \Exception
      */
     public static function becauseRouterFileWasNotFound($routerFile)
     {
-        return new static(
+        return new self(
             "wp-cli server router file was not found [$routerFile]: did you add the `wp-cli/server-command`" .
             ' package to Composer dependencies?'
         );
@@ -104,7 +104,7 @@ class WpCliException extends \Exception
 
     public static function becauseACommandDidNotTerminate(Process $process)
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'Command did not terminate when was expected to; commandline: %s',
             $process->getCommandLine()
         ));

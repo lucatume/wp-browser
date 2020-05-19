@@ -131,7 +131,7 @@ class EventDispatcherAdapter
             ));
         }
 
-        static::$sharedInstance = new static($appEventDispatcher);
+        static::$sharedInstance = new self($appEventDispatcher);
 
         return static::$sharedInstance;
     }
@@ -202,7 +202,7 @@ class EventDispatcherAdapter
     public static function setWrappedEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         if (static::$sharedInstance === null) {
-            static::$sharedInstance = new static($eventDispatcher);
+            static::$sharedInstance = new self($eventDispatcher);
 
             return;
         }
