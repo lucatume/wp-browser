@@ -86,6 +86,7 @@ function db($dsn, $user, $pass, $dbName = null)
     }
 
     $pdo = new \PDO($dsn, $user, $pass);
+    $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
     return static function ($query) use ($pdo, $dsn, $user, $pass) {
         $result = $pdo->query($query);

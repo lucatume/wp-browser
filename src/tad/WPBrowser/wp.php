@@ -49,11 +49,18 @@ function emptyWpTables(\wpdb $wpdb, array $tables = null)
     $emptiedTables = [];
 
     foreach ($tablesList as $table => $prefixedTable) {
-        $deleted = $wpdb->query("DELETE FROM {$prefixedTable} WHERE 1=1");
+        $created = $wpdb->query("CREATE TABLE IF NOT EXISTS {$prefixedTable}");
+
+        if ($created === false) {
+            continue;
+        }
+
+        $deleted = $wpdb->query("TRUNCATE TABLE {$prefixedTable}");
 
         if ($deleted === false) {
             throw new \RuntimeException("Could not empty table {$prefixedTable}: " . $wpdb->last_error);
         }
+
         $emptiedTables[] = $prefixedTable;
     }
 
