@@ -4,6 +4,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.3] 2020-05-15;
+
+### Added
+
+- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowe to spawn during tests or not (new default).
+
+### Fixed
+
+- the `WPDb` module will set up the database to prevent `wp-cron` requests from being spawned during tests, fixes #363.
+- env file parsing issues reported, fixes #398.
+
+### Changed
+
+- following changes to how the `WPDb` module sets up the database at the start of tests (and between tests), `wp-cron` process will not be spawned during tests unless the `WPDb.letCron` configuration parameter is set to `true`.
+
+## [2.5.2] 2020-05-13;
+
+### Fixed
+
+- added `Dotenv\Dotenv` polyfill class to avoid back-compatibility issues w/ projects not requiring `vlucas/phpdotenv` explicitly and using env files for tests configuration.
+
+## [2.5.1] 2020-05-13;
+
+### Fixed
+
+- add `function_exists` check to avoid redefinition issues when wp-browser is used in two related packages (thanks @cliffordp)
+
 ## [2.5.0] 2020-05-11;
 
 ### Fixed
@@ -1355,4 +1382,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.4.7]: https://github.com/lucatume/wp-browser/compare/2.4.6...2.4.7
 [2.4.8]: https://github.com/lucatume/wp-browser/compare/2.4.7...2.4.8
 [2.5.0]: https://github.com/lucatume/wp-browser/compare/2.4.8...2.5.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.0...HEAD
+[2.5.1]: https://github.com/lucatume/wp-browser/compare/2.5.0...2.5.1
+[2.5.2]: https://github.com/lucatume/wp-browser/compare/2.5.1...2.5.2
+[2.5.3]: https://github.com/lucatume/wp-browser/compare/2.5.2...2.5.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.3...HEAD
