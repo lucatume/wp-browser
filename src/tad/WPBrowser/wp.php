@@ -52,7 +52,7 @@ function emptyWpTables(\wpdb $wpdb, array $tables = null)
         $created = $wpdb->query("CREATE TABLE IF NOT EXISTS {$prefixedTable}");
 
         if ($created === false) {
-            continue;
+            throw new \RuntimeException("Could not empty table {$prefixedTable}: " . $wpdb->last_error);
         }
 
         $deleted = $wpdb->query("TRUNCATE TABLE {$prefixedTable}");

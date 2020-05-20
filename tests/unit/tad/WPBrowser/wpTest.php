@@ -93,9 +93,12 @@ class wpTest extends \Codeception\Test\Unit
         $emptied = emptyWpTables($wpdb);
 
         $this->assertEquals([
-            'DELETE FROM wp_options WHERE 1=1',
-            'DELETE FROM wp_posts WHERE 1=1',
-            'DELETE FROM wp_users WHERE 1=1'
+            'CREATE TABLE IF NOT EXISTS wp_options',
+            'TRUNCATE TABLE wp_options',
+            'CREATE TABLE IF NOT EXISTS wp_posts',
+            'TRUNCATE TABLE wp_posts',
+            'CREATE TABLE IF NOT EXISTS wp_users',
+            'TRUNCATE TABLE wp_users',
         ], $queries);
         $this->assertEquals(['wp_options', 'wp_posts', 'wp_users'], $emptied);
     }
@@ -118,8 +121,10 @@ class wpTest extends \Codeception\Test\Unit
         $emptied = emptyWpTables($wpdb, ['wp_posts', 'wp_users', 'foo_bar']);
 
         $this->assertEquals([
-            'DELETE FROM wp_posts WHERE 1=1',
-            'DELETE FROM wp_users WHERE 1=1'
+            'CREATE TABLE IF NOT EXISTS wp_posts',
+            'TRUNCATE TABLE wp_posts',
+            'CREATE TABLE IF NOT EXISTS wp_users',
+            'TRUNCATE TABLE wp_users',
         ], $queries);
         $this->assertEquals(['wp_posts', 'wp_users'], $emptied);
     }

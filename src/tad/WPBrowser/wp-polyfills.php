@@ -65,7 +65,7 @@ function remove_accents($string)
 function sanitize_user($username, $strict = false)
 {
     $username = remove_accents(strip_all_tags($username));
-    $username = preg_replace(['|%([a-fA-F0-9][a-fA-F0-9])|', '/&.+?;/', '|\s+|'], ['', '', ''], $username);
+    $username = preg_replace(['|%([a-fA-F0-9][a-fA-F0-9])|', '/&.+?;/'], ['', ''], $username);
 
     if (!is_string($username)) {
         throw new \InvalidArgumentException("Could not sanitize username '{$username}'.");
@@ -79,5 +79,11 @@ function sanitize_user($username, $strict = false)
         }
     }
 
-    return $username;
+    $sanitized = preg_replace('|\s+|', ' ', trim($username));
+
+    if (!is_string($sanitized)) {
+        throw new \InvalidArgumentException("Could not normalize whitespaces in username '{$username}'.");
+    }
+
+    return $sanitized;
 }
