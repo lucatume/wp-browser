@@ -85,11 +85,12 @@ function os()
 /**
  * Loads a Map of environment variables into `getenv()`, `$_ENV` and `$_SERVER`.
  *
- * @param Map $map The map of environment variables to load.
+ * @param Map  $map       The map of environment variables to load.
+ * @param bool $overwrite Whether to overwrite the existing env vars or not.
  *
  * @see envFile() For the function to load to generate a Map from an environment file.
  */
-function loadEnvMap(Map $map)
+function loadEnvMap(Map $map, $overwrite = true)
 {
     if (empty($_SERVER)) {
         $_SERVER = [];
@@ -99,7 +100,15 @@ function loadEnvMap(Map $map)
         $_ENV = [];
     }
 
-    foreach ($map->toArray() as $key => $value) {
+    $load = $map->toArray();
+
+    if (! $overwrite) {
+        $load = array_filter($load, static function ($key) {
+            return ! isset($_ENV[ $key ]);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    foreach ($load as $key => $value) {
         putenv("{$key}={$value}");
         $_SERVER[$key] = $value;
         $_ENV[$key] = $value;

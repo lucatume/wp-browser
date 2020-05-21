@@ -71,4 +71,52 @@ class envTest extends \Codeception\Test\Unit
             $this->assertEquals($expected, getenv($key));
         }
     }
+
+    /**
+     * It should allow loading an env file w/o overriding previous values
+     *
+     * @test
+     */
+    public function should_allow_loading_an_env_file_w_o_overriding_previous_values()
+    {
+        $envFile = codecept_data_dir('envFiles/testEnvFile4.env');
+
+        loadEnvMap(envFile($envFile));
+
+        $map = [
+            'TEST_COMMENT_ENV_VAR_1'  => '23',
+            'TEST_COMMENT_ENV_VAR_2'  => '89',
+            'TEST_COMMENT_ENV_VAR_4'  => 'test-inline-comment',
+            'TEST_COMMENT_ENV_VAR_5'  => 'test-inline-comment',
+            'TEST_COMMENT_ENV_VAR_6'  => 'hash-containing-=-and-#-symbols',
+            'TEST_COMMENT_ENV_VAR_7'  => 'hash-containing-=',
+            'TEST_COMMENT_ENV_VAR_8'  => 'hash-containing-#',
+            'TEST_COMMENT_ENV_VAR_9'  => 'hash-containing-"',
+            'TEST_COMMENT_ENV_VAR_10' => 'hash-containing-"-and=#',
+            'TEST_COMMENT_ENV_VAR_11' => 'hash-containing-"-and=#',
+            'TEST_COMMENT_ENV_VAR_12' => 'hash-containing-"-and=#'
+        ];
+        foreach ($map as $key => $expected) {
+            $this->assertEquals($expected, getenv($key));
+        }
+    }
+
+    /**
+     * It should allow loading multiple env files overriding or not existing values
+     *
+     * @test
+     */
+    public function should_allow_loading_multiple_env_files_overriding_or_not_existing_values()
+    {
+        $envFile1 = codecept_data_dir('envFiles/testEnvFile5.env');
+        $envFile2 = codecept_data_dir('envFiles/testEnvFile6.env');
+        $envFile3 = codecept_data_dir('envFiles/testEnvFile7.env');
+
+        loadEnvMap(envFile($envFile1), true);
+        loadEnvMap(envFile($envFile2), true);
+        loadEnvMap(envFile($envFile3), false);
+
+        $this->assertEquals('89', getenv('TEST_ENV_VAR'));
+        $this->assertEquals('lorem', getenv('TEST_ENV_VAR_2'));
+    }
 }

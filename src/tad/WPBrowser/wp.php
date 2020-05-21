@@ -52,7 +52,7 @@ function emptyWpTables(\wpdb $wpdb, array $tables = null)
         $exists = (int)$wpdb->query("SHOW TABLES LIKE '{$prefixedTable}'");
 
         if (!$exists) {
-        	continue;
+            continue;
         }
 
         $deleted = $wpdb->query("TRUNCATE TABLE {$prefixedTable}");

@@ -75,6 +75,6 @@ class Dotenv
      */
     public function load()
     {
-        loadEnvMap(envFile($this->envFilePath));
+        loadEnvMap(envFile($this->envFilePath), false);
     }
 }
