@@ -128,22 +128,4 @@ class wpTest extends \Codeception\Test\Unit
         ], $queries);
         $this->assertEquals(['wp_posts', 'wp_users'], $emptied);
     }
-
-    /**
-     * Test emptyWpTables will throw if table cannot be emptied
-     */
-    public function test_empty_wp_tables_will_throw_if_table_cannot_be_emptied()
-    {
-        $wpdb = $this->makeEmpty(\wpdb::class, [
-            'tables' => ['wp_options', 'wp_posts', 'wp_users'],
-            'query' => static function ($query) use (&$queries) {
-                return false;
-            },
-            'last_error' => 'test test test'
-        ]);
-
-        $this->expectException(\RuntimeException::class);
-
-        $emptied = emptyWpTables($wpdb);
-    }
 }
