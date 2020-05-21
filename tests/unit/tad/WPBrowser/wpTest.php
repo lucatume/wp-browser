@@ -93,11 +93,11 @@ class wpTest extends \Codeception\Test\Unit
         $emptied = emptyWpTables($wpdb);
 
         $this->assertEquals([
-	        "SHOW TABLES LIKE 'wp_options'",
+            "SHOW TABLES LIKE 'wp_options'",
             'TRUNCATE TABLE wp_options',
-	        "SHOW TABLES LIKE 'wp_posts'",
+            "SHOW TABLES LIKE 'wp_posts'",
             'TRUNCATE TABLE wp_posts',
-	        "SHOW TABLES LIKE 'wp_users'",
+            "SHOW TABLES LIKE 'wp_users'",
             'TRUNCATE TABLE wp_users',
         ], $queries);
         $this->assertEquals(['wp_options', 'wp_posts', 'wp_users'], $emptied);
@@ -123,8 +123,8 @@ class wpTest extends \Codeception\Test\Unit
         $this->assertEquals([
             "SHOW TABLES LIKE 'wp_posts'",
             'TRUNCATE TABLE wp_posts',
-	        "SHOW TABLES LIKE 'wp_users'",
-	        'TRUNCATE TABLE wp_users',
+            "SHOW TABLES LIKE 'wp_users'",
+            'TRUNCATE TABLE wp_users',
         ], $queries);
         $this->assertEquals(['wp_posts', 'wp_users'], $emptied);
     }
