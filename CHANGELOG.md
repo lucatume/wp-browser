@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.4] 2020-05-22;
+
 ### Fixed
 
 - an issue with .env files handling that, when the `vlucas/phpdotenv` package is not required, would incorrectly set up the test environment.
@@ -1393,4 +1395,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.1]: https://github.com/lucatume/wp-browser/compare/2.5.0...2.5.1
 [2.5.2]: https://github.com/lucatume/wp-browser/compare/2.5.1...2.5.2
 [2.5.3]: https://github.com/lucatume/wp-browser/compare/2.5.2...2.5.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.3...HEAD
+[2.5.4]: https://github.com/lucatume/wp-browser/compare/2.5.3...2.5.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.4...HEAD
