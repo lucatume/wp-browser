@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- an issue with .env files handling that, when the `vlucas/phpdotenv` package is not required, would incorrectly set up the test environment.
+
 ### Changed
 
 - some refactoring to pass `phpstan` level `0` checks
