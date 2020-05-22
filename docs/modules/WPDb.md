@@ -154,7 +154,7 @@ modules:
 
 ## Using the module with the WPLoader one
 This module is often used in conjunction with the [WPLoader one](WPLoader.md) to use WordPress-defined functions, classes and methods in acceptance or functional tests.  
-The WPLoader module should be [set to only load WordPress](WPLoader.md#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.eanbled` section of the suite configuration file **before** the `WPLoader` one:
+The WPLoader module should be [set to only load WordPress](WPLoader.md#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.enabled` section of the suite configuration file **before** the `WPLoader` one:
 
 ```yaml
 modules:
