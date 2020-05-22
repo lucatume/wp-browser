@@ -321,6 +321,8 @@ function dbDsnToMap($dsnString)
     }
 
     $version = null;
+    $type = 'mysql';
+
     if (preg_match('/^(?<type>(mysql|sqlite(?<version>\\d)*)):/', $dsnString, $m)) {
         $type = isset($m['type']) ? $m['type'] : 'mysql';
         $version = isset($m['version']) ? $m['version'] : null;

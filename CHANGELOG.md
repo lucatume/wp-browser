@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+- some refactoring to pass `phpstan` level `2` checks.
+
 ## [2.5.4] 2020-05-22;
 
 ### Fixed
