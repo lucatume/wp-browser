@@ -223,7 +223,6 @@ class MethodProphecy
     /**
      * Builds and returns the failure message for an argument expectation.
      *
-     * @param string       $method       The name of the method whose argument expectation failed.
      * @param array<mixed> $expectedArgs The method call expected arguments.
      * @param array<mixed> $callArgs     The method call actual arguments.
      * @param int          $failIndex    The index of the call argument whose expectation failed.

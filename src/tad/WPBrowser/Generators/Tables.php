@@ -1,9 +1,19 @@
 <?php
+/**
+ * Provides informations about WordPress tables.
+ *
+ * @package tad\WPBrowser\Generators
+ */
 
 namespace tad\WPBrowser\Generators;
 
 use function tad\WPBrowser\renderString;
 
+/**
+ * Class Tables
+ *
+ * @package tad\WPBrowser\Generators
+ */
 class Tables
 {
     /**
@@ -51,7 +61,7 @@ class Tables
     public function getAlterTableQuery($table, $prefix)
     {
         $data = ['operation' => 'ALTER TABLE', 'prefix' => $prefix];
-        return in_array($table, $this->alterableTables()) ? $this->renderQuery($table, $data) : '';
+        return in_array($table, $this->alterableTables(), true) ? $this->renderQuery($table, $data) : '';
     }
 
     private function alterableTables()
@@ -62,8 +72,12 @@ class Tables
     }
 
     /**
-     * @param $table
-     * @param $data
+     * Renders a SQL query for a WordPress table operation.
+     *
+     * @param string $table The name of the table to render the query for, e.g. `blogs` or `posts`.
+     * @param array<string,mixed> $data The data that should be used to render the query.
+     *
+     * @return string The rendered SQL query.
      */
     protected function renderQuery($table, $data)
     {
@@ -78,7 +92,7 @@ class Tables
 
     private function tables()
     {
-        return array_merge([], $this->multisiteTables());
+        return array_merge([], self::multisiteTables());
     }
 
     /**

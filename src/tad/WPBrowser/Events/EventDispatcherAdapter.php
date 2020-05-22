@@ -158,7 +158,7 @@ class EventDispatcherAdapter
         }
 
         try {
-            $runningCommand = readPrivateProperty($app, 'runningCommand', SymfonyApp::class);
+            $runningCommand = readPrivateProperty($app, 'runningCommand');
 
             if (! $runningCommand instanceof Command) {
                 throw new TestRuntimeException(

@@ -42,7 +42,7 @@ jobs:
       - name: Run PHPStan static analysis
         run: make phpstan
         env:
-          PHPSTAN_LEVEL: 0
+          PHPSTAN_LEVEL: 2
 
 
   test:

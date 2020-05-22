@@ -30,9 +30,9 @@ function addListener($eventName, callable $listener, $priority = 0)
 /**
  * Dispatches an event using wp-browser Events API.
  *
- * @param string      $eventName  The event name or handle.
- * @param object|null $dispatcher The event dispatcher.
- * @param array       $context    Additional context or data for the event.
+ * @param string      $eventName The event name or handle.
+ * @param object|null $origin    The dispatched event origin.
+ * @param array       $context   Additional context or data for the event.
  */
 function dispatch($eventName, $origin = null, array $context = [])
 {
