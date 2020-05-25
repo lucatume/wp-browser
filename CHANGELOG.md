@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.5] 2020-05-25;
+
 ### Changed
 
 - refactoring to pass `phpstan` level `1` and `2` checks.
@@ -1400,4 +1402,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.2]: https://github.com/lucatume/wp-browser/compare/2.5.1...2.5.2
 [2.5.3]: https://github.com/lucatume/wp-browser/compare/2.5.2...2.5.3
 [2.5.4]: https://github.com/lucatume/wp-browser/compare/2.5.3...2.5.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.4...HEAD
+[2.5.5]: https://github.com/lucatume/wp-browser/compare/2.5.4...2.5.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.5...HEAD
