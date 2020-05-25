@@ -1,7 +1,17 @@
 <?php
+/**
+ * Models a group of WordPress filters to be added or removed together.
+ *
+ * @package tad\WPBrowser\Module\WPLoader
+ */
 
 namespace tad\WPBrowser\Module\WPLoader;
 
+/**
+ * Class FiltersGroup
+ *
+ * @package tad\WPBrowser\Module\WPLoader
+ */
 class FiltersGroup
 {
     /**
@@ -20,7 +30,11 @@ class FiltersGroup
     /**
      * FiltersGroup constructor.
      *
-     * @param FiltersGroup $toRemove
+     * @param array<string> $filters    The list of filters to remove.
+     * @param callable|null $removeWith The callable that should be used to remove the filters or `null` to use the
+     *                                  default one.
+     * @param callable|null $addWith    The callable that should be used to add the filters, or `null` to use the
+     *                                  default one.
      */
     public function __construct(array $filters = [], callable $removeWith = null, callable $addWith = null)
     {
@@ -29,6 +43,11 @@ class FiltersGroup
         $this->addCallback    = null === $addWith ? 'add_filter' : $addWith;
     }
 
+    /**
+     * Removes the filters of the group.
+     *
+     * @return void
+     */
     public function remove()
     {
         foreach ($this->filters as $filter) {
@@ -37,6 +56,11 @@ class FiltersGroup
         }
     }
 
+    /**
+     * Adds the filters of the group.
+     *
+     * @return void
+     */
     public function add()
     {
         foreach ($this->filters as $filter) {

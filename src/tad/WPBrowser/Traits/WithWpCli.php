@@ -46,7 +46,7 @@ trait WithWpCli
      * @param string       $wpRootFolderDir The absolute path to the WordPress installation root directory.
      * @param Process|null $process         The process wrapper instance to use.
      *
-     * @return WithWpCli This object instance.
+     * @return self This object instance.
      *
      * @throws WpCliException If wp-cli package files cannot be located while requiring them.
      */
