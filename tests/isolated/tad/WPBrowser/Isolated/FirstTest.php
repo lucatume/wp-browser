@@ -4,27 +4,6 @@ namespace tad\WPBrowser\Isolated;
 class FirstTest extends \Codeception\TestCase\WPTestCase
 {
     /**
-     * @var \IsolatedTester
-     */
-    protected $tester;
-
-    public function setUp()
-    {
-        // Before...
-        parent::setUp();
-
-        // Your set up methods here.
-    }
-
-    public function tearDown()
-    {
-        // Your tear down methods here.
-
-        // Then...
-        parent::tearDown();
-    }
-
-    /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
@@ -53,6 +32,10 @@ class FirstTest extends \Codeception\TestCase\WPTestCase
         $this->assertCount(1, get_posts());
 
         $this->assertFalse(defined('TEST_CONST'));
+
+        define('WP_ADMIN', true);
+
+        $this->assertTrue(is_admin());
     }
 
     /**
@@ -67,5 +50,9 @@ class FirstTest extends \Codeception\TestCase\WPTestCase
         $this->assertCount(1, get_posts());
 
         $this->assertFalse(defined('TEST_CONST'));
+
+        define('WP_ADMIN', false);
+
+        $this->assertFalse(is_admin());
     }
 }
