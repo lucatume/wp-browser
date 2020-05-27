@@ -32,13 +32,16 @@ function rootDir($path = '')
  */
 function vendorDir($path = '')
 {
-    $root = rootDir();
+    static $vendorDir;
 
-    if (file_exists($root . '/vendor')) {
-        // We're in the wp-browser package itself context.
-        $vendorDir = $root . '/vendor';
-    } else {
-        $vendorDir = dirname(dirname($root));
+    if (! $vendorDir) {
+        $root = rootDir();
+        if (file_exists($root . '/vendor')) {
+            // We're in the wp-browser package itself context.
+            $vendorDir = $root . '/vendor';
+        } else {
+            $vendorDir = dirname(dirname($root));
+        }
     }
 
     return empty($path) ?
@@ -118,4 +121,32 @@ function requireCodeceptionModules($module, array $requiredModules = [])
         );
 
         throw new \Codeception\Exception\ConfigurationException($message);
+}
+
+/**
+ * Identifies the current running suite provided a debug backtrace.
+ *
+ * @return string The suite name.
+ *
+ * @throws \RuntimeException If the suite cannot be identified from the debug backtrace.
+ */
+function identifySuiteFromTrace()
+{
+    $debugBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+    foreach (array_reverse($debugBacktrace) as $traceEntry) {
+        if (! ( isset($traceEntry['file']) && file_exists($traceEntry['file']) )) {
+            continue;
+        }
+        $pathFrags = array_filter(explode('/', $traceEntry['file']));
+        $path      = '';
+        do {
+            $suite = array_shift($pathFrags);
+            $path  .= '/' . $suite;
+            if (file_exists("{$path}.suite.dist.yml") || file_exists("{$path}.suite.yml")) {
+                return $suite;
+            }
+        } while (count($pathFrags));
+    }
+
+    throw new \RuntimeException('Suite cannot be identified from the debug backtrace.');
 }

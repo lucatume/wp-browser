@@ -2,6 +2,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\Command\Shared\Config;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Lib\ModuleContainer;
@@ -12,13 +13,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
+use tad\WPBrowser\Traits\SerializableModule;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
 use function tad\WPBrowser\findHereOrInParent;
+use function tad\WPBrowser\identifySuiteFromTrace;
 use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\unleadslashit;
 use function tad\WPBrowser\untrailslashit;
+use function tad\WPBrowser\vendorDir;
 
 /**
  * Class WPLoader
@@ -38,6 +42,7 @@ class WPLoader extends Module
 
     use WithEvents;
     use WithWordPressFilters;
+    use Config;
 
     public static $includeInheritedActions = true;
 
@@ -204,6 +209,47 @@ class WPLoader extends Module
         parent::__construct($moduleContainer, $config);
         $this->wp = $wp ? $wp : new WP();
         $this->healthcheck = $healthcheck ? $healthcheck : new WPHealthcheck();
+    }
+
+    /**
+     * Initializes the module if not already initialized.
+     *
+     * When this method runs, the `ABSPATH` constant is not set then the module will init itself and
+     * load WordPress.
+     * It should really not be used elsewhere.
+     *
+     * @return array An export-able array that will define objects and variables expected to be global when this is
+     *               called.
+     * @internal This method is very much tailored to the use in `WPTestCase` to support tests running in isolation.
+     *
+     */
+    public static function _maybeInit()
+    {
+        if (defined('ABSPATH')) {
+            return [];
+        }
+
+        $classReflection       = new \ReflectionClass(self::class);
+        $instance              = $classReflection->newInstanceWithoutConstructor();
+        $instance->wp          = new WP();
+        $instance->healthcheck = new WPHealthcheck();
+
+        // Some Codeception functions will not be auto-loaded when this method runs in isolation, load them now.
+        require_once vendorDir('codeception/codeception/autoload.php');
+        $suite       = identifySuiteFromTrace();
+        $suiteConfig = $instance->getSuiteConfig($suite);
+        if (! isset($suiteConfig['modules']['config']['WPLoader'])) {
+            throw new \RuntimeException(
+                "WPLoader module configuration not found in '{$suite}' suite configuration."
+            );
+        }
+        $config = $suiteConfig['modules']['config']['WPLoader'];
+        $instance->_setConfig($config);
+        $instance->defineConstants($instance->_getConstants());
+
+        return [
+            'installationConfiguration' => $instance->getInstallationConfiguration()
+        ];
     }
 
     /**
@@ -563,11 +609,7 @@ class WPLoader extends Module
             tests_add_filter('plugins_loaded', [$this, '_switchTheme']);
         }
 
-        $installationConfiguration = new Configuration([
-            'tablesHandling' => isset($this->config['installationTableHandling']) ?
-                $this->config['installationTableHandling']
-                : 'empty'
-        ]);
+        $installationConfiguration = $this->getInstallationConfiguration();
 
         require_once $this->wpBootstrapFile;
 
@@ -916,5 +958,19 @@ class WPLoader extends Module
         $this->contentDir = untrailslashit($resolved);
 
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
+    }
+
+    /**
+     * Returns the WordPress installation configuration as created from the currrent module configuration.
+     *
+     * @return Configuration The WordPress installation configuration, as created from the module configuration.
+     */
+    protected function getInstallationConfiguration()
+    {
+        return new Configuration([
+            'tablesHandling' => isset($this->config['installationTableHandling']) ?
+                $this->config['installationTableHandling']
+                : 'empty'
+        ]);
     }
 }

@@ -165,6 +165,9 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
 		docker-compose --project-name=${PROJECT_NAME}_init \
 		run --rm ccf run init
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
+		docker-compose --project-name=${PROJECT_NAME}_isolated \
+		run --rm ccf run isolated
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
@@ -230,10 +233,13 @@ test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm cc56 run events
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
+		docker-compose --project-name=${PROJECT_NAME}_isolated \
+		run --rm cc56 run isolated
 
 # A variable target to debug issues in a PHP 5.6 environment.
 debug:
-	TEST_SUBNET=104 \
+	TEST_SUBNET=105 \
 		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.debug.yml \
 		run --rm \
@@ -256,8 +262,3 @@ setup_wp:
 
 build_debug:
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
-
-test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
-		docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm ccf run muloader

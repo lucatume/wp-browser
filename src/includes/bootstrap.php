@@ -5,11 +5,15 @@
  * @var tad\WPBrowser\Utils\Configuration $installationConfiguration The current installation configuration.
  */
 
+use Codeception\Module\WPLoader;
 use function tad\WPBrowser\vendorDir;
 
 if (!function_exists('tad_functions')) {
 	require_once __DIR__ . '/tad-functions.php';
 }
+
+// phpcs:ignore
+extract( WPLoader::_maybeInit() );
 
 /*
  * Globalize some WordPress variables, because PHPUnit loads this file inside a function.
