@@ -8,9 +8,13 @@
 namespace tad\WPBrowser\Traits;
 
 use Codeception\Exception\InjectionException;
+use Codeception\Exception\TestRuntimeException;
 use Codeception\Lib\Di;
+use Codeception\Module\WPLoader;
+use Codeception\PHPUnit\Runner;
 use Codeception\Test\Loader\Unit as CodeceptionUnitLoader;
 use ReflectionMethod;
+use tad\WPBrowser\PHPUnit\TestListener;
 
 /**
  * Trait WithCodeceptionTestCaseEnhancements
@@ -21,6 +25,17 @@ use ReflectionMethod;
  */
 trait WithCodeceptionTestCaseEnhancements
 {
+
+
+    /**
+     * Tries to set up the WPLoader module at the very last useful moment.
+     *
+     * This is required when the test runs in a separate process.
+     */
+    protected static function setupForSeparateProcessBeforeClass()
+    {
+        WPLoader::_maybeInit();
+    }
 
     /**
      * Enhances the test case if the 'di' service, added by Codeception, is not set on its metadata.
@@ -38,5 +53,55 @@ trait WithCodeceptionTestCaseEnhancements
             $reflectionMethod->invoke($loader, $this);
             $this->getMetadata()->setServices([ 'di' => new Di() ]);
         }
+    }
+
+    /**
+     * Checks the test method is correctly configured to run in a separate process.
+     *
+     * @throws TestRuntimeException If the test method, or test case, is configured to run in a separate process
+     *                              preserving the global state.
+     */
+    protected function checkSeparateProcessConfiguration()
+    {
+        if (! method_exists($this, 'getAnnotations')) {
+            return;
+        }
+
+        $annotationGroups = $this->getAnnotations();
+
+        foreach ([ 'class', 'method' ] as $annotationGroup) {
+            if (! isset($annotationGroups[ $annotationGroup ])) {
+                continue;
+            }
+
+            $a = array_combine(
+                array_keys($annotationGroups[ $annotationGroup ]),
+                array_column((array) $annotationGroups[ $annotationGroup ], 0)
+            );
+
+            if (isset($a['runInSeparateProcess'], $a['preserveGlobalState'])
+                && 'enabled' === $a['preserveGlobalState']
+            ) {
+                $message = "Running WPTestCase tests in a separate process (@runInSeparateProcess)" .
+                           " preserving global state (@preserveGlobalState enabled) is not supported." .
+                           "\nEither remove the '@preserveGlobalState' annotation or set it to 'disabled'.";
+                throw new TestRuntimeException($message);
+            }
+        }
+    }
+
+    /**
+     * Overrides the base test case implementation to check the separate process configuration for the test
+     * case is correct.
+     *
+     * @param bool $runTestInSeparateProcess Whether the test should run in a separate process or not.
+     *
+     * @throws TestRuntimeException If the test method, or test case, is configured to run in a separate process
+     *                              preserving the global state.
+     */
+    public function setRunTestInSeparateProcess($runTestInSeparateProcess)
+    {
+        parent::setRunTestInSeparateProcess($runTestInSeparateProcess);
+        $this->checkSeparateProcessConfiguration();
     }
 }

@@ -1,7 +1,8 @@
 <?php
+
 namespace tad\WPBrowser\Isolated;
 
-class FirstTest extends \Codeception\TestCase\WPTestCase
+class ThirdIsolatedTest extends \Codeception\TestCase\WPTestCase
 {
     /**
      * @runInSeparateProcess
@@ -55,4 +56,28 @@ class FirstTest extends \Codeception\TestCase\WPTestCase
 
         $this->assertFalse(is_admin());
     }
+
+    public function test_normal()
+    {
+        $this->assertFalse(is_admin());
+    }
+
+
+//    /**
+//     * @runInSeparateProcess
+//     * @preserveGlobalState enabled
+//     */
+//    public function test_wo_preserving_global_state_one()
+//    {
+//        $this->assertTrue(true);
+//    }
+//
+//    /**
+//     * @runInSeparateProcess
+//     * @preserveGlobalState enabled
+//     */
+//    public function test_wo_preserving_global_state_two()
+//    {
+//        $this->assertTrue(true);
+//    }
 }

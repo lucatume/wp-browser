@@ -57,7 +57,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public static function _setUpBeforeClass()
     {
-        WPLoader::_maybeInit();
+        static::setupForSeparateProcessBeforeClass();
 
         global $wpdb;
 

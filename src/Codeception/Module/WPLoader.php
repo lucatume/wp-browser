@@ -226,6 +226,7 @@ class WPLoader extends Module
     public static function _maybeInit()
     {
         if (defined('ABSPATH')) {
+            // Already initialized.
             return [];
         }
 
