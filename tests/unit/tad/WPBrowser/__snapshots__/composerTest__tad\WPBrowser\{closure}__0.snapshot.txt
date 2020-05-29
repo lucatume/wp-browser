@@ -1,0 +1,8 @@
+project requires the following packages to work:
+
+"foo/bar": "3.4.5",
+"bar/baz": "3.4.5"
+
+1. Add these lines to the 'composer.json' file 'require-dev' section.
+2. Run 'composer update'.
+3. Run the command again.
