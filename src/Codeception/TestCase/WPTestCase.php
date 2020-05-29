@@ -3,11 +3,11 @@ namespace Codeception\TestCase;
 
 // phpcs:disable
 use Codeception\Exception\ModuleException;
-use Codeception\Module\WPLoader;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
 use tad\WPBrowser\Compat\Compatibility;
 use tad\WPBrowser\Traits\WithCodeceptionTestCaseEnhancements;
+use tad\WPBrowser\Traits\WithSeparateProcessChecks;
 
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
@@ -37,6 +37,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 {
 
     use WithCodeceptionTestCaseEnhancements;
+    use WithSeparateProcessChecks;
 
     protected static $forced_tickets = array();
     protected static $hooks_saved = array();

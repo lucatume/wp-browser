@@ -34,7 +34,10 @@ docker_pull:
 
 # Lint the project source files to make sure they are PHP 5.6 compatible.
 lint:
-	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 --colors /project/src
+	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 \
+		--colors \
+		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHP7.php \
+		/project/src
 
 # Use the PHP Code Sniffer container to sniff the relevant source files.
 sniff:

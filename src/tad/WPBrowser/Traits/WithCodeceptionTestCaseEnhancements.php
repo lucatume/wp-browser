@@ -11,7 +11,6 @@ use Codeception\Exception\InjectionException;
 use Codeception\Exception\TestRuntimeException;
 use Codeception\Lib\Di;
 use Codeception\Module\WPLoader;
-use Codeception\PHPUnit\Runner;
 use Codeception\Test\Loader\Unit as CodeceptionUnitLoader;
 use ReflectionMethod;
 use tad\WPBrowser\PHPUnit\TestListener;
@@ -88,20 +87,5 @@ trait WithCodeceptionTestCaseEnhancements
                 throw new TestRuntimeException($message);
             }
         }
-    }
-
-    /**
-     * Overrides the base test case implementation to check the separate process configuration for the test
-     * case is correct.
-     *
-     * @param bool $runTestInSeparateProcess Whether the test should run in a separate process or not.
-     *
-     * @throws TestRuntimeException If the test method, or test case, is configured to run in a separate process
-     *                              preserving the global state.
-     */
-    public function setRunTestInSeparateProcess($runTestInSeparateProcess)
-    {
-        parent::setRunTestInSeparateProcess($runTestInSeparateProcess);
-        $this->checkSeparateProcessConfiguration();
     }
 }
