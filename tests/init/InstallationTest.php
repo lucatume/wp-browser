@@ -6,6 +6,7 @@ use Codeception\Template\Wpbrowser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
+use function tad\WPBrowser\replacingWithUopz;
 
 require_once __DIR__ . '/BaseTest.php';
 
@@ -165,38 +166,84 @@ class InstallationTest extends BaseTest
     }
 
     /**
-     * It should throw if composer.json does not included required Codeception modules
+     * It should correctly scaffold with mysql on unix socket with home symbol in path
      *
      * @test
      */
-    public function should_throw_if_composer_json_does_not_included_required_codeception_modules()
+    public function should_correctly_scaffold_with_mysql_on_unix_socket_with_home_symbol_in_path()
     {
-        $input = $this->makeEmpty(ArrayInput::class, [
-            'get_option' => static function ($option) {
-                return $option === 'quiet' || $option === 'no-interaction' ? true : null;
-            },
-            'has_option' => false,
-        ]);
-        $init             = new Wpbrowser($input, new NullOutput());
-        $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
-        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
-            'testSiteDbUser'     => 'root',
-            'testSiteDbPassword' => 'secret',
-            'testSiteDbName' => 'wordpress',
-            'testSiteDbHost' => '/var/mysql.sock',
-            'testDbUser'     => 'root',
-            'testDbPassword' => 'secret',
-            'testDbName' => 'wordpress_tests',
-            'testDbHost' => '/var/mysql.sock'
-        ]));
-        $this->createWorkDir($workDir);
-        $init->setWorkDir($workDir);
-        $this->createComposerJsonFile($workDir, 'codeception-30-ok.json');
-        $init->setCreateActors(false)->setCreateHelpers(false);
+        if (! extension_loaded('uopz')) {
+            $this->markTestSkipped('This test requires the uopz extension to run.');
+        }
 
-        $this->expectException(\RuntimeException::class);
+        replacingWithUopz([
+            'tad\WPBrowser\homeDir' => '/Users/test'
+        ], function () {
+            $input = $this->makeEmpty(ArrayInput::class, [
+                'get_option' => static function ($option) {
+                    return $option === 'quiet' || $option === 'no-interaction' ? true : null;
+                },
+                'has_option' => false,
+            ]);
+            $init             = new Wpbrowser($input, new NullOutput());
+            $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
+            $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
+                'testSiteDbUser'     => 'root',
+                'testSiteDbPassword' => 'secret',
+                'testSiteDbName' => 'wordpress',
+                'testSiteDbHost' => '~/some/app/mysql.sock',
+                'testDbUser'     => 'root',
+                'testDbPassword' => 'secret',
+                'testDbName' => 'wordpress_tests',
+                'testDbHost' => '~/some/app/mysql.sock'
+            ]));
+            $this->createWorkDir($workDir);
+            $init->setWorkDir($workDir);
+            $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
+            $init->setCreateActors(false)->setCreateHelpers(false);
+            $init->setup(true);
 
-        $init->setup(true);
+            $this->assertMatchesDirectorySnapshot($workDir);
+        });
+    }
+
+    /**
+     * It should throw if composer.json does not include required Codeception modules
+     *
+     * @test
+     */
+    public function should_throw_if_composer_json_does_not_include_required_codeception_modules()
+    {
+        replacingWithUopz([
+            'version_compare' => true
+        ], function () {
+            $input = $this->makeEmpty(ArrayInput::class, [
+                'get_option' => static function ($option) {
+                    return $option === 'quiet' || $option === 'no-interaction' ? true : null;
+                },
+                'has_option' => false,
+            ]);
+            $init             = new Wpbrowser($input, new NullOutput());
+            $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
+            $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
+                'testSiteDbUser'     => 'root',
+                'testSiteDbPassword' => 'secret',
+                'testSiteDbName' => 'wordpress',
+                'testSiteDbHost' => '/var/mysql.sock',
+                'testDbUser'     => 'root',
+                'testDbPassword' => 'secret',
+                'testDbName' => 'wordpress_tests',
+                'testDbHost' => '/var/mysql.sock'
+            ]));
+            $this->createWorkDir($workDir);
+            $init->setWorkDir($workDir);
+            $this->createComposerJsonFile($workDir, 'codeception-30-ok.json');
+            $init->setCreateActors(false)->setCreateHelpers(false);
+
+            $this->expectException(\RuntimeException::class);
+
+            $init->setup(true);
+        });
     }
 
     /**
@@ -206,32 +253,36 @@ class InstallationTest extends BaseTest
      */
     public function should_throw_if_composer_json_does_not_include_all_required_codeception_modules()
     {
-        $input = $this->makeEmpty(ArrayInput::class, [
-            'get_option' => static function ($option) {
-                return $option === 'quiet' || $option === 'no-interaction' ? true : null;
-            },
-            'has_option' => false,
-        ]);
-        $init             = new Wpbrowser($input, new NullOutput());
-        $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
-        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
-            'testSiteDbUser'     => 'root',
-            'testSiteDbPassword' => 'secret',
-            'testSiteDbName' => 'wordpress',
-            'testSiteDbHost' => '/var/mysql.sock',
-            'testDbUser'     => 'root',
-            'testDbPassword' => 'secret',
-            'testDbName' => 'wordpress_tests',
-            'testDbHost' => '/var/mysql.sock'
-        ]));
-        $this->createWorkDir($workDir);
-        $init->setWorkDir($workDir);
-        $this->createComposerJsonFile($workDir, 'codeception-40-not-all-modules.json');
-        $init->setCreateActors(false)->setCreateHelpers(false);
+        replacingWithUopz([
+            'version_compare' => true
+        ], function () {
+            $input = $this->makeEmpty(ArrayInput::class, [
+                'get_option' => static function ($option) {
+                    return $option === 'quiet' || $option === 'no-interaction' ? true : null;
+                },
+                'has_option' => false,
+            ]);
+            $init             = new Wpbrowser($input, new NullOutput());
+            $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
+            $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
+                'testSiteDbUser'     => 'root',
+                'testSiteDbPassword' => 'secret',
+                'testSiteDbName' => 'wordpress',
+                'testSiteDbHost' => '/var/mysql.sock',
+                'testDbUser'     => 'root',
+                'testDbPassword' => 'secret',
+                'testDbName' => 'wordpress_tests',
+                'testDbHost' => '/var/mysql.sock'
+            ]));
+            $this->createWorkDir($workDir);
+            $init->setWorkDir($workDir);
+            $this->createComposerJsonFile($workDir, 'codeception-40-not-all-modules.json');
+            $init->setCreateActors(false)->setCreateHelpers(false);
 
-        $this->expectException(\RuntimeException::class);
+            $this->expectException(\RuntimeException::class);
 
-        $init->setup(true);
+            $init->setup(true);
+        });
     }
 
     protected function createComposerJsonFile($dir, $name)
