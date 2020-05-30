@@ -176,11 +176,11 @@ class InstallationTest extends BaseTest
             $this->markTestSkipped('This test requires the uopz extension to run.');
         }
 
-	    $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
+        $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
 
-	    replacingWithUopz([
+        replacingWithUopz([
             'tad\WPBrowser\homeDir' => '/Users/test'
-        ], function ()use($workDir) {
+        ], function () use ($workDir) {
             $input = $this->makeEmpty(ArrayInput::class, [
                 'get_option' => static function ($option) {
                     return $option === 'quiet' || $option === 'no-interaction' ? true : null;
@@ -205,7 +205,7 @@ class InstallationTest extends BaseTest
             $init->setup(true);
         });
 
-	    $this->assertMatchesDirectorySnapshot($workDir);
+        $this->assertMatchesDirectorySnapshot($workDir);
     }
 
     /**
