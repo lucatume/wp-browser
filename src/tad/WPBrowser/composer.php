@@ -47,7 +47,7 @@ function composerFile($file)
  */
 function checkComposerDependencies(Map $composerFile, array $dependencies, callable $else)
 {
-    $require     = $composerFile('required', []);
+    $require     = $composerFile('require', []);
     $requireDev  = $composerFile('require-dev', []);
     $allRequired = array_merge($require, $requireDev);
     $found       = array_intersect_key($dependencies, $allRequired);

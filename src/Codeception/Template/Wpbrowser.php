@@ -729,6 +729,7 @@ EOF;
     public function setWorkDir($workDir)
     {
         chdir($workDir);
+        $this->workDir = $workDir;
     }
 
     /**

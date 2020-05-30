@@ -29,6 +29,7 @@ class InstallationTest extends BaseTest
         $init             = new Wpbrowser($input, new NullOutput());
         $workDir          = codecept_output_dir('init/installationTest/quiet');
         $this->createWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
         $init->setWorkDir($workDir);
         $init->setCreateActors(false)->setCreateHelpers(false);
         $init->setup(false);
@@ -54,6 +55,7 @@ class InstallationTest extends BaseTest
         $init->setInstallationData($init->getDefaultInstallationData());
         $this->createWorkDir($workDir);
         $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
         $init->setCreateActors(false)->setCreateHelpers(false);
         $init->setup(true);
 
@@ -87,6 +89,7 @@ class InstallationTest extends BaseTest
         ]));
         $this->createWorkDir($workDir);
         $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
         $init->setCreateActors(false)->setCreateHelpers(false);
         $init->setup(true);
 
@@ -120,6 +123,7 @@ class InstallationTest extends BaseTest
         ]));
         $this->createWorkDir($workDir);
         $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
         $init->setCreateActors(false)->setCreateHelpers(false);
         $init->setup(true);
 
@@ -153,9 +157,93 @@ class InstallationTest extends BaseTest
         ]));
         $this->createWorkDir($workDir);
         $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
         $init->setCreateActors(false)->setCreateHelpers(false);
         $init->setup(true);
 
         $this->assertMatchesDirectorySnapshot($workDir);
+    }
+
+    /**
+     * It should throw if composer.json does not included required Codeception modules
+     *
+     * @test
+     */
+    public function should_throw_if_composer_json_does_not_included_required_codeception_modules()
+    {
+        $input = $this->makeEmpty(ArrayInput::class, [
+            'get_option' => static function ($option) {
+                return $option === 'quiet' || $option === 'no-interaction' ? true : null;
+            },
+            'has_option' => false,
+        ]);
+        $init             = new Wpbrowser($input, new NullOutput());
+        $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
+        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
+            'testSiteDbUser'     => 'root',
+            'testSiteDbPassword' => 'secret',
+            'testSiteDbName' => 'wordpress',
+            'testSiteDbHost' => '/var/mysql.sock',
+            'testDbUser'     => 'root',
+            'testDbPassword' => 'secret',
+            'testDbName' => 'wordpress_tests',
+            'testDbHost' => '/var/mysql.sock'
+        ]));
+        $this->createWorkDir($workDir);
+        $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-30-ok.json');
+        $init->setCreateActors(false)->setCreateHelpers(false);
+
+        $this->expectException(\RuntimeException::class);
+
+        $init->setup(true);
+    }
+
+    /**
+     * It should throw if composer.json does not include all required codeception modules
+     *
+     * @test
+     */
+    public function should_throw_if_composer_json_does_not_include_all_required_codeception_modules()
+    {
+        $input = $this->makeEmpty(ArrayInput::class, [
+            'get_option' => static function ($option) {
+                return $option === 'quiet' || $option === 'no-interaction' ? true : null;
+            },
+            'has_option' => false,
+        ]);
+        $init             = new Wpbrowser($input, new NullOutput());
+        $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
+        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
+            'testSiteDbUser'     => 'root',
+            'testSiteDbPassword' => 'secret',
+            'testSiteDbName' => 'wordpress',
+            'testSiteDbHost' => '/var/mysql.sock',
+            'testDbUser'     => 'root',
+            'testDbPassword' => 'secret',
+            'testDbName' => 'wordpress_tests',
+            'testDbHost' => '/var/mysql.sock'
+        ]));
+        $this->createWorkDir($workDir);
+        $init->setWorkDir($workDir);
+        $this->createComposerJsonFile($workDir, 'codeception-40-not-all-modules.json');
+        $init->setCreateActors(false)->setCreateHelpers(false);
+
+        $this->expectException(\RuntimeException::class);
+
+        $init->setup(true);
+    }
+
+    protected function createComposerJsonFile($dir, $name)
+    {
+        $file     = codecept_data_dir('composer-config/' . $name);
+        $contents = file_get_contents($file);
+        if (! $contents) {
+            throw new \RuntimeException("Could not ready file {$file}");
+        }
+        $put = file_put_contents($dir . '/composer.json', $contents);
+        if (! $put) {
+            throw new \RuntimeException("Could not write file {$file}.");
+        }
     }
 }
