@@ -176,9 +176,11 @@ class InstallationTest extends BaseTest
             $this->markTestSkipped('This test requires the uopz extension to run.');
         }
 
-        replacingWithUopz([
+	    $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
+
+	    replacingWithUopz([
             'tad\WPBrowser\homeDir' => '/Users/test'
-        ], function () {
+        ], function ()use($workDir) {
             $input = $this->makeEmpty(ArrayInput::class, [
                 'get_option' => static function ($option) {
                     return $option === 'quiet' || $option === 'no-interaction' ? true : null;
@@ -186,7 +188,6 @@ class InstallationTest extends BaseTest
                 'has_option' => false,
             ]);
             $init             = new Wpbrowser($input, new NullOutput());
-            $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
             $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
                 'testSiteDbUser'     => 'root',
                 'testSiteDbPassword' => 'secret',
@@ -202,9 +203,9 @@ class InstallationTest extends BaseTest
             $this->createComposerJsonFile($workDir, 'codeception-40-ok.json');
             $init->setCreateActors(false)->setCreateHelpers(false);
             $init->setup(true);
-
-            $this->assertMatchesDirectorySnapshot($workDir);
         });
+
+	    $this->assertMatchesDirectorySnapshot($workDir);
     }
 
     /**
