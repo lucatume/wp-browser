@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Codeception required version erroneously set in prev version of `composer.json` file
+
 ## [2.5.6] 2020-06-02;
 
 ### Added
