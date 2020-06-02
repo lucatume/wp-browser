@@ -11,8 +11,12 @@
 
 namespace tad\WPBrowser\Traits;
 
-if ( PHP_VERSION_ID >= 70000 ) {
-	require_once __DIR__ . '/_WithSeparateProcessChecksPHP7.php';
+use function tad\WPBrowser\phpunitVersion;
+
+if ( version_compare(phpunitVersion(),'7.0.0','>=') ) {
+	// Load the version compatible with PHPUnit >= 7.0.0.
+	require_once __DIR__ . '/_WithSeparateProcessChecksPHPUnitGte7.php';
 } else {
-	require_once __DIR__ . '/_WithSeparateProcessChecksPHP56.php';
+	// Load the version compatible with PHPUnit < 7.0.0.
+	require_once __DIR__ . '/_WithSeparateProcessChecksPHPUnitLt7.php';
 }

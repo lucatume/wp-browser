@@ -265,8 +265,3 @@ setup_wp:
 
 build_debug:
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
-
-test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
-		docker-compose --project-name=${PROJECT_NAME}_init \
-		run --rm ccf run init --debug
