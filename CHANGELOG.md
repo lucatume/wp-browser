@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.5.6] 2020-06-02;
+
+### Added
+
+- check in the `codecept init wpbrowser` command to check and report missing Codeception 4.0 to the user during initialization, fixes #412
+
 ## [2.5.5] 2020-05-25;
 
 ### Changed
@@ -1403,4 +1409,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.3]: https://github.com/lucatume/wp-browser/compare/2.5.2...2.5.3
 [2.5.4]: https://github.com/lucatume/wp-browser/compare/2.5.3...2.5.4
 [2.5.5]: https://github.com/lucatume/wp-browser/compare/2.5.4...2.5.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.5...HEAD
+[2.5.6]: https://github.com/lucatume/wp-browser/compare/2.5.5...2.5.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.6...HEAD
