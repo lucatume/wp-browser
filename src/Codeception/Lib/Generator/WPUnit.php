@@ -70,7 +70,7 @@ EOF;
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-        $phpunitSeries = phpunitVersion();
+        $phpunitSeries = $this->compatibilityLayer->phpunitVersion();
 
         /** @var string $phpunitSeries */
         $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?

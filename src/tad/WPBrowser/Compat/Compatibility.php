@@ -7,6 +7,8 @@
 
 namespace tad\WPBrowser\Compat;
 
+use function tad\WPBrowser\phpunitVersion;
+
 /**
  * Class Compatibility
  *
@@ -28,5 +30,17 @@ class Compatibility
     public static function setupMethodFor($class)
     {
         return method_exists($class, '_setUp') ? '_setUp' : 'setUp';
+    }
+
+    /**
+     * Returns the PHPUnit version currently installed.
+     *
+     * Falls back on version 5 if none can be found.
+     *
+     * @return string The current PHPUnit version.
+     */
+    public function phpunitVersion()
+    {
+        return phpunitVersion();
     }
 }
