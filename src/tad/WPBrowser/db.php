@@ -191,7 +191,11 @@ function dbDsnMap($dbHost)
         case 7:
             // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
             $map['type'] = $type ?: 'mysql';
-            $map['unix_socket'] = $unixSocketMatches['socket'];
+            $unixSocket = $unixSocketMatches['socket'];
+            if (strpos($unixSocket, '~') === 0) {
+                $unixSocket = str_replace('~', homeDir(), $unixSocket);
+            }
+            $map['unix_socket'] = $unixSocket;
             break;
         case 8:
         case 9:

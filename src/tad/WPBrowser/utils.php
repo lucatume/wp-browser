@@ -22,3 +22,4 @@ require_once __DIR__ . '/deprecated.php';
 require_once __DIR__ . '/wp.php';
 require_once __DIR__ . '/class-aliases.php';
 require_once __DIR__ . '/phpunit-polyfills.php';
+require_once __DIR__ . '/composer.php';

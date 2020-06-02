@@ -1,6 +1,6 @@
 >>> /.env.testing >>>
-TEST_SITE_DB_DSN=mysql:host=localhost;dbname=wordpress
-TEST_SITE_DB_HOST=localhost
+TEST_SITE_DB_DSN=mysql:unix_socket=/Users/test/some/app/mysql.sock;dbname=wordpress
+TEST_SITE_DB_HOST=localhost:/Users/test/some/app/mysql.sock
 TEST_SITE_DB_NAME=wordpress
 TEST_SITE_DB_USER=root
 TEST_SITE_DB_PASSWORD=secret
@@ -10,7 +10,7 @@ TEST_SITE_ADMIN_PASSWORD=password
 TEST_SITE_WP_ADMIN_PATH=/wp-admin
 WP_ROOT_FOLDER=/var/www/html
 TEST_DB_NAME=wordpress_tests
-TEST_DB_HOST=localhost
+TEST_DB_HOST=localhost:/Users/test/some/app/mysql.sock
 TEST_DB_USER=root
 TEST_DB_PASSWORD=secret
 TEST_TABLE_PREFIX=wp_
