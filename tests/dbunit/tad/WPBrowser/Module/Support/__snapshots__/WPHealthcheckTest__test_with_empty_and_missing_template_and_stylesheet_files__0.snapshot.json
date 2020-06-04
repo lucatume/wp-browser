@@ -34,6 +34,8 @@
             "Active plugin [one/one.php]": "file [wp-content/plugins/one/one.php] does not exist.",
             "Active plugin [two/two.php]": "file [wp-content/plugins/two/two.php] does not exist.",
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
+            "Inactive plugin [isolated-test-plugin-two]": "wp-content/plugins/isolated-test-plugin-two",
+            "Inactive plugin [isolated-test-plugin]": "wp-content/plugins/isolated-test-plugin",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1",
             "Inactive plugin [test]": "wp-content/plugins/test"
         }
