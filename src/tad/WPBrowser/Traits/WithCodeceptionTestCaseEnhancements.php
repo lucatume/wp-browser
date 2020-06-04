@@ -24,8 +24,6 @@ use tad\WPBrowser\PHPUnit\TestListener;
  */
 trait WithCodeceptionTestCaseEnhancements
 {
-
-
     /**
      * Tries to set up the WPLoader module at the very last useful moment.
      *
