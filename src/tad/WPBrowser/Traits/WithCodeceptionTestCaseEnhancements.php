@@ -78,13 +78,25 @@ trait WithCodeceptionTestCaseEnhancements
                 array_column((array) $annotationGroups[ $annotationGroup ], 0)
             );
 
-            if (isset($a['runInSeparateProcess'], $a['preserveGlobalState'])
-                && 'enabled' === $a['preserveGlobalState']
-            ) {
-                $message = "Running WPTestCase tests in a separate process (@runInSeparateProcess)" .
-                           " preserving global state (@preserveGlobalState enabled) is not supported." .
-                           "\nEither remove the '@preserveGlobalState' annotation or set it to 'disabled'.";
-                throw new TestRuntimeException($message);
+            if (isset($a['runInSeparateProcess'])) {
+                if (isset($a['preserveGlobalState']) && $a['preserveGlobalState'] !== 'disabled'
+                    || ! isset($a['preserveGlobalState'])
+                ) {
+                    $message = <<< OUT
+Running WPTestCase tests in a separate processes requires the following annotations on the test case or test methods:
+
+/**
+ * @runInSeparateProcess
+ * @preserveGlobalState disabled
+ */
+ 
+Read more at: 
+* https://phpunit.readthedocs.io/en/9.1/annotations.html?highlight=runInSeparateProcess#runinseparateprocess
+* https://wpbrowser.wptestkit.dev/advanced/run-in-separate-process
+
+OUT;
+                    throw new TestRuntimeException($message);
+                }
             }
         }
     }

@@ -248,7 +248,11 @@ class WPLoader extends Module
         $instance->_setConfig($config);
         $instance->defineConstants($instance->_getConstants());
 
+        $instance->setActivePlugins();
+        $instance->_setActiveTheme();
+
         return [
+            'skipWordPressInstall' => true,
             'installationConfiguration' => $instance->getInstallationConfiguration()
         ];
     }

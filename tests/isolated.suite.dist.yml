@@ -16,7 +16,11 @@ modules:
             adminEmail: 'admin@%WORDPRESS_DOMAIN%'
             title: Test
             configFile: ''
-            theme: dummy
-            plugins: []
-            activatePlugins: []
+            theme: isolated
+            plugins:
+                - isolated-test-plugin/plugin.php
+                - isolated-test-plugin-two/plugin.php
+            activatePlugins:
+                - isolated-test-plugin/plugin.php
+                - isolated-test-plugin-two/plugin.php
             booststrapActions: []
