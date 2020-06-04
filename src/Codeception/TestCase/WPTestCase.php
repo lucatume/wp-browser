@@ -3,6 +3,8 @@ namespace Codeception\TestCase;
 
 // phpcs:disable
 use Codeception\Exception\ModuleException;
+use Codeception\Exception\TestRuntimeException;
+use Codeception\Module\WPLoader;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
 use tad\WPBrowser\Compat\Compatibility;
@@ -17,7 +19,9 @@ if (!class_exists('TracTickets')) {
 }
 
 // Require the WordPress bootstrap file if not already loaded; this will deal with test methods running in isolation.
-require_once( __DIR__ . '/../../includes/bootstrap.php' );
+if (!WPLoader::$didInit) {
+	require_once( __DIR__ . '/../../includes/bootstrap.php' );
+}
 
 // Load the PHPUnit compatibility layer.
 require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
@@ -37,7 +41,6 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 {
 
     use WithCodeceptionTestCaseEnhancements;
-    use WithSeparateProcessChecks;
 
     protected static $forced_tickets = array();
     protected static $hooks_saved = array();
@@ -197,6 +200,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _setUp()
     {
+        $this->checkSeparateProcessConfiguration();
+
         set_time_limit(0);
 
         if (!self::$ignore_files) {

@@ -36,7 +36,7 @@ docker_pull:
 lint:
 	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 \
 		--colors \
-		--exclude /project/src/tad/WPBrowser/Traits/WithSeparateProcessChecks.php \
+		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
 		/project/src
 
 # Use the PHP Code Sniffer container to sniff the relevant source files.

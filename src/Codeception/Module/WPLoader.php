@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use Codeception\Command\Shared\Config;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Util\Debug;
@@ -15,6 +16,7 @@ use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 use tad\WPBrowser\Traits\SerializableModule;
 use tad\WPBrowser\Traits\WithEvents;
+use tad\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
 use function tad\WPBrowser\findHereOrInParent;
@@ -43,12 +45,20 @@ class WPLoader extends Module
     use WithEvents;
     use WithWordPressFilters;
     use Config;
+    use WithCodeceptionModuleConfig;
 
     public static $includeInheritedActions = true;
 
     public static $onlyActions = [];
 
     public static $excludeActions = [];
+
+    /**
+     * A flag to indicate whether the module should late init or not.
+     *
+     * @var bool
+     */
+    public static $didInit = false;
 
     /**
      * The fields the user will have to set to legit values for the module to
@@ -225,29 +235,16 @@ class WPLoader extends Module
      */
     public static function _maybeInit()
     {
-        if (defined('ABSPATH')) {
+        if (defined('ABSPATH') || self::$didInit) {
             // Already initialized.
             return [];
         }
 
-        $classReflection       = new \ReflectionClass(self::class);
-        $instance              = $classReflection->newInstanceWithoutConstructor();
-        $instance->wp          = new WP();
-        $instance->healthcheck = new WPHealthcheck();
+        self::$didInit = true;
 
-        // Some Codeception functions will not be auto-loaded when this method runs in isolation, load them now.
-        require_once vendorDir('codeception/codeception/autoload.php');
-        $suite       = identifySuiteFromTrace();
-        $suiteConfig = $instance->getSuiteConfig($suite);
-        if (! isset($suiteConfig['modules']['config']['WPLoader'])) {
-            throw new \RuntimeException(
-                "WPLoader module configuration not found in '{$suite}' suite configuration."
-            );
-        }
-        $config = $suiteConfig['modules']['config']['WPLoader'];
-        $instance->_setConfig($config);
+        $instance    = static::_newInstanceWithoutConstructor();
+
         $instance->defineConstants($instance->_getConstants());
-
         $instance->setActivePlugins();
         $instance->_setActiveTheme();
 
@@ -255,6 +252,30 @@ class WPLoader extends Module
             'skipWordPressInstall' => true,
             'installationConfiguration' => $instance->getInstallationConfiguration()
         ];
+    }
+
+    /**
+     * Builds a new instance of the module without calling its contructor.
+     *
+     *
+     * @return static A new instance of the module, built without calling its constructor method.
+     *
+     * @throws ModuleException If an instance of the module cannot be built.
+     */
+    protected static function _newInstanceWithoutConstructor()
+    {
+        $classReflection       = new \ReflectionClass(self::class);
+        $instance              = $classReflection->newInstanceWithoutConstructor();
+
+        if (! $instance instanceof static) {
+            throw new ModuleException($instance, 'Could not build instance.');
+        }
+
+        $instance->wp          = new WP();
+        $instance->healthcheck = new WPHealthcheck();
+        $instance->_setConfig(static::_getModuleConfig($instance));
+
+        return $instance;
     }
 
     /**
@@ -279,6 +300,7 @@ class WPLoader extends Module
      */
     protected function initialize()
     {
+        self::$didInit = true;
         $this->config = new Configuration($this->config, [
             'wpRootDir' => 'wpRootFolder',
             'pluginsDir' => 'pluginsFolder',
