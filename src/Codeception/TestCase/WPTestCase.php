@@ -3,13 +3,12 @@ namespace Codeception\TestCase;
 
 // phpcs:disable
 use Codeception\Exception\ModuleException;
-use Codeception\Exception\TestRuntimeException;
 use Codeception\Module\WPLoader;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
 use tad\WPBrowser\Compat\Compatibility;
 use tad\WPBrowser\Traits\WithCodeceptionTestCaseEnhancements;
-use tad\WPBrowser\Traits\WithSeparateProcessChecks;
+use tad\WPBrowser\Traits\WithRequestTime;
 
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
@@ -41,6 +40,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 {
 
     use WithCodeceptionTestCaseEnhancements;
+    use WithRequestTime;
 
     protected static $forced_tickets = array();
     protected static $hooks_saved = array();
@@ -200,6 +200,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _setUp()
     {
+        $this->requestTimeSetUp();
         $this->checkSeparateProcessConfiguration();
 
         set_time_limit(0);
@@ -469,6 +470,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         remove_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
         $this->_restore_hooks();
         wp_set_current_user(0);
+        $this->requestTimeTearDown();
     }
 
     /**

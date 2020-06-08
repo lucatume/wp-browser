@@ -14,11 +14,3 @@ if (version_compare(\Codeception\Codecept::VERSION, '3.0.0', '<')) {
         '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
     );
 }
-
-if (! isset($_SERVER['REQUEST_TIME'])) {
-    $_SERVER['REQUEST_TIME'] = time();
-}
-
-if (! isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-    $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
-}
