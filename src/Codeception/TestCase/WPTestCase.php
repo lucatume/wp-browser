@@ -3,15 +3,24 @@ namespace Codeception\TestCase;
 
 // phpcs:disable
 use Codeception\Exception\ModuleException;
+use Codeception\Exception\TestRuntimeException;
+use Codeception\Module\WPLoader;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
 use tad\WPBrowser\Compat\Compatibility;
+use tad\WPBrowser\Traits\WithCodeceptionTestCaseEnhancements;
+use tad\WPBrowser\Traits\WithSeparateProcessChecks;
 
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
 }
 if (!class_exists('TracTickets')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
+}
+
+// Require the WordPress bootstrap file if not already loaded; this will deal with test methods running in isolation.
+if (!WPLoader::$didInit) {
+	require_once( __DIR__ . '/../../includes/bootstrap.php' );
 }
 
 // Load the PHPUnit compatibility layer.
@@ -30,6 +39,8 @@ require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
  */
 class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 {
+
+    use WithCodeceptionTestCaseEnhancements;
 
     protected static $forced_tickets = array();
     protected static $hooks_saved = array();
@@ -50,6 +61,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public static function _setUpBeforeClass()
     {
+        static::setupForSeparateProcessBeforeClass();
+
         global $wpdb;
 
         $wpdb->suppress_errors = false;
@@ -187,6 +200,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _setUp()
     {
+        $this->checkSeparateProcessConfiguration();
+
         set_time_limit(0);
 
         if (!self::$ignore_files) {
@@ -221,6 +236,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $this->start_transaction();
         $this->expectDeprecated();
         add_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
+
+        $this->maybeEnhanceTestCaseIfWoDiService();
 
         /**
          * After WordPress has been initialized in the test context initialize the Codeception Unit test case.
@@ -415,6 +432,11 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public function _tearDown()
     {
         global $wpdb, $wp_query, $wp;
+
+        if (empty($wpdb) || !$wpdb instanceof \wpdb) {
+            return;
+        }
+
         $wpdb->query('ROLLBACK');
         if (is_multisite()) {
             while (ms_is_switched()) {

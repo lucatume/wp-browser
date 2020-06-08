@@ -1,6 +1,6 @@
 <?php
 /**
- * Function dedicate to WordPress interaction.
+ * Functions dedicate to WordPress interaction.
  *
  * @package tad\WPBrowser
  */

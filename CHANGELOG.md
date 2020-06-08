@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.0] 2020-06-08;
+
+### Added
+
+- support, in `WPTestCase`, for the `@runInSeparateProcess` annotation to run test methods in separate PHP processes; fixes #410
+
 ## [2.5.7] 2020-06-02;
 
 ### Fixed
@@ -1417,4 +1423,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.5]: https://github.com/lucatume/wp-browser/compare/2.5.4...2.5.5
 [2.5.6]: https://github.com/lucatume/wp-browser/compare/2.5.5...2.5.6
 [2.5.7]: https://github.com/lucatume/wp-browser/compare/2.5.6...2.5.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.5.7...HEAD
+[2.6.0]: https://github.com/lucatume/wp-browser/compare/2.5.7...2.6.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.0...HEAD

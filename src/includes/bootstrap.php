@@ -3,13 +3,18 @@
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  *
  * @var tad\WPBrowser\Utils\Configuration $installationConfiguration The current installation configuration.
+ * @var bool $skipWordPressInstall Whether WordPress shoudl be installed by this script or not.
  */
 
+use Codeception\Module\WPLoader;
 use function tad\WPBrowser\vendorDir;
 
 if (!function_exists('tad_functions')) {
 	require_once __DIR__ . '/tad-functions.php';
 }
+
+// phpcs:ignore
+extract( WPLoader::_maybeInit() );
 
 /*
  * Globalize some WordPress variables, because PHPUnit loads this file inside a function.
@@ -72,68 +77,70 @@ $wp_theme_directories = array(DIR_TESTDATA . '/themedir1');
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 
-// in place of executing the installation script require the (modified) installation file
-if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
-	codecept_debug('Installing WordPress in same process...');
-	require 'same-scope-install.php';
-} else {
-	global $wp_tests_options;
-	$wploaderInstallationFilters = empty($wp_tests_options['installation_filters'])
-		? []
-		: $wp_tests_options['installation_filters'];
+if(empty($skipWordPressInstall)){
+	// In place of executing the installation script require the (modified) installation file
+	if (!defined('WPCEPT_ISOLATED_INSTALL') || false === WPCEPT_ISOLATED_INSTALL) {
+		codecept_debug('Installing WordPress in same process...');
+		require 'same-scope-install.php';
+	} else {
+		global $wp_tests_options;
+		$wploaderInstallationFilters = empty($wp_tests_options['installation_filters'])
+			? []
+			: $wp_tests_options['installation_filters'];
 
-	$environment = [
-		'root' => codecept_root_dir(),
-		'autoload' => vendorDir('autoload.php'),
-		'installationFilters' => $wploaderInstallationFilters,
-		'constants' => [
-			'ABSPATH' => ABSPATH,
-			'WP_DEBUG' => true,
-			'WP_TESTS_TABLE_PREFIX' => WP_TESTS_TABLE_PREFIX,
-			'DB_NAME' => DB_NAME,
-			'DB_USER' => DB_USER,
-			'DB_PASSWORD' => DB_PASSWORD,
-			'DB_HOST' => DB_HOST,
-			'DB_CHARSET' => DB_CHARSET,
-			'DB_COLLATE' => DB_COLLATE,
-			'WP_TESTS_DOMAIN' => WP_TESTS_DOMAIN,
-			'WP_TESTS_EMAIL' => WP_TESTS_EMAIL,
-			'WP_TESTS_TITLE' => WP_TESTS_TITLE,
-			'WP_PHP_BINARY' => WP_PHP_BINARY,
-			'WPLANG' => WPLANG,
-		],
-		'tablesHandling' => $installationConfiguration->get('tablesHandling','empty'),
-	];
+		$environment = [
+			'root' => codecept_root_dir(),
+			'autoload' => vendorDir('autoload.php'),
+			'installationFilters' => $wploaderInstallationFilters,
+			'constants' => [
+				'ABSPATH' => ABSPATH,
+				'WP_DEBUG' => true,
+				'WP_TESTS_TABLE_PREFIX' => WP_TESTS_TABLE_PREFIX,
+				'DB_NAME' => DB_NAME,
+				'DB_USER' => DB_USER,
+				'DB_PASSWORD' => DB_PASSWORD,
+				'DB_HOST' => DB_HOST,
+				'DB_CHARSET' => DB_CHARSET,
+				'DB_COLLATE' => DB_COLLATE,
+				'WP_TESTS_DOMAIN' => WP_TESTS_DOMAIN,
+				'WP_TESTS_EMAIL' => WP_TESTS_EMAIL,
+				'WP_TESTS_TITLE' => WP_TESTS_TITLE,
+				'WP_PHP_BINARY' => WP_PHP_BINARY,
+				'WPLANG' => WPLANG,
+			],
+			'tablesHandling' => $installationConfiguration->get('tablesHandling','empty'),
+		];
 
-	$dirConstants = [
-		'WP_PLUGIN_DIR',
-		'WP_CONTENT_DIR',
-		'WP_TEMP_DIR',
-		'WPMU_PLUGIN_DIR',
-		'WP_LANG_DIR',
-	];
-	foreach ($dirConstants as $const) {
-		if (defined($const)) {
-			$environment['constants'][$const] = constant($const);
+		$dirConstants = [
+			'WP_PLUGIN_DIR',
+			'WP_CONTENT_DIR',
+			'WP_TEMP_DIR',
+			'WPMU_PLUGIN_DIR',
+			'WP_LANG_DIR',
+		];
+		foreach ($dirConstants as $const) {
+			if (defined($const)) {
+				$environment['constants'][$const] = constant($const);
+			}
 		}
-	}
 
-	if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
-		$uniqueActivePlugins = array_unique($GLOBALS['wp_tests_options']['active_plugins']);
-		$environment['activePlugins'] = $uniqueActivePlugins;
-		codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $uniqueActivePlugins));
-	}
+		if (!empty($GLOBALS['wp_tests_options']['active_plugins'])) {
+			$uniqueActivePlugins = array_unique($GLOBALS['wp_tests_options']['active_plugins']);
+			$environment['activePlugins'] = $uniqueActivePlugins;
+			codecept_debug("Active plugins:\n\t- " . implode("\n\t- ", $uniqueActivePlugins));
+		}
 
-	codecept_debug('Installing WordPress in isolated process...');
-	ob_start();
-	$isolatedInstallationScript = __DIR__ . '/isolated-install.php';
-	system(implode(' ', [
-		WP_PHP_BINARY,
-		escapeshellarg($isolatedInstallationScript),
-		escapeshellarg(base64_encode(serialize($environment))),
-		$multisite,
-	]));
-	codecept_debug("Isolated installation script output: \n\n" . ob_get_clean());
+		codecept_debug('Installing WordPress in isolated process...');
+		ob_start();
+		$isolatedInstallationScript = __DIR__ . '/isolated-install.php';
+		system(implode(' ', [
+			WP_PHP_BINARY,
+			escapeshellarg($isolatedInstallationScript),
+			escapeshellarg(base64_encode(serialize($environment))),
+			$multisite,
+		]));
+		codecept_debug("Isolated installation script output: \n\n" . ob_get_clean());
+	}
 }
 
 if ($multisite) {

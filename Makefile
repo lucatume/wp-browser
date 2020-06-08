@@ -34,7 +34,10 @@ docker_pull:
 
 # Lint the project source files to make sure they are PHP 5.6 compatible.
 lint:
-	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 --colors /project/src
+	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 \
+		--colors \
+		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
+		/project/src
 
 # Use the PHP Code Sniffer container to sniff the relevant source files.
 sniff:
@@ -61,7 +64,7 @@ fix_n_sniff: fix sniff
 
 # Use phpstan container to analyze the source code.
 # Configuration will be read from the phpstan.neon.dist file.
-PHPSTAN_LEVEL?=max
+PHPSTAN_LEVEL?=2
 phpstan:
 	docker run --rm -v ${PWD}:/project lucatume/wpstan analyze -l ${PHPSTAN_LEVEL}
 
@@ -165,6 +168,9 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
 		docker-compose --project-name=${PROJECT_NAME}_init \
 		run --rm ccf run init
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
+		docker-compose --project-name=${PROJECT_NAME}_isolated \
+		run --rm ccf run isolated
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
@@ -230,10 +236,13 @@ test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm cc56 run events
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
+		docker-compose --project-name=${PROJECT_NAME}_isolated \
+		run --rm cc56 run isolated
 
 # A variable target to debug issues in a PHP 5.6 environment.
 debug:
-	TEST_SUBNET=104 \
+	TEST_SUBNET=105 \
 		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
 		-f docker-compose.debug.yml \
 		run --rm \
@@ -256,8 +265,3 @@ setup_wp:
 
 build_debug:
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
-
-test_1:
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
-		docker-compose --project-name=${PROJECT_NAME}_init \
-		run --rm ccf run init --debug

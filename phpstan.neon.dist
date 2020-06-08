@@ -9,12 +9,13 @@ parameters:
     - %currentWorkingDirectory%/src/Codeception/
     - %currentWorkingDirectory%/src/tad/
   excludes_analyse:
-    - %currentWorkingDirectory%/src/Codeception/TestCase/WPXMLRPCTestCase.php
+    - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
     - %currentWorkingDirectory%/src/tad/scripts
     # Not required for compatibility with Codeception 4.0.
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Codeception/Version2/Unit.php
     - %currentWorkingDirectory%/src/tad/WPBrowser/Adapters/PHPUnit/Framework/Assert.php
+    - %currentWorkingDirectory%/src/tad/WPBrowser/phpunit.php
   autoload_files:
     - %currentWorkingDirectory%/vendor/autoload.php
     - %currentWorkingDirectory%/vendor/codeception/codeception/autoload.php

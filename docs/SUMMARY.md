@@ -24,8 +24,10 @@
     * [WPLoader](modules/WPLoader.md)	
     * [WPQueries](modules/WPQueries.md)	
     * [WPWebDriver](modules/WPWebDriver.md)	
+* Advanced Usage
+    * [Running tests in separate processes](advanced/run-in-separate-process.md)
 * [Events API](events-api.md)
-* [Commands](commands.md)	
 * [Extensions](extensions.md)	
+* [Commands](commands.md)	
 * [Contributing](contributing.md)	
 * [Changelog](https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md)

@@ -2,8 +2,10 @@
 
 namespace Codeception\Module;
 
+use Codeception\Command\Shared\Config;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Util\Debug;
@@ -12,13 +14,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
+use tad\WPBrowser\Traits\SerializableModule;
 use tad\WPBrowser\Traits\WithEvents;
+use tad\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
 use function tad\WPBrowser\findHereOrInParent;
+use function tad\WPBrowser\identifySuiteFromTrace;
 use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\unleadslashit;
 use function tad\WPBrowser\untrailslashit;
+use function tad\WPBrowser\vendorDir;
 
 /**
  * Class WPLoader
@@ -38,12 +44,21 @@ class WPLoader extends Module
 
     use WithEvents;
     use WithWordPressFilters;
+    use Config;
+    use WithCodeceptionModuleConfig;
 
     public static $includeInheritedActions = true;
 
     public static $onlyActions = [];
 
     public static $excludeActions = [];
+
+    /**
+     * A flag to indicate whether the module should late init or not.
+     *
+     * @var bool
+     */
+    public static $didInit = false;
 
     /**
      * The fields the user will have to set to legit values for the module to
@@ -207,6 +222,63 @@ class WPLoader extends Module
     }
 
     /**
+     * Initializes the module if not already initialized.
+     *
+     * When this method runs, the `ABSPATH` constant is not set then the module will init itself and
+     * load WordPress.
+     * It should really not be used elsewhere.
+     *
+     * @return array An export-able array that will define objects and variables expected to be global when this is
+     *               called.
+     * @internal This method is very much tailored to the use in `WPTestCase` to support tests running in isolation.
+     *
+     */
+    public static function _maybeInit()
+    {
+        if (defined('ABSPATH') || self::$didInit) {
+            // Already initialized.
+            return [];
+        }
+
+        self::$didInit = true;
+
+        $instance    = static::_newInstanceWithoutConstructor();
+
+        $instance->defineConstants($instance->_getConstants());
+        $instance->setActivePlugins();
+        $instance->_setActiveTheme();
+
+        return [
+            'skipWordPressInstall' => true,
+            'installationConfiguration' => $instance->getInstallationConfiguration()
+        ];
+    }
+
+    /**
+     * Builds a new instance of the module without calling its contructor.
+     *
+     *
+     * @return static A new instance of the module, built without calling its constructor method.
+     *
+     * @throws ModuleException If an instance of the module cannot be built.
+     */
+    protected static function _newInstanceWithoutConstructor()
+    {
+        $classReflection       = new \ReflectionClass(self::class);
+        $instance              = $classReflection->newInstanceWithoutConstructor();
+
+        if (! $instance instanceof static) {
+            throw new ModuleException($instance, 'Could not build instance.');
+        }
+
+        $instance->wp          = new WP();
+        $instance->healthcheck = new WPHealthcheck();
+        $instance->_setConfig(static::_getModuleConfig($instance));
+
+        return $instance;
+    }
+
+    /**
      * The function that will initialize the module.
      *
      * The function will set up the WordPress testing configuration and will
@@ -228,6 +300,7 @@ class WPLoader extends Module
      */
     protected function initialize()
     {
+        self::$didInit = true;
         $this->config = new Configuration($this->config, [
             'wpRootDir' => 'wpRootFolder',
             'pluginsDir' => 'pluginsFolder',
@@ -563,11 +636,7 @@ class WPLoader extends Module
             tests_add_filter('plugins_loaded', [$this, '_switchTheme']);
         }
 
-        $installationConfiguration = new Configuration([
-            'tablesHandling' => isset($this->config['installationTableHandling']) ?
-                $this->config['installationTableHandling']
-                : 'empty'
-        ]);
+        $installationConfiguration = $this->getInstallationConfiguration();
 
         require_once $this->wpBootstrapFile;
 
@@ -916,5 +985,19 @@ class WPLoader extends Module
         $this->contentDir = untrailslashit($resolved);
 
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
+    }
+
+    /**
+     * Returns the WordPress installation configuration as created from the currrent module configuration.
+     *
+     * @return Configuration The WordPress installation configuration, as created from the module configuration.
+     */
+    protected function getInstallationConfiguration()
+    {
+        return new Configuration([
+            'tablesHandling' => isset($this->config['installationTableHandling']) ?
+                $this->config['installationTableHandling']
+                : 'empty'
+        ]);
     }
 }

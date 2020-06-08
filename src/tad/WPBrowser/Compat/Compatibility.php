@@ -7,6 +7,8 @@
 
 namespace tad\WPBrowser\Compat;
 
+use function tad\WPBrowser\phpunitVersion;
+
 /**
  * Class Compatibility
  *
@@ -39,14 +41,6 @@ class Compatibility
      */
     public function phpunitVersion()
     {
-        if (class_exists('PHPUnit\Runner\Version')) {
-            return \PHPUnit\Runner\Version::series();
-        }
-
-        if (class_exists('PHPUnit_Runner_Version')) {
-            return PHPUnit_Runner_Version::series();
-        }
-
-        return '5.0';
+        return phpunitVersion();
     }
 }

@@ -7,6 +7,7 @@ use Codeception\Lib\Generator\Shared\Classname;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
 use tad\WPBrowser\Compat\Compatibility;
+use function tad\WPBrowser\phpunitVersion;
 
 class WPUnit extends AbstractGenerator implements GeneratorInterface
 {
