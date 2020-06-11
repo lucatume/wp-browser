@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.1] 2020-06-11;
+
 ### Fixed
 
 - ensure `$_SERVER['REQUEST_TIME']` and `$_SERVER['REQUEST_TIME_FLOAT']` are correctly set when running tests based on the `Codeception\Test\WPTestCase` class, fixes #417
@@ -1428,4 +1430,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.6]: https://github.com/lucatume/wp-browser/compare/2.5.5...2.5.6
 [2.5.7]: https://github.com/lucatume/wp-browser/compare/2.5.6...2.5.7
 [2.6.0]: https://github.com/lucatume/wp-browser/compare/2.5.7...2.6.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.0...HEAD
+[2.6.1]: https://github.com/lucatume/wp-browser/compare/2.6.0...2.6.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.1...HEAD
