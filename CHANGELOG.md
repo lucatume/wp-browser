@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- ensure `$_SERVER['REQUEST_TIME']` and `$_SERVER['REQUEST_TIME_FLOAT`]` are correctly set when running tests based on the `Codeception\Test\WPTestCase` class, fixes #417
+- ensure `$_SERVER['REQUEST_TIME']` and `$_SERVER['REQUEST_TIME_FLOAT']` are correctly set when running tests based on the `Codeception\Test\WPTestCase` class, fixes #417
 
 ## [2.6.0] 2020-06-08;
 
