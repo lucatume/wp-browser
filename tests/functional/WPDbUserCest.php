@@ -100,6 +100,24 @@ class WPDbUserCest
         $I->seeUserMetaInDatabase($criteria);
     }
 
+    public function it_should_set_bool_meta_to_true_false_by_default(FunctionaLTester $I) {
+        $I->haveUserInDatabase('Luca');
+        $userId = $I->grabUserIdFromDatabase('Luca');
+        $criteria = [
+            'user_id' => $userId,
+            'meta_key' => $I->grabPrefixedTableNameFor('show_admin_bar_front'),
+            'meta_value' => 'true',
+        ];
+        $I->seeUserMetaInDatabase($criteria);
+
+        $criteria['meta_key'] = $I->grabPrefixedTableNameFor('rich_editing');
+        $I->seeUserMetaInDatabase($criteria);
+
+        $criteria['meta_key'] = $I->grabPrefixedTableNameFor('comment_shortcuts');
+        $criteria['meta_value'] = 'false';
+        $I->seeUserMetaInDatabase($criteria);
+    }
+
     /**
      * @test
      * it should allow overriding the default user level and role
