@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Example;
 use tad\WPBrowser\Generators\User;
 
 class WPDbUserCest
@@ -100,21 +101,28 @@ class WPDbUserCest
         $I->seeUserMetaInDatabase($criteria);
     }
 
-    public function it_should_set_bool_meta_to_true_false_by_default(FunctionaLTester $I) {
+    public function boolMetaKeys()
+    {
+        return [
+            'rich_editing'         => [ 'key' => 'rich_editing', 'value' => 'true' ],
+            'syntax_highlighting'  => [ 'key' => 'syntax_highlighting', 'value' => 'true' ],
+            'comment_shortcuts'    => [ 'key' => 'comment_shortcuts', 'value' => 'false' ],
+            'show_admin_bar_front' => [ 'key' => 'show_admin_bar_front', 'value' => 'true' ],
+        ];
+    }
+
+    /**
+     * @dataProvider boolMetaKeys
+     */
+    public function it_should_set_bool_meta_to_true_false_by_default(FunctionaLTester $I, Example $data)
+    {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
         $criteria = [
             'user_id' => $userId,
-            'meta_key' => $I->grabPrefixedTableNameFor('show_admin_bar_front'),
-            'meta_value' => 'true',
+            'meta_key' => $data['key'],
+            'meta_value' => $data['value'],
         ];
-        $I->seeUserMetaInDatabase($criteria);
-
-        $criteria['meta_key'] = $I->grabPrefixedTableNameFor('rich_editing');
-        $I->seeUserMetaInDatabase($criteria);
-
-        $criteria['meta_key'] = $I->grabPrefixedTableNameFor('comment_shortcuts');
-        $criteria['meta_value'] = 'false';
         $I->seeUserMetaInDatabase($criteria);
     }
 
