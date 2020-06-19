@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.2] 2020-06-19;
+
+### Fixed
+
+- An issue where users created during tests would not be have the correct editing and layout meta set, fixes #422, thanks @ryanshoover  
+
 ## [2.6.1] 2020-06-11;
 
 ### Fixed
@@ -1431,4 +1437,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.5.7]: https://github.com/lucatume/wp-browser/compare/2.5.6...2.5.7
 [2.6.0]: https://github.com/lucatume/wp-browser/compare/2.5.7...2.6.0
 [2.6.1]: https://github.com/lucatume/wp-browser/compare/2.6.0...2.6.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.1...HEAD
+[2.6.2]: https://github.com/lucatume/wp-browser/compare/2.6.1...2.6.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.2...HEAD
