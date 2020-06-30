@@ -65,6 +65,13 @@ class Wpbrowser extends Bootstrap
     protected $createSuiteConfigFiles = true;
 
     /**
+     * Whether to check the Composer configuration or not.
+     *
+     * @var bool
+     */
+    protected $checkComposerConfig = true;
+
+    /**
      * @param bool $interactive
      *
      * @return mixed|void
@@ -74,27 +81,7 @@ class Wpbrowser extends Bootstrap
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->checkInstalled($this->workDir);
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        if (version_compare(Codecept::VERSION, '4.0.0', '>=')) {
-            checkComposerDependencies(composerFile(resolvePath('composer.json', $this->workDir)), [
-                'codeception/module-asserts'          => '^1.0',
-                'codeception/module-phpbrowser'       => '^1.0',
-                'codeception/module-webdriver'        => '^1.0',
-                'codeception/module-db'               => '^1.0',
-                'codeception/module-filesystem'       => '^1.0',
-                'codeception/module-cli'              => '^1.0',
-                'codeception/util-universalframework' => '^1.0'
-            ], static function ($lines) {
-                throw new \RuntimeException(
-                    "wp-browser requires the following packages to work with Codeception v4.0:\n\n" .
-                    implode(",\n", $lines) .
-                    "\n\n1. Add these lines to the 'composer.json' file 'require-dev' section." .
-                    "\n2. Run 'composer update'." .
-                    "\n3. Run the 'codecept init wpbrowser' command again."
-                );
-            });
-        }
+        $this->checkComposerConfig();
 
         $input = $this->input;
 
@@ -857,5 +844,46 @@ EOF;
         $this->createSuiteConfigFiles = $createSuiteConfigFiles;
 
         return $this;
+    }
+
+    /**
+     * Checks the composer.json file for requirements.
+     */
+    protected function checkComposerConfig()
+    {
+        if (!$this->checkComposerConfig) {
+            return;
+        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        if (version_compare(Codecept::VERSION, '4.0.0', '>=')) {
+            checkComposerDependencies(composerFile(resolvePath('composer.json', $this->workDir)), [
+                'codeception/module-asserts'          => '^1.0',
+                'codeception/module-phpbrowser'       => '^1.0',
+                'codeception/module-webdriver'        => '^1.0',
+                'codeception/module-db'               => '^1.0',
+                'codeception/module-filesystem'       => '^1.0',
+                'codeception/module-cli'              => '^1.0',
+                'codeception/util-universalframework' => '^1.0'
+            ], static function ($lines) {
+                throw new \RuntimeException(
+                    "wp-browser requires the following packages to work with Codeception v4.0:\n\n" .
+                    implode(",\n", $lines) .
+                    "\n\n1. Add these lines to the 'composer.json' file 'require-dev' section." .
+                    "\n2. Run 'composer update'." .
+                    "\n3. Run the 'codecept init wpbrowser' command again."
+                );
+            });
+        }
+    }
+
+    /**
+     * Sets the flag that controls the check of the Composer configuration file.
+     *
+     * @param bool $checkComposerConfig The flag that will control the check on the Composer configuration file.
+     */
+    public function setCheckComposerConfig($checkComposerConfig)
+    {
+        $this->checkComposerConfig = (bool)$checkComposerConfig;
     }
 }
