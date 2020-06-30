@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.3] 2020-06-30;
+
 ### Fixed
 
 - An issue where additional required plugins would not be correctly parsed during the `init wpbrowser` command, fixes #424
@@ -1442,4 +1444,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.0]: https://github.com/lucatume/wp-browser/compare/2.5.7...2.6.0
 [2.6.1]: https://github.com/lucatume/wp-browser/compare/2.6.0...2.6.1
 [2.6.2]: https://github.com/lucatume/wp-browser/compare/2.6.1...2.6.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.2...HEAD
+[2.6.3]: https://github.com/lucatume/wp-browser/compare/2.6.2...2.6.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.3...HEAD
