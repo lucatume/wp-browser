@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- An issue where additional required plugins would not be correctly parsed during the `init wpbrowser` command, fixes #424
+
 ## [2.6.2] 2020-06-19;
 
 ### Fixed

@@ -20,6 +20,7 @@ use function tad\WPBrowser\urlDomain;
 
 class Wpbrowser extends Bootstrap
 {
+    use WithInjectableHelpers;
 
     /**
      * Whether to output during the bootstrap process or not.
@@ -457,9 +458,9 @@ class Wpbrowser extends Bootstrap
             } while (! empty($plugin));
         }
 
-        $installationData['plugins'] = array_filter($installationData['plugins']);
+        $installationData['plugins'] = array_map('trim', array_filter($installationData['plugins']));
         if (! empty($installationData['mainPlugin'])) {
-            $installationData['plugins'] = $installationData['mainPlugin'];
+            $installationData['plugins'][] = $installationData['mainPlugin'];
         }
 
         return $installationData;
