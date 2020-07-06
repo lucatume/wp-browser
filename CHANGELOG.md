@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- typos and spacing in documentation (thanks @cliffordp)
+
 ## [2.6.3] 2020-06-30;
 
 ### Fixed
