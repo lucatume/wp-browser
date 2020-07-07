@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - typos and spacing in documentation (thanks @cliffordp)
+- environment file parsing for empty values, fixes #427
 
 ## [2.6.3] 2020-06-30;
 

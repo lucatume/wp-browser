@@ -46,7 +46,11 @@ function envFile($file)
                 return $lines;
             }
 
-            $value = ! empty($m['q_value']) ? $m['q_value'] : trim($m['value']);
+            if (! empty($m['q_value'])) {
+                $value = $m['q_value'];
+            } else {
+                $value = isset($m['value']) ? trim($m['value'], ' \'"') : '';
+            }
             // Replace escaped double quotes.
             $value = str_replace('\\"', '"', $value);
 

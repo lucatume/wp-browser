@@ -119,4 +119,20 @@ class envTest extends \Codeception\Test\Unit
         $this->assertEquals('89', getenv('TEST_ENV_VAR'));
         $this->assertEquals('lorem', getenv('TEST_ENV_VAR_2'));
     }
+
+    /**
+     * It should handle empty fields correctly
+     *
+     * @test
+     */
+    public function should_handle_empty_fields_correctly()
+    {
+        $envFile = codecept_data_dir('envFiles/testEnvFile8.env');
+
+        loadEnvMap(envFile($envFile), true);
+
+        $this->assertEquals('', getenv('TEST_EMPTY_FIELD_W_DOUBLE_QUOTES'));
+        $this->assertEquals('', getenv('TEST_EMPTY_FIELD_W_SINGLE_QUOTES'));
+        $this->assertEquals('', getenv('TEST_EMPTY_FIELD_WO_QUOTES'));
+    }
 }
