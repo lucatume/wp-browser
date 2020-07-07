@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.4] 2020-07-07;
+
 ### Fixed
 
 - typos and spacing in documentation (thanks @cliffordp)
@@ -1450,4 +1452,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.1]: https://github.com/lucatume/wp-browser/compare/2.6.0...2.6.1
 [2.6.2]: https://github.com/lucatume/wp-browser/compare/2.6.1...2.6.2
 [2.6.3]: https://github.com/lucatume/wp-browser/compare/2.6.2...2.6.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.3...HEAD
+[2.6.4]: https://github.com/lucatume/wp-browser/compare/2.6.3...2.6.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.4...HEAD
