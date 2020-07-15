@@ -776,7 +776,7 @@ class WPLoader extends Module
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
      *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object factories.
+     * @return \tad\WPBrowser\Module\WPLoader\FactoryStore A factory store, proxy to get hold of the Core suite object factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
