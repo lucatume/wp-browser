@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.5] 2020-07-16;
+
+### Fixed
+
+- return type of `WPLoader::factory` method to ensure IDE type-hinting will work correctly (thanks @Luc45)
+
 ## [2.6.4] 2020-07-07;
 
 ### Fixed
@@ -1453,4 +1459,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.2]: https://github.com/lucatume/wp-browser/compare/2.6.1...2.6.2
 [2.6.3]: https://github.com/lucatume/wp-browser/compare/2.6.2...2.6.3
 [2.6.4]: https://github.com/lucatume/wp-browser/compare/2.6.3...2.6.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.4...HEAD
+[2.6.5]: https://github.com/lucatume/wp-browser/compare/2.6.4...2.6.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.5...HEAD
