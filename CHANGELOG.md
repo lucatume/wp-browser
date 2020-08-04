@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.6] 2020-08-04;
+
 ### Fixed
 
 - URL replacement function in `WPDb` module that would incorrectly handling the replacement of `locahost:port` URLs, fixes #430
@@ -1464,4 +1466,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.3]: https://github.com/lucatume/wp-browser/compare/2.6.2...2.6.3
 [2.6.4]: https://github.com/lucatume/wp-browser/compare/2.6.3...2.6.4
 [2.6.5]: https://github.com/lucatume/wp-browser/compare/2.6.4...2.6.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.5...HEAD
+[2.6.6]: https://github.com/lucatume/wp-browser/compare/2.6.5...2.6.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.6...HEAD
