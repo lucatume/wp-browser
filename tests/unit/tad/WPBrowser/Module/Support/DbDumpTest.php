@@ -303,4 +303,24 @@ SQL;
             $this->assertEquals($expectedLine, $replaced, 'Error at line number ' . $lineNumber);
         }
     }
+
+    /**
+     * It should correctly replace localhost host address with pretty URL
+     *
+     * @test
+     */
+    public function should_correctly_replace_localhost_host_address_with_pretty_url()
+    {
+        $inputFile = codecept_data_dir('dump-test/url-replacement-test-01.sql');
+        $sql         = file_get_contents($inputFile);
+
+        $dbDump      = $this->make_instance();
+        $dbDump->setUrl('http://some-nice-host-name');
+        $originalUrl = $dbDump->getOriginalUrlFromSqlString($sql);
+
+        $this->assertEquals('http://localhost:5100', $originalUrl);
+
+        $replacedSql = $dbDump->replaceSiteDomainInSqlString($sql);
+        $this->assertEquals('http://some-nice-host-name', $dbDump->getOriginalUrlFromSqlString($replacedSql));
+    }
 }

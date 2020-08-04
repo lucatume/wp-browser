@@ -103,8 +103,14 @@ class DbDump
         }
 
         $originalFrags = parse_url($this->originalUrl);
-        $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path']));
-        $originalHostAndPath = rtrim(implode('', array_merge(['host' => '', 'path' => ''], $originalFrags)), '/');
+        $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path','port']));
+        if (!empty($originalFrags['port'])) {
+            $originalFrags['port'] = ':' . $originalFrags['port'];
+        }
+        $originalHostAndPath = rtrim(
+            implode('', array_merge(['host' => '', 'path' => '', 'port' => ''], $originalFrags)),
+            '/'
+        );
         $replaceScheme = parse_url($this->url, PHP_URL_SCHEME);
         $replaceHost = parse_url($this->url, PHP_URL_HOST);
 

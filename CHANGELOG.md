@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- URL replacement function in `WPDb` module that would incorrectly handling the replacement of `locahost:port` URLs, fixes #430
+
 ## [2.6.5] 2020-07-16;
 
 ### Fixed
