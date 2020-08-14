@@ -4141,4 +4141,47 @@ class WPDb extends Db
          */
         $this->doAction(static::EVENT_AFTER_DB_PREPARE, $this, $this->config);
     }
+
+    /**
+     * Assigns the specified attachment ID as thumbnail (featured image) to a post.
+     *
+     * @example
+     * ```php
+     * $attachmentId = $I->haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+     * $postId = $I->havePostInDatabase();
+     * $I->havePostThumbnailInDatabase($postId, $attachmentId);
+     * ```
+     *
+     * @param int $postId      The post ID to assign the thumbnail (featured image) to.
+     * @param int $thumbnailId The post ID of the attachment.
+     *
+     * @return int The inserted meta id.
+     */
+    public function havePostThumbnailInDatabase($postId, $thumbnailId)
+    {
+        $this->dontHavePostThumbnailInDatabase($postId);
+        return $this->havePostmetaInDatabase($postId, '_thumbnail_id', (int) $thumbnailId);
+    }
+
+    /**
+     * Remove the thumbnail (featured image) from a post, if any.
+     *
+     * Please note: the method will NOT remove the attachment post, post meta and file.
+     *
+     * @example
+     * ```php
+     * $attachmentId = $I->haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+     * $postId = $I->havePostInDatabase();
+     * // Attach the thumbnail to the post.
+     * $I->havePostThumbnailInDatabase($postId, $attachmentId);
+     * // Remove the thumbnail from the post.
+     * $I->dontHavePostThumbnailInDatabase($postId);
+     * ```
+     *
+     * @param int $postId The post ID to remove the thumbnail (featured image) from.
+     */
+    public function dontHavePostThumbnailInDatabase($postId)
+    {
+        $this->dontHavePostMetaInDatabase([ 'post_id' => $postId, 'meta_key' => '_thumbnail_id' ]);
+    }
 }

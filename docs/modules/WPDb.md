@@ -210,6 +210,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 			<a href="#donthavepostmetaindatabase">dontHavePostMetaInDatabase</a>
 		</li>
 		<li>
+			<a href="#donthavepostthumbnailindatabase">dontHavePostThumbnailInDatabase</a>
+		</li>
+		<li>
 			<a href="#donthavesiteoptionindatabase">dontHaveSiteOptionInDatabase</a>
 		</li>
 		<li>
@@ -454,6 +457,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 		</li>
 		<li>
 			<a href="#havepostindatabase">havePostInDatabase</a>
+		</li>
+		<li>
+			<a href="#havepostthumbnailindatabase">havePostThumbnailInDatabase</a>
 		</li>
 		<li>
 			<a href="#havepostmetaindatabase">havePostmetaInDatabase</a>
@@ -749,6 +755,25 @@ $postId = $I->havePostInDatabase(['meta_input' => ['rating' => 23]]);
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+  
+
+<h3>dontHavePostThumbnailInDatabase</h3>
+
+<hr>
+
+<p>Remove the thumbnail (featured image) from a post, if any. Please note: the method will NOT remove the attachment post, post meta and file.</p>
+```php
+$attachmentId = $I->haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+  $postId = $I->havePostInDatabase();
+  // Attach the thumbnail to the post.
+  $I->havePostThumbnailInDatabase($postId, $attachmentId);
+  // Remove the thumbnail from the post.
+  $I->dontHavePostThumbnailInDatabase($postId);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID to remove the thumbnail (featured image) from.</li></ul>
   
 
 <h3>dontHaveSiteOptionInDatabase</h3>
@@ -2102,6 +2127,23 @@ $I->haveOptionInDatabase('posts_per_page', 23);
 <h4>Parameters</h4>
 <ul>
 <li><code>array</code> <strong>$data</strong> - An associative array of post data to override default and random generated values.</li></ul>
+  
+
+<h3>havePostThumbnailInDatabase</h3>
+
+<hr>
+
+<p>Assigns the specified attachment ID as thumbnail (featured image) to a post.</p>
+```php
+$attachmentId = $I->haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+  $postId = $I->havePostInDatabase();
+  $I->havePostThumbnailInDatabase($postId, $attachmentId);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID to assign the thumbnail (featured image) to.</li>
+<li><code>int</code> <strong>$thumbnailId</strong> - The post ID of the attachment.</li></ul>
   
 
 <h3>havePostmetaInDatabase</h3>
