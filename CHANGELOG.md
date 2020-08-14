@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.7] 2020-08-14;
+
+### Added
+
+- the `WPDb::havePostThumbnailInDatabase` and `WPDb::dontHavePostThumbnailInDatabase` methods, fixes #434
+
 ## [2.6.6] 2020-08-04;
 
 ### Fixed
@@ -1467,4 +1473,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.4]: https://github.com/lucatume/wp-browser/compare/2.6.3...2.6.4
 [2.6.5]: https://github.com/lucatume/wp-browser/compare/2.6.4...2.6.5
 [2.6.6]: https://github.com/lucatume/wp-browser/compare/2.6.5...2.6.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.6...HEAD
+[2.6.7]: https://github.com/lucatume/wp-browser/compare/2.6.6...2.6.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.7...HEAD
