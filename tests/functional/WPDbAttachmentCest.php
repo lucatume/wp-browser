@@ -369,4 +369,27 @@ class WPDbAttachmentCest
             $I->dontSeeUploadedFileFound($sizeData['file']);
         }
     }
+
+    /**
+     * It should allow having a post thumbnail in the database
+     *
+     * @test
+     */
+    public function should_allow_having_a_post_thumbnail_in_the_database(FunctionalTester $I)
+    {
+        $postId      = $I->havePostInDatabase();
+        $file        = codecept_data_dir('attachments/kitten.jpeg');
+        $thumbnailId = $I->haveAttachmentInDatabase($file);
+        $I->havePostThumbnailInDatabase($postId, $thumbnailId);
+
+        $I->seeUploadedFileFound('kitten.jpeg', 'now');
+        $I->seeAttachmentInDatabase(['ID' => $thumbnailId]);
+        $I->seePostMetaInDatabase([ 'post_id'    => $postId, 'meta_key'   => '_thumbnail_id', 'meta_value' => $thumbnailId ]);
+
+        $I->dontHavePostThumbnailInDatabase($postId);
+
+        $I->seeUploadedFileFound('kitten.jpeg', 'now');
+        $I->seeAttachmentInDatabase(['ID' => $thumbnailId]);
+        $I->dontSeePostMetaInDatabase([ 'post_id'    => $postId, 'meta_key'   => '_thumbnail_id', 'meta_value' => $thumbnailId ]);
+    }
 }
