@@ -155,8 +155,6 @@ function process($cmd = [], $cwd = null, $env = null)
  * @param string|array $command The command line to parse, if in array format it will not be modified.
  *
  * @return array The parsed command line, in array format. Untouched if originally already an array.
- *
- * @uses \Symfony\Component\Process\Process To parse and escape the command line.
  */
 function buildCommandline($command)
 {
