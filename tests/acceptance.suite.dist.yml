@@ -11,6 +11,7 @@ modules:
         - WPDb
         - AcceptanceHelper
         - WPFilesystem
+        - Asserts
     config:
         WPBrowser:
             url: '%WORDPRESS_URL%'

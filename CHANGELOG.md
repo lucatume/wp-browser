@@ -4,7 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- the `WPDb::importSql` method to allow importing custom SQL strings in the database during tests
+
 ## [2.6.8] 2020-08-19;
+
 ### Fixed
 
 - avoid deprecation notices when loading `MockPHPMailer`, fixes #436

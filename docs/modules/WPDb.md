@@ -495,6 +495,9 @@ This will avoid issues where the `WPLoader` module could `exit`, terminating the
 			<a href="#haveusermetaindatabase">haveUserMetaInDatabase</a>
 		</li>
 		<li>
+			<a href="#importsql">importSql</a>
+		</li>
+		<li>
 			<a href="#importsqldumpfile">importSqlDumpFile</a>
 		</li>
 		<li>
@@ -2392,6 +2395,28 @@ $userId = $I->haveUserInDatabase('luca', 'editor');
 <li><code>int</code> <strong>$userId</strong> - The user ID.</li>
 <li><code>string</code> <strong>$meta_key</strong> - The meta key to set the value for.</li>
 <li><code>mixed</code> <strong>$meta_value</strong> - Either a single value or an array of values; objects will be serialized while array of</li></ul>
+  
+
+<h3>importSql</h3>
+
+<hr>
+
+<p>Loads a set SQL code lines in the current database.</p>
+```php
+// Import a SQL string.
+  $I->importSql([$sqlString]);
+  // Import a set of SQL strings.
+  $I->importSql($sqlStrings);
+  // Import a prepared set of SQL strings.
+  $preparedSqlStrings = array_map(function($line){
+  return str_replace('{{date}}', date('Y-m-d H:i:s'), $line);
+  }, $sqlTemplate);
+  $I->importSql($preparedSqlStrings);
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>array</code> <strong>$sql</strong> - The SQL strings to load.</li></ul>
   
 
 <h3>importSqlDumpFile</h3>
