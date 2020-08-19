@@ -4184,4 +4184,27 @@ class WPDb extends Db
     {
         $this->dontHavePostMetaInDatabase([ 'post_id' => $postId, 'meta_key' => '_thumbnail_id' ]);
     }
+
+    /**
+     * Loads a set SQL code lines in the current database.
+     *
+     * @example
+     * ```php
+     * // Import a SQL string.
+     * $I->importSql([$sqlString]);
+     * // Import a set of SQL strings.
+     * $I->importSql($sqlStrings);
+     * // Import a prepared set of SQL strings.
+     * $preparedSqlStrings = array_map(function($line){
+     *     return str_replace('{{date}}', date('Y-m-d H:i:s'), $line);
+     * }, $sqlTemplate);
+     * $I->importSql($preparedSqlStrings);
+     * ```
+     *
+     * @param array $sql The SQL strings to load.
+     */
+    public function importSql(array $sql)
+    {
+        $this->_getDriver()->load($sql);
+    }
 }
