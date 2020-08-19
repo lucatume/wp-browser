@@ -71,7 +71,6 @@ services:
     user: ${DOCKER_RUN_USER:-}:${DOCKER_RUN_GROUP:-}
     networks:
       test:
-        ipv4_address: 172.${TEST_SUBNET:-28}.1.1
     # Make the WordPress files source directory world writeable, readable and executable, then exit.
     entrypoint: [ "chmod", "-R" ,"a+rwx", "/usr/src/wordpress" ]
     volumes:
@@ -215,3 +214,8 @@ services:
     volumes:
       - .:/project:cached
       - wordpress:/project/vendor/wordpress/wordpress:cached
+
+  cli :
+    image: wordpress:cli
+    volumes:
+      - ./vendor/wordpress/wordpress:/var/www/html

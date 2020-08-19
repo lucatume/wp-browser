@@ -1,5 +1,16 @@
 <?php
-require_once( ABSPATH . '/wp-includes/class-phpmailer.php' );
+// phpcs:disable
+if ( file_exists( ABSPATH . '/wp-includes/PHPMailer/PHPMailer.php' ) ) {
+	// WordPress >= 5.5, replicate the aliasing logic here.
+	require_once ABSPATH . '/wp-includes/PHPMailer/PHPMailer.php';
+	require_once ABSPATH . '/wp-includes/PHPMailer/Exception.php';
+	class_alias( PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer' );
+	class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
+} else {
+	// WordPress < 5.5, use the pre-5.5 class name.
+	require_once( ABSPATH . '/wp-includes/class-phpmailer.php' );
+}
+// phpcs:enable
 
 class MockPHPMailer extends PHPMailer {
 	var $mock_sent = array();

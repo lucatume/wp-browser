@@ -10,9 +10,6 @@ PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
 .SILENT:
 
-# Define what targets should always run.
-.PHONY: docker_pull lint sniff fix fix_n_sniff phpstan pre_commit clean docs check_exports build_suites test debug major minor patch
-
 # PUll all the Docker images this repository will use in building images or running processes.
 docker_pull:
 	images=( \
@@ -31,6 +28,7 @@ docker_pull:
 	for image in "$${images[@]}"; do \
 		docker pull "$$image"; \
 	done;
+.PHONY: docker_pull
 
 # Lint the project source files to make sure they are PHP 5.6 compatible.
 lint:
@@ -38,6 +36,7 @@ lint:
 		--colors \
 		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
 		/project/src
+.PHONY: lint
 
 # Use the PHP Code Sniffer container to sniff the relevant source files.
 sniff:
@@ -48,6 +47,7 @@ sniff:
 		--standard=phpcs.xml $(SRC) \
 		--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
 		src
+.PHONY: sniff
 
 # Use the PHP Code Beautifier container to fix the source and tests code.
 fix:
@@ -58,15 +58,18 @@ fix:
 		--standard=phpcs.xml $(SRC) \
 		--ignore=src/data,src/includes,src/tad/scripts,_build \
 		src tests
+.PHONY: fix
 
 # Fix the PHP code, then sniff it.
 fix_n_sniff: fix sniff
+.PHONY: fix_n_sniff
 
 # Use phpstan container to analyze the source code.
 # Configuration will be read from the phpstan.neon.dist file.
 PHPSTAN_LEVEL?=2
 phpstan:
 	docker run --rm -v ${PWD}:/project lucatume/wpstan analyze -l ${PHPSTAN_LEVEL}
+.PHONY: phpstan
 
 # Clean the project Docker containers, volumes and networks.
 clean:
@@ -84,6 +87,7 @@ clean:
 		|| echo "No networks found".
 	echo "Removing .bak files." && rm -f *.bak
 	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output && echo "*" > tests/_output/.gitignore
+.PHONY: clean
 
 # Produces the Modules documentation in the docs/modules folder.
 docs: composer.lock src/Codeception/Module
@@ -114,10 +118,12 @@ docs: composer.lock src/Codeception/Module
 # Prints a list of files that will be exported from the project on package pull.
 check_exports:
 	bash ./_build/check_exports.sh
+.PHONY: check_exports
 
 build_suites:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=27 \
 		docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
+.PHONY: build_suites
 
 test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
@@ -171,24 +177,31 @@ test:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
 		docker-compose --project-name=${PROJECT_NAME}_isolated \
 		run --rm ccf run isolated
+.PHONY: test
 
 ready:
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
+.PHONY: ready
 
 major:
 	_build/release.php major
+.PHONY: major
 
 minor:
 	_build/release.php minor
+.PHONY: minor
 
 patch:
 	_build/release.php patch
+.PHONY: patch
 
 composer_hash_bump:
 	sh "${PWD}/_build/composer-hash.sh"
+.PHONY: composer_hash_bump
 
 # Run a set of checks on the code before commit.
 pre_commit: lint fix sniff docs
+.PHONY: pre_commit
 
 test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
@@ -239,6 +252,7 @@ test_56:
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
 		docker-compose --project-name=${PROJECT_NAME}_isolated \
 		run --rm cc56 run isolated
+.PHONY: test_56
 
 # A variable target to debug issues in a PHP 5.6 environment.
 debug:
@@ -247,6 +261,7 @@ debug:
 		-f docker-compose.debug.yml \
 		run --rm \
 		cc56 shell
+.PHONY: debug
 
 # A variable target to debug issues in a PHP 7.2 environment.
 debug_7:
@@ -255,6 +270,7 @@ debug_7:
 		-f docker-compose.debug.yml \
 		run --rm \
 		codeception shell
+.PHONY: debug_7
 
 # Populate the vendor/wordpres/wordpress directory.
 setup_wp:
@@ -262,6 +278,16 @@ setup_wp:
 		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
 		-f docker-compose.debug.yml \
 		up -d wordpress
+.PHONY: setup_wp
+
+# Remove the current WordPress installation, if any, and set it up again.
+refresh_wp:
+	rm -rf vendor/wordpress/wordpress && \
+		_build/dc.sh --project-name=${PROJECT_NAME}_refresh_wp \
+		-f docker-compose.yml \
+		run --rm cli wp core download
+.PHONY: refresh_wp
 
 build_debug:
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
+.PHONY: build_debug

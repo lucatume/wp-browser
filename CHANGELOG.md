@@ -3,6 +3,9 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+### Fixed
+
+- avoid deprecation notices when loading `MockPHPMailer`, fixes #436
 
 ## [2.6.7] 2020-08-14;
 
