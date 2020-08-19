@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.9] 2020-08-19;
+
 ### Added
 
 - the `WPDb::importSql` method to allow importing custom SQL strings in the database during tests
@@ -1485,4 +1487,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.6]: https://github.com/lucatume/wp-browser/compare/2.6.5...2.6.6
 [2.6.7]: https://github.com/lucatume/wp-browser/compare/2.6.6...2.6.7
 [2.6.8]: https://github.com/lucatume/wp-browser/compare/2.6.7...2.6.8
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.8...HEAD
+[2.6.9]: https://github.com/lucatume/wp-browser/compare/2.6.8...2.6.9
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.9...HEAD
