@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [2.6.8] 2020-08-19;
 ### Fixed
 
 - avoid deprecation notices when loading `MockPHPMailer`, fixes #436
@@ -1477,4 +1479,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.5]: https://github.com/lucatume/wp-browser/compare/2.6.4...2.6.5
 [2.6.6]: https://github.com/lucatume/wp-browser/compare/2.6.5...2.6.6
 [2.6.7]: https://github.com/lucatume/wp-browser/compare/2.6.6...2.6.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.7...HEAD
+[2.6.8]: https://github.com/lucatume/wp-browser/compare/2.6.7...2.6.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.8...HEAD
