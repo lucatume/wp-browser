@@ -35,12 +35,17 @@ class WPDbImportSqlCest
      */
     public function should_allow_importing_multiple_sql_strings(AcceptanceTester  $I)
     {
-        $sqlString = "INSERT INTO wp_postmeta SET post_id = 89, meta_key = '_from_dump_2', meta_value='test test test';";
+        $sqlStrings = [
+            "INSERT INTO wp_postmeta SET post_id = 89, meta_key = '_from_dump_23', meta_value='test test test';",
+            "INSERT INTO wp_postmeta SET post_id = 2389, meta_key = '_from_dump_2389', meta_value='test test test';",
+            "INSERT INTO wp_postmeta SET post_id = 89, meta_key = '_from_dump_89', meta_value='test test test';",
+        ];
 
-        $I->importSql([ $sqlString ]);
+        $I->importSql($sqlStrings);
 
-        $I->dontSeePostMetaInDatabase([ 'post_id' => 23, 'meta_key' => '_from_dump', 'meta_value' => 'test test test' ]);
-        $I->seePostMetaInDatabase([ 'post_id' => 89, 'meta_key' => '_from_dump_2', 'meta_value' => 'test test test' ]);
+        $I->dontSeePostMetaInDatabase([ 'post_id' => 23, 'meta_key' => '_from_dump_23', 'meta_value' => 'test test test' ]);
+        $I->seePostMetaInDatabase([ 'post_id' => 2389, 'meta_key' => '_from_dump_2389', 'meta_value' => 'test test test' ]);
+        $I->seePostMetaInDatabase([ 'post_id' => 89, 'meta_key' => '_from_dump_89', 'meta_value' => 'test test test' ]);
     }
 
     /**
