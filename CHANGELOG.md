@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- remove version block on `symfony/filesystem` dependency, fixes #440
+
 ## [2.6.9] 2020-08-19;
 
 ### Added
