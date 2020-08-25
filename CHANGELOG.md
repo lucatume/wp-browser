@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.10] 2020-08-25;
+
 ### Fixed
 
 - remove version block on `symfony/filesystem` dependency, fixes #440
@@ -1492,4 +1494,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.7]: https://github.com/lucatume/wp-browser/compare/2.6.6...2.6.7
 [2.6.8]: https://github.com/lucatume/wp-browser/compare/2.6.7...2.6.8
 [2.6.9]: https://github.com/lucatume/wp-browser/compare/2.6.8...2.6.9
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.9...HEAD
+[2.6.10]: https://github.com/lucatume/wp-browser/compare/2.6.9...2.6.10
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.10...HEAD
