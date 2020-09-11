@@ -5,7 +5,7 @@ There are many ways you can contribute to the project and most of them do not in
  
 ## Reporting an issue  
  
-It can be done [from here](https://github.com/lucatume/wp-browser/issues/new).  
+It can be done [from here](https://github.com/lucatume/wp-browser/issues/new/choose).  
 
 Whenever you find yourself struggling with something, anything, while using `wp-browser`, please report an issue.  
 
