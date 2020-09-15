@@ -116,6 +116,10 @@ class filesystemTest extends \Codeception\Test\Unit
 
         rrmdir($root);
 
-        $this->assertDirectoryNotExists($root);
+        if (method_exists($this, 'assertDirectoryDoesNotExist')) {
+            $this->assertDirectoryDoesNotExist($root);
+        } else {
+            $this->assertDirectoryNotExists($root);
+        }
     }
 }
