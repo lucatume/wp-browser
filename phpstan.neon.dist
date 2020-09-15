@@ -8,6 +8,12 @@ parameters:
   paths:
     - %currentWorkingDirectory%/src/Codeception/
     - %currentWorkingDirectory%/src/tad/
+  scanDirectories:
+    - %currentWorkingDirectory%/vendor/codeception/codeception
+    - %currentWorkingDirectory%/vendor/antecedent/patchwork
+    - %currentWorkingDirectory%/src/includes/factory
+  bootstrapFiles:
+    - %currentWorkingDirectory%/vendor/codeception/phpunit-wrapper/src/shim.php
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
