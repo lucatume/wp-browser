@@ -13,11 +13,19 @@ namespace tad\WPBrowser;
  * Differently from the `recurseRemoveDir` function, this one wil not stop on error.
  *
  * @param string $src The absolute path to the directory to remove.
+ *
+ * @return bool Whether the directory, and all its contents, were correctly removed or not.
  */
 function rrmdir($src)
 {
-    if (! file_exists($src)) {
-        return;
+    if (is_file($src) || is_link($src)) {
+        if (! unlink($src)) {
+            return false;
+        }
+    }
+
+    if (! is_dir($src)) {
+        return true;
     }
 
     $dir = opendir($src);
@@ -25,7 +33,9 @@ function rrmdir($src)
         if (( $file !== '.' ) && ( $file !== '..' )) {
             $full = $src . '/' . $file;
             if (is_dir($full)) {
-                rrmdir($full);
+                if (!rrmdir($full)) {
+                    return false;
+                }
             } else {
                 unlink($full);
             }
@@ -33,6 +43,8 @@ function rrmdir($src)
     }
     closedir($dir);
     rmdir($src);
+
+    return true;
 }
 
 /**
@@ -161,9 +173,10 @@ function recurseCopy($source, $destination)
     return true;
 }
 
-
 /**
  * Recursively deletes a target directory.
+ *
+ * This function is just an alias of the `tad\WPBrowser\rrmdir` one.
  *
  * @param string $target The absolute path to a directory to remove.
  *
@@ -171,22 +184,7 @@ function recurseCopy($source, $destination)
  */
 function recurseRemoveDir($target)
 {
-    if (! file_exists($target)) {
-        return true;
-    }
-
-    $iterator = new \FilesystemIterator($target, \FilesystemIterator::SKIP_DOTS);
-    foreach ($iterator as $file) {
-        if (is_dir($file->getPathname())) {
-            if (! recurseRemoveDir($file->getPathname())) {
-                return false;
-            }
-        } elseif (! unlink($file->getPathname())) {
-            return false;
-        }
-    }
-
-    return true;
+    return rrmdir($target);
 }
 
 /**
@@ -235,4 +233,40 @@ function realpathish($path)
     }
 
     return file_exists($path) ? $path : false;
+}
+
+/**
+ * Recursively Create a directory structure with files and sub-directories starting at a root path.
+ *
+ * @param string                            $pathname The path to the root directory, if not existing, it will be
+ *                                                    recursively created.
+ * @param string|array<string,array|string> $contents Either a directory structure to produce or the contents of a file
+ *                                                    to create.
+ * @param int                               $mode     The filemode that will be used to create each directory in the
+ *                                                    directory tree.
+ *
+ * @return void This function does not return any value.
+ *
+ * @throws \RuntimeException If the creation of a directory or file fails.
+ */
+function rmkdir($pathname, $contents, $mode = 0777)
+{
+    if (is_array($contents)) {
+        if (! is_dir($pathname) && ! mkdir($pathname, $mode, true) && ! is_dir($pathname)) {
+            throw new \RuntimeException("Could not create directory {$pathname}");
+        }
+        foreach ($contents as $subPath => $subContents) {
+            rmkdir(
+                rtrim($pathname, '\\/') . '/' . ltrim($subPath, '\\/'),
+                $subContents,
+                $mode
+            );
+        }
+
+        return;
+    }
+
+    if (! file_put_contents($pathname, $contents)) {
+        throw new \RuntimeException("Could not put file contents in file {$pathname}");
+    }
 }
