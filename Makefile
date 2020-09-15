@@ -255,22 +255,22 @@ test_56:
 .PHONY: test_56
 
 # A variable target to debug issues in a PHP 5.6 environment.
-debug:
+dev:
 	TEST_SUBNET=105 \
-		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
+		_build/dc.sh --project-name=${PROJECT_NAME}_dev \
 		-f docker-compose.debug.yml \
 		run --rm \
 		cc56 shell
-.PHONY: debug
+.PHONY: dev
 
 # A variable target to debug issues in a PHP 7.2 environment.
-debug_7:
+dev_7:
 	TEST_SUBNET=189 \
-		_build/dc.sh --project-name=${PROJECT_NAME}_debug \
+		_build/dc.sh --project-name=${PROJECT_NAME}_dev_7 \
 		-f docker-compose.debug.yml \
 		run --rm \
 		codeception shell
-.PHONY: debug_7
+.PHONY: dev_7
 
 # Populate the vendor/wordpres/wordpress directory.
 setup_wp:
