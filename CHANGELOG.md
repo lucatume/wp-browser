@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- an issue where the `recurseRemoveDir` function would leave empty directories behind, fixes #447
+
+### Added
+
+- the `rmkdir` function to scaffold nested directory structures and files
+
 ## [2.6.10] 2020-08-25;
 
 ### Fixed
