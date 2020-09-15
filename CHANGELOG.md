@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- an issue where the `recurseRemoveDir` function would leave empty directories behind, fixes #445
+- an issue where the `recurseRemoveDir` function would leave empty directories behind, fixes #447
 
 ### Added
 
