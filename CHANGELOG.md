@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.11] 2020-09-15;
+
 ### Fixed
 
 - an issue where the `recurseRemoveDir` function would leave empty directories behind, fixes #447
