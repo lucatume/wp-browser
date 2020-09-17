@@ -12,7 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- the `rmkdir` function to scaffold nested directory structures and files
+- the `mkdirp` function to scaffold nested directory structures and files
 
 ## [2.6.10] 2020-08-25;
 
