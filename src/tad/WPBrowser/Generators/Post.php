@@ -9,28 +9,14 @@
      */
 class Post
 {
-
     /**
-     * Generates a WordPress page entry.
+     * Returns a set of default values for the creation of a post.
      *
-     * @param  int $ID The post ID to use.
-     * @param  string $url The site url.
+     * @param  int $id The post ID to use.
+     * @param  string $url The site URL.
      *
-     * @param array $data
-     *
-     * @return array Key/value pairs to be used to insert the page in the database.
+     * @return array<string,string|int> A map of the post creation default values.
      */
-//      public static function makePage(
-//          $ID,
-//          $url = 'http://www.example.com',
-//          array $data = array()
-//      ) {
-//          $defaults = self::getDefaults( $ID, 'page', $url );
-//          self::$count ++;
-//
-//          return array_merge( $defaults, $data );
-//      }
-
     protected static function getDefaults($id, $url)
     {
         $title    = self::generateTitle($id);
