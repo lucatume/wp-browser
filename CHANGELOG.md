@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- rename the `rmkdir` function to `mkdirp` for clarity and resemblance with the WordPress one.
+
 ## [2.6.11] 2020-09-15;
 
 ### Fixed
