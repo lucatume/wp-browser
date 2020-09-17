@@ -42,7 +42,7 @@ class User
      *
      * @param string|int $role The input role as a slug, e.g. `subscriber`, or as an integer for identity.
      *
-     * @return string The corresponding user level.
+     * @return int The corresponding user level, an integer.
      */
     public static function getLevelForRole($role = 'subscriber')
     {

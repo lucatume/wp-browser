@@ -10,11 +10,10 @@ namespace tad\WPBrowser\Events;
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Exception\TestRuntimeException;
-use Symfony\Component\Console\Application as SymfonyApp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcherInterface;
 use function tad\WPBrowser\readPrivateProperty;
 
 /**
@@ -33,7 +32,7 @@ class EventDispatcherAdapter
     /**
      * The shared instance of the adapter.
      *
-     * @var static
+     * @var static|null
      */
     protected static $sharedInstance;
 
@@ -86,16 +85,17 @@ class EventDispatcherAdapter
 
     /**
      * The wrapped Symfony Event Dispatcher instance.
-     * @var SymfonyEventDispatcher
+     *
+     * @var SymfonyEventDispatcherInterface
      */
     protected $eventDispatcher;
 
     /**
      * EventDispatcherAdapter constructor.
      *
-     * @param EventDispatcherInterface $eventDispatcher The Symfony Event Dispatcher instance to wrap.
+     * @param SymfonyEventDispatcherInterface $eventDispatcher The Symfony Event Dispatcher instance to wrap.
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(SymfonyEventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -104,7 +104,7 @@ class EventDispatcherAdapter
      * Returns the shared instance of the event dispatcher that will be shared by all classes dispatching and listening
      * for events.
      *
-     * @return static The shared instance of this class.
+     * @return EventDispatcherAdapter The shared instance of this class.
      */
     public static function getEventDispatcher()
     {
@@ -197,9 +197,9 @@ class EventDispatcherAdapter
     /**
      * Sets the event dispatcher the shared instance should use.
      *
-     * @param EventDispatcherInterface $eventDispatcher The event dispatcher to set on the shared instance.
+     * @param SymfonyEventDispatcherInterface $eventDispatcher The event dispatcher to set on the shared instance.
      */
-    public static function setWrappedEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    public static function setWrappedEventDispatcher(SymfonyEventDispatcherInterface $eventDispatcher)
     {
         if (static::$sharedInstance === null) {
             static::$sharedInstance = new self($eventDispatcher);
@@ -376,7 +376,7 @@ OUT;
     /**
      * Returns the original Symfony Event Dispatcher wrapped by the adapter.
      *
-     * @return SymfonyEventDispatcher The original Symfony Event Dispatcher wrapped by the adapter.
+     * @return SymfonyEventDispatcherInterface The original Symfony Event Dispatcher wrapped by the adapter.
      */
     public function getOriginalEventDispatcher()
     {

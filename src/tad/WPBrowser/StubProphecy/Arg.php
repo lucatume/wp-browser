@@ -57,7 +57,7 @@ class Arg implements ArgInterface
     /**
      * Returns an argument expectation for anything.
      *
-     * @return static The build argument expectation.
+     * @return Arg The build argument expectation.
      */
     public static function any()
     {
@@ -81,7 +81,7 @@ class Arg implements ArgInterface
      * @param callable $callback The callback that should be used to assert the argument expectation. It should return
      *                           a boolean value and throw a message on failure.
      *
-     * @return static The build argument expectation.
+     * @return Arg The build argument expectation.
      */
     public static function that(callable $callback)
     {

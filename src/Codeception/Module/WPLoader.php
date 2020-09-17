@@ -124,7 +124,7 @@ class WPLoader extends Module
      * called after before any test case runs.
      *
      *
-     * @var array
+     * @var array|Configuration
      */
     protected $config
         = [
