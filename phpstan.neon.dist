@@ -9,11 +9,20 @@ parameters:
     - %currentWorkingDirectory%/src/Codeception/
     - %currentWorkingDirectory%/src/tad/
   scanDirectories:
-    - %currentWorkingDirectory%/vendor/codeception/codeception
+    - %currentWorkingDirectory%/src/includes
+    # Patchwork bootstrap and autoloading.
     - %currentWorkingDirectory%/vendor/antecedent/patchwork
-    - %currentWorkingDirectory%/src/includes/factory
+    # Codeception bootstrap and autoloading.
+    - %currentWorkingDirectory%/vendor/codeception/codeception
+    # WP-CLI bootstrap and autoloading.
+    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php
   bootstrapFiles:
+    # PHPUnit aliases.
     - %currentWorkingDirectory%/vendor/codeception/phpunit-wrapper/src/shim.php
+    # AbstractBrowser aliases.
+    - %currentWorkingDirectory%/vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
+    # WP_CLI_Command class definition.
+    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
