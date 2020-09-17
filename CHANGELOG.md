@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- rename the `rmkdir` function to `mkdirp` for clarity and resemblance with the WordPress one.
+
 ## [2.6.11] 2020-09-15;
 
 ### Fixed
@@ -12,7 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- the `rmkdir` function to scaffold nested directory structures and files
+- the `mkdirp` function to scaffold nested directory structures and files
 
 ## [2.6.10] 2020-08-25;
 
