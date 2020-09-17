@@ -12,7 +12,7 @@ trait WploaderTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -23,7 +23,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('create_a_post', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -50,7 +50,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -74,7 +74,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -98,7 +98,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getContentFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -119,13 +119,13 @@ trait WploaderTesterActions
      *
      * @param callable|null $format A callback function to format the arguments debug output; the callback will receive
      *                              the array of arguments as input.
-     * @see \Codeception\Module\WPLoader::startwpfiltersdebug()
+     * @see \Codeception\Module\WPLoader::startWpFiltersDebug()
      */
     public function startwpfiltersdebug($format = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startwpfiltersdebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -147,7 +147,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -175,7 +175,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -203,7 +203,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -229,7 +229,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -255,7 +255,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -277,7 +277,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -300,7 +300,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -329,7 +329,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertCountQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -353,7 +353,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -377,7 +377,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -401,7 +401,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -428,7 +428,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -452,7 +452,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -478,7 +478,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -500,7 +500,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -523,7 +523,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -547,7 +547,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -572,7 +572,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -597,7 +597,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -625,7 +625,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -649,7 +649,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -674,7 +674,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -701,7 +701,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -727,7 +727,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -753,7 +753,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -782,7 +782,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -810,7 +810,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -838,7 +838,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -870,7 +870,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -900,7 +900,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -930,7 +930,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -963,7 +963,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -995,7 +995,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1027,7 +1027,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1064,7 +1064,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1088,7 +1088,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('countQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *

@@ -142,6 +142,7 @@ EOF;
     private function setupClient($siteDomain)
     {
         $this->client = $this->client ?: $this->buildConnector();
+        $this->client->setUrl($this->siteUrl);
         $this->client->setDomain($siteDomain);
         $this->client->setRootFolder($this->config['wpRootFolder']);
         $this->client->followRedirects(true);
