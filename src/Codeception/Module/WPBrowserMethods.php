@@ -8,9 +8,9 @@ use function GuzzleHttp\Psr7\build_query;
 trait WPBrowserMethods
 {
     /**
-     * The plugin screen absolute URL
+     * The plugin screen absolute URL.
      *
-     * @var string
+     * @var null|string
      */
     protected $pluginsPath;
 

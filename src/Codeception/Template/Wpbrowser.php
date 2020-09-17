@@ -856,6 +856,7 @@ EOF;
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */
+        // @phpstan-ignore-next-line
         if (version_compare(Codecept::VERSION, '4.0.0', '>=')) {
             checkComposerDependencies(composerFile(resolvePath('composer.json', $this->workDir)), [
                 'codeception/module-asserts'          => '^1.0',

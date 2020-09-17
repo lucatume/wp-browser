@@ -3,6 +3,7 @@
  * Loads the correct version of the compatible test case depending on the Codeception version.
  */
 
+// @phpstan-ignore-next-line
 if (version_compare(\Codeception\Codecept::VERSION, '3.0.0', '<')) {
     class_alias(
         '\\tad\WPBrowser\\Compat\\Codeception\\Version2\\Unit',

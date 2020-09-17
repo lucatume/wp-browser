@@ -14,11 +14,6 @@ class WpPassword
     protected static $instance;
 
     /**
-     * @var \MikeMcLin\WpPassword\WpPassword
-     */
-    private $wpPassword;
-
-    /**
      * Singleton constructor for the class.
      *
      * @return \MikeMcLin\WpPassword\WpPassword

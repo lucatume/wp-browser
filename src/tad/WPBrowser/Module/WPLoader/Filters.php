@@ -120,7 +120,7 @@ class Filters
         }
 
         if (is_array($callbackFunc)) {
-            if (!count($callbackFunc) === 2
+            if (count($callbackFunc) !== 2
                 || count(array_filter($callbackFunc, 'is_string')) !== 2
             ) {
                 throw new ModuleException(
