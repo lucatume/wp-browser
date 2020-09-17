@@ -733,7 +733,7 @@ EOF;
     /**
      * Returns the default installation data.
      *
-     * @return array<string,string> The template default installation data.
+     * @return array<string,array<string,false>|string> The template default installation data.
      */
     public function getDefaultInstallationData()
     {

@@ -17,19 +17,19 @@ class DbDump
     protected static $urlReplacementCache = [];
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $tablePrefix;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $url;
     /**
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
      *
-     * @var string
+     * @var string|null
      */
     protected $originalUrl;
 
@@ -222,8 +222,8 @@ class DbDump
     /**
      * DbDump constructor.
      *
-     * @param null $url
-     * @param null $tablePrefix
+     * @param string|null $url The URL to replace, `null` to have it inferred.
+     * @param string|null $tablePrefix The table prefix to use.
      */
     public function __construct($url = null, $tablePrefix = null)
     {
@@ -295,17 +295,19 @@ class DbDump
     {
         if ($originalUrl === null) {
             $this->originalUrl = null;
+
             return;
         }
 
         $originalUrl = trim($originalUrl);
-        $originalUrlFrags = parse_url($originalUrl);
-        $originalUrlFrags['scheme'] = isset($originalUrlFrags['scheme']) ? $originalUrlFrags['scheme'] : 'http';
-        $originalUrlFrags['host'] = isset($originalUrlFrags['host']) ? $originalUrlFrags['host'] . '/' : '';
-        $originalUrlFrags['path'] = isset($originalUrlFrags['path']) ? $originalUrlFrags['path'] : '';
-        $originalUrl = $originalUrlFrags['scheme'] . '://'
-            . $originalUrlFrags['host'] .
-            $originalUrlFrags['path'];
+        $parsed      = parse_url($originalUrl);
+
+        if ($parsed === false || ! is_array($parsed)) {
+            return;
+        }
+
+        $originalUrlFrags = array_replace([ 'scheme' => 'http', 'host' => '', 'path' => '' ], $parsed);
+        $originalUrl      = $originalUrlFrags['scheme'] . '://' . $originalUrlFrags['host'] . $originalUrlFrags['path'];
 
         $this->originalUrl = untrailslashit($originalUrl);
     }

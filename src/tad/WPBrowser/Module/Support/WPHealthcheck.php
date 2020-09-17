@@ -33,7 +33,7 @@ class WPHealthcheck
     /**
      * The name of the currently active theme.
      *
-     * @var string
+     * @var string|array<string,mixed>
      */
     protected $currentTheme;
 
@@ -47,7 +47,7 @@ class WPHealthcheck
     /**
      * The current mu-plugins information, if any.
      *
-     * @var array<string>
+     * @var string|array<string>
      */
     protected $muPlugins;
 
@@ -65,9 +65,9 @@ class WPHealthcheck
     protected $plugins;
 
     /**
-     * The current plugins error, if any.
+     * The current plugins errors, if any.
      *
-     * @var string
+     * @var string|array<string,array|string>
      */
     protected $pluginsErrors;
 
@@ -118,7 +118,7 @@ class WPHealthcheck
     /**
      * Runs a battery of checks on the WordPress installation and returns the results.
      *
-     * @return array An array of results, by category.
+     * @return array<string,array> An array of results, by category.
      */
     public function run()
     {
@@ -191,7 +191,7 @@ class WPHealthcheck
     /**
      * Runs and returns a battery of checks on the site filesystem and status.
      *
-     * @return array An associative array reporting the checks statuses.
+     * @return array<string,string> An associative array reporting the checks statuses.
      */
     protected function runChecks()
     {

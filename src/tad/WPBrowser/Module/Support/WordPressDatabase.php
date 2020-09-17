@@ -18,7 +18,7 @@ class WordPressDatabase
     /**
      * The current database connection error message.
      *
-     * @var string
+     * @var string|null
      */
     protected $dbConnectionError;
     /**
