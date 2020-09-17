@@ -249,14 +249,14 @@ function realpathish($path)
  *
  * @throws \RuntimeException If the creation of a directory or file fails.
  */
-function rmkdir($pathname, $contents, $mode = 0777)
+function mkdirp($pathname, $contents = [], $mode = 0777)
 {
     if (is_array($contents)) {
         if (! is_dir($pathname) && ! mkdir($pathname, $mode, true) && ! is_dir($pathname)) {
             throw new \RuntimeException("Could not create directory {$pathname}");
         }
         foreach ($contents as $subPath => $subContents) {
-            rmkdir(
+            mkdirp(
                 rtrim($pathname, '\\/') . '/' . ltrim($subPath, '\\/'),
                 $subContents,
                 $mode

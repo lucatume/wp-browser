@@ -63,7 +63,7 @@ class filesystemTest extends \Codeception\Test\Unit
                 throw new \RuntimeException("Could not put file contents in file {$key}");
             }
         };
-        rmkdir($root, [
+        mkdirp($root, [
             'sub-dir-1' => [
                 'delme.txt' => 'delme'
             ],
@@ -121,5 +121,17 @@ class filesystemTest extends \Codeception\Test\Unit
         } else {
             $this->assertDirectoryNotExists($root);
         }
+    }
+
+    public function test_mkdirp_creates_nested_trees_wo_specifying_content()
+    {
+        $dir = codecept_output_dir('one/two/three/four');
+
+        mkdirp($dir);
+
+        $this->assertDirectoryExists(codecept_output_dir('one'));
+        $this->assertDirectoryExists(codecept_output_dir('one/two'));
+        $this->assertDirectoryExists(codecept_output_dir('one/two/three'));
+        $this->assertDirectoryExists(codecept_output_dir('one/two/three/four'));
     }
 }
