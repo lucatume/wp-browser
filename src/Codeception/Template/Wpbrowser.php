@@ -562,9 +562,9 @@ EOF;
     /**
      * Overrides the base implementation to control what should be created.
      *
-     * @param string              $suite  The name of the suite to create.
-     * @param string              $actor  The name of the suite actor to create.
-     * @param array<string,mixed> $config The suie configuration.
+     * @param string $suite  The name of the suite to create.
+     * @param string $actor  The name of the suite actor to create.
+     * @param string $config The suite configuration.
      */
     protected function createSuite($suite, $actor, $config)
     {
