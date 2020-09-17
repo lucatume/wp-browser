@@ -68,7 +68,7 @@ fix_n_sniff: fix sniff
 # Configuration will be read from the phpstan.neon.dist file.
 PHPSTAN_LEVEL?=2
 phpstan:
-	docker run --rm -v ${PWD}:/project lucatume/wpstan analyze -l ${PHPSTAN_LEVEL}
+	docker run --rm -v ${PWD}:/project lucatume/wpstan:0.12.42 analyze -l ${PHPSTAN_LEVEL}
 .PHONY: phpstan
 
 # Clean the project Docker containers, volumes and networks.

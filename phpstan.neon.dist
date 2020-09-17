@@ -8,6 +8,21 @@ parameters:
   paths:
     - %currentWorkingDirectory%/src/Codeception/
     - %currentWorkingDirectory%/src/tad/
+  scanDirectories:
+    - %currentWorkingDirectory%/src/includes
+    # Patchwork bootstrap and autoloading.
+    - %currentWorkingDirectory%/vendor/antecedent/patchwork
+    # Codeception bootstrap and autoloading.
+    - %currentWorkingDirectory%/vendor/codeception/codeception
+    # WP-CLI bootstrap and autoloading.
+    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php
+  bootstrapFiles:
+    # PHPUnit aliases.
+    - %currentWorkingDirectory%/vendor/codeception/phpunit-wrapper/src/shim.php
+    # AbstractBrowser aliases.
+    - %currentWorkingDirectory%/vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
+    # WP_CLI_Command class definition.
+    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
@@ -16,18 +31,6 @@ parameters:
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Codeception/Version2/Unit.php
     - %currentWorkingDirectory%/src/tad/WPBrowser/Adapters/PHPUnit/Framework/Assert.php
     - %currentWorkingDirectory%/src/tad/WPBrowser/phpunit.php
-  autoload_files:
-    - %currentWorkingDirectory%/vendor/autoload.php
-    - %currentWorkingDirectory%/vendor/codeception/codeception/autoload.php
-    - %currentWorkingDirectory%/src/includes/functions.php
-    - %currentWorkingDirectory%/src/includes/utils.php
-    - %currentWorkingDirectory%/src/includes/spy-rest-server.php
-    - %currentWorkingDirectory%/src/includes/exceptions.php
-    - %currentWorkingDirectory%/src/includes/factory.php
-    - %currentWorkingDirectory%/src/includes/trac.php
-    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
-    - %currentWorkingDirectory%/vendor/antecedent/patchwork/Patchwork.php
-    - %currentWorkingDirectory%/_build/phpstan/aliases.php
   ignoreErrors:
     # Uses func_get_args()
     - '#^Function add_query_arg invoked with [123] parameters?, 0 required\.$#'
