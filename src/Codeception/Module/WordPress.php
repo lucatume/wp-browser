@@ -29,7 +29,7 @@ class WordPress extends Framework implements DependsOnModule
     use WPBrowserMethods;
 
     /**
-     * @var WordPressConnector
+     * @var WordPressConnector|null
      */
     public $client;
 
@@ -141,7 +141,7 @@ EOF;
      */
     private function setupClient($siteDomain)
     {
-        $this->client->setUrl($this->siteUrl);
+        $this->client = $this->client ?: $this->buildConnector();
         $this->client->setDomain($siteDomain);
         $this->client->setRootFolder($this->config['wpRootFolder']);
         $this->client->followRedirects(true);
