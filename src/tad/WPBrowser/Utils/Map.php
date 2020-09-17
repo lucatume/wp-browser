@@ -22,6 +22,7 @@ namespace tad\WPBrowser\Utils;
  * Class Map
  *
  * @package tad\WPBrowser\Utils
+ * @implements \ArrayAccess<string,mixed>
  */
 class Map implements \ArrayAccess
 {
@@ -58,6 +59,7 @@ class Map implements \ArrayAccess
      *
      * @param string     $key     The key to get the value for.
      * @param null|mixed $default The value that will be returned if the key is not set.
+     *
      * @return mixed|null The value associated with the key.
      */
     public function __invoke($key, $default = null)
@@ -68,7 +70,11 @@ class Map implements \ArrayAccess
 
 
     /**
-     * @inheritDoc
+     * Whether a map key exists or not.
+     *
+     * @param string $offset The key of the value to check.
+     *
+     * @return bool Whether the key is set on the map or not.
      */
     public function offsetExists($offset)
     {
@@ -77,7 +83,11 @@ class Map implements \ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * Gets a map value.
+     *
+     * @param $offset string The key of the value to get.
+     *
+     * @return mixed|null The map value of `null` if not found.
      */
     public function offsetGet($offset)
     {
@@ -86,31 +96,48 @@ class Map implements \ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * Sets a map value.
+     *
+     * @param string|int $offset The offset to unset.
+     * @param mixed $value The value to set.
+     *
+     * @return $this For chaining.
      */
     public function offsetSet($offset, $value)
     {
         $offset = $this->redirectAlias($offset);
         $this->map[$offset] = $value;
+
+        return $this;
     }
 
     /**
-     * @inheritDoc
+     * Unsets a  map value.
+     *
+     * @param string|int $offset The offset to unset.
+     *
+     * @return $this For chaining.
      */
     public function offsetUnset($offset)
     {
         $offset = $this->redirectAlias($offset);
         unset($this->map[$offset]);
+
+        return $this;
     }
 
     /**
      * Sets the underlying map this instance should use.
      *
      * @param array<string,mixed> $map The map this object should use.
+     *
+     * @return $this For chaining.
      */
     public function setMap(array $map)
     {
         $this->map = $map;
+
+        return $this;
     }
 
     /**
@@ -149,6 +176,8 @@ class Map implements \ArrayAccess
      *
      * @param array<string,string> $aliases  A map of each alias and the source key.
      * @param bool                 $override Whether previous aliases should be overridden or not.
+     *
+     * @return $this For chaining.
      */
     public function setAliases(array $aliases, $override = true)
     {
@@ -157,6 +186,8 @@ class Map implements \ArrayAccess
         } else {
             $this->aliases = array_merge($this->aliases, $aliases);
         }
+
+        return $this;
     }
 
     /**

@@ -21,6 +21,8 @@ use tad\WPBrowser\Events\EventDispatcherAdapter;
  *
  * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
  *                                   Codeception default events due to the Codeception version.
+ *
+ * @return void
  */
 function addListener($eventName, callable $listener, $priority = 0)
 {
@@ -30,9 +32,11 @@ function addListener($eventName, callable $listener, $priority = 0)
 /**
  * Dispatches an event using wp-browser Events API.
  *
- * @param string      $eventName The event name or handle.
- * @param object|null $origin    The dispatched event origin.
- * @param array       $context   Additional context or data for the event.
+ * @param string       $eventName The event name or handle.
+ * @param object|null  $origin    The dispatched event origin.
+ * @param array<mixed> $context   Additional context or data for the event.
+ *
+ * @return void
  */
 function dispatch($eventName, $origin = null, array $context = [])
 {

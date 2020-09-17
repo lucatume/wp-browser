@@ -105,7 +105,7 @@ function renderString($template, array $data = [], array $fnArgs = [])
  *
  * @param string $url The input URL.
  *
- * @return array An array of parsed components, or an array of default values.
+ * @return array<string,string> An array of parsed components, or an array of default values.
  */
 function parseUrl($url)
 {

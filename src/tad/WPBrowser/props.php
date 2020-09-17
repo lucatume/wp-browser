@@ -63,6 +63,8 @@ function setPropertiesForClass($object, $class, array $props)
  *
  * @param object|mixed        $object The object to set the properties of.
  * @param array<string,mixed> $props  A map of the names and values of the properties to set.
+ *
+ * @return void
  */
 function setPrivateProperties($object, array $props)
 {

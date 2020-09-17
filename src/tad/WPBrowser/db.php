@@ -19,6 +19,8 @@ use tad\WPBrowser\Utils\Map;
  * @param string $dbHost The database host to use to import the dump.
  *
  * @throws \RuntimeException If there's an error while importing the database.
+ *
+ * @return void
  */
 function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 'root', $dbHost = 'localhost')
 {
