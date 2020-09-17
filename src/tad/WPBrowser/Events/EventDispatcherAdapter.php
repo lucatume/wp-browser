@@ -104,7 +104,7 @@ class EventDispatcherAdapter
      * Returns the shared instance of the event dispatcher that will be shared by all classes dispatching and listening
      * for events.
      *
-     * @return static The shared instance of this class.
+     * @return EventDispatcherAdapter The shared instance of this class.
      */
     public static function getEventDispatcher()
     {
