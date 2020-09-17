@@ -131,7 +131,8 @@ function parseUrl($url)
 function isRegex($string)
 {
     try {
-        return preg_match($string, null) !== false;
+        // @phpstan-ignore-next-line
+        return @preg_match($string, null) !== false;
     } catch (\Exception $e) {
         return false;
     }

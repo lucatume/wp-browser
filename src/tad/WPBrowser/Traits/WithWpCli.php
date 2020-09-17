@@ -306,7 +306,7 @@ trait WithWpCli
             }
         } elseif (is_numeric($sleepOrVerify)) {
             codecept_debug("Sleeping {$sleepOrVerify}s after WPCLI background process started...");
-            sleep((float)$sleepOrVerify);
+            sleep((int)$sleepOrVerify);
         }
 
         return $process;
