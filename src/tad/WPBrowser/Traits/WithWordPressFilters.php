@@ -40,7 +40,7 @@ trait WithWordPressFilters
      * @param callable|null $format A callback function to format the arguments debug output; the callback will receive
      *                              the array of arguments as input.
      */
-    public function startwpfiltersdebug(callable $format = null)
+    public function startWpFiltersDebug(callable $format = null)
     {
         if (!function_exists('add_filter')) {
             throw new \RuntimeException('Function "add_filter" is not defined; is WordPress loaded?');

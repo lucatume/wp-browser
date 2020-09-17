@@ -12,7 +12,7 @@ trait MuloaderTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -39,7 +39,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -63,7 +63,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -87,7 +87,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getContentFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -108,13 +108,13 @@ trait MuloaderTesterActions
      *
      * @param callable|null $format A callback function to format the arguments debug output; the callback will receive
      *                              the array of arguments as input.
-     * @see \Codeception\Module\WPLoader::startwpfiltersdebug()
+     * @see \Codeception\Module\WPLoader::startWpFiltersDebug()
      */
     public function startwpfiltersdebug($format = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startwpfiltersdebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -136,7 +136,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -164,7 +164,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -192,7 +192,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -218,7 +218,7 @@ trait MuloaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *

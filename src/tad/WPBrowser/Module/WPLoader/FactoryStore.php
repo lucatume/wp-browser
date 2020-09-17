@@ -101,12 +101,13 @@ class FactoryStore
 
         require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
 
-        $this->post      = new \WP_UnitTest_Factory_For_Post();
-        $factoryForThing = $this->post;
+        $factoryForThing = null;
 
         switch ($name) {
             default:
             case 'post':
+                $this->post      = new \WP_UnitTest_Factory_For_Post();
+                $factoryForThing = $this->post;
                 break;
             case 'bookmark':
                 $this->bookmark  = new \WP_UnitTest_Factory_For_Bookmark();
