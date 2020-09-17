@@ -206,7 +206,9 @@ trait WithWpCli
         $process       = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
         $process->setTimeout($timeout);
         $process->inheritEnvironmentVariables(true);
-        count($env) && $process->setEnv(array_merge((array)$process->getEnv(), $env));
+        if (count($env)) {
+            $process->setEnv(array_merge((array)$process->getEnv(), $env));
+        }
 
         try {
             $process->mustRun();

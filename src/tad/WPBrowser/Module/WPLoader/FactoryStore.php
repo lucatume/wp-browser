@@ -101,22 +101,30 @@ class FactoryStore
 
         require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
 
+        $factoryForThing = null;
+
         switch ($name) {
+            default:
             case 'post':
-                $this->post         = new \WP_UnitTest_Factory_For_Post();
+                $this->post      = new \WP_UnitTest_Factory_For_Post();
+                $factoryForThing = $this->post;
                 break;
             case 'bookmark':
-                $this->bookmark     = new \WP_UnitTest_Factory_For_Bookmark();
+                $this->bookmark  = new \WP_UnitTest_Factory_For_Bookmark();
+                $factoryForThing = $this->bookmark;
                 break;
             case 'attachment':
                 require_once ABSPATH . 'wp-admin/includes/image.php';
-                $this->attachment   = new \WP_UnitTest_Factory_For_Attachment();
+                $this->attachment = new \WP_UnitTest_Factory_For_Attachment();
+                $factoryForThing  = $this->attachment;
                 break;
             case 'user':
-                $this->user         = new \WP_UnitTest_Factory_For_User();
+                $this->user      = new \WP_UnitTest_Factory_For_User();
+                $factoryForThing = $this->user;
                 break;
             case 'comment':
-                $this->comment      = new \WP_UnitTest_Factory_For_Comment();
+                $this->comment   = new \WP_UnitTest_Factory_For_Comment();
+                $factoryForThing = $this->comment;
                 break;
             case 'blog':
                 if (! function_exists('is_multisite') || ! is_multisite()) {
@@ -127,22 +135,23 @@ class FactoryStore
                         'https://wpbrowser.wptestkit.dev/summary/modules/wploader#configuration'
                     );
                 }
-                $this->blog         = new \WP_UnitTest_Factory_For_Blog();
+                $this->blog      = new \WP_UnitTest_Factory_For_Blog();
+                $factoryForThing = $this->blog;
                 break;
             case 'network':
-                $this->network      = new \WP_UnitTest_Factory_For_Network();
+                $this->network   = new \WP_UnitTest_Factory_For_Network();
+                $factoryForThing = $this->network;
                 break;
             case 'term':
-                $this->term         = new \WP_UnitTest_Factory_For_Term();
+                $this->term      = new \WP_UnitTest_Factory_For_Term();
+                $factoryForThing = $this->term;
                 break;
-            default:
-                throw new \InvalidArgumentException("No factory available for key '{$name}'");
         }
 
-        if (!$this->{$name} instanceof ThingFactory) {
+        if (!$factoryForThing instanceof ThingFactory) {
             throw new \InvalidArgumentException("No factory available for key '{$name}'");
         }
 
-        return $this->{$name};
+        return $factoryForThing;
     }
 }

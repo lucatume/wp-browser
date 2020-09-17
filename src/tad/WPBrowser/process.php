@@ -103,17 +103,14 @@ function process($cmd = [], $cwd = null, $env = null)
         switch ($what) {
             case PROC_WRITE:
                 return fwrite($pipes[0], reset($args));
-                break;
             case PROC_READ:
                 $length = isset($args[0]) ? (int) $args[0] : null;
 
                 return processReadPipe($pipes[1], $length);
-                break;
             case PROC_ERROR:
                 $length = isset($args[0]) ? (int) $args[0] : null;
 
                 return processReadPipe($pipes[2], $length);
-                break;
             /** @noinspection PhpMissingBreakStatementInspection */
             case PROC_REALTIME:
                 $callback = $args[0];
@@ -144,7 +141,6 @@ function process($cmd = [], $cwd = null, $env = null)
                 }
 
                 return proc_close($proc);
-                break;
         }
     };
 }

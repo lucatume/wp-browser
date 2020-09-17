@@ -22,14 +22,14 @@ trait WithInjectableHelpers
     /**
      * The current question helper instance the template will use to ask questions to the user.
      *
-     * @var QuestionHelper
+     * @var QuestionHelper|null
      */
     protected $questionHelper;
 
     /**
      * Returns the current template question helper.
      *
-     * @return QuestionHelper
+     * @return QuestionHelper|null
      */
     public function getQuestionHelper()
     {
