@@ -36,9 +36,9 @@ class DbDump
     /**
      * Replaces the WordPress domains in an array of SQL dump string.
      *
-     * @param array $sql The input SQL dump array.
+     * @param array<string> $sql The input SQL dump array.
      *
-     * @return array The modified SQL array.
+     * @return array<string> The modified SQL array.
      */
     public function replaceSiteDomainInSqlArray(array $sql)
     {
@@ -56,9 +56,9 @@ class DbDump
     /**
      * Replaces the site domain in the multisite tables of an array of SQL dump strings.
      *
-     * @param array $sql The input SQL dump array.
+     * @param array<string> $sql The input SQL dump array.
      *
-     * @return array The modified SQL array.
+     * @return array<string> The modified SQL array.
      */
     public function replaceSiteDomainInMultisiteSqlArray(array $sql)
     {
@@ -150,7 +150,8 @@ class DbDump
     /**
      * Replaces the site domain in the multisite tables of a SQL dump.
      *
-     * @param string $sql The SQL code to apply the replacements to.
+     * @param string $sql   The SQL code to apply the replacements to.
+     * @param bool   $debug Whether to debug the replacement operation or not.
      *
      * @return string The SQL code, with the URL replaced in it.
      */
@@ -240,7 +241,11 @@ class DbDump
     }
 
     /**
-     * @param string $tablePrefix
+     * Sets the table prefix.
+     *
+     * @param string $tablePrefix The table prefix to use.
+     *
+     * @return void
      */
     public function setTablePrefix($tablePrefix)
     {
@@ -248,7 +253,9 @@ class DbDump
     }
 
     /**
-     * @return string
+     * Returns the current dump URL.
+     *
+     * @return string The current dump URL.
      */
     public function getUrl()
     {
@@ -259,6 +266,8 @@ class DbDump
      * Sets the URL that should replace the original URL in the SQL dump file.
      *
      * @param string $url The URL that should replace the original URL in the SQL dump file.
+     *
+     * @return void
      */
     public function setUrl($url)
     {
@@ -290,6 +299,8 @@ class DbDump
      *
      * @param string|null $originalUrl The site URL that should be replaced in the dump, or `null` to unset the
      *                                 property.
+     *
+     * @return void
      */
     public function setOriginalUrl($originalUrl = null)
     {

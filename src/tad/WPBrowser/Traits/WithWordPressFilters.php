@@ -18,6 +18,8 @@ trait WithWordPressFilters
 {
     /**
      * A callback function to format the arguments debug output.
+     *
+     * @var callable|null
      */
     private $wpFiltersFormatCallback;
 
@@ -39,6 +41,8 @@ trait WithWordPressFilters
      *
      * @param callable|null $format A callback function to format the arguments debug output; the callback will receive
      *                              the array of arguments as input.
+     *
+     * @return void
      */
     public function startWpFiltersDebug(callable $format = null)
     {
@@ -73,6 +77,8 @@ trait WithWordPressFilters
      * // Stop debugging all WordPress filters and action final and initial values.
      * $this->stopWpFiltersDebug();
      * ```
+     *
+     * @return void
      */
     public function stopWpFiltersDebug()
     {
@@ -198,6 +204,8 @@ trait WithWordPressFilters
      * ```
      *
      * @param mixed ...$args The action call arguments.
+     *
+     * @return void
      */
     public function debugWpActionInitial(...$args)
     {
@@ -226,6 +234,8 @@ trait WithWordPressFilters
      * ```
      *
      * @param mixed ...$args The action call arguments.
+     *
+     * @return void
      */
     public function debugWpActionFinal(...$args)
     {

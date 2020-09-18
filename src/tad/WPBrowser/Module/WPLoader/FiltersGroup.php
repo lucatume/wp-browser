@@ -15,26 +15,34 @@ namespace tad\WPBrowser\Module\WPLoader;
 class FiltersGroup
 {
     /**
-     * @var array
+     * An array detailing each filter callback, priority and arguments.
+     *
+     * @var array<array<mixed>>
      */
-    protected $filters;
+    protected $filters = [];
+
     /**
-     * @var callable|string
+     * The callback that will be used to remove filters.
+     *
+     * @var callable
      */
     protected $removeCallback;
+
     /**
-     * @var callable|string
+     * The callback that will be used to add filters.
+     *
+     * @var callable
      */
     protected $addCallback;
 
     /**
      * FiltersGroup constructor.
      *
-     * @param array<string> $filters    The list of filters to remove.
-     * @param callable|null $removeWith The callable that should be used to remove the filters or `null` to use the
-     *                                  default one.
-     * @param callable|null $addWith    The callable that should be used to add the filters, or `null` to use the
-     *                                  default one.
+     * @param array<array<mixed>> $filters    The list of filters to manage.
+     * @param callable|null       $removeWith The callable that should be used to remove the filters or `null` to use the
+     *                                        default one.
+     * @param callable|null       $addWith    The callable that should be used to add the filters, or `null` to use the
+     *                                        default one.
      */
     public function __construct(array $filters = [], callable $removeWith = null, callable $addWith = null)
     {

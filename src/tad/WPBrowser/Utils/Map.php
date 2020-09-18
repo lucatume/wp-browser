@@ -85,7 +85,7 @@ class Map implements \ArrayAccess
     /**
      * Gets a map value.
      *
-     * @param $offset string The key of the value to get.
+     * @param string $offset The key of the value to get.
      *
      * @return mixed|null The map value of `null` if not found.
      */

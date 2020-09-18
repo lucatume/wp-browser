@@ -574,7 +574,7 @@ class WPDb extends Db
         $postTableName = $this->grabPostsTableName();
         $idColumn = 'ID';
         $id = $this->grabLatestEntryByFromDatabase($postTableName, $idColumn) + 1;
-        $post = Post::makePost($id, $this->config['url'], $data);
+        $post = Post::buildPostData($id, $this->config['url'], $data);
         $hasMeta = !empty($data['meta']) || !empty($data['meta_input']);
         $hasTerms = !empty($data['terms']) || !empty($data['tax_input']);
 

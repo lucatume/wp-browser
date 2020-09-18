@@ -1,19 +1,32 @@
 <?php
+/**
+ * An array-able value object.
+ *
+ * @package tad\WPBrowser\Template
+ */
 
 namespace tad\WPBrowser\Template;
 
+/**
+ * Class Data
+ *
+ * @package tad\WPBrowser\Template
+ * @implements \ArrayAccess<string,mixed>
+ */
 class Data implements \ArrayAccess
 {
 
     /**
-     * @var array
+     * The data the object has been hydrated with.
+     *
+     * @var array<string,mixed>
      */
     protected $data = [];
 
     /**
      * Data constructor.
      *
-     * @param array $data
+     * @param array<string,mixed> $data The data to hydrate the instance from.
      */
     public function __construct(array $data)
     {

@@ -1,11 +1,23 @@
 <?php
+/**
+ * A filter that will remove queries based on the caller they originated from.
+ *
+ * @package tad\WPBrowser\Iterators\Filters
+ */
 
 namespace tad\WPBrowser\Iterators\Filters;
 
+/**
+ * Class QueriesCallerBasedFilterIterator
+ *
+ * @package tad\WPBrowser\Iterators\Filters
+ */
 abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
 {
     /**
-     * @var array
+     * The list of callers to look for.
+     *
+     * @var array<string>
      */
     protected $needles = [];
 
@@ -13,8 +25,8 @@ abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
      * Check whether the current element of the iterator is acceptable
      *
      * @link  http://php.net/manual/en/filteriterator.accept.php
+     *
      * @return bool true if the current element is acceptable, otherwise false.
-     * @since 5.1.0
      */
     public function accept()
     {

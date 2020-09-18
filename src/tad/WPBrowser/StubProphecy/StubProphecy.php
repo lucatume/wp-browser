@@ -173,10 +173,12 @@ class StubProphecy
      *
      * The method prophecy will fail if not called at all, in the test post-conditions, or if called more than once
      * during the test execution.
+     *
+     * @return $this The instance for chaining.
      */
     public function shouldBeCalledOnce()
     {
-        $this->getCurrentMethodProphecy()->setExpectedCallCount(1, $this->testCase);
+        $this->getCurrentMethodProphecy()->setExpectedCallCount(1);
 
         return $this;
     }
@@ -193,10 +195,13 @@ class StubProphecy
 
     /**
      * Sets the method call expectations to 0, the method should not be called.
+     *
+     * @return $this The instance for chaining.
      */
     public function shouldNotBeCalled()
     {
-        $this->getCurrentMethodProphecy()->setExpectedCallCount(0, $this->testCase);
+        $this->getCurrentMethodProphecy()->setExpectedCallCount(0);
+
         return $this;
     }
 
@@ -214,6 +219,8 @@ class StubProphecy
 
     /**
      * Asserts the stub prophecy post conditions.
+     *
+     * @return void
      */
     public function _assertPostConditions()
     {

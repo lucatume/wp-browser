@@ -12,9 +12,11 @@ class UriToIndexMapper
     protected $root;
 
     /**
-     * @var array
+     * A map of pre-resolved URI to paths.
+     *
+     * @var array<string,string>
      */
-    protected $map = [
+    protected $preResolvedMap = [
         '/wp-admin' => '/wp-admin/index.php',
         '/wp-login.php' => '/wp-login.php',
         '/wp-cron.php' => '/wp-cron.php'
@@ -30,19 +32,27 @@ class UriToIndexMapper
         $this->root = rtrim($root, '/');
     }
 
+    /**
+     * Returns the index file for a URI.
+     *
+     * @param string $uri The URI to return the index file for.
+     *
+     * @return string The index file for the URI.
+     */
     public function getIndexForUri($uri)
     {
-        preg_match('~\\/?(.*?\\.php)~', $uri, $matches);
+        preg_match('~/?(.*?\\.php)$~', $uri, $matches);
         if (!empty($matches[1])) {
             $uri = '/' . $matches[1];
         }
 
-        if (file_exists($this->root . $uri) && !is_dir($this->root . $uri)) {
+        if (is_dir($this->root . $uri) && !is_dir($this->root . $uri)) {
             return $this->root . $uri;
         }
 
         $uri = '/' . trim($uri, '/');
-        $indexFile = isset($this->map[$uri]) ? $this->map[$uri] : '/index.php';
+        $indexFile = isset($this->preResolvedMap[$uri]) ? $this->preResolvedMap[$uri] : '/index.php';
+
         return $this->root . $indexFile;
     }
 
@@ -55,7 +65,11 @@ class UriToIndexMapper
     }
 
     /**
-     * @param string $root
+     * Sets the root directory for the URI mapper.
+     *
+     * @param string $root The root directory for the URI mapper.
+     *
+     * @return void
      */
     public function setRoot($root)
     {

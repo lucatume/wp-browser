@@ -132,7 +132,7 @@ class WPHealthcheck
     /**
      * Returns an array of WordPress constants and their value or status.
      *
-     * @return array An associative array of WordPress constants and their value/status.
+     * @return array<string,mixed> An associative array of WordPress constants and their value/status.
      */
     protected function getConstants()
     {
@@ -179,7 +179,7 @@ class WPHealthcheck
     /**
      * Returns an array of WordPress globals and their value or status.
      *
-     * @return array An associative array of WordPress globals and their value/status.
+     * @return array<string,mixed> An associative array of WordPress globals and their value/status.
      */
     public function getGlobals()
     {
@@ -312,7 +312,7 @@ class WPHealthcheck
     /**
      * Returns a list of default multi-site tables.
      *
-     * @return array A list of default multi-site tables, including the table prefix.
+     * @return array<string> A list of default multi-site tables, including the table prefix.
      */
     public function getMultiSiteDefaultTables()
     {
@@ -328,11 +328,12 @@ class WPHealthcheck
     /**
      * Returns a list of default single site tables.
      *
-     * @return array A list of default single site tables, including the table prefix.
+     * @return array<string> A list of default single site tables, including the table prefix.
      */
     public function getSingleSiteDefaultTables()
     {
         $tablePrefix = $this->database->getTablePrefix();
+
         return array_map(static function ($tableName) use ($tablePrefix) {
             return $tablePrefix . $tableName;
         }, Tables::blogTables());
@@ -566,6 +567,8 @@ class WPHealthcheck
      * Second level paths will always be printed as relative; first-level paths
      *
      * @param bool $useRelativePaths Whether to print all paths as relative paths.
+     *
+     * @return void
      */
     public function useRelativePaths($useRelativePaths)
     {
