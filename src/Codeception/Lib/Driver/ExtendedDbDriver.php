@@ -18,7 +18,7 @@ class ExtendedDbDriver extends Db
      * @param string $dsn The data source name for the database connection.
      * @param string $user The database access user.
      * @param string $password The database access password.
-     * @param array|null $options An array of connection options.
+     * @param array<string,mixed>|null $options An array of connection options.
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      *

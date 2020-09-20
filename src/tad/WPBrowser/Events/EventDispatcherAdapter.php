@@ -188,6 +188,8 @@ class EventDispatcherAdapter
 
     /**
      * Resets the shared instance.
+     *
+     * @return void
      */
     public static function resetSharedInstance()
     {
@@ -198,6 +200,8 @@ class EventDispatcherAdapter
      * Sets the event dispatcher the shared instance should use.
      *
      * @param SymfonyEventDispatcherInterface $eventDispatcher The event dispatcher to set on the shared instance.
+     *
+     * @return void
      */
     public static function setWrappedEventDispatcher(SymfonyEventDispatcherInterface $eventDispatcher)
     {
@@ -215,7 +219,7 @@ class EventDispatcherAdapter
      *
      * @return array<string> A list of all the available Codeception events.
      */
-    public static function codeceptionEvents($index = null)
+    public static function codeceptionEvents()
     {
         if (null === static::$compiledCodeceptionEvents) {
             static::$compiledCodeceptionEvents = array_filter(array_map(static function ($const) {
@@ -236,6 +240,8 @@ class EventDispatcherAdapter
      * @param int      $priority    A priority to attach the listener at. Differently from WordPress listeners added at
      *                              higher priorities are called first.
      *
+     * @return void
+     *
      * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
      *                                   Codeception default events due to the Codeception version.
      */
@@ -246,14 +252,14 @@ class EventDispatcherAdapter
     }
 
     /**
-     *
-     *
-     * @since TBD
+     * Checks an event name to make sure the current version of Codeception does support it.
      *
      * @param string $eventName The name of the event to check.
      *
      * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
      *                                   Codeception default events due to the Codeception version.
+     *
+     * @return void
      */
     protected static function checkEventName($eventName)
     {
@@ -308,6 +314,8 @@ OUT;
      *
      * @param bool $fallbackAvailable Whether the fallback to attache listeners to Codeception 4.0+ events is available
      *                                or not.
+     *
+     * @return void
      */
     public static function setFallbackAvailable($fallbackAvailable)
     {
@@ -320,9 +328,9 @@ OUT;
      * @param string                   $eventName     The event name or handle.
      * @param object|SymfonyEvent|null $originOrEvent The event origin or, in the case of events dispatched by
      *                                                Codeception, the original dispatched event.
-     * @param array                    $context       Additional context or data for the event.
+     * @param array<string,mixed>      $context       Additional context or data for the event.
      *
-     * @return object The passed $event MUST be returned
+     * @return object The passed `$event` MUST be returned
      */
     public function dispatch($eventName, $originOrEvent = null, array $context = [])
     {

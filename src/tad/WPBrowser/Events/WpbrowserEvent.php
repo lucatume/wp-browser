@@ -32,7 +32,7 @@ class WpbrowserEvent extends SymfonyEvent
     /**
      * Additional context or data for the event.
      *
-     * @var array
+     * @var array<string,mixed>
      */
     protected $context;
 
@@ -40,8 +40,8 @@ class WpbrowserEvent extends SymfonyEvent
      * WpbrowserEvent constructor.
      *
      * @param string      $name       The event name or handle.
-     * @param object|null $dispatcher The event dispatcher.
-     * @param array       $context    Additional context or data for the event.
+     * @param object|null         $dispatcher The event dispatcher.
+     * @param array<string,mixed> $context    Additional context or data for the event.
      */
     public function __construct($name, $dispatcher = null, array $context = [])
     {

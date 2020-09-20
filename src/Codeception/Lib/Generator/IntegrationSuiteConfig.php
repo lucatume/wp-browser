@@ -5,8 +5,14 @@ namespace Codeception\Lib\Generator;
 class IntegrationSuiteConfig extends AbstractGenerator implements GeneratorInterface
 {
 
+    /**
+     * @var array<string>
+     */
     public static $requiredSettings = ['className', 'namespace', 'actor'];
 
+    /**
+     * @var string
+     */
     protected $template = <<< YAML
 class_name: {{className}}
 modules:

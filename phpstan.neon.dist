@@ -2,6 +2,10 @@ includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
   - /composer/vendor/szepeviktor/phpstan-wordpress/extension.neon
 parameters:
+  parallel:
+    jobSize: 10
+    maximumNumberOfProcesses: 32
+    minimumNumberOfJobsPerProcess: 2
   level: max
   inferPrivatePropertyTypeFromConstructor: true
   reportUnmatchedIgnoredErrors: false

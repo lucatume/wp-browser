@@ -1,4 +1,9 @@
 <?php
+/**
+ * The template used for the `codecept init wpbrowser` command.
+ *
+ * @package Codeception\Template
+ */
 
 namespace Codeception\Template;
 
@@ -18,6 +23,11 @@ use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\urlDomain;
 
+/**
+ * Class Wpbrowser
+ *
+ * @package Codeception\Template
+ */
 class Wpbrowser extends Bootstrap
 {
     use WithInjectableHelpers;
@@ -72,10 +82,13 @@ class Wpbrowser extends Bootstrap
     protected $checkComposerConfig = true;
 
     /**
-     * @param bool $interactive
+     * Sets up wp-browser.
      *
-     * @return mixed|void
-     * @throws \Exception
+     * @param bool $interactive Whether to set up wp-browser in interactive mode or not.
+     *
+     * @return void
+     *
+     * @throws \Exception If there's an error processing the installation information or context.
      */
     public function setup($interactive = true)
     {
@@ -205,6 +218,13 @@ class Wpbrowser extends Bootstrap
                     . "{$installationData['wpunitSuiteSlug']}</comment>, to avoid problems.");
     }
 
+    /**
+     * Says something to the user.
+     *
+     * @param string $message The message to tell to the user.
+     *
+     * @return void
+     */
     protected function say($message = '')
     {
         if ($this->quiet) {
@@ -213,6 +233,12 @@ class Wpbrowser extends Bootstrap
         parent::say($message);
     }
 
+    /**
+     * Creates the global config.
+     *
+     * @return void
+     *
+     */
     public function createGlobalConfig()
     {
         $basicConfig = [
@@ -241,6 +267,11 @@ class Wpbrowser extends Bootstrap
         $this->createFile('codeception.dist.yml', $str);
     }
 
+    /**
+     * Returns a list of additional commands.
+     *
+     * @return array<string> The additonal commands provided by wp-browser.
+     */
     protected function getAddtionalCommands()
     {
         return [
@@ -276,6 +307,11 @@ class Wpbrowser extends Bootstrap
         return $installationData instanceof Map ? $installationData : new Map($installationData);
     }
 
+    /**
+     * Asks the user for the installation data.
+     *
+     * @return array<string,mixed>|Map The installation data as provided by the user.
+     */
     protected function askForInstallationData()
     {
         $installationData = [
@@ -453,6 +489,13 @@ class Wpbrowser extends Bootstrap
         return $installationData;
     }
 
+    /**
+     * Checks for the existence of an environment file.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If an environment file already exists.
+     */
     protected function checkEnvFileExistence()
     {
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
@@ -466,6 +509,13 @@ class Wpbrowser extends Bootstrap
         }
     }
 
+    /**
+     * Normalizes a path.
+     *
+     * @param string $path The path to normalize.
+     *
+     * @return string The normalized path.
+     */
     protected function normalizePath($path)
     {
         $pathFrags = preg_split('#([/\\\])#u', $path) ?: [];
@@ -477,6 +527,8 @@ class Wpbrowser extends Bootstrap
      * Writes the testing environment configuration file.
      *
      * @param Map $installationData The installation data to use to build the env file contents.
+     *
+     * @return void
      */
     public function writeEnvFile(Map $installationData)
     {
@@ -495,6 +547,11 @@ class Wpbrowser extends Bootstrap
         }
     }
 
+    /**
+     * Removes the command scaffolded files.
+     *
+     * @return void
+     */
     protected function removeCreatedFiles()
     {
         $files = [ 'codeception.yml', $this->envFileName ];
@@ -511,6 +568,14 @@ class Wpbrowser extends Bootstrap
         }
     }
 
+    /**
+     * Creates the WordPress unit test suite.
+     *
+     * @param string $actor The actor for the suite.
+     * @param array<string,mixed>  $installationData The installation data.
+     *
+     * @return void
+     */
     protected function createWpUnitSuite($actor = 'Wpunit', array $installationData = [])
     {
         $installationData = new Data($installationData);
@@ -565,6 +630,8 @@ EOF;
      * @param string $suite  The name of the suite to create.
      * @param string $actor  The name of the suite actor to create.
      * @param string $config The suite configuration.
+     *
+     * @return void
      */
     protected function createSuite($suite, $actor, $config)
     {
@@ -580,6 +647,14 @@ EOF;
         }
     }
 
+    /**
+     * Creates the functional suite.
+     *
+     * @param string $actor The actor to use for the suite.
+     * @param array<string,mixed>  $installationData The installation data.
+     *
+     * @return void
+     */
     protected function createFunctionalSuite($actor = 'Functional', array $installationData = [])
     {
         $installationData = new Data($installationData);
@@ -633,6 +708,14 @@ EOF;
         $this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
     }
 
+    /**
+     * Creates the acceptance suite files.
+     *
+     * @param string $actor The actor to use for the acceptance suite.
+     * @param array<string,mixed>  $installationData The current installation data.
+     *
+     * @return void
+     */
     protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = [])
     {
         $installationData = new Data($installationData);
@@ -678,6 +761,11 @@ EOF;
         $this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
     }
 
+    /**
+     * Asks the user for acknowledgment.
+     *
+     * @return void
+     */
     protected function askForAcknowledgment()
     {
         $this->say('<info>'
@@ -713,6 +801,8 @@ EOF;
      * Sets the template working directory.
      *
      * @param string $workDir The path to the working directory the template should use.
+     *
+     * @return void
      */
     public function setWorkDir($workDir)
     {
@@ -724,6 +814,8 @@ EOF;
      * Sets the installation data the template should use.
      *
      * @param array<string,string> $installationData The installation data map.
+     *
+     * @return void
      */
     public function setInstallationData(array $installationData)
     {
@@ -733,7 +825,7 @@ EOF;
     /**
      * Returns the default installation data.
      *
-     * @return array<string,array<string,false>|string> The template default installation data.
+     * @return array<string,array<string,false>|string>|Map The template default installation data.
      */
     public function getDefaultInstallationData()
     {
@@ -774,6 +866,8 @@ EOF;
      * Returns the env file lines that should be written in the env file given the current installation data.
      *
      * @param Map $installationData The installation data to generate the environment variables from.
+     *
+     * @return array<string,mixed> The interpolated environment variables.
      */
     public function getEnvFileVars(Map $installationData)
     {
@@ -848,6 +942,8 @@ EOF;
 
     /**
      * Checks the composer.json file for requirements.
+     *
+     * @return void
      */
     protected function checkComposerConfig()
     {
@@ -882,6 +978,8 @@ EOF;
      * Sets the flag that controls the check of the Composer configuration file.
      *
      * @param bool $checkComposerConfig The flag that will control the check on the Composer configuration file.
+     *
+     * @return void
      */
     public function setCheckComposerConfig($checkComposerConfig)
     {

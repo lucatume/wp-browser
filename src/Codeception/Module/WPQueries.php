@@ -1,10 +1,14 @@
 <?php
+/**
+ * WordPress queries based assertions.
+ *
+ * @package Codeception\Module
+ */
 
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Module;
 use PHPUnit\Framework\Assert;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Iterators\Filters\ActionsQueriesFilter;
@@ -18,15 +22,15 @@ use tad\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter;
 /**
  * Class WPQueries
  *
- * WordPress queries based assertions.
- *
  * @package Codeception\Module
  */
-class WPQueries extends Module
+class WPQueries extends \Codeception\Module
 {
 
     /**
-     * @var array
+     * A list of the filtered queries.
+     *
+     * @var array<string>
      */
     protected $filteredQueries = [];
 
@@ -48,10 +52,10 @@ class WPQueries extends Module
     /**
      * WPQueries constructor.
      *
-     * @param ModuleContainer $moduleContainer
-     * @param null $config
-     * @param Constants|null $constants
-     * @param \wpdb $wpdbInstance
+     * @param ModuleContainer $moduleContainer The current module container.
+     * @param array<string,mixed>|null $config The current module configuration.
+     * @param Constants|null $constants The constants adapter.
+     * @param \wpdb|null $wpdbInstance The current wpdb instance.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
@@ -67,6 +71,13 @@ class WPQueries extends Module
         parent::__construct($moduleContainer, $config);
     }
 
+    /**
+     * Initializes the module.
+     *
+     * @throws ModuleException If the initialization fails.
+     *
+     * @return void
+     */
     public function _initialize()
     {
         if (!$this->moduleContainer->hasModule('WPLoader')) {
@@ -87,12 +98,19 @@ class WPQueries extends Module
 
     /**
      * Runs before each test method.
+     *
+     * @return void
      */
     public function _cleanup()
     {
         $this->getWpdbInstance()->queries = [];
     }
 
+    /**
+     * Returns the corrent wpdb instance.
+     *
+     * @return \wpdb|null The current wpdb instance.
+     */
     private function getWpdbInstance()
     {
         if (null === $this->wpdb) {
@@ -117,6 +135,8 @@ class WPQueries extends Module
      * ```
      *
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueries($message = '')
     {
@@ -125,6 +145,11 @@ class WPQueries extends Module
         Assert::assertNotEmpty($this->filteredQueries, $message);
     }
 
+    /**
+     * Reads the current queries.
+     *
+     * @return void
+     */
     private function readQueries()
     {
         $wpdb = $this->getWpdbInstance();
@@ -169,6 +194,8 @@ class WPQueries extends Module
      * ```
      *
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueries($message = '')
     {
@@ -197,6 +224,8 @@ class WPQueries extends Module
      *
      * @param int $n The expected number of queries.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertCountQueries($n, $message = '')
     {
@@ -220,6 +249,8 @@ class WPQueries extends Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByStatement($statement, $message = '')
     {
@@ -244,6 +275,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByMethod($class, $method, $message = '')
     {
@@ -269,6 +302,8 @@ class WPQueries extends Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByStatement($statement, $message = '')
     {
@@ -295,6 +330,8 @@ class WPQueries extends Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByStatement($n, $statement, $message = '')
     {
@@ -320,6 +357,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByMethod($class, $method, $message = '')
     {
@@ -344,6 +383,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByMethod($n, $class, $method, $message = '')
     {
@@ -368,6 +409,8 @@ class WPQueries extends Module
      *
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByFunction($function, $message = '')
     {
@@ -391,6 +434,8 @@ class WPQueries extends Module
      *
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByFunction($function, $message = '')
     {
@@ -413,6 +458,8 @@ class WPQueries extends Module
      * @param int $n The expected number of queries.
      * @param string $function The function to check the queries for.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByFunction($n, $function, $message = '')
     {
@@ -438,6 +485,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = '')
     {
@@ -468,6 +517,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = '')
     {
@@ -495,6 +546,8 @@ class WPQueries extends Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = '')
     {
@@ -524,6 +577,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The fully qualified function name.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByStatementAndFunction($statement, $function, $message = '')
     {
@@ -553,6 +608,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The name of the function to check the assertions for.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByStatementAndFunction($statement, $function, $message = '')
     {
@@ -579,6 +636,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The fully-qualified function name.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = '')
     {
@@ -609,6 +668,8 @@ class WPQueries extends Module
      *
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByAction($action, $message = '')
     {
@@ -635,6 +696,8 @@ class WPQueries extends Module
      *
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByAction($action, $message = '')
     {
@@ -662,6 +725,8 @@ class WPQueries extends Module
      * @param int $n The expected number of queries.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByAction($n, $action, $message = '')
     {
@@ -690,6 +755,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByStatementAndAction($statement, $action, $message = '')
     {
@@ -722,6 +789,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByStatementAndAction($statement, $action, $message = '')
     {
@@ -753,6 +822,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = '')
     {
@@ -787,6 +858,8 @@ class WPQueries extends Module
      *
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByFilter($filter, $message = '')
     {
@@ -817,6 +890,8 @@ class WPQueries extends Module
      *
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByFilter($filter, $message = '')
     {
@@ -848,6 +923,8 @@ class WPQueries extends Module
      * @param int $n The expected number of queries.
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByFilter($n, $filter, $message = '')
     {
@@ -880,6 +957,8 @@ class WPQueries extends Module
      *                          Regular expressions must contain delimiters.
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesByStatementAndFilter($statement, $filter, $message = '')
     {
@@ -916,6 +995,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = '')
     {
@@ -952,6 +1033,8 @@ class WPQueries extends Module
      *                           Regular expressions must contain delimiters.
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
+     *
+     * @return void
      */
     public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = '')
     {
@@ -977,7 +1060,7 @@ class WPQueries extends Module
      * $queriesCount = $this->queries()->countQueries($customWdbb);
      * ```
      *
-     * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
+     * @param \wpdb|null $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
      * @return int The current count of performed queries.
      */
@@ -1000,7 +1083,7 @@ class WPQueries extends Module
      *
      * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
-     * @return array An array of queries.
+     * @return array<string> An array of queries.
      */
     public function getQueries($wpdb = null)
     {

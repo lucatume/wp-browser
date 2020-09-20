@@ -10,21 +10,34 @@ class GenerateWPRestController extends GenerateWPUnit implements CustomCommandIn
     use Shared\FileSystem;
     use Shared\Config;
 
+    /**
+     * Returns the command description.
+     *
+     * @return string The command description.
+     */
     public function getDescription()
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_Controller_Testcase '
                . 'extension with Codeception super-powers.';
     }
 
+    /**
+     * Returns the test case generator.
+     *
+     * @param array<string,mixed>  $config The generator configuration.
+     * @param string $class The class to generate the test case for.
+     *
+     * @return WPUnit The generator instance.
+     */
     protected function getGenerator($config, $class)
     {
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestControllerTestCase');
     }
 
     /**
-     * returns the name of the command
+     * Returns the name of the command.
      *
-     * @return string
+     * @return string The commmand name.
      */
     public static function getCommandName()
     {

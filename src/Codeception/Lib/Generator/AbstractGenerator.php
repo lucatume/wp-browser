@@ -6,13 +6,25 @@ use Codeception\Util\Template;
 
 abstract class AbstractGenerator
 {
+    /**
+     * @var array<string>J
+     */
     public static $requiredSettings = [];
+
+    /**
+     * @var string
+     */
     protected $template = '';
+
+    /**
+     * @var array<string,mixed>
+     */
     protected $settings = [];
 
     /**
      * AbstractGenerator constructor.
-     * @param array $settings
+     *
+     * @param array<string,mixed> $settings
      */
     public function __construct(array $settings)
     {
@@ -21,6 +33,11 @@ abstract class AbstractGenerator
         $this->ensureSettingsAreAllStrings();
     }
 
+    /**
+     * Checks the template settings.
+     *
+     * @return bool Whether the template settings are correct or not.
+     */
     protected function ensureSettings()
     {
         if (empty(static::$requiredSettings)) {
@@ -36,6 +53,11 @@ abstract class AbstractGenerator
         return true;
     }
 
+    /**
+     * Checks all settings are strings.
+     *
+     * @return bool
+     */
     protected function ensureSettingsAreAllStrings()
     {
         if (empty(static::$requiredSettings)) {
@@ -52,6 +74,11 @@ abstract class AbstractGenerator
         return true;
     }
 
+    /**
+     * Renders and returns the template..
+     *
+     * @return string The rendered template.
+     */
     public function produce()
     {
         $template = new Template($this->template);

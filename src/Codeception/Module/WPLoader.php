@@ -1,4 +1,9 @@
 <?php
+/**
+ * A module to load WordPress.
+ *
+ * @package Codeception\Module;
+ */
 
 namespace Codeception\Module;
 
@@ -15,16 +20,14 @@ use tad\WPBrowser\Adapters\WP;
 use tad\WPBrowser\Module\Support\WPHealthcheck;
 use tad\WPBrowser\Module\WPLoader\FactoryStore;
 use tad\WPBrowser\Traits\SerializableModule;
-use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithCodeceptionModuleConfig;
+use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
 use function tad\WPBrowser\findHereOrInParent;
-use function tad\WPBrowser\identifySuiteFromTrace;
 use function tad\WPBrowser\resolvePath;
 use function tad\WPBrowser\unleadslashit;
 use function tad\WPBrowser\untrailslashit;
-use function tad\WPBrowser\vendorDir;
 
 /**
  * Class WPLoader
@@ -47,10 +50,25 @@ class WPLoader extends Module
     use Config;
     use WithCodeceptionModuleConfig;
 
+    /**
+     * Whether to include inherited actions or not.
+     *
+     * @var bool
+     */
     public static $includeInheritedActions = true;
 
+    /**
+     * Allows to explicitly set what methods have this class.
+     *
+     * @var array<string>
+     */
     public static $onlyActions = [];
 
+    /**
+     * Allows to explicitly exclude actions from module.
+     *
+     * @var array<string>
+     */
     public static $excludeActions = [];
 
     /**
@@ -74,7 +92,7 @@ class WPLoader extends Module
      * will be the DB_USER global.
      * dbPassword - the password for the user, will be the DB_PASSWORD global.
      *
-     * @var array
+     * @var array<string>
      */
     protected $requiredFields = [
         'wpRootFolder',
@@ -124,7 +142,7 @@ class WPLoader extends Module
      * called after before any test case runs.
      *
      *
-     * @var array|Configuration
+     * @var array<string,mixed>|Configuration
      */
     protected $config
         = [
@@ -164,18 +182,20 @@ class WPLoader extends Module
 
     /**
      * The absolute path to the plugins directory.
+     *
      * @var string
      */
     protected $pluginDir;
 
     /**
      * The absolute path to the content directory.
+     *
      * @var string
      */
     protected $contentDir;
 
     /**
-     * @var \tad\WPBrowser\Module\WPLoader\FactoryStore
+     * @var FactoryStore
      */
     protected $factoryStore;
 
@@ -185,31 +205,43 @@ class WPLoader extends Module
      * @var bool
      */
     protected $wpDidLoadCorrectly = false;
+
     /**
      * An array of the database populating modules found in the module container.
      *
-     * @var Module[]
+     * @var array<Module>
      */
     protected $dbModules;
 
     /**
-     * A list of redirections triggered by WordPress during load.
+     * A list of redirections triggered by WordPress during load in the shape location to status codes.
      *
-     * @var array.
+     * @var array<string,int>
      */
     protected $loadRedirections = [];
+
     /**
      * An instance of the WordPress healthcheck provider object.
      *
-     * @var WPHealthcheck
+     * @var WPHealthcheck|null
      */
     protected $healthcheck;
 
     /**
-     * @var WP
+     * An instance of the WordPress adapter.
+     *
+     * @var WP|null
      */
-    private $wp;
+    protected $wp;
 
+    /**
+     * WPLoader constructor.
+     *
+     * @param ModuleContainer    $moduleContainer The current module container.
+     * @param array<string,mixed>                   $config The current module configuration.
+     * @param WP|null            $wp An instance of the WordPress adapter.
+     * @param WPHealthcheck|null $healthcheck An instance of the WPHealthcheck object.
+     */
     public function __construct(
         ModuleContainer $moduleContainer,
         $config,
@@ -228,10 +260,12 @@ class WPLoader extends Module
      * load WordPress.
      * It should really not be used elsewhere.
      *
-     * @return array An export-able array that will define objects and variables expected to be global when this is
-     *               called.
-     * @internal This method is very much tailored to the use in `WPTestCase` to support tests running in isolation.
+     * @return array<string,mixed>An export-able array that will define objects and variables expected to be global when
+     *                            this is called.
      *
+     * @throws ModuleConfigException|ModuleException If there's any configuration error.
+     *
+     * @internal This method is very much tailored to the use in `WPTestCase` to support tests running in isolation.
      */
     public static function _maybeInit()
     {
@@ -260,7 +294,7 @@ class WPLoader extends Module
      *
      * @return static A new instance of the module, built without calling its constructor method.
      *
-     * @throws ModuleException If an instance of the module cannot be built.
+     * @throws ModuleException|ModuleConfigException If an instance of the module cannot be built.
      */
     protected static function _newInstanceWithoutConstructor()
     {
@@ -285,6 +319,8 @@ class WPLoader extends Module
      * take care of installing and loading WordPress. The simple inclusion of
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
+     *
+     * @return void
      */
     public function _initialize()
     {
@@ -293,6 +329,8 @@ class WPLoader extends Module
 
     /**
      * Initializes the module making some initial checks and setting up the paths.
+     *
+     * @return void
      *
      * @throws ModuleConfigException If the WordPress root directory specified in the configuration is not valid.
      * @throws ModuleConflictException If a *Db module is loaded alongside this one and the settings of each are not
@@ -328,14 +366,14 @@ class WPLoader extends Module
     }
 
     /**
-     * @param string $wpRootFolder
+     * Checks the root directory.
+     *
+     * @param string $wpRootFolder The current WordPress root directory.
      * @param bool $throw Whether to throw an exception on invalid path or return a value.
      *
-     * @return bool If `$throw` if `false` then this will be the value of j:w
+     * @return bool Whether the current root directory is valid or not.
      *
-     *
-     * @throws \Codeception\Exception\ModuleConfigException If the specified WordPress root folder is not found or not
-     *                                                      valid.
+     * @throws ModuleConfigException If the specified WordPress root folder is not found or not valid.
      */
     protected function ensureWPRoot($wpRootFolder, $throw = true)
     {
@@ -383,6 +421,8 @@ class WPLoader extends Module
      * Checks the *Db modules loaded in the suite to ensure their configuration is compatible with this module current
      * one.
      *
+     * @return void
+     *
      * @throws ModuleConflictException If the configuration of one *Db module is not compatible with this module
      *                                 configuration.
      */
@@ -410,6 +450,8 @@ class WPLoader extends Module
 
     /**
      * Loads WordPress calling the bootstrap file.
+     *
+     * @return void
      */
     public function _loadWordpress()
     {
@@ -448,7 +490,7 @@ class WPLoader extends Module
      * testing workflow included to allow run-time customization of the
      * globals in a Codeception friendly way.
      *
-     * @return array<string,string|int> The map of the defined constants.
+     * @return array<string,mixed> The map of the defined constants.
      *
      * @throws ModuleConfigException If a `configFile` parameter is defined in the configuration, but cannot be found.
      */
@@ -492,6 +534,8 @@ class WPLoader extends Module
      *
      * @param null|string $folder The directory to load configuration files from.
      *
+     * @return void
+     *
      * @throws ModuleConfigException If the specified configuration file cannot be found.
      */
     protected function loadConfigFile($folder = null)
@@ -502,7 +546,9 @@ class WPLoader extends Module
     }
 
     /**
-     * @return bool|mixed
+     * Returns whether the configuration requires an isolated installation or not.
+     *
+     * @return bool Whether the configuration requires an isolated installation or not.
      */
     protected function requiresIsolatedInstallation()
     {
@@ -558,6 +604,8 @@ class WPLoader extends Module
 
     /**
      * Bootstraps the WordPress installation using the same steps taken by the Core PHPUnit test suite.
+     *
+     * @return void
      */
     protected function bootstrapWP()
     {
@@ -572,6 +620,8 @@ class WPLoader extends Module
 
     /**
      * Sets up the required `$_SERVER` variables to ensure the WordPress installation will work correctly.
+     *
+     * @return void
      */
     protected function ensureServerVars()
     {
@@ -590,6 +640,8 @@ class WPLoader extends Module
     /**
      * Sets up the `current_site` global handling multisite and single site
      * installation cases.
+     *
+     * @return void
      */
     protected function setupCurrentSite()
     {
@@ -620,6 +672,11 @@ class WPLoader extends Module
         $current_site->id = 1;
     }
 
+    /**
+     * Installs and bootstraps the WordPress installation.
+     *
+     * @return void
+     */
     protected function installAndBootstrapInstallation()
     {
         $this->setActivePlugins();
@@ -646,6 +703,11 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * Sets the currently active plugins.
+     *
+     * @return void
+     */
     protected function setActivePlugins()
     {
         if (empty($this->config['plugins'])) {
@@ -665,6 +727,8 @@ class WPLoader extends Module
     /**
      * Sets the active template and stylesheet according to the `theme`
      * configuration parameter.
+     *
+     * @return void
      */
     public function _setActiveTheme()
     {
@@ -689,6 +753,8 @@ class WPLoader extends Module
 
     /**
      * Calls a list of user-defined actions needed in tests.
+     *
+     * @return void
      */
     public function _bootstrapActions()
     {
@@ -705,6 +771,11 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * Switches the current theme.
+     *
+     * @return void
+     */
     public function _switchTheme()
     {
         if (! empty($this->config['theme'])) {
@@ -720,6 +791,11 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * Activates the set of specified plugins.
+     *
+     * @return void
+     */
     public function _activatePlugins()
     {
         $currentUserIdBackup = get_current_user_id();
@@ -743,6 +819,8 @@ class WPLoader extends Module
 
     /**
      * Loads the plugins required by the test.
+     *
+     * @return void
      */
     public function _loadPlugins()
     {
@@ -770,14 +848,14 @@ class WPLoader extends Module
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
+     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
-     *
-     * @return \tad\WPBrowser\Module\WPLoader\FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
@@ -790,6 +868,8 @@ class WPLoader extends Module
      * Returns a closure to handle the exit of WordPress during the bootstrap process.
      *
      * @param  OutputInterface|null  $output  An output stream.
+     *
+     * @return void
      */
     public function _wordPressExitHandler(OutputInterface $output = null)
     {
@@ -862,6 +942,14 @@ class WPLoader extends Module
         $output->writeln('<error>' . implode(PHP_EOL, $lines) . '</error>');
     }
 
+    /**
+     * Returns the current redirect handler callback.
+     *
+     * @param string $location The redirect location.
+     * @param int $status The redirection status code.
+     *
+     * @return string The redirect location.
+     */
     public function _wordPressRedirectHandler($location, $status)
     {
         $this->loadRedirections [$location] = $status;
@@ -875,6 +963,11 @@ class WPLoader extends Module
         return $location;
     }
 
+    /**
+     * Sets up the load watchers.
+     *
+     * @return void
+     */
     protected function setupLoadWatchers()
     {
         register_shutdown_function([$this, '_wordPressExitHandler']);
@@ -882,6 +975,11 @@ class WPLoader extends Module
         $this->loadRedirections = [];
     }
 
+    /**
+     * Removes the set load watchers.
+     *
+     * @return void
+     */
     protected function removeLoadWatchers()
     {
         $this->wpDidLoadCorrectly = true;
@@ -891,6 +989,8 @@ class WPLoader extends Module
 
     /**
      * Instantiates and sets up the factory store that will be available on the suite tester.
+     *
+     * @return void
      */
     protected function setupFactoryStore()
     {
@@ -934,6 +1034,8 @@ class WPLoader extends Module
      * Defines the constants required to set up the WordPress installation.
      *
      * @param array<string,int|string> $constants The map of the constants to define.
+     *
+     * @return void
      */
     protected function defineConstants(array $constants = [])
     {

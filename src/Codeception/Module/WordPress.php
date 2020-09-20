@@ -39,12 +39,16 @@ class WordPress extends Framework implements DependsOnModule
     public $wpRootFolder;
 
     /**
-     * @var array
+     * The fields required by the module.
+     *
+     * @var array<string>
      */
     protected $requiredFields = ['wpRootFolder', 'adminUsername', 'adminPassword'];
 
     /**
-     * @var array
+     * The default module configuration.
+     *
+     * @var array<string,mixed>
      */
     protected $config = ['adminPath' => '/wp-admin'];
 
@@ -106,7 +110,7 @@ EOF;
      * @param array<string,string|int|bool>    $config          The module configuration
      * @param WordPressConnector               $client          The client connector that will process the requests.
      *
-     * @throws \Codeception\Exception\ModuleConfigException
+     * @throws \Codeception\Exception\ModuleConfigException If the configuration is not correct.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
@@ -121,7 +125,11 @@ EOF;
     }
 
     /**
-     * @param TestInterface $test
+     * Sets up the module.
+     *
+     * @param TestInterface $test The current test.
+     *
+     * @return void
      *
      * @throws \Codeception\Exception\ModuleException
      */
@@ -138,6 +146,8 @@ EOF;
      * Sets up the client/connector for the request.
      *
      * @param string $siteDomain The current site domain, e.g. 'wordpress.test'.
+     *
+     * @return void
      */
     private function setupClient($siteDomain)
     {
@@ -154,6 +164,8 @@ EOF;
      * Internal method to inject the client to use.
      *
      * @param WordPressConnector $client The client object that should be used.
+     *
+     * @return void
      */
     public function _setClient($client)
     {
@@ -161,7 +173,11 @@ EOF;
     }
 
     /**
-     * @param bool $isMockRequest
+     * Returns whether the current request is a mock one or not.
+     *
+     * @param bool $isMockRequest Whether the current request is a mock one or not.
+     *
+     * @return void
      */
     public function _isMockRequest($isMockRequest = false)
     {
@@ -169,7 +185,9 @@ EOF;
     }
 
     /**
-     * @return bool
+     * Returns whether the last request was for the admin area or not.
+     *
+     * @return bool Whether the last request was for the admin area or not.
      */
     public function _lastRequestWasAdmin()
     {
@@ -182,7 +200,7 @@ EOF;
      * THis method should return array with key as class name and value as error message
      * [className => errorMessage]
      *
-     * @return array
+     * @return array<string,string> A list of module dependencies.
      */
     public function _depends()
     {
@@ -190,7 +208,11 @@ EOF;
     }
 
     /**
-     * @param WPDb $wpdbModule
+     * Injects the required modules.
+     *
+     * @param WPDb $wpdbModule An instance of the `WPDb` class.
+     *
+     * @return void
      */
     public function _inject(WPDb $wpdbModule)
     {
@@ -208,6 +230,8 @@ EOF;
      * ```
      *
      * @param string $page The path, relative to the admin area URL, to the page.
+     *
+     * @return string The resulting page path.
      */
     public function amOnAdminPage($page)
     {
@@ -216,6 +240,7 @@ EOF;
             $preparedPage = 'index.php';
         }
         $page         = $this->getAdminPath() . '/' . $preparedPage;
+
         return $this->amOnPage($page);
     }
 
@@ -276,7 +301,14 @@ EOF;
         return $page;
     }
 
-    private function setRequestType($page)
+    /**
+     * Sets the current type of request.s
+     *
+     * @param string $page The page the request is for.
+     *
+     * @return void
+     */
+    protected function setRequestType($page)
     {
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
@@ -285,6 +317,13 @@ EOF;
         }
     }
 
+    /**
+     * Whether a request is for an admin page or not.
+     *
+     * @param string $page The page to check for.
+     *
+     * @return bool Whether the current request is for an admin page or not.
+     */
     private function isAdminPageRequest($page)
     {
         return 0 === strpos($page, $this->getAdminPath());
@@ -296,7 +335,7 @@ EOF;
      * @internal This method is public for inter-operability and compatibility purposes and should
      *           not be considered part of the API.
      *
-     * @return array
+     * @return array<string> A list of the internal domains.
      */
     public function getInternalDomains()
     {
@@ -378,7 +417,11 @@ EOF;
      *
      * This method utility is to get, in the scope of test code, the value of a cookie set during the tests.
      *
-     * @example
+     * @param string $cookie The cookie name.
+     * @param array<string,mixed>  $params Parameters to filter the cookie value.
+     *
+     * @return string|null The cookie value or `null` if no cookie matching the parameters is found.
+     *@example
      * ```php
      * $id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
      * $I->loginAs('user', 'pass');
@@ -391,10 +434,6 @@ EOF;
      * $I->haveHttpHeader('X-WP-Nonce', $nonce);
      * ```
      *
-     * @param string $cookie The cookie name.
-     * @param array  $params Parameters to filter the cookie value.
-     *
-     * @return mixed|string|null The cookie value or `null` if no cookie matching the parameters is found.
      */
     public function extractCookie($cookie, array $params = [])
     {
@@ -418,6 +457,8 @@ EOF;
      *
      * @param string $username The user login name.
      * @param string $password The user password in plain text.
+     *
+     * @return void
      */
     public function loginAs($username, $password)
     {

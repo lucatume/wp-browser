@@ -1,4 +1,9 @@
 <?php
+/**
+ * Symlinks files and folders into specified destinations before tests.
+ *
+ * @package tad\WPBrowser\Extension
+ */
 
 namespace tad\WPBrowser\Extension;
 
@@ -9,33 +14,42 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use tad\WPBrowser\Filesystem\Filesystem;
 
+/**
+ * Class Symlinker
+ *
+ * @package tad\WPBrowser\Extension
+ */
 class Symlinker extends Extension
 {
+    /**
+     * A list of events the extension hooks on.
+     *
+     * @var array<string>
+     */
     public static $events = [
         CodeceptionEvents::MODULE_INIT => 'symlink',
         CodeceptionEvents::SUITE_AFTER => 'unlink',
     ];
 
     /**
-     * @var array
+     * A list of the required configuration settings.
+     *
+     * @var array<int|string,array<int,string>|string>
      */
     protected $required = ['mode' => ['plugin', 'theme'], 'destination'];
 
     /**
-     * @var string
-     */
-    protected $destination;
-
-    /**
+     * An instance of the filesystem operations wrapper.
+     *
      * @var Filesystem
      */
-    private $filesystem;
+    protected $filesystem;
 
     /**
      * Symlinker constructor.
      *
-     * @param array $config The configuration contents.
-     * @param array $options An array of options..
+     * @param array<string,mixed> $config The configuration contents.
+     * @param array<string,mixed> $options An array of options..
      * @param Filesystem|null $filesystem A wrapper around file system operations.
      */
     public function __construct($config, $options, Filesystem $filesystem = null)
@@ -47,29 +61,34 @@ class Symlinker extends Extension
     /**
      * Symbolically links one or more source folders to one or more destinations.
      *
-     * @param \Codeception\Event\SuiteEvent $e The event the method is running on.
+     * @param \Codeception\Event\SuiteEvent $event The event the method is running on.
+     *
      * @throws ExtensionException If there are issues with the source or destination folders.
+     *
+     * @return void
      */
-    public function symlink(\Codeception\Event\SuiteEvent $e)
+    public function symlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($e->getSettings());
-        $destination = $this->getDestination($rootFolder, $e->getSettings());
+        $rootFolder = $this->getRootFolder($event->getSettings());
+        $destination = $this->getDestination($rootFolder, $event->getSettings());
 
         try {
             if (!$this->filesystem->file_exists($destination)) {
                 $this->filesystem->symlink($rootFolder, $destination, true);
                 $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
             }
-        } catch (IOException $e) {
+        } catch (IOException $event) {
             throw new ExtensionException(
                 __CLASS__,
-                "Error while trying to symlink plugin or theme to destination.\n\n" . $e->getMessage()
+                "Error while trying to symlink plugin or theme to destination.\n\n" . $event->getMessage()
             );
         }
     }
 
     /**
      * Returns the root folder for a symlink.
+     *
+     * @param array<string,mixed> $settings The current settings.
      *
      * @return string The root folder path.
      */
@@ -98,8 +117,9 @@ class Symlinker extends Extension
      * Returns the symlink destination folder.
      *
      * @param string $rootFolder The root folder path.
-     * @param array $settings The current extension settings.
-     * @return array|string The destination path or an array of destination paths.
+     * @param array<string,mixed> $settings The current extension settings.
+     *
+     * @return array<string>|string The destination path or an array of destination paths.
      */
     protected function getDestination($rootFolder, array $settings = null)
     {
@@ -120,12 +140,14 @@ class Symlinker extends Extension
     /**
      * Unlinks the plugin(s) symbolically linked by the extension.
      *
-     * @param \Codeception\Event\SuiteEvent $e The suite event the operation is hooking on.
+     * @param \Codeception\Event\SuiteEvent $event The suite event the operation is hooking on.
+     *
+     * @return void
      */
-    public function unlink(\Codeception\Event\SuiteEvent $e)
+    public function unlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($e->getSettings());
-        $destination = $this->getDestination($rootFolder, $e->getSettings());
+        $rootFolder = $this->getRootFolder($event->getSettings());
+        $destination = $this->getDestination($rootFolder, $event->getSettings());
 
         if ($this->filesystem->file_exists($destination)) {
             try {
@@ -139,12 +161,12 @@ class Symlinker extends Extension
                         )
                     );
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception $event) {
                 // Let's not kill the suite but let's notify the user.
                 $this->writeln(sprintf(
                     "There was an error while trying to unlink file [%s], manual removal is required.\nError: %s",
                     $destination,
-                    $e->getMessage()
+                    $event->getMessage()
                 ));
                 return;
             }
@@ -157,6 +179,8 @@ class Symlinker extends Extension
      * Initializes the extension, checking its settings.
      *
      * @throws ExtensionException If the settings are not valid.
+     *
+     * @return void
      */
     public function _initialize()
     {
@@ -166,6 +190,8 @@ class Symlinker extends Extension
 
     /**
      * Checks that the extension broader requirements are met.
+     *
+     * @return void
      *
      * @throws ExtensionException If one or more requirements are not satisfied.
      */
@@ -206,7 +232,10 @@ class Symlinker extends Extension
      * Checks the destination folder to make sure it exists and is writable.
      *
      * @param string $destination The path to the destination folder.
+     *
      * @throws ExtensionException If the destination folder does not exist or is not writable.
+     *
+     * @return void
      */
     protected function checkDestination($destination)
     {
@@ -222,7 +251,10 @@ class Symlinker extends Extension
      * Checks the root folder specified in the settings to make sure it exists and it's writeable.
      *
      * @param string $rootFolder The path to the root folder.
+     *
      * @throws ExtensionException If the root folder does not exist or is not readable.
+     *
+     * @return void
      */
     protected function checkRootFolder($rootFolder)
     {
@@ -237,9 +269,9 @@ class Symlinker extends Extension
     /**
      * Parses and returns the environments, if any, from the settings.
      *
-     * @param array $settings The settings array.
+     * @param array<string,mixed> $settings The settings array.
      *
-     * @return array The environment(s) found in the settings, or `default` if none was found.
+     * @return array<int,string>|false. The environment(s) found in the settings, or `default` if none was found.
      */
     protected function getCurrentEnvsFromSettings(array $settings)
     {
@@ -252,6 +284,8 @@ class Symlinker extends Extension
      * Sets the output the instance should use.
      *
      * @param OutputInterface $output The output the instance should use.
+     *
+     * @return void
      */
     public function setOutput(OutputInterface $output)
     {

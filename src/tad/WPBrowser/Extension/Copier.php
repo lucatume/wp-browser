@@ -49,6 +49,8 @@ class Copier extends Extension
 
     /**
      * Copies the directory and files from the extension configuration.
+     *
+     * @return void
      */
     public function copyFiles()
     {
@@ -61,6 +63,8 @@ class Copier extends Extension
 
     /**
      * Removes the copied directories and files.
+     *
+     * @return void
      */
     public function removeFiles()
     {
@@ -75,6 +79,9 @@ class Copier extends Extension
      * Checks the source to ensure it's accessible and readable.
      *
      * @param string $source The path to the source directory or file.
+     *
+     * @return void
+     *
      * @throws ExtensionException If the source directory or file is not readable or not accessible.
      */
     protected function ensureSource($source)
@@ -95,6 +102,8 @@ class Copier extends Extension
      * Checks a destination directory or file are accessible.
      *
      * @param string $destination The path to the copy destination.
+     *
+     * @return void
      *
      * @throws ExtensionException If the destination is not accessible.
      */
@@ -119,6 +128,8 @@ class Copier extends Extension
      * Removes a previously created destination directory or file.
      *
      * @param string $destination The absolute path to the destination to remove.
+     *
+     * @return void
      *
      * @throws ExtensionException If the destination directory of file removal fails.
      */
@@ -151,6 +162,9 @@ class Copier extends Extension
      *
      * @param string $destination The absolute path to the destination.
      * @param string $source The absolute path to the source.
+     *
+     * @return void
+     *
      * @throws ExtensionException If the copy from the source to the destination fails.
      */
     protected function copy($destination, $source)

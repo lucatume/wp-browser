@@ -20,25 +20,37 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 {
-
     use Shared\FileSystem;
     use Shared\Config;
 
     /**
-     * returns the name of the command
+     * Returns the name of the command.
      *
-     * @return string
+     * @return string The command name.
      */
     public static function getCommandName()
     {
         return "generate:wpunit";
     }
 
+    /**
+     * Returns the command description.
+     *
+     * @return string The command description.
+     */
     public function getDescription()
     {
         return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception super-powers.';
     }
 
+    /**
+     * Executes the command.
+     *
+     * @param InputInterface  $input The inputl
+     * @param OutputInterface $output The output.
+     *
+     * @return int|null Either the command return value or `null`.
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $suite = $input->getArgument('suite');
@@ -63,6 +75,14 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
         return 0;
     }
 
+    /**
+     * Returns the built path.
+     *
+     * @param string $path The root path.
+     * @param string $class The class to build the path for.
+     *
+     * @return string The built path.
+     */
     protected function buildPath($path, $class)
     {
         $className = $this->getShortClassName($class);
@@ -74,7 +94,9 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     }
 
     /**
-     * @param array $config The generator configuration.
+     * Returns the configured generator.
+     *
+     * @param array<string,mixed> $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnitGenerator An instance of the test case code generator.
@@ -84,6 +106,11 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPTestCase');
     }
 
+    /**
+     * Configures the generator.
+     *
+     * @return void
+     */
     protected function configure()
     {
         $this->setDefinition([

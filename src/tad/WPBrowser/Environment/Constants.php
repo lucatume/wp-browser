@@ -34,6 +34,8 @@ class Constants
      *
      * @param string $key The constant to define.
      * @param mixed $value The constant value.
+     *
+     * @return bool Whether the constant was defined or not.
      */
     public function define($key, $value)
     {
@@ -58,6 +60,8 @@ class Constants
      *
      * @param string $key The name of the constant to define.
      * @param mixed $value The value to set for the constant.
+     *
+     * @return void
      */
     public function defineIfUndefined($key, $value)
     {
