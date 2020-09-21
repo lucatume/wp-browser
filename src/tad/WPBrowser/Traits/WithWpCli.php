@@ -198,8 +198,8 @@ trait WithWpCli
      * @param array<string>                  $command The command fragments; a mix of arguments and options.
      * @param int|float|null                 $timeout The timeout, in seconds, to use for the command. Use `null` to
      *                                                remove the timeout entirely.
-     * @param array<string,string|int|float> $env     An optional,associative array of environment variables to set for the
-     *                                                process.
+     * @param array<string,string|int|float> $env     An optional,associative array of environment variables to set for
+     *                                                the process.
      *
      * @return \Symfony\Component\Process\Process<string,string> The process object that executed the command.
      *
@@ -279,7 +279,8 @@ trait WithWpCli
      *                                          If a numeric value is, instead, provided then the code will `sleep` for
      *                                          that amount after starting the process.
      *
-     * @return \Symfony\Component\Process\Process<string,string> The process object that is handling the command execution.
+     * @return \Symfony\Component\Process\Process<string,string> The process object that is handling the command
+     *                                                           execution.
      *
      * @throws WpCliException If wp-cli has not been set up first.
      */

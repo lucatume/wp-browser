@@ -265,6 +265,10 @@ trait WPBrowserMethods
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()ja
@@ -272,9 +276,6 @@ trait WPBrowserMethods
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the `.notice.notice-error` ones.
-     *
-     * @return void
      */
     public function seeErrorMessage($classes = '')
     {

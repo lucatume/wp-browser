@@ -39,10 +39,9 @@ class FiltersGroup
      * FiltersGroup constructor.
      *
      * @param array<array<mixed>> $filters    The list of filters to manage.
-     * @param callable|null       $removeWith The callable that should be used to remove the filters or `null` to use the
-     *                                        default one.
+     * @param callable|null $removeWith       The callable that should be used to remove the filters or `null` to use
+     *                                        the default one.
      * @param callable|null       $addWith    The callable that should be used to add the filters, or `null` to use the
-     *                                        default one.
      */
     public function __construct(array $filters = [], callable $removeWith = null, callable $addWith = null)
     {

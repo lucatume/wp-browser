@@ -152,7 +152,7 @@ class Tables
     {
         $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "{$table}.handlebars";
 
-        if (!is_dir($templateFile)) {
+        if (!is_file($templateFile)) {
             throw new \RuntimeException("Template file {$templateFile} not found.");
         }
 

@@ -5,7 +5,6 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Module;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Exceptions\WpCliException;
@@ -115,9 +114,10 @@ class WPCLI extends Module
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
-     *                                  For back-compatibility purposes you can still pass the commandline as a string,
-     *                                  but the array format is the preferred and supported method.
+     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                                          minus `wp`.
+     *                                          For back-compatibility purposes you can still pass the commandline as a
+     *                                          string, but the array format is the preferred and supported method.
      *
      * @return int The command exit value; `0` usually means success.
      *
@@ -313,10 +313,11 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
-     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli minus
-     *                                    `wp`. For back-compatibility purposes you can still pass the commandline as a
-     *                                    string, but the array format is the preferred and supported method.
-     * @param callable     $splitCallback An optional callback function in charge of splitting the results array.
+     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
+     *                                            minus `wp`. For back-compatibility purposes you can still pass the
+     *                                            commandline as a string, but the array format is the preferred and
+     *                                            supported method.
+     * @param callable             $splitCallback An optional callback function to split the results array.
      *
      * @return array<string> An array containing the output of wp-cli split into single elements.
      *
@@ -374,9 +375,10 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as a string.
      *
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli minus `wp`.
-     *                                  For back-compatibility purposes you can still pass the commandline as a string,
-     *                                  but the array format is the preferred and supported method.
+     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                                          minus `wp`.
+     *                                          For back-compatibility purposes you can still pass the commandline as a
+     *                                          string, but the array format is the preferred and supported method.
      *
      * @return string The command output, if any.
      *

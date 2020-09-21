@@ -591,26 +591,30 @@ class WPDb extends Db
     /**
      * Inserts a post in the database.
      *
-     * @example
-     * ```php
-     * // Insert a post with random values in the database.
-     * $randomPostId = $I->havePostInDatabase();
-     * // Insert a post with specific values in the database.
-     * $I->havePostInDatabase([
-     *         'post_type' => 'book',
-     *         'post_title' => 'Alice in Wonderland',
-     *         'meta_input' => [
-     *              'readers_count' => 23
-     *          ],
-     *         'tax_input' => [
-     *              ['genre' => 'fiction']
-     *          ]
-     * ]);
-     * ```
-     *
-     * @param  array<string,mixed> $data An associative array of post data to override default and random generated values.
+     * @param array<string,mixed> $data An associative array of post data to override default and random generated
+     *                                  values.
      *
      * @return int post_id The inserted post ID.
+     *
+     * @throws \Exception If there's an exception during the insertion.
+     *
+     * @example
+     *              ```php
+     *              // Insert a post with random values in the database.
+     *              $randomPostId = $I->havePostInDatabase();
+     *              // Insert a post with specific values in the database.
+     *              $I->havePostInDatabase([
+     *              'post_type' => 'book',
+     *              'post_title' => 'Alice in Wonderland',
+     *              'meta_input' => [
+     *              'readers_count' => 23
+     *              ],
+     *              'tax_input' => [
+     *              ['genre' => 'fiction']
+     *              ]
+     *              ]);
+     *              ```
+     *
      */
     public function havePostInDatabase(array $data = [])
     {
@@ -1276,15 +1280,16 @@ class WPDb extends Db
     /**
      * Deletes a database entry.
      *
+     * @param string              $table    The table name.
+     * @param array<string,mixed> $criteria An associative array of the column names and values to use as deletion
+     *                                      criteria.
+     *
+     * @return void
      * @example
      * ```php
      * $I->dontHaveInDatabase('custom_table', ['book_ID' => 23, 'book_genre' => 'fiction']);
      * ```
      *
-     * @param  string $table The table name.
-     * @param  array<string,mixed>  $criteria An associative array of the column names and values to use as deletion criteria.
-     *
-     * @return void
      */
     public function dontHaveInDatabase($table, array $criteria)
     {
@@ -1820,14 +1825,9 @@ class WPDb extends Db
      *                         `Post Title - 1` for the second one and so on.
      *                         The same applies to meta values as well.
      *
-     * @type array<string,mixed>  $meta      An associative array of meta key/values to be set for the post, shorthand for the
-     *       `havePostmetaInDatabase` method. e.g. `['one' => 'foo', 'two' => 'bar']`; to have an array value inserted
-     *       in a single row serialize it e.g.
-     *                    `['serialized_field` => serialize(['one','two','three'])]` otherwise a distinct row will be
-     *                    added for each entry. See `havePostmetaInDatabase` method.
-     * }
+     * @return array<int> An array of the inserted post IDs.
      *
-     * @example
+     *@example
      * ```php
      * // Insert 3 random posts.
      * $I->haveManyPostsInDatabase(3);
@@ -1835,7 +1835,6 @@ class WPDb extends Db
      * $I->haveManyPostsInDatabase(3, ['post_title' => 'Test post {{n}}']);
      * ```
      *
-     * @return array<int> An array of the inserted post IDs.
      */
     public function haveManyPostsInDatabase($count, array $overrides = [])
     {
@@ -1917,16 +1916,16 @@ class WPDb extends Db
      * Checks for a term in the database.
      * Looks up the `terms` and `term_taxonomy` prefixed tables.
      *
+     * @param array<string,mixed> $criteria An array of criteria to search for the term, can be columns from the `terms`
+     *                                      and the `term_taxonomy` tables.
+     *
+     * @return void
      * @example
      * ```php
      * $I->seeTermInDatabase(['slug' => 'genre--fiction']);
      * $I->seeTermInDatabase(['name' => 'Fiction', 'slug' => 'genre--fiction']);
      * ```
      *
-     * @param array<string,mixed> $criteria An array of criteria to search for the term, can be columns from the `terms` and the
-     *                        `term_taxonomy` tables.
-     *
-     * @return void
      */
     public function seeTermInDatabase(array $criteria)
     {
@@ -2012,18 +2011,18 @@ class WPDb extends Db
      *
      * Looks up both the `terms` table and the `term_taxonomy` tables.
      *
-     * @example
+     * @param array<string,mixed> $criteria An array of criteria to search for the term, can be columns from the `terms`
+     *                                      and the `term_taxonomy` tables.
+     *
+     * @return void
+     *
+     *@example
      * ```php
      * // Asserts a 'fiction' term is not in the database.
      * $I->dontSeeTermInDatabase(['name' => 'fiction']);
      * // Asserts a 'fiction' term with slug 'genre--fiction' is not in the database.
      * $I->dontSeeTermInDatabase(['name' => 'fiction', 'slug' => 'genre--fiction']);
      * ```
-     *
-     * @param array<string,mixed> $criteria An array of criteria to search for the term, can be columns from the `terms` and the
-     *                        `term_taxonomy` tables.
-     *
-     * @return void
      */
     public function dontSeeTermInDatabase(array $criteria)
     {
@@ -2386,6 +2385,16 @@ class WPDb extends Db
     /**
      * Inserts a user and its meta in the database.
      *
+     * @param string               $user_login The user login name.
+     * @param string|array<string> $role       The user role slug(s), e.g. `administrator` or `['author', 'editor']`;
+     *                                         defaults to `subscriber`. If more than one role is specified, then the
+     *                                         first role in the list will be the user primary role and the
+     *                                         `wp_user_level` will be set to that role.
+     * @param array<string,mixed> $overrides   An associative array of column names and values overriding defaults in
+     *                                         the `users` and `usermeta` table.
+     *
+     * @return int The inserted user ID.
+     *
      * @example
      * ```php
      * // Create an editor user in blog 1 w/ specific email.
@@ -2418,16 +2427,6 @@ class WPDb extends Db
      * // Create a user w/o role.
      * $userId = $I->haveUserInDatabase('luca', '');
      * ```
-     *
-     * @param string               $user_login The user login name.
-     * @param string|array<string> $role       The user role slug(s), e.g. `administrator` or `['author', 'editor']`;
-     *                                         defaults to `subscriber`. If more than one role is specified, then the
-     *                                         first role in the list will be the user primary role and the
-     *                                         `wp_user_level` will be set to that role.
-     * @param array<string,mixed> $overrides                 An associative array of column names and values overriding defaults in
-     *                                         the `users` and `usermeta` table.
-     *
-     * @return int The inserted user ID.
      *
      * @see WPDb::haveUserCapabilitiesInDatabase() for the roles and caps options.
      */
@@ -2947,20 +2946,21 @@ class WPDb extends Db
     /**
      * Inserts many blogs in the database.
      *
+     * @param int                 $count     The number of blogs to create.
+     * @param array<string,mixed> $overrides An array of values to override the default ones; `{{n}}` will be replaced
+     *                                       by the count.
+     * @param bool                $subdomain Whether the new blogs should be created as a subdomain or subfolder.
+     *
+     * @return array<int> An array of inserted blogs `blog_id`s.
      * @example
-     * ```php
-     * $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
-     * foreach($blogIds as $blogId){
+     *      ```php
+     *      $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
+     *      foreach($blogIds as $blogId){
      *      $I->useBlog($blogId);
      *      $I->haveManuPostsInDatabase(3);
      * }
      * ```
      *
-     * @param int   $count     The number of blogs to create.
-     * @param array<string,mixed> $overrides An array of values to override the default ones; `{{n}}` will be replaced by the count.
-     * @param bool  $subdomain Whether the new blogs should be created as a subdomain or subfolder.
-     *
-     * @return array<int> An array of inserted blogs `blog_id`s.
      */
     public function haveManyBlogsInDatabase($count, array $overrides = [], $subdomain = true)
     {
@@ -3172,21 +3172,21 @@ class WPDb extends Db
     /**
      * Returns a list of tables for a blog ID.
      *
+     * @param int $blogId The ID of the blog to fetch the tables for.
+     *
+     * @return array<string> An array of tables for the blog, it does not include the tables common to all blogs; an
+     *                       empty array if the tables for the blog do not exist.
+     *
+     * @throws \Exception If there is any error while preparing the query.
      * @example
-     * ```php
-     * $blogId = $I->haveBlogInDatabase('test');
-     * $tables = $I->grabBlogTableNames($blogId);
-     * $options = array_filter($tables, function($tableName){
+     *      ```php
+     *      $blogId = $I->haveBlogInDatabase('test');
+     *      $tables = $I->grabBlogTableNames($blogId);
+     *      $options = array_filter($tables, function($tableName){
      *      return str_pos($tableName, 'options') !== false;
      * });
      * ```
      *
-     * @param int $blogId The ID of the blog to fetch the tables for.
-     *
-     * @return array<string> An array of tables for the blog, it does not include the tables common to all blogs; an empty array
-     *               if the tables for the blog do not exist.
-     *
-     * @throws \Exception If there is any error while preparing the query.
      */
     public function grabBlogTableNames($blogId)
     {
@@ -3331,19 +3331,20 @@ class WPDb extends Db
     /**
      * Adds a menu element to a menu for the current theme.
      *
-     * @example
+     * @param string              $menuSlug  The menu slug the item should be added to.
+     * @param string              $title     The menu item title.
+     * @param int|null            $menuOrder An optional menu order, `1` based.
+     * @param array<string,mixed> $meta      An associative array that will be prefixed with `_menu_item_` for the item
+     *                                       post meta.
+     *
+     * @return int The menu item post `ID`
+     *@example
      * ```php
      * $I->haveMenuInDatabase('test', 'sidebar');
      * $I->haveMenuItemInDatabase('test', 'Test one', 0);
      * $I->haveMenuItemInDatabase('test', 'Test two', 1);
      * ```
      *
-     * @param string $menuSlug The menu slug the item should be added to.
-     * @param string $title The menu item title.
-     * @param int|null $menuOrder An optional menu order, `1` based.
-     * @param array<string,mixed> $meta An associative array that will be prefixed with `_menu_item_` for the item post meta.
-     *
-     * @return int The menu item post `ID`
      */
     public function haveMenuItemInDatabase($menuSlug, $title, $menuOrder = null, array $meta = [])
     {
@@ -3411,22 +3412,13 @@ class WPDb extends Db
     /**
      * Creates the database entries representing an attachment and moves the attachment file to the right location.
      *
-     * @example
-     * ```php
-     * $file = codecept_data_dir('images/test.png');
-     * $attachmentId = $I->haveAttachmentInDatabase($file);
-     * $image = codecept_data_dir('images/test-2.png');
-     * $lastWeekAttachment = $I->haveAttachmentInDatabase($image, '-1 week');
-     * ```
-     *
-     * Requires the WPFilesystem module.
-     *
-     * @param string $file The absolute path to the attachment file.
-     * @param string|int $date Either a string supported by the `strtotime` function or a UNIX timestamp that
-     *                               should be used to build the "year/time" uploads sub-folder structure.
-     * @param array<string,mixed> $overrides An associative array of values overriding the default ones.
-     * @param array<string,array<int>> $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to override the
-     *                               image sizes created by default.
+     * @param string                   $file       The absolute path to the attachment file.
+     * @param string|int               $date       Either a string supported by the `strtotime` function or a UNIX
+     *                                             timestamp that should be used to build the "year/time" uploads
+     *                                             sub-folder structure.
+     * @param array<string,mixed>      $overrides  An associative array of values overriding the default ones.
+     * @param array<string,array<int>> $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to
+     *                                             override the image sizes created by default.
      *
      * @return int The post ID of the inserted attachment.
      *
@@ -3437,6 +3429,16 @@ class WPDb extends Db
      *
      * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite or if the
      *                                'gumlet/php-image-resize:^1.6' package is not installed.
+     *@example
+     * ```php
+     * $file = codecept_data_dir('images/test.png');
+     * $attachmentId = $I->haveAttachmentInDatabase($file);
+     * $image = codecept_data_dir('images/test-2.png');
+     * $lastWeekAttachment = $I->haveAttachmentInDatabase($image, '-1 week');
+     * ```
+     *
+     * Requires the WPFilesystem module.
+     *
      */
     public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
     {
@@ -3638,9 +3640,19 @@ class WPDb extends Db
     /**
      * Removes an attachment from the posts table.
      *
+     * @param array<string,mixed> $criteria    An array of search criteria to find the attachment post in the posts
+     *                                         table.
+     * @param bool                $purgeMeta   If set to `true` then the meta for the attachment will be purged too.
+     * @param bool $removeFiles                Remove all files too, requires the `WPFilesystem` module to be loaded in
+     *                                         the suite.
+     *
+     * @return void
+     *
+     * @throws ModuleException If the WPFilesystem module is not loaded in the suite
+     *                                                and the `$removeFiles` argument is `true`.
      * @example
-     * ```
-     * $postmeta = $I->grabpostmetatablename();
+     *      ```
+     *      $postmeta = $I->grabpostmetatablename();
      * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
      *      'post_id' => $id,
      *      'meta_key'=>'thumbnail_id'
@@ -3651,14 +3663,6 @@ class WPDb extends Db
      * $I->dontHaveAttachmentInDatabase($thumbnailId, true, true);
      * ```
      *
-     * @param  array<string,mixed> $criteria    An array of search criteria to find the attachment post in the posts table.
-     * @param bool   $purgeMeta   If set to `true` then the meta for the attachment will be purged too.
-     * @param bool   $removeFiles Remove all files too, requires the `WPFilesystem` module to be loaded in the suite.
-     *
-     * @return void
-     *
-     * @throws ModuleException If the WPFilesystem module is not loaded in the suite
-     *                                                and the `$removeFiles` argument is `true`.
      */
     public function dontHaveAttachmentInDatabase(array $criteria, $purgeMeta = true, $removeFiles = false)
     {
@@ -3754,15 +3758,16 @@ class WPDb extends Db
      * Returns the metadata array for an attachment post.
      * This is the value of the `_wp_attachment_metadata` meta.
      *
-     * @example
+     * @param int $attachmentPostId The attachment post ID.
+     *
+     * @return array<string,mixed> The unserialized contents of the attachment `_wp_attachment_metadata` meta or an
+     *                             empty array.
+     *@example
      * ```php
      * $metadata = $I->grabAttachmentMetadata($attachmentId);
      * $I->assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);
      * ```
      *
-     * @param int $attachmentPostId The attachment post ID.
-     *
-     * @return array<string,mixed> The unserialized contents of the attachment `_wp_attachment_metadata` meta or an empty array.
      */
     public function grabAttachmentMetadata($attachmentPostId)
     {

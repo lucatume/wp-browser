@@ -37,7 +37,9 @@ trait WithCodeceptionModuleConfig
 
         if (method_exists($moduleInstance, 'getSuiteConfig')) {
             throw new \RuntimeException(
-                "{$module} module does not implement the getSuiteConfig method or does not use the " . Config::class . ' trait.'
+                "{$module} module does not implement the getSuiteConfig method or does not use the "
+                . Config::class
+                . ' trait.'
             );
         }
 
