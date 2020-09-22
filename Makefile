@@ -66,7 +66,7 @@ fix_n_sniff: fix sniff
 
 # Use phpstan container to analyze the source code.
 # Configuration will be read from the phpstan.neon.dist file.
-PHPSTAN_LEVEL?=7
+PHPSTAN_LEVEL?=8
 phpstan:
 	docker run --rm -v ${PWD}:/project lucatume/wpstan:0.12.42 analyze -l ${PHPSTAN_LEVEL}
 .PHONY: phpstan
