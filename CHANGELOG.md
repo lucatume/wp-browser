@@ -4,9 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.12] 2020-09-22;
+
 ### Changed
 
 - rename the `rmkdir` function to `mkdirp` for clarity and resemblance with the WordPress one.
+
+### Fixed
+
+- restore full phpstan lvl 8 coverage
 
 ## [2.6.11] 2020-09-15;
 
