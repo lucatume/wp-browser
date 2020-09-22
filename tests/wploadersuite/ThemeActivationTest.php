@@ -8,7 +8,8 @@ class ThemeActivationTest extends \Codeception\TestCase\WPTestCase
      */
     public function it_should_switch_to_the_theme_during_installation()
     {
-        $this->assertEquals('dummy', get_option('dummy_after_switch_theme_called'));
+	    $called = get_option( 'dummy_after_switch_theme_called' );
+	    $this->assertEquals('dummy', $called );
     }
 
     /**

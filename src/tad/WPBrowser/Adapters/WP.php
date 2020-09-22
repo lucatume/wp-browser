@@ -149,7 +149,7 @@ class WP
      */
     public function do_action($tag, ...$context)
     {
-        do_action($tag, $context);
+        do_action($tag, ...$context);
     }
 
     /**
