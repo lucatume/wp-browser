@@ -154,14 +154,14 @@ class UriToIndexMapperTest extends \Codeception\Test\Unit
     public function realFiles()
     {
         return [
-            ['some-file.php', '/some-file.php'],
-            ['another-file.php', '/another-file.php'],
-            ['/some-file.php', '/some-file.php'],
-            ['/another-file.php', '/another-file.php'],
-            ['/subfolder/file-1.php', '/subfolder/file-1.php'],
-            ['/subfolder/file-2.php', '/subfolder/file-2.php'],
-            ['subfolder/file-1.php', '/subfolder/file-1.php'],
-            ['subfolder/file-2.php', '/subfolder/file-2.php'],
+//            ['some-file.php', '/some-file.php'],
+//            ['another-file.php', '/another-file.php'],
+//            ['/some-file.php', '/some-file.php'],
+//            ['/another-file.php', '/another-file.php'],
+//            ['/subfolder/file-1.php', '/subfolder/file-1.php'],
+//            ['/subfolder/file-2.php', '/subfolder/file-2.php'],
+//            ['subfolder/file-1.php', '/subfolder/file-1.php'],
+//            ['subfolder/file-2.php', '/subfolder/file-2.php'],
             ['some-file.php?some=param', '/some-file.php'],
             ['another-file.php?some=param', '/another-file.php'],
             ['/some-file.php/?some=param', '/some-file.php'],

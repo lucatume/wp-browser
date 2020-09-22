@@ -46,12 +46,20 @@ class UriToIndexMapper
             $uri = '/' . $matches[1];
         }
 
-        if (is_dir($this->root . $uri) && !is_dir($this->root . $uri)) {
-            return $this->root . $uri;
-        }
+        $uriPath = parse_url($uri,PHP_URL_PATH);
 
-        $uri = '/' . trim($uri, '/');
-        $indexFile = isset($this->preResolvedMap[$uri]) ? $this->preResolvedMap[$uri] : '/index.php';
+	    if ( false === $uriPath ) {
+	    	// Try resolving something like `?some-var=foo#frag`.
+		    $uriPath = '/' . $uri;
+	    }
+
+	    $uriPath = '/' . trim( $uriPath, '/' );
+
+	    if ( is_file( $this->root . $uriPath ) ) {
+		    return $this->root . $uriPath;
+	    }
+
+        $indexFile = isset($this->preResolvedMap[$uriPath]) ? $this->preResolvedMap[$uriPath] : '/index.php';
 
         return $this->root . $indexFile;
     }

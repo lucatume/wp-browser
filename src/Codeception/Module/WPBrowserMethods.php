@@ -366,11 +366,11 @@ trait WPBrowserMethods
      *
      * @param string $page The path, relative to the admin area URL, to the page.
      *
-     * @return void
+     * @return string The admin page path.
      */
     public function amOnAdminPage($page)
     {
-        $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
+        return $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
     }
 
     /**
@@ -385,7 +385,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
-     * @return void
+     * @return string The admin page path.
      */
     public function amOnAdminAjaxPage($queryVars = null)
     {
@@ -394,7 +394,7 @@ trait WPBrowserMethods
             $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
-        $this->amOnAdminPage($path);
+        return $this->amOnAdminPage($path);
     }
 
     /**
