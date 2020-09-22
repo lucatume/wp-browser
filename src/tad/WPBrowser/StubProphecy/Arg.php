@@ -155,13 +155,21 @@ class Arg implements ArgInterface
      *                     respective primitive, use a fully-qualified class name to check for a specific class type.
      *
      * @return Arg An argument expectation that will verify the expectation and format the output error.
+     *
+     * @throws \RuntimeException If the type results in a missing `is_<type>` function.
      */
     public static function type($type)
     {
         if (in_array($type, [ 'string', 'array', 'bool', 'int', 'float', 'resource' ])) {
             return new self(
                 static function ($input) use ($type) {
-                    return call_user_func("is_{$type}", $input);
+                    $function = "is_{$type}";
+
+                    if (!is_callable($function)) {
+                        throw new \RuntimeException($function . ' is not callable');
+                    }
+
+                    return call_user_func($function, $input);
                 },
                 static function () use ($type) {
                     return "Expected argument of type '{$type}'.";

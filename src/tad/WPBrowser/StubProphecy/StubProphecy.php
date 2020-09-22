@@ -56,7 +56,8 @@ class StubProphecy
 
     /**
      * The revealed stub prophecy, if previously revealed.
-     * @var self|null
+     *
+     * @var self|object|null
      */
     protected $revealed;
 
@@ -123,7 +124,7 @@ class StubProphecy
      *
      * @return object The stub object built by the \Codeception\Stub class.
      *
-     * @throws \Exception If there's an issue building the stub object.
+     * @throws \Exception|\RuntimeException If there's an issue building the stub object.
      *
      * @see \Codeception\Stub::make
      * @see \Codeception\Stub::makeEmpty
@@ -141,7 +142,11 @@ class StubProphecy
             array_map([ $this, 'buildProphecy' ], $this->methodProphecies)
         );
 
-        $this->revealed =Stub::makeEmpty($this->class, $params, $this->testCase);
+        if ($params === false) {
+            throw new \RuntimeException('Failed to build the prophecy parameters.');
+        }
+
+        $this->revealed = Stub::makeEmpty($this->class, $params, $this->testCase);
 
         return $this->revealed;
     }
@@ -186,11 +191,20 @@ class StubProphecy
     /**
      * Returns the current prophecy being built by the class.
      *
-     * @return MethodProphecy The current prophecy being built.
+     * @return MethodProphecy The current prophecy being built or `false` if no current method prophecy is being
+     *                              built.
+     *
+     * @throws \RuntimeException If the current method prophecy is not set yet.
      */
     protected function getCurrentMethodProphecy()
     {
-        return end($this->methodProphecies);
+        $currentMethodProphecy = end($this->methodProphecies);
+
+        if (empty($currentMethodProphecy)) {
+            throw new \RuntimeException('No current method prophecy set.');
+        }
+
+        return $currentMethodProphecy;
     }
 
     /**
@@ -248,11 +262,12 @@ class StubProphecy
     /**
      * Finds and returns a method prophecy matching the call and arguments.
      *
-     * @param string $name The name of the called method .
-     * @param array<mixed>          $actualArgs An array of the actual call arguments.
+     * @param string       $name       The name of the called method .
+     * @param array<mixed> $actualArgs An array of the actual call arguments.
      *
-     * @return MethodProphecy|\Exception Either a matching method prophecy or the first exception thrown while trying
+     * @return MethodProphecy Either a matching method prophecy or the first exception thrown while trying
      *                                   to find a matching method prophecy.
+     * @throws \Exception On expectation error.
      */
     protected function findMatchingMethodProphecy($name, array $actualArgs)
     {
@@ -273,7 +288,7 @@ class StubProphecy
             }
         }
 
-        throw reset($errors);
+        throw $errors[0];
     }
 
     /**

@@ -314,6 +314,10 @@ class MethodProphecy
      */
     public function setExpectedCallCount($expectedCallCount)
     {
+        if (is_callable($expectedCallCount)) {
+            $expectedCallCount = (int)$expectedCallCount();
+        }
+
         $this->expectedCallCount = (int) $expectedCallCount;
     }
 
@@ -321,6 +325,8 @@ class MethodProphecy
      * Verifies an expected method call count expectation.
      *
      * @return void
+     *
+     * @throws AssertionFailedError
      */
     public function verifyExpectedCallCount()
     {

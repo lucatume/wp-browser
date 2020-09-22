@@ -591,7 +591,7 @@ class WPDb extends Db
     /**
      * Inserts a post in the database.
      *
-     * @param array<string,mixed> $data An associative array of post data to override default and random generated
+     * @param array<int|string,mixed> $data An associative array of post data to override default and random generated
      *                                  values.
      *
      * @return int post_id The inserted post ID.
@@ -599,21 +599,21 @@ class WPDb extends Db
      * @throws \Exception If there's an exception during the insertion.
      *
      * @example
-     *              ```php
-     *              // Insert a post with random values in the database.
-     *              $randomPostId = $I->havePostInDatabase();
-     *              // Insert a post with specific values in the database.
-     *              $I->havePostInDatabase([
-     *              'post_type' => 'book',
-     *              'post_title' => 'Alice in Wonderland',
-     *              'meta_input' => [
-     *              'readers_count' => 23
-     *              ],
-     *              'tax_input' => [
-     *              ['genre' => 'fiction']
-     *              ]
-     *              ]);
-     *              ```
+     * ```php
+     * // Insert a post with random values in the database.
+     * $randomPostId = $I->havePostInDatabase();
+     * // Insert a post with specific values in the database.
+     * $I->havePostInDatabase([
+     * 'post_type' => 'book',
+     * 'post_title' => 'Alice in Wonderland',
+     * 'meta_input' => [
+     * 'readers_count' => 23
+     * ],
+     * 'tax_input' => [
+     * ['genre' => 'fiction']
+     * ]
+     * ]);
+     * ```
      *
      */
     public function havePostInDatabase(array $data = [])
@@ -844,7 +844,7 @@ class WPDb extends Db
      *
      * @param  string $name      The term name, e.g. "Fuzzy".
      * @param string  $taxonomy  The term taxonomy
-     * @param array<string,mixed>   $overrides An array of values to override the default ones.
+     * @param array<int|string,mixed>   $overrides An array of values to override the default ones.
      *
      * @return array<int> An array containing `term_id` and `term_taxonomy_id` of the inserted term.
      */
@@ -1030,7 +1030,7 @@ class WPDb extends Db
      */
     protected function increaseTermCountBy($termTaxonomyId, $by = 1)
     {
-        $updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by} 
+        $updateQuery = "UPDATE {$this->grabTermTaxonomyTableName()} SET count = count + {$by}
           WHERE term_taxonomy_id = {$termTaxonomyId}";
 
         return (bool)$this->_getDriver()->executeQuery($updateQuery, []);
@@ -1873,15 +1873,15 @@ class WPDb extends Db
     /**
      * Replaces each occurrence of the `{{n}}` placeholder with the specified number.
      *
-     * @param string|array<string> $input The entry, or entries, to replace the placeholder in.
+     * @param string|array<string|array> $input The entry, or entries, to replace the placeholder in.
      * @param int   $i     The value to replace the placeholder with.
      *
-     * @return array<string> The input array with any `{{n}]` placeholder replaced with a number.
+     * @return array<int|string,mixed> The input array with any `{{n}}` placeholder replaced with a number.
      */
     protected function replaceNumbersInArray($input, $i)
     {
         $out = [];
-        foreach ($input as $key => $value) {
+        foreach ((array)$input as $key => $value) {
             if (is_array($value)) {
                 $out[$this->replaceNumbersInString($key, $i)] = $this->replaceNumbersInArray($value, $i);
             } else {
@@ -2080,7 +2080,7 @@ class WPDb extends Db
      * ```
      *
      * @param  int   $comment_post_ID The id of the post the comment refers to.
-     * @param  array<string,mixed> $data            The comment data overriding default and random generated values.
+     * @param  array<int|string,mixed> $data            The comment data overriding default and random generated values.
      *
      * @return int The inserted comment `comment_id`.
      */
@@ -2310,7 +2310,7 @@ class WPDb extends Db
      * $linkId = $I->haveLinkInDatabase(['link_url' => 'http://example.org']);
      * ```
      *
-     * @param  array<string,mixed> $overrides The data to insert.
+     * @param  array<int|string,mixed> $overrides The data to insert.
      *
      * @return int The inserted link `link_id`.
      */
@@ -2390,8 +2390,8 @@ class WPDb extends Db
      *                                         defaults to `subscriber`. If more than one role is specified, then the
      *                                         first role in the list will be the user primary role and the
      *                                         `wp_user_level` will be set to that role.
-     * @param array<string,mixed> $overrides   An associative array of column names and values overriding defaults in
-     *                                         the `users` and `usermeta` table.
+     * @param array<int|string,mixed> $overrides An associative array of column names and values overriding defaults
+     *                                           in the `users` and `usermeta` table.
      *
      * @return int The inserted user ID.
      *
@@ -2530,7 +2530,7 @@ class WPDb extends Db
      *                                                           installation (e.g. `[1 => 'administrator`, 2 =>
      *                                                           'subscriber']`).
      *
-     * @return array<int> An array of inserted `meta_id`.
+     * @return array<int|string,array<int>|int> An array of inserted `meta_id`.
      */
     public function haveUserCapabilitiesInDatabase($userId, $role)
     {
@@ -2605,6 +2605,12 @@ class WPDb extends Db
     /**
      * Sets the user access level meta in the database for a user.
      *
+     * @param int                             $userId The ID of the user to set the level for.
+     * @param array<array|bool|string>|string $role   Either a role string (e.g. `administrator`) or an array of blog
+     *                                                IDs/roles for a multisite installation
+     *                                                (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
+     *
+     * @return array<int> An array of inserted `meta_id`.
      * @example
      * ```php
      * $userId = $I->haveUserInDatabase('luca', 'editor');
@@ -2612,11 +2618,6 @@ class WPDb extends Db
      * $I->haveUserLevelsInDatabase($userId, $moreThanAnEditorLessThanAnAdmin);
      * ```
      *
-     * @param int          $userId The ID of the user to set the level for.
-     * @param string|array<string> $role Either a role string (e.g. `administrator`) or an array of blog IDs/roles for a
-     *                           multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
-     *
-     * @return array<int> An array of inserted `meta_id`.
      */
     public function haveUserLevelsInDatabase($userId, $role)
     {
@@ -2971,7 +2972,7 @@ class WPDb extends Db
             $domainOrPath = 'blog-' . $i;
 
             if (isset($blogOverrides['slug'])) {
-                $domainOrPath = $blogOverrides['slug'];
+                $domainOrPath = (string)$blogOverrides['slug'];
                 unset($blogOverrides['slug']);
             }
 
@@ -2993,7 +2994,7 @@ class WPDb extends Db
      * ```
      *
      * @param  string $domainOrPath     The subdomain or the path to the be used for the blog.
-     * @param array<string,mixed>   $overrides        An array of values to override the defaults.
+     * @param array<int|string,mixed>   $overrides        An array of values to override the defaults.
      * @param bool    $subdomain        Whether the new blog should be created as a subdomain (`true`)
      *                                  or subfolder (`true`)
      *
@@ -4082,6 +4083,8 @@ class WPDb extends Db
      * @param string|array<string> $dump The dump string or array of lines.
      *
      * @return string|array<string> The ready SQL dump.
+     *
+     * @throws ModuleException If there's any issue with the URL replacement.
      */
     protected function prepareSqlDump($dump)
     {
@@ -4092,13 +4095,13 @@ class WPDb extends Db
             return '';
         }
 
-        return $this->_replaceUrlInDump($prepared);
+        return $this->_replaceUrlInDump((array)$prepared);
     }
 
     /**
      * Replaces the URL hard-coded in the database with the one set in the the config if required.
      *
-     * @param string|array<string> $sql The SQL dump string or strings.
+     * @param array<string>|string $sql The SQL dump string or strings.
      *
      * @return string|array<string> The SQL dump string, or strings, with the hard-coded URL replaced.
      *
@@ -4288,7 +4291,7 @@ class WPDb extends Db
 
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
-                $dsnMap = dbDsnToMap($dsn);
+                $dsnMap = dbDsnToMap((string)$dsn);
                 $dbname = $dsnMap('dbname', '');
 
                 if (empty($dbname)) {

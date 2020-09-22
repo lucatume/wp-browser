@@ -29,6 +29,11 @@ function rrmdir($src)
     }
 
     $dir = opendir($src);
+
+    if ($dir === false) {
+        throw new \RuntimeException("Could not open dir {$dir}.");
+    }
+
     while (false !== ( $file = readdir($dir) )) {
         if (( $file !== '.' ) && ( $file !== '..' )) {
             $full = $src . '/' . $file;
@@ -85,7 +90,7 @@ function homeDir($path = '')
  * @param string|null $root Either the absolute path to resolve the path from, or `null` to use the current working
  *                          directory.
  *
- * @return string The resolved, absolute path.
+ * @return string|false The resolved, absolute path or `false` on failure to resolve the path.
  *
  * @throws \InvalidArgumentException If the root or path cannot be resolved.
  */
@@ -158,9 +163,8 @@ function recurseCopy($source, $destination)
         throw new \RuntimeException(sprintf('Directory "%s" was not created', $destination));
     }
 
-    $iterator = new \FilesystemIterator($source, \FilesystemIterator::SKIP_DOTS);
-
-    foreach ($iterator as $file) {
+    /** @var \SplFileInfo $file */
+    foreach (new \FilesystemIterator($source, \FilesystemIterator::SKIP_DOTS) as $file) {
         if ($file->isDir()) {
             if (! recurseCopy($file->getPathname(), $destination . '/' . $file->getBasename())) {
                 return false;
@@ -201,13 +205,17 @@ function findHereOrInParent($path, $root)
         return realpathish($path);
     }
 
-    $root = resolvePath($root);
+    $resolvedRoot = resolvePath($root);
 
-    if (! is_dir($root)) {
-        $root = dirname($root);
+    if ($resolvedRoot === false) {
+        return false;
     }
 
-    $dir  = untrailslashit($root);
+    if (! is_dir($resolvedRoot)) {
+        $resolvedRoot = dirname($resolvedRoot);
+    }
+
+    $dir  = untrailslashit($resolvedRoot);
     $path = unleadslashit($path);
 
     while (! file_exists($dir . '/' . $path) && '/' !== $dir) {

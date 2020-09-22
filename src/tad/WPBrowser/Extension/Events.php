@@ -64,7 +64,7 @@ class Events extends Extension
 
         EventDispatcherAdapter::setFallbackAvailable(true);
 
-        return static::$subscribedEvents;
+        return static::$subscribedEvents ?: [];
     }
 
     /**

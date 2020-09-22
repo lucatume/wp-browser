@@ -20,9 +20,9 @@ class Comment
      * generateDefaultsFor*
      *
      * @param int                 $comment_post_ID The ID of the post the comment relates to.
-     * @param array<string,mixed> $overrides       The optional data to be used to generate the comment.
+     * @param array<int|string,mixed> $overrides       The optional data to be used to generate the comment.
      *
-     * @return array<string,mixed>                    A column as key array of comment content.
+     * @return array<int|string,mixed>                    A column as key array of comment content.
      */
     public static function makeComment($comment_post_ID, array $overrides = array())
     {

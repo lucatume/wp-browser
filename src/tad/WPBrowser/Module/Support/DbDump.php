@@ -29,7 +29,7 @@ class DbDump
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
      *
-     * @var string|null
+     * @var string|false|null
      */
     protected $originalUrl;
 
@@ -50,6 +50,7 @@ class DbDump
         $joined = implode($delimiter, $sql);
         $replaced = $this->replaceSiteDomainInSqlString($joined);
 
+        // @phpstan-ignore-next-line
         return explode($delimiter, $replaced);
     }
 
@@ -70,6 +71,7 @@ class DbDump
         $joined = implode($delimiter, $sql);
         $replaced = $this->replaceSiteDomainInMultisiteSqlString($joined);
 
+        // @phpstan-ignore-next-line
         return explode($delimiter, $replaced);
     }
 
@@ -103,6 +105,13 @@ class DbDump
         }
 
         $originalFrags = parse_url($this->originalUrl);
+
+        if ($originalFrags === false) {
+            throw new DumpException(
+                'Could not parse, the original site URL; check the parsed or set originalUrl paramter.'
+            );
+        }
+
         $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path','port']));
         if (!empty($originalFrags['port'])) {
             $originalFrags['port'] = ':' . $originalFrags['port'];

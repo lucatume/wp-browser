@@ -36,6 +36,18 @@ class Date
     }
 
     /**
+     * Proxy to `time()` to allow mocking.
+     *
+     * @return int The current time.
+     */
+    public static function _time()
+    {
+        $time = self::$time ? self::$time : time();
+
+        return $time;
+    }
+
+    /**
      * Returns the 0 time string in WordPress specific format.
      *
      * @return string The "0000-00-00 00:00:00" string.
@@ -58,25 +70,13 @@ class Date
     /**
      * Injects the value of the "now" time for testing purposes.
      *
-     * @param int $now  The mock "now" timestamp.
+     * @param int $now The mock "now" timestamp.
      *
      * @return void
      */
     public static function _injectNow($now)
     {
         self::$time = $now;
-    }
-
-    /**
-     * Proxy to `time()` to allow mocking.
-     *
-     * @return int The current time.
-     */
-    public static function _time()
-    {
-        $time = self::$time ? self::$time : time();
-
-        return $time;
     }
 
     /**
@@ -90,6 +90,12 @@ class Date
      */
     public static function fromString($strtotime)
     {
-        return date(self::DATE_FORMAT, strtotime($strtotime));
+        $timestamp = strtotime($strtotime);
+
+        if ($timestamp === false) {
+            throw new \InvalidArgumentException('Invalid time: ' . $strtotime);
+        }
+
+        return date(self::DATE_FORMAT);
     }
 }

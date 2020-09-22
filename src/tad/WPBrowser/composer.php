@@ -12,13 +12,13 @@ use tad\WPBrowser\Utils\Map;
 /**
  * Parses a Composer configuration file into a map.
  *
- * @param string|null $file The file to read.
+ * @param string|false|null $file The file to read.
  *
  * @return Map The parsed file map.
  */
 function composerFile($file)
 {
-    if (! file_exists($file)) {
+    if (empty($file) || ! is_dir($file)) {
         throw new \InvalidArgumentException("File {$file} does not exist.");
     }
     $composerFileContents = file_get_contents($file);

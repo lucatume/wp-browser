@@ -120,7 +120,7 @@ class WPCLI extends Module
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
      *
-     * @return int The command exit value; `0` usually means success.
+     * @return int|string The command exit value; `0` usually means success.
      *
      *
      * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
@@ -340,7 +340,7 @@ class WPCLI extends Module
      */
     public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
-        $output = $this->cliToString($userCommand);
+        $output = (string)$this->cliToString($userCommand);
 
         if (empty($output)) {
             return [];
@@ -381,7 +381,7 @@ class WPCLI extends Module
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
      *
-     * @return string The command output, if any.
+     * @return int|string The command output, if any.
      *
      * @throws ModuleConfigException If the path to the WordPress installation does not exist.
      * @throws ModuleException If there's an exception while running the command and the module is configured to throw.

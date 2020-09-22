@@ -94,7 +94,13 @@ trait WithWpCli
                 throw WpCliException::becauseConfiguratorClassCannotBeFound();
             }
 
-            $wpCliRootDir = dirname($ref->getFileName()) . '/../../';
+            $filename     = $ref->getFileName();
+
+            if ($filename === false) {
+                throw new WpCliException('Filename could not be read from reflection.');
+            }
+
+            $wpCliRootDir = dirname($filename) . '/../../';
 
             $wpCliRootRealPath = realpath($wpCliRootDir);
 
@@ -139,7 +145,7 @@ trait WithWpCli
      *
      * @param string|array<string> $command The command to parse
      *
-     * @return array<string,string|int|float|bool> An associative array of all the options found in the command.
+     * @return array<int|string,mixed> An associative array of all the options found in the command.
      */
     protected function parseWpCliInlineOptions($command)
     {
@@ -330,6 +336,9 @@ trait WithWpCli
     {
         try {
             $serverCommandFile = (new \ReflectionClass(\Server_Command::class))->getFileName();
+            if ($serverCommandFile === false) {
+                throw WpCliException::becauseServerCommandClassWasNotFound();
+            }
             $routerFilePath = dirname(dirname($serverCommandFile)) . '/router.php';
             if (!file_exists($routerFilePath)) {
                 throw WpCliException::becauseRouterFileWasNotFound($routerFilePath);

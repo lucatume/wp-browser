@@ -286,7 +286,7 @@ EOF;
         $parts      = parseUrl($page);
         $parameters = [];
         if (!empty($parts['query'])) {
-            parse_str($parts['query'], $parameters);
+            parse_str((string)$parts['query'], $parameters);
         }
 
         $this->client->setHeaders($this->headers);
@@ -363,7 +363,15 @@ EOF;
     {
         if (empty($this->wpRootFolder)) {
             try {
-                $this->wpRootFolder = resolvePath($this->config['wpRootFolder']);
+                $resolvedWpRoot = resolvePath((string)$this->config['wpRootFolder']);
+
+                if ($resolvedWpRoot === false) {
+                    throw new ModuleConfigException(
+                        $this,
+                        'Parameter "wpRootFolder" is not a directory or is not accesssible.'
+                    );
+                }
+                $this->wpRootFolder = $resolvedWpRoot;
             } catch (\Exception $e) {
                 throw new ModuleConfigException(
                     __CLASS__,
@@ -371,7 +379,7 @@ EOF;
                     'installation folder: directory not found.'
                 );
             }
-            if (!file_exists(untrailslashit($this->wpRootFolder) . '/wp-settings.php')) {
+            if (!file_exists(untrailslashit((string)$this->wpRootFolder) . '/wp-settings.php')) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "\nThe `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress installation " .

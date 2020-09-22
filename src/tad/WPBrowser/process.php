@@ -22,11 +22,19 @@ const PROC_REALTIME = 'proc_realtime';
  * @param resource $proc_handle The process handle.
  *
  * @return \Closure A function to check and return the process status map.
+ *
+ * @throws \RuntimeException If the process current status cannot be fetched.
  */
 function processStatus($proc_handle)
 {
     return static function ($what, $default = null) use ($proc_handle) {
-        $map   = new Map(proc_get_status($proc_handle));
+        $status = proc_get_status($proc_handle);
+
+        if ($status === false) {
+            throw new \RuntimeException('Failed to gather the process current status.');
+        }
+
+        $map   = new Map($status);
         $value = $map($what, $default);
         unset($map);
 
@@ -70,7 +78,7 @@ function processReadPipe($pipe, $length = null)
  */
 function process($cmd = [], $cwd = null, $env = null)
 {
-    if (PHP_VERSION_ID < 70400) {
+    if (PHP_VERSION_ID < 70400 && is_array($cmd)) {
         $escapedCommand = implode(' ', $cmd);
     } else {
         // PHP 7.4 has introduced support for array commands and will handle the escaping.
@@ -93,10 +101,12 @@ function process($cmd = [], $cwd = null, $env = null)
         debug('Running command: ' . implode(' ', $escapedCommand));
     }
 
+    // @phpstan-ignore-next-line
     $proc = proc_open($escapedCommand, $descriptors, $pipes, $cwd, $env);
 
     if (! is_resource($proc)) {
-        throw new \RuntimeException('Process `' . $cmd . '` could not be started.');
+        $cmd = is_array($cmd) ? implode(' ', $cmd) : $cmd;
+        throw new \RuntimeException('Process "' . $cmd . '" could not be started.');
     }
 
     return static function ($what = PROC_STATUS, ...$args) use ($proc, $pipes) {

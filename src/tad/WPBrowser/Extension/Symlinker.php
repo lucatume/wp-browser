@@ -103,7 +103,7 @@ class Symlinker extends Extension
             $fallbackRootFolder = isset($rootFolder['default']) ?
                 $rootFolder['default']
                 : reset($rootFolder);
-            $supportedEnvs      = array_intersect(array_keys($rootFolder), $currentEnvs);
+            $supportedEnvs      = array_intersect(array_keys($rootFolder), (array)$currentEnvs);
             $firstSupported     = reset($supportedEnvs);
             $rootFolder         = isset($rootFolder[$firstSupported]) ?
                 $rootFolder[$firstSupported] :
@@ -119,7 +119,7 @@ class Symlinker extends Extension
      * @param string $rootFolder The root folder path.
      * @param array<string,mixed> $settings The current extension settings.
      *
-     * @return array<string>|string The destination path or an array of destination paths.
+     * @return string The destination path or an array of destination paths.
      */
     protected function getDestination($rootFolder, array $settings = null)
     {
@@ -128,7 +128,7 @@ class Symlinker extends Extension
         if (is_array($destination)) {
             $currentEnvs = $this->getCurrentEnvsFromSettings($settings);
             $fallbackDestination = isset($destination['default']) ? $destination['default'] : reset($destination);
-            $supportedEnvs = array_intersect(array_keys($destination), $currentEnvs);
+            $supportedEnvs = array_intersect(array_keys($destination), (array)$currentEnvs);
             $firstSupported = reset($supportedEnvs);
             $destination = isset($destination[$firstSupported]) ? $destination[$firstSupported] : $fallbackDestination;
         }
@@ -200,10 +200,10 @@ class Symlinker extends Extension
         if (!isset($this->config['mode'])) {
             throw new ExtensionException(__CLASS__, 'Required configuration parameter [mode] is missing.');
         }
-        if (!array_intersect($this->required['mode'], (array)$this->config['mode'])) {
+        if (!array_intersect((array)$this->required['mode'], (array)$this->config['mode'])) {
             throw new ExtensionException(
                 __CLASS__,
-                '[mode] should be one among these values: [' . implode(', ', $this->required['mode']) . ']'
+                '[mode] should be one among these values: [' . implode(', ', (array)$this->required['mode']) . ']'
             );
         }
         if (!isset($this->config['destination'])) {

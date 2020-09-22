@@ -344,6 +344,7 @@ OUT;
             [ $eventObject, $eventName ]
             : [ $eventName, $eventObject ];
 
+        // @phpstan-ignore-next-line
         return $this->eventDispatcher->dispatch(...$dispatchArgs);
     }
 

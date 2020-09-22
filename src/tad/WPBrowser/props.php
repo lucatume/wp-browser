@@ -23,6 +23,7 @@ namespace tad\WPBrowser;
  */
 function setPropertiesForClass($object, $class, array $props)
 {
+    // @phpstan-ignore-next-line
     $reflectedEntity = new \ReflectionClass($class);
 
     if (! $object) {

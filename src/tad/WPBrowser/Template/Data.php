@@ -19,14 +19,14 @@ class Data implements \ArrayAccess
     /**
      * The data the object has been hydrated with.
      *
-     * @var array<string,mixed>
+     * @var array<int|string,mixed>
      */
     protected $data = [];
 
     /**
      * Data constructor.
      *
-     * @param array<string,mixed> $data The data to hydrate the instance from.
+     * @param array<int|string,mixed> $data The data to hydrate the instance from.
      */
     public function __construct(array $data)
     {
