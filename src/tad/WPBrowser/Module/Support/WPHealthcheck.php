@@ -74,7 +74,7 @@ class WPHealthcheck
     /**
      * An instance of the constants wrapper.
      *
-     * @var Constants|null
+     * @var Constants
      */
     protected $constants;
 

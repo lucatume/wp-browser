@@ -3,6 +3,7 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\Framework;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\ModuleContainer;
@@ -287,6 +288,10 @@ EOF;
         $parameters = [];
         if (!empty($parts['query'])) {
             parse_str((string)$parts['query'], $parameters);
+        }
+
+        if (!$this->client instanceof WordPressConnector) {
+            throw new ModuleException($this, 'Connector not yet initialized.');
         }
 
         $this->client->setHeaders($this->headers);

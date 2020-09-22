@@ -18,7 +18,7 @@ namespace tad\WPBrowser;
  */
 function normalizeNewLine($str)
 {
-    return preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
+    return (string)preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
 }
 
 /**
@@ -40,33 +40,41 @@ function slug($string, $sep = '-', $let = false)
     }, array_unique($unquotedSeps)));
 
     // Prepend the separator to the first uppercase letter and trim the string.
-    $string = preg_replace('/(?<![A-Z' . $seps . '])([A-Z])/u', $sep . '$1', trim($string));
+    $step1 = preg_replace('/(?<![A-Z' . $seps . '])([A-Z])/u', $sep . '$1', trim($string));
+
+    if ($step1 === null) {
+        throw new \InvalidArgumentException('Failed to slugify string');
+    }
 
     // Replace non letter or digits with the separator.
-    $string = preg_replace('~[^\pL\d' . $seps . ']+~u', $sep, $string);
+    $step2 = preg_replace('~[^\pL\d' . $seps . ']+~u', $sep, $step1);
+
+    if ($step2 === null) {
+        throw new \InvalidArgumentException('Failed to slugify string');
+    }
 
     // Transliterate.
-    $string = iconv('utf-8', 'us-ascii//TRANSLIT', $string);
+    $step3 = iconv('utf-8', 'us-ascii//TRANSLIT', $step2);
 
-    if ($string === false) {
+    if ($step3 === false) {
         throw new \InvalidArgumentException('Failed to slugify string');
     }
 
     // Remove anything that is not a word or a number or the separator(s).
-    $string = preg_replace('~[^' . $seps . '\w]+~', '', $string);
+    $step4 = preg_replace('~[^' . $seps . '\w]+~', '', $step3);
 
-    if ($string === null) {
+    if ($step4 === null) {
         throw new \InvalidArgumentException('Failed to slugify string');
     }
 
     // Trim excess separator chars.
-    $string = trim(trim($string), $seps);
+    $step5 = trim(trim($step4), $seps);
 
     // Remove duplicate separators and lowercase.
-    $string = strtolower(preg_replace('~[' . $seps . ']{2,}~', $sep, $string));
+    $step6 = strtolower((string)preg_replace('~[' . $seps . ']{2,}~', $sep, $step5));
 
     // Empty strings are fine here.
-    return $string;
+    return $step6;
 }
 
 /**

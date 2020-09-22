@@ -17,14 +17,14 @@ class DbDump
     protected static $urlReplacementCache = [];
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected $tablePrefix;
+    protected $tablePrefix = 'wp_';
 
     /**
-     * @var string|null
+     * @var string
      */
-    protected $url;
+    protected $url = 'http://wordpress.test';
     /**
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
@@ -108,7 +108,7 @@ class DbDump
 
         if ($originalFrags === false) {
             throw new DumpException(
-                'Could not parse, the original site URL; check the parsed or set originalUrl paramter.'
+                'Could not parse, the original site URL; check the parsed or set originalUrl parameter.'
             );
         }
 
@@ -137,12 +137,13 @@ class DbDump
 
         $sql = preg_replace($urlPattern, $replacement, $sql);
 
-        preg_match($urlPattern, $sql, $m);
+        preg_match($urlPattern, (string)$sql, $m);
 
-        if ($sql === null) {
+        $pregLastError = preg_last_error();
+        if ($pregLastError !== 0 || $sql === null) {
             throw new DumpException(
                 'There was an error while trying to replace the URL in the dump file: ' .
-                pregErrorMessage(preg_last_error()) .
+                pregErrorMessage($pregLastError) .
                 "\n\n" .
                 'Either manually replace it and set the "urlReplacement" module parameter to "false" or check the ' .
                 'dump file integrity.'
@@ -187,7 +188,7 @@ class DbDump
             $currentTable = $this->tablePrefix . $table;
             $matches      = [];
             $fullPattern = "/(INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}";
-            preg_match($fullPattern, $sql, $matches);
+            preg_match($fullPattern, (string)$sql, $matches);
 
             if (empty($matches) || empty($matches[1])) {
                 if ($debug) {
@@ -217,25 +218,25 @@ class DbDump
                 codecept_debug('Dump file URL [' . $dumpSiteUrl . '] replaced with [' . $thisSiteUrl . '].');
             }
 
-            $sql = preg_replace(
+            $sql = (string)preg_replace(
                 '#([\'"])([A-z0-9_-]+\\.)*' . preg_quote($dumpSiteUrl, '#') . '(/[^\'"])*([\'"])#',
                 '$1$2' . $thisSiteUrl . '$3$4',
-                $sql
+                (string)$sql
             );
         }
 
-        static::$urlReplacementCache[$cacheKey] = $sql;
+        static::$urlReplacementCache[$cacheKey] = (string)$sql;
 
-        return $sql;
+        return (string)$sql;
     }
 
     /**
      * DbDump constructor.
      *
-     * @param string|null $url The URL to replace, `null` to have it inferred.
-     * @param string|null $tablePrefix The table prefix to use.
+     * @param string $url The URL to replace, `null` to have it inferred.
+     * @param string $tablePrefix The table prefix to use.
      */
-    public function __construct($url = null, $tablePrefix = null)
+    public function __construct($url = 'http://wordpress.test', $tablePrefix = 'wp_')
     {
         $this->url         = $url;
         $this->tablePrefix = $tablePrefix;
@@ -295,7 +296,7 @@ class DbDump
         $matches = [];
         $urlPattern = sprintf(
             "/INSERT\\s+INTO\\s+`%soptions`.*'(home|siteurl)'\\s*,\\s*'(?<url>[^']+)'/uis",
-            preg_quote($this->tablePrefix)
+            preg_quote($this->tablePrefix, '/')
         );
 
         preg_match($urlPattern, $sql, $matches);

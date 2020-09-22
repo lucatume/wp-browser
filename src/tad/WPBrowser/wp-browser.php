@@ -126,7 +126,7 @@ function requireCodeceptionModules($module, array $requiredModules = [])
 /**
  * Identifies the current running suite provided a debug backtrace.
  *
- * @return string The suite name.
+ * @return string The suite name
  *
  * @throws \RuntimeException If the suite cannot be identified from the debug backtrace.
  */
@@ -141,7 +141,13 @@ function identifySuiteFromTrace()
         $path      = '';
         do {
             $suite = array_shift($pathFrags);
+
+            if (!is_string($suite)) {
+                throw new \RuntimeException('Suite cannot be identified from the debug backtrace.');
+            }
+
             $path  .= '/' . $suite;
+
             if (file_exists("{$path}.suite.dist.yml") || file_exists("{$path}.suite.yml")) {
                 return $suite;
             }

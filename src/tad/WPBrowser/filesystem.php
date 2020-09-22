@@ -104,13 +104,13 @@ function resolvePath($path, $root = null)
 
     $homeDir = homeDir();
 
-    $root = preg_replace('/^~/', $homeDir, $root);
+    $root = (string)preg_replace('/^~/', $homeDir, $root);
 
     if (empty($path)) {
         return realpathish($root);
     }
 
-    $path = preg_replace('/^~/', $homeDir, $path);
+    $path = (string)preg_replace('/^~/', $homeDir, $path);
 
     if (file_exists($path)) {
         return realpathish($path);

@@ -69,8 +69,9 @@ class Symlinker extends Extension
      */
     public function symlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($event->getSettings());
-        $destination = $this->getDestination($rootFolder, $event->getSettings());
+        $eventSettings =(array)$event->getSettings();
+        $rootFolder = $this->getRootFolder($eventSettings);
+        $destination = $this->getDestination($rootFolder, $eventSettings);
 
         try {
             if (!$this->filesystem->file_exists($destination)) {
@@ -92,7 +93,7 @@ class Symlinker extends Extension
      *
      * @return string The root folder path.
      */
-    protected function getRootFolder(array $settings = null)
+    protected function getRootFolder(array $settings = [])
     {
         $rootFolder = isset($this->config['rootFolder']) ?
             $this->config['rootFolder']
@@ -121,7 +122,7 @@ class Symlinker extends Extension
      *
      * @return string The destination path or an array of destination paths.
      */
-    protected function getDestination($rootFolder, array $settings = null)
+    protected function getDestination($rootFolder, array $settings = [])
     {
         $destination = $this->config['destination'];
 
@@ -146,8 +147,9 @@ class Symlinker extends Extension
      */
     public function unlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($event->getSettings());
-        $destination = $this->getDestination($rootFolder, $event->getSettings());
+        $eventSettings =(array)$event->getSettings();
+        $rootFolder = $this->getRootFolder($eventSettings);
+        $destination = $this->getDestination($rootFolder, $eventSettings);
 
         if ($this->filesystem->file_exists($destination)) {
             try {

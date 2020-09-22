@@ -109,7 +109,7 @@ class WPQueries extends \Codeception\Module
     /**
      * Returns the corrent wpdb instance.
      *
-     * @return \wpdb|null The current wpdb instance.
+     * @return \wpdb The current wpdb instance.
      */
     private function getWpdbInstance()
     {

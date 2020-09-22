@@ -140,7 +140,7 @@ function dbDsnMap($dbHost)
         $typeInInput = true;
     }
 
-    $dbHost = rtrim($dbHost, ';');
+    $dbHost = rtrim((string)$dbHost, ';');
 
     $frags = array_replace(['', ''], explode(':', $dbHost));
 
