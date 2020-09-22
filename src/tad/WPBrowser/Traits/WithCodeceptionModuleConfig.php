@@ -35,7 +35,7 @@ trait WithCodeceptionModuleConfig
         // Some Codeception functions will not be auto-loaded when this method runs in isolation, load them now.
         require_once vendorDir('codeception/codeception/autoload.php');
 
-        if (method_exists($moduleInstance, 'getSuiteConfig')) {
+        if (!method_exists($moduleInstance, 'getSuiteConfig')) {
             throw new \RuntimeException(
                 "{$module} module does not implement the getSuiteConfig method or does not use the "
                 . Config::class
