@@ -408,7 +408,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
-     * @return void
+     * @return string The page path.
      */
     public function amOnCronPage($queryVars = null)
     {
@@ -417,7 +417,7 @@ trait WPBrowserMethods
             $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
-        $this->amOnPage($path);
+        return $this->amOnPage($path);
     }
 
     /**
