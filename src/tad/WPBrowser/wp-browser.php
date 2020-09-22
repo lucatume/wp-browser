@@ -148,7 +148,7 @@ function identifySuiteFromTrace()
 
             $path  .= '/' . $suite;
 
-            if (!file_exists("{$path}.suite.dist.yml") || file_exists("{$path}.suite.yml")) {
+            if (file_exists("{$path}.suite.dist.yml") || file_exists("{$path}.suite.yml")) {
                 return $suite;
             }
         } while (count($pathFrags));

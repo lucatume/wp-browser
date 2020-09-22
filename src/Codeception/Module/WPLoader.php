@@ -298,8 +298,7 @@ class WPLoader extends Module
      */
     protected static function _newInstanceWithoutConstructor()
     {
-        $classReflection       = new \ReflectionClass(self::class);
-        $instance              = $classReflection->newInstanceWithoutConstructor();
+        $instance              = (new \ReflectionClass(self::class))->newInstanceWithoutConstructor();
 
         if (! $instance instanceof static) {
             throw new ModuleException($instance, 'Could not build instance.');
