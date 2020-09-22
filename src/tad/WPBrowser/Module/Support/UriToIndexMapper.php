@@ -53,7 +53,7 @@ class UriToIndexMapper
             $uriPath = '/' . $uri;
         }
 
-        $uriPath = '/' . trim($uriPath, '/');
+        $uriPath = '/' . trim((string)$uriPath, '/');
 
         if (is_file($this->root . $uriPath)) {
             return $this->root . $uriPath;

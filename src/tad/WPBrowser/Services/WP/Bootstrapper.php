@@ -20,7 +20,7 @@ class Bootstrapper
     protected $bootstrapScriptFilePath;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $wpLoadPath;
 
@@ -76,9 +76,15 @@ class Bootstrapper
      * @param array<string,mixed> $actions The array of actions to execute.
      *
      * @return string|false Either the last line of the bootstrap output, or `false` on failure.
+     *
+     * @throws \RuntimeException If the bootstrap happens before the load path is set.
      */
     public function bootstrapWpAndExec(array $actions)
     {
+        if (empty($this->wpLoadPath)) {
+            throw new \RuntimeException('Cannot bootstrap WordPress if load path is not set.');
+        }
+
         $command = implode(' ', [
             PHP_BINARY,
             escapeshellarg($this->bootstrapScriptFilePath),

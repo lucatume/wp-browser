@@ -24,7 +24,7 @@ class Arg implements ArgInterface
 
     /**
      * The callback to execute to format the expectation error.
-     * @var callable
+     * @var callable|null
      */
     protected $onFail;
 
@@ -45,8 +45,8 @@ class Arg implements ArgInterface
      *
      * @param callable $check The callable that will be used to check the argument. It should return a boolean or throw
      *                        an Exception that will be formatted and thrown again.
-     * @param callable $onFail The callable that will be used to format the error message if the argument expectation is
-     *                         fails.
+     * @param callable|null $onFail The callable that will be used to format the error message if the argument
+     *                              expectation is fails.
      */
     public function __construct(callable $check, callable $onFail = null)
     {
@@ -142,9 +142,15 @@ class Arg implements ArgInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \RuntimeException If the onFail handler is not set.
      */
     public function getFailureMessage()
     {
+        if (!is_callable($this->onFail)) {
+            throw new \RuntimeException('onFail handler not set');
+        }
+
         return call_user_func($this->onFail, $this->actualInput, $this->checkException);
     }
 

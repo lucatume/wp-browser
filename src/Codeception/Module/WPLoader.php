@@ -230,7 +230,7 @@ class WPLoader extends Module
     /**
      * An instance of the WordPress adapter.
      *
-     * @var WP|null
+     * @var WP
      */
     protected $wp;
 
@@ -476,7 +476,7 @@ class WPLoader extends Module
         // Make the `factory` property available on the `$tester` property.
         $this->setupFactoryStore();
 
-        if (Debug::isEnabled()) {
+        if ($this->healthcheck instanceof WPHealthcheck && Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode(
                 $this->healthcheck->run(),
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
@@ -782,17 +782,19 @@ class WPLoader extends Module
      */
     public function _switchTheme()
     {
-        if (! empty($this->config['theme'])) {
-            $stylesheet = is_array($this->config['theme']) ?
-                end($this->config['theme'])
-                : $this->config['theme'];
-            $functionsFile = $this->wp->getWpContentDir() . '/themes/' . $stylesheet . '/functions.php';
-            if (file_exists($functionsFile)) {
-                require_once($functionsFile);
-            }
-            $this->wp->switch_theme($stylesheet);
-            $this->wp->do_action('after_switch_theme', $stylesheet);
+        if (empty($this->config['theme'])) {
+            return;
         }
+
+        $stylesheet = is_array($this->config['theme']) ?
+            end($this->config['theme'])
+            : $this->config['theme'];
+        $functionsFile = $this->wp->getWpContentDir() . '/themes/' . $stylesheet . '/functions.php';
+        if (file_exists($functionsFile)) {
+            require_once($functionsFile);
+        }
+        $this->wp->switch_theme($stylesheet);
+        $this->wp->do_action('after_switch_theme', $stylesheet);
     }
 
     /**
@@ -877,7 +879,7 @@ class WPLoader extends Module
      */
     public function _wordPressExitHandler(OutputInterface $output = null)
     {
-        if ($this->wpDidLoadCorrectly) {
+        if ($this->wpDidLoadCorrectly || !$this->healthcheck instanceof WPHealthcheck) {
             return;
         }
 

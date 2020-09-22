@@ -20,8 +20,8 @@ class WP
      * Proxy to the `locate_template` function.
      *
      * @param string|array<string> $templateNames Template file(s) to search for, in order.
-     * @param bool|null            $load          Whether to load the found templates.
-     * @param bool|null            $require_once  Whether to require the found templates or not.
+     * @param bool $load Whether to load the found templates.
+     * @param bool $require_once Whether to require the found templates or not.
      *
      * @return string The template filename if one is located.
      */
@@ -90,7 +90,7 @@ class WP
     /**
      * Proxy to the `home_url` function.
      *
-     * @param string|null $path   An optional path to append to the home URL.
+     * @param string $path   An optional path to append to the home URL.
      * @param string|null $scheme The HTTP scheme to use.
      *
      * @return string|void The home URL.
@@ -103,10 +103,10 @@ class WP
     /**
      * Proxy to the `admin_url` function.
      *
-     * @param string|null $path   An optional path to append to the admin URL.
-     * @param string|null $scheme The HTTP scheme to use.
+     * @param string $path   An optional path to append to the admin URL.
+     * @param string $scheme The HTTP scheme to use.
      *
-     * @return string|void The admin URL.
+     * @return string The admin URL.
      */
     public function admin_url($path = '', $scheme = 'admin')
     {

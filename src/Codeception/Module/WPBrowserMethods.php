@@ -25,7 +25,7 @@ trait WPBrowserMethods
     /**
      * The login screen absolute URL
      *
-     * @var string|null
+     * @var string
      */
     protected $loginUrl;
 

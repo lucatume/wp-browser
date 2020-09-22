@@ -92,7 +92,7 @@ class Symlinker extends Extension
      *
      * @return string The root folder path.
      */
-    protected function getRootFolder(array $settings = null)
+    protected function getRootFolder(array $settings = [])
     {
         $rootFolder = isset($this->config['rootFolder']) ?
             $this->config['rootFolder']
@@ -121,7 +121,7 @@ class Symlinker extends Extension
      *
      * @return string The destination path or an array of destination paths.
      */
-    protected function getDestination($rootFolder, array $settings = null)
+    protected function getDestination($rootFolder, array $settings = [])
     {
         $destination = $this->config['destination'];
 
