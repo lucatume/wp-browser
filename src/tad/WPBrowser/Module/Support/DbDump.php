@@ -108,7 +108,7 @@ class DbDump
 
         if ($originalFrags === false) {
             throw new DumpException(
-                'Could not parse, the original site URL; check the parsed or set originalUrl paramter.'
+                'Could not parse, the original site URL; check the parsed or set originalUrl parameter.'
             );
         }
 
@@ -139,10 +139,11 @@ class DbDump
 
         preg_match($urlPattern, (string)$sql, $m);
 
-        if (empty($sql)) {
+        $pregLastError = preg_last_error();
+        if ($pregLastError !== 0 || $sql === null) {
             throw new DumpException(
                 'There was an error while trying to replace the URL in the dump file: ' .
-                pregErrorMessage(preg_last_error()) .
+                pregErrorMessage($pregLastError) .
                 "\n\n" .
                 'Either manually replace it and set the "urlReplacement" module parameter to "false" or check the ' .
                 'dump file integrity.'

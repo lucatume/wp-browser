@@ -69,8 +69,9 @@ class Symlinker extends Extension
      */
     public function symlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($event->getSettings());
-        $destination = $this->getDestination($rootFolder, $event->getSettings());
+        $eventSettings =(array)$event->getSettings();
+        $rootFolder = $this->getRootFolder($eventSettings);
+        $destination = $this->getDestination($rootFolder, $eventSettings);
 
         try {
             if (!$this->filesystem->file_exists($destination)) {
@@ -146,8 +147,9 @@ class Symlinker extends Extension
      */
     public function unlink(\Codeception\Event\SuiteEvent $event)
     {
-        $rootFolder = $this->getRootFolder($event->getSettings());
-        $destination = $this->getDestination($rootFolder, $event->getSettings());
+        $eventSettings =(array)$event->getSettings();
+        $rootFolder = $this->getRootFolder($eventSettings);
+        $destination = $this->getDestination($rootFolder, $eventSettings);
 
         if ($this->filesystem->file_exists($destination)) {
             try {
