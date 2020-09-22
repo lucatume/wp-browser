@@ -30,14 +30,14 @@ class Map implements \ArrayAccess
     /**
      * The map of value underlying the map.
      *
-     * @var array<string,mixed>
+     * @var array<int|string,mixed>
      */
     protected $map = [];
 
     /**
      * A map of the aliases, aliases to sources.
      *
-     * @var array<string,string>
+     * @var array<int|string,string>
      */
     protected $aliases;
 
@@ -45,8 +45,8 @@ class Map implements \ArrayAccess
     /**
      * Map constructor.
      *
-     * @param array<string,mixed> $map The map of values underlying this map.
-     * @param array<string,mixed> $aliases The map of aliases for the map.
+     * @param array<int|string,mixed> $map The map of values underlying this map.
+     * @param array<int|string,mixed> $aliases The map of aliases for the map.
      */
     public function __construct(array $map = [], array $aliases = [])
     {
@@ -158,9 +158,9 @@ class Map implements \ArrayAccess
     /**
      * Redirects an offset to the real one if the specified offset is an alias.
      *
-     * @param string $offset The offset to redirect.
+     * @param string|int $offset The offset to redirect.
      *
-     * @return string The real offset key.
+     * @return int|string The real offset key.
      */
     protected function redirectAlias($offset)
     {
@@ -193,7 +193,7 @@ class Map implements \ArrayAccess
     /**
      * Outputs the map in array format, including aliases.
      *
-     * @return array<string,mixed> The map in array format, including aliases.
+     * @return array<int|string,mixed> The map in array format, including aliases.
      */
     public function toArray()
     {

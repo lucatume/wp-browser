@@ -11,10 +11,10 @@ class User
      * Generates the entry for the users table.
      *
      * @param string              $user_login The user login slug.
-     * @param array<string,mixed> $userData   An array of user data to override the default values. It should NOT
+     * @param array<int|string,mixed> $userData   An array of user data to override the default values. It should NOT
      *                                        include `meta` and `meta_input` keys.
      *
-     * @return array<string,string>             An associative array of column/values for the "users" table.
+     * @return array<int|string,string>             An associative array of column/values for the "users" table.
      */
     public static function generateUserTableDataFrom($user_login, array $userData = array())
     {
@@ -84,7 +84,7 @@ class User
 
         if ($stringValues) {
             // Format is `[<cap1>, <cap2>]`.
-            $roles = array_combine($roles, array_fill(0, count($roles), true)) ;
+            $roles = (array)array_combine($roles, array_fill(0, count($roles), true)) ;
             $boolValues = true;
         }
 

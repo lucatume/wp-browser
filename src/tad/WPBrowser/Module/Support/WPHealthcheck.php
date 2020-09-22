@@ -191,7 +191,7 @@ class WPHealthcheck
     /**
      * Runs and returns a battery of checks on the site filesystem and status.
      *
-     * @return array<string,string> An associative array reporting the checks statuses.
+     * @return array<string,string|array> An associative array reporting the checks statuses.
      */
     protected function runChecks()
     {
@@ -276,6 +276,11 @@ class WPHealthcheck
         $table_prefix = $this->database->getTablePrefix();
 
         $allTables = $tables->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($allTables === false) {
+            $this->dbStructureError = 'unable to fetch all the tables from the database.';
+            return false;
+        }
 
         $matchingTables = array_filter($allTables, static function ($table) use ($table_prefix) {
             return strpos($table, $table_prefix) === 0;

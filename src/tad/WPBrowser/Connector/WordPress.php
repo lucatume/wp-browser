@@ -97,6 +97,8 @@ class WordPress extends Universal
      * @param Request $request The request object.
      *
      * @return Response The request response.
+     *
+     * @throws \RuntimeException If the request URI could not be parsed.
      */
     public function doRequestInProcess($request)
     {
@@ -111,9 +113,14 @@ class WordPress extends Universal
         $requestFiles = $this->remapFiles($request->getFiles());
 
         $parseResult = parse_url($request->getUri());
-        $uri = $parseResult["path"];
-        if (array_key_exists("query", $parseResult)) {
-            $uri .= "?" . $parseResult["query"];
+
+        if ($parseResult === false) {
+            throw new \RuntimeException('Request URI could not be parsed.');
+        }
+
+        $uri = isset($parseResult['path']) ? $parseResult['path'] : '/';
+        if (array_key_exists('query', $parseResult)) {
+            $uri .= '?' . $parseResult['query'];
         }
 
         $requestRequestArray = $this->remapRequestParameters($request->getParameters());

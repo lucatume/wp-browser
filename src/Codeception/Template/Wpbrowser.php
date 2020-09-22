@@ -572,7 +572,7 @@ class Wpbrowser extends Bootstrap
      * Creates the WordPress unit test suite.
      *
      * @param string $actor The actor for the suite.
-     * @param array<string,mixed>  $installationData The installation data.
+     * @param array<int|string,mixed>  $installationData The installation data.
      *
      * @return void
      */
@@ -651,7 +651,7 @@ EOF;
      * Creates the functional suite.
      *
      * @param string $actor The actor to use for the suite.
-     * @param array<string,mixed>  $installationData The installation data.
+     * @param array<int|string,mixed>  $installationData The installation data.
      *
      * @return void
      */
@@ -712,7 +712,7 @@ EOF;
      * Creates the acceptance suite files.
      *
      * @param string $actor The actor to use for the acceptance suite.
-     * @param array<string,mixed>  $installationData The current installation data.
+     * @param array<int|string,mixed>  $installationData The current installation data.
      *
      * @return void
      */

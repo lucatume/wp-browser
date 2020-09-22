@@ -148,6 +148,10 @@ trait WithWordPressFilters
 
         $output = json_encode($args);
 
+        if ($output === false) {
+            return 'n/a';
+        }
+
         if (strlen($output) > 120) {
             $output = substr($output, 0, 120) . '…';
         }

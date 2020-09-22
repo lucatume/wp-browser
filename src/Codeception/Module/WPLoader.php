@@ -339,7 +339,8 @@ class WPLoader extends Module
     protected function initialize()
     {
         self::$didInit = true;
-        $this->config = new Configuration($this->config, [
+        $configArray = $this->config instanceof Configuration ? $this->config->toArray() : $this->config;
+        $this->config = new Configuration($configArray, [
             'wpRootDir' => 'wpRootFolder',
             'pluginsDir' => 'pluginsFolder',
             'contentDir' => 'contentFolder'
@@ -403,7 +404,7 @@ class WPLoader extends Module
         if (empty($this->wpRootFolder)) {
             $wpRootFolder = $this->config['wpRootFolder'];
             // Maybe the user is using the `~` symbol for home?
-            $wpRootFolder = resolvePath($wpRootFolder);
+            $wpRootFolder = (string)resolvePath($wpRootFolder);
             // Remove `\ ` spaces in folder paths.
             $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
             // Resolve to real path if relative or symlinked.
@@ -590,6 +591,9 @@ class WPLoader extends Module
 
         try {
             $resolved = resolvePath($candidate, $this->getWpRootFolder());
+            if ($resolved === false) {
+                throw new \RuntimeException('Could not resolve path.');
+            }
         } catch (\Exception $e) {
             throw new ModuleConfigException(
                 __CLASS__,
@@ -597,7 +601,7 @@ class WPLoader extends Module
             );
         }
 
-        $this->pluginDir = untrailslashit($resolved);
+        $this->pluginDir = (string)untrailslashit($resolved);
 
         return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
     }
@@ -786,7 +790,7 @@ class WPLoader extends Module
             if (file_exists($functionsFile)) {
                 require_once($functionsFile);
             }
-            call_user_func([$this->wp, 'switch_theme'], $stylesheet);
+            $this->wp->switch_theme($stylesheet);
             $this->wp->do_action('after_switch_theme', $stylesheet);
         }
     }
@@ -1003,7 +1007,7 @@ class WPLoader extends Module
      * @param string|null $root   The start directory to search for configuration files. If not found in the starting
      *                            directory, then files will be searched in the directory parents.
      *
-     * @return array<string> An array of configuration files absolute paths.
+     * @return array<int,string|false> An array of configuration files absolute paths.
      *
      * @throws ModuleConfigException If a specified configuration file does not exist.
      */
@@ -1016,8 +1020,8 @@ class WPLoader extends Module
 
         foreach ((array)$candidates as $candidate) {
             if (! empty($candidate)) {
-                $configFile = findHereOrInParent($candidate, $root);
-                if (! file_exists($configFile)) {
+                $configFile = (string)findHereOrInParent($candidate, $root);
+                if (! is_file($configFile)) {
                     throw new ModuleConfigException(
                         __CLASS__,
                         "\nConfig file `{$candidate}` could not be found in WordPress root folder or above."
@@ -1078,14 +1082,17 @@ class WPLoader extends Module
 
         try {
             $resolved = resolvePath($candidate, $this->getWpRootFolder());
+            if ($resolved === false) {
+                throw new \RuntimeException('Could not resolve path.');
+            }
         } catch (\Exception $e) {
             throw new ModuleConfigException(
                 __CLASS__,
-                "The path to the content directory ('{$candidate}') doesn't exist."
+                "The path to the content directory ('{$candidate}') doesn't exist or is not accessible."
             );
         }
 
-        $this->contentDir = untrailslashit($resolved);
+        $this->contentDir = (string)untrailslashit($resolved);
 
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
     }

@@ -48,8 +48,16 @@ function slug($string, $sep = '-', $let = false)
     // Transliterate.
     $string = iconv('utf-8', 'us-ascii//TRANSLIT', $string);
 
+    if ($string === false) {
+        throw new \InvalidArgumentException('Failed to slugify string');
+    }
+
     // Remove anything that is not a word or a number or the separator(s).
     $string = preg_replace('~[^' . $seps . '\w]+~', '', $string);
+
+    if ($string === null) {
+        throw new \InvalidArgumentException('Failed to slugify string');
+    }
 
     // Trim excess separator chars.
     $string = trim(trim($string), $seps);
@@ -82,8 +90,14 @@ function renderString($template, array $data = [], array $fnArgs = [])
     );
 
     if (false !== strpos($template, '{{#')) {
+        $php = \LightnCandy\LightnCandy::compile($template);
+
+        if ($php === false) {
+            throw new \RuntimeException('Failed to compile template');
+        }
+
         /** @var \Closure $compiler */
-        $compiler = \LightnCandy\LightnCandy::prepare(\LightnCandy\LightnCandy::compile($template));
+        $compiler = \LightnCandy\LightnCandy::prepare($php);
 
         return $compiler($replace);
     }
@@ -105,10 +119,18 @@ function renderString($template, array $data = [], array $fnArgs = [])
  *
  * @param string $url The input URL.
  *
- * @return array<string,string> An array of parsed components, or an array of default values.
+ * @return array<string,string|int> An array of parsed components, or an array of default values.
+ *
+ * @throws \InvalidArgumentException If the URL cannot be parsed at all.
  */
 function parseUrl($url)
 {
+    $parsed = \parse_url($url);
+
+    if (!is_array($parsed)) {
+        throw new \InvalidArgumentException("Failed to parse URL {$url}");
+    }
+
     return array_merge([
         'scheme'   => '',
         'host'     => '',
@@ -118,7 +140,7 @@ function parseUrl($url)
         'path'     => '',
         'query'    => '',
         'fragment' => ''
-    ], \parse_url($url));
+    ], $parsed);
 }
 
 /**
@@ -143,7 +165,7 @@ function isRegex($string)
  *
  * @param array<string> $elements The list elements.
  *
- * @return string The list in string format.
+ * @return string|false The list in string format or `false` if the list is empty.
  */
 function andList(array $elements)
 {

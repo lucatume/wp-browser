@@ -21,9 +21,9 @@ class Post
      *
      * @param int                 $id   The post ID.
      * @param string              $url  The URL of the site to generate a post for.
-     * @param array<string,mixed> $data A map of fixed data for the post.
+     * @param array<int|string,mixed> $data A map of fixed data for the post.
      *
-     * @return array<string,mixed> The post data.
+     * @return array<int|string,mixed> The post data.
      */
     public static function buildPostData($id, $url = 'http://www.example.com', array $data = [])
     {
@@ -36,7 +36,7 @@ class Post
      * @param int    $id  The post ID to use.
      * @param string $url The site URL.
      *
-     * @return array<string,string|int> A map of the post creation default values.
+     * @return array<string,mixed> A map of the post creation default values.
      */
     protected static function getDefaults($id, $url)
     {

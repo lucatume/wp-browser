@@ -136,7 +136,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
         // Skip the method if it's an @internal one.
         $methodFullDoc = (new ReflectionMethod($this->fullClassName, $func->getName()))->getDocComment();
-        foreach (explode(PHP_EOL, $methodFullDoc) as $line) {
+        foreach ((array)explode(PHP_EOL, (string)$methodFullDoc) as $line) {
             if (strpos($line, ' @internal ') !== false) {
                 return '';
             }
