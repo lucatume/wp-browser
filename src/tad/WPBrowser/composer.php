@@ -18,7 +18,7 @@ use tad\WPBrowser\Utils\Map;
  */
 function composerFile($file)
 {
-    if (empty($file) || ! is_dir($file)) {
+    if (empty($file) || ! is_file($file)) {
         throw new \InvalidArgumentException("File {$file} does not exist.");
     }
     $composerFileContents = file_get_contents($file);
