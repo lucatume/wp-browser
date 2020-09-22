@@ -1,6 +1,4 @@
 <?php
-namespace PHPDocsMD;
-
 /**
  * Object describing a class or an interface.
  *
@@ -9,126 +7,176 @@ namespace PHPDocsMD;
  *
  * @package PHPDocsMD
  */
+namespace PHPDocsMD;
+
+/**
+ * Class ClassEntity
+ *
+ * @package PHPDocsMD
+ */
 class ClassEntity extends CodeEntity
 {
 
     /**
-     * @var \PHPDocsMD\FunctionEntity[]
+     * A list of the class functions.
+     *
+     * @var array<\PHPDocsMD\FunctionEntity>
      */
     private $functions = [];
 
     /**
+     * Whether the class is an interface or not.
+     *
      * @var bool
      */
     private $isInterface = false;
 
     /**
+     * Whether the class is abstract or not.
+     *
      * @var bool
      */
     private $abstract = false;
 
     /**
+     * Whether the class has the ignore tag or not.
+     *
      * @var bool
      */
     private $hasIgnoreTag = false;
 
     /**
+     * Whether the class has the internal tag or not.
+     *
      * @var bool
      */
     private $hasInternalTag = false;
 
     /**
+     * The class extended bu the class, if any.
+     *
      * @var string
      */
     private $extends = '';
 
     /**
-     * @var array
+     * A list of interfaces the class implements.
+     *
+     * @var array<string>
      */
     private $interfaces = [];
 
     /**
-     * @var array
+     * A list of see links for the class.
+     *
+     * @var array<string>
      */
     private $see = [];
 
     /**
+     * Whether the class is PHP native or not.
+     *
      * @var bool
      */
-    private $isNative;
+    protected $isNative;
 
     /**
-     * @param bool $toggle
-     * @return bool
+     * Sets or gets whether a class is abstract or not.
+     *
+     * @param bool|null $isAbstract Whether a class is abstract or not.
+     *
+     * @return bool Whether a class is abstract or not.
      */
-    public function isAbstract($toggle = null)
+    public function isAbstract($isAbstract = null)
     {
-        if ($toggle === null) {
+        if ($isAbstract === null) {
             return $this->abstract;
-        } else {
-            return $this->abstract = (bool)$toggle;
         }
+
+        return $this->abstract = (bool) $isAbstract;
     }
 
     /**
-     * @param bool $toggle
-     * @return bool
+     * Sets or gets whether a class has the ignore tag or not.
+     *
+     * @param bool|null $hasIgnoreTag Whether a class has the ignore tag or not.
+     *
+     * @return bool Whether a class has the ignore tag or not.
      */
-    public function hasIgnoreTag($toggle = null)
+    public function hasIgnoreTag($hasIgnoreTag = null)
     {
-        if ($toggle === null) {
+        if ($hasIgnoreTag === null) {
             return $this->hasIgnoreTag;
         } else {
-            return $this->hasIgnoreTag = (bool)$toggle;
+            return $this->hasIgnoreTag = (bool)$hasIgnoreTag;
         }
     }
 
+    /**
+     * Returns the class description.
+     *
+     * @return string The class description.
+     */
     public function getDescription()
     {
         return '';
     }
 
     /**
-     * @param bool $toggle
-     * @return bool
+     * Sets or gets whether a class entity has the internal tag or not.
+     *
+     * @param bool|null $hasInternalTag Whether a class entity has the internal tag or not.
+     *
+     * @return bool Whether a class entity has the internal tag or not.
      */
-    public function hasInternalTag($toggle = null)
+    public function hasInternalTag($hasInternalTag = null)
     {
-        if ($toggle === null) {
+        if ($hasInternalTag === null) {
             return $this->hasInternalTag;
-        } else {
-            return $this->hasInternalTag = (bool)$toggle;
         }
+
+        return $this->hasInternalTag = (bool) $hasInternalTag;
     }
 
     /**
-     * @param bool $toggle
-     * @return bool
+     * Sets or gets whether a class entity is an interface or not.
+     *
+     * @param bool|null $isInterface Whether the class entity is an interface or not.
+     *
+     * @return bool Whether the class entity is an interface or not.
      */
-    public function isInterface($toggle = null)
+    public function isInterface($isInterface = null)
     {
-        if ($toggle === null) {
+        if ($isInterface === null) {
             return $this->isInterface;
-        } else {
-            return $this->isInterface = (bool)$toggle;
         }
+
+        return $this->isInterface = (bool) $isInterface;
     }
 
     /**
-     * @param bool $toggle
-     * @return bool
+     * Sets , or returns, whether  the class is a PHP native one or not.
+     *
+     * @param bool|null $toggle Whether the class is a PHP native one or not; if `null` the current value will be
+     *                          returned.
+     *
+     * @return bool Whether the class is native or not.
      */
     public function isNative($toggle = null)
     {
         if ($toggle === null) {
             return $this->isNative;
-        } else {
-            return $this->isNative = (bool)$toggle;
         }
+
+        return $this->isNative = (bool)$toggle;
     }
 
     /**
-     * @param string $extends
+     * Sets the class extended by the class.
+     *
+     * @param string $extends The class extended by the class.
+     *
+     * @return void
      */
     public function setExtends($extends)
     {
@@ -136,7 +184,9 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @return string
+     * Returns the parent class.
+     *
+     * @return string The parent class of the class.
      */
     public function getExtends()
     {
@@ -144,7 +194,11 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @param \PHPDocsMD\FunctionEntity[] $functions
+     * Sets the list of class functions.
+     *
+     * @param array<\PHPDocsMD\FunctionEntity> $functions The list of class functions.
+     *
+     * @return void
      */
     public function setFunctions(array $functions)
     {
@@ -152,7 +206,11 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @param array $see
+     * Sets the list of class see links.
+     *
+     * @param array<string> $see The list of class see links.
+     *
+     * @return void
      */
     public function setSee(array $see)
     {
@@ -163,7 +221,11 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @param array $implements
+     * Sets the list of interfaces implemented by the class.
+     *
+     * @param array<string> $implements The list of interfaces implemented by the class.
+     *
+     * @return void
      */
     public function setInterfaces(array $implements)
     {
@@ -174,7 +236,9 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @return array
+     * Returns a list of Interfaces implemented by the class.
+     *
+     * @return array<string> A list of interfaces implemented by the class.
      */
     public function getInterfaces()
     {
@@ -182,7 +246,9 @@ class ClassEntity extends CodeEntity
     }
 
     /**
-     * @return array
+     * Returns a list of see links for the class.
+     *
+     * @return array<string> A list of see links.
      */
     public function getSee()
     {
@@ -198,7 +264,11 @@ class ClassEntity extends CodeEntity
     }
 
     /**
+     * Sets the class name.
+     *
      * @param string $name
+     *
+     * @return void
      */
     public function setName($name)
     {

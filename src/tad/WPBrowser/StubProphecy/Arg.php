@@ -95,6 +95,13 @@ class Arg implements ArgInterface
         return $argExpectation;
     }
 
+    /**
+     * Builds and returns an argument expected to contain a string.
+     *
+     * @param string $string The string to check.
+     *
+     * @return Arg The built argument expectation.
+     */
     public static function containingString($string)
     {
         return new self(
@@ -103,7 +110,7 @@ class Arg implements ArgInterface
                     return (bool) preg_match($string, $input);
                 }
 
-                return false !== strpos($input, $string);
+                return str_contains($input, $string);
             },
             static function ($input) use ($string) {
                 return "Failed asserting that '{$input}' contains '{$string}'.";
@@ -212,6 +219,8 @@ class Arg implements ArgInterface
      * Sets the argument expectation failure message callback.
      *
      * @param callable $onFail The failure message callback.
+     *
+     * @return void
      */
     public function setOnFail(callable $onFail)
     {

@@ -9,6 +9,8 @@ namespace tad\WPBrowser;
 
 /**
  * Includes the Patchwork library main file.
+ *
+ * @return void
  */
 function includePatchwork()
 {
@@ -23,6 +25,8 @@ function includePatchwork()
  * Configures Patchwork using its API, without requiring a file.
  *
  * @param array<string,mixed> $config An array defining the Patchwork configuration to use.
+ *
+ * @return void
  */
 function configurePatchwork($config)
 {

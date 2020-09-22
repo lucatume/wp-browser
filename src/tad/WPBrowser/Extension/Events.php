@@ -22,18 +22,21 @@ class Events extends Extension
 
     /**
      * A compiled list of all the events this extension subscribes to.
-     * @var array|false
+     *
+     * @var array<string,mixed>|false
      */
     protected static $subscribedEvents;
 
     /**
      * Whether the event dispatcher was set on the Event Dispatcher Adapter or not.
+     *
      * @var bool
      */
     protected static $dispatcherSet = false;
 
     /**
      * Whether the event dispatcher should be captured or not for the current suite.
+     *
      * @var bool
      */
     protected static $doNotCapture = false;
@@ -66,6 +69,8 @@ class Events extends Extension
 
     /**
      * Fires on each events dispatched by Codeception to capture the current Symfony event dispatcher instance.
+     *
+     * @return void
      */
     public function onEvent()
     {

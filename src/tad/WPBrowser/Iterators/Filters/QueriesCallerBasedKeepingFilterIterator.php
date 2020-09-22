@@ -1,21 +1,33 @@
 <?php
+/**
+ * A filter that will keep queries depending on the caller that originated them.
+ *
+ * @package tad\WPBrowser\Iterators\Filters
+ */
 
 namespace tad\WPBrowser\Iterators\Filters;
 
+/**
+ * Class QueriesCallerBasedKeepingFilterIterator
+ *
+ * @package tad\WPBrowser\Iterators\Filters
+ */
 class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
 {
 
     /**
-     * @var array
+     * The list of elements to look for.
+     *
+     * @var array<string>
      */
     protected $needles = [];
 
     /**
-     * Check whether the current element of the iterator is acceptable
+     * Check whether the current element of the iterator is acceptable.
      *
      * @link  http://php.net/manual/en/filteriterator.accept.php
-     * @return bool true if the current element is acceptable, otherwise false.
-     * @since 5.1.0
+     *
+     * @return bool True if the current element is acceptable, otherwise false.
      */
     public function accept()
     {

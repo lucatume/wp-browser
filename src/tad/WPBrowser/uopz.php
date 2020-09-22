@@ -24,6 +24,8 @@ if (! extension_loaded('uopz')) {
  *
  * @throws \RuntimeException If the uopz extension is not loaded or a defined replacement is neither a function nor
  *                           a static method.
+ *
+ * @return void
  */
 function replacingWithUopz(array $what, callable $do)
 {

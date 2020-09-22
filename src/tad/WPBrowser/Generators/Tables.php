@@ -37,7 +37,7 @@ class Tables
      * @param string $table_prefix The table prefix to prepend to each blog table name.
      * @param int $blog_id The ID of the blog to return the table names for.
      *
-     * @return array The list of tables, not prefixed with the table prefix.
+     * @return array<string> The list of tables, not prefixed with the table prefix.
      */
     public static function blogTables($table_prefix = '', $blog_id = 1)
     {
@@ -58,12 +58,25 @@ class Tables
         ]);
     }
 
+    /**
+     * Returns the SQL to alter a table.
+     *
+     * @param string $table The table to alter.
+     * @param string $prefix The prefix of the table to alter.
+     *
+     * @return string The SQL.
+     */
     public function getAlterTableQuery($table, $prefix)
     {
         $data = ['operation' => 'ALTER TABLE', 'prefix' => $prefix];
         return in_array($table, $this->alterableTables(), true) ? $this->renderQuery($table, $data) : '';
     }
 
+    /**
+     * Returns  a list of alterable tables.
+     *
+     * @return array<string> The list of alterable tables in the context of multisite installations.
+     */
     private function alterableTables()
     {
         return [
@@ -78,11 +91,13 @@ class Tables
      * @param array<string,mixed> $data The data that should be used to render the query.
      *
      * @return string The rendered SQL query.
+     *
+     * @throws \InvalidArgumentException If the table name is not a valid table name.
      */
     protected function renderQuery($table, $data)
     {
         if (! in_array($table, $this->tables(), true)) {
-            throw new \InvalidArgumentException('Table ' . $table . ' is not a multisite table name');
+            throw new \InvalidArgumentException('Table ' . $table . ' is not a valid table name');
         }
 
         $template = $this->templates($table);
@@ -90,7 +105,12 @@ class Tables
         return renderString($template, $data);
     }
 
-    private function tables()
+    /**
+     * Returns a list of all the site tables.
+     *
+     * @return array<string> A list of all the site tables.
+     */
+    protected function tables()
     {
         return array_merge([], self::multisiteTables());
     }
@@ -102,7 +122,7 @@ class Tables
      *
      * @param string $table_prefix The table prefix to prepend to each table name.
      *
-     * @return array The list of tables, not prefixed with the table prefix.
+     * @return array<string> The list of tables, not prefixed with the table prefix.
      *
      * @see Tables::blogTables()
      */
@@ -119,47 +139,55 @@ class Tables
         ]);
     }
 
-    private function templates($table)
+    /**
+     * Returns the SQL query to perform a table operation.
+     *
+     * @param string $table The table name or table operation slug.
+     *
+     * @return string The SQL query.
+     *
+     * @throws \RuntimeException If the SQL query cannot be fetched.
+     */
+    protected function templates($table)
     {
-        $map = [
-            'blogs' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('blogs.handlebars'));
-            },
-            'drop-blog-tables' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('drop-blog-tables.handlebars'));
-            },
-            'blog_versions' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('blog_versions.handlebars'));
-            },
-            'registration_log' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('registration_log.handlebars'));
-            },
-            'signups' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('signups.handlebars'));
-            },
-            'site' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('site.handlebars'));
-            },
-            'sitemeta' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('site_meta.handlebars'));
-            },
-            'users' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('users.handlebars'));
-            },
-            'new-blog' => function () {
-                return file_get_contents($this->templatesDir . DIRECTORY_SEPARATOR . ('new-blog.handlebars'));
-            }
-        ];
+        $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "{$table}.handlebars";
 
-        return $map[$table]();
+        if (!is_file($templateFile)) {
+            throw new \RuntimeException("Template file {$templateFile} not found.");
+        }
+
+        $queryTemplate = file_get_contents($templateFile);
+
+        if (false ===$queryTemplate) {
+            throw new \RuntimeException("Template file {$templateFile} could not be read.");
+        }
+
+        return $queryTemplate;
     }
 
+    /**
+     * Returns the SQL code to create a blog table.
+     *
+     * @param string $table The table name.
+     * @param string $prefix The table prefix.
+     *
+     * @return string The SQL.
+     */
     public function getCreateTableQuery($table, $prefix)
     {
         $data = ['operation' => 'CREATE TABLE IF NOT EXISTS', 'prefix' => $prefix];
         return $this->renderQuery($table, $data);
     }
 
+    /**
+     * Returns the SQL code required to scaffold a blog tables.
+     *
+     * @param       string $prefix The blog prefix.
+     * @param       int $blogId The blog ID.
+     * @param array<string,mixed> $data The blog data.
+     *
+     * @return string The SQL query.
+     */
     public function getBlogScaffoldQuery($prefix, $blogId, array $data)
     {
         $template = $this->templates('new-blog');
@@ -172,6 +200,14 @@ class Tables
         return renderString($template, $data);
     }
 
+    /**
+     * Returns the SQL code to drop a blog tables.
+     *
+     * @param string $tablePrefix The database table prefix.
+     * @param int $blogId The blog ID.
+     *
+     * @return string SQL code.
+     */
     public function getBlogDropQuery($tablePrefix, $blogId)
     {
         $template = $this->templates('drop-blog-tables');

@@ -44,6 +44,8 @@ function composerFile($file)
  *
  * @param array<string,string> $dependencies A map of dependencies and their required versions.
  * @param callable             $else         Teh callback that will be called if the dependency check fails.
+ *
+ * @return void
  */
 function checkComposerDependencies(Map $composerFile, array $dependencies, callable $else)
 {

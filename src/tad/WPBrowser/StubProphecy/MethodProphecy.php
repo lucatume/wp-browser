@@ -32,9 +32,11 @@ class MethodProphecy
     protected $name;
 
     /**
-     * @var array
+     * The expected call arguments for the method, if any.
+     *
+     * @var array<mixed>
      */
-    protected $expectedArguments;
+    protected $expectedArguments = [];
     /**
      * The value the method prophecy should return when called, or a callback that will produce the method prophecy
      * return value when called.
@@ -167,6 +169,8 @@ class MethodProphecy
      *
      * @param callable $returnValue A callable that will produce, taking as input the actual call arguments, the
      *                              return value of the prophesized method.
+     *
+     * @return void
      */
     public function setReturnValue($returnValue)
     {
@@ -186,9 +190,11 @@ class MethodProphecy
     /**
      * Verifies the actual call arguments against the expected ones.
      *
-     * @param array $actualArgs The actual call arguments.
+     * @param array<mixed> $actualArgs The actual call arguments.
      *
      * @throws AssertionFailedError If the actual call arguments do not match the expected ones.
+     *
+     * @return void
      */
     public function verifyArgsExpectation(array $actualArgs = [])
     {
@@ -303,13 +309,19 @@ class MethodProphecy
      * Sets the method prophecy expected call count.
      *
      * @param int|callable $expectedCallCount The expected method count or a callable to verify the calls.
-     * @param TestCase $testCase The test case to attach the post conditions to.
+     *
+     * @return void
      */
-    public function setExpectedCallCount($expectedCallCount, TestCase $testCase)
+    public function setExpectedCallCount($expectedCallCount)
     {
         $this->expectedCallCount = (int) $expectedCallCount;
     }
 
+    /**
+     * Verifies an expected method call count expectation.
+     *
+     * @return void
+     */
     public function verifyExpectedCallCount()
     {
         $this->actualCallCount++;
@@ -329,6 +341,14 @@ class MethodProphecy
         }
     }
 
+    /**
+     * Returns the message that will details the failed expectation for a method call count.
+     *
+     * @param int $expectedCalls The number of expected calls.
+     * @param int $actualCalls The number of calls actually received.
+     *
+     * @return string The formatted error message.
+     */
     protected function failedCallCountExpectationMessage($expectedCalls, $actualCalls)
     {
         return sprintf(
@@ -344,6 +364,8 @@ class MethodProphecy
      * Adds a post condition to the method prophecy, verified when the `assertPostConditions` method is called.
      *
      * @param \Closure $postCondition The post condition to verify.
+     *
+     * @return void
      */
     protected function addPostCondition(\Closure $postCondition)
     {
@@ -352,6 +374,8 @@ class MethodProphecy
 
     /**
      * Asserts the method prophecy post conditions.
+     *
+     * @return void
      */
     public function assertPostConditions()
     {
@@ -366,6 +390,8 @@ class MethodProphecy
      * Sets a post condition on the method prophecy to ensure the prophecy method has been called at least times.
      *
      * @param int $times The number of times the prophecy method should be called as a minimum.
+     *
+     * @return void
      */
     public function shouldBeCalledAtLeastTimes($times)
     {

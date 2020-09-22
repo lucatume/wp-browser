@@ -14,9 +14,10 @@ if (! function_exists('rrmdir')) {
      *
      * @param string $src The absolute path to the directory to remove.
      *
+     * @return bool Whether the directory, and all its contents, were correctly removed or not.
      */
     function rrmdir($src)
     {
-        tad\WPBrowser\rrmdir($src);
+        return tad\WPBrowser\rrmdir($src);
     }
 }

@@ -11,7 +11,7 @@ class ExtendedMySql extends MySql
      * Returns the statement to insert or update an entry in the database.
      *
      * @param  string $tableName The table name to use
-     * @param  array $data Key/value pairs of the data to insert/update.
+     * @param  array<string,mixed> $data Key/value pairs of the data to insert/update.
      *
      * @return string            The query string ready to be prepared.
      */
@@ -33,6 +33,14 @@ class ExtendedMySql extends MySql
         );
     }
 
+    /**
+     * Returns the compiled assignments for the data.
+     *
+     * @param array<string,mixed>  $data The data to glue.
+     * @param string $glue The data glue.
+     *
+     * @return string The glued data.
+     */
     protected function getAssignmentsFor(array $data, $glue = ', ')
     {
         $assignments = array();

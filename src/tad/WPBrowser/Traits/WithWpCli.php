@@ -62,6 +62,8 @@ trait WithWpCli
     /**
      * Requires some wp-cli package files that could not be autoloaded.
      *
+     * @return void
+     *
      * @throws WpCliException If wp-cli package files cannot be located.
      */
     protected function requireWpCliFiles()
@@ -111,9 +113,9 @@ trait WithWpCli
     /**
      * Formats an associative array of options to be used as wp-cli options.
      *
-     * @param array $options The array of wp-cli options to format.
+     * @param array<string,string|int|float|bool> $options The array of wp-cli options to format.
      *
-     * @return array The formatted array of wp-cli options, in the `[ --<key> <value> ]` format.
+     * @return array<string> The formatted array of wp-cli options, in the `[ --<key> <value> ]` format.
      */
     protected function wpCliOptions(array $options)
     {
@@ -135,10 +137,9 @@ trait WithWpCli
     /**
      * Parses the inline options found in a command and returns them in an associative array.
      *
-     * @param string|array $command The command to parse
-     *                              .
+     * @param string|array<string> $command The command to parse
      *
-     * @return array An associative array of all the options found in the command.
+     * @return array<string,string|int|float|bool> An associative array of all the options found in the command.
      */
     protected function parseWpCliInlineOptions($command)
     {
@@ -164,6 +165,8 @@ trait WithWpCli
      * @param string $value    The option value.
      * @param string $autoload One of `yes` or `no` to indicate if the option should be auto-loaded by WordPress or not.
      * @param string $format   The option serialization format, one of `plaintext` or `json`.
+     *
+     * @return void
      *
      * @throws WpCliException If the option update command fails.
      */
@@ -192,11 +195,13 @@ trait WithWpCli
     /**
      * Executes a wp-cli command.
      *
-     * @param array          $command   The command fragments; a mix of arguments and options.
-     * @param int|float|null $timeout   The timeout, in seconds, to use for the command. Use `null` to remove the
-     *                                  timeout entirely.
-     * @param array          $env An optional,associative array of environment variables to set for the process.
-     * @return \Symfony\Component\Process\Process The process object that executed the command.
+     * @param array<string>                  $command The command fragments; a mix of arguments and options.
+     * @param int|float|null                 $timeout The timeout, in seconds, to use for the command. Use `null` to
+     *                                                remove the timeout entirely.
+     * @param array<string,string|int|float> $env     An optional,associative array of environment variables to set for
+     *                                                the process.
+     *
+     * @return \Symfony\Component\Process\Process<string,string> The process object that executed the command.
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
@@ -223,9 +228,10 @@ trait WithWpCli
     /**
      * Builds the full command to run including the PHP binary and the wp-cli boot file path.
      *
-     * @param array|string $command The command to run.
+     * @param array<string>|string $command The command to run.
      *
-     * @return array The full command including the current PHP binary and the absolute path to the wp-cli boot file.
+     * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
+     *                       file.
      *
      * @throws WpCliException If there's an issue building the command.
      *
@@ -265,7 +271,7 @@ trait WithWpCli
     /**
      * Executes a wp-cli command asynchronously.
      *
-     * @param array              $command       The command fragments; a mix of arguments and options.
+     * @param array<string>      $command       The command fragments; a mix of arguments and options.
      * @param callable|int|float $sleepOrVerify A callback to use to verify if the process is correctly running or not;
      *                                          the callback will receive the Symfony Process instance as argument;
      *                                          the callback should return falsy or truthy values; the code will wait
@@ -273,7 +279,9 @@ trait WithWpCli
      *                                          If a numeric value is, instead, provided then the code will `sleep` for
      *                                          that amount after starting the process.
      *
-     * @return \Symfony\Component\Process\Process The process object that is handling the command execution.
+     * @return \Symfony\Component\Process\Process<string,string> The process object that is handling the command
+     *                                                           execution.
+     *
      * @throws WpCliException If wp-cli has not been set up first.
      */
     protected function executeBackgroundWpCliCommand(array $command, $sleepOrVerify = null)

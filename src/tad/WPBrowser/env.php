@@ -93,6 +93,8 @@ function os()
  * @param bool $overwrite Whether to overwrite the existing env vars or not.
  *
  * @see envFile() For the function to load to generate a Map from an environment file.
+ *
+ * @return void
  */
 function loadEnvMap(Map $map, $overwrite = true)
 {

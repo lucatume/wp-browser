@@ -1,11 +1,26 @@
 <?php
+/**
+ * Blog data generator.
+ *
+ * @package tad\WPBrowser\Generators
+ */
 
 namespace tad\WPBrowser\Generators;
 
+/**
+ * Class Blog
+ *
+ * @package tad\WPBrowser\Generators
+ */
 class Blog
 {
 
-    public static function makeDefaults($isSubdomainMultisiteInstall = true)
+    /**
+     * Generates the data for a subdomain installation.
+     *
+     * @return array<string,mixed> The blog data.
+     */
+    public static function makeDefaults()
     {
         return [
             'site_id'      => 1,

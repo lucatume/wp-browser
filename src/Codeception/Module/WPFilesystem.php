@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * WordPress specific filesystem operations.
+ *
+ * @package Codeception\Module
+ */
 
 namespace Codeception\Module;
 
@@ -22,20 +26,21 @@ requireCodeceptionModules('WPFilesystem', [ 'Filesystem' ]);
 /**
  * Class WPFilesystem
  *
- * WordPress specific filesystem operations.
- *
  * @package Codeception\Module
  */
 class WPFilesystem extends Filesystem
 {
-
     /**
-     * @var array
+     * A list of the module required fields.
+     *
+     * @var array<string>
      */
     protected $requiredFields = ['wpRootFolder'];
 
     /**
-     * @var array
+     * The default module configuration.
+     *
+     * @var array<string,string>
      */
     protected $config = [
         'themes' => '/wp-content/themes',
@@ -45,15 +50,28 @@ class WPFilesystem extends Filesystem
     ];
 
     /**
-     * @var array
+     * A list of paths to clean after the tests.
+     *
+     * @var array<string>
      */
     protected $toClean = [];
 
     /**
+     * The current count of generated test plugins.
+     *
      * @var int
      */
     protected $testPluginCount = 0;
 
+    /**
+     * Runs before each test.
+     *
+     * @param TestInterface $test The current test.
+     *
+     * @return void
+     *
+     * @throws ModuleConfigException If there's an issue with the module configuration.
+     */
     public function _before(TestInterface $test)
     {
         $this->ensureOptionalPaths(false);
@@ -63,6 +81,8 @@ class WPFilesystem extends Filesystem
      * Sets and checks that the optional paths, if set, are actually valid.
      *
      * @param bool $check Whether to check the paths for existence or not.
+     *
+     * @return void
      *
      * @throws \Codeception\Exception\ModuleConfigException If one of the paths does not exist.
      */
@@ -117,6 +137,13 @@ class WPFilesystem extends Filesystem
         }
     }
 
+    /**
+     * Initializes the module before the tests.
+     *
+     * @return void
+     *
+     * @throws ModuleConfigException If the path to WordPress or the optional paths are not correct.
+     */
     public function _initialize()
     {
         $this->ensureWpRootFolder();
@@ -128,6 +155,8 @@ class WPFilesystem extends Filesystem
      *
      * @throws \Codeception\Exception\ModuleConfigException if the WordPress root folder does not exist
      *                                                      or is not a valid WordPress root folder.
+     *
+     * @return void
      */
     protected function ensureWpRootFolder()
     {
@@ -151,11 +180,26 @@ class WPFilesystem extends Filesystem
         $this->config['wpRootFolder'] = untrailslashit($wpRoot) . DIRECTORY_SEPARATOR;
     }
 
+    /**
+     * Runs after a test failure.
+     *
+     * @param TestInterface $test The test that just ran.
+     * @param \Exception    $fail The failure
+     *
+     * @return void;
+     */
     public function _failed(TestInterface $test, $fail)
     {
         $this->_after($test);
     }
 
+    /**
+     * Runs after each test.
+     *
+     * @param TestInterface $test The test that just ran.
+     *
+     * @return void
+     */
     public function _after(TestInterface $test)
     {
         if (!empty($this->toClean)) {
@@ -182,6 +226,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param string $path The path, relative to the site uploads folder.
+     *
+     * @return void
      *
      * @throws \Exception If the path is a date string and is not parsable by the `strtotime` function.
      */
@@ -224,6 +270,8 @@ class WPFilesystem extends Filesystem
      *
      * @param string $filename The file path, relative to the uploads folder or the current folder.
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @return void
      */
     public function seeUploadedFileFound($filename, $date = null)
     {
@@ -299,6 +347,8 @@ class WPFilesystem extends Filesystem
      *
      * @param string $file The file path, relative to the uploads folder or the current folder.
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @return void
      */
     public function dontSeeUploadedFileFound($file, $date = null)
     {
@@ -320,6 +370,8 @@ class WPFilesystem extends Filesystem
      * @param string $file The file path, relative to the uploads folder or the current folder.
      * @param string $contents The expected file contents or part of them.
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @return void
      */
     public function seeInUploadedFile($file, $contents, $date = null)
     {
@@ -347,6 +399,8 @@ class WPFilesystem extends Filesystem
      * @param string $file The file path, relative to the uploads folder or the current folder.
      * @param string $contents The not expected file contents or part of them.
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @return void
      */
     public function dontSeeInUploadedFile($file, $contents, $date = null)
     {
@@ -373,6 +427,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
      * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
      */
     public function deleteUploadedDir($dir, $date = null)
     {
@@ -395,6 +451,8 @@ class WPFilesystem extends Filesystem
      *
      * @param string $file The file path, relative to the uploads folder or the current folder.
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @return void
      */
     public function deleteUploadedFile($file, $date = null)
     {
@@ -416,6 +474,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
      * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
      */
     public function cleanUploadsDir($dir = null, $date = null)
     {
@@ -441,6 +501,8 @@ class WPFilesystem extends Filesystem
      * @param  string $src The path to the source file, relative to the current uploads folder.
      * @param  string $dst The path to the destination file, relative to the current uploads folder.
      * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
      */
     public function copyDirToUploads($src, $dst, $date = null)
     {
@@ -501,6 +563,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $filename The path to the file, relative to the current uploads folder.
      * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
      */
     public function openUploadedFile($filename, $date = null)
     {
@@ -516,6 +580,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $path The folder path, relative to the root uploads folder, to change to.
+     *
+     * @return void
      */
     public function amInPluginPath($path)
     {
@@ -533,6 +599,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $src The path to the source directory to copy.
      * @param  string $pluginDst The destination path, relative to the plugins root folder.
+     *
+     * @return void
      */
     public function copyDirToPlugin($src, $pluginDst)
     {
@@ -551,6 +619,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The folder path, relative to the plugins root folder.
+     *
+     * @return void
      */
     public function deletePluginFile($file)
     {
@@ -567,6 +637,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the plugins root folder.
      * @param  string $data The data to write in the file.
+     *
+     * @return void
      */
     public function writeToPluginFile($file, $data)
     {
@@ -585,6 +657,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the plugins root folder.
+     *
+     * @return void
      */
     public function dontSeePluginFileFound($file)
     {
@@ -600,6 +674,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to thep plugins root folder.
+     *
+     * @return void
      */
     public function seePluginFileFound($file)
     {
@@ -616,6 +692,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the plugins root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function seeInPluginFile($file, $contents)
     {
@@ -635,6 +713,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the plugins root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function dontSeeInPluginFile($file, $contents)
     {
@@ -653,6 +733,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $dir The path to the folder, relative to the plugins root folder.
+     *
+     * @return void
      */
     public function cleanPluginDir($dir)
     {
@@ -668,6 +750,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $path The path to the theme folder, relative to themes root folder.
+     *
+     * @return void
      */
     public function amInThemePath($path)
     {
@@ -684,6 +768,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $src The path to the source file.
      * @param  string $themeDst The path to the destination folder, relative to the themes root folder.
+     *
+     * @return void
      */
     public function copyDirToTheme($src, $themeDst)
     {
@@ -702,6 +788,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file to delete, relative to the themes root folder.
+     *
+     * @return void
      */
     public function deleteThemeFile($file)
     {
@@ -718,6 +806,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the themese root folder.
      * @param  string $data The data to write to the file.
+     *
+     * @return void
      */
     public function writeToThemeFile($file, $data)
     {
@@ -736,6 +826,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the themes root folder.
+     *
+     * @return void
      */
     public function dontSeeThemeFileFound($file)
     {
@@ -751,6 +843,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the themes root folder.
+     *
+     * @return void
      */
     public function seeThemeFileFound($file)
     {
@@ -769,6 +863,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the themes root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function seeInThemeFile($file, $contents)
     {
@@ -788,6 +884,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the themes root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function dontSeeInThemeFile($file, $contents)
     {
@@ -806,6 +904,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $dir The path to the folder, relative to the themese root folder.
+     *
+     * @return void
      */
     public function cleanThemeDir($dir)
     {
@@ -821,6 +921,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $path The path to the folder, relative to the mu-plugins root folder.
+     *
+     * @return void
      */
     public function amInMuPluginPath($path)
     {
@@ -837,6 +939,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $src The path to the source file to copy.
      * @param  string $pluginDst The path to the destination folder, relative to the mu-plugins root folder.
+     *
+     * @return void
      */
     public function copyDirToMuPlugin($src, $pluginDst)
     {
@@ -855,6 +959,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the mu-plugins root folder.
+     *
+     * @return void
      */
     public function deleteMuPluginFile($file)
     {
@@ -871,6 +977,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the destination file, relative to the mu-plugins root folder.
      * @param  string $data The data to write to the file.
+     *
+     * @return void
      */
     public function writeToMuPluginFile($file, $data)
     {
@@ -889,6 +997,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the mu-plugins folder.
+     *
+     * @return void
      */
     public function dontSeeMuPluginFileFound($file)
     {
@@ -904,6 +1014,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $file The path to the file, relative to the mu-plugins folder.
+     *
+     * @return void
      */
     public function seeMuPluginFileFound($file)
     {
@@ -920,6 +1032,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path the file, relative to the mu-plugins root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function seeInMuPluginFile($file, $contents)
     {
@@ -939,6 +1053,8 @@ class WPFilesystem extends Filesystem
      *
      * @param  string $file The path to the file, relative to the mu-plugins root folder.
      * @param  string $contents The contents to check the file for.
+     *
+     * @return void
      */
     public function dontSeeInMuPluginFile($file, $contents)
     {
@@ -957,6 +1073,8 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param  string $dir The path to the directory, relative to the mu-plugins root folder.
+     *
+     * @return void
      */
     public function cleanMuPluginDir($dir)
     {
@@ -982,6 +1100,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleException If the plugin folder and/or files could not be created.
      *
+     * @return void
      */
     public function havePlugin($path, $code)
     {
@@ -1036,6 +1155,8 @@ PHP;
      * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
+     *
+     * @return void
      */
     public function haveMuPlugin($filename, $code)
     {
@@ -1098,6 +1219,8 @@ PHP;
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
+     *
+     * @return void
      */
     public function haveTheme($folder, $indexFileCode, $functionsFileCode = '')
     {

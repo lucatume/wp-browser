@@ -10,21 +10,34 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
     use Shared\FileSystem;
     use Shared\Config;
 
+    /**
+     * Returns the command description.
+     *
+     * @return string The command description.
+     */
     public function getDescription()
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_Post_Type_Controller_Testcase extension '
                . 'with Codeception super-powers.';
     }
 
+    /**
+     * Returns the command generator.
+     *
+     * @param array<string,mixed>  $config The generator configuration.
+     * @param string $class The class to generate the template for.
+     *
+     * @return WPUnit The generator instance.
+     */
     protected function getGenerator($config, $class)
     {
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestPostTypeControllerTestCase');
     }
 
     /**
-     * returns the name of the command
+     * Returns the name of the command
      *
-     * @return string
+     * @return string The command name.
      */
     public static function getCommandName()
     {

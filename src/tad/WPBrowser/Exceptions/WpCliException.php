@@ -19,8 +19,8 @@ class WpCliException extends \Exception
     /**
      * Builds and returns an exception to indicate a type of variable cannot be set.
      *
-     * @param string $type           The type the command is trying to set.
-     * @param array  $supportedTypes The supported value types..
+     * @param string        $type           The type the command is trying to set.
+     * @param array<string> $supportedTypes The supported value types..
      *
      * @return WpCliException The built exception.
      */
@@ -46,7 +46,7 @@ class WpCliException extends \Exception
     /**
      * Builds and returns an exception to indicate a command failed.
      *
-     * @param Process $commandProcess The process that ran the command that failed.
+     * @param Process<string,string> $commandProcess The process that ran the command that failed.
      *
      * @return WpCliException The built exception.
      */
@@ -100,13 +100,5 @@ class WpCliException extends \Exception
             "wp-cli server router file was not found [$routerFile]: did you add the `wp-cli/server-command`" .
             ' package to Composer dependencies?'
         );
-    }
-
-    public static function becauseACommandDidNotTerminate(Process $process)
-    {
-        return new self(sprintf(
-            'Command did not terminate when was expected to; commandline: %s',
-            $process->getCommandLine()
-        ));
     }
 }

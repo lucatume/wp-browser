@@ -59,8 +59,8 @@ function processReadPipe($pipe, $length = null)
  *
  * The command is NOT escaped and should be escaped before being input into this function.
  *
- * @param array|string             $cmd The command to run, escaped if required..
- * @param string|string            $cwd The process working directory, or `null` to use the current one.
+ * @param array<string>|string     $cmd The command to run, escaped if required..
+ * @param string|null            $cwd The process working directory, or `null` to use the current one.
  * @param array<string,mixed>|null $env A map of the process environment variables; or `null` to use the current ones.
  *
  * @return \Closure A closure to read ($what = PROC_READ), write ($what = PROC_WRITE), read errors ($what = PROC_ERROR)
@@ -148,9 +148,9 @@ function process($cmd = [], $cwd = null, $env = null)
 /**
  * Builds an array format command line, compatible with the Symfony Process component, from a string command line.
  *
- * @param string|array $command The command line to parse, if in array format it will not be modified.
+ * @param string|array<string> $command The command line to parse, if in array format it will not be modified.
  *
- * @return array The parsed command line, in array format. Untouched if originally already an array.
+ * @return array<string> The parsed command line, in array format. Untouched if originally already an array.
  */
 function buildCommandline($command)
 {

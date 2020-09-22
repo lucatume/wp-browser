@@ -27,6 +27,8 @@ trait WithEvents
      * @param int      $priority  The priority that will be assigned to the callback in the context of the event.
      *
      * @throws \Codeception\Exception\TestRuntimeException If the event dispatcher cannot be found or built.
+     *
+     * @return void
      */
     protected function addAction($eventName, $listener, $priority = 0)
     {
@@ -42,6 +44,8 @@ trait WithEvents
      * @param mixed|null          $origin    The event origin: an object, a string or null.
      * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
      *                                       event.
+     *
+     * @return void
      */
     protected function doAction($eventName, $origin = null, $context = [])
     {

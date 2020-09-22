@@ -1,8 +1,13 @@
 <?php
+/**
+ * A Codeception module offering specific WordPress browsing methods.
+ *
+ * @package Codeception\Module
+ */
 
 namespace Codeception\Module;
 
-use Symfony\Component\BrowserKit\Cookie;
+use Facebook\WebDriver\Cookie;
 use function tad\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
@@ -10,7 +15,9 @@ requireCodeceptionModules('WPBrowser', [ 'PhpBrowser' ]);
 //phpcs:enable
 
 /**
- * A Codeception module offering specific WordPress browsing methods.
+ * Class WPBrowser
+ *
+ * @package Codeception\Module
  */
 class WPBrowser extends PhpBrowser
 {
@@ -19,7 +26,7 @@ class WPBrowser extends PhpBrowser
     /**
      * The module required fields, to be set in the suite .yml configuration file.
      *
-     * @var array
+     * @var array<string>
      */
     protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
@@ -35,7 +42,7 @@ class WPBrowser extends PhpBrowser
      *
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array|null An array of cookies matching the pattern.
+     * @return array<Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -76,7 +83,9 @@ class WPBrowser extends PhpBrowser
      * $I->activatePlugin(['hello-dolly','another-plugin']);
      * ```
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     *
+     * @return void
      */
     public function activatePlugin($pluginSlug)
     {
@@ -104,7 +113,9 @@ class WPBrowser extends PhpBrowser
      * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
      * ```
      *
-     * @param  string|array $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
+     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
+     *
+     * @return void
      */
     public function deactivatePlugin($pluginSlug)
     {
@@ -115,6 +126,13 @@ class WPBrowser extends PhpBrowser
         $this->click('#doaction');
     }
 
+    /**
+     * Validates the module configuration.
+     *
+     * @return void
+     *
+     * @throws \Codeception\Exception\ModuleConfigException|\Codeception\Exception\ModuleException If there's any issue.
+     */
     protected function validateConfig()
     {
         $this->configBackCompat();

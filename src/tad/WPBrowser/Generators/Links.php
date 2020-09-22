@@ -1,14 +1,23 @@
 <?php
+/**
+ * Links data generator.
+ *
+ * @package tad\WPBrowser\Generators
+ */
 
 namespace tad\WPBrowser\Generators;
 
+/**
+ * Class Links
+ *
+ * @package tad\WPBrowser\Generators
+ */
 class Links
 {
-
     /**
      * Generates an array of default links table entries.
      *
-     * @return array
+     * @return array<string,mixed> The generated data.
      */
     public static function getDefaults()
     {
