@@ -827,7 +827,7 @@ PHP;
     }
 
     /**
-     * It should allow having a plugin with code
+     * It should allow having a single file plugin with code
      * @test
      */
     public function it_should_allow_having_a_single_file_plugin_with_code()
