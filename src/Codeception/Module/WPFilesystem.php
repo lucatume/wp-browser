@@ -1105,14 +1105,24 @@ class WPFilesystem extends Filesystem
     public function havePlugin($path, $code)
     {
         $fullPath = $this->config['plugins'] . unleadslashit($path);
-        $dir = dirname($fullPath);
-        if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
-            throw new ModuleException(
-                __CLASS__,
-                "Could not create [{$dir}] plugin folder."
-            );
+
+        if (strpos($path, DIRECTORY_SEPARATOR) === false) {
+            $slug    = pathinfo($fullPath, PATHINFO_FILENAME);
+            $toClean = $fullPath;
+        } else {
+            $slug = basename(dirname($path));
+            $dir  = dirname($fullPath);
+
+            if ( ! @mkdir($dir, 0777, true) && ! is_dir($dir)) {
+                throw new ModuleException(
+                    __CLASS__,
+                    "Could not create [{$dir}] plugin folder."
+                );
+            }
+
+            $toClean = $dir;
         }
-        $slug = basename(dirname($path));
+
         $code = $this->removeOpeningPhpTag($code);
         $name = $slug;
         $contents = <<<PHP
@@ -1134,7 +1144,7 @@ PHP;
             );
         }
 
-        $this->toClean[] = $dir;
+        $this->toClean[] = $toClean;
     }
 
     /**

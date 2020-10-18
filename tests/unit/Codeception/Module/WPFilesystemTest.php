@@ -826,6 +826,39 @@ PHP;
         Assert::assertFileDoesNotExist($pluginFolder);
     }
 
+    /**
+     * It should allow having a plugin with code
+     * @test
+     */
+    public function it_should_allow_having_a_single_file_plugin_with_code()
+    {
+        $sut = $this->make_instance();
+
+        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
+        $pluginFile =  $pluginsFolder . '/plugin.php';
+
+        $code = "echo 'Hello world';";
+        $sut->havePlugin('plugin.php', $code);
+
+        $this->assertFileExists($pluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: plugin
+Description: plugin
+*/
+
+echo 'Hello world';
+PHP;
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+
+        Assert::assertFileDoesNotExist($pluginFile);
+        $this->assertFileExists($pluginsFolder);
+    }
+
 
     /**
      * It should allow having a mu-plugin with code
