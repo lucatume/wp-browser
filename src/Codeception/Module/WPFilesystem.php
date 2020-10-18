@@ -1113,7 +1113,7 @@ class WPFilesystem extends Filesystem
             $slug = basename(dirname($path));
             $dir  = dirname($fullPath);
 
-            if ( ! @mkdir($dir, 0777, true) && ! is_dir($dir)) {
+            if (!@mkdir($dir, 0777, true) && ! is_dir($dir)) {
                 throw new ModuleException(
                     __CLASS__,
                     "Could not create [{$dir}] plugin folder."
