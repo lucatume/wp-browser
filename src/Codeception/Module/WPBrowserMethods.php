@@ -30,6 +30,23 @@ trait WPBrowserMethods
     protected $loginUrl;
 
     /**
+     * Navigate to the stock WordPress logout page and click the logout link.
+     *
+     * @example
+     * ```php
+     * $I->logOut();
+     * ```
+     *
+     * @return void
+     */
+    public function logOut()
+    {
+        $this->amOnPage( $this->getLoginUrl() . '?action=logout');
+        $this->click('log out');
+        $this->seeInCurrentUrl('loggedout=true');
+    }
+
+    /**
      * Login as the administrator user using the credentials specified in the module configuration.
      *
      * The method will **not** follow redirection, after the login, to any page.
