@@ -585,7 +585,7 @@ $I->haveManyPostsInDatabase(3, ['post_status' => 'draft' ]);
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table to count the rows in.</li>
-<li><code>array</code> <strong>$criteria</strong> - Search criteria, if empty all table rows will be counted.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - Search criteria, if empty all table rows will be counted.</li></ul>
   
 
 <h3>dontHaveAttachmentFilesInDatabase</h3>
@@ -602,14 +602,14 @@ $posts = $I->grabPostsTableName();
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array/int</code> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
+<li><code>\Codeception\Module\array<int>/int</code> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
   
 
 <h3>dontHaveAttachmentInDatabase</h3>
 
 <hr>
 
-<p>Removes an attachment from the posts table.</p>
+<p>Removes an attachment from the posts table. table. the suite.</p>
 ```php
 $postmeta = $I->grabpostmetatablename();
   $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
@@ -624,9 +624,9 @@ $postmeta = $I->grabpostmetatablename();
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts table.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts</li>
 <li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the attachment will be purged too.</li>
-<li><code>bool</code> <strong>$removeFiles</strong> - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in the suite.</li></ul>
+<li><code>bool</code> <strong>$removeFiles</strong> - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in</li></ul>
   
 
 <h3>dontHaveBlogInDatabase</h3>
@@ -645,7 +645,7 @@ $postmeta = $I->grabpostmetatablename();
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria to find the blog rows in the blogs table.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria to find the blog rows in the blogs table.</li>
 <li><code>bool</code> <strong>$removeTables</strong> - Remove the blog tables.</li>
 <li><code>bool</code> <strong>$removeUploads</strong> - Remove the blog uploads; requires the <code>WPFilesystem</code> module.</li></ul>
   
@@ -661,7 +661,7 @@ $I->dontHaveCommentInDatabase(['comment_post_ID' => 23, 'comment_url' => 'http:/
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
 <li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the comment will be purged too.</li></ul>
   
 
@@ -679,14 +679,14 @@ $I->dontHaveCommentInDatabase(['comment_post_ID' => 23, 'comment_url' => 'http:/
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHaveInDatabase</h3>
 
 <hr>
 
-<p>Deletes a database entry.</p>
+<p>Deletes a database entry. criteria.</p>
 ```php
 $I->dontHaveInDatabase('custom_table', ['book_ID' => 23, 'book_genre' => 'fiction']);
 ```
@@ -694,7 +694,7 @@ $I->dontHaveInDatabase('custom_table', ['book_ID' => 23, 'book_genre' => 'fictio
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table name.</li>
-<li><code>array</code> <strong>$criteria</strong> - An associative array of the column names and values to use as deletion criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An associative array of the column names and values to use as deletion</li></ul>
   
 
 <h3>dontHaveLinkInDatabase</h3>
@@ -708,7 +708,7 @@ $I->dontHaveLinkInDatabase(['link_url' => 'http://example.com']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHaveOptionInDatabase</h3>
@@ -726,7 +726,7 @@ $I->dontHaveLinkInDatabase(['link_url' => 'http://example.com']);
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The option name.</li>
-<li><code>null/mixed</code> <strong>$value</strong> - If set the option will only be removed if its value matches the passed one.</li></ul>
+<li><code>mixed/null</code> <strong>$value</strong> - If set the option will only be removed if its value matches the passed one.</li></ul>
   
 
 <h3>dontHavePostInDatabase</h3>
@@ -741,7 +741,7 @@ $posts = $I->haveManyPostsInDatabase(3, ['post_title' => 'Test {{n}}']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
 <li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the post will be purged too.</li></ul>
   
 
@@ -757,7 +757,7 @@ $postId = $I->havePostInDatabase(['meta_input' => ['rating' => 23]]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHavePostThumbnailInDatabase</h3>
@@ -794,7 +794,7 @@ $attachmentId = $I->haveAttachmentInDatabase(codecept_data_dir('some-image.png')
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The option name.</li>
-<li><code>null/mixed</code> <strong>$value</strong> - If set the option will only be removed it its value matches the specified one.</li></ul>
+<li><code>mixed/null</code> <strong>$value</strong> - If set the option will only be removed it its value matches the specified one.</li></ul>
   
 
 <h3>dontHaveSiteTransientInDatabase</h3>
@@ -838,7 +838,7 @@ $I->dontHaveTermInDatabase(['name' => 'romance']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
 <li><code>bool</code> <strong>$purgeMeta</strong> - Whether the terms meta should be purged along side with the meta or not.</li></ul>
   
 
@@ -856,7 +856,7 @@ $I->dontHaveTermInDatabase(['name' => 'romance']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHaveTermRelationshipInDatabase</h3>
@@ -873,7 +873,7 @@ $I->dontHaveTermInDatabase(['name' => 'romance']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHaveTermTaxonomyInDatabase</h3>
@@ -890,7 +890,7 @@ $I->dontHaveTermInDatabase(['name' => 'romance']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontHaveTransientInDatabase</h3>
@@ -957,7 +957,7 @@ $luca = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeAttachmentInDatabase</h3>
@@ -972,7 +972,7 @@ $url = 'https://example.org/images/foo.png';
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeBlogInDatabase</h3>
@@ -987,7 +987,7 @@ $I->haveManyBlogsInDatabase(2, ['path' => 'test-{{n}}'], false)
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeCommentInDatabase</h3>
@@ -1004,7 +1004,7 @@ $I->haveManyBlogsInDatabase(2, ['path' => 'test-{{n}}'], false)
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - The serach criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - The search criteria.</li></ul>
   
 
 <h3>dontSeeCommentMetaInDatabase</h3>
@@ -1021,7 +1021,7 @@ $I->haveManyBlogsInDatabase(2, ['path' => 'test-{{n}}'], false)
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeLinkInDatabase</h3>
@@ -1036,7 +1036,7 @@ $I->dontSeeLinkInDatabase(['link_url' => 'http://example.com']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeOptionInDatabase</h3>
@@ -1051,7 +1051,7 @@ $I->dontHaveOptionInDatabase('posts_per_page');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeePageInDatabase</h3>
@@ -1068,7 +1068,7 @@ $I->dontHaveOptionInDatabase('posts_per_page');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeePostInDatabase</h3>
@@ -1085,7 +1085,7 @@ $I->dontHaveOptionInDatabase('posts_per_page');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeePostMetaInDatabase</h3>
@@ -1100,7 +1100,7 @@ $postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeePostWithTermInDatabase</h3>
@@ -1147,7 +1147,7 @@ $options = $I->grabPrefixedTableNameFor('options');
 
 <hr>
 
-<p>Makes sure a term is not in the database. Looks up both the <code>terms</code> table and the <code>term_taxonomy</code> tables.</p>
+<p>Makes sure a term is not in the database. Looks up both the <code>terms</code> table and the <code>term_taxonomy</code> tables. and the <code>term_taxonomy</code> tables.</p>
 ```php
 // Asserts a 'fiction' term is not in the database.
   $I->dontSeeTermInDatabase(['name' => 'fiction']);
@@ -1157,7 +1157,7 @@ $options = $I->grabPrefixedTableNameFor('options');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code></li></ul>
   
 
 <h3>dontSeeTermMetaInDatabase</h3>
@@ -1173,7 +1173,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeTermTaxonomyInDatabase</h3>
@@ -1188,7 +1188,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeUserInDatabase</h3>
@@ -1205,7 +1205,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>dontSeeUserMetaInDatabase</h3>
@@ -1222,7 +1222,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>getSiteDomain</h3>
@@ -1268,7 +1268,7 @@ $books = $I->grabPrefixedTableNameFor('books');
 <ul>
 <li><code>string</code> <strong>$table</strong> - The table to grab the values from.</li>
 <li><code>string</code> <strong>$column</strong> - The column to fetch.</li>
-<li><code>array</code> <strong>$criteria</strong> - The search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed></code> <strong>$criteria</strong> - The search criteria.</li></ul>
   
 
 <h3>grabAttachmentAttachedFile</h3>
@@ -1690,7 +1690,7 @@ $shopPath = $I->grabSiteUrl('/shop');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>grabTermMetaTableName</h3>
@@ -1733,7 +1733,7 @@ $I->grabTermRelationshipsTableName();
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>grabTermTaxonomyTableName</h3>
@@ -1832,23 +1832,21 @@ $userId = $I->grabUserIdFromDatabase('luca');
 
 <hr>
 
-<p>Creates the database entries representing an attachment and moves the attachment file to the right location.</p>
+<p>Creates the database entries representing an attachment and moves the attachment file to the right location. timestamp that should be used to build the &quot;year/time&quot; uploads sub-folder structure. override the image sizes created by default.</p>
 ```php
 $file = codecept_data_dir('images/test.png');
   $attachmentId = $I->haveAttachmentInDatabase($file);
   $image = codecept_data_dir('images/test-2.png');
   $lastWeekAttachment = $I->haveAttachmentInDatabase($image, '-1 week');
   Requires the WPFilesystem module.
-  should be used to build the "year/time" uploads sub-folder structure.
-  image sizes created by default.
 ```
 
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$file</strong> - The absolute path to the attachment file.</li>
-<li><code>string/string/int</code> <strong>$date</strong> - Either a string supported by the <code>strtotime</code> function or a UNIX timestamp that</li>
-<li><code>array</code> <strong>$overrides</strong> - An associative array of values overriding the default ones.</li>
-<li><code>array</code> <strong>$imageSizes</strong> - An associative array in the format [ <size> =&gt; [<width>,<height>]] to override the</li></ul>
+<li><code>string/string/int</code> <strong>$date</strong> - Either a string supported by the <code>strtotime</code> function or a UNIX</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array of values overriding the default ones.</li>
+<li><code>\Codeception\Module\array<string,array<int>></code> <strong>$imageSizes</strong> - An associative array in the format [ <size> =&gt; [<width>,<height>]] to</li></ul>
   
 
 <h3>haveBlogInDatabase</h3>
@@ -1867,7 +1865,7 @@ $file = codecept_data_dir('images/test.png');
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$domainOrPath</strong> - The subdomain or the path to the be used for the blog.</li>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li>
 <li><code>bool</code> <strong>$subdomain</strong> - Whether the new blog should be created as a subdomain (<code>true</code>)</li></ul>
   
 
@@ -1883,7 +1881,7 @@ $I->haveCommentInDatabase($postId, ['comment_content' => 'Test Comment', 'commen
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$comment_post_ID</strong> - The id of the post the comment refers to.</li>
-<li><code>array</code> <strong>$data</strong> - The comment data overriding default and random generated values.</li></ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$data</strong> - The comment data overriding default and random generated values.</li></ul>
   
 
 <h3>haveCommentMetaInDatabase</h3>
@@ -1916,14 +1914,14 @@ $linkId = $I->haveLinkInDatabase(['link_url' => 'http://example.org']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$overrides</strong> - The data to insert.</li></ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - The data to insert.</li></ul>
   
 
 <h3>haveManyBlogsInDatabase</h3>
 
 <hr>
 
-<p>Inserts many blogs in the database.</p>
+<p>Inserts many blogs in the database. by the count.</p>
 ```php
 $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
   foreach($blogIds as $blogId){
@@ -1935,7 +1933,7 @@ $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of blogs to create.</li>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the default ones; <code>{{n}}</code> will be replaced by the count.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones; <code>{{n}}</code> will be replaced</li>
 <li><code>bool</code> <strong>$subdomain</strong> - Whether the new blogs should be created as a subdomain or subfolder.</li></ul>
   
 
@@ -1955,7 +1953,7 @@ $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of comments to insert.</li>
 <li><code>int</code> <strong>$comment_post_ID</strong> - The comment parent post ID.</li>
-<li><code>array</code> <strong>$overrides</strong> - An associative array to override the defaults.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array to override the defaults.</li></ul>
   
 
 <h3>haveManyLinksInDatabase</h3>
@@ -1973,7 +1971,7 @@ $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of links to insert.</li>
-<li><code>array</code> <strong>$overrides</strong> - Overrides for the default arguments.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - Overrides for the default arguments.</li></ul>
   
 
 <h3>haveManyPostsInDatabase</h3>
@@ -1991,7 +1989,7 @@ $blogIds = $I->haveManyBlogsInDatabase(3, ['domain' =>'test-{{n}}']);
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$count</strong> - The number of posts to insert.</li>
-<li><code>array</code> <strong>$overrides</strong></li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong></li></ul>
   
 
 <h3>haveManyTermsInDatabase</h3>
@@ -2010,7 +2008,7 @@ $terms = $I->haveManyTermsInDatabase(3, 'genre-{{n}}', 'genre');
 <li><code>int</code> <strong>$count</strong> - The number of terms to insert.</li>
 <li><code>string</code> <strong>$name</strong> - The term name template, can include the <code>{{n}}</code> placeholder.</li>
 <li><code>string</code> <strong>$taxonomy</strong> - The taxonomy to insert the terms for.</li>
-<li><code>array</code> <strong>$overrides</strong> - An associative array of default overrides.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array of default overrides.</li></ul>
   
 
 <h3>haveManyUsersInDatabase</h3>
@@ -2033,7 +2031,7 @@ $subscribers = $I->haveManyUsersInDatabase(5, 'user-{{n}}');
 <li><code>int</code> <strong>$count</strong> - The number of users to insert.</li>
 <li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
 <li><code>string</code> <strong>$role</strong> - The user role.</li>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
   
 
 <h3>haveMenuInDatabase</h3>
@@ -2049,14 +2047,14 @@ list($termId, $termTaxId) = $I->haveMenuInDatabase('test', 'sidebar');
 <ul>
 <li><code>string</code> <strong>$slug</strong> - The menu slug.</li>
 <li><code>string</code> <strong>$location</strong> - The theme menu location the menu will be assigned to.</li>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li></ul>
   
 
 <h3>haveMenuItemInDatabase</h3>
 
 <hr>
 
-<p>Adds a menu element to a menu for the current theme.</p>
+<p>Adds a menu element to a menu for the current theme. post meta.</p>
 ```php
 $I->haveMenuInDatabase('test', 'sidebar');
   $I->haveMenuItemInDatabase('test', 'Test one', 0);
@@ -2068,7 +2066,7 @@ $I->haveMenuInDatabase('test', 'sidebar');
 <li><code>string</code> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
 <li><code>string</code> <strong>$title</strong> - The menu item title.</li>
 <li><code>int/null</code> <strong>$menuOrder</strong> - An optional menu order, <code>1</code> based.</li>
-<li><code>array</code> <strong>$meta</strong> - An associative array that will be prefixed with <code>_menu_item_</code> for the item post meta.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$meta</strong> - An associative array that will be prefixed with <code>_menu_item_</code> for the item</li></ul>
   
 
 <h3>haveOptionInDatabase</h3>
@@ -2103,14 +2101,14 @@ $I->haveOptionInDatabase('posts_per_page', 23);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
   
 
 <h3>havePostInDatabase</h3>
 
 <hr>
 
-<p>Inserts a post in the database.</p>
+<p>Inserts a post in the database. values.</p>
 ```php
 // Insert a post with random values in the database.
   $randomPostId = $I->havePostInDatabase();
@@ -2129,7 +2127,7 @@ $I->haveOptionInDatabase('posts_per_page', 23);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$data</strong> - An associative array of post data to override default and random generated values.</li></ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$data</strong> - An associative array of post data to override default and random generated</li></ul>
   
 
 <h3>havePostThumbnailInDatabase</h3>
@@ -2225,7 +2223,7 @@ $I->haveSiteTransientInDatabase('total_comments_count', 23);
 <ul>
 <li><code>string</code> <strong>$name</strong> - The term name, e.g. &quot;Fuzzy&quot;.</li>
 <li><code>string</code> <strong>$taxonomy</strong> - The term taxonomy</li>
-<li><code>array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
   
 
 <h3>haveTermMetaInDatabase</h3>
@@ -2322,7 +2320,7 @@ $I->haveTermMetaInDatabase($fictionId, 'readers_count', 23);
 
 <hr>
 
-<p>Inserts a user and its meta in the database.</p>
+<p>Inserts a user and its meta in the database. defaults to <code>subscriber</code>. If more than one role is specified, then the first role in the list will be the user primary role and the <code>wp_user_level</code> will be set to that role. in the <code>users</code> and <code>usermeta</code> table.</p>
 ```php
 // Create an editor user in blog 1 w/ specific email.
   $userId = $I->haveUserInDatabase('luca', 'editor', ['user_email' => 'luca@example.org']);
@@ -2349,34 +2347,30 @@ $I->haveTermMetaInDatabase($fictionId, 'readers_count', 23);
   );
   // Create a user w/o role.
   $userId = $I->haveUserInDatabase('luca', '');
-  defaults to `subscriber`. If more than one role is specified, then the
-  first role in the list will be the user primary role and the
-  the `users` and `usermeta` table.
 ```
 
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
 <li><code>string/string/\Codeception\Module\array<string></code> <strong>$role</strong> - The user role slug(s), e.g. <code>administrator</code> or <code>['author', 'editor']</code>;</li>
-<li><code>array</code> <strong>$overrides</strong> - An associative array of column names and values overriding defaults in</li></ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An associative array of column names and values overriding defaults</li></ul>
   
 
 <h3>haveUserLevelsInDatabase</h3>
 
 <hr>
 
-<p>Sets the user access level meta in the database for a user.</p>
+<p>Sets the user access level meta in the database for a user. IDs/roles for a multisite installation (e.g. <code>[1 =&gt; 'administrator</code>, 2 =&gt; 'subscriber']`).</p>
 ```php
 $userId = $I->haveUserInDatabase('luca', 'editor');
   $moreThanAnEditorLessThanAnAdmin = 8;
   $I->haveUserLevelsInDatabase($userId, $moreThanAnEditorLessThanAnAdmin);
-  multisite installation (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
 ```
 
 <h4>Parameters</h4>
 <ul>
 <li><code>int</code> <strong>$userId</strong> - The ID of the user to set the level for.</li>
-<li><code>string/array</code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an array of blog IDs/roles for a</li></ul>
+<li><code>\Codeception\Module\array<array/bool/\Codeception\Module\string>/string</code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an array of blog</li></ul>
   
 
 <h3>haveUserMetaInDatabase</h3>
@@ -2416,7 +2410,7 @@ $userId = $I->haveUserInDatabase('luca', 'editor');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$sql</strong> - The SQL strings to load.</li></ul>
+<li><code>\Codeception\Module\array<string>/array</code> <strong>$sql</strong> - The SQL strings to load.</li></ul>
   
 
 <h3>importSqlDumpFile</h3>
@@ -2432,7 +2426,7 @@ $userId = $I->haveUserInDatabase('luca', 'editor');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>null/string</code> <strong>$dumpFile</strong> - The dump file that should be imported in place of the default one.</li></ul>
+<li><code>string/null</code> <strong>$dumpFile</strong> - The dump file that should be imported in place of the default one.</li></ul>
   
 
 <h3>seeAttachmentInDatabase</h3>
@@ -2447,7 +2441,7 @@ $url = 'https://example.org/images/foo.png';
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeBlogInDatabase</h3>
@@ -2464,7 +2458,7 @@ $url = 'https://example.org/images/foo.png';
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeCommentInDatabase</h3>
@@ -2478,7 +2472,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeCommentMetaInDatabase</h3>
@@ -2495,7 +2489,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeLinkInDatabase</h3>
@@ -2512,7 +2506,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeOptionInDatabase</h3>
@@ -2529,7 +2523,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seePageInDatabase</h3>
@@ -2546,7 +2540,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seePostInDatabase</h3>
@@ -2563,7 +2557,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seePostMetaInDatabase</h3>
@@ -2578,7 +2572,7 @@ $postId = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar']];
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seePostWithTermInDatabase</h3>
@@ -2659,7 +2653,7 @@ $options = $I->grabPrefixedTableNameFor('options');
 
 <hr>
 
-<p>Checks for a term in the database. Looks up the <code>terms</code> and <code>term_taxonomy</code> prefixed tables.</p>
+<p>Checks for a term in the database. Looks up the <code>terms</code> and <code>term_taxonomy</code> prefixed tables. and the <code>term_taxonomy</code> tables.</p>
 ```php
 $I->seeTermInDatabase(['slug' => 'genre--fiction']);
   $I->seeTermInDatabase(['name' => 'Fiction', 'slug' => 'genre--fiction']);
@@ -2667,7 +2661,7 @@ $I->seeTermInDatabase(['slug' => 'genre--fiction']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code> and the</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code></li></ul>
   
 
 <h3>seeTermMetaInDatabase</h3>
@@ -2683,7 +2677,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeTermRelationshipInDatabase</h3>
@@ -2698,7 +2692,7 @@ $postId = $I->havePostInDatabase(['tax_input' => ['category' => 'one']]);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeTermTaxonomyInDatabase</h3>
@@ -2713,7 +2707,7 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeUserInDatabase</h3>
@@ -2730,7 +2724,7 @@ $I->seeUserInDatabase([
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>seeUserMetaInDatabase</h3>
@@ -2744,7 +2738,7 @@ $I->seeUserMetaInDatabase(['user_id' => 23, 'meta_key' => 'karma']);
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
   
 
 <h3>useBlog</h3>
@@ -2792,8 +2786,8 @@ $I->useTheme('twentyseventeen');
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>
-<li><code>string/null</code> <strong>$template</strong> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
-<li><code>string/null</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of</li></ul>
+<li><code>string</code> <strong>$template</strong> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
+<li><code>string</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of</li></ul>
 
 
 *This class extends \Codeception\Module\Db*

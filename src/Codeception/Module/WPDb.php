@@ -1827,7 +1827,7 @@ class WPDb extends Db
      *
      * @return array<int> An array of the inserted post IDs.
      *
-     *@example
+     * @example
      * ```php
      * // Insert 3 random posts.
      * $I->haveManyPostsInDatabase(3);
@@ -2016,7 +2016,7 @@ class WPDb extends Db
      *
      * @return void
      *
-     *@example
+     * @example
      * ```php
      * // Asserts a 'fiction' term is not in the database.
      * $I->dontSeeTermInDatabase(['name' => 'fiction']);
@@ -3339,7 +3339,7 @@ class WPDb extends Db
      *                                       post meta.
      *
      * @return int The menu item post `ID`
-     *@example
+     * @example
      * ```php
      * $I->haveMenuInDatabase('test', 'sidebar');
      * $I->haveMenuItemInDatabase('test', 'Test one', 0);
@@ -3430,7 +3430,7 @@ class WPDb extends Db
      *
      * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite or if the
      *                                'gumlet/php-image-resize:^1.6' package is not installed.
-     *@example
+     * @example
      * ```php
      * $file = codecept_data_dir('images/test.png');
      * $attachmentId = $I->haveAttachmentInDatabase($file);
@@ -3763,7 +3763,7 @@ class WPDb extends Db
      *
      * @return array<string,mixed> The unserialized contents of the attachment `_wp_attachment_metadata` meta or an
      *                             empty array.
-     *@example
+     * @example
      * ```php
      * $metadata = $I->grabAttachmentMetadata($attachmentId);
      * $I->assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);

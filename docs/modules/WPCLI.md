@@ -144,14 +144,14 @@ modules:
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array/string</code> <strong>$command</strong> - The command to run.</li></ul>
+<li><code>\Codeception\Module\array<string>/string</code> <strong>$command</strong> - The command to run.</li></ul>
   
 
 <h3>cli</h3>
 
 <hr>
 
-<p>Executes a wp-cli command targeting the test WordPress installation. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
+<p>Executes a wp-cli command targeting the test WordPress installation. minus <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
 ```php
 // Activate a plugin via wp-cli in the test WordPress site.
   $I->cli(['plugin', 'activate', 'my-plugin']);
@@ -161,14 +161,14 @@ modules:
 
 <h4>Parameters</h4>
 <ul>
-<li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
+<li><code>string/string/\Codeception\Module\array<string></code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli</li></ul>
   
 
 <h3>cliToArray</h3>
 
 <hr>
 
-<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
+<p>Returns the output of a wp-cli command as an array optionally allowing a callback to process the output. minus <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
 ```php
 // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
   $inactiveThemes = $I->cliToArray(['theme', 'list', '--status=inactive', '--field=name']);
@@ -182,15 +182,15 @@ modules:
 
 <h4>Parameters</h4>
 <ul>
-<li><code>string/string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus</li>
-<li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function in charge of splitting the results array.</li></ul>
+<li><code>string/string/\Codeception\Module\array<string></code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli</li>
+<li><code>\callable</code> <strong>$splitCallback</strong> - An optional callback function to split the results array.</li></ul>
   
 
 <h3>cliToString</h3>
 
 <hr>
 
-<p>Returns the output of a wp-cli command as a string. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
+<p>Returns the output of a wp-cli command as a string. minus <code>wp</code>. For back-compatibility purposes you can still pass the commandline as a string, but the array format is the preferred and supported method.</p>
 ```php
 // Return the current site administrator email, using string command format.
   $adminEmail = $I->cliToString('option get admin_email');
@@ -201,7 +201,7 @@ modules:
 
 <h4>Parameters</h4>
 <ul>
-<li><code>string/array</code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli minus <code>wp</code>.</li></ul>
+<li><code>string/\Codeception\Module\array<string></code> <strong>$userCommand</strong> - The string of command and parameters as it would be passed to wp-cli</li></ul>
   
 
 <h3>dontSeeInShellOutput</h3>
