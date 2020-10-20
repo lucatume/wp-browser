@@ -224,6 +224,10 @@ class WPLoaderTest extends \Codeception\Test\Unit
             $this->markTestSkipped('This test cannot run without the uopz extension');
         }
 
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
+        }
+
         uopz_redefine('WP_PLUGIN_DIR', '/foo/bar/baz');
 
         $wpLoader = $this->make_instance();
@@ -243,6 +247,11 @@ class WPLoaderTest extends \Codeception\Test\Unit
         if (!extension_loaded('uopz')) {
             $this->markTestSkipped('This test cannot run without the uopz extension');
         }
+
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
+        }
+
         uopz_redefine('WP_PLUGIN_DIR', __DIR__);
 
         $wpLoader = $this->make_instance();
@@ -300,6 +309,10 @@ class WPLoaderTest extends \Codeception\Test\Unit
             $this->markTestSkipped('This test requires the uopz extension.');
         }
 
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
+        }
+
         uopz_undefine('WP_CONTENT_DIR');
         uopz_undefine('WP_PLUGIN_DIR');
 
@@ -327,6 +340,10 @@ class WPLoaderTest extends \Codeception\Test\Unit
     {
         if (!extension_loaded('uopz')) {
             $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
         }
 
         $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
@@ -357,6 +374,10 @@ class WPLoaderTest extends \Codeception\Test\Unit
     {
         if (!extension_loaded('uopz')) {
             $this->markTestSkipped('This test requires the uopz extension.');
+        }
+
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
         }
 
         uopz_undefine('WP_CONTENT_DIR');
@@ -390,12 +411,20 @@ class WPLoaderTest extends \Codeception\Test\Unit
             $this->markTestSkipped('This test requires the uopz extension.');
         }
 
+        if (PHP_VERSION_ID <= 70000) {
+            $this->markTestSkipped('Due to a uopz bug on PHP 5.6.');
+        }
+
         $wpRootDir     = codecept_data_dir('folder-structures/wp-root-folder-2/wp');
         $contentDir = codecept_data_dir('folder-structures/wp-root-folder-2/content');
         $pluginsDir = __DIR__;
 
+        uopz_undefine('WP_CONTENT_DIR');
         uopz_redefine('WP_CONTENT_DIR', $contentDir);
+        $this->assertEquals($contentDir, WP_CONTENT_DIR);
+        uopz_undefine('WP_PLUGIN_DIR');
         uopz_redefine('WP_PLUGIN_DIR', $pluginsDir);
+        $this->assertEquals($pluginsDir, WP_PLUGIN_DIR);
 
         $this->config['wpRootFolder '] = $wpRootDir;
 

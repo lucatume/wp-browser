@@ -30,6 +30,37 @@ trait WPBrowserMethods
     protected $loginUrl;
 
     /**
+     * Navigate to the default WordPress logout page and click the logout link.
+     *
+     * @example
+     * ```php
+     * // Log out using the `wp-login.php` form and return to the current page.
+     * $I->logOut(true);
+     * // Log out using the `wp-login.php` form and remain there.
+     * $I->logOut(false);
+     * // Log out using the `wp-login.php` form and move to another page.
+     * $I->logOut('/some-other-page');
+     * ```
+     *
+     * @param bool|string $redirectTo Whether to redirect to another (optionally specified) page after the logout.
+     *
+     * @return void
+     */
+    public function logOut($redirectTo = false)
+    {
+        $previousUri = $this->_getCurrentUri();
+        $loginUri = $this->getLoginUrl();
+        $this->amOnPage($loginUri . '?action=logout');
+        // Use XPath to have a better performance and find the link in any language.
+        $this->click("//a[contains(@href,'action=logout')]");
+        $this->seeInCurrentUrl('loggedout=true');
+        if ($redirectTo) {
+            $redirectUri = $redirectTo === true ? $previousUri : $redirectTo;
+            $this->amOnPage($redirectUri);
+        }
+    }
+
+    /**
      * Login as the administrator user using the credentials specified in the module configuration.
      *
      * The method will **not** follow redirection, after the login, to any page.

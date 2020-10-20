@@ -98,6 +98,9 @@ if (
 			<a href="#grabwordpresstestcookie">grabWordPressTestCookie</a>
 		</li>
 		<li>
+			<a href="#logout">logOut</a>
+		</li>
+		<li>
 			<a href="#loginas">loginAs</a>
 		</li>
 		<li>
@@ -152,7 +155,7 @@ $I->amOnAdminAjaxPage(['action' => 'my-action', 'data' => ['id' => 23], 'nonce' 
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
+<li><code>string/\Codeception\Module\array<string,mixed></code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
   
 
 <h3>amOnAdminPage</h3>
@@ -183,7 +186,7 @@ $I->loginAs('user', 'password');
 
 <h4>Parameters</h4>
 <ul>
-<li><code>array/string</code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
+<li><code>string/\Codeception\Module\array<string,mixed></code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
   
 
 <h3>amOnPage</h3>
@@ -267,7 +270,7 @@ $id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$cookie</strong> - The cookie name.</li>
-<li><code>array</code> <strong>$params</strong> - Parameters to filter the cookie value.</li></ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$params</strong> - Parameters to filter the cookie value.</li></ul>
   
 
 <h3>getResponseContent</h3>
@@ -311,6 +314,25 @@ $root = $I->getWpRootFolder();
 <li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li></ul>
   
 
+<h3>logOut</h3>
+
+<hr>
+
+<p>Navigate to the default WordPress logout page and click the logout link.</p>
+```php
+// Log out using the `wp-login.php` form and return to the current page.
+  $I->logOut(true);
+  // Log out using the `wp-login.php` form and remain there.
+  $I->logOut(false);
+  // Log out using the `wp-login.php` form and move to another page.
+  $I->logOut('/some-other-page');
+```
+
+<h4>Parameters</h4>
+<ul>
+<li><code>bool/bool/string</code> <strong>$redirectTo</strong> - Whether to redirect to another (optionally specified) page after the logout.</li></ul>
+  
+
 <h3>loginAs</h3>
 
 <hr>
@@ -345,7 +367,7 @@ $I->loginAsAdmin();
 
 <hr>
 
-<p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
+<p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area. <code>.notice.notice-error</code> ones.</p>
 ```php
 $I->loginAsAdmin()ja
   $I->amOnAdminPage('/');
@@ -354,7 +376,7 @@ $I->loginAsAdmin()ja
 
 <h4>Parameters</h4>
 <ul>
-<li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the notice should have other than the <code>.notice.notice-error</code> ones.</li></ul>
+<li><code>string/string/\Codeception\Module\array<string></code> <strong>$classes</strong> - A list of classes the notice should have other than the</li></ul>
   
 
 <h3>seeMessage</h3>
@@ -370,7 +392,7 @@ $I->loginAsAdmin()ja
 
 <h4>Parameters</h4>
 <ul>
-<li><code>string/array/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
+<li><code>string/\Codeception\Module\array<string>/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
   
 
 <h3>seePluginActivated</h3>

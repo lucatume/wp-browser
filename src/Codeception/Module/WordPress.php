@@ -434,7 +434,7 @@ EOF;
      * @param array<string,mixed>  $params Parameters to filter the cookie value.
      *
      * @return string|null The cookie value or `null` if no cookie matching the parameters is found.
-     *@example
+     * @example
      * ```php
      * $id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
      * $I->loginAs('user', 'pass');

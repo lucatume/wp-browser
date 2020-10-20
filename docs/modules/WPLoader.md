@@ -205,7 +205,7 @@ modules:
 			<a href="#getpluginsfolder">getPluginsFolder</a>
 		</li>
 		<li>
-			<a href="#startwpfiltersdebug">startwpfiltersdebug</a>
+			<a href="#startwpfiltersdebug">startWpFiltersDebug</a>
 		</li>
 		<li>
 			<a href="#stopwpfiltersdebug">stopWpFiltersDebug</a>
@@ -328,7 +328,7 @@ $plugins = $this->getPluginsFolder();
 <li><code>string</code> <strong>$path</strong> - A relative path to append to te plugins directory absolute path.</li></ul>
   
 
-<h3>startwpfiltersdebug</h3>
+<h3>startWpFiltersDebug</h3>
 
 <hr>
 
