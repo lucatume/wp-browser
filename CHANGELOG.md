@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.14] 2020-10-20;
+
 ### Added
 
 - the `logOut(string|bool $redirectTo)` method to the `WPBrowser` and `WPWebDriver` modules (thanks @gabe-connolly)
