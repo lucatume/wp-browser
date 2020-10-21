@@ -1104,16 +1104,17 @@ class WPFilesystem extends Filesystem
      */
     public function havePlugin($path, $code)
     {
+        $path = str_replace('\\', '/', $path);
         $fullPath = $this->config['plugins'] . unleadslashit($path);
 
-        if (strpos($path, DIRECTORY_SEPARATOR) === false) {
-            $slug    = pathinfo($fullPath, PATHINFO_FILENAME);
+        if (strpos($path, '/') === false) {
+            $slug = pathinfo($fullPath, PATHINFO_FILENAME);
             $toClean = $fullPath;
         } else {
             $slug = basename(dirname($path));
-            $dir  = dirname($fullPath);
+            $dir = dirname($fullPath);
 
-            if (!@mkdir($dir, 0777, true) && ! is_dir($dir)) {
+            if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
                 throw new ModuleException(
                     __CLASS__,
                     "Could not create [{$dir}] plugin folder."

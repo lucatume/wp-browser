@@ -859,7 +859,6 @@ PHP;
         $this->assertFileExists($pluginsFolder);
     }
 
-
     /**
      * It should allow having a mu-plugin with code
      * @test
@@ -1094,5 +1093,48 @@ PHP;
         Assert::assertFileDoesNotExist($themeStyleFile);
         Assert::assertFileDoesNotExist($themeIndexFile);
         Assert::assertFileDoesNotExist($themeFunctionsFile);
+    }
+
+    public function plugin_path_with_diff_path_separators_data_provider()
+    {
+        return [
+            '/' => ['foo/plugin.php'],
+            '\\' => ['foo\\plugin.php']
+        ];
+    }
+
+    /**
+     * It should allow using different directory separators to havePlugin
+     *
+     * @test
+     * @dataProvider plugin_path_with_diff_path_separators_data_provider
+     */
+    public function should_allow_using_different_directory_separators_to_have_plugin($pluginPath)
+    {
+        $sut = $this->make_instance();
+
+        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
+        $pluginFile =  $pluginsFolder . '/foo/plugin.php';
+
+        $code = "echo 'Hello world';";
+        $sut->havePlugin($pluginPath, $code);
+
+        $this->assertFileExists($pluginFile);
+
+        $expected = <<<PHP
+<?php
+/*
+Plugin Name: foo
+Description: foo
+*/
+
+echo 'Hello world';
+PHP;
+        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+
+        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+
+        Assert::assertFileDoesNotExist($pluginFile);
+        $this->assertFileExists($pluginsFolder);
     }
 }
