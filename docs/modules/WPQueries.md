@@ -796,7 +796,7 @@ Acme\BookRepository::new(['title' => 'Alice in Wonderland'])->commit();
 
 <h4>Parameters</h4>
 <ul>
-<li><code>null/\wpdb</code> <strong>$wpdb</strong> - A specific instance of the <code>wpdb</code> class or <code>null</code> to use the global one.</li></ul>
+<li><code>\wpdb/null</code> <strong>$wpdb</strong> - A specific instance of the <code>wpdb</code> class or <code>null</code> to use the global one.</li></ul>
   
 
 <h3>getQueries</h3>
