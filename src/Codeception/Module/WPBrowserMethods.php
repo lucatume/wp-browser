@@ -302,7 +302,7 @@ trait WPBrowserMethods
      * @return void
      * @example
      * ```php
-     * $I->loginAsAdmin()ja
+     * $I->loginAsAdmin()
      * $I->amOnAdminPage('/');
      * $I->seeErrorMessage('.my-plugin');
      * ```
@@ -343,7 +343,7 @@ trait WPBrowserMethods
      *
      * @example
      * ```php
-     * $I->loginAsAdmin()ja
+     * $I->loginAsAdmin()
      * $I->amOnAdminPage('/');
      * $I->seeMessage('.missing-api-token.my-plugin');
      * ```

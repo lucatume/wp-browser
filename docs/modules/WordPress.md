@@ -369,7 +369,7 @@ $I->loginAsAdmin();
 
 <p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area. <code>.notice.notice-error</code> ones.</p>
 ```php
-$I->loginAsAdmin()ja
+$I->loginAsAdmin()
   $I->amOnAdminPage('/');
   $I->seeErrorMessage('.my-plugin');
 ```
@@ -385,7 +385,7 @@ $I->loginAsAdmin()ja
 
 <p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
 ```php
-$I->loginAsAdmin()ja
+$I->loginAsAdmin()
   $I->amOnAdminPage('/');
   $I->seeMessage('.missing-api-token.my-plugin');
 ```
