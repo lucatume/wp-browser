@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.15] 2020-10-21;
+
 ### Fixed
 
 - avoid deleting the whole plugins folder when `havePlugin` is used to create single file plugins (thanks @Luc45)
