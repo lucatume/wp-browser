@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- change DotEnv suggestion to  `vlucas/phpdotenv:^4.0` to avoid env vars loading issues.
+
 ## [2.6.15] 2020-10-21;
 
 ### Fixed

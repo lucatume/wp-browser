@@ -72,6 +72,6 @@
     "codeception/module-cli": "Codeception 4.0 compatibility; required by the WPCLI module.",
     "codeception/util-universalframework": "Codeception 4.0 compatibility; required by the WordPress framework module.",
     "gumlet/php-image-resize": "To handle runtime image modification in the WPDb::haveAttachmentInDatabase method.",
-    "vlucas/phpdotenv": "To manage env file based configuration of the suites."
+    "vlucas/phpdotenv:^4.0": "To manage more complex environment file based configuration of the suites."
   }
 }
