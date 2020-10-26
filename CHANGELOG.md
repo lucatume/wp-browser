@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- handle more Cookie types in `WPBrowser::grabCookiesWithPattern` method to avoid errors.
+
 ### Changed
 
 - change DotEnv suggestion to  `vlucas/phpdotenv:^4.0` to avoid env vars loading issues.
