@@ -9,7 +9,8 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
-use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use Symfony\Component\BrowserKit\Cookie;
 use function tad\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
@@ -132,20 +133,21 @@ class WPWebDriver extends WebDriver
      *
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array<Cookie>|null An array of cookies matching the pattern.
+     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
+        /** @var array<FacebookWebdriverCookie|Cookie> $cookies */
         $cookies = $this->webDriver->manage()->getCookies();
 
         if (!$cookies) {
             return null;
         }
         $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
-            return preg_match($cookiePattern, $cookie['name']);
+            return preg_match($cookiePattern, $cookie->getName());
         });
         $cookieList = array_map(static function ($cookie) {
-            return sprintf('{"%s": "%s"}', $cookie['name'], $cookie['value']);
+            return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 
         $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));

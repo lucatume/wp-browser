@@ -3,7 +3,8 @@
 namespace Codeception\Module;
 
 use Codeception\Exception\ModuleException;
-use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use Symfony\Component\BrowserKit\Cookie;
 use function GuzzleHttp\Psr7\build_query;
 
 trait WPBrowserMethods
@@ -130,7 +131,7 @@ trait WPBrowserMethods
      *
      * @param string|null $pattern The pattern to filter the cookies by.
      *
-     * @return Cookie|null The WordPress authorization cookie or `null` if not found.
+     * @return FacebookWebdriverCookie|Cookie|null The WordPress authorization cookie or `null` if not found.
      */
     protected function grabWordPressAuthCookie($pattern = null)
     {
@@ -149,7 +150,7 @@ trait WPBrowserMethods
      *
      * @param string|null $pattern The pattern to filter the cookies by.
      *
-     * @return Cookie|null The WordPress login cookie or `null` if not found.
+     * @return FacebookWebdriverCookie|Cookie|null The WordPress login cookie or `null` if not found.
      */
     protected function grabWordPressLoginCookie($pattern = null)
     {
