@@ -30,4 +30,5 @@
 * [Extensions](extensions.md)	
 * [Commands](commands.md)	
 * [Contributing](contributing.md)	
+* [Sponsors](sponsors.md)
 * [Changelog](https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md)
