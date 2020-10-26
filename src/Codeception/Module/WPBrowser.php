@@ -7,7 +7,8 @@
 
 namespace Codeception\Module;
 
-use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use Symfony\Component\BrowserKit\Cookie;
 use function tad\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
@@ -42,22 +43,22 @@ class WPBrowser extends PhpBrowser
      *
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array<Cookie>|null An array of cookies matching the pattern.
+     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
         /**
-         * @var Cookie[]
+         * @var array<FacebookWebdriverCookie|Cookie>
          */
         $cookies = $this->client->getCookieJar()->all();
 
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function (Cookie $cookie) use ($cookiePattern) {
+        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
             return preg_match($cookiePattern, $cookie->getName());
         });
-        $cookieList = array_map(static function (Cookie $cookie) {
+        $cookieList = array_map(static function ($cookie) {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 
