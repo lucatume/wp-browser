@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.16] 2020-10-26;
+
 ### Fixed
 
 - handle more Cookie types in `WPBrowser::grabCookiesWithPattern` method to avoid errors.
@@ -1537,4 +1539,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.8]: https://github.com/lucatume/wp-browser/compare/2.6.7...2.6.8
 [2.6.9]: https://github.com/lucatume/wp-browser/compare/2.6.8...2.6.9
 [2.6.10]: https://github.com/lucatume/wp-browser/compare/2.6.9...2.6.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.10...HEAD
+[2.6.11]: https://github.com/lucatume/wp-browser/compare/2.6.10...2.6.11
+[2.6.12]: https://github.com/lucatume/wp-browser/compare/2.6.11...2.6.12
+[2.6.13]: https://github.com/lucatume/wp-browser/compare/2.6.12...2.6.13
+[2.6.14]: https://github.com/lucatume/wp-browser/compare/2.6.13...2.6.14
+[2.6.15]: https://github.com/lucatume/wp-browser/compare/2.6.14...2.6.15
+[2.6.16]: https://github.com/lucatume/wp-browser/compare/2.6.14...2.6.16
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.16...HEAD
