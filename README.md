@@ -72,7 +72,7 @@ This is just a bite though, find out more in [the documentation][1].
 
 My sincere thanks to my sponsors: you make maintaining this project easier.
 
-    * [@TimothyBJacobs](https://github.com/TimothyBJacobs)
+* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
