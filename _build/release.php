@@ -119,9 +119,9 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
     $entryLine = '## [unreleased] Unreleased';
     $changelogContents = str_replace($entryLine, $entryLine . $changelogVersionLine, $currentContents);
     $changelogContents = preg_replace_callback(
-        '/^\\[unreleased]:\\s+(?<repo>.*)(?<previous_version>\\d\\.\\d\\.\\d)\\.{3}HEAD$/um',
+        '/\\[(?:[Uu])nreleased]:\\s+(?<repo>.*)\\/(?<previous_version>\\d+\\.\\d+\\.\\d+)...(HEAD|head)/ium',
         static function (array $matches) use ($version) {
-            return sprintf('[%1$s]: %2$s%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s%1$s...HEAD'
+            return sprintf('[%1$s]: %2$s/%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s/%1$s...HEAD'
                 , $version, $matches['repo'], $matches['previous_version']);
         },
         $changelogContents
