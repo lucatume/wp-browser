@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Removed the `WithWpCli::executeBackgroundWpCliCommand` method, and, as a consequence, the `WPCLI::executeBackgroundWpCliCommand` method.
+- Removed the `symfony/process` dependency and replaced it with the `mikehaertl/php-shellcommand` one.
+- Removed the `wp-cli/wp-cli-bundle` dependency and replaced it with the `wp-cli/wp-cli` one.
+
 ## [2.6.16] 2020-10-26;
 
 ### Fixed

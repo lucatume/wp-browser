@@ -7,9 +7,9 @@
 
 namespace tad\WPBrowser\Traits;
 
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Exceptions\WpCliException;
+use tad\WPBrowser\Process\Process;
+use tad\WPBrowser\Process\ProcessFailedException;
 use WP_CLI\Configurator;
 
 /**
@@ -201,20 +201,19 @@ trait WithWpCli
     /**
      * Executes a wp-cli command.
      *
-     * @param array<string>                  $command The command fragments; a mix of arguments and options.
-     * @param int|float|null                 $timeout The timeout, in seconds, to use for the command. Use `null` to
-     *                                                remove the timeout entirely.
-     * @param array<string,string|int|float> $env     An optional,associative array of environment variables to set for
+     * @param array<string> $command The command fragments; a mix of arguments and options.
+     * @param int|null $timeout The timeout, in seconds, to use for the command. Use `null` to remove the timeout entirely.
+     * @param array<string,string|int|float> $env An optional,associative array of environment variables to set for
      *                                                the process.
      *
-     * @return \Symfony\Component\Process\Process<string,string> The process object that executed the command.
+     * @return Process The process object that executed the command.
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
     protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [])
     {
         $fullCommand   = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
-        $process       = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
+        $process       = $this->wpCliProcess->withCommand($fullCommand)->withCwd($this->wpCliWpRootDir);
         $process->setTimeout($timeout);
         $process->inheritEnvironmentVariables(true);
         if (count($env)) {
@@ -249,7 +248,7 @@ trait WithWpCli
      * // Builds the full wp-cli command, including the `path` variable.
      * $fullCommand =  $this->buildFullCommand(['core', 'version']);
      * // The full command can then be used to run it with another process handler.
-     * $wpCliProcess = new \Symfony\Component\Process\Process($fullCommand);
+     * $wpCliProcess = new Process($fullCommand);
      * $wpCliProcess->run();
      * ```
      */
@@ -272,58 +271,6 @@ trait WithWpCli
     protected function getWpCliBootFilePath()
     {
         return $this->getWpCliRootDir('/php/boot-fs.php');
-    }
-
-    /**
-     * Executes a wp-cli command asynchronously.
-     *
-     * @param array<string>      $command       The command fragments; a mix of arguments and options.
-     * @param callable|int|float $sleepOrVerify A callback to use to verify if the process is correctly running or not;
-     *                                          the callback will receive the Symfony Process instance as argument;
-     *                                          the callback should return falsy or truthy values; the code will wait
-     *                                          50ms after each failed verification.
-     *                                          If a numeric value is, instead, provided then the code will `sleep` for
-     *                                          that amount after starting the process.
-     *
-     * @return \Symfony\Component\Process\Process<string,string> The process object that is handling the command
-     *                                                           execution.
-     *
-     * @throws WpCliException If wp-cli has not been set up first.
-     */
-    protected function executeBackgroundWpCliCommand(array $command, $sleepOrVerify = null)
-    {
-        $fullCommand = $this->buildFullCommand($command);
-        $process = $this->wpCliProcess->forCommand($fullCommand, $this->wpCliWpRootDir);
-        $process->setTimeout(null);
-
-        // Whatever happens let's make sure any background process is killed at shutdown.
-        register_shutdown_function(static function () use ($process) {
-            if ($process->isRunning()) {
-                $process->stop();
-            }
-        });
-
-        try {
-            $process->start();
-        } catch (\Exception $e) {
-            codecept_debug('WPCLI background process failed: ' . $e->getMessage());
-            if ($process->isRunning()) {
-                $process->stop();
-            }
-            return $process;
-        }
-
-        if (is_callable($sleepOrVerify)) {
-            while (!$sleepOrVerify($process)) {
-                codecept_debug('WPCLI background process not ready yet, sleeping 50ms...');
-                usleep(50000);
-            }
-        } elseif (is_numeric($sleepOrVerify)) {
-            codecept_debug("Sleeping {$sleepOrVerify}s after WPCLI background process started...");
-            sleep((int)$sleepOrVerify);
-        }
-
-        return $process;
     }
 
     /**

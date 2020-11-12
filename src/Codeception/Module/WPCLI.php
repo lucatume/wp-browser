@@ -7,8 +7,8 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use tad\WPBrowser\Adapters\Process;
 use tad\WPBrowser\Exceptions\WpCliException;
+use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Traits\WithWpCli;
 use function tad\WPBrowser\buildCommandline;
 use function tad\WPBrowser\requireCodeceptionModules;
@@ -87,7 +87,7 @@ class WPCLI extends Module
     /**
      * The process timeout.
      *
-     * @var int|float|null
+     * @var int|null
      */
     protected $timeout;
     /**
@@ -189,14 +189,14 @@ class WPCLI extends Module
             return ['', 1];
         }
 
-        $output = $process->getOutput() ?: $process->getErrorOutput();
+        $output = $process->getOutput() ?: $process->getError();
         $status = $process->getExitCode();
 
         // If the process returns `null`, then it's not terminated.
         if ($status === null) {
             throw new ModuleException(
                 $this,
-                'Command process did not terminate; commandline: ' . $process->getCommandLine()
+                'Command process did not terminate; commandline: ' . (string)$process->getExecCommand()
             );
         }
 
@@ -336,7 +336,6 @@ class WPCLI extends Module
      *      });
      * });
      * ```
-     *
      */
     public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
@@ -527,6 +526,6 @@ class WPCLI extends Module
             throw new ModuleConfigException($this, "Timeout [{$this->config['timeout']}] is not valid.");
         }
 
-        $this->timeout = is_string($timeout) ? (float)$timeout : $timeout;
+        $this->timeout = (int)$timeout;
     }
 }

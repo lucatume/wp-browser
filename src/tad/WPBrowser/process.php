@@ -7,6 +7,7 @@
 
 namespace tad\WPBrowser;
 
+use mikehaertl\shellcommand\Command;
 use tad\WPBrowser\Utils\Map;
 
 const PROC_CLOSE    = 'proc_close';
@@ -156,7 +157,7 @@ function process($cmd = [], $cwd = null, $env = null)
 }
 
 /**
- * Builds an array format command line, compatible with the Symfony Process component, from a string command line.
+ * Builds an array format command line from a string command line.
  *
  * @param string|array<string> $command The command line to parse, if in array format it will not be modified.
  *
@@ -168,7 +169,7 @@ function buildCommandline($command)
         return array_filter((array) $command);
     }
 
-    $escapedCommandLine = ( new \Symfony\Component\Process\Process($command) )->getCommandLine();
+    $escapedCommandLine = (string)( new Command($command) )->getCommand();
     $commandLineFrags   = explode(' ', $escapedCommandLine);
 
     if (count($commandLineFrags) === 1) {
