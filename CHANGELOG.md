@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- URL replacement issue in `DbDump` class
+
 ## [2.6.16] 2020-10-26;
 
 ### Fixed

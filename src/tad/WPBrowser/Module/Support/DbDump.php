@@ -122,6 +122,7 @@ class DbDump
         );
         $replaceScheme = parse_url($this->url, PHP_URL_SCHEME);
         $replaceHost = parse_url($this->url, PHP_URL_HOST);
+        $replacePort = parse_url($this->url, PHP_URL_PORT);
 
         if ($originalHostAndPath === $replaceHost) {
             return $sql;
@@ -130,12 +131,19 @@ class DbDump
         $urlPattern = '~' .
             '(?<scheme>https?)://' .
             '(?<subdomain>[A-z0-9_-]+\\.)*' .
-            preg_quote($originalHostAndPath, '~') . '(?!\\.)' .
+            '(?<hostAndPort>' . preg_quote($originalHostAndPath, '~') . ')' .
+            '(?!\\.)' .
             '(?<path>/+[A-z0-9/_-]*)*' .
             '~u';
-        $replacement = $replaceScheme . '://$2' . $replaceHost . '$3';
 
-        $sql = preg_replace($urlPattern, $replacement, $sql);
+        $replaceCallback = static function (array $matches) use ($replaceScheme, $replaceHost, $replacePort) {
+                return $replaceScheme . '://'
+                        . (isset($matches['subdomain']) ? $matches['subdomain'] : '')
+                        . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
+                        . (isset($matches['path']) ? $matches['path'] : '');
+        };
+
+        $sql = preg_replace_callback($urlPattern, $replaceCallback, $sql);
 
         preg_match($urlPattern, (string)$sql, $m);
 
