@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.6.17] 2020-11-17;
+
 ### Fixed
 
 - URL replacement issue in `DbDump` class
@@ -1549,4 +1551,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.14]: https://github.com/lucatume/wp-browser/compare/2.6.13...2.6.14
 [2.6.15]: https://github.com/lucatume/wp-browser/compare/2.6.14...2.6.15
 [2.6.16]: https://github.com/lucatume/wp-browser/compare/2.6.15...2.6.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.16...HEAD
+[2.6.17]: https://github.com/lucatume/wp-browser/compare/2.6.16...2.6.17
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.17...HEAD
