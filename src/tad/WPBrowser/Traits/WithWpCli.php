@@ -202,7 +202,7 @@ trait WithWpCli
      * Executes a wp-cli command.
      *
      * @param array<string> $command The command fragments; a mix of arguments and options.
-     * @param int|null $timeout The timeout, in seconds, to use for the command. Use `null` to remove the timeout entirely.
+     * @param int|null $timeout The timeout, in seconds, to use for the command. Use `null` to remove the timeout.
      * @param array<string,string|int|float> $env An optional,associative array of environment variables to set for
      *                                                the process.
      *
