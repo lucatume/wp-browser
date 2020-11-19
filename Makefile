@@ -291,3 +291,8 @@ refresh_wp:
 build_debug:
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
 .PHONY: build_debug
+
+reset: clean
+	rm -rf vendor
+	rm -f .ready
+.PHONY: reset
