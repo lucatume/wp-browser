@@ -74,7 +74,9 @@ class Process extends Command
         if (is_array($command)) {
             $command = implode(' ', $command);
         }
-        return (clone $this)->setCommand($command);
+        $clone = clone $this;
+
+        return $clone->setCommand($command);
     }
 
     /**
