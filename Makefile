@@ -296,3 +296,23 @@ reset: clean
 	rm -rf vendor
 	rm -f .ready
 .PHONY: reset
+
+composer_56_update:
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php5.6 update
+.PHONY: composer_56_update
+
+composer_73_update:
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php7.3 update
+.PHONY: composer_73_update
