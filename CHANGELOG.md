@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `symfony/process` dependency and replaced it with the `mikehaertl/php-shellcommand` one.
 - Removed the `wp-cli/wp-cli-bundle` dependency and replaced it with the `wp-cli/wp-cli` one.
 
+## [2.6.17] 2020-11-17;
+
+### Fixed
+
+- URL replacement issue in `DbDump` class
+
 ## [2.6.16] 2020-10-26;
 
 ### Fixed
@@ -1551,4 +1557,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.6.14]: https://github.com/lucatume/wp-browser/compare/2.6.13...2.6.14
 [2.6.15]: https://github.com/lucatume/wp-browser/compare/2.6.14...2.6.15
 [2.6.16]: https://github.com/lucatume/wp-browser/compare/2.6.15...2.6.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.16...HEAD
+[2.6.17]: https://github.com/lucatume/wp-browser/compare/2.6.16...2.6.17
+[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.17...HEAD
