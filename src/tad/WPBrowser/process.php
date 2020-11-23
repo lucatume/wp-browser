@@ -7,7 +7,6 @@
 
 namespace tad\WPBrowser;
 
-use mikehaertl\shellcommand\Command;
 use tad\WPBrowser\Utils\Map;
 
 const PROC_CLOSE    = 'proc_close';
@@ -168,25 +167,40 @@ function buildCommandline($command)
     if (empty($command) || is_array($command)) {
         return array_filter((array) $command);
     }
+    $escapedCommandLine = [];
+    $pattern = '/' .
+        '-{1,2}[A-Za-z0-9_-]+=\'(\\\\\'|[^\'])*\'' . // Format `--opt='foo \'esc\' bar' -o='foo \'esc\' bar'`.
+        '|-{1,2}[A-Za-z0-9_-]+="(\\\\"|[^"])*"' . // Format `--opt="foo \"esc\" bar" -o="foo \"esc\" bar"`.
+        '|-{1,2}[A-Za-z0-9_-]+=[^\\s]+' . // Format `-o=val --opt=val`.
+        '|-{1,2}[A-Za-z0-9_-]+' . // Format `-f --flag`.
+        '|[^\\s"\']+' . // Format `command`.
+        '|"(\\\\"|[^"])+"' . // Format `"some \"esc\" value"`.
+        '|\'(\\\\\'|[^\'])+\'' . // Format `'some \'esc\' value'`
+        '/';
+        $singleQuotedPattern = '/^\'(\\\\\'|[^\'])*\'$/';
+        $doubleQuotedPattern = '/^"(\\\\"|[^"])*"$/';
+        preg_replace_callback($pattern, static function ($match) use (&$escapedCommandLine,$singleQuotedPattern,$doubleQuotedPattern) {
+        $value = reset($match);
 
-    $escapedCommandLine = (string)( new Command($command) )->getCommand();
-    $commandLineFrags   = explode(' ', $escapedCommandLine);
+        if (empty($value)) {
+            return;
+        }
 
-    if (count($commandLineFrags) === 1) {
-        return $commandLineFrags;
-    }
+        if (strpos($value, '=') !== false) {
+            // option=value format.
+            $keyAndValue = explode('=', $value, 2);
+            if (is_array($keyAndValue) && count($keyAndValue) === 2) {
+                // Assume the caller has already correctly escaped the value if single or double quoted.
+                $candidateValue = $keyAndValue[1];
+                if (preg_match($singleQuotedPattern, $keyAndValue[1]) || preg_match($doubleQuotedPattern, $keyAndValue[1])) {
+                    $escapedCommandLine[] = $keyAndValue[0] . '=' . $candidateValue;
+                    return;
+                }
+            }
+        }
 
-    $open                   = false;
-    $unescapedQuotesPattern = '/(?<!\\\\)("|\')/u';
+        $escapedCommandLine [] = escapeshellarg($value);
+    }, $command);
 
-    return array_reduce($commandLineFrags, static function (array $acc, $v) use (&$open, $unescapedQuotesPattern) {
-        $containsUnescapedQuotes = preg_match_all($unescapedQuotesPattern, $v);
-        $v                       = $open ? array_pop($acc) . ' ' . $v : $v;
-        $open                    = $containsUnescapedQuotes ?
-            $containsUnescapedQuotes & 1 && (bool) $containsUnescapedQuotes !== $open
-            : $open;
-        $acc[]                   = preg_replace($unescapedQuotesPattern, '', $v);
-
-        return $acc;
-    }, []);
+    return $escapedCommandLine;
 }

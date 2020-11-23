@@ -114,6 +114,27 @@ class Process extends Command
     {
         $clone = clone $this;
         $clone->procCwd = $cwd;
+
         return $clone;
+    }
+
+    /**
+     * Returns whether the process was successful (exit 0) or not.
+     *
+     * @return bool Whether the process was successful (exit 0) or not.
+     */
+    public function isSuccessful()
+    {
+        return (int)$this->getExitCode() === 0;
+    }
+
+    /**
+     * Returns the process current working directory.
+     *
+     * @return string|null The process current working directory.
+     */
+    public function getWorkingDirectory()
+    {
+        return $this->procCwd;
     }
 }
