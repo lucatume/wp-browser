@@ -161,7 +161,7 @@ class WPCLI extends Module
 
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
-         * Set the value to a string to make it so that Symfony\Process will pick it up while populating the env.
+         * Set the value to a string to make it so that the process will pick it up while populating the env.
          */
         putenv('WPBROWSER_HOST_REQUEST="1"');
         $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
