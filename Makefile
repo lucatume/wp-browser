@@ -256,7 +256,7 @@ test_56:
 
 # A variable target to debug issues in a PHP 5.6 environment.
 dev:
-	TEST_SUBNET=105 \
+	export TEST_SUBNET=105; \
 		_build/dc.sh --project-name=${PROJECT_NAME}_dev \
 		-f docker-compose.debug.yml \
 		run --rm \
@@ -265,7 +265,7 @@ dev:
 
 # A variable target to debug issues in a PHP 7.2 environment.
 dev_7:
-	TEST_SUBNET=189 \
+	export TEST_SUBNET=189; \
 		_build/dc.sh --project-name=${PROJECT_NAME}_dev_7 \
 		-f docker-compose.debug.yml \
 		run --rm \
@@ -274,7 +274,7 @@ dev_7:
 
 # Populate the vendor/wordpres/wordpress directory.
 setup_wp:
-	TEST_SUBNET=200 \
+	export TEST_SUBNET=203; \
 		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
 		-f docker-compose.debug.yml \
 		up -d wordpress
@@ -282,7 +282,8 @@ setup_wp:
 
 # Remove the current WordPress installation, if any, and set it up again.
 refresh_wp:
-	rm -rf vendor/wordpress/wordpress && \
+	export TEST_SUBNET=202 \
+	 rm -rf vendor/wordpress/wordpress && \
 		_build/dc.sh --project-name=${PROJECT_NAME}_refresh_wp \
 		-f docker-compose.yml \
 		run --rm cli wp core download
