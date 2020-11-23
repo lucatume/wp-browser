@@ -86,7 +86,7 @@ class Process extends Command
      *
      * @return Process A clone of the current process with the set environment.
      */
-    public function setEnv(array $env = [])
+    public function withEnv(array $env = [])
     {
         $clone = clone $this;
         $clone->procEnv = $env;

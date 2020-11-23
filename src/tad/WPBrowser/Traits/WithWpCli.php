@@ -218,7 +218,7 @@ trait WithWpCli
         $process->inheritEnvironmentVariables(true);
         if (count($env)) {
             $currentEnv = (array)$process->getEnv();
-            $process = $process->setEnv(array_merge($currentEnv, $env));
+            $process = $process->withEnv(array_merge($currentEnv, $env));
         }
 
         try {
