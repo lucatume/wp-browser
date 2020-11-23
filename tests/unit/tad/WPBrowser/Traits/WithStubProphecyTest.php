@@ -5,20 +5,18 @@ use PHPUnit\Framework\AssertionFailedError;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\StubProphecy\Arg;
 
-class TestObject{
+class TestObject
+{
     public function returnInt()
     {
-
     }
 
     public function returnString()
     {
-
     }
 
     public function returnFloat()
     {
-
     }
 }
 

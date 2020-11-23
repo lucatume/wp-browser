@@ -32,7 +32,7 @@ trait WithStubProphecy
      *
      * @return StubProphecy The built prophecy, as per phpspec Prophecy, call `reveal` to get a usable mock.
      */
-    protected function stubProphecy($class,array $methodSet = [])
+    protected function stubProphecy($class, array $methodSet = [])
     {
         $stubProphecy = new StubProphecy($class, $this);
         $this->stubProphecies[] = $stubProphecy;

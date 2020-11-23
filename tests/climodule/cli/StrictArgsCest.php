@@ -42,7 +42,7 @@ class StrictArgsCest
             'add',
             'rss',
             'sidebar-1',
-            '--title=' . $title,
+            "--title='{$title}'",
             '--url=https://wordpress.org/news/feed/',
         ]));
 

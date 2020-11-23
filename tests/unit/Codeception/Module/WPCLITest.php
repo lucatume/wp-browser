@@ -683,7 +683,7 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getOutput' => $output,
             ]
         );
-        $this->process->setEnv(Arg::that($matchesExpectedEnv))->willReturn(null);
+        $this->process->setEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
         $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
         $this->process->withCommand($this->buildExpectedCommand([
             "widget",
@@ -738,7 +738,7 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getOutput' => '5.2.2',
             ]
         );
-        $this->process->setEnv(Arg::that($matchesExpectedEnv))->willReturn(null);
+        $this->process->setEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
         $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
         $this->process->withCommand($this->buildExpectedCommand([
             'core'  ,'version'

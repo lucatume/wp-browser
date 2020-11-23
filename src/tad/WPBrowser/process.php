@@ -177,30 +177,30 @@ function buildCommandline($command)
         '|"(\\\\"|[^"])+"' . // Format `"some \"esc\" value"`.
         '|\'(\\\\\'|[^\'])+\'' . // Format `'some \'esc\' value'`
         '/';
-        $singleQuotedPattern = '/^\'(\\\\\'|[^\'])*\'$/';
-        $doubleQuotedPattern = '/^"(\\\\"|[^"])*"$/';
-        preg_replace_callback($pattern, static function ($match) use (&$escapedCommandLine,$singleQuotedPattern,$doubleQuotedPattern) {
-        $value = reset($match);
+        $singleEsc = '/^\'(\\\\\'|[^\'])*\'$/';
+        $doubleEsc = '/^"(\\\\"|[^"])*"$/';
+        preg_replace_callback($pattern, static function ($match) use (&$escapedCommandLine, $singleEsc, $doubleEsc) {
+            $value = reset($match);
 
-        if (empty($value)) {
-            return;
-        }
+            if (empty($value)) {
+                return;
+            }
 
-        if (strpos($value, '=') !== false) {
-            // option=value format.
-            $keyAndValue = explode('=', $value, 2);
-            if (is_array($keyAndValue) && count($keyAndValue) === 2) {
-                // Assume the caller has already correctly escaped the value if single or double quoted.
-                $candidateValue = $keyAndValue[1];
-                if (preg_match($singleQuotedPattern, $keyAndValue[1]) || preg_match($doubleQuotedPattern, $keyAndValue[1])) {
-                    $escapedCommandLine[] = $keyAndValue[0] . '=' . $candidateValue;
-                    return;
+            if (strpos($value, '=') !== false) {
+                // option=value format.
+                $keyAndValue = explode('=', $value, 2);
+                if (is_array($keyAndValue) && count($keyAndValue) === 2) {
+                    // Assume the caller has already correctly escaped the value if single or double quoted.
+                    $candidateValue = $keyAndValue[1];
+                    if (preg_match($singleEsc, $keyAndValue[1]) || preg_match($doubleEsc, $keyAndValue[1])) {
+                        $escapedCommandLine[] = $keyAndValue[0] . '=' . $candidateValue;
+                        return;
+                    }
                 }
             }
-        }
 
-        $escapedCommandLine [] = escapeshellarg($value);
-    }, $command);
+            $escapedCommandLine [] = escapeshellarg($value);
+        }, $command);
 
     return $escapedCommandLine;
 }
