@@ -13,8 +13,8 @@ use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
-use Symfony\Component\Process\Process;
 use tad\WPBrowser\Module\Support\UriToIndexMapper;
+use tad\WPBrowser\Process\Process;
 
 // phpcs:disable
 /**
@@ -159,7 +159,7 @@ class WordPress extends Universal
             ' ' . escapeshellarg(base64_encode(serialize($env)));
 
         $process = new Process($command);
-        $process->run();
+        $process->execute();
         $rawProcessOutput = $process->getOutput();
 
         $unserializedResponse = @unserialize(base64_decode($rawProcessOutput));
