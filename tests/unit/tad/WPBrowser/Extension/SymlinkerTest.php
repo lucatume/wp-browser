@@ -6,8 +6,8 @@ use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Exception\IOException;
-use tad\WPBrowser\Filesystem\Filesystem;
 use tad\WPBrowser\Traits\WithStubProphecy;
+use tad\WPBrowser\StubProphecy\FunctionProphecy as theFunction;
 
 class SymlinkerTest extends \Codeception\TestCase\Test
 {
@@ -31,11 +31,6 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     protected $options = ['silent' => true];
 
     /**
-     * @var Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * @var SuiteEvent
      */
     protected $event;
@@ -49,9 +44,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     protected function _before()
     {
         $this->filename   = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $this->filesystem = $this->stubProphecy('tad\WPBrowser\Filesystem\Filesystem');
-        $this->filesystem->is_dir(__DIR__)->willReturn(true);
-        $this->filesystem->is_writeable(__DIR__)->willReturn(true);
+        theFunction::is_dir(__DIR__)->willReturn(true);
+        theFunction::is_writable(__DIR__)->willReturn(true);
         $this->event      = $this->stubProphecy('\Codeception\Event\SuiteEvent');
         $this->printEvent = $this->stubProphecy('\Codeception\Event\PrintResultEvent');
     }

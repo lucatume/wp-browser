@@ -10,7 +10,6 @@ namespace tad\WPBrowser\StubProphecy;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class MethodProphecy
@@ -104,7 +103,9 @@ class MethodProphecy
         $argumentExpectations = [];
 
         try {
-            $reflectionMethod = new \ReflectionMethod($this->class, $this->name);
+            $reflectionMethod = method_exists($this->class, $this->name) ?
+                new \ReflectionMethod($this->class, $this->name)
+                : new \ReflectionFunction($this->name);
             $methodParameters = $reflectionMethod->getParameters();
             $expectedKeys = array_keys($expectedArguments);
             foreach ($methodParameters as $i => $methodParameter) {

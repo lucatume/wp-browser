@@ -12,7 +12,6 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\recurseCopy;
-use function tad\WPBrowser\recurseRemoveDir;
 
 /**
  * Class Copier
@@ -139,21 +138,8 @@ class Copier extends Extension
             return;
         }
 
-        if (!is_dir($destination)) {
-            if (!unlink($destination)) {
-                throw new ExtensionException(
-                    $this,
-                    sprintf('Removal of [%s] failed.', $destination)
-                );
-            }
-            return;
-        }
-
-        if (!recurseRemoveDir($destination)) {
-            throw new ExtensionException(
-                $this,
-                sprintf('Removal of [%s] failed.', $destination)
-            );
+        if (!\tad\WPBrowser\rrmdir($destination)) {
+            throw new ExtensionException($this, sprintf('Removal of [%s] failed.', $destination));
         }
     }
 
