@@ -63,17 +63,17 @@ class StubProphecy
 
     /**
      * The test case instance used by the stub prophecy.
-     * @var TestCase|null
+     * @var TestCase|false
      */
-    protected $testCase;
+    protected $testCase = false;
 
     /**
      * StubProphecy constructor.
      *
      * @param string $class The fully qualified name of the class to build a stub prophecy for.
-     * @param TestCase|null $testCase The test case to attach the stubs to.
+     * @param TestCase|false $testCase The test case to attach the stubs to.
      */
-    public function __construct($class, $testCase = null)
+    public function __construct($class, $testCase = false)
     {
         $this->class    = $class;
         $this->testCase = $testCase;

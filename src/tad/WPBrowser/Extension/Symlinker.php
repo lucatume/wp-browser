@@ -207,21 +207,13 @@ class Symlinker extends Extension
             throw new ExtensionException(__CLASS__, 'Required configuration parameter [destination] is missing.');
         }
 
-        $destination = $this->config['destination'];
+        $destination = (array)$this->config['destination'];
 
-        if (is_array($destination)) {
-            array_walk($destination, [$this, 'checkDestination']);
-        } else {
-            $this->checkDestination($destination);
-        }
+        array_walk($destination, [$this, 'checkDestination']);
 
         if (isset($this->config['rootFolder'])) {
-            $rootFolder = $this->config['rootFolder'];
-            if (is_array($rootFolder)) {
-                array_walk($rootFolder, [$this, 'checkRootFolder']);
-            } else {
-                $this->checkRootFolder($rootFolder);
-            }
+            $rootFolder = (array)$this->config['rootFolder'];
+            array_walk($rootFolder, [$this, 'checkRootFolder']);
         }
     }
 

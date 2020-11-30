@@ -7,6 +7,10 @@
 
 namespace tad\WPBrowser\StubProphecy;
 
+use Patchwork\CallRerouting\Handle;
+use function Patchwork\redefine;
+use function Patchwork\restore;
+
 /**
  * Class FunctionProphecy
  *
@@ -27,9 +31,15 @@ class FunctionProphecy
      * @var array<string,string>
      */
     protected static $functionSignatures = [];
+    /**
+     * An array of handles of functions redefined using Patchwork.
+     *
+     * @var array<Handle>
+     */
+    protected static $redefinitionHandles = [];
 
     /**
-     * Replaces a function with a prophecy using the `uopz` extension.
+     * Replaces a function with a prophecy using the `uopz` extension, if available.
      *
      * @param string $name The fully-qualified name of the function to replace.
      * @param array<mixed|ArgInterface> $expectedArguments An array of either expected arguments or matchers for them.
@@ -40,7 +50,7 @@ class FunctionProphecy
      */
     public static function __callStatic($name, array $expectedArguments = [])
     {
-        return static::theFunction($name, $expectedArguments);
+        return self::theFunction($name, $expectedArguments);
     }
 
     /**
@@ -56,21 +66,27 @@ class FunctionProphecy
     public static function theFunction($name, array $expectedArguments = [])
     {
         $safeName = str_replace('\\', '_', trim($name, '\\'));
-        $className = 'FunctionProphecy_' . md5($safeName . microtime());
-        $classCode = str_replace(
-            ['{{ class_name }}', '{{ safe_name }}', '{{ function_signature }}'],
-            [$className, $safeName, self::getFunctionSignatureString($name)],
-            'class {{ class_name }} { public function {{ safe_name }}({{ function_signature }}){} }'
-        );
-        eval($classCode);
+        $className = $safeName . '_function_prophecy';
+        if (!class_exists($className)) {
+            $classCode = str_replace(
+                ['{{ class_name }}', '{{ safe_name }}', '{{ function_signature }}'],
+                [$className, $safeName, self::getFunctionSignatureString($name)],
+                'class {{ class_name }} { public function {{ safe_name }}({{ function_signature }}){} }'
+            );
+            eval($classCode);
+        }
         $prophecy = new StubProphecy($className);
 
         $closure = static function (...$args) use ($prophecy, $safeName) {
             return $prophecy->reveal()->{$safeName}(...$args);
         };
 
-        uopz_set_return($name, $closure, true);
-        static::$replacedFunction[] = $name;
+        if (function_exists('uopz_set_return')) {
+            uopz_set_return($name, $closure, true);
+            static::$replacedFunction[] = $name;
+        } else {
+            static::$redefinitionHandles[] = redefine($name, $closure);
+        }
 
         return $prophecy->{$safeName}(...$expectedArguments);
     }
@@ -90,12 +106,19 @@ class FunctionProphecy
 
         $reflectionFunction = new \ReflectionFunction($name);
 
-        return implode(', ', array_map(static function (\ReflectionParameter $p) {
+        return implode(', ', array_map(static function (\ReflectionParameter $parameter) {
+            $default = '';
+            if ($parameter->isDefaultValueAvailable()) {
+                $default = print_r($parameter->getDefaultValue(), true);
+            } elseif ($parameter->isOptional()) {
+                $default = 'null';
+            }
+            /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
             return sprintf(
                 '%s$%s%s',
-                ($p->getType() instanceof \ReflectionType ? $p->getType()->__toString() . ' ' : ''),
-                $p->name,
-                ($p->isDefaultValueAvailable() ? ' = ' . print_r($p->getDefaultValue(), true) : '')
+                ($parameter->getType() instanceof \ReflectionType ? $parameter->getType()->__toString() . ' ' : ''),
+                $parameter->name,
+                ($default ? '= ' . $default : '')
             );
         }, $reflectionFunction->getParameters()));
     }
@@ -103,12 +126,21 @@ class FunctionProphecy
     /**
      * Resets all the function replacements.
      *
-     * @since TBD
+     * @return void
      */
     public static function reset()
     {
-        foreach (static::$replacedFunction as $replacedFunction) {
-            uopz_unset_return($replacedFunction);
+        if (function_exists('uopz_unset_return')) {
+            foreach (static::$replacedFunction as $replacedFunction) {
+                uopz_unset_return($replacedFunction);
+            }
+        } else {
+            foreach (static::$redefinitionHandles as $handle) {
+                restore($handle);
+            }
         }
+
+        static::$replacedFunction = [];
+        static::$redefinitionHandles = [];
     }
 }

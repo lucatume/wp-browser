@@ -36,6 +36,22 @@ class FunctionProphecyTest extends \Codeception\Test\Unit
         $this->assertEquals(89, is_dir(__FILE__));
     }
 
+    /**
+     * It should allow replacing unlink
+     *
+     * @test
+     */
+    public function should_allow_replacing_unlink()
+    {
+        if (PHP_VERSION_ID >= 70000 && !extension_loaded('uopz')) {
+            $this->markTestSkipped('uopz extension is required to run this test.');
+        }
+
+        FunctionProphecy::unlink(Arg::type('string'))->willReturn(23);
+
+        $this->assertEquals(23, unlink('foo-bar'));
+    }
+
     protected function _after()
     {
         FunctionProphecy::reset();

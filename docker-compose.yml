@@ -108,7 +108,7 @@ services:
     environment:
       FIXUID: "${FIXUID:-1}"
       # Add an arbitrary wait before launching the tests to wait for the database.
-      CODECEPTION_WAIT: ${CODECEPTION_WAIT:-3}
+      CODECEPTION_WAIT: ${CODECEPTION_WAIT:-0}
       # Configure this to debug the tests with XDebug.
       PHP_IDE_CONFIG: "serverName=${XDK:-wpbrowser_cc}"
       XDEBUG_CONFIG: "idekey=${XDK:-wpbrowser_cc} remote_enable=${XDE:-1} remote_host=${XDH:-host.docker.internal} remote_port=${XDP:-9001}"
