@@ -56,4 +56,11 @@ class FunctionProphecyTest extends \Codeception\Test\Unit
     {
         FunctionProphecy::reset();
     }
+
+    protected function _before()
+    {
+        if (!(PHP_VERSION_ID >= 70000 && extension_loaded('uopz'))) {
+            $this->markTestSkipped('This test will require PHP 7.0+ and the uopz extension to run.');
+        }
+    }
 }

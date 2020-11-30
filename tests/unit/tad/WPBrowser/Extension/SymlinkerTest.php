@@ -133,7 +133,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_symlink_the_root_folder_into_the_destination_before_the_suite_runs()
     {
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(true);
+        $this->givenFileExists($this->filename, true);
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
             $this->filename,
@@ -144,16 +144,14 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $sut->symlink($this->event->reveal());
     }
 
-    private function givenFileExists($filename)
+    private function givenFileExists($filename, $exists)
     {
-        return static function ($exists) use ($filename) {
-            theFunction::is_file(Arg::any())->will(static function ($file) use ($filename, $exists) {
-                if ($file === $filename) {
-                    return $exists;
-                }
-                return file_exists($file);
-            });
-        };
+        theFunction::is_file(Arg::any())->will(static function ($file) use ($filename, $exists) {
+            if ($file === $filename) {
+                return $exists;
+            }
+            return file_exists($file);
+        });
     }
 
     /**
@@ -163,7 +161,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_not_attempt_re_linking_if_file_exists_already()
     {
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(true);
+        $this->givenFileExists($this->filename, true);
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
             $this->filename,
@@ -181,7 +179,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_symlink_the_files_over_to_the_destination_if_mode_is_theme_before_the_suite_runs()
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(false);
+        $this->givenFileExists($this->filename, false);
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
             $this->filename,
@@ -199,7 +197,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_unlink_the_root_folder_from_the_destination_after_the_suite_ran()
     {
         $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(true);
+        $this->givenFileExists($this->filename, true);
         theFunction::unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled()->willReturn(true);
 
         $sut = $this->make_instance();
@@ -213,7 +211,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_unlink_the_linked_theme_from_the_destination_folder_after_the_suite_ran_if_mode_is_theme()
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(true);
+        $this->givenFileExists($this->filename, true);
         theFunction::unlink($this->filename)->shouldBeCalled()->willReturn(true);
 
         $sut = $this->make_instance();
@@ -227,7 +225,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     public function it_should_not_attempt_unlinking_if_destination_file_does_not_exist()
     {
         $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename)(false);
+        $this->givenFileExists($this->filename, false);
         theFunction::unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
@@ -803,7 +801,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
     protected function _before()
     {
-        if (PHP_VERSION_ID >= 70000 && !extension_loaded('uopz')) {
+        if (!(PHP_VERSION_ID >= 70000 && extension_loaded('uopz'))) {
             $this->markTestSkipped('This test will require PHP 7.0+ and the uopz extension to run.');
         }
 
