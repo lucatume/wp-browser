@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.0] 2020-12-01;
+
 This version is the first to target Composer version `2` compatibility, while keeping back-compatibility with Composer version `1`.
 The version is marked as breaking, and as such as a Major release, as existing setups that rely on some packages previously bundled
 with wp-browser might break.
@@ -1566,4 +1568,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [2.6.15]: https://github.com/lucatume/wp-browser/compare/2.6.14...2.6.15
 [2.6.16]: https://github.com/lucatume/wp-browser/compare/2.6.15...2.6.16
 [2.6.17]: https://github.com/lucatume/wp-browser/compare/2.6.16...2.6.17
-[unreleased]: https://github.com/lucatume/wp-browser/compare/2.6.17...HEAD
+[3.0.0]: https://github.com/lucatume/wp-browser/compare/2.6.17...3.0.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.0...HEAD
