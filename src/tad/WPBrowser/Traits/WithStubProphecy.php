@@ -27,13 +27,16 @@ trait WithStubProphecy
      * Builds a prophecy for a class using Codeception Stubs.
      *
      * @param string $class The name of the class to prophesize.
+     * @parama array<string,mixed> A map of methods that should be replaced with some preset return values or
+     *                             callbacks.
      *
      * @return StubProphecy The built prophecy, as per phpspec Prophecy, call `reveal` to get a usable mock.
      */
-    protected function stubProphecy($class)
+    protected function stubProphecy($class, array $methodSet = [])
     {
         $stubProphecy = new StubProphecy($class, $this);
         $this->stubProphecies[] = $stubProphecy;
+        $stubProphecy->bulkProphesizeMethods($methodSet);
 
         return $stubProphecy;
     }

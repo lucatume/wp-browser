@@ -1,0 +1,45 @@
+name: Static Analysis
+
+on: [push]
+
+jobs:
+
+  lint-on-56:
+    name: PHP 5.6 lint
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Lint files
+        run: make lint
+
+  phpcs:
+    name: phpcs
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Sniff files
+        run: make sniff
+
+  phpstsan:
+    name: phpstan
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set src directory hash
+        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1
+        with:
+          path: vendor
+          key: composer-5.6-cc-4.0-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - name: Prepare Composer dependencies
+        run: test -d vendor || _build/vendor_prepare.sh 5.6 4.0
+      - name: Dump autoload
+        run: _build/dump_autoload.sh 5.6
+      - name: Run PHPStan static analysis
+        run: make phpstan
+        env:
+          PHPSTAN_LEVEL: max

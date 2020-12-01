@@ -7,7 +7,7 @@
 
 namespace tad\WPBrowser\Exceptions;
 
-use Symfony\Component\Process\Process;
+use tad\WPBrowser\Process\Process;
 
 /**
  * Class WpCliException
@@ -46,7 +46,7 @@ class WpCliException extends \Exception
     /**
      * Builds and returns an exception to indicate a command failed.
      *
-     * @param Process<string,string> $commandProcess The process that ran the command that failed.
+     * @param Process $commandProcess The process that ran the command that failed.
      *
      * @return WpCliException The built exception.
      */
@@ -54,9 +54,9 @@ class WpCliException extends \Exception
     {
         return new self(sprintf(
             "Command failed with status %s.\nOutput: %s\nError: %s",
-            $commandProcess->getStatus(),
+            $commandProcess->getExitCode(),
             $commandProcess->getOutput(),
-            $commandProcess->getErrorOutput()
+            $commandProcess->getError()
         ));
     }
 

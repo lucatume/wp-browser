@@ -1,4 +1,4 @@
-Method [96mCodeception\Module\WPFilesystem::getBlogUploadsPath[0m expected to be called with arguments:
+Method Codeception\Module\WPFilesystem::getBlogUploadsPath expected to be called with arguments:
 
 [96m    [0]  =>  Expected argument of type 'array'.[0m
     [1]  =>  Expected argument of type 'string'.

@@ -156,7 +156,7 @@ function process($cmd = [], $cwd = null, $env = null)
 }
 
 /**
- * Builds an array format command line, compatible with the Symfony Process component, from a string command line.
+ * Builds an array format command line from a string command line.
  *
  * @param string|array<string> $command The command line to parse, if in array format it will not be modified.
  *
@@ -167,25 +167,40 @@ function buildCommandline($command)
     if (empty($command) || is_array($command)) {
         return array_filter((array) $command);
     }
+    $escapedCommandLine = [];
+    $pattern = '/' .
+        '-{1,2}[A-Za-z0-9_-]+=\'(\\\\\'|[^\'])*\'' . // Format `--opt='foo \'esc\' bar' -o='foo \'esc\' bar'`.
+        '|-{1,2}[A-Za-z0-9_-]+="(\\\\"|[^"])*"' . // Format `--opt="foo \"esc\" bar" -o="foo \"esc\" bar"`.
+        '|-{1,2}[A-Za-z0-9_-]+=[^\\s]+' . // Format `-o=val --opt=val`.
+        '|-{1,2}[A-Za-z0-9_-]+' . // Format `-f --flag`.
+        '|[^\\s"\']+' . // Format `command`.
+        '|"(\\\\"|[^"])+"' . // Format `"some \"esc\" value"`.
+        '|\'(\\\\\'|[^\'])+\'' . // Format `'some \'esc\' value'`
+        '/';
+        $singleEsc = '/^\'(\\\\\'|[^\'])*\'$/';
+        $doubleEsc = '/^"(\\\\"|[^"])*"$/';
+        preg_replace_callback($pattern, static function ($match) use (&$escapedCommandLine, $singleEsc, $doubleEsc) {
+            $value = reset($match);
 
-    $escapedCommandLine = ( new \Symfony\Component\Process\Process($command) )->getCommandLine();
-    $commandLineFrags   = explode(' ', $escapedCommandLine);
+            if (empty($value)) {
+                return;
+            }
 
-    if (count($commandLineFrags) === 1) {
-        return $commandLineFrags;
-    }
+            if (strpos($value, '=') !== false) {
+                // option=value format.
+                $keyAndValue = explode('=', $value, 2);
+                if (is_array($keyAndValue) && count($keyAndValue) === 2) {
+                    // Assume the caller has already correctly escaped the value if single or double quoted.
+                    $candidateValue = $keyAndValue[1];
+                    if (preg_match($singleEsc, $keyAndValue[1]) || preg_match($doubleEsc, $keyAndValue[1])) {
+                        $escapedCommandLine[] = $keyAndValue[0] . '=' . $candidateValue;
+                        return;
+                    }
+                }
+            }
 
-    $open                   = false;
-    $unescapedQuotesPattern = '/(?<!\\\\)("|\')/u';
+            $escapedCommandLine [] = escapeshellarg($value);
+        }, $command);
 
-    return array_reduce($commandLineFrags, static function (array $acc, $v) use (&$open, $unescapedQuotesPattern) {
-        $containsUnescapedQuotes = preg_match_all($unescapedQuotesPattern, $v);
-        $v                       = $open ? array_pop($acc) . ' ' . $v : $v;
-        $open                    = $containsUnescapedQuotes ?
-            $containsUnescapedQuotes & 1 && (bool) $containsUnescapedQuotes !== $open
-            : $open;
-        $acc[]                   = preg_replace($unescapedQuotesPattern, '', $v);
-
-        return $acc;
-    }, []);
+    return $escapedCommandLine;
 }

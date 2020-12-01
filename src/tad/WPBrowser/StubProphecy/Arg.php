@@ -66,7 +66,7 @@ class Arg implements ArgInterface
                 return true;
             },
             static function ($input) {
-                $inputType = get_class($input);
+                $inputType = gettype($input);
 
                 return "Expected anything, got '{$inputType}' instead.";
             }

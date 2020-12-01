@@ -625,6 +625,30 @@ EOF;
     }
 
     /**
+     * Creates the `unit` suite configuration file.
+     *
+     * @param string $actor The name of the actor that should be used for the `unit` suite.
+     *
+     * @return void
+     */
+    protected function createUnitSuite($actor = 'Unit')
+    {
+        $suiteConfig = <<<EOF
+# Codeception Test Suite Configuration
+#
+# Suite for unit tests not relying WordPress code.
+
+actor: $actor{$this->actorSuffix}
+modules:
+    enabled:
+        - Asserts
+        - \\{$this->namespace}Helper\Unit
+    step_decorators: ~        
+EOF;
+        $this->createSuite('unit', $actor, $suiteConfig);
+    }
+
+    /**
      * Overrides the base implementation to control what should be created.
      *
      * @param string $suite  The name of the suite to create.

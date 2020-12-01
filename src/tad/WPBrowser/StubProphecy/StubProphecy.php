@@ -63,17 +63,17 @@ class StubProphecy
 
     /**
      * The test case instance used by the stub prophecy.
-     * @var TestCase
+     * @var TestCase|false
      */
-    protected $testCase;
+    protected $testCase = false;
 
     /**
      * StubProphecy constructor.
      *
-     * @param string   $class    The fully qualified name of the class to build a stub prophecy for.
-     * @param TestCase $testCase The test case to attach the stubs to.
+     * @param string $class The fully qualified name of the class to build a stub prophecy for.
+     * @param TestCase|false $testCase The test case to attach the stubs to.
      */
-    public function __construct($class, $testCase)
+    public function __construct($class, $testCase = false)
     {
         $this->class    = $class;
         $this->testCase = $testCase;
@@ -122,6 +122,9 @@ class StubProphecy
     /**
      * Reveals a stub prophecy building the actual stub and setting up call expectations and return values.
      *
+     * @param bool $anew Whether to reuse the same revelead prophecy, if any, or to build and reveal a new one. If a
+     *                   prophecy is revealed anew, it will not override the originally revealed one.
+     *
      * @return object The stub object built by the \Codeception\Stub class.
      *
      * @throws \Exception|\RuntimeException If there's an issue building the stub object.
@@ -129,9 +132,9 @@ class StubProphecy
      * @see \Codeception\Stub::make
      * @see \Codeception\Stub::makeEmpty
      */
-    public function reveal()
+    public function reveal($anew = false)
     {
-        if ($this->revealed !== null) {
+        if ($this->revealed !== null && !$anew) {
             return $this->revealed;
         }
 
@@ -146,9 +149,35 @@ class StubProphecy
             throw new \RuntimeException('Failed to build the prophecy parameters.');
         }
 
-        $this->revealed = Stub::makeEmpty($this->class, $params, $this->testCase);
+        $revealed = Stub::makeEmpty($this->class, $params, $this->testCase);
 
-        return $this->revealed;
+        if (!$anew) {
+            $this->revealed = $revealed;
+        }
+
+        return $revealed;
+    }
+
+    /**
+     * Sets prophecies on a set of methods.
+     *
+     * Any `callable` value will be used as input to a `methodName->will` call, any non `callable` value will
+     * be used as input to a `willReturn` call.
+     *
+     * @param array<string,callable|mixed> $methodSet A map of methods to their return value or prophecy.
+     *
+     * @return void
+     */
+    public function bulkProphesizeMethods(array $methodSet = [])
+    {
+        foreach ($methodSet as $methodName => $methodProphecy) {
+            if (is_callable($methodProphecy)) {
+                $this->{$methodName}()->will($methodProphecy);
+                continue;
+            }
+
+            $this->{$methodName}()->willReturn($methodProphecy);
+        }
     }
 
     /**

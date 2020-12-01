@@ -2,6 +2,7 @@
 
 namespace tad\WPBrowser\Tests\Support;
 
+use tad\WPBrowser\StubProphecy\StubProphecy;
 use function tad\WPBrowser\db;
 use function tad\WPBrowser\envFile;
 use function tad\WPBrowser\importDumpWithMysqlBin;

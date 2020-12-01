@@ -5,6 +5,21 @@ use PHPUnit\Framework\AssertionFailedError;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\StubProphecy\Arg;
 
+class TestObject
+{
+    public function returnInt()
+    {
+    }
+
+    public function returnString()
+    {
+    }
+
+    public function returnFloat()
+    {
+    }
+}
+
 class WithStubProphecyTest extends \Codeception\Test\Unit
 {
     use SnapshotAssertions;
@@ -205,6 +220,40 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
                    ->getBlogUploadsPath(23, 'some/file/foo.php')
                    ->willReturn('some-path');
 
+        $this->assertSame($fs->reveal(), $fs->reveal());
+    }
+
+    /**
+     * It should allow returning a new revelead prophecy when revealing a second time anew
+     *
+     * @test
+     */
+    public function should_allow_returning_a_new_revelead_prophecy_when_revealing_a_second_time_anew()
+    {
+        $fs = $this->stubProphecy(WPFilesystem::class)
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->willReturn('some-path');
+
+        $originallyRevealed = $fs->reveal();
+        $this->assertSame($originallyRevealed, $fs->reveal());
+        $this->assertNotSame($fs->reveal(), $fs->reveal(true));
+        $this->assertNotSame($fs->reveal(true), $fs->reveal(true));
+        $this->assertSame($originallyRevealed, $fs->reveal());
+    }
+
+    /**
+     * It should not cache the revealed anew prophecy if first reveal call
+     *
+     * @test
+     */
+    public function should_not_cache_the_revealed_anew_prophecy_if_first_reveal_call()
+    {
+        $fs = $this->stubProphecy(WPFilesystem::class)
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->willReturn('some-path');
+
+        $originallyRevealed = $fs->reveal(true);
+        $this->assertNotSame($originallyRevealed, $fs->reveal());
         $this->assertSame($fs->reveal(), $fs->reveal());
     }
 
@@ -411,5 +460,26 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
         $this->expectException(AssertionFailedError::class);
 
         $revealed->getBlogUploadsPath(89, 'lorem-dolor');
+    }
+
+    /**
+     * It should allow bulk setting return value and callbacks
+     *
+     * @test
+     */
+    public function should_allow_bulk_setting_return_value_and_callbacks()
+    {
+        $prefix = 'lorem';
+        $stub = $this->stubProphecy(TestObject::class, [
+            'returnInt' => 23,
+            'returnFloat' => 8.9,
+            'returnString' => static function () use ($prefix) {
+                return $prefix . ' dolor';
+            }
+        ])->reveal();
+
+        $this->assertEquals(23, $stub->returnInt());
+        $this->assertEquals(8.9, $stub->returnFloat());
+        $this->assertEquals('lorem dolor', $stub->returnString());
     }
 }

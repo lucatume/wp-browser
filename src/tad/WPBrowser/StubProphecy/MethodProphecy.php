@@ -10,7 +10,6 @@ namespace tad\WPBrowser\StubProphecy;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class MethodProphecy
@@ -66,6 +65,11 @@ class MethodProphecy
      * @var bool
      */
     protected $verificationStopped = false;
+    /**
+     * Whether this is a method prophecy proper, or a function one.
+     * @var bool
+     */
+    protected $isMethod = true;
 
     /**
      * MethodProphecy constructor.
@@ -104,10 +108,15 @@ class MethodProphecy
         $argumentExpectations = [];
 
         try {
-            $reflectionMethod = new \ReflectionMethod($this->class, $this->name);
+            $reflectionMethod = method_exists($this->class, $this->name) ?
+                new \ReflectionMethod($this->class, $this->name)
+                : new \ReflectionFunction($this->name);
+            if ($reflectionMethod instanceof \ReflectionFunction) {
+                $this->isMethod = false;
+            }
             $methodParameters = $reflectionMethod->getParameters();
             $expectedKeys = array_keys($expectedArguments);
-            foreach ($methodParameters as $i => $methodParameter) {
+            foreach ($methodParameters as $i => $parameter) {
                 if (isset($expectedKeys[ $i ])) {
                     $argumentExpectations[] = $expectedArguments[ $i ];
                     continue;
@@ -118,19 +127,24 @@ class MethodProphecy
                         continue;
                     }
                 }
-                if (! $methodParameter->isDefaultValueAvailable()) {
+                if (!($parameter->isOptional() || $parameter->isDefaultValueAvailable())) {
                     throw new StubProphecyException(
                         sprintf(
-                            'Method %s parameter %d (%s) does not have a default value: you must specify an ' .
+                            '%s %s parameter %d (%s) does not have a default value: you must specify an ' .
                             'expectation for it.',
+                            $this->isMethod ? 'Method' : 'Function',
                             $this->name,
                             $i,
-                            $methodParameter->name
+                            $parameter->name
                         )
                     );
                 }
 
-                $argumentExpectations[] = $methodParameter->getDefaultValue();
+                if ($parameter->isDefaultValueAvailable()) {
+                    $argumentExpectations[] = $parameter->getDefaultValue();
+                } else {
+                    $argumentExpectations[] = null;
+                }
             }
         } catch (\ReflectionException $e) {
             throw new StubProphecyException(
@@ -238,8 +252,9 @@ class MethodProphecy
     protected function failedArgumentExpectationMessage(array $expectedArgs, array $callArgs, $failIndex)
     {
         return sprintf(
-            "Method \033[96m%s\033[0m expected to be called with arguments:"
+            "%s %s expected to be called with arguments:"
             . "\n\n%s\n\nGot instead:\n\n%s\n",
+            $this->isMethod ? 'Method' : 'Function',
             $this->getFQAName(),
             $this->formatArgsForOutput($expectedArgs, $failIndex, true),
             $this->formatArgsForOutput($callArgs, $failIndex, false)
@@ -253,7 +268,7 @@ class MethodProphecy
      */
     public function getFQAName()
     {
-        return $this->class . '::' . $this->name;
+        return $this->isMethod ? $this->class . '::' . $this->name : $this->name;
     }
 
     /**

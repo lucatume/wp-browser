@@ -23,6 +23,7 @@ extensions:
     enabled:
         - tad\WPBrowser\Extension\Copier
         - tad\WPBrowser\Extension\Events
+        - Codeception\Extension\DotReporter
     config:
         tad\WPBrowser\Extension\Copier:
             files:

@@ -12,7 +12,6 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
-use tad\WPBrowser\Filesystem\Filesystem;
 
 /**
  * Class Symlinker
@@ -39,22 +38,13 @@ class Symlinker extends Extension
     protected $required = ['mode' => ['plugin', 'theme'], 'destination'];
 
     /**
-     * An instance of the filesystem operations wrapper.
-     *
-     * @var Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * Symlinker constructor.
      *
      * @param array<string,mixed> $config The configuration contents.
      * @param array<string,mixed> $options An array of options..
-     * @param Filesystem|null $filesystem A wrapper around file system operations.
      */
-    public function __construct($config, $options, Filesystem $filesystem = null)
+    public function __construct($config, $options)
     {
-        $this->filesystem = $filesystem ? $filesystem : new Filesystem();
         parent::__construct($config, $options);
     }
 
@@ -74,8 +64,14 @@ class Symlinker extends Extension
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
         try {
-            if (!$this->filesystem->file_exists($destination)) {
-                $this->filesystem->symlink($rootFolder, $destination, true);
+            if (!is_file($destination)) {
+                if (!symlink($rootFolder, $destination)) {
+                    throw new ExtensionException(
+                        $this,
+                        "Symbolic linking {$rootFolder} -> {$destination} failed; " .
+                        "it will never succeed on Windows, use the Copier extension."
+                    );
+                }
                 $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
             }
         } catch (IOException $event) {
@@ -151,10 +147,9 @@ class Symlinker extends Extension
         $rootFolder = $this->getRootFolder($eventSettings);
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
-        if ($this->filesystem->file_exists($destination)) {
+        if (is_file($destination)) {
             try {
-                $unlinked = $this->filesystem->unlink($destination);
-                if (!$unlinked) {
+                if (!(unlink($destination))) {
                     // Let's not kill the suite but let's notify the user.
                     $this->writeln(
                         sprintf(
@@ -212,21 +207,13 @@ class Symlinker extends Extension
             throw new ExtensionException(__CLASS__, 'Required configuration parameter [destination] is missing.');
         }
 
-        $destination = $this->config['destination'];
+        $destination = (array)$this->config['destination'];
 
-        if (is_array($destination)) {
-            array_walk($destination, [$this, 'checkDestination']);
-        } else {
-            $this->checkDestination($destination);
-        }
+        array_walk($destination, [$this, 'checkDestination']);
 
         if (isset($this->config['rootFolder'])) {
-            $rootFolder = $this->config['rootFolder'];
-            if (is_array($rootFolder)) {
-                array_walk($rootFolder, [$this, 'checkRootFolder']);
-            } else {
-                $this->checkRootFolder($rootFolder);
-            }
+            $rootFolder = (array)$this->config['rootFolder'];
+            array_walk($rootFolder, [$this, 'checkRootFolder']);
         }
     }
 
@@ -241,7 +228,7 @@ class Symlinker extends Extension
      */
     protected function checkDestination($destination)
     {
-        if (!($this->filesystem->is_dir($destination) && $this->filesystem->is_writeable($destination))) {
+        if (!(is_dir($destination) && is_writable($destination))) {
             throw new ExtensionException(
                 __CLASS__,
                 '[destination] parameter [' . $destination . '] is not an existing and writeable directory.'
@@ -260,7 +247,7 @@ class Symlinker extends Extension
      */
     protected function checkRootFolder($rootFolder)
     {
-        if (!($this->filesystem->is_dir($rootFolder) && $this->filesystem->is_readable($rootFolder))) {
+        if (!(is_dir($rootFolder) && is_readable($rootFolder))) {
             throw new ExtensionException(
                 __CLASS__,
                 '[rootFolder] parameter [' . $rootFolder . '] is not an existing and readable directory.'

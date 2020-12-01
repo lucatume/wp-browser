@@ -20,132 +20,29 @@ TEST_SITE_ADMIN_EMAIL=admin@wordpress.test
 
 <<< /.env.testing <<<
 
->>> /tests/functional.suite.yml >>>
-# Codeception Test Suite Configuration
-#
-# Suite for functional tests
-# Emulate web requests and make WordPress process them
-
-actor: FunctionalTester
-modules:
+>>> /codeception.dist.yml >>>
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+actor_suffix: Tester
+extensions:
     enabled:
-        # - WPDb
-        # - WPBrowser
-        # - WPFilesystem
-        - Asserts
-        - \Helper\Functional
-    config:
-        WPDb:
-            dsn: '%TEST_SITE_DB_DSN%'
-            user: '%TEST_SITE_DB_USER%'
-            password: '%TEST_SITE_DB_PASSWORD%'
-            dump: 'tests/_data/dump.sql'
-            populate: true
-            cleanup: true
-            waitlock: 10
-            url: '%TEST_SITE_WP_URL%'
-            urlReplacement: true
-            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        WPBrowser:
-            url: '%TEST_SITE_WP_URL%'
-            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
-            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
-            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
-            headers:
-                X_TEST_REQUEST: 1
-                X_WPBROWSER_REQUEST: 1
+        - Codeception\Extension\RunFailed
+    commands:
+        - Codeception\Command\GenerateWPUnit
+        - Codeception\Command\GenerateWPRestApi
+        - Codeception\Command\GenerateWPRestController
+        - Codeception\Command\GenerateWPRestPostTypeController
+        - Codeception\Command\GenerateWPAjax
+        - Codeception\Command\GenerateWPCanonical
+        - Codeception\Command\GenerateWPXMLRPC
+params:
+    - .env.testing
 
-        WPFilesystem:
-            wpRootFolder: '%WP_ROOT_FOLDER%'
-            plugins: '/wp-content/plugins'
-            mu-plugins: '/wp-content/mu-plugins'
-            themes: '/wp-content/themes'
-            uploads: '/wp-content/uploads'
-<<< /tests/functional.suite.yml <<<
-
->>> /tests/acceptance.suite.yml >>>
-# Codeception Test Suite Configuration
-#
-# Suite for acceptance tests.
-# Perform tests in browser using the WPWebDriver or WPBrowser.
-# Use WPDb to set up your initial database fixture.
-# If you need both WPWebDriver and WPBrowser tests - create a separate suite.
-
-actor: AcceptanceTester
-modules:
-    enabled:
-        # - WPDb
-        # - WPBrowser
-        - \Helper\Acceptance
-    config:
-        WPDb:
-            dsn: '%TEST_SITE_DB_DSN%'
-            user: '%TEST_SITE_DB_USER%'
-            password: '%TEST_SITE_DB_PASSWORD%'
-            dump: 'tests/_data/dump.sql'
-            #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true
-            # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true
-            waitlock: 10
-            url: '%TEST_SITE_WP_URL%'
-            urlReplacement: true #replace the hardcoded dump URL with the one above
-            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        WPBrowser:
-            url: '%TEST_SITE_WP_URL%'
-            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
-            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
-            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
-            headers:
-                X_TEST_REQUEST: 1
-                X_WPBROWSER_REQUEST: 1
-<<< /tests/acceptance.suite.yml <<<
-
->>> /tests/unit.suite.yml >>>
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests.
-
-actor: UnitTester
-modules:
-    enabled:
-        - Asserts
-        - \Helper\Unit
-    step_decorators: ~        
-<<< /tests/unit.suite.yml <<<
-
->>> /tests/_output/.gitkeep >>>
-
-<<< /tests/_output/.gitkeep <<<
-
->>> /tests/_data/.gitkeep >>>
-
-<<< /tests/_data/.gitkeep <<<
-
->>> /tests/wpunit.suite.yml >>>
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests that require WordPress functions and classes.
-
-actor: WpunitTester
-modules:
-    enabled:
-        # - WPLoader
-        - \Helper\Wpunit
-    config:
-        WPLoader:
-            wpRootFolder: "%WP_ROOT_FOLDER%"
-            dbName: "%TEST_DB_NAME%"
-            dbHost: "%TEST_DB_HOST%"
-            dbUser: "%TEST_DB_USER%"
-            dbPassword: "%TEST_DB_PASSWORD%"
-            tablePrefix: "%TEST_TABLE_PREFIX%"
-            domain: "%TEST_SITE_WP_DOMAIN%"
-            adminEmail: "%TEST_SITE_ADMIN_EMAIL%"
-            title: "WP Test"        
-            plugins: ['']
-            activatePlugins: ['']
-<<< /tests/wpunit.suite.yml <<<
+<<< /codeception.dist.yml <<<
 
 >>> /composer.json >>>
 {
@@ -234,26 +131,129 @@ modules:
 
 <<< /composer.json <<<
 
->>> /codeception.dist.yml >>>
-paths:
-    tests: tests
-    output: tests/_output
-    data: tests/_data
-    support: tests/_support
-    envs: tests/_envs
-actor_suffix: Tester
-extensions:
-    enabled:
-        - Codeception\Extension\RunFailed
-    commands:
-        - Codeception\Command\GenerateWPUnit
-        - Codeception\Command\GenerateWPRestApi
-        - Codeception\Command\GenerateWPRestController
-        - Codeception\Command\GenerateWPRestPostTypeController
-        - Codeception\Command\GenerateWPAjax
-        - Codeception\Command\GenerateWPCanonical
-        - Codeception\Command\GenerateWPXMLRPC
-params:
-    - .env.testing
+>>> /tests/_data/.gitkeep >>>
 
-<<< /codeception.dist.yml <<<
+<<< /tests/_data/.gitkeep <<<
+
+>>> /tests/_output/.gitkeep >>>
+
+<<< /tests/_output/.gitkeep <<<
+
+>>> /tests/acceptance.suite.yml >>>
+# Codeception Test Suite Configuration
+#
+# Suite for acceptance tests.
+# Perform tests in browser using the WPWebDriver or WPBrowser.
+# Use WPDb to set up your initial database fixture.
+# If you need both WPWebDriver and WPBrowser tests - create a separate suite.
+
+actor: AcceptanceTester
+modules:
+    enabled:
+        # - WPDb
+        # - WPBrowser
+        - \Helper\Acceptance
+    config:
+        WPDb:
+            dsn: '%TEST_SITE_DB_DSN%'
+            user: '%TEST_SITE_DB_USER%'
+            password: '%TEST_SITE_DB_PASSWORD%'
+            dump: 'tests/_data/dump.sql'
+            #import the dump before the tests; this means the test site database will be repopulated before the tests.
+            populate: true
+            # re-import the dump between tests; this means the test site database will be repopulated between the tests.
+            cleanup: true
+            waitlock: 10
+            url: '%TEST_SITE_WP_URL%'
+            urlReplacement: true #replace the hardcoded dump URL with the one above
+            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
+        WPBrowser:
+            url: '%TEST_SITE_WP_URL%'
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+            headers:
+                X_TEST_REQUEST: 1
+                X_WPBROWSER_REQUEST: 1
+<<< /tests/acceptance.suite.yml <<<
+
+>>> /tests/functional.suite.yml >>>
+# Codeception Test Suite Configuration
+#
+# Suite for functional tests
+# Emulate web requests and make WordPress process them
+
+actor: FunctionalTester
+modules:
+    enabled:
+        # - WPDb
+        # - WPBrowser
+        # - WPFilesystem
+        - Asserts
+        - \Helper\Functional
+    config:
+        WPDb:
+            dsn: '%TEST_SITE_DB_DSN%'
+            user: '%TEST_SITE_DB_USER%'
+            password: '%TEST_SITE_DB_PASSWORD%'
+            dump: 'tests/_data/dump.sql'
+            populate: true
+            cleanup: true
+            waitlock: 10
+            url: '%TEST_SITE_WP_URL%'
+            urlReplacement: true
+            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
+        WPBrowser:
+            url: '%TEST_SITE_WP_URL%'
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+            headers:
+                X_TEST_REQUEST: 1
+                X_WPBROWSER_REQUEST: 1
+
+        WPFilesystem:
+            wpRootFolder: '%WP_ROOT_FOLDER%'
+            plugins: '/wp-content/plugins'
+            mu-plugins: '/wp-content/mu-plugins'
+            themes: '/wp-content/themes'
+            uploads: '/wp-content/uploads'
+<<< /tests/functional.suite.yml <<<
+
+>>> /tests/unit.suite.yml >>>
+# Codeception Test Suite Configuration
+#
+# Suite for unit tests not relying WordPress code.
+
+actor: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - \Helper\Unit
+    step_decorators: ~        
+<<< /tests/unit.suite.yml <<<
+
+>>> /tests/wpunit.suite.yml >>>
+# Codeception Test Suite Configuration
+#
+# Suite for unit or integration tests that require WordPress functions and classes.
+
+actor: WpunitTester
+modules:
+    enabled:
+        # - WPLoader
+        - \Helper\Wpunit
+    config:
+        WPLoader:
+            wpRootFolder: "%WP_ROOT_FOLDER%"
+            dbName: "%TEST_DB_NAME%"
+            dbHost: "%TEST_DB_HOST%"
+            dbUser: "%TEST_DB_USER%"
+            dbPassword: "%TEST_DB_PASSWORD%"
+            tablePrefix: "%TEST_TABLE_PREFIX%"
+            domain: "%TEST_SITE_WP_DOMAIN%"
+            adminEmail: "%TEST_SITE_ADMIN_EMAIL%"
+            title: "WP Test"        
+            plugins: ['']
+            activatePlugins: ['']
+<<< /tests/wpunit.suite.yml <<<

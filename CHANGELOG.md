@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+This version is the first to target Composer version `2` compatibility, while keeping back-compatibility with Composer version `1`.
+The version is marked as breaking, and as such as a Major release, as existing setups that rely on some packages previously bundled
+with wp-browser might break.
+I've changed the removed `wp-cli/wp-cli-bundle` (full wp-cli packages) dependency in favor of the `wp-cli/wp-cli` one and I've removed the `symfony/filesystem`
+dependency in favour of other internal solutions.
+Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-version-2-to-version-3).
+
+### Breaking changes
+
+- Removed the `WithWpCli::executeBackgroundWpCliCommand` method, and, as a consequence, the `WPCLI::executeBackgroundWpCliCommand` method.
+- Removed the `symfony/process` dependency and replaced it with the `mikehaertl/php-shellcommand` one; refactor methods that use and accept shell commands.
+- Refactor the `WPCLI` module to build and escape string command lines differently.
+- Removed the `wp-cli/wp-cli-bundle` dependency and replaced it with the `wp-cli/wp-cli` one.
+
 ## [2.6.17] 2020-11-17;
 
 ### Fixed
