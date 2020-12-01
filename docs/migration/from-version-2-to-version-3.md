@@ -17,4 +17,4 @@ some breakages in string commands that used to work correctly before; should thi
 your code ot provide the command in array format (taking care of the correct escaping in your code), or make sure to 
 pass a correctly structured command string to the `WPCLI` module.
 
-[1] https://symfony.com/doc/current/components/process.html
+[1]: https://symfony.com/doc/current/components/process.html
