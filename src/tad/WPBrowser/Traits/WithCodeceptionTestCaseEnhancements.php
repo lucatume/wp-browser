@@ -60,11 +60,18 @@ trait WithCodeceptionTestCaseEnhancements
      */
     protected function checkSeparateProcessConfiguration()
     {
-        if (! method_exists($this, 'getAnnotations')) {
+        if (
+            !class_exists('\PHPUnit\Util\Test') ||
+            !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
+            !method_exists($this, 'getName')
+        ) {
             return;
         }
 
-        $annotationGroups = $this->getAnnotations();
+        $annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
 
         foreach ([ 'class', 'method' ] as $annotationGroup) {
             if (! isset($annotationGroups[ $annotationGroup ])) {

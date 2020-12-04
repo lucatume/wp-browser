@@ -319,7 +319,10 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      */
     protected function getSlowThreshold(PHPUnit_Framework_TestCase $test)
     {
-        $ann = $test->getAnnotations();
+        $ann = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+            get_class($test),
+            $test->getName(false)
+        );
 
         return isset($ann['method']['slowThreshold'][0]) ? $ann['method']['slowThreshold'][0] : $this->slowThreshold;
     }
