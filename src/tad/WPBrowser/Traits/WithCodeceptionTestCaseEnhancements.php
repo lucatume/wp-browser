@@ -60,6 +60,7 @@ trait WithCodeceptionTestCaseEnhancements
      */
     protected function checkSeparateProcessConfiguration()
     {
+        //phpcs:ignore PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace
         if (
             !class_exists('\PHPUnit\Util\Test') ||
             !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
