@@ -63,14 +63,14 @@ trait WithCodeceptionTestCaseEnhancements
         if (
             !class_exists('\PHPUnit\Util\Test') ||
             !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
-            !method_exists($this, 'getName')
+            !property_exists($this, 'name')
         ) {
             return;
         }
 
         $annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
             get_class($this),
-            $this->getName(false)
+            $this->name
         );
 
         foreach ([ 'class', 'method' ] as $annotationGroup) {
