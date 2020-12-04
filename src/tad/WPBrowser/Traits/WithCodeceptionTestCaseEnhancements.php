@@ -60,18 +60,18 @@ trait WithCodeceptionTestCaseEnhancements
      */
     protected function checkSeparateProcessConfiguration()
     {
-        if (
-            !class_exists('\PHPUnit\Util\Test') ||
-            !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
-            !method_exists($this, 'getName')
-        ) {
-            return;
-        }
+		if (
+			!class_exists('\PHPUnit\Util\Test') ||
+			!method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
+			!method_exists($this, 'getName')
+		) {
+			return;
+		}
 
-        $annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($this),
-            $this->getName(false)
-        );
+		$annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+			get_class($this),
+			$this->getName(false)
+		);
 
         foreach ([ 'class', 'method' ] as $annotationGroup) {
             if (! isset($annotationGroups[ $annotationGroup ])) {
@@ -94,8 +94,8 @@ Running WPTestCase tests in a separate processes requires the following annotati
  * @runInSeparateProcess
  * @preserveGlobalState disabled
  */
- 
-Read more at: 
+
+Read more at:
 * https://phpunit.readthedocs.io/en/9.1/annotations.html?highlight=runInSeparateProcess#runinseparateprocess
 * https://wpbrowser.wptestkit.dev/advanced/run-in-separate-process
 

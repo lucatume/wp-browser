@@ -402,10 +402,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function expectDeprecated()
     {
-        $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($this),
-            $this->name
-        );
+		$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+			get_class($this),
+			$this->name
+		);
 
         foreach (array('class', 'method') as $depth) {
             if (!empty($annotations[$depth]['expectedDeprecated'])) {
