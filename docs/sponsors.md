@@ -14,3 +14,4 @@ My sincere thanks to my sponsors: you make the above easier.
     * [@borkweb](https://github.com/borkweb)
     * [@TimothyBJacobs](https://github.com/TimothyBJacobs)
     * [@jchristopher](https://github.com/jchristopher)
+	* [@dingo-d](https://github.com/dingo-d)
