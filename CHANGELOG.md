@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.1] 2020-12-07;
+
+### Fixed
+
+- Compatibility with PHPUnit version 9.5, thanks @Luc45
+
 ## [3.0.0] 2020-12-01;
 
 This version is the first to target Composer version `2` compatibility, while keeping back-compatibility with Composer version `1`.
@@ -1569,4 +1575,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [2.6.16]: https://github.com/lucatume/wp-browser/compare/2.6.15...2.6.16
 [2.6.17]: https://github.com/lucatume/wp-browser/compare/2.6.16...2.6.17
 [3.0.0]: https://github.com/lucatume/wp-browser/compare/2.6.17...3.0.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.0...HEAD
+[3.0.1]: https://github.com/lucatume/wp-browser/compare/3.0.0...3.0.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.1...HEAD
