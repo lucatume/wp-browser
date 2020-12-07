@@ -60,11 +60,19 @@ trait WithCodeceptionTestCaseEnhancements
      */
     protected function checkSeparateProcessConfiguration()
     {
-        if (! method_exists($this, 'getAnnotations')) {
+        //phpcs:ignore PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace
+        if (
+            !class_exists('\PHPUnit\Util\Test') ||
+            !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
+            !property_exists($this, 'name')
+        ) {
             return;
         }
 
-        $annotationGroups = $this->getAnnotations();
+        $annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+            get_class($this),
+            $this->name
+        );
 
         foreach ([ 'class', 'method' ] as $annotationGroup) {
             if (! isset($annotationGroups[ $annotationGroup ])) {

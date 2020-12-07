@@ -347,7 +347,10 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	function expectDeprecated() {
-		$annotations = $this->getAnnotations();
+		$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+			get_class($this),
+			$this->name
+		);
 		foreach ( array( 'class', 'method' ) as $depth ) {
 			if ( ! empty( $annotations[ $depth ]['expectedDeprecated'] ) )
 				$this->expected_deprecated = array_merge( $this->expected_deprecated, $annotations[ $depth ]['expectedDeprecated'] );
