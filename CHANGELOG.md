@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.2] 2020-12-08;
+
 ### Fixed
 
 - Yaml format issue in scaffoled configuration files, thanks @dale42
@@ -1580,4 +1582,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [2.6.17]: https://github.com/lucatume/wp-browser/compare/2.6.16...2.6.17
 [3.0.0]: https://github.com/lucatume/wp-browser/compare/2.6.17...3.0.0
 [3.0.1]: https://github.com/lucatume/wp-browser/compare/3.0.0...3.0.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.1...HEAD
+[3.0.2]: https://github.com/lucatume/wp-browser/compare/3.0.1...3.0.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.2...HEAD
