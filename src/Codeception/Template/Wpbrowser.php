@@ -608,7 +608,7 @@ EOF;
                 $installationData['theme']
                 : "[{$installationData['parentTheme']}, {$installationData['theme']}]";
             $suiteConfig .= <<<EOF
-            
+
             theme: {$theme}
 EOF;
         }
@@ -616,7 +616,7 @@ EOF;
         $plugins     = $installationData['plugins'];
         $plugins     = "'" . implode("', '", (array) $plugins) . "'";
         $suiteConfig .= <<< EOF
-        
+
             plugins: [{$plugins}]
             activatePlugins: [{$plugins}]
 EOF;

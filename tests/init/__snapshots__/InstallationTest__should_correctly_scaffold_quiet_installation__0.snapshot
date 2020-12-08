@@ -253,7 +253,7 @@ modules:
             tablePrefix: "%TEST_TABLE_PREFIX%"
             domain: "%TEST_SITE_WP_DOMAIN%"
             adminEmail: "%TEST_SITE_ADMIN_EMAIL%"
-            title: "Test"        
+            title: "Test"
             plugins: ['my-plugin/my-plugin.php']
             activatePlugins: ['my-plugin/my-plugin.php']
 <<< /tests/wpunit.suite.yml <<<
