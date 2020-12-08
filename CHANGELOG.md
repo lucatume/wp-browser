@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Yaml format issue in scaffoled configuration files, thanks @dale42
+
 ## [3.0.1] 2020-12-07;
 
 ### Fixed
