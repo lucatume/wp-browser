@@ -11,7 +11,8 @@ To that end, I've [applied for GitHub sponsorship system](https://github.com/spo
 
 My sincere thanks to my sponsors: you make the above easier.
 
-    * [@borkweb](https://github.com/borkweb)
-    * [@TimothyBJacobs](https://github.com/TimothyBJacobs)
-    * [@jchristopher](https://github.com/jchristopher)
-	* [@dingo-d](https://github.com/dingo-d)
+* [@borkweb](https://github.com/borkweb)
+* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
+* [@jchristopher](https://github.com/jchristopher)
+* [@dingo-d](https://github.com/dingo-d)
+* [@cliffordp](https://github.com/cliffordp)
