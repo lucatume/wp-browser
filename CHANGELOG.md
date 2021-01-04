@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+- Add more tests to cover URL replacement in `WPDb` module.
+
 ## [3.0.3] 2021-01-04;
 
 ### Fixed

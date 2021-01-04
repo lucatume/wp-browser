@@ -323,4 +323,42 @@ SQL;
         $replacedSql = $dbDump->replaceSiteDomainInSqlString($sql);
         $this->assertEquals('http://some-nice-host-name', $dbDump->getOriginalUrlFromSqlString($replacedSql));
     }
+
+    public function replacementUrlsDataProvider()
+    {
+        return [
+            'IP Address to URL' => ['http://1.2.3.4', 'http://wordpress.local'],
+            'IP Address wth port to URL' => ['http://127.0.0.1:8888', 'http://wordpress.local'],
+            'IP Address wth port to URL with port' => ['http://127.0.0.1:8888', 'http://wordpress.local:2111'],
+            'IP Address wth port to URL with same port' => ['http://127.0.0.1:8888', 'http://wordpress.local:8888'],
+            'IP address to IP address' => ['http://127.0.0.1', 'http://1.2.3.4'],
+            'IP address with port to IP address' => ['http://127.0.0.1:9999', 'http://1.2.3.4'],
+            'IP address with port to IP address with port' => ['http://127.0.0.1:9999', 'http://1.2.3.4:2133'],
+            'IP address to IP address with port' => ['http://127.0.0.1', 'http://1.2.3.4:2133'],
+            'URL to IP Address' => ['http://wordpress.local', 'http://1.2.3.4:2133'],
+            'URL with port to IP Address' => ['http://wordpress.local', 'http://1.2.3.4:2133'],
+            'URL with port to IP Address with port' => ['http://wordpress.local:9993', 'http://1.2.3.4:2133']
+        ];
+    }
+
+    /**
+     * It should correctly replace local URL with IP address
+     *
+     * @test
+     * @dataProvider replacementUrlsDataProvider
+     */
+    public function should_correctly_replace_local_url_with_ip_address($startUrl, $destUrl)
+    {
+        $inputFile = codecept_data_dir('dump-test/url-replacement-test.sql.handlebars');
+        $sql         = str_replace('{{ siteurl }}', $startUrl, file_get_contents($inputFile));
+
+        $dbDump      = $this->make_instance();
+        $dbDump->setUrl($destUrl);
+        $originalUrl = $dbDump->getOriginalUrlFromSqlString($sql);
+
+        $this->assertEquals($startUrl, $originalUrl);
+
+        $replacedSql = $dbDump->replaceSiteDomainInSqlString($sql);
+        $this->assertEquals($destUrl, $dbDump->getOriginalUrlFromSqlString($replacedSql));
+    }
 }
