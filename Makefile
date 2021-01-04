@@ -282,7 +282,7 @@ setup_wp:
 
 # Remove the current WordPress installation, if any, and set it up again.
 refresh_wp:
-	export TEST_SUBNET=202 \
+	export TEST_SUBNET=202 && \
 	 rm -rf vendor/wordpress/wordpress && \
 		_build/dc.sh --project-name=${PROJECT_NAME}_refresh_wp \
 		-f docker-compose.yml \
