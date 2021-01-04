@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.4] 2021-01-04;
+
 ### Fixed
 - Smaller text fix in Healthcheck component.
 
@@ -1601,4 +1603,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.1]: https://github.com/lucatume/wp-browser/compare/3.0.0...3.0.1
 [3.0.2]: https://github.com/lucatume/wp-browser/compare/3.0.1...3.0.2
 [3.0.3]: https://github.com/lucatume/wp-browser/compare/3.0.2...3.0.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.3...HEAD
+[3.0.4]: https://github.com/lucatume/wp-browser/compare/3.0.3...3.0.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.4...HEAD
