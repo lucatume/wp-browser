@@ -29,7 +29,7 @@
             "stylesheet": "n/a",
             "foo-bar directory not found": "vendor/wordpress/wordpress/wp-content/themes/foo-bar"
         },
-        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
             "Active plugin [one/one.php]": "file [wp-content/plugins/one/one.php] does not exist.",
             "Active plugin [two/two.php]": "file [wp-content/plugins/two/two.php] does not exist.",

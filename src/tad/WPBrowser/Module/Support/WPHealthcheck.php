@@ -463,7 +463,7 @@ class WPHealthcheck
         $muPluginsFolder = $this->directories->getWpmuPluginsDir();
 
         if (!file_exists($muPluginsFolder)) {
-            $this->muPlugins = "mu-plugins directory({$this->relative($muPluginsFolder)}) does not exist.";
+            $this->muPlugins = "mu-plugins directory ({$this->relative($muPluginsFolder)}) does not exist.";
             return true;
         }
 

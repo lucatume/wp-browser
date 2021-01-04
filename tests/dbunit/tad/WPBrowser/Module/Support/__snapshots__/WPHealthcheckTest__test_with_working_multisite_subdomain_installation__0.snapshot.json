@@ -29,7 +29,7 @@
             "stylesheet": "twentynineteen",
             "twentynineteen directory": "vendor/wordpress/wordpress/wp-content/themes/twentynineteen"
         },
-        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
             "Inactive plugin [isolated-test-plugin-two]": "wp-content/plugins/isolated-test-plugin-two",

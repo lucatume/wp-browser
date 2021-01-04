@@ -25,7 +25,7 @@
         "Database structure as expected": "No, structure errors: no tables found in database.",
         "Blog installed": "No, blog is not installed: database table [wp_options] does not contain a 'siteurl' option.",
         "Theme :": "Cannot find the 'template' option in the database.",
-        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": "The 'active_plugins' option was not found in the database . "
     }
 }

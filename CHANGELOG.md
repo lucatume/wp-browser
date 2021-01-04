@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+- Smaller text fix in Healthcheck component.
+
 ### Changed
 - Add more tests to cover URL replacement in `WPDb` module.
 
