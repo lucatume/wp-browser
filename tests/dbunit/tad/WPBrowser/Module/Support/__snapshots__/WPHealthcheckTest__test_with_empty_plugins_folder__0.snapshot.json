@@ -29,7 +29,7 @@
             "stylesheet": "twentytwenty",
             "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
         },
-        "Must-use plugins health-check:": "mu-plugins directory(wp-content/mu-plugins) does not exist.",
+        "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
             "Active plugin [airplane-mode/airplane-mode.php]": "file [../../../tests/_data/empty/airplane-mode/airplane-mode.php] does not exist."
         }
