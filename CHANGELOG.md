@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Parameter format of the `WPDb` module `seeOptionInDatabase`, `dontSeeOptionInDatabase`, `seeSiteOptionInDatabase`,
+  `dontSeeSiteOptionInDatabase` methods to support both name and value or array criteria.
+
+### Added
+
+- The `WPDb::dontSeeSiteOptionInDatabase` method.
+
 ## [3.0.2] 2020-12-08;
 
 ### Fixed

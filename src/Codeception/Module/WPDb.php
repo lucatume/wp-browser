@@ -294,18 +294,21 @@ class WPDb extends Db
      * ```php
      * $I->dontHaveOptionInDatabase('posts_per_page');
      * $I->dontSeeOptionInDatabase('posts_per_page');
+     * $I->dontSeeOptionInDatabase('posts_per_page', 23);
+     * $I->dontSeeOptionInDatabase(['option_name' => 'posts_per_page']);
+     * $I->dontSeeOptionInDatabase(['option_name' => 'posts_per_page', 'option_value' => 23]);
      * ```
      *
-     * @param array<string,mixed> $criteria An array of search criteria.
+     * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
+     * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
      * @return void
      */
-    public function dontSeeOptionInDatabase(array $criteria)
+    public function dontSeeOptionInDatabase($criteriaOrName, $value = null)
     {
+        $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         $tableName = $this->grabPrefixedTableNameFor('options');
-        if (!empty($criteria['option_value'])) {
-            $criteria['option_value'] = $this->maybeSerialize($criteria['option_value']);
-        }
+
         $this->dontSeeInDatabase($tableName, $criteria);
     }
 
@@ -1762,7 +1765,8 @@ class WPDb extends Db
     }
 
     /**
-     * Checks if an option is in the database for the current blog.
+     * Checks if an option is in the database for the current blog, either by criteria or by name and value.
+     *
      * If checking for an array or an object then the serialized version will be checked for.
      *
      * @example
@@ -1771,18 +1775,19 @@ class WPDb extends Db
      * $I->seeOptionInDatabase('tables_version');
      * // Checks an option is in the database and has a specific value.
      * $I->seeOptionInDatabase('tables_version', '1.0');
+     * $I->seeOptionInDatabase(['option_name' => 'tables_version', 'option_value' => 1.0']);
      * ```
      *
-     * @param array<string,mixed> $criteria An array of search criteria.
+     * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
+     * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
      * @return void
      */
-    public function seeOptionInDatabase(array $criteria)
+    public function seeOptionInDatabase($criteriaOrName, $value = null)
     {
+        $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         $tableName = $this->grabPrefixedTableNameFor('options');
-        if (!empty($criteria['option_value'])) {
-            $criteria['option_value'] = $this->maybeSerialize($criteria['option_value']);
-        }
+
         $this->seeInDatabase($tableName, $criteria);
     }
 
@@ -1797,19 +1802,18 @@ class WPDb extends Db
      * $I->seeSiteOptionInDatabase('foo_count', 23);
      * ```
      *
-     * @param string     $key The name of the otpion to check.
-     * @param mixed|null $value If set the assertion will also check the option value.
+     * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
+     * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
      * @return void
      */
-    public function seeSiteOptionInDatabase($key, $value = null)
+    public function seeSiteOptionInDatabase($criteriaOrName, $value = null)
     {
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
-        $criteria = ['option_name' => '_site_option_' . $key];
-        if ($value) {
-            $criteria['option_value'] = $value;
-        }
+
+        $criteria = $this->buildSiteOptionCriteria($criteriaOrName, $value);
+
         $this->seeOptionInDatabase($criteria);
         $this->useBlog($currentBlogId);
     }
@@ -4410,5 +4414,91 @@ class WPDb extends Db
     public function importSql(array $sql)
     {
         $this->_getDriver()->load($sql);
+    }
+
+    /**
+     * Normalizes a site option name.
+     *
+     * @param string $name The site option name to normalize, either containing a `_site_option_` prefix or not.
+     * @param string $prefix The option name prefix to normalize for.
+     *
+     * @return string The normalized site option name, with a `_site_option_` prefix.
+     */
+    protected function normalizePrefixedOptionName($name, $prefix)
+    {
+        return strpos($name, $prefix) === 0 ? $name : $prefix . $name;
+    }
+
+    /**
+     * Checks that a site option is not in the database.
+     *
+     * @example
+     * ```php
+     * // Check that the option is not set in the database.
+     * $I->dontSeeSiteOptionInDatabase('foo_count');
+     * // Check that the option is not set with a specific value.
+     * $I->dontSeeSiteOptionInDatabase('foo_count', 23);
+     * $I->dontSeeSiteOptionInDatabase(['option_name => 'foo_count', 'option_value' => 23]);
+     * ```
+     *
+     * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
+     * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
+     *
+     * @return void
+     */
+    public function dontSeeSiteOptionInDatabase($criteriaOrName, $value = null)
+    {
+        $currentBlogId = $this->blogId;
+        $this->useMainBlog();
+
+        $criteria = $this->buildSiteOptionCriteria($criteriaOrName, $value);
+
+        $this->dontSeeOptionInDatabase($criteria);
+        $this->useBlog($currentBlogId);
+    }
+
+    /**
+     * Builds the criteria required to search for a site option.
+     *
+     * @param string|array<string,mixed> $criteriaOrName Either the ready to use array criteria or the site option name.
+     * @param mixed|null $value The site option value, only used if the first parameter is not an array.
+     * @return array<string,mixed> An array of criteria to search for the site option.
+     */
+    protected function buildSiteOptionCriteria($criteriaOrName, $value = null)
+    {
+        $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
+        if (isset($criteria['option_name'])) {
+            $criteria['option_name'] = $this->normalizePrefixedOptionName($criteria['option_name'], '_site_option_');
+        }
+
+        return $criteria;
+    }
+
+    /**
+     * Normalizes an option criteria to consistently build array format criteria from name and value tuples.
+     *
+     * @param array<string,mixed>|string $criteriaOrName The option name or the criteria to check the option by.
+     * @param mixed|null $value The option value to check; ignored if the first parameter is an array.
+     *
+     * @return array<string,mixed> An array of option criteria, normalized.
+     */
+    protected function normalizeOptionCriteria($criteriaOrName, $value = null)
+    {
+        $criteria = [];
+
+        if (!is_array($criteriaOrName)) {
+            $criteria['option_name'] = $criteriaOrName;
+            if ($value !== null) {
+                $criteria['option_value'] = $value;
+            }
+        } else {
+            $criteria = $criteriaOrName;
+        }
+
+        if (isset($criteria['option_value'])) {
+            $criteria['option_value']= $this->maybeSerialize($criteria['option_value']);
+        }
+
+        return $criteria;
     }
 }
