@@ -17,4 +17,4 @@ My sincere thanks to my sponsors: you make the above easier.
 * [@dingo-d](https://github.com/dingo-d)
 * [@cliffordp](https://github.com/cliffordp)
 * [@Luc45](https://github.com/Luc45)
-* [@pods-framework](https://github.com/pods-frameworkLuc45)
+* [@pods-framework](https://github.com/pods-framework)

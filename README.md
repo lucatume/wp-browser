@@ -72,7 +72,13 @@ This is just a bite though, find out more in [the documentation][1].
 
 My sincere thanks to my sponsors: you make maintaining this project easier.
 
+* [@borkweb](https://github.com/borkweb)
 * [@TimothyBJacobs](https://github.com/TimothyBJacobs)
+* [@jchristopher](https://github.com/jchristopher)
+* [@dingo-d](https://github.com/dingo-d)
+* [@cliffordp](https://github.com/cliffordp)
+* [@Luc45](https://github.com/Luc45)
+* [@pods-framework](https://github.com/pods-framework)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
