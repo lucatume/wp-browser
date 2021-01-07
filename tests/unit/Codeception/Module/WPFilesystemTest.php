@@ -1137,4 +1137,46 @@ PHP;
         Assert::assertFileDoesNotExist($pluginFile);
         $this->assertFileExists($pluginsFolder);
     }
+
+    public function plugin_path_without_extension()
+    {
+        return [
+            ['input' => 'foo', 'expected' => 'foo.php'],
+            ['input' => 'foo/bar', 'expected' => 'foo/bar.php'],
+            ['input' => 'foo.html', 'expected' => 'foo.html'],
+            ['input' => 'foo/bar.html', 'expected' => 'foo/bar.html'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider plugin_path_without_extension
+     */
+    public function should_allow_passing_plugin_filename_without_extension($input, $expected)
+    {
+        $sut = $this->make_instance();
+
+        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
+        $pluginFile = "$pluginsFolder/$expected";
+
+        $sut->havePlugin($input, '');
+
+        $this->assertFileExists($pluginFile);
+    }
+
+    /**
+     * @test
+     * @dataProvider plugin_path_without_extension
+     */
+    public function should_allow_passing_muplugin_filename_without_extension($input, $expected)
+    {
+        $sut = $this->make_instance();
+
+        $muPluginsFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
+        $muPluginFile = "$muPluginsFolder/$expected";
+
+        $sut->haveMuPlugin($input, '');
+
+        $this->assertFileExists($muPluginFile);
+    }
 }
