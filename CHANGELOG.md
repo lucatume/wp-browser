@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+- Update the `WPFilesystem::havePlugin` and `WPFilesystem::haveMuPlugin` methods to take a plugin path without requiring the `.php` extension (thanks @Luc45).
+
 ## [3.0.4] 2021-01-04;
 
 ### Fixed
