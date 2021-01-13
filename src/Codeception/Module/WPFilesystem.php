@@ -1107,6 +1107,10 @@ class WPFilesystem extends Filesystem
         $path = str_replace('\\', '/', $path);
         $fullPath = $this->config['plugins'] . unleadslashit($path);
 
+        if (!isset(pathinfo($fullPath)['extension'])) {
+            $fullPath .= '.php';
+        }
+
         if (strpos($path, '/') === false) {
             $slug = pathinfo($fullPath, PATHINFO_FILENAME);
             $toClean = $fullPath;
@@ -1172,6 +1176,11 @@ PHP;
     public function haveMuPlugin($filename, $code)
     {
         $fullPath = $this->config['mu-plugins'] . unleadslashit($filename);
+
+        if (!isset(pathinfo($fullPath)['extension'])) {
+            $fullPath .= '.php';
+        }
+
         $dir = dirname($fullPath);
 
         if (!file_exists($dir)) {
