@@ -19,3 +19,5 @@ My sincere thanks to my sponsors: you make the above easier.
 * [@Luc45](https://github.com/Luc45)
 * [@pods-framework](https://github.com/pods-framework)
 * [@bordoni](https://github.com/bordoni)
+* [@francescamarano](https://github.com/francescamarano)
+* [@zackkatz](https://github.com/zackkatz)

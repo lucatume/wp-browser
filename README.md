@@ -80,6 +80,8 @@ My sincere thanks to my sponsors: you make maintaining this project easier.
 * [@Luc45](https://github.com/Luc45)
 * [@pods-framework](https://github.com/pods-framework)
 * [@bordoni](https://github.com/bordoni)
+* [@francescamarano](https://github.com/francescamarano)
+* [@zackkatz](https://github.com/zackkatz)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
