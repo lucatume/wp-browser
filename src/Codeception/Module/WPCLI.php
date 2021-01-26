@@ -1,4 +1,9 @@
 <?php
+/**
+ * Wraps calls to the wp-cli tool.
+ *
+ * @package Codeception\Module
+ */
 
 namespace Codeception\Module;
 
@@ -19,8 +24,6 @@ requireCodeceptionModules('WPCLI', [ 'Cli' ]);
 
 /**
  * Class WPCLI
- *
- * Wraps calls to the wp-cli tool.
  *
  * @package Codeception\Module
  */
