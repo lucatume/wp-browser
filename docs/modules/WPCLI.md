@@ -5,7 +5,7 @@ This module allows invoking [WP-CLI](https://wp-cli.org/) commands, refer to the
 The module will use **its own** version of WP-CLI, not the one installed in the machine running the tests!
 
 By default, wp-browser will only include the `wp-cli/wp-cli` package; this package contains the basic files to run WP-CLI and **does not contain all the commands that come with a typical wp-cli installation**.  
-If, in your tests, you require all the commands that usually come installed with WP-CLI, then you should **require the wp-cli/wp-cli-bundle` package as a development dependency of your project, see below.
+If, in your tests, you require all the commands that usually come installed with WP-CLI, then you should require the `wp-cli/wp-cli-bundle` package as a development dependency of your project, see below.
 
 ## Fixing "not a registered command" issue
 
