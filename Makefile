@@ -104,11 +104,13 @@ docs: composer.lock src/Codeception/Module
 			echo "<!--doc--><!--/doc-->" > $${file}; \
 		fi; \
 		echo "Generating documentation for module $${class} in file $${file}..."; \
-		docs/bin/wpbdocmd generate \
-			--visibility=public \
-			--methodRegex="/^[^_]/" \
-			--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
-			$${class} > doc.tmp; \
+		docker run --rm -v ${PWD}:${PWD} \
+			php:7.3-cli \
+				${PWD}/docs/bin/wpbdocmd generate \
+				--visibility=public \
+				--methodRegex="/^[^_]/" \
+				--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
+				$${class} > doc.tmp; \
 		if [ 0 != $$? ]; then rm doc.tmp && exit 1; fi; \
 		echo "${PWD}/doc.tmp $${file}" | xargs php ${PWD}/docs/bin/update_doc.php; \
 		rm doc.tmp; \
