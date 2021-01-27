@@ -10,7 +10,7 @@ If, in your tests, you require all the commands that usually come installed with
 ## Fixing "not a registered command" issue
 
 To keep the conflicts at a manageable level, the wp-browser project **does not include all the commands WP-CLI usually comes bundled with**.  
-Running, in the context of an automated tests, a WP-CLI command that would work on your machine, e.g. `wp plugin list --status=active`, will not work on a default installation of wp-browser and you will get the following error message:
+Running, in the context of an automated test, a WP-CLI command that would work on your machine, e.g. `wp plugin list --status=active`, will not work on a default installation of wp-browser and you will get the following error message:
 
 ```
 [ModuleException] WPCLI: wp-cli terminated with status [1] and output [Error: 'plugin' is not a registered wp command. See 'wp help' for available commands.]
