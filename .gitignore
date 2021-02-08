@@ -10,8 +10,10 @@ codeception.yml
 tests/*.suite.yml
 .env.testing.local
 
+# Cache folder.
+.cache
+
 # Patchwork cache folder.
-cache/*
 src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
 composer.lock
