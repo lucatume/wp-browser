@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 if [ "$#" -lt 2 ]; then
   echo -e "\033[1mPrepares the vendor directory (or restore it from cache) for a specific PHP and Codeception version combination.\033[0m"
   echo ""
@@ -18,10 +20,10 @@ if [ "$#" -lt 2 ]; then
   exit 0
 fi
 
-php_version="$1"
-codeception_version="$2"
-# Default the Composer version to 2 if not specified.
+php_version="${1:-5.6}"
+codeception_version="${2:-4.0}"
 composer_version="${3:-2}"
+# Default the Composer version to 2 if not specified. composer_version="${3:-2}"
 composer_cache_dir="${4:-"${PWD}/.cache/composer"}"
 cwd="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
@@ -39,6 +41,8 @@ else
   echo "File ${cwd}/required-packages-${codeception_version} not found, requiring codeception/codeception:^${codeception_version}"
   required_packages="codeception/codeception:^${codeception_version}"
 fi
+
+rm -rf vendor
 
 docker run --rm -t \
   --user "$(id -u):$(id -g)" \
