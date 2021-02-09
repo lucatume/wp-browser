@@ -317,3 +317,8 @@ composer_73_update: ## Update the Composer dependencies using the PHP 7.3 contai
 	-t \
 	lucatume/composer:php7.3 update
 .PHONY: composer_73_update
+
+composer_dump_autoload: ## Generate Composer autoload files using a specific PHP version.
+	if [ "$(PHP_VERSION)" = '' ]; then echo "Usage: make composer_dump_autoload PHP_VERSION=5.6"; exit 1; fi
+	"${PWD}/_build/dump-autoload.sh" "$(PHP_VERSION)"
+.PHONY: composer_dump_autoload
