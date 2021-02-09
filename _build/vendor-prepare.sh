@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-
 if [ "$#" -lt 2 ]; then
   echo -e "\033[1mPrepares the vendor directory (or restore it from cache) for a specific PHP and Codeception version combination.\033[0m"
   echo ""
