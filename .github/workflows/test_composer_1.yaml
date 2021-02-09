@@ -19,9 +19,9 @@ jobs:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
-        run: test -d vendor || _build/vendor_prepare.sh ${{ matrix.php_version }} ${{ matrix.codeception_version }} 1
+        run: test -d vendor || make composer_vendor_prepare PHP_VERSION=-${{ matrix.php_version }} CODECEPTION_VERSION=${{ matrix.codeception_version }} COMPOSER_VERSION=1
       - name: Dump autoload
-        run: _build/dump_autoload.sh ${{ matrix.php_version }}
+        run: make composer_dump_autoload PHP_VERSION=${{ matrix.php_version }}
       - name: Run tests
         env:
           CI_PHP_VERSION: ${{ matrix.php_version }}
@@ -44,9 +44,9 @@ jobs:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
-        run: test -d vendor || _build/vendor_prepare.sh 5.6 ${{ matrix.codeception_version }} 1
+        run: test -d vendor || make composer_vendor_prepare.sh PHP_VERSION=5.6 CODECEPTION_VERSION=${{ matrix.codeception_version }} COMPOSER_VERSION=1
       - name: Dump autoload
-        run: _build/dump_autoload.sh 5.6
+        run: make composer_dump_autoload PHP_VERSION=5.6
       - name: Run tests
         env:
           CI_PHP_VERSION: 5.6

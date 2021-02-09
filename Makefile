@@ -22,6 +22,13 @@ build: clean docker_pull wp_refresh docker_build_debug ## Builds the project tes
 	"${PWD}/_build/vendor-prepare.sh" "5.6" "4.0"
 .PHONY: build
 
+composer_vendor_prepare: ## Installs Composer dependencies for a target PHP and Codeception version.
+	if [[ "$(PHP_VERSION)" = '' ]] || [[ "$(CODECEPTION_VERSION)" = '' ]] || [[ "$(COMPOSER_VERSION)" = '' ]]; \
+		then echo "Usage: make composer_vendor_prepare PHP_VERSION=5.6 CODECEPTION_VERSION=4.0 COMPOSER_VERSION=2"; exit 1; \
+	fi
+	"${PWD}/_build/vendor-prepare.sh" "$(PHP_VERSION)" "$(CODECEPTION_VERSION)" "$(COMPOSER_VERSION)"
+.PHONY: composer_vendor_prepare
+
 docker_pull: ## Pull all the Docker images this repository will use in building images or running processes.
 	images=( \
 		'cytopia/phpcs' \
