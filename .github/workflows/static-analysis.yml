@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Lint files
-        run: make lint
+        run: make code_lint
 
   phpcs:
     name: phpcs
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Sniff files
-        run: make sniff
+        run: make code_sniff
 
   phpstsan:
     name: phpstan
@@ -36,9 +36,9 @@ jobs:
           path: vendor
           key: composer-5.6-cc-4.0-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
-        run: test -d vendor || _build/vendor_prepare.sh 5.6 4.0
+        run: test -d vendor || make composer_vendor_prepare PHP_VERSION=5.6 CODECEPTION_VERSION=4.0 COMPOSER_VERSION=2
       - name: Dump autoload
-        run: _build/dump_autoload.sh 5.6
+        run: make composer_dump_autoload PHP_VERSION=5.6
       - name: Run PHPStan static analysis
         run: make phpstan
         env:

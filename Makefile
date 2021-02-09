@@ -10,8 +10,26 @@ PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
 .SILENT:
 
-# PUll all the Docker images this repository will use in building images or running processes.
-docker_pull:
+# Make `help` the default target to make sure it will display when make is called without a target.
+.DEFAULT_GOAL := help
+
+help: ## Show this help message.
+	echo -e "\n\033[36mHint\033[0m: if you do not know what target to run first, run the \033[36mbuild\033[0m one.\n"
+	@grep -E '^[a-zA-Z0-9\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+.PHONY: help
+
+build: clean docker_pull wp_refresh docker_build_debug ## Builds the project testing environment.
+	"${PWD}/_build/vendor-prepare.sh" "5.6" "4.0"
+.PHONY: build
+
+composer_vendor_prepare: ## Installs Composer dependencies for a target PHP and Codeception version.
+	if [[ "$(PHP_VERSION)" = '' ]] || [[ "$(CODECEPTION_VERSION)" = '' ]] || [[ "$(COMPOSER_VERSION)" = '' ]]; \
+		then echo "Usage: make composer_vendor_prepare PHP_VERSION=5.6 CODECEPTION_VERSION=4.0 COMPOSER_VERSION=2"; exit 1; \
+	fi
+	"${PWD}/_build/vendor-prepare.sh" "$(PHP_VERSION)" "$(CODECEPTION_VERSION)" "$(COMPOSER_VERSION)"
+.PHONY: composer_vendor_prepare
+
+docker_pull: ## Pull all the Docker images this repository will use in building images or running processes.
 	images=( \
 		'cytopia/phpcs' \
 		'cytopia/phpcbf' \
@@ -29,17 +47,14 @@ docker_pull:
 		docker pull "$$image"; \
 	done;
 .PHONY: docker_pull
-
-# Lint the project source files to make sure they are PHP 5.6 compatible.
-lint:
+code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
 	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 \
 		--colors \
 		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
 		/project/src
-.PHONY: lint
+.PHONY: code_lint
 
-# Use the PHP Code Sniffer container to sniff the relevant source files.
-sniff:
+code_sniff: ## Use the PHP Code Sniffer container to sniff the relevant source files.
 	docker run --rm -v ${PWD}:/data cytopia/phpcs \
 		--colors \
 		-p \
@@ -47,10 +62,9 @@ sniff:
 		--standard=phpcs.xml $(SRC) \
 		--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
 		src
-.PHONY: sniff
+.PHONY: code_sniff
 
-# Use the PHP Code Beautifier container to fix the source and tests code.
-fix:
+code_fix: ## Use the PHP Code Beautifier container to fix the source and tests code.
 	docker run --rm -v ${PWD}:/data cytopia/phpcbf \
 		--colors \
 		-p \
@@ -58,21 +72,17 @@ fix:
 		--standard=phpcs.xml $(SRC) \
 		--ignore=src/data,src/includes,src/tad/scripts,_build \
 		src tests
-.PHONY: fix
+.PHONY: code_fix
 
-# Fix the PHP code, then sniff it.
-fix_n_sniff: fix sniff
-.PHONY: fix_n_sniff
+code_fix_n_sniff: code_fix code_sniff ## Fix the PHP code, then sniff it.
+.PHONY: code_fix_n_sniff
 
-# Use phpstan container to analyze the source code.
-# Configuration will be read from the phpstan.neon.dist file.
 PHPSTAN_LEVEL?=max
-phpstan:
+phpstan: # Use phpstan container to analyze the source code; Configuration will be read from the `phpstan.neon.dist` file.
 	docker run --rm -v ${PWD}:/project lucatume/wpstan:0.12.42 analyze -l ${PHPSTAN_LEVEL}
 .PHONY: phpstan
 
-# Clean the project Docker containers, volumes and networks.
-clean:
+docker_clean: ## Clean the project Docker containers, volumes and networks.
 	docker stop $$(docker ps -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
 		&& echo "Running containers stopped." \
 		|| echo "No running containers".
@@ -85,12 +95,9 @@ clean:
 	docker network rm $$(docker network ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
 		&& echo "Networks removed." \
 		|| echo "No networks found".
-	echo "Removing .bak files." && rm -f *.bak
-	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output && echo "*" > tests/_output/.gitignore
-.PHONY: clean
+.PHONY: docker_clean
 
-# Produces the Modules documentation in the docs/modules folder.
-docs: composer.lock src/Codeception/Module
+docs_rebuild: composer.lock src/Codeception/Module ## Produces the Modules documentation in the docs/modules folder.
 	mkdir -p docs/modules
 	for file in ${PWD}/src/Codeception/Module/*.php; \
 	do \
@@ -116,18 +123,18 @@ docs: composer.lock src/Codeception/Module
 		rm doc.tmp; \
 	done;
 	cp ${PWD}/docs/welcome.md ${PWD}/docs/README.md
+.PHONY: docs_rebuild
 
-# Prints a list of files that will be exported from the project on package pull.
-check_exports:
+relase_check_exports: ## Prints a list of files that will be exported from the project on package pull.
 	bash ./_build/check_exports.sh
 .PHONY: check_exports
 
-build_suites:
+build_suites: ## Rebuilds the suites from the respective configuration files.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=27 \
 		docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
 .PHONY: build_suites
 
-test:
+test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
 		docker-compose --project-name=${PROJECT_NAME}_acceptance \
 		run --rm ccf run acceptance
@@ -181,31 +188,30 @@ test:
 		run --rm ccf run isolated
 .PHONY: test
 
-ready:
+print_ready: ## Prints the currently ready configuration.
 	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
-.PHONY: ready
+.PHONY: print_ready
 
-major:
+release_major: ## Prepare a major version.
 	_build/release.php major
-.PHONY: major
+.PHONY: release_major
 
-minor:
+release_minor: ## Prepare a minor version.
 	_build/release.php minor
-.PHONY: minor
+.PHONY: release_minor
 
-patch:
+patch: ## Prepare a patch version.
 	_build/release.php patch
 .PHONY: patch
 
-composer_hash_bump:
+composer_hash_bump: ## Bumps the composer.lock hash to trigger an invalidation of caches that might be using ti.
 	sh "${PWD}/_build/composer-hash.sh"
 .PHONY: composer_hash_bump
 
-# Run a set of checks on the code before commit.
-pre_commit: lint fix sniff docs
+pre_commit: code_lint code_fix_n_sniff phpstan docs  ## Run a set of checks on the code before a commit.
 .PHONY: pre_commit
 
-test_56:
+test_56: ## Runs all the tests in the PHP 5.6 container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
 		docker-compose --project-name=${PROJECT_NAME}_acceptance \
 		run --rm cc56 run acceptance
@@ -256,51 +262,50 @@ test_56:
 		run --rm cc56 run isolated
 .PHONY: test_56
 
-# A variable target to debug issues in a PHP 5.6 environment.
-dev:
+ssh_dev: ## Open a bash shell in the PHP 5.6 testing container.
 	export TEST_SUBNET=105; \
 		_build/dc.sh --project-name=${PROJECT_NAME}_dev \
 		-f docker-compose.debug.yml \
 		run --rm \
 		cc56 shell
-.PHONY: dev
+.PHONY: ssh_dev
 
-# A variable target to debug issues in a PHP 7.2 environment.
-dev_7:
+ssh_dev_7: ## Open a bash shell in the PHP 7 testing container.
 	export TEST_SUBNET=189; \
 		_build/dc.sh --project-name=${PROJECT_NAME}_dev_7 \
 		-f docker-compose.debug.yml \
 		run --rm \
 		codeception shell
-.PHONY: dev_7
+.PHONY: ssh_dev_7
 
-# Populate the vendor/wordpres/wordpress directory.
-setup_wp:
-	export TEST_SUBNET=203; \
+wp_setup: ## Populate the vendor/wordpres/wordpress directory.
+	export TEST_SUBNET=203 && \
 		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
 		-f docker-compose.debug.yml \
 		up -d wordpress
-.PHONY: setup_wp
+.PHONY: wp_setup
 
-# Remove the current WordPress installation, if any, and set it up again.
-refresh_wp:
+wp_refresh: ## Remove the current WordPress installation, if any, and set it up again.
 	export TEST_SUBNET=202 && \
 	 rm -rf vendor/wordpress/wordpress && \
 		_build/dc.sh --project-name=${PROJECT_NAME}_refresh_wp \
 		-f docker-compose.yml \
 		run --rm cli wp core download
-.PHONY: refresh_wp
+	$(MAKE) wp_setup
+.PHONY: wp_refresh
 
-build_debug:
+docker_build_debug: ## Builds the debug image.
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
-.PHONY: build_debug
+.PHONY: docker_build_debug
 
-reset: clean
+clean: docker_clean ## Cleans the project removing any dependency and artifact.
+	echo "Removing .bak files." && rm -f *.bak
+	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output && echo "*" > tests/_output/.gitignore
 	rm -rf vendor
 	rm -f .ready
-.PHONY: reset
+.PHONY: clean
 
-composer_56_update:
+composer_56_update: ## Update the Composer dependencies using the PHP 5.6 container.
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -310,7 +315,7 @@ composer_56_update:
 	lucatume/composer:php5.6 update
 .PHONY: composer_56_update
 
-composer_73_update:
+composer_73_update: ## Update the Composer dependencies using the PHP 7.3 container.
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -319,3 +324,8 @@ composer_73_update:
 	-t \
 	lucatume/composer:php7.3 update
 .PHONY: composer_73_update
+
+composer_dump_autoload: ## Generate Composer autoload files using a specific PHP version.
+	if [ "$(PHP_VERSION)" = '' ]; then echo "Usage: make composer_dump_autoload PHP_VERSION=5.6"; exit 1; fi
+	"${PWD}/_build/dump-autoload.sh" "$(PHP_VERSION)"
+.PHONY: composer_dump_autoload

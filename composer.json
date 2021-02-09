@@ -16,6 +16,8 @@
       "role": "Developer"
     }
   ],
+  "minimum-stability": "dev",
+  "prefer-stable" : true,
   "require": {
     "php": ">=5.6.0",
     "ext-pdo": "*",
