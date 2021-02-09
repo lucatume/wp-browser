@@ -19,7 +19,7 @@ jobs:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Prepare Composer dependencies
-        run: test -d vendor || make composer_vendor_prepare PHP_VERSION=-${{ matrix.php_version }} CODECEPTION_VERSION=${{ matrix.codeception_version }} COMPOSER_VERSION=1
+        run: test -d vendor || make composer_vendor_prepare PHP_VERSION=${{ matrix.php_version }} CODECEPTION_VERSION=${{ matrix.codeception_version }} COMPOSER_VERSION=1
       - name: Dump autoload
         run: make composer_dump_autoload PHP_VERSION=${{ matrix.php_version }}
       - name: Run tests
