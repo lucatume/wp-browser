@@ -13,6 +13,9 @@ PROJECT_NAME = $(notdir $(PWD))
 # Make `help` the default target to make sure it will display when make is called without a target.
 .DEFAULT_GOAL := help
 
+COMPOSER_CACHE_DIR="$(PWD)/.cache/composer"
+WP_CLI_CACHE_DIR="$(PWD)/.cache/wp-cli"
+
 help: ## Show this help message.
 	echo -e "\n\033[36mHint\033[0m: if you do not know what target to run first, run the \033[36mbuild\033[0m one.\n"
 	@grep -E '^[a-zA-Z0-9\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -306,26 +309,65 @@ clean: docker_clean ## Cleans the project removing any dependency and artifact.
 .PHONY: clean
 
 composer_56_update: ## Update the Composer dependencies using the PHP 5.6 container.
-	docker run --rm \
+	docker run --rm -t \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
+	-e COMPOSER_CACHE_DIR=/composer/cache \
+	-v "$(COMPOSER_CACHE_DIR):/composer/cache" \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php5.6 update
+	lucatume/composer:php5.6-composer-v2 update
 .PHONY: composer_56_update
 
 composer_73_update: ## Update the Composer dependencies using the PHP 7.3 container.
-	docker run --rm \
+	docker run --rm -t \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
+	-e COMPOSER_CACHE_DIR=/composer/cache \
+	-v "$(COMPOSER_CACHE_DIR):/composer/cache" \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php7.3 update
+	lucatume/composer:php7.3-composer-v2 update
 .PHONY: composer_73_update
 
 composer_dump_autoload: ## Generate Composer autoload files using a specific PHP version.
 	if [ "$(PHP_VERSION)" = '' ]; then echo "Usage: make composer_dump_autoload PHP_VERSION=5.6"; exit 1; fi
 	"${PWD}/_build/dump-autoload.sh" "$(PHP_VERSION)"
 .PHONY: composer_dump_autoload
+
+.cache/composer:
+	mkdir -p "$(COMPOSER_CACHE_DIR)"
+
+.cache/wp-cli:
+	mkdir -p "$(WP_CLI_CACHE_DIR)"
+
+CODECEPTION_VERSION="^4.0"
+PHPUNIT_VERSION="*"
+PHP_VERSION="7.4"
+WPBROWSER_VERSION="@dev"
+debug_installation: .cache/composer .cache/wp-cli ## Scaffolds a wp-browser project in a target directory.
+	if [ -z "$(DEST)" ]; then echo -e "\n\033[31mPlease specify a destination directory path using DEST=<path>.\033[0m\n"; exit 1; fi
+	rm -rf "${PWD}/debug_installation/$(DEST)"
+	mkdir -p "${PWD}/debug_installation/$(DEST)"
+	export PHPUNIT_VERSION="$(PHPUNIT_VERSION)" && \
+	  	export CODECEPTION_VERSION="$(CODECEPTION_VERSION)" && \
+	  	export WPBROWSER_VERSION="$(WPBROWSER_VERSION)" && \
+	  	export WPBROWSER_PATH="$(PWD)" && \
+		envsubst < _build/debug_installation/composer.json > "${PWD}/debug_installation/$(DEST)/composer.json"
+	docker run --rm -t \
+		--user "$$(id -u):$$(id -g)" \
+		-e FIXUID=1 \
+  		-e COMPOSER_CACHE_DIR=/composer/cache \
+		-v "$(COMPOSER_CACHE_DIR):/composer/cache" \
+		-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+		-v "${PWD}:/wp-browser" \
+		-v "${PWD}/debug_installation/$(DEST):/project" \
+		lucatume/composer:php$(PHP_VERSION)-composer-v2 install
+	mkdir -p "${PWD}/debug_installation/$(DEST)/wordpress"
+	docker run -it --rm \
+		--user "$$(id -u):$$(id -g)" \
+		-e WP_CLI_CACHE_DIR="/wp-cli-cache" \
+		-v "$(WP_CLI_CACHE_DIR):/wp-cli-cache" \
+		-v "${PWD}/debug_installation/$(DEST)/wordpress:/var/www/html" \
+        wordpress:cli core download
+.PHONY: debug_installation
