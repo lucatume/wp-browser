@@ -369,5 +369,5 @@ debug_installation: .cache/composer .cache/wp-cli ## Scaffolds a wp-browser proj
 		-e WP_CLI_CACHE_DIR="/wp-cli-cache" \
 		-v "$(WP_CLI_CACHE_DIR):/wp-cli-cache" \
 		-v "${PWD}/debug_installation/$(DEST)/wordpress:/var/www/html" \
-        wordpress:cli core download
+    	wordpress:cli core download
 .PHONY: debug_installation
