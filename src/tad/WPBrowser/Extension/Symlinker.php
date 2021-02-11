@@ -64,7 +64,7 @@ class Symlinker extends Extension
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
         try {
-            if (!is_file($destination)) {
+            if (!file_exists($destination)) {
                 if (!symlink($rootFolder, $destination)) {
                     throw new ExtensionException(
                         $this,
