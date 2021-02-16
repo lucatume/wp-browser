@@ -106,7 +106,7 @@ Understanding them might help you work with it:
 			];
 	}
 
-	public funcion test_posts($post_id){
+	public function test_posts($post_id){
 			$this->assertInstanceOf(WP_Post::class, get_post($post_id));
 	}
 	```
