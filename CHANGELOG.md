@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- destination file detection in Symlinker extension (thanks @ryanshoover)
+
 ## [3.0.5.1] 2021-01-13;
 
 ### Fixed
