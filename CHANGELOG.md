@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- update `WPDb` module documentation to improve clarity about `populate` and `cleanup` configuration parameters (thanks @calvinalkan)
+
 ## [3.0.6] 2021-03-29;
 
 ### Fixed
