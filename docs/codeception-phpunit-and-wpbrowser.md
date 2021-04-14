@@ -14,7 +14,7 @@ In the context of this documentation WordPress is the PHP and JavaScript framewo
 
 ### Codeception
 
-Codeception ([home](http://codeception.com/ "Codeception - BDD-style PHP testing.") is a modern, powerful PHP testing framework written in PHP.  
+Codeception ([home](http://codeception.com/ "Codeception - BDD-style PHP testing.")) is a modern, powerful PHP testing framework written in PHP.  
 
 It comes with a number of [modules](https://codeception.com/docs/06-ModulesAndHelpers) and [extensions](https://codeception.com/extensions) that are comparable to WordPress plugins and themes.  
 
