@@ -82,6 +82,7 @@ My sincere thanks to my sponsors: you make maintaining this project easier.
 * [@bordoni](https://github.com/bordoni)
 * [@francescamarano](https://github.com/francescamarano)
 * [@zackkatz](https://github.com/zackkatz)
+* [@Borlabs-Ben](https://github.com/Borlabs-Ben)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
