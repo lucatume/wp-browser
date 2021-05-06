@@ -40,8 +40,8 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
               url: 'http://wordpress.localhost'
               adminUsername: 'admin'
               adminPassword: 'password'
-              adminPath: '/wp-admin'            
-							headers:
+              adminPath: '/wp-admin'
+              headers:
                 X_TEST_REQUEST: 1
                 X_WPBROWSER_REQUEST: 1
 ```
