@@ -21,7 +21,7 @@ composer require --dev codeception/module-phpbrowser:^1.0
 Since this module extends the `PHPBrowser` module provided by Codeception, please refer to the [PHPBrowser configuration section](https://codeception.com/docs/modules/PhpBrowser#Configuration) for more information about the base configuration parameters.  
 
 * `url` *required* - Start URL of your WordPress project, e.g. `http://wp.test`.
-* `headers` - Default headers are set before each test; this might be useful to simulate a specific user agent during the tests or to identify the request source. Note that the headers defined in the config should be prefaced with `HTTP_` in your `wp-config.php` file. This can be used to select which database to use.
+* `headers` - Default headers are set before each test; this might be useful to simulate a specific user agent during the tests or to identify the request source. Note that the headers defined in the config should be prefaced with `HTTP_` in your `wp-config.php` file. [This can be used to select which database to use](https://wpbrowser.wptestkit.dev/tutorials/automatically-change-db-in-tests).
 * `handler` (default: `curl`) - The [Guzzle handler](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html) to use. By default `curl` is used, also possible to pass `stream`, or any valid class name as Handler.
 * `middleware` - The Guzzle middlewares to add. An array of valid callables is required; see [here for more information](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html#middleware).
 * `curl` - curl options; only applied if using the `curl` handler; [more options are available](http://docs.guzzlephp.org/en/stable/request-options.html).
@@ -46,18 +46,8 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
                 X_WPBROWSER_REQUEST: 1
 ```
 
-```php
-<?php
-// example wp-config.php
+[Read here how to use the headers information to automatically change the database during acceptance and functional tests](https://wpbrowser.wptestkit.dev/tutorials/automatically-change-db-in-tests).
 
-if (isset($_SERVER['HTTP_X_TEST_REQUEST']) && isset($_SERVER['HTTP_X_WPBROWSER_REQUEST'])) {
-	// the testing environment
-  define('DB_HOST', 'mysql-test-db');
-} else {
-	// the local dev environment
-  define('DB_HOST', 'mysql');
-}
-```
 <!--doc-->
 
 
