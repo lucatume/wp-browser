@@ -303,7 +303,7 @@ class DbDump
     {
         $matches = [];
         $urlPattern = sprintf(
-            "/INSERT\\s+INTO\\s+`%soptions`.*'(home|siteurl)'\\s*,\\s*'(?<url>[^']+)'/uis",
+            "/INSERT\\s+INTO\\s+`%soptions`.*'(home|siteurl)'\\s*,\\s*'(?<url>[^']+)'/Uuis",
             preg_quote($this->tablePrefix, '/')
         );
 
