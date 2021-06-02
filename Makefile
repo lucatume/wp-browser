@@ -153,9 +153,9 @@ test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
 		docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm ccf run muloader
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
-		docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm ccf run unit
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
+#		docker-compose --project-name=${PROJECT_NAME}_unit \
+#		run --rm ccf run unit
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=135 \
 		docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm codeception run webdriver --debug
@@ -230,9 +230,9 @@ test_56: ## Runs all the tests in the PHP 5.6 container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
 		docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm cc56 run muloader
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
-		docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm cc56 run unit
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
+#		docker-compose --project-name=${PROJECT_NAME}_unit \
+#		run --rm cc56 run unit
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
 		docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm cc56 run webdriver --debug
