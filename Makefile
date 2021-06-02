@@ -141,9 +141,9 @@ test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=129 \
 		docker-compose --project-name=${PROJECT_NAME}_cli \
 		run --rm ccf run cli
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
-		docker-compose --project-name=${PROJECT_NAME}_climodule \
-		run --rm ccf run climodule
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
+#		docker-compose --project-name=${PROJECT_NAME}_climodule \
+#		run --rm ccf run climodule
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=131 \
 		docker-compose --project-name=${PROJECT_NAME}_dbunit \
 		run --rm ccf run dbunit
@@ -218,9 +218,9 @@ test_56: ## Runs all the tests in the PHP 5.6 container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=90 \
 		docker-compose --project-name=${PROJECT_NAME}_cli \
 		run --rm cc56 run cli
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
-		docker-compose --project-name=${PROJECT_NAME}_climodule \
-		run --rm cc56 run climodule
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
+#		docker-compose --project-name=${PROJECT_NAME}_climodule \
+#		run --rm cc56 run climodule
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=92 \
 		docker-compose --project-name=${PROJECT_NAME}_dbunit \
 		run --rm cc56 run dbunit
