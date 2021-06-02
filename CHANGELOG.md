@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.7] 2021-06-02;
+
 ### Fixed
 
 - `WPDb::getOriginalUrlFromSqlString` regex to parse original site URL from dump file (thanks @stracker-phil)
@@ -1630,4 +1632,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.5]: https://github.com/lucatume/wp-browser/compare/3.0.4...3.0.5
 [3.0.5.1]: https://github.com/lucatume/wp-browser/compare/3.0.5...3.0.5.1
 [3.0.6]: https://github.com/lucatume/wp-browser/compare/3.0.5.1..3.0.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.6...HEAD
+[3.0.7]: https://github.com/lucatume/wp-browser/compare/3.0.6...3.0.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.7...HEAD
