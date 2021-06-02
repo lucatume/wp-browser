@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- `WPDb::getOriginalUrlFromSqlString` regex to parse original site URL from dump file (thanks @stracker-phil)
 - update `WPDb` module documentation to improve clarity about `populate` and `cleanup` configuration parameters (thanks @calvinalkan)
 
 ## [3.0.6] 2021-03-29;
