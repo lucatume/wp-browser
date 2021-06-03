@@ -8,6 +8,7 @@
 
 namespace tad\WPBrowser\Traits;
 
+use tad\WPBrowser\StubProphecy\FunctionProphecy;
 use tad\WPBrowser\StubProphecy\StubProphecy;
 
 /**
@@ -51,5 +52,14 @@ trait WithStubProphecy
         array_walk($this->stubProphecies, static function (StubProphecy $stubProphecy) {
             $stubProphecy->_assertPostConditions();
         });
+    }
+
+    /**
+     * @before
+     * @after
+     */
+    public function resetFunctionMocks()
+    {
+        FunctionProphecy::reset();
     }
 }
