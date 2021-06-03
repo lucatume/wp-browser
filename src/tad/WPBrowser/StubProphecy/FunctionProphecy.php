@@ -36,7 +36,14 @@ class FunctionProphecy
      *
      * @var array<Handle>
      */
-    protected static $redefinitionHandles = [];
+    private static $redefinitionHandles = [];
+
+    /**
+     * A map from the names of the function redefining classes, to their existence.
+     *
+     * @var array<string,bool>
+     */
+    private static $classExists = [];
 
     /**
      * Replaces a function with a prophecy using the `uopz` extension, if available.
@@ -67,13 +74,14 @@ class FunctionProphecy
     {
         $safeName = str_replace('\\', '_', trim($name, '\\'));
         $className = $safeName . '_function_prophecy';
-        if (!class_exists($className)) {
+        if (!isset(self::$classExists[$className])) {
             $classCode = str_replace(
                 ['{{ class_name }}', '{{ safe_name }}', '{{ function_signature }}'],
                 [$className, $safeName, self::getFunctionSignatureString($name)],
                 'class {{ class_name }} { public function {{ safe_name }}({{ function_signature }}){} }'
             );
             eval($classCode);
+            self::$classExists[$className] = true;
         }
         $prophecy = new StubProphecy($className);
 
