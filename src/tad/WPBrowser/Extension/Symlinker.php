@@ -147,7 +147,7 @@ class Symlinker extends Extension
         $rootFolder = $this->getRootFolder($eventSettings);
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
-        if (is_file($destination)) {
+        if (file_exists($destination)) {
             try {
                 if (!(unlink($destination))) {
                     // Let's not kill the suite but let's notify the user.
