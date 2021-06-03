@@ -135,57 +135,57 @@ build_suites: ## Rebuilds the suites from the respective configuration files.
 .PHONY: build_suites
 
 test: ## Runs all the tests in the container.
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
-		docker-compose --project-name=${PROJECT_NAME}_acceptance \
-		run --rm ccf run acceptance
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=129 \
-		docker-compose --project-name=${PROJECT_NAME}_cli \
-		run --rm ccf run cli
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
-#		docker-compose --project-name=${PROJECT_NAME}_climodule \
-#		run --rm ccf run climodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=131 \
-		docker-compose --project-name=${PROJECT_NAME}_dbunit \
-		run --rm ccf run dbunit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=132 \
-		docker-compose --project-name=${PROJECT_NAME}_functional \
-		run --rm ccf run functional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
-		docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm ccf run muloader
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
-#		docker-compose --project-name=${PROJECT_NAME}_unit \
-#		run --rm ccf run unit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=135 \
-		docker-compose --project-name=${PROJECT_NAME}_webdriver \
-		run --rm codeception run webdriver --debug
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=136 \
-		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
-		run --rm ccf run wpcli_module
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=137 \
-		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
-		run --rm ccf run wpfunctional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=138 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
-		run --rm ccf run wploader_multisite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=139 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
-		run --rm ccf run wploader_wpdb_interaction
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=140 \
-		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
-		run --rm ccf run wploadersuite
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=141 \
-#		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-#		run --rm ccf run wpmodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=142 \
-		docker-compose --project-name=${PROJECT_NAME}_events \
-		run --rm ccf run events
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
-		docker-compose --project-name=${PROJECT_NAME}_init \
-		run --rm ccf run init
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
-		docker-compose --project-name=${PROJECT_NAME}_isolated \
-		run --rm ccf run isolated
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
+#		docker-compose --project-name=${PROJECT_NAME}_acceptance \
+#		run --rm ccf run acceptance
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=129 \
+#		docker-compose --project-name=${PROJECT_NAME}_cli \
+#		run --rm ccf run cli
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
+		docker-compose --project-name=${PROJECT_NAME}_climodule \
+		run --rm ccf run climodule --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=131 \
+#		docker-compose --project-name=${PROJECT_NAME}_dbunit \
+#		run --rm ccf run dbunit
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=132 \
+#		docker-compose --project-name=${PROJECT_NAME}_functional \
+#		run --rm ccf run functional
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
+#		docker-compose --project-name=${PROJECT_NAME}_muloader \
+#		run --rm ccf run muloader
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm ccf run unit --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=135 \
+#		docker-compose --project-name=${PROJECT_NAME}_webdriver \
+#		run --rm codeception run webdriver --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=136 \
+#		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
+#		run --rm ccf run wpcli_module
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=137 \
+#		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
+#		run --rm ccf run wpfunctional
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=138 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
+#		run --rm ccf run wploader_multisite
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=139 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
+#		run --rm ccf run wploader_wpdb_interaction
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=140 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
+#		run --rm ccf run wploadersuite
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=141 \
+		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm ccf run wpmodule --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=142 \
+#		docker-compose --project-name=${PROJECT_NAME}_events \
+#		run --rm ccf run events
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
+#		docker-compose --project-name=${PROJECT_NAME}_init \
+#		run --rm ccf run init
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
+#		docker-compose --project-name=${PROJECT_NAME}_isolated \
+#		run --rm ccf run isolated
 .PHONY: test
 
 print_ready: ## Prints the currently ready configuration.
@@ -212,54 +212,54 @@ pre_commit: code_lint code_fix_n_sniff phpstan docs  ## Run a set of checks on t
 .PHONY: pre_commit
 
 test_56: ## Runs all the tests in the PHP 5.6 container.
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
-		docker-compose --project-name=${PROJECT_NAME}_acceptance \
-		run --rm cc56 run acceptance
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=90 \
-		docker-compose --project-name=${PROJECT_NAME}_cli \
-		run --rm cc56 run cli
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
-#		docker-compose --project-name=${PROJECT_NAME}_climodule \
-#		run --rm cc56 run climodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=92 \
-		docker-compose --project-name=${PROJECT_NAME}_dbunit \
-		run --rm cc56 run dbunit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=93 \
-		docker-compose --project-name=${PROJECT_NAME}_functional \
-		run --rm cc56 run functional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
-		docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm cc56 run muloader
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
-#		docker-compose --project-name=${PROJECT_NAME}_unit \
-#		run --rm cc56 run unit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
-		docker-compose --project-name=${PROJECT_NAME}_webdriver \
-		run --rm cc56 run webdriver --debug
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=97 \
-		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
-		run --rm cc56 run wpcli_module
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=98 \
-		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
-		run --rm cc56 run wpfunctional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=99 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
-		run --rm cc56 run wploader_multisite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=100 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
-		run --rm cc56 run wploader_wpdb_interaction
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=101 \
-		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
-		run --rm cc56 run wploadersuite
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
-#		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-#		run --rm cc56 run wpmodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
-		docker-compose --project-name=${PROJECT_NAME}_events \
-		run --rm cc56 run events
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
-		docker-compose --project-name=${PROJECT_NAME}_isolated \
-		run --rm cc56 run isolated
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
+#		docker-compose --project-name=${PROJECT_NAME}_acceptance \
+#		run --rm cc56 run acceptance
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=90 \
+#		docker-compose --project-name=${PROJECT_NAME}_cli \
+#		run --rm cc56 run cli
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
+		docker-compose --project-name=${PROJECT_NAME}_climodule \
+		run --rm cc56 run climodule --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=92 \
+#		docker-compose --project-name=${PROJECT_NAME}_dbunit \
+#		run --rm cc56 run dbunit
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=93 \
+#		docker-compose --project-name=${PROJECT_NAME}_functional \
+#		run --rm cc56 run functional
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
+#		docker-compose --project-name=${PROJECT_NAME}_muloader \
+#		run --rm cc56 run muloader
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm cc56 run unit --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
+#		docker-compose --project-name=${PROJECT_NAME}_webdriver \
+#		run --rm cc56 run webdriver --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=97 \
+#		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
+#		run --rm cc56 run wpcli_module
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=98 \
+#		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
+#		run --rm cc56 run wpfunctional
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=99 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
+#		run --rm cc56 run wploader_multisite
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=100 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
+#		run --rm cc56 run wploader_wpdb_interaction
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=101 \
+#		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
+#		run --rm cc56 run wploadersuite
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
+		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm cc56 run wpmodule --debug
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
+#		docker-compose --project-name=${PROJECT_NAME}_events \
+#		run --rm cc56 run events
+#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
+#		docker-compose --project-name=${PROJECT_NAME}_isolated \
+#		run --rm cc56 run isolated
 .PHONY: test_56
 
 ssh_dev: ## Open a bash shell in the PHP 5.6 testing container.
