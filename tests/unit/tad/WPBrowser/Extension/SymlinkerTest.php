@@ -146,7 +146,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
     private function givenFileExists($filename, $exists)
     {
-        theFunction::is_file(Arg::any())->will(static function ($file) use ($filename, $exists) {
+        theFunction::file_exists(Arg::any())->will(static function ($file) use ($filename, $exists) {
             if ($file === $filename) {
                 return $exists;
             }
@@ -250,13 +250,14 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $returnTrueOrRelayTo = $this->ifIn([$fooDestinationFolder, $barDestinationFolder]);
         theFunction::is_dir(Arg::type('string'))->will($returnTrueOrRelayTo('is_dir'));
         theFunction::is_writable(Arg::type('string'))->will($returnTrueOrRelayTo('is_writable'));
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
             if ($filename === $fooDestination) {
                 return false;
             }
             if ($filename === $barDestination) {
-                throw new AssertionFailedError("is_file should not be called with {$barDestination}");
+                throw new AssertionFailedError("file_exists should not be called with {$barDestination}");
             }
+            return file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -304,14 +305,14 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
             if ($filename === $fooDestination) {
                 return false;
             }
             if ($filename === $barDestination) {
-                throw new AssertionFailedError('is_file should not be called with ' . $barDestination);
+                throw new AssertionFailedError('file_exists should not be called with ' . $barDestination);
             }
-            return is_file($filename);
+            return file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -353,11 +354,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file  should not be called');
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
+            return $filename === $defaultDestination ? false : file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -399,11 +397,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
+            return $filename === $defaultDestination ? false : file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -438,11 +433,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
+            return $filename === $fooDestination ? false : file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -477,11 +469,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
+            return $filename === $fooDestination ? false : file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -517,11 +506,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
             return in_array($filename, $matches, true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
+            return $filename === $defaultDestination ? false : file_exists($filename);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -575,8 +561,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->config = ['mode' => 'plugin', 'destination' => $envDestinations, 'rootFolder' => $rootFolder];
         $this->event->getSettings()->willReturn(['current_environment' => 'default']);
         $expected = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename($rootFolder);
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($expected) {
-            return $filename === $expected ? false : is_file($filename);
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($expected) {
+            return $filename === $expected ? false : file_exists($filename);
         });
         theFunction::is_dir(Arg::type('string'))->will(static function ($filename) use ($rootFolder, $defaultDestinationFolder) {
             return in_array($filename, [$defaultDestinationFolder, $rootFolder], true) ?: is_dir($filename);
@@ -744,14 +730,14 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) use ($fooDestinationFolder, $gooDestinationFolder) {
             return in_array($filename, [$fooDestinationFolder, $gooDestinationFolder], true) ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination, $gooDestination) {
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($fooDestination, $gooDestination) {
             if (!in_array($filename, [$fooDestination, $gooDestination], true)) {
-                return is_file($filename);
+                return file_exists($filename);
             }
             if ($filename === $fooDestination) {
                 return false;
             }
-            throw new AssertionFailedError('is_file shoould not be called with ' . $gooDestination);
+            throw new AssertionFailedError('file_exists shoould not be called with ' . $gooDestination);
         });
         theFunction::symlink(
             rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
@@ -783,8 +769,8 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         theFunction::is_writable(Arg::type('string'))->will(static function ($filename) {
             return $filename === '/foo' ?: is_writable($filename);
         });
-        theFunction::is_file(Arg::type('string'))->will(static function ($filename) use ($dest) {
-            return $filename === $dest ?: is_file($filename);
+        theFunction::file_exists(Arg::type('string'))->will(static function ($filename) use ($dest) {
+            return $filename === $dest ?: file_exists($filename);
         });
         theFunction::unlink(Arg::type('string'))->will(static function ($filename) use ($dest) {
             if ($filename !== $dest) {
@@ -809,10 +795,5 @@ class SymlinkerTest extends \Codeception\TestCase\Test
 
         $this->event = $this->stubProphecy('\Codeception\Event\SuiteEvent');
         $this->printEvent = $this->stubProphecy('\Codeception\Event\PrintResultEvent');
-    }
-
-    protected function _after()
-    {
-        theFunction::reset();
     }
 }
