@@ -221,6 +221,11 @@ trait WithWpCli
             $process = $process->withEnv(array_merge($currentEnv, $env));
         }
 
+        if (method_exists($this, 'debugSection')) {
+            $this->debugSection('execute full-command ', $fullCommand);
+            $this->debugSection('execute env', $process->getEnv());
+        }
+
         try {
             $process->mustRun();
         } catch (ProcessFailedException $e) {
