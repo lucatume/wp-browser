@@ -138,7 +138,7 @@ test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
 		docker-compose --project-name=${PROJECT_NAME}_acceptance \
 		run --rm ccf run acceptance
-	cat ${PWD}/vendor/wordpress/wordpress/wp-config.php
+	cat vendor/wordpress/wordpress/wp-config.php
 #	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=129 \
 #		docker-compose --project-name=${PROJECT_NAME}_cli \
 #		run --rm ccf run cli
