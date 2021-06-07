@@ -204,14 +204,6 @@ class WPCLI extends Module
             );
         }
 
-        if (Debug::isEnabled()) {
-            // Append wp-cli debug output, from STDERR, to the output.
-            $debugOutput = $process->getStdErr();
-            foreach (explode("\n", $debugOutput) as $wpCliDebugOutputLine) {
-                $this->debugSection('debug',$wpCliDebugOutputLine);
-            }
-        }
-
         $this->debugSection('output', $output);
         $this->debugSection('status', $status);
 
