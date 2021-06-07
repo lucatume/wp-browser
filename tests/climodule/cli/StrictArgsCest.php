@@ -43,7 +43,7 @@ class StrictArgsCest
             'rss',
             'sidebar-1',
             "--title='{$title}'",
-            '--url=https://wordpress.org/news/feed/',
+            // '--url=https://wordpress.org/news/feed/',
         ]));
 
         $widgets = $I->grabFromDatabase($I->grabPrefixedTableNameFor('options'), 'option_value', ['option_name' => 'widget_rss']);
