@@ -11,6 +11,7 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use Codeception\Util\Debug;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
@@ -203,8 +204,16 @@ class WPCLI extends Module
             );
         }
 
+        if (Debug::isEnabled()) {
+            // Append wp-cli debug output, from STDERR, to the output.
+            $debugOutput = $process->getStdErr();
+            foreach (explode("\n", $debugOutput) as $wpCliDebugOutputLine) {
+                $this->debugSection('debug',$wpCliDebugOutputLine);
+            }
+        }
+
         $this->debugSection('output', $output);
-        $this->debugSection(' status', $status);
+        $this->debugSection('status', $status);
 
         $this->evaluateStatus($output, $status);
 
@@ -263,6 +272,10 @@ class WPCLI extends Module
 
         if (empty($configOptions)) {
             return [];
+        }
+
+        if (Debug::isEnabled()) {
+            $configOptions['debug'] = true;
         }
 
         return $this->wpCliOptions($configOptions);

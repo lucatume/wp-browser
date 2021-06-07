@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+- activate and output `wp-cli` debug mode when running tests in debug mode
+
 ## [3.0.7] 2021-06-02;
 
 ### Fixed
