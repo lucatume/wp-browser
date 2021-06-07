@@ -143,7 +143,7 @@ test: ## Runs all the tests in the container.
 #		run --rm ccf run cli
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
 		docker-compose --project-name=${PROJECT_NAME}_climodule \
-		run --rm ccf run climodule --debug
+		run --rm ccf run tests/climodule/cli/StrictArgsCest.php:should_use_strict_arguments_if_configured_to_do_so --debug
 #	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=131 \
 #		docker-compose --project-name=${PROJECT_NAME}_dbunit \
 #		run --rm ccf run dbunit
