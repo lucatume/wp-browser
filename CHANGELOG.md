@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- pass the provided parameters to the actions fired in the replacement `wp_set_auth_cookie` function, fixes #509
+
 ## [3.0.7] 2021-06-02;
 
 ### Fixed
