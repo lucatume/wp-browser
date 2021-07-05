@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.8] 2021-07-05;
+
 ### Fixed
 
 - pass the provided parameters to the actions fired in the replacement `wp_set_auth_cookie` function, fixes #509
@@ -1637,4 +1639,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.5.1]: https://github.com/lucatume/wp-browser/compare/3.0.5...3.0.5.1
 [3.0.6]: https://github.com/lucatume/wp-browser/compare/3.0.5.1..3.0.6
 [3.0.7]: https://github.com/lucatume/wp-browser/compare/3.0.6...3.0.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.7...HEAD
+[3.0.8]: https://github.com/lucatume/wp-browser/compare/3.0.7...3.0.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.8...HEAD
