@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.9] 2021-09-10;
+
 ### Fixed
 
 - add mirror for the `phpass` dependency, thanks @bordoni, fixes #523
@@ -1644,4 +1646,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.6]: https://github.com/lucatume/wp-browser/compare/3.0.5.1..3.0.6
 [3.0.7]: https://github.com/lucatume/wp-browser/compare/3.0.6...3.0.7
 [3.0.8]: https://github.com/lucatume/wp-browser/compare/3.0.7...3.0.8
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.8...HEAD
+[3.0.9]: https://github.com/lucatume/wp-browser/compare/3.0.8...3.0.9
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.9...HEAD
