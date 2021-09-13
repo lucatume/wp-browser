@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+- update `phpass` dependency to use `stable` mirror (thanks @Luc45 and @bordoni)
+
 ## [3.0.9] 2021-09-10;
 
 ### Fixed
