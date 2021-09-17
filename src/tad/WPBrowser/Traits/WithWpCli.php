@@ -259,6 +259,13 @@ trait WithWpCli
             PHP_BINARY,
             $this->getWpCliBootFilePath(),
         ], (array)$command);
+
+        if (!empty($fullCommand) && count($fullCommand) > 0) {
+            $fullCommand[0] = escapeshellarg($fullCommand[0]);
+        }
+
+        codecept_debug($fullCommand);
+
         return $fullCommand;
     }
 
