@@ -264,8 +264,6 @@ trait WithWpCli
             $fullCommand[0] = escapeshellarg($fullCommand[0]);
         }
 
-        codecept_debug($fullCommand);
-
         return $fullCommand;
     }
 
