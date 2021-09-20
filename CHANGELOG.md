@@ -4,13 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- correct escaping of the PHP binary in the `WithWpCli` trait (thanks @joppuyo)
+
+
 ## [3.0.10] 2021-09-13;
+
+### Fixed
 
 - update `phpass` dependency to use `stable` mirror (thanks @Luc45 and @bordoni)
 
 ## [3.0.9] 2021-09-10;
 
-### Fixed
 
 - add mirror for the `phpass` dependency, thanks @bordoni, fixes #523
 
