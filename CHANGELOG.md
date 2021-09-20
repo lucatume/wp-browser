@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.11] 2021-09-20;
+
 ### Fixed
 
 - correct escaping of the PHP binary in the `WithWpCli` trait (thanks @joppuyo)
@@ -1658,4 +1660,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.8]: https://github.com/lucatume/wp-browser/compare/3.0.7...3.0.8
 [3.0.9]: https://github.com/lucatume/wp-browser/compare/3.0.8...3.0.9
 [3.0.10]: https://github.com/lucatume/wp-browser/compare/3.0.9...3.0.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.10...HEAD
+[3.0.11]: https://github.com/lucatume/wp-browser/compare/3.0.10...3.0.11
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.11...HEAD
