@@ -9,7 +9,6 @@ vendor/
 codeception.yml
 tests/*.suite.yml
 .env.testing.local
-tests/_support/_generated/*TesterActions.php
 tests/_output
 
 # Cache folder.
