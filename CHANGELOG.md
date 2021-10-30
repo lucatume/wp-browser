@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.12] 2021-10-30;
+
 ### Fixed
 
 - do not redefine wp-config constants when using the `WPLoaded` module in `loadOnly: true` mode (thanks @LucasDemea)
@@ -1665,4 +1667,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.9]: https://github.com/lucatume/wp-browser/compare/3.0.8...3.0.9
 [3.0.10]: https://github.com/lucatume/wp-browser/compare/3.0.9...3.0.10
 [3.0.11]: https://github.com/lucatume/wp-browser/compare/3.0.10...3.0.11
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.11...HEAD
+[3.0.12]: https://github.com/lucatume/wp-browser/compare/3.0.11...3.0.12
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.12...HEAD
