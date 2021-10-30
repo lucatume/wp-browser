@@ -22,3 +22,6 @@ My sincere thanks to my sponsors: you make the above easier.
 * [@francescamarano](https://github.com/francescamarano)
 * [@zackkatz](https://github.com/zackkatz)
 * [@Borlabs-Ben](https://github.com/Borlabs-Ben)
+* [@DrewAPicture](https://github.com/DrewAPicture)
+* [@jerclarke](https://github.com/jerclarke)
+* [@joppuyo](https://github.com/joppuyo)
