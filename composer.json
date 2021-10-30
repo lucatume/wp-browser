@@ -1,4 +1,5 @@
 {
+  "_hash": "11223344",
   "name": "lucatume/wp-browser",
   "type": "library",
   "description": "WordPress extension of the PhpBrowser class.",
