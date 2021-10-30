@@ -456,7 +456,6 @@ class WPLoader extends Module
     public function _loadWordpress()
     {
         $this->loadConfigFile();
-        $this->defineConstants($this->_getConstants());
 
         if ($this->config['multisite']) {
             $this->debug('Running as multisite');
@@ -469,6 +468,7 @@ class WPLoader extends Module
         if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();
         } else {
+            $this->defineConstants($this->_getConstants());
             $this->installAndBootstrapInstallation();
         }
 
