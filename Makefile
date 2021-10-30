@@ -153,9 +153,9 @@ test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
 		docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm ccf run muloader
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
-#		docker-compose --project-name=${PROJECT_NAME}_unit \
-#		run --rm ccf run unit
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm ccf run unit
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=135 \
 		docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm codeception run webdriver --debug
