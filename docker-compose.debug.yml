@@ -13,6 +13,7 @@ services:
 
   wordpress:
     image: wp-browser/wordpress_debug:latest
+    env_file: .env.testing.docker
     build:
       # Use a version of the latest WordPress container that has XDebug installed.
       context: tests/_containers/wordpress

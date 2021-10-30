@@ -217,5 +217,8 @@ services:
 
   cli :
     image: wordpress:cli
+    networks:
+      - test
     volumes:
       - ./vendor/wordpress/wordpress:/var/www/html
+      - .:/project:cached
