@@ -821,7 +821,7 @@ class WPCLITest extends \Codeception\Test\Unit
     protected function buildExpectedCommand(array $arr)
     {
         return array_merge([
-            PHP_BINARY,
+            escapeshellarg(PHP_BINARY),
             codecept_root_dir('vendor/wp-cli/wp-cli/php/boot-fs.php'),
             '--path=' . $this->root->url() . '/wp'
         ], $arr);
