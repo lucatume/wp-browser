@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- do not redefine wp-config constants when using the `WPLoaded` module in `loadOnly: true` mode (thanks @LucasDemea)
+
 ## [3.0.11] 2021-09-20;
 
 ### Fixed
