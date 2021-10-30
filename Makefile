@@ -8,7 +8,7 @@ PWD ?= pwd_unknown
 PROJECT_NAME = $(notdir $(PWD))
 
 # Suppress `make` own output.
-.SILENT:
+#.SILENT:
 
 # Make `help` the default target to make sure it will display when make is called without a target.
 .DEFAULT_GOAL := help
@@ -230,9 +230,9 @@ test_56: ## Runs all the tests in the PHP 5.6 container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
 		docker-compose --project-name=${PROJECT_NAME}_muloader \
 		run --rm cc56 run muloader
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
-#		docker-compose --project-name=${PROJECT_NAME}_unit \
-#		run --rm cc56 run unit
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
+		docker-compose --project-name=${PROJECT_NAME}_unit \
+		run --rm cc56 run unit
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
 		docker-compose --project-name=${PROJECT_NAME}_webdriver \
 		run --rm cc56 run webdriver --debug
@@ -278,21 +278,40 @@ ssh_dev_7: ## Open a bash shell in the PHP 7 testing container.
 		codeception shell
 .PHONY: ssh_dev_7
 
-wp_setup: ## Populate the vendor/wordpres/wordpress directory.
+ssh_dev_wp_cli: ## Open a shell in a wp-cli container set up for the running WordPress container.
+	docker run --rm -i \
+		--env-file .env.docker.testing \
+		--user "$$(id -u):$$(id -g)" \
+		--network wp-browser_dev_test \
+		--volume "${PWD}/vendor/wordpress/wordpress:/var/www/html" \
+		--volume "${PWD}:/project" \
+		wordpress:cli bash
+
+wp_setup: ## Populate or refresh the vendor/wordpres/wordpress directory.
+	export TEST_SUBNET=203 && \
+		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
+		-f docker-compose.debug.yml \
+		down -v
+	rm -rf ${PWD}/worpress/wordpress
 	export TEST_SUBNET=203 && \
 		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
 		-f docker-compose.debug.yml \
 		up -d wordpress
 .PHONY: wp_setup
 
-wp_refresh: ## Remove the current WordPress installation, if any, and set it up again.
-	export TEST_SUBNET=202 && \
-	 rm -rf vendor/wordpress/wordpress && \
-		_build/dc.sh --project-name=${PROJECT_NAME}_refresh_wp \
-		-f docker-compose.yml \
-		run --rm cli wp core download
-	$(MAKE) wp_setup
-.PHONY: wp_refresh
+dump_files := dump.sql foo-installation.sql mu-subdir-dump.sql mu-subdomain-dump.sql wploader-wpdb-dump.sql
+define update_dump
+	docker run --rm \
+		--user "$$(id -u):$$(id -g)" \
+		--env-file .env.testing.docker \
+		--network wp-browser_dev_test \
+		--volume "${PWD}/vendor/wordpress/wordpress:/var/www/html" \
+		--volume "${PWD}:/project" \
+		wordpress:cli bash -c "wp db import /project/tests/_data/$(1) && wp core update-db && wp db export /project/tests/_data/$(1)";
+endef
+wp_update_dumps:
+	$(foreach dump_file,$(dump_files),$(call update_dump,$(dump_file)))
+.PHONY: wp_update_dumps
 
 docker_build_debug: ## Builds the debug image.
 	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
