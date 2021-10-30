@@ -174,9 +174,9 @@ test: ## Runs all the tests in the container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=140 \
 		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
 		run --rm ccf run wploadersuite
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=141 \
-#		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-#		run --rm ccf run wpmodule
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=141 \
+		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm ccf run wpmodule
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=142 \
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm ccf run events
@@ -251,9 +251,9 @@ test_56: ## Runs all the tests in the PHP 5.6 container.
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=101 \
 		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
 		run --rm cc56 run wploadersuite
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
-#		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-#		run --rm cc56 run wpmodule
+	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
+		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
+		run --rm cc56 run wpmodule
 	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
 		docker-compose --project-name=${PROJECT_NAME}_events \
 		run --rm cc56 run events
