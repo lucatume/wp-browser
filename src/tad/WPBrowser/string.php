@@ -54,8 +54,8 @@ function slug($string, $sep = '-', $let = false)
     }
 
     // Transliterate.
-    if ( function_exists( 'transliterator_transliterate' ) ) {
-        $step3 = transliterator_transliterate( 'Any-Latin; Latin-ASCII; [\u0080-\u7fff] remove', $step2 );
+    if (function_exists('transliterator_transliterate')) {
+        $step3 = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0080-\u7fff] remove', $step2);
     } else {
         $step3 = iconv('utf-8', 'us-ascii//TRANSLIT', $step2);
     }
