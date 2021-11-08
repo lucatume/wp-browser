@@ -86,6 +86,7 @@ My sincere thanks to my sponsors: you make maintaining this project easier.
 * [@DrewAPicture](https://github.com/DrewAPicture)
 * [@jerclarke](https://github.com/jerclarke)
 * [@joppuyo](https://github.com/joppuyo)
+* [@roborourke](https://github.com/roborourke)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
