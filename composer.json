@@ -24,7 +24,6 @@
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-json": "*",
-    "ext-iconv": "*",
     "antecedent/patchwork": "^2.0",
     "codeception/codeception": "^2.5 || ^3.0 || ^4.0",
     "dg/mysql-dump": "^1.3",

@@ -55,9 +55,14 @@ function slug($string, $sep = '-', $let = false)
 
     // Transliterate.
     if (function_exists('transliterator_transliterate')) {
+        // From the `intl` extension
         $step3 = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0080-\u7fff] remove', $step2);
-    } else {
+    } elseif (function_exists('iconv')) {
+        // From the `iconv` extension.
         $step3 = iconv('utf-8', 'us-ascii//TRANSLIT', $step2);
+    } else {
+        // No extension available: fallback on a simpler approach.
+        $step3 = preg_replace('/[^A-Za-z0-9' . preg_quote($sep, '/') . ']/', '-', $step2);
     }
 
     if ($step3 === false) {
