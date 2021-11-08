@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-###
+### Fixed
 
 Do not require `iconv` extension when, and use the `intl` one if available, when building slugs (thanks @roborourke).
 
