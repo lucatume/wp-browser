@@ -33,10 +33,12 @@ function envFile($file)
         throw new \InvalidArgumentException('Could not read ' . $file . ' contents.');
     }
 
+	$envFileContents = str_replace( "\r\n", "\n", $envFileContents );
+
     $pattern = '/^(?<key>.*?)=("(?<q_value>.*)(?<!\\\\)"|(?<value>.*?))([\\s]*#.*)*$/ui';
 
     $vars = array_reduce(
-        array_filter(explode(PHP_EOL, $envFileContents)),
+	    array_filter(explode("\n", $envFileContents)),
         static function (array $lines, $line) use ($pattern) {
             if (strpos($line, '#') === 0) {
                 return $lines;
