@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Normalize env file parsing to support LF line separators on Windows (thanks @kagg-design).
+
 ## [3.0.13] 2021-11-08;
 
 ### Fixed
