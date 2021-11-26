@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.14] 2021-11-26;
+
 ### Fixed
 
 - Normalize env file parsing to support LF line separators on Windows (thanks @kagg-design).
@@ -1679,4 +1681,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.11]: https://github.com/lucatume/wp-browser/compare/3.0.10...3.0.11
 [3.0.12]: https://github.com/lucatume/wp-browser/compare/3.0.11...3.0.12
 [3.0.13]: https://github.com/lucatume/wp-browser/compare/3.0.12...3.0.13
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.13...HEAD
+[3.0.14]: https://github.com/lucatume/wp-browser/compare/3.0.13...3.0.14
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.14...HEAD
