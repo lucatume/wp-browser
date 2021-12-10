@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.15] 2021-12-10;
+
 ### Fixed
 
 - Update Codeception module suggestions to stick with version `^1.0` and PHP 5.6 compatibility.
@@ -1686,4 +1688,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.12]: https://github.com/lucatume/wp-browser/compare/3.0.11...3.0.12
 [3.0.13]: https://github.com/lucatume/wp-browser/compare/3.0.12...3.0.13
 [3.0.14]: https://github.com/lucatume/wp-browser/compare/3.0.13...3.0.14
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.14...HEAD
+[3.0.15]: https://github.com/lucatume/wp-browser/compare/3.0.14...3.0.15
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.15...HEAD
