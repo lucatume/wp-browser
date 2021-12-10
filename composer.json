@@ -67,13 +67,13 @@
     "_hash": "484f861f69198089cab0e642f27e5653"
   },
   "suggest": {
-    "codeception/module-asserts": "Codeception 4.0 compatibility.",
-    "codeception/module-phpbrowser": "Codeception 4.0 compatibility; required by the WPBrowser module.",
-    "codeception/module-webdriver": "Codeception 4.0 compatibility; required by the WPWebDriver module.",
-    "codeception/module-db": "Codeception 4.0 compatibility; required by the WPDb module.",
-    "codeception/module-filesystem": "Codeception 4.0 compatibility; required by the WPFilesystem module.",
-    "codeception/module-cli": "Codeception 4.0 compatibility; required by the WPCLI module.",
-    "codeception/util-universalframework": "Codeception 4.0 compatibility; required by the WordPress framework module.",
+    "codeception/module-asserts:^1.0": "Codeception 4.0 compatibility.",
+    "codeception/module-phpbrowser:^1.0": "Codeception 4.0 compatibility; required by the WPBrowser module.",
+    "codeception/module-webdriver:^1.0": "Codeception 4.0 compatibility; required by the WPWebDriver module.",
+    "codeception/module-db:^1.0": "Codeception 4.0 compatibility; required by the WPDb module, PHP 5.6 compatible version.",
+    "codeception/module-filesystem:^1.0": "Codeception 4.0 compatibility; required by the WPFilesystem module.",
+    "codeception/module-cli:^1.0": "Codeception 4.0 compatibility; required by the WPCLI module.",
+    "codeception/util-universalframework:^1.0": "Codeception 4.0 compatibility; required by the WordPress framework module.",
     "gumlet/php-image-resize": "To handle runtime image modification in the WPDb::haveAttachmentInDatabase method.",
     "vlucas/phpdotenv:^4.0": "To manage more complex environment file based configuration of the suites."
   }
