@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Update Codeception module suggestions to stick with version `^1.0` and PHP 5.6 compatibility.
+
 ## [3.0.14] 2021-11-26;
 
 ### Fixed
