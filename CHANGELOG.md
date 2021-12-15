@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.17] 2021-12-15;
+
 ## [3.0.16] 2021-12-15;
 
 ### Fixed
@@ -1696,4 +1698,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.14]: https://github.com/lucatume/wp-browser/compare/3.0.13...3.0.14
 [3.0.15]: https://github.com/lucatume/wp-browser/compare/3.0.14...3.0.15
 [3.0.16]: https://github.com/lucatume/wp-browser/compare/3.0.15...3.0.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.16...HEAD
+[3.0.17]: https://github.com/lucatume/wp-browser/compare/3.0.16...3.0.17
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.17...HEAD
