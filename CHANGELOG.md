@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Update `composer.json` to specify the package conflicts with version `2.0` of Codeception modules (thanks @simonhammes).
+
 ## [3.0.15] 2021-12-10;
 
 ### Fixed
