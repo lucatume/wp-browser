@@ -76,5 +76,14 @@
     "codeception/util-universalframework:^1.0": "Codeception 4.0 compatibility; required by the WordPress framework module.",
     "gumlet/php-image-resize": "To handle runtime image modification in the WPDb::haveAttachmentInDatabase method.",
     "vlucas/phpdotenv:^4.0": "To manage more complex environment file based configuration of the suites."
+  },
+  "conflict": {
+    "codeception/module-asserts":">=2.0",
+    "codeception/module-phpbrowser":">=2.0",
+    "codeception/module-webdriver":">=2.0",
+    "codeception/module-db":">=2.0",
+    "codeception/module-filesystem":">=2.0",
+    "codeception/module-cli":">=2.0",
+    "codeception/util-universalframework":">=2.0"
   }
 }
