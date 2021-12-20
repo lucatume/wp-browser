@@ -29,8 +29,8 @@ tags
 # Backup files and folders
 *.bak
 
-# Ready files
-*.ready
-
 # WordPress test directory.
 _wordpress
+
+# The docker configuration file, produced in the make `build` target.
+.env.testing.docker

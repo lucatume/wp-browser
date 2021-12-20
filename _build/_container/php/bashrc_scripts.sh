@@ -14,3 +14,5 @@ function xoff(){
   rm -f xdebug_config.tmp
   php -v
 }
+
+xoff
