@@ -1,350 +1,243 @@
-# Use bash as shell.
+.SILENT:
 SHELL := /bin/bash
-
-# If you see pwd_unknown showing up, this is why. Re-calibrate your system.
-PWD ?= pwd_unknown
-
-# PROJECT_NAME defaults to name of the current directory.
 PROJECT_NAME = $(notdir $(PWD))
+REBUILD ?=0
+ROOT ?= 0
+MYSQL_ROOT_PASSWORD ?= root
+MYSQL_LOCALHOST_PORT ?= 9906
+MYSQL_IMAGE ?= mysql:5.7
+MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
+WORDPRESS_PARENT_DIR ?= $(PWD)/_wordpress
+WORDPRESS_DB_USER ?= $(PROJECT_NAME)
+WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
+WORDPRESS_DB_HOST ?= $(MYSQL_CONTAINER_NAME)
+WORDPRESS_DB_PORT ?= 3306
+WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
+WORDPRESS_LOCALHOST_PORT ?= 9980
+PHP_VERSION ?= 5.6
+COMPOSER_VERSION ?= 2
+COMPOSER_CACHE_DIR ?= $(PWD)/.cache/composer
+XDEBUG_REMOTE_PORT ?= 9003
+XDEBUG_REMOTE_HOST ?= host.docker.internal
 
-# Suppress `make` own output.
-#.SILENT:
+ifeq (1, $(ROOT))
+DOCKER_USER ?= "0:0"
+else
+DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
+endif
 
-# Make `help` the default target to make sure it will display when make is called without a target.
-.DEFAULT_GOAL := help
+test_docker_user:
+	echo "DOCKER_USER: $(DOCKER_USER)"
 
-help: ## Show this help message.
-	echo -e "\n\033[36mHint\033[0m: if you do not know what target to run first, run the \033[36mbuild\033[0m one.\n"
-	@grep -E '^[a-zA-Z0-9\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-.PHONY: help
+build: db_up wp_up composer_install
 
-build: clean docker_pull wp_refresh docker_build_debug ## Builds the project testing environment.
-	"${PWD}/_build/vendor-prepare.sh" "5.6" "4.0"
-.PHONY: build
+test: codecept_run
 
-composer_vendor_prepare: ## Installs Composer dependencies for a target PHP and Codeception version.
-	if [[ "$(PHP_VERSION)" = '' ]] || [[ "$(CODECEPTION_VERSION)" = '' ]] || [[ "$(COMPOSER_VERSION)" = '' ]]; \
-		then echo "Usage: make composer_vendor_prepare PHP_VERSION=5.6 CODECEPTION_VERSION=4.0 COMPOSER_VERSION=2"; exit 1; \
-	fi
-	"${PWD}/_build/vendor-prepare.sh" "$(PHP_VERSION)" "$(CODECEPTION_VERSION)" "$(COMPOSER_VERSION)"
-.PHONY: composer_vendor_prepare
+ifeq "$(findstring 'Linux',$(OS))" ""
+host_ip:
+	echo 'host.docker.internal'
+else
+host_ip:
+	docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3'
+endif
 
-docker_pull: ## Pull all the Docker images this repository will use in building images or running processes.
-	images=( \
-		'cytopia/phpcs' \
-		'cytopia/phpcbf' \
-		'lucatume/parallel-lint-56' \
-		'lucatume/wpstan' \
-		'lucatume/codeception' \
-		'lucatume/composer:php5.6' \
-		'lucatume/composer:php7.0' \
-		'lucatume/composer:php7.1' \
-		'lucatume/composer:php7.2' \
-		'lucatume/composer:php7.3' \
-		'lucatume/composer:php7.4' \
-	); \
-	for image in "$${images[@]}"; do \
-		docker pull "$$image"; \
-	done;
-.PHONY: docker_pull
-code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
-	docker run --rm -v ${PWD}:/project lucatume/parallel-lint-56 \
-		--colors \
-		--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
-		/project/src
-.PHONY: code_lint
+clean: db_destroy wp_destroy php_container_destroy
 
-code_sniff: ## Use the PHP Code Sniffer container to sniff the relevant source files.
-	docker run --rm -v ${PWD}:/data cytopia/phpcs \
-		--colors \
-		-p \
-		-s \
-		--standard=phpcs.xml $(SRC) \
-		--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
-		src
-.PHONY: code_sniff
-
-code_fix: ## Use the PHP Code Beautifier container to fix the source and tests code.
-	docker run --rm -v ${PWD}:/data cytopia/phpcbf \
-		--colors \
-		-p \
-		-s \
-		--standard=phpcs.xml $(SRC) \
-		--ignore=src/data,src/includes,src/tad/scripts,_build \
-		src tests
-.PHONY: code_fix
-
-code_fix_n_sniff: code_fix code_sniff ## Fix the PHP code, then sniff it.
-.PHONY: code_fix_n_sniff
-
-PHPSTAN_LEVEL?=max
-phpstan: # Use phpstan container to analyze the source code; Configuration will be read from the `phpstan.neon.dist` file.
-	docker run --rm -v ${PWD}:/project lucatume/wpstan:0.12.42 analyze -l ${PHPSTAN_LEVEL}
-.PHONY: phpstan
-
-docker_clean: ## Clean the project Docker containers, volumes and networks.
-	docker stop $$(docker ps -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
-		&& echo "Running containers stopped." \
-		|| echo "No running containers".
-	docker rm $$(docker ps -qa -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
-		&& echo "Stopped containers removed." \
-		|| echo "No stopped containers".
-	docker volume rm -f $$(docker volume ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
-		&& echo "Volumes removed." \
-		|| echo "No volumes found".
-	docker network rm $$(docker network ls -q -f "name=${PROJECT_NAME}*") > /dev/null 2>&1 \
-		&& echo "Networks removed." \
-		|| echo "No networks found".
-.PHONY: docker_clean
-
-docs_rebuild: composer.lock src/Codeception/Module ## Produces the Modules documentation in the docs/modules folder.
-	mkdir -p docs/modules
-	for file in ${PWD}/src/Codeception/Module/*.php; \
-	do \
-		name=$$(basename "$${file}" | cut -d. -f1); \
-		if	[ $${name} = "WPBrowserMethods" ]; then \
-			continue; \
-		fi; \
-		class="Codeception\\Module\\$${name}"; \
-		file=${PWD}/docs/modules/$${name}.md; \
-		if [ ! -f $${file} ]; then \
-			echo "<!--doc--><!--/doc-->" > $${file}; \
-		fi; \
-		echo "Generating documentation for module $${class} in file $${file}..."; \
-		docker run --rm -v ${PWD}:${PWD} \
-			php:7.3-cli \
-				${PWD}/docs/bin/wpbdocmd generate \
-				--visibility=public \
-				--methodRegex="/^[^_]/" \
-				--tableGenerator=tad\\WPBrowser\\Documentation\\TableGenerator \
-				$${class} > doc.tmp; \
-		if [ 0 != $$? ]; then rm doc.tmp && exit 1; fi; \
-		echo "${PWD}/doc.tmp $${file}" | xargs php ${PWD}/docs/bin/update_doc.php; \
-		rm doc.tmp; \
-	done;
-	cp ${PWD}/docs/welcome.md ${PWD}/docs/README.md
-.PHONY: docs_rebuild
-
-relase_check_exports: ## Prints a list of files that will be exported from the project on package pull.
-	bash ./_build/check_exports.sh
-.PHONY: check_exports
-
-build_suites: ## Rebuilds the suites from the respective configuration files.
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDE=0 TEST_SUBNET=27 \
-		docker-compose --project-name=${PROJECT_NAME}_build run --rm codeception build
-.PHONY: build_suites
-
-test: ## Runs all the tests in the container.
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=128 \
-		docker-compose --project-name=${PROJECT_NAME}_acceptance \
-		run --rm ccf run acceptance
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=129 \
-		docker-compose --project-name=${PROJECT_NAME}_cli \
-		run --rm ccf run cli
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=130 \
-#		docker-compose --project-name=${PROJECT_NAME}_climodule \
-#		run --rm ccf run climodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=131 \
-		docker-compose --project-name=${PROJECT_NAME}_dbunit \
-		run --rm ccf run dbunit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=132 \
-		docker-compose --project-name=${PROJECT_NAME}_functional \
-		run --rm ccf run functional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=133 \
-		docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm ccf run muloader
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=134 \
-		docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm ccf run unit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=135 \
-		docker-compose --project-name=${PROJECT_NAME}_webdriver \
-		run --rm codeception run webdriver --debug
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=136 \
-		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
-		run --rm ccf run wpcli_module
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=137 \
-		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
-		run --rm ccf run wpfunctional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=138 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
-		run --rm ccf run wploader_multisite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=139 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
-		run --rm ccf run wploader_wpdb_interaction
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=140 \
-		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
-		run --rm ccf run wploadersuite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=141 \
-		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-		run --rm ccf run wpmodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=142 \
-		docker-compose --project-name=${PROJECT_NAME}_events \
-		run --rm ccf run events
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=143 \
-		docker-compose --project-name=${PROJECT_NAME}_init \
-		run --rm ccf run init
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=144 \
-		docker-compose --project-name=${PROJECT_NAME}_isolated \
-		run --rm ccf run isolated
-.PHONY: test
-
-print_ready: ## Prints the currently ready configuration.
-	test -f "${PWD}/.ready" && echo $$(<${PWD}/.ready) || echo "No .ready file found."
-.PHONY: print_ready
-
-release_major: ## Prepare a major version.
-	_build/release.php major
-.PHONY: release_major
-
-release_minor: ## Prepare a minor version.
-	_build/release.php minor
-.PHONY: release_minor
-
-patch: ## Prepare a patch version.
-	_build/release.php patch
-.PHONY: patch
-
-composer_hash_bump: ## Bumps the composer.lock hash to trigger an invalidation of caches that might be using ti.
-	sh "${PWD}/_build/composer-hash.sh"
-.PHONY: composer_hash_bump
-
-pre_commit: code_lint code_fix_n_sniff phpstan docs  ## Run a set of checks on the code before a commit.
-.PHONY: pre_commit
-
-test_56: ## Runs all the tests in the PHP 5.6 container.
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=89 \
-		docker-compose --project-name=${PROJECT_NAME}_acceptance \
-		run --rm cc56 run acceptance
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=90 \
-		docker-compose --project-name=${PROJECT_NAME}_cli \
-		run --rm cc56 run cli
-#	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=91 \
-#		docker-compose --project-name=${PROJECT_NAME}_climodule \
-#		run --rm cc56 run climodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=92 \
-		docker-compose --project-name=${PROJECT_NAME}_dbunit \
-		run --rm cc56 run dbunit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=93 \
-		docker-compose --project-name=${PROJECT_NAME}_functional \
-		run --rm cc56 run functional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=94 \
-		docker-compose --project-name=${PROJECT_NAME}_muloader \
-		run --rm cc56 run muloader
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=95 \
-		docker-compose --project-name=${PROJECT_NAME}_unit \
-		run --rm cc56 run unit
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=96 \
-		docker-compose --project-name=${PROJECT_NAME}_webdriver \
-		run --rm cc56 run webdriver --debug
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=97 \
-		docker-compose --project-name=${PROJECT_NAME}_wpcli_module \
-		run --rm cc56 run wpcli_module
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=98 \
-		docker-compose --project-name=${PROJECT_NAME}_wpfunctional \
-		run --rm cc56 run wpfunctional
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=99 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_multisite \
-		run --rm cc56 run wploader_multisite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=100 \
-		docker-compose --project-name=${PROJECT_NAME}_wploader_wpdb_interaction \
-		run --rm cc56 run wploader_wpdb_interaction
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=101 \
-		docker-compose --project-name=${PROJECT_NAME}_wploadersuite \
-		run --rm cc56 run wploadersuite
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=102 \
-		docker-compose --project-name=${PROJECT_NAME}_wpmodule \
-		run --rm cc56 run wpmodule
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=103 \
-		docker-compose --project-name=${PROJECT_NAME}_events \
-		run --rm cc56 run events
-	DOCKER_RUN_USER=$$(id -u) DOCKER_RUN_GROUP=$$(id -g) XDEBUG_DISABLE=1 TEST_SUBNET=104 \
-		docker-compose --project-name=${PROJECT_NAME}_isolated \
-		run --rm cc56 run isolated
-.PHONY: test_56
-
-ssh_dev: ## Open a bash shell in the PHP 5.6 testing container.
-	export TEST_SUBNET=105; \
-		_build/dc.sh --project-name=${PROJECT_NAME}_dev \
-		-f docker-compose.debug.yml \
-		run --rm \
-		cc56 shell
-.PHONY: ssh_dev
-
-ssh_dev_7: ## Open a bash shell in the PHP 7 testing container.
-	export TEST_SUBNET=189; \
-		_build/dc.sh --project-name=${PROJECT_NAME}_dev_7 \
-		-f docker-compose.debug.yml \
-		run --rm \
-		codeception shell
-.PHONY: ssh_dev_7
-
-ssh_dev_wp_cli: ## Open a shell in a wp-cli container set up for the running WordPress container.
-	docker run --rm -i \
-		--env-file .env.docker.testing \
-		--user "$$(id -u):$$(id -g)" \
-		--network wp-browser_dev_test \
-		--volume "${PWD}/vendor/wordpress/wordpress:/var/www/html" \
-		--volume "${PWD}:/project" \
-		wordpress:cli bash
-
-wp_setup: ## Populate or refresh the vendor/wordpres/wordpress directory.
-	export TEST_SUBNET=203 && \
-		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
-		-f docker-compose.debug.yml \
-		down -v
-	rm -rf ${PWD}/worpress/wordpress
-	export TEST_SUBNET=203 && \
-		_build/dc.sh --project-name=${PROJECT_NAME}_setup_wordpress \
-		-f docker-compose.debug.yml \
-		up -d wordpress
-.PHONY: wp_setup
-
-dump_files := dump.sql foo-installation.sql mu-subdir-dump.sql mu-subdomain-dump.sql wploader-wpdb-dump.sql
-define update_dump
-	docker run --rm \
-		--user "$$(id -u):$$(id -g)" \
-		--env-file .env.testing.docker \
-		--network wp-browser_dev_test \
-		--volume "${PWD}/vendor/wordpress/wordpress:/var/www/html" \
-		--volume "${PWD}:/project" \
-		wordpress:cli bash -c "wp db import /project/tests/_data/$(1) && wp core update-db && wp db export /project/tests/_data/$(1)";
+define DB_SETUP_QUERY
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'localhost' IDENTIFIED WITH mysql_native_password BY '$(PROJECT_NAME)';
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'%' IDENTIFIED WITH mysql_native_password BY '$(PROJECT_NAME)';
+CREATE DATABASE IF NOT EXISTS `$(PROJECT_NAME)`;
+GRANT ALL ON `$(PROJECT_NAME)`.* TO '$(PROJECT_NAME)'@'localhost';
+GRANT ALL ON `$(PROJECT_NAME)`.* TO '$(PROJECT_NAME)'@'%';
+FLUSH PRIVILEGES;
 endef
-wp_update_dumps:
-	$(foreach dump_file,$(dump_files),$(call update_dump,$(dump_file)))
-.PHONY: wp_update_dumps
+export DB_SETUP_QUERY
 
-docker_build_debug: ## Builds the debug image.
-	docker-compose -f docker-compose.yml -f docker-compose.debug.yml build
-.PHONY: docker_build_debug
+define MYSQL_CONFIG
+[client]
+default-character-set=utf8
 
-clean: docker_clean ## Cleans the project removing any dependency and artifact.
-	echo "Removing .bak files." && rm -f *.bak
-	echo "Emptying tests/_output directory." && rm -rf tests/_output && mkdir tests/_output && echo "*" > tests/_output/.gitignore
-	rm -rf vendor
-	rm -f .ready
-.PHONY: clean
+[mysql]
+default-character-set=utf8
+bind-address=0.0.0.0
 
-composer_56_update: ## Update the Composer dependencies using the PHP 5.6 container.
-	docker run --rm \
-	--user "$$(id -u):$$(id -g)" \
-	-e FIXUID=1 \
-	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
-	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php5.6 update
-.PHONY: composer_56_update
+[mysqld]
+default-authentication-plugin=mysql_native_password
+collation-server=utf8_unicode_ci
+character-set-server=utf8
+endef
+export MYSQL_CONFIG
 
-composer_73_update: ## Update the Composer dependencies using the PHP 7.3 container.
-	docker run --rm \
-	--user "$$(id -u):$$(id -g)" \
-	-e FIXUID=1 \
-	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
-	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php7.3 update
-.PHONY: composer_73_update
+db_up:
+	mkdir -p "$(WORDPRESS_PARENT_DIR)"
+	if [ ! -f "$(WORDPRESS_PARENT_DIR)/my.cnf" ]; \
+		then echo -e "$${MYSQL_CONFIG}" > "$(WORDPRESS_PARENT_DIR)/my.cnf"; \
+	fi
+	if [ -z "$$(docker ps -aq --filter name=$(MYSQL_CONTAINER_NAME))" ]; then \
+		docker run --name $(MYSQL_CONTAINER_NAME) -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+			--publish "$(MYSQL_LOCALHOST_PORT):3306" \
+			--volume "$(WORDPRESS_PARENT_DIR)/my.cnf:/etc/mysql/conf.d/docker.cnf" \
+			--health-cmd='mysqladmin ping --silent' \
+			--label $(PROJECT_NAME).service=mysql \
+			--detach $(MYSQL_IMAGE); \
+	elif [ ! $$(docker ps -q --filter name=$(MYSQL_CONTAINER_NAME)) ]; then \
+	  	docker restart $(MYSQL_CONTAINER_NAME); \
+	fi
+	echo -n "Waiting for DB ready ..."
+	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(MYSQL_CONTAINER_NAME))" == "healthy" ]; \
+		do echo -n '.' && sleep .5; \
+	done
+	echo " done"
+	docker exec -i $(MYSQL_CONTAINER_NAME) mysql -uroot -p$(MYSQL_ROOT_PASSWORD) -e "$${DB_SETUP_QUERY}"
 
-composer_dump_autoload: ## Generate Composer autoload files using a specific PHP version.
-	if [ "$(PHP_VERSION)" = '' ]; then echo "Usage: make composer_dump_autoload PHP_VERSION=5.6"; exit 1; fi
-	"${PWD}/_build/dump-autoload.sh" "$(PHP_VERSION)"
-.PHONY: composer_dump_autoload
+db_down:
+	-docker stop "$(MYSQL_CONTAINER_NAME)"
+
+db_destroy: db_down
+	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=mysql)
+	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=mysql)
+	rm -rf "$(WORDPRESS_PARENT_DIR)/my.cnf"
+
+db_cli:
+	docker exec -it $(MYSQL_CONTAINER_NAME) mysql -uroot -p$(MYSQL_ROOT_PASSWORD)
+
+define QENV_FN
+function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
+endef
+
+wp_setup:
+	mkdir -p "$(WORDPRESS_PARENT_DIR)"
+	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ]; then curl https://wordpress.org/latest.zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"; fi
+	if [ ! -d "$(WORDPRESS_PARENT_DIR)/wordpress" ]; then unzip -u "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"; fi
+	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php" ]; then \
+		php -r 'echo preg_replace("/^\\R/m", "\n$(QENV_FN)\n\n", file_get_contents("$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php"),1);' \
+		| sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
+		| sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
+		| sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
+		| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(WORDPRESS_DB_HOST)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
+		> "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php"; \
+	fi
+
+wp_up: db_up php_container wp_setup
+	if [ -z "$$(docker ps -aq --filter name=$(PROJECT_NAME)_php_$(PHP_VERSION))" ]; then \
+		docker run --detach --name $(PROJECT_NAME)_php_$(PHP_VERSION) \
+			-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
+			-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
+			-e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
+			-e WORDPRESS_DB_PORT=3306 \
+			-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
+			-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
+			--label $(PROJECT_NAME).service=php \
+			--link $(MYSQL_CONTAINER_NAME) \
+			--volume "$(PWD):$(PWD)" \
+			--workdir "$(PWD)" \
+			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
+			$(PROJECT_NAME)_php:$(PHP_VERSION) \
+			php -t "$(PWD)/_wordpress/wordpress" -S 0.0.0.0:80; \
+  	fi
+	echo -n "Waiting for WP ready ..."
+	until $$(curl --output /dev/null --silent --head --fail http://localhost:$(WORDPRESS_LOCALHOST_PORT)); do \
+		printf '.'; \
+		sleep .5; \
+	done
+	echo " done"
+	echo "Server address: http://localhost:$(WORDPRESS_LOCALHOST_PORT)"
+
+wp_down:
+	-docker stop $(PROJECT_NAME)_php_$(PHP_VERSION)
+	-docker rm $(PROJECT_NAME)_php_$(PHP_VERSION)
+	rm -rf "$(WORDPRESS_PARENT_DIR)/wordpress/wp-content/server.log"
+	rm -rf "$(WORDPRESS_PARENT_DIR)/wordpress/wp-content/debug.log"
+
+wp_destroy: wp_down
+	rm -f $(WORDPRESS_PARENT_DIR)/wordpress.zip
+	rm -rf $(WORDPRESS_PARENT_DIR)/wordpress
+
+wp_logs:
+	tail -f "$(WORDPRESS_PARENT_DIR)/wordpress/wp-content/*.log"
+
+php_container:
+	if [ $(REBUILD) = 1 ] || [ -z "$$(docker images $(PROJECT_NAME)_php:$(PHP_VERSION) -q)" ]; then \
+		docker build _build/_container/php \
+			--build-arg USER_UID=$$(id -u) \
+			--build-arg USER_GID=$$(id -g) \
+			--build-arg USER_UNAME=$$(whoami) \
+			--build-arg PHP_VERSION=$(PHP_VERSION) \
+			--build-arg CONTAINER_NAME=$(PROJECT_NAME)_php_$(PHP_VERSION) \
+			--tag $(PROJECT_NAME)_php:$(PHP_VERSION) \
+			--label $(PROJECT_NAME).service=php; \
+	fi
+
+php_container_destroy:
+	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
+	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
+	-docker image rm $$(docker images $(PROJECT_NAME)_php -q)
+
+ifeq "7.2" "$(word 1, $(sort 7.2 $(PHP_VERSION)))"
+# PHP Version >= 7.2 -> XDebug 3
+php_container_shell:
+	docker exec --interactive --tty \
+      --user $(DOCKER_USER) \
+	  --workdir "$(PWD)" \
+	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
+	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
+	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_NAME) \
+	  -e XDEBUG_MODE=develop,debug \
+	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(shell $(MAKE) host_ip)" \
+	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  bash
+else
+# PHP Version < 7.2 -> XDebug 2
+php_container_shell:
+	docker exec --interactive --tty \
+      --user $(DOCKER_USER) \
+	  --workdir "$(PWD)" \
+	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
+	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
+	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_NAME) \
+	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(shell $(MAKE) host_ip)" \
+	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  bash
+endif
+
+
+composer_update:
+	docker exec --interactive \
+      --user "$$(id -u):$$(id -g)" \
+	  --workdir "$(PWD)" \
+      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
+	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  composer update
+
+composer_install:
+	docker exec --interactive \
+      --user "$$(id -u):$$(id -g)" \
+	  --workdir "$(PWD)" \
+      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
+	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  composer install
+
+codecept_run:
+	docker exec --interactive \
+      --user "$$(id -u):$$(id -g)" \
+	  --workdir "$(PWD)" \
+	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
+	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
+	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_NAME) \
+	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_NAME) \
+	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  vendor/bin/codecept run unit

@@ -31,3 +31,6 @@ tags
 
 # Ready files
 *.ready
+
+# WordPress test directory.
+_wordpress
