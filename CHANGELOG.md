@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Exit non 0 value on wp db connection error during bootstrap.
+
 ## [3.0.17] 2021-12-15;
 
 ### Fixed
