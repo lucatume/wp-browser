@@ -1,11 +1,11 @@
-.SILENT:
+#.SILENT:
 SHELL := /bin/bash
 PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
 ROOT ?= 0
 MYSQL_ROOT_PASSWORD ?= root
 MYSQL_LOCALHOST_PORT ?= 9906
-MYSQL_IMAGE ?= mysql:5.7
+MYSQL_IMAGE ?= mariadb:latest
 MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
 WORDPRESS_PARENT_DIR ?= $(PWD)/_wordpress
 WORDPRESS_DOMAIN ?= wordpress.test
@@ -14,12 +14,12 @@ WORDPRESS_ROOT_DIR ?= vendor/wordpress/wordpress
 WORDPRESS_DB_USER ?= $(PROJECT_NAME)
 WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
 WORDPRESS_DB_HOST ?= $(MYSQL_CONTAINER_NAME)
-WORDPRESS_DB_PORT ?= 3306
+WORDPRESS_DB_PORT ?= 9806
 WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
 WORDPRESS_TABLE_PREFIX ?= wp_
 WORDPRESS_ADMIN_USER ?= admin
 WORDPRESS_ADMIN_PASSWORD ?= admin
-WORDPRESS_LOCALHOST_PORT ?= 9980
+WORDPRESS_LOCALHOST_PORT ?= 9880
 WORDPRESS_SUBDIR_URL ?= http://wordpress.test/subdir-one
 WORDPRESS_SUBDIR_DB_NAME ?= test_subdir
 WORDPRESS_SUBDOMAIN_URL ?= http://one.wordpress.test
@@ -56,9 +56,20 @@ endif
 
 clean: db_destroy wp_destroy php_container_destroy
 
+define MYSQL_CONFIG
+[mysqld]
+bind_address=*
+collation_server=utf8_unicode_ci
+character-set-server=utf8
+
+[client]
+default-character-set=utf8
+endef
+export MYSQL_CONFIG
+
 define DB_SETUP_QUERY
-CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'localhost' IDENTIFIED WITH mysql_native_password BY '$(PROJECT_NAME)';
-CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'%' IDENTIFIED WITH mysql_native_password BY '$(PROJECT_NAME)';
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'localhost' IDENTIFIED BY '$(PROJECT_NAME)';
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'%' IDENTIFIED BY '$(PROJECT_NAME)';
 CREATE DATABASE IF NOT EXISTS `$(PROJECT_NAME)`;
 GRANT ALL ON `$(PROJECT_NAME)`.* TO '$(PROJECT_NAME)'@'localhost';
 GRANT ALL ON `$(PROJECT_NAME)`.* TO '$(PROJECT_NAME)'@'%';
@@ -66,53 +77,38 @@ FLUSH PRIVILEGES;
 endef
 export DB_SETUP_QUERY
 
-define MYSQL_CONFIG
-[client]
-default-character-set=utf8
-
-[mysql]
-default-character-set=utf8
-bind-address=0.0.0.0
-
-[mysqld]
-default-authentication-plugin=mysql_native_password
-collation-server=utf8_unicode_ci
-character-set-server=utf8
-endef
-export MYSQL_CONFIG
-
 db_up:
-	mkdir -p "$(WORDPRESS_PARENT_DIR)"
-	if [ ! -f "$(WORDPRESS_PARENT_DIR)/my.cnf" ]; \
-		then echo -e "$${MYSQL_CONFIG}" > "$(WORDPRESS_PARENT_DIR)/my.cnf"; \
-	fi
-	if [ -z "$$(docker ps -aq --filter name=$(MYSQL_CONTAINER_NAME))" ]; then \
-		docker run --name $(MYSQL_CONTAINER_NAME) -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
-			--publish "$(MYSQL_LOCALHOST_PORT):3306" \
+	if [ ! -f "$(WORDPRESS_PARENT_DIR)/my.cnf" ]; then echo -e "$${MYSQL_CONFIG}" > "$(WORDPRESS_PARENT_DIR)/my.cnf"; fi
+	if [ -z "$$(docker ps -aq --filter name=$(PROJECT_NAME)_db)" ]; then \
+	  	echo "Starting db ..."; \
+		docker run --name $(PROJECT_NAME)_db -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+			--publish "$(WORDPRESS_DB_PORT):3306" \
 			--volume "$(WORDPRESS_PARENT_DIR)/my.cnf:/etc/mysql/conf.d/docker.cnf" \
 			--health-cmd='mysqladmin ping --silent' \
 			--label $(PROJECT_NAME).service=mysql \
 			--detach $(MYSQL_IMAGE); \
-	elif [ ! $$(docker ps -q --filter name=$(MYSQL_CONTAINER_NAME)) ]; then \
-	  	docker restart $(MYSQL_CONTAINER_NAME); \
+	elif [ ! $$(docker ps -q --filter name=$(PROJECT_NAME)_db) ]; then \
+	  	echo "Restarting db ..."; \
+	  	docker restart $(PROJECT_NAME)_db; \
 	fi
 	echo -n "Waiting for DB ready ..."
-	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(MYSQL_CONTAINER_NAME))" == "healthy" ]; \
+	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_db)" == "healthy" ]; \
 		do echo -n '.' && sleep .5; \
 	done
 	echo " done"
-	docker exec -i $(MYSQL_CONTAINER_NAME) mysql -uroot -p$(MYSQL_ROOT_PASSWORD) -e "$${DB_SETUP_QUERY}"
+	docker exec -i $(PROJECT_NAME)_db mysql -uroot -p$(MYSQL_ROOT_PASSWORD) -e "$${DB_SETUP_QUERY}"
 
 db_down:
-	-docker stop "$(MYSQL_CONTAINER_NAME)"
+	-docker stop "$(PROJECT_NAME)_db"
+	rm -f "$(PWD)/my.cnf"
+
+db_cli:
+	docker exec -it $(PROJECT_NAME)_db mysql -uroot -p$(MYSQL_ROOT_PASSWOR)
 
 db_destroy: db_down
 	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=mysql)
 	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=mysql)
 	rm -rf "$(WORDPRESS_PARENT_DIR)/my.cnf"
-
-db_cli:
-	docker exec -it $(MYSQL_CONTAINER_NAME) mysql -uroot -p$(MYSQL_ROOT_PASSWORD)
 
 define QENV_FN
 function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
@@ -192,6 +188,7 @@ php_container_shell:
 	docker exec --interactive --tty \
       --user $(DOCKER_USER) \
 	  --workdir "$(PWD)" \
+      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
 	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
@@ -210,6 +207,7 @@ php_container_shell:
 	docker exec --interactive --tty \
       --user $(DOCKER_USER) \
 	  --workdir "$(PWD)" \
+      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
 	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
