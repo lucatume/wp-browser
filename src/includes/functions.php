@@ -104,10 +104,31 @@ function _delete_all_posts()
 function _wp_die_handler($message, $title = '', $args = array())
 {
     if (!$GLOBALS['_wp_die_disabled']) {
-        _wp_die_handler_txt($message, $title, $args);
+        _wp_die_handler_filter($message, $title, $args);
     } else {
         //Ignore at our peril
     }
+}
+
+function _wp_die_handler_filter_exit() {
+    return '_wp_die_handler_exit';
+}
+
+function _wp_die_handler_exit( $message, $title, $args ) {
+    echo "\nwp_die called\n";
+    echo "Message: $message\n";
+
+    if ( ! empty( $title ) ) {
+        echo "Title: $title\n";
+    }
+
+    if ( ! empty( $args ) ) {
+        echo "Args: \n";
+        foreach ( $args as $k => $v ) {
+            echo "\t $k : $v\n";
+        }
+    }
+    exit( 1 );
 }
 
 function _disable_wp_die()
@@ -127,7 +148,7 @@ function _wp_die_handler_filter()
 
 function _wp_die_handler_txt($message, $title, $args)
 {
-    echo "\nwp_die called\n";
+    echo "\nwp_die\n";
     echo "Message : $message\n";
     echo "Title : $title\n";
     if (! empty($args)) {
