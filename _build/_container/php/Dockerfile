@@ -18,6 +18,7 @@ RUN chmod a+x /usr/local/bin/install-php-extensions && \
 RUN apt-get update && apt-get install -y \
     default-mysql-client curl git zip unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+COPY php.ini /usr/local/etc/php/conf.d/docker-php-defaults.ini
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 RUN chmod a+x /usr/local/bin/composer
 RUN if [ $(getent group $USER_GID) ]; then \
