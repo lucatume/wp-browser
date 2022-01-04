@@ -4,7 +4,7 @@ PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
 ROOT ?= 0
 MYSQL_ROOT_PASSWORD ?= root
-MYSQL_LOCALHOST_PORT ?= 9906
+MYSQL_LOCALHOST_PORT ?= 9306
 MYSQL_IMAGE ?= mariadb:latest
 MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
 WORDPRESS_PARENT_DIR ?= $(PWD)/_wordpress
@@ -14,12 +14,12 @@ WORDPRESS_ROOT_DIR ?= $(WORDPRESS_PARENT_DIR)/wordpress
 WORDPRESS_DB_USER ?= $(PROJECT_NAME)
 WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
 WORDPRESS_DB_HOST ?= $(MYSQL_CONTAINER_NAME)
-WORDPRESS_DB_PORT ?= 9806
+WORDPRESS_DB_PORT ?= 9306
 WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
 WORDPRESS_TABLE_PREFIX ?= wp_
 WORDPRESS_ADMIN_USER ?= admin
 WORDPRESS_ADMIN_PASSWORD ?= admin
-WORDPRESS_LOCALHOST_PORT ?= 9880
+WORDPRESS_LOCALHOST_PORT ?= 9380
 WORDPRESS_SUBDIR_URL ?= http://wordpress.test/subdir-one
 WORDPRESS_SUBDIR_DB_NAME ?= test_subdir
 WORDPRESS_SUBDOMAIN_URL ?= http://one.wordpress.test
@@ -32,6 +32,7 @@ XDEBUG_REMOTE_PORT ?= 9003
 XDEBUG_REMOTE_HOST ?= host.docker.internal
 CHROMEDRIVER_HOST ?= chrome
 CHROMEDRIVER_PORT ?= 4444
+CODECEPTION_MAJOR_VERSION ?= 4
 
 ifeq (1, $(ROOT))
 DOCKER_USER ?= "0:0"
@@ -39,10 +40,17 @@ else
 DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
 endif
 
+ifeq (4, $(CODECEPTION_MAJOR_VERSION))
+COMPOSER_JSON_FILE = "$(PWD)/composer.codecept-4.json"
+else
+COMPOSER_JSON_FILE = "$(PWD)/composer.json"
+endif
+
+
 test_docker_user:
 	echo "DOCKER_USER: $(DOCKER_USER)"
 
-build: db_up wp_up composer_install test_env_file
+build: db_up wp_up composer_update test_env_file
 
 test: codecept_run
 
@@ -139,6 +147,7 @@ wp_up: db_up php_container wp_setup
 			--label $(PROJECT_NAME).service=php \
 			--link $(MYSQL_CONTAINER_NAME) \
 			--volume "$(PWD):$(PWD)" \
+			--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
 			--workdir "$(PWD)" \
 			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
 			$(PROJECT_NAME)_php:$(PHP_VERSION) \
@@ -221,14 +230,13 @@ php_container_shell:
 	  bash
 endif
 
-
-composer_update:
+composer_update: composer.json
 	docker exec --interactive \
       --user "$$(id -u):$$(id -g)" \
 	  --workdir "$(PWD)" \
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
-	  composer update
+	  composer update --lock
 
 composer_install:
 	docker exec --interactive \
