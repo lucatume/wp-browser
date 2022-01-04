@@ -57,6 +57,9 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 
+$GLOBALS['_wp_die_disabled'] = false;
+tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter_exit' );
+
 if ("1" == getenv('WP_MULTISITE') ||
 	(defined('WP_TESTS_MULTISITE') && WP_TESTS_MULTISITE)
 ) {
@@ -156,10 +159,6 @@ unset($multisite);
 
 require_once __DIR__ . '/functions.php';
 
-$GLOBALS['_wp_die_disabled'] = false;
-// Allow tests to override wp_die
-tests_add_filter('wp_die_handler', '_wp_die_handler_filter');
-
 // Preset WordPress options defined in bootstrap file.
 // Used to activate themes, plugins, as well as  other settings.
 if (isset($GLOBALS['wp_tests_options'])) {
@@ -179,6 +178,9 @@ if (isset($GLOBALS['wp_tests_options'])) {
  * while still working if ABSPATH did not include a trailing slash.
  */
 require_once rtrim(ABSPATH, '/\\') . '/wp-settings.php';
+
+// Allow tests to override wp_die
+tests_add_filter('wp_die_handler', '_wp_die_handler_filter');
 
 // Delete any default posts & related data.
 _without_filters('_delete_all_posts');
