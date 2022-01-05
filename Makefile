@@ -80,6 +80,7 @@ endef
 export DB_SETUP_QUERY
 
 db_up:
+	mkdir -p $(WORDPRESS_PARENT_DIR)
 	if [ ! -f "$(WORDPRESS_PARENT_DIR)/my.cnf" ]; then echo -e "$${MYSQL_CONFIG}" > "$(WORDPRESS_PARENT_DIR)/my.cnf"; fi
 	if [ -z "$$(docker ps -aq --filter name=$(PROJECT_NAME)_db)" ]; then \
 	  	echo "Starting db ..."; \
@@ -94,8 +95,9 @@ db_up:
 	  	docker restart $(PROJECT_NAME)_db; \
 	fi
 	echo -n "Waiting for DB ready ..."
+	export C=0 && \
 	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_db)" == "healthy" ]; \
-		do echo -n '.' && sleep .5; \
+		do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
 	done
 	echo " done"
 	docker exec -i $(PROJECT_NAME)_db mysql -uroot -p$(MYSQL_ROOT_PASSWORD) -e "$${DB_SETUP_QUERY}"
@@ -148,13 +150,16 @@ wp_up: db_up php_container wp_setup
 			--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
 			--workdir "$(PWD)" \
 			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
+			--health-cmd='curl --fail $(WORDPRESS_URL) || exit 1' \
+			--health-interval=2s \
+		 	--health-timeout=1s \
 			$(PROJECT_NAME)_php:$(PHP_VERSION) \
 			php -t "$(PWD)/_wordpress/wordpress" -S 0.0.0.0:80; \
   	fi
 	echo -n "Waiting for WP ready ..."
-	until $$(curl --output /dev/null --silent --head --fail http://localhost:$(WORDPRESS_LOCALHOST_PORT)); do \
-		printf '.'; \
-		sleep .5; \
+	export C=0 && \
+	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_php_$(PHP_VERSION))" == "healthy" ]; \
+		do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 10 ] || exit 1); \
 	done
 	echo " done"
 	echo "Server address: http://localhost:$(WORDPRESS_LOCALHOST_PORT)"
