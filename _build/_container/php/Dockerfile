@@ -30,4 +30,4 @@ RUN echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /home/$USER_UNAME/.bashrc 
     echo "source /home/$USER_UNAME/bashrc_scripts.sh" >> /home/$USER_UNAME/.bashrc && \
     echo "source /home/$USER_UNAME/bashrc_scripts.sh" >> /root/.bashrc
 COPY bashrc_scripts.sh /home/$USER_UNAME/bashrc_scripts.sh
-RUN chmod -R a+rwx "$(dirname $(php --ini | grep xdebug))"
+RUN chmod -R a+rwx /usr/local/etc/php/conf.d
