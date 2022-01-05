@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.18] 2022-01-05;
+
 ### Changed
 
 - Introduce the `skipPluggables` configuration parameter in the `WPLoader` module to avoid the override of pluggable 
@@ -1712,4 +1714,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.15]: https://github.com/lucatume/wp-browser/compare/3.0.14...3.0.15
 [3.0.16]: https://github.com/lucatume/wp-browser/compare/3.0.15...3.0.16
 [3.0.17]: https://github.com/lucatume/wp-browser/compare/3.0.16...3.0.17
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.17...HEAD
+[3.0.18]: https://github.com/lucatume/wp-browser/compare/3.0.17...3.0.18
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.18...HEAD
