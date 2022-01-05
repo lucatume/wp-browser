@@ -30,6 +30,11 @@ PHP_VERSION ?= 5.6
 COMPOSER_VERSION ?= 2
 COMPOSER_CACHE_DIR ?= $(PWD)/.cache/composer
 XDEBUG_REMOTE_PORT ?= 9003
+ifeq "$(findstring 'Linux',$(OS))" ""
+XDEBUG_REMOTE_HOST ?= host.docker.internal
+else
+XDEBUG_REMOTE_HOST ?= $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
+endif
 XDEBUG_REMOTE_HOST ?= host.docker.internal
 CHROMEDRIVER_HOST ?= chrome
 CHROMEDRIVER_PORT ?= 4444
@@ -47,21 +52,9 @@ else
 COMPOSER_JSON_FILE = "$(PWD)/composer.json"
 endif
 
-
-test_docker_user:
-	echo "DOCKER_USER: $(DOCKER_USER)"
-
 build: db_up wp_up composer_update test_env_file
 
 test: codecept_run
-
-ifeq "$(findstring 'Linux',$(OS))" ""
-host_ip:
-	echo 'host.docker.internal'
-else
-host_ip:
-	docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3'
-endif
 
 clean: db_destroy wp_destroy php_container_destroy
 
@@ -212,7 +205,7 @@ php_container_shell:
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_MODE=develop,debug \
-	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(shell $(MAKE) host_ip)" \
+	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(XDEBUG_REMOTE_HOST)" \
 	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
 	  bash
 else
@@ -230,7 +223,7 @@ php_container_shell:
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(shell $(MAKE) host_ip)" \
+	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(XDEBUG_REMOTE_HOST)" \
 	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
 	  bash
 endif
