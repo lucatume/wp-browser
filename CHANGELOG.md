@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Introduce the `skipPluggables` configuration parameter in the `WPLoader` module to avoid the override of pluggable 
+functions (thanks @johnbillion).
+
 ### Fixed
 
 - Exit non 0 value on wp db connection error during bootstrap.
