@@ -22,6 +22,7 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 * `installationTableHandling` - defaults to `empty`; it controls how tables created by WordPress and plugins will be handled during the installation of WordPress during tests. By default tables will be emptied of any content, but some plugins might require tables to be dropped before WordPress is installed and after plugins are activated (this used to be the default behavior). Supported values are `drop` to drop the tables, `empty` to just empty the tables and `let` to do nothing about the tables. If you get errors from database queries while the `WPLoader` module installs the tests, then try changing this parameter value. 
 * `wpDebug` - defaults to `true`, the value the `WP_DEBUG` constant will be set to.
 * `multisite` - defaults to `false`, the value the `MULTISITE` constant will be set to.
+* `skipPluggables` - defaults to `false`, if set to `true` will skip the definition of pluggable functions.
 * `dbCharset` - defaults to `utf8`, the value the `DB_CHARSET` constant will be set to.
 * `dbCollate` - defaults to an empty string, the value the `DB_COLLATE` constant will be set to.
 * `tablePrefix` - defaults to `wptests_`, the value the `$table_prefix` variable will be set to.

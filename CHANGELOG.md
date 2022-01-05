@@ -4,6 +4,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Introduce the `skipPluggables` configuration parameter to the `WPLoader` module to avoid the override of pluggable 
+functions (thanks @johnbillion).
+
+### Fixed
+
+- Exit non 0 value on wp db connection error during bootstrap.
+
+## [3.0.17] 2021-12-15;
+
+### Fixed
+
+- Update `composer.json` to specify the package conflicts with version `2.0` of Codeception modules (thanks @simonhammes).
+
+## [3.0.16] 2021-12-15;
+
+### Changed
+
+- Nothing, this version was lost in the aether of my release tool and I have to live with it. You will be missed, version `3.0.16`.
+
 ## [3.0.15] 2021-12-10;
 
 ### Fixed
@@ -1689,4 +1710,6 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.13]: https://github.com/lucatume/wp-browser/compare/3.0.12...3.0.13
 [3.0.14]: https://github.com/lucatume/wp-browser/compare/3.0.13...3.0.14
 [3.0.15]: https://github.com/lucatume/wp-browser/compare/3.0.14...3.0.15
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.15...HEAD
+[3.0.16]: https://github.com/lucatume/wp-browser/compare/3.0.15...3.0.16
+[3.0.17]: https://github.com/lucatume/wp-browser/compare/3.0.16...3.0.17
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.17...HEAD

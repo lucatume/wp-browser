@@ -140,6 +140,8 @@ class WPLoader extends Module
      * `folder/plugin-file.php` format.
      * bootstrapActions - array, def. `[]`, a list of actions that should be
      * called after before any test case runs.
+     * skipPluggables - bool, def. `false`, if set to `true` will skip the
+     * definition of pluggable functions.
      *
      *
      * @var array<string,mixed>|Configuration
@@ -151,6 +153,7 @@ class WPLoader extends Module
             'installationTableHandling' => 'empty',
             'wpDebug'                   => true,
             'multisite'                 => false,
+            'skipPluggables'            => false,
             'dbCharset'                 => 'utf8',
             'dbCollate'                 => '',
             'tablePrefix'               => 'wptests_',
@@ -464,6 +467,10 @@ class WPLoader extends Module
         }
 
         require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
+
+        if (! $this->config['skipPluggables']) {
+            require_once dirname(dirname(__DIR__)) . '/includes/pluggable-functions.php';
+        }
 
         if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();
