@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Avoid core installer failures due to mysqli report defaults on PHP 8.1 (thanks @johnbillion).
+
 ## [3.0.18] 2022-01-05;
 
 ### Changed
