@@ -27,3 +27,4 @@ My sincere thanks to my sponsors: you make the above easier.
 * [@joppuyo](https://github.com/joppuyo)
 * [@roborourke](https://github.com/roborourke)
 * [@ryanshoover](https://github.com/ryanshoover)
+* [@johnbillion](https://github.com/johnbillion)
