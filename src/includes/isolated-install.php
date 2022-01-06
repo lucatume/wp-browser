@@ -6,6 +6,11 @@
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
+// https://core.trac.wordpress.org/ticket/52825
+if (function_exists('mysqli_report')) {
+	mysqli_report(MYSQLI_REPORT_OFF);
+}
+
 $configuration = unserialize(base64_decode($argv[1]));
 
 $multisite = !empty($argv[2]) ? $argv[2] : false;
