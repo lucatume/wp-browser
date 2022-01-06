@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.19] 2022-01-06;
+
 ### Fixed
 
 - Avoid core installer failures due to mysqli report defaults on PHP 8.1 (thanks @johnbillion).
@@ -1719,4 +1721,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.16]: https://github.com/lucatume/wp-browser/compare/3.0.15...3.0.16
 [3.0.17]: https://github.com/lucatume/wp-browser/compare/3.0.16...3.0.17
 [3.0.18]: https://github.com/lucatume/wp-browser/compare/3.0.17...3.0.18
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.18...HEAD
+[3.0.19]: https://github.com/lucatume/wp-browser/compare/3.0.18...3.0.19
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.19...HEAD
