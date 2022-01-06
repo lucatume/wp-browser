@@ -88,6 +88,7 @@ My sincere thanks to my sponsors: you make maintaining this project easier.
 * [@joppuyo](https://github.com/joppuyo)
 * [@roborourke](https://github.com/roborourke)
 * [@ryanshoover](https://github.com/ryanshoover)
+* [@johnbillion](https://github.com/johnbillion)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing
