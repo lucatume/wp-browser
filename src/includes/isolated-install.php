@@ -5,6 +5,8 @@
  */
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+ini_set('display_errors', '1');
+
 
 // https://core.trac.wordpress.org/ticket/52825
 if (function_exists('mysqli_report')) {
@@ -69,6 +71,9 @@ $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter_exit' );
 
 require_once ABSPATH . '/wp-settings.php';
+
+// Re-enable error output in case it was disabled during wp-settings.php bootstrap
+ini_set('display_errors', '1');
 
 require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 require_once ABSPATH . '/wp-includes/wp-db.php';
