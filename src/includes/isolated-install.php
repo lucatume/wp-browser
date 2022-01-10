@@ -105,7 +105,7 @@ foreach ($activePlugins as $activePlugin) {
 	if (!file_exists($path)) {
 		$path = dirname($configuration['root']) . '/' . $activePlugin;
 	}
-	include_once $path;
+	require_once $path;
 }
 
 $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
@@ -201,6 +201,11 @@ if (!empty($activePlugins)) {
 
 	foreach ($activePlugins as $plugin) {
 		printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
-		activate_plugin($plugin, null, $multisite, false);
+		$activated = activate_plugin($plugin, null, $multisite, false);
+
+		if (is_wp_error($activated)) {
+			echo $activated->get_error_message();
+			exit(1);
+		}
 	}
 }
