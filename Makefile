@@ -335,10 +335,14 @@ chromedriver_up:
 
 chromedriver_down:
 	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
-	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
 
 chromedriver_shell:
 	docker exec --interactive --tty \
       --user $(DOCKER_USER) \
 	  $(PROJECT_NAME)_chrome \
 	  bash
+
+chromedriver_destroy: chromedriver_down
+	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
+
+destroy: wp_destroy db_destroy chromedriver_destroy
