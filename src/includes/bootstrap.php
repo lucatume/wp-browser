@@ -57,6 +57,8 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 $PHP_SELF = $GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'] = '/index.php';
 
+require_once __DIR__ . '/functions.php';
+
 $GLOBALS['_wp_die_disabled'] = false;
 tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter_exit' );
 
@@ -156,8 +158,6 @@ if ($multisite) {
 	$GLOBALS['base'] = '/';
 }
 unset($multisite);
-
-require_once __DIR__ . '/functions.php';
 
 // Preset WordPress options defined in bootstrap file.
 // Used to activate themes, plugins, as well as  other settings.
