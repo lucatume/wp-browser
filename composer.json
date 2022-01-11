@@ -59,8 +59,7 @@
       "Codeception\\": "tests/_data/classes/Codeception"
     },
     "files": [
-      "tests/_support/functions.php",
-      "src/tad/WPBrowser/uopz.php"
+      "tests/_support/functions.php"
     ]
   },
   "extra": {

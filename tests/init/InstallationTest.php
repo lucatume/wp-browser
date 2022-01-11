@@ -3,16 +3,17 @@
 namespace tad\WPBrowser\Tests;
 
 use Codeception\Template\Wpbrowser;
+use lucatume\WPBrowser\Tests\Traits\WithUopz;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use function tad\WPBrowser\replacingWithUopz;
 
 require_once __DIR__ . '/BaseTest.php';
 
 class InstallationTest extends BaseTest
 {
     use SnapshotAssertions;
+    use WithUopz;
 
     /**
      * It should correctly scaffold quiet installation
@@ -178,7 +179,7 @@ class InstallationTest extends BaseTest
 
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
 
-        replacingWithUopz([
+        $this->replacingWithUopz([
             'tad\WPBrowser\homeDir' => '/Users/test'
         ], function () use ($workDir) {
             $input = $this->makeEmpty(ArrayInput::class, [
@@ -215,7 +216,7 @@ class InstallationTest extends BaseTest
      */
     public function should_throw_if_composer_json_does_not_include_required_codeception_modules()
     {
-        replacingWithUopz([
+        $this->replacingWithUopz([
             'version_compare' => true
         ], function () {
             $input = $this->makeEmpty(ArrayInput::class, [
@@ -254,7 +255,7 @@ class InstallationTest extends BaseTest
      */
     public function should_throw_if_composer_json_does_not_include_all_required_codeception_modules()
     {
-        replacingWithUopz([
+        $this->replacingWithUopz([
             'version_compare' => true
         ], function () {
             $input = $this->makeEmpty(ArrayInput::class, [
