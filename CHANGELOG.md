@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.21] 2022-01-11;
+
 ### Fixed
 
 - Correctly load SQL from a file in the `WPDb::importSqlDumpFile` (thanks @andergmartins).
@@ -1734,4 +1736,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.18]: https://github.com/lucatume/wp-browser/compare/3.0.17...3.0.18
 [3.0.19]: https://github.com/lucatume/wp-browser/compare/3.0.18...3.0.19
 [3.0.20]: https://github.com/lucatume/wp-browser/compare/3.0.19...3.0.20
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.20...HEAD
+[3.0.21]: https://github.com/lucatume/wp-browser/compare/3.0.20...3.0.21
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.21...HEAD
