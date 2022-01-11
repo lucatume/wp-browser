@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Pass the configured table prefix to the user capability builder in the `WPDb` module (thanks @johnbillion).
+- Trigger an error when plugins in `activePlugins` cannot be included or activated in the `WPLoader` module (thanks @johnbillion).
 
 ## [3.0.19] 2022-01-06;
 
