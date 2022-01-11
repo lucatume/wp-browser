@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Pass the configured table prefix to the user capability builder in the `WPDb` module (thanks @johnbillion).
+
 ## [3.0.19] 2022-01-06;
 
 ### Fixed
