@@ -27,6 +27,7 @@ WORDPRESS_SUBDOMAIN_URL ?= http://$(WORDPRESS_SUBDOMAIN_DOMAIN)
 WORDPRESS_SUBDOMAIN_DB_NAME ?= test_subdomain
 WORDPRESS_EMPTY_DB_NAME ?= test_empty
 PHP_VERSION ?= 5.6
+PHP_CONTAINER_NAME = $(PROJECT_NAME)_php_$(PHP_VERSION)
 COMPOSER_VERSION ?= 2
 COMPOSER_CACHE_DIR ?= $(PWD)/.cache/composer
 XDEBUG_REMOTE_PORT ?= 9003
@@ -36,8 +37,11 @@ else
 XDEBUG_REMOTE_HOST ?= $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
 endif
 XDEBUG_REMOTE_HOST ?= host.docker.internal
-CHROMEDRIVER_HOST ?= chrome
+CHROMEDRIVER_HOST ?= $(PROJECT_NAME)_chrome
 CHROMEDRIVER_PORT ?= 4444
+CHROMEDRIVER_LOCALHOST_PORT ?= 9344
+CHROMEDRIVER_VNC_PORT ?= 5993
+CHROMEDRIVER_VERSION ?= latest
 CODECEPTION_MAJOR_VERSION ?= 4
 
 ifeq (1, $(ROOT))
@@ -52,7 +56,7 @@ else
 COMPOSER_JSON_FILE = "$(PWD)/composer.json"
 endif
 
-build: db_up wp_up composer_update test_env_file
+build: db_up wp_up composer_update test_env_file chromedriver_up
 
 test: codecept_run
 
@@ -118,47 +122,38 @@ define QENV_FN
 function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
 endef
 
+define WP_CONFIG_EXTRAS
+define( 'WP_ALLOW_MULTISITE', true );
+define( 'MULTISITE', true );
+define( 'SUBDOMAIN_INSTALL', false );
+$$base = '/';
+define( 'DOMAIN_CURRENT_SITE', '$(WORDPRESS_DOMAIN)' );
+define( 'PATH_CURRENT_SITE', '/' );
+define( 'SITE_ID_CURRENT_SITE', 1 );
+define( 'BLOG_ID_CURRENT_SITE', 1 );
+endef
+export WP_CONFIG_EXTRAS
+
 wp_setup:
 	mkdir -p "$(WORDPRESS_PARENT_DIR)"
 	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ]; then curl https://wordpress.org/latest.zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"; fi
 	if [ ! -d "$(WORDPRESS_PARENT_DIR)/wordpress" ]; then unzip -u "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"; fi
-	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php" ]; then \
-		php -r 'echo preg_replace("/^\\R/m", "\n$(QENV_FN)\n\n", file_get_contents("$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php"),1);' \
-		| sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
-		| sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
-		| sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
-		| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(WORDPRESS_DB_HOST)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
-		> "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php"; \
-	fi
 
-wp_up: db_up php_container wp_setup
-	if [ -z "$$(docker ps -aq --filter name=$(PROJECT_NAME)_php_$(PHP_VERSION))" ]; then \
-		docker run --detach --name $(PROJECT_NAME)_php_$(PHP_VERSION) \
-			--add-host=$(WORDPRESS_DOMAIN):127.0.0.1 \
-			--add-host=$(WORDPRESS_SUBDOMAIN_DOMAIN):127.0.0.1 \
-			--add-host=test1.$(WORDPRESS_DOMAIN):127.0.0.1 \
-			--add-host=test2.$(WORDPRESS_DOMAIN):127.0.0.1 \
-			-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
-			-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-			-e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
-			-e WORDPRESS_DB_PORT=3306 \
-			-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-			-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
-			--label $(PROJECT_NAME).service=php \
-			--link $(MYSQL_CONTAINER_NAME) \
-			--volume "$(PWD):$(PWD)" \
-			--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
-			--workdir "$(PWD)" \
-			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
-			--health-cmd='curl --fail $(WORDPRESS_URL) || exit 1' \
-			--health-interval=2s \
-		 	--health-timeout=1s \
-			$(PROJECT_NAME)_php:$(PHP_VERSION) \
-			php -t "$(PWD)/_wordpress/wordpress" -S 0.0.0.0:80; \
-  	fi
+wp_config: wp_setup
+	echo "$${WP_CONFIG_EXTRAS}" > wp_config_extras.tmp
+	php -r 'echo preg_replace("/^\\R/m", "\n$(QENV_FN)\n\n", file_get_contents("$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php"),1);' \
+	| sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
+	| sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
+	| sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
+	| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(WORDPRESS_DB_HOST)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
+	| sed '/Happy publishing/r wp_config_extras.tmp' \
+	> "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php";
+	rm -f wp_config_extras.tmp
+
+wp_up: db_up php_container wp_config php_container_up
 	echo -n "Waiting for WP ready ..."
 	export C=0 && \
-	until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_php_$(PHP_VERSION))" == "healthy" ]; \
+	until [ "$$(curl -fs http://localhost:$(WORDPRESS_LOCALHOST_PORT); echo $$?)" == 0 ]; \
 		do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 10 ] || exit 1); \
 	done
 	echo " done"
@@ -189,9 +184,40 @@ php_container:
 			--label $(PROJECT_NAME).service=php; \
 	fi
 
-php_container_destroy:
+php_container_up:
+	if [ -z "$$(docker ps -aq --filter name=$(PHP_CONTAINER_NAME))" ]; then \
+		docker run --detach --name $(PHP_CONTAINER_NAME) \
+			--add-host=$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=$(WORDPRESS_SUBDOMAIN_DOMAIN):127.0.0.1 \
+			--add-host=test1.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=test2.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=testsite1.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=testsite2.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=blog0.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=blog1.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			--add-host=blog2.$(WORDPRESS_DOMAIN):127.0.0.1 \
+			-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
+			-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
+			-e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
+			-e WORDPRESS_DB_PORT=3306 \
+			-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
+			-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
+			--label $(PROJECT_NAME).service=php \
+			--link $(MYSQL_CONTAINER_NAME) \
+			--link $(CHROMEDRIVER_HOST) \
+			--volume "$(PWD):$(PWD)" \
+			--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
+			--workdir "$(PWD)" \
+			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
+			$(PROJECT_NAME)_php:$(PHP_VERSION) \
+			php -t "$(PWD)/_wordpress/wordpress" -S 0.0.0.0:80; \
+  	fi
+
+php_container_down:
 	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
 	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
+
+php_container_destroy:
 	-docker image rm $$(docker images $(PROJECT_NAME)_php -q)
 
 ifeq "7.2" "$(word 1, $(sort 7.2 $(PHP_VERSION)))"
@@ -203,7 +229,7 @@ php_container_shell:
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
@@ -211,7 +237,7 @@ php_container_shell:
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_MODE=develop,debug \
 	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(XDEBUG_REMOTE_HOST)" \
-	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  $(PHP_CONTAINER_NAME) \
 	  bash
 else
 # PHP Version < 7.2 -> XDebug 2
@@ -222,14 +248,14 @@ php_container_shell:
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(XDEBUG_REMOTE_HOST)" \
-	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  $(PHP_CONTAINER_NAME) \
 	  bash
 endif
 
@@ -238,7 +264,7 @@ composer_update: composer.json
       --user "$$(id -u):$$(id -g)" \
 	  --workdir "$(PWD)" \
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
-	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  $(PHP_CONTAINER_NAME) \
 	  composer update --lock
 
 composer_install:
@@ -246,7 +272,7 @@ composer_install:
       --user "$$(id -u):$$(id -g)" \
 	  --workdir "$(PWD)" \
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
-	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  $(PHP_CONTAINER_NAME) \
 	  composer install
 
 codecept_run:
@@ -255,13 +281,13 @@ codecept_run:
 	  --workdir "$(PWD)" \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
+	  -e CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-	  $(PROJECT_NAME)_php_$(PHP_VERSION) \
+	  $(PHP_CONTAINER_NAME) \
 	  vendor/bin/codecept run unit
 
 define TEST_ENV_FILE_CONTENTS
@@ -284,6 +310,35 @@ WORDPRESS_SUBDOMAIN_DB_NAME=$(WORDPRESS_SUBDOMAIN_DB_NAME)
 WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
 endef
 export TEST_ENV_FILE_CONTENTS
+
 test_env_file:
 	rm -f .env.testing.docker
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
+
+chromedriver_up:
+	docker run --detach \
+		--name $(PROJECT_NAME)_chrome \
+		--publish $(CHROMEDRIVER_LOCALHOST_PORT):4444 \
+		--publish $(CHROMEDRIVER_VNC_PORT):5900 \
+		--link $(PHP_CONTAINER_NAME):$(WORDPRESS_DOMAIN) \
+		--link $(PHP_CONTAINER_NAME):test1.$(WORDPRESS_DOMAIN) \
+		--link $(PHP_CONTAINER_NAME):test2.$(WORDPRESS_DOMAIN) \
+		--shm-size="2g" \
+		--label $(PROJECT_NAME).service=chrome \
+		seleniarm/standalone-chromium:$(CHROMEDRIVER_VERSION)
+	echo -n "Waiting for Chromedriver ready ..."
+	export C=0 && \
+	until [ $$(curl --silent 'http://localhost:$(CHROMEDRIVER_LOCALHOST_PORT)/wd/hub/status' 2>/dev/null | grep --quiet  -e 'ready.*true'; echo $$?) == 0 ]; \
+		do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
+	done
+	echo "done"
+
+chromedriver_down:
+	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
+	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
+
+chromedriver_shell:
+	docker exec --interactive --tty \
+      --user $(DOCKER_USER) \
+	  $(PROJECT_NAME)_chrome \
+	  bash
