@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- correctly escape the database name in the `WPDb::createDatabasesIfNotExist` method.
+- issue with isolation tests where the `tests_add_filter` function would not be defined.
+
+### Changed
+
+- rework the build and test flow to reduce complexity and leverage `make`.
+
 ## [3.0.19] 2022-01-06;
 
 ### Fixed
