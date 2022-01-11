@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.20] 2022-01-11;
+
 ### Fixed
 
 - Pass the configured table prefix to the user capability builder in the `WPDb` module (thanks @johnbillion).
@@ -1727,4 +1729,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.17]: https://github.com/lucatume/wp-browser/compare/3.0.16...3.0.17
 [3.0.18]: https://github.com/lucatume/wp-browser/compare/3.0.17...3.0.18
 [3.0.19]: https://github.com/lucatume/wp-browser/compare/3.0.18...3.0.19
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.19...HEAD
+[3.0.20]: https://github.com/lucatume/wp-browser/compare/3.0.19...3.0.20
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.20...HEAD
