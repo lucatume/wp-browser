@@ -1,16 +1,16 @@
 {
     "constants": {
-        "ABSPATH": "vendor/wordpress/wordpress/",
+        "ABSPATH": "_wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
-        "WP_PLUGIN_DIR": "../../../tests/_data/empty",
+        "WP_PLUGIN_DIR": "../../tests/_data/empty",
         "WP_HOME": "http://wordpress.test",
         "WP_SITEURL": "http://wordpress.test",
-        "WPMU_PLUGIN_DIR": "../../../tests/_data/empty",
-        "DB_HOST": "db",
-        "DB_NAME": "test",
-        "DB_PASSWORD": "password",
-        "DB_USER": "root",
+        "WPMU_PLUGIN_DIR": "../../tests/_data/empty",
+        "DB_HOST": "wp-browser_db",
+        "DB_NAME": "wp-browser",
+        "DB_PASSWORD": "wp-browser",
+        "DB_USER": "wp-browser",
         "CUSTOM_USER_TABLE": "not set",
         "CUSTOM_USER_META_TABLE": "not set",
         "DISABLE_WP_CRON": "not set"
@@ -27,11 +27,11 @@
         "Theme :": {
             "template": "twentytwenty",
             "stylesheet": "twentytwenty",
-            "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
+            "twentytwenty directory": "_wordpress/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": "No mu-plugins found in mu-plugins directory.",
         "Plugins health-check:": {
-            "Active plugin [airplane-mode/airplane-mode.php]": "file [../../../tests/_data/empty/airplane-mode/airplane-mode.php] does not exist."
+            "Active plugin [airplane-mode/airplane-mode.php]": "file [../../tests/_data/empty/airplane-mode/airplane-mode.php] does not exist."
         }
     }
 }

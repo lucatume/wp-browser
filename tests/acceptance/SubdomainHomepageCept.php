@@ -3,7 +3,7 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo('access the homepage of a subdomain site');
 
 $I->useBlog(2);
-$I->havePostInDatabase(['post_title' => 'Post test1']);
+$post2Id= $I->havePostInDatabase(['post_title' => 'Post test1']);
 
 $I->amOnSubdomain('test1');
 $I->amOnPage('/');

@@ -1,6 +1,6 @@
 {
     "constants": {
-        "ABSPATH": "vendor/wordpress/wordpress/",
+        "ABSPATH": "_wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
