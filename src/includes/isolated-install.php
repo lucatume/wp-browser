@@ -5,6 +5,8 @@
  */
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+ini_set('display_errors', '1');
+
 
 // https://core.trac.wordpress.org/ticket/52825
 if (function_exists('mysqli_report')) {
@@ -70,6 +72,9 @@ tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter_exit' );
 
 require_once ABSPATH . '/wp-settings.php';
 
+// Re-enable error output in case it was disabled during wp-settings.php bootstrap
+ini_set('display_errors', '1');
+
 require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 require_once ABSPATH . '/wp-includes/wp-db.php';
 
@@ -100,7 +105,7 @@ foreach ($activePlugins as $activePlugin) {
 	if (!file_exists($path)) {
 		$path = dirname($configuration['root']) . '/' . $activePlugin;
 	}
-	include_once $path;
+	require_once $path;
 }
 
 $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
@@ -196,6 +201,11 @@ if (!empty($activePlugins)) {
 
 	foreach ($activePlugins as $plugin) {
 		printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
-		activate_plugin($plugin, null, $multisite, false);
+		$activated = activate_plugin($plugin, null, $multisite, false);
+
+		if (is_wp_error($activated)) {
+			echo $activated->get_error_message();
+			exit(1);
+		}
 	}
 }
