@@ -257,7 +257,7 @@ class WPDb extends Db
                 throw new \InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
             }
 
-            $this->driver->load($dumpFile);
+            $this->_getDriver()->load(file($dumpFile));
 
             return;
         }
