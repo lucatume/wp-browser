@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Correctly load SQL from a file in the `WPDb::importSqlDumpFile` (thanks @andergmartins).
+
 ## [3.0.20] 2022-01-11;
 
 ### Fixed
