@@ -4309,7 +4309,7 @@ class WPDb extends Db
                     // Since the database might not exist at this point, remove the `dbname` from the DSN string.
                     unset($dsnMap['dbname']);
                     $db = db(dbDsnString($dsnMap), $user, $pass);
-                    $db('CREATE DATABASE IF NOT EXISTS ' . $dbname);
+                    $db("CREATE DATABASE IF NOT EXISTS `{$dbname}`");
                 } catch (\Exception $e) {
                     throw new ModuleException(
                         $this,
