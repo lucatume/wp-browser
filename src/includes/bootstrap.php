@@ -138,13 +138,17 @@ if(empty($skipWordPressInstall)){
 		codecept_debug('Installing WordPress in isolated process...');
 		ob_start();
 		$isolatedInstallationScript = __DIR__ . '/isolated-install.php';
-		system(implode(' ', [
+		$resultLine = system(implode(' ', [
 			WP_PHP_BINARY,
 			escapeshellarg($isolatedInstallationScript),
 			escapeshellarg(base64_encode(serialize($environment))),
 			$multisite,
-		]));
+		]), $resultCode);
 		codecept_debug("Isolated installation script output: \n\n" . ob_get_clean());
+
+		if ($resultCode !== 0) {
+			throw new \Exception($resultLine);
+		}
 	}
 }
 

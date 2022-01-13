@@ -257,7 +257,7 @@ class WPDb extends Db
                 throw new \InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
             }
 
-            $this->driver->load($dumpFile);
+            $this->_getDriver()->load(file($dumpFile));
 
             return;
         }
@@ -2538,7 +2538,7 @@ class WPDb extends Db
      */
     public function haveUserCapabilitiesInDatabase($userId, $role)
     {
-        $insert = User::buildCapabilities($role);
+        $insert = User::buildCapabilities($role, $this->grabTablePrefix());
 
         $roleIds = [];
         foreach ($insert as $meta_key => $meta_value) {
@@ -2625,7 +2625,7 @@ class WPDb extends Db
      */
     public function haveUserLevelsInDatabase($userId, $role)
     {
-        $roles = User::buildCapabilities($role);
+        $roles = User::buildCapabilities($role, $this->grabTablePrefix());
 
         $ids = [];
         foreach ($roles as $roleMetaKey => $roleMetaValue) {
