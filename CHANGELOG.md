@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Require file defining functions before calling `tests_add_filter` function in `includes/bootstrap.php`.
+
 ## [3.0.21] 2022-01-11;
 
 ### Fixed
