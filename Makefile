@@ -1,4 +1,4 @@
-#.SILENT:
+#.SILENT
 SHELL := /bin/bash
 PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
@@ -36,7 +36,7 @@ XDEBUG_REMOTE_HOST ?= host.docker.internal
 else
 XDEBUG_REMOTE_HOST ?= $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
 endif
-XDEBUG_REMOTE_HOST ?= host.docker.internal
+HOST_IP ?= $(XDEBUG_REMOTE_HOST)
 CHROMEDRIVER_HOST ?= $(PROJECT_NAME)_chrome
 CHROMEDRIVER_PORT ?= 4444
 CHROMEDRIVER_LOCALHOST_PORT ?= 9344
@@ -56,11 +56,14 @@ else
 COMPOSER_JSON_FILE = "$(PWD)/composer.json"
 endif
 
-build: db_up wp_up composer_update test_env_file chromedriver_up
+build: up composer_update .env.testing.docker
 
 test: codecept_run
 
-clean: db_destroy wp_destroy php_container_destroy
+clean: wp_destroy php_container_destroy db_destroy chromedriver_destroy
+	rm -f .env.testing.docker
+
+up: db_up wp_up chromedriver_up
 
 define MYSQL_CONFIG
 [mysqld]
@@ -204,7 +207,6 @@ php_container_up:
 			-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
 			--label $(PROJECT_NAME).service=php \
 			--link $(MYSQL_CONTAINER_NAME) \
-			--link $(CHROMEDRIVER_HOST) \
 			--volume "$(PWD):$(PWD)" \
 			--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
 			--workdir "$(PWD)" \
@@ -229,7 +231,7 @@ php_container_shell:
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST) \
+	  -e CHROMEDRIVER_HOST=$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
@@ -248,7 +250,7 @@ php_container_shell:
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST) \
+	  -e CHROMEDRIVER_HOST=$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
@@ -291,7 +293,7 @@ codecept_run:
 	  vendor/bin/codecept run unit
 
 define TEST_ENV_FILE_CONTENTS
-CHROMEDRIVER_HOST=$(CHROMEDRIVER_HOST)
+CHROMEDRIVER_HOST=$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome)
 CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT)
 WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
 WORDPRESS_URL=$(WORDPRESS_URL)
@@ -311,8 +313,7 @@ WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
 endef
 export TEST_ENV_FILE_CONTENTS
 
-test_env_file:
-	rm -f .env.testing.docker
+.env.testing.docker:
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
 
 chromedriver_up:
@@ -344,5 +345,3 @@ chromedriver_shell:
 
 chromedriver_destroy: chromedriver_down
 	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
-
-destroy: wp_destroy db_destroy chromedriver_destroy
