@@ -1,4 +1,4 @@
-#.SILENT
+.SILENT:
 SHELL := /bin/bash
 PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
@@ -213,6 +213,8 @@ php_container_up:
 			--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
 			$(PROJECT_NAME)_php:$(PHP_VERSION) \
 			php -t "$(PWD)/_wordpress/wordpress" -S 0.0.0.0:80; \
+	elif [ -z "$$(docker ps -q --filter name=$(PHP_CONTAINER_NAME))" ]; then \
+	  docker restart $$(docker ps -aq --filter name=$(PHP_CONTAINER_NAME)); \
   	fi
 
 php_container_down:
@@ -317,16 +319,20 @@ export TEST_ENV_FILE_CONTENTS
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
 
 chromedriver_up:
-	docker run --detach \
-		--name $(PROJECT_NAME)_chrome \
-		--publish $(CHROMEDRIVER_LOCALHOST_PORT):4444 \
-		--publish $(CHROMEDRIVER_VNC_PORT):5900 \
-		--link $(PHP_CONTAINER_NAME):$(WORDPRESS_DOMAIN) \
-		--link $(PHP_CONTAINER_NAME):test1.$(WORDPRESS_DOMAIN) \
-		--link $(PHP_CONTAINER_NAME):test2.$(WORDPRESS_DOMAIN) \
-		--shm-size="2g" \
-		--label $(PROJECT_NAME).service=chrome \
-		seleniarm/standalone-chromium:$(CHROMEDRIVER_VERSION)
+	if [ -z "$$(docker ps -aq --filter name=$(PROJECT_NAME)_chrome)" ]; then \
+		docker run --detach \
+			--name $(PROJECT_NAME)_chrome \
+			--publish $(CHROMEDRIVER_LOCALHOST_PORT):4444 \
+			--publish $(CHROMEDRIVER_VNC_PORT):5900 \
+			--link $(PHP_CONTAINER_NAME):$(WORDPRESS_DOMAIN) \
+			--link $(PHP_CONTAINER_NAME):test1.$(WORDPRESS_DOMAIN) \
+			--link $(PHP_CONTAINER_NAME):test2.$(WORDPRESS_DOMAIN) \
+			--shm-size="2g" \
+			--label $(PROJECT_NAME).service=chrome \
+			seleniarm/standalone-chromium:$(CHROMEDRIVER_VERSION); \
+	elif [ -z "$$(docker ps -q --filter name=$(PROJECT_NAME)_chrome)" ]; then \
+	  	docker restart $$(docker ps -aq --filter name=$(PROJECT_NAME)_chrome); \
+	fi
 	echo -n "Waiting for Chromedriver ready ..."
 	export C=0 && \
 	until [ $$(curl --silent 'http://localhost:$(CHROMEDRIVER_LOCALHOST_PORT)/wd/hub/status' 2>/dev/null | grep --quiet  -e 'ready.*true'; echo $$?) == 0 ]; \
