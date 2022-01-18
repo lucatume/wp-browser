@@ -1,4 +1,4 @@
-.SILENT:
+#.SILENT:
 SHELL := /bin/bash
 PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
@@ -125,6 +125,11 @@ define QENV_FN
 function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
 endef
 
+wp_setup:
+	mkdir -p "$(WORDPRESS_PARENT_DIR)"
+	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ]; then curl https://wordpress.org/latest.zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"; fi
+	if [ ! -d "$(WORDPRESS_PARENT_DIR)/wordpress" ]; then unzip -u "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"; fi
+
 define WP_CONFIG_EXTRAS
 define( 'WP_ALLOW_MULTISITE', true );
 define( 'MULTISITE', true );
@@ -137,10 +142,9 @@ define( 'BLOG_ID_CURRENT_SITE', 1 );
 endef
 export WP_CONFIG_EXTRAS
 
-wp_setup:
-	mkdir -p "$(WORDPRESS_PARENT_DIR)"
-	if [ ! -f "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ]; then curl https://wordpress.org/latest.zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"; fi
-	if [ ! -d "$(WORDPRESS_PARENT_DIR)/wordpress" ]; then unzip -u "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"; fi
+define wp_salt
+	awk '/put your unique phrase here/ && ++count==1{sub(/put your unique phrase here/,"$(shell LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 64)")} 1'
+endef
 
 wp_config: wp_setup
 	echo "$${WP_CONFIG_EXTRAS}" > wp_config_extras.tmp
@@ -150,6 +154,8 @@ wp_config: wp_setup
 	| sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
 	| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(WORDPRESS_DB_HOST)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
 	| sed '/Happy publishing/r wp_config_extras.tmp' \
+	| $(call wp_salt) | $(call wp_salt) | $(call wp_salt) | $(call wp_salt) \
+	| $(call wp_salt) | $(call wp_salt) | $(call wp_salt) | $(call wp_salt) \
 	> "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config.php";
 	rm -f wp_config_extras.tmp
 
