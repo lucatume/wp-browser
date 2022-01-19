@@ -13,6 +13,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - rework the build and test flow to reduce complexity and leverage `make`.
 
+## [3.0.22] 2022-01-14;
+
+### Fixed
+
+- Require file defining functions before calling `tests_add_filter` function in `includes/bootstrap.php`.
+
 ## [3.0.21] 2022-01-11;
 
 ### Fixed
@@ -1746,4 +1752,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.19]: https://github.com/lucatume/wp-browser/compare/3.0.18...3.0.19
 [3.0.20]: https://github.com/lucatume/wp-browser/compare/3.0.19...3.0.20
 [3.0.21]: https://github.com/lucatume/wp-browser/compare/3.0.20...3.0.21
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.21...HEAD
+[3.0.22]: https://github.com/lucatume/wp-browser/compare/3.0.21...3.0.22
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.22...HEAD
