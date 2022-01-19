@@ -315,6 +315,22 @@ build: db_up wp_up chromedriver_up composer_update test_env_file
 
 test:
 	$(call _codecept_run,unit)
+	$(call _codecept_run,dbunit)
+	$(call _codecept_run,acceptance)
+	$(call _codecept_run,cli)
+	$(call _codecept_run,climodule)
+	$(call _codecept_run,events)
+	$(call _codecept_run,functional)
+	$(call _codecept_run,init)
+	$(call _codecept_run,isolated)
+	$(call _codecept_run,muloader)
+	$(call _codecept_run,webdriver)
+	$(call _codecept_run,wpcli_module)
+	$(call _codecept_run,wpfunctional)
+	$(call _codecept_run,wploader_multisite)
+	$(call _codecept_run,wploader_wpdb_interaction)
+	$(call _codecept_run,wploadersuite)
+	$(call _codecept_run,wpmodule)
 
 clean: wp_remove php_container_remove db_remove chromedriver_remove
 	rm -f .env.testing.docker
