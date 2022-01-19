@@ -10,6 +10,7 @@ function xon(){
   sed -i '/^;zend_extension/ s/;zend_extension/zend_extension/g' "$xdebug_config_file"
   php -v
 }
+
 function xoff(){
   xdebug_config_file=$(xdebug_config_file)
   sed -i '/^zend_extension/ s/zend_extension/;zend_extension/g' "$xdebug_config_file"
