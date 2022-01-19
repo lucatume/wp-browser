@@ -349,6 +349,9 @@ test:
 clean: wp_remove php_container_remove db_remove chromedriver_remove
 	rm -f .env.testing.docker
 
+state:
+	docker ps -a --filter label=wp-browser.service --format="table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}"
+
 db_up:
 	$(call _db_setup_conf)
 	$(if\
