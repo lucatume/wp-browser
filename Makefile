@@ -187,6 +187,20 @@ define _chromedriver_container_ip
 $(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome)
 endef
 
+define _xdebug_2_config
+idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(call _host_ip)
+endef
+
+define _xdebug_3_config
+idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(call _host_ip)
+endef
+
+define _xdebug_config
+$(shell [ '7.2' = '$(word 1, $(sort 7.2 $(PHP_VERSION)))' ] \
+	&& echo '$(call _xdebug_3_config)' \
+	|| echo '$(call _xdebug_2_config)';)
+endef
+
 define _codecept_run
 docker exec --interactive \
   --user "$$(id -u):$$(id -g)" \
@@ -410,8 +424,6 @@ php_container_stop:
 php_container_remove:
 	-docker image rm $$(docker images $(PROJECT_NAME)_php -q)
 
-ifeq "7.2" "$(word 1, $(sort 7.2 $(PHP_VERSION)))"
-# PHP Version >= 7.2 -> XDebug 3
 php_container_shell: chromedriver_up
 	docker exec --interactive --tty \
       --user $(DOCKER_USER) \
@@ -426,28 +438,9 @@ php_container_shell: chromedriver_up
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_MODE=develop,debug \
-	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) client_port=$(XDEBUG_REMOTE_PORT) client_host=$(call _host_ip)" \
+	  -e XDEBUG_CONFIG='$(call _xdebug_config)' \
 	  $(PHP_CONTAINER_NAME) \
 	  bash
-else
-# PHP Version < 7.2 -> XDebug 2
-php_container_shell: chromedriver_up
-	docker exec --interactive --tty \
-      --user $(DOCKER_USER) \
-	  --workdir "$(PWD)" \
-      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
-	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
-	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(call _chromedriver_container_ip) \
-	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
-	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
-	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
-	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-	  -e XDEBUG_CONFIG="idekey=$(PROJECT_NAME) remote_enable=1 remote_port=$(XDEBUG_REMOTE_PORT) remote_host=$(call _host_ip)" \
-	  $(PHP_CONTAINER_NAME) \
-	  bash
-endif
 
 composer_update: composer.json
 	docker exec --interactive \
