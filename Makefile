@@ -217,6 +217,14 @@ docker exec --interactive \
   vendor/bin/codecept run $(1)
 endef
 
+define _php_lint
+docker exec --interactive \
+  --user "$$(id -u):$$(id -g)" \
+  --workdir "$(PWD)" \
+  $(PHP_CONTAINER_NAME) \
+  phplint "$(1)"
+endef
+
 # Vars
 PROJECT_NAME = $(notdir $(PWD))
 REBUILD ?=0
@@ -325,9 +333,19 @@ WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
 endef
 export TEST_ENV_FILE_CONTENTS
 
-build: db_up wp_up chromedriver_up composer_update test_env_file
+build: db_up wp_up chromedriver_up composer_update test_env_file phpstan_container
 
-test:
+phpstan:
+	docker run --rm --interactive --tty \
+		--user "$$(id -u):$$(id -g)" \
+		--workdir "$(PWD)" \
+		--volume "$(PWD):$(PWD)" \
+		wp-browser_phpstan analyze "$(PWD)/src"
+
+lint:
+	$(call _php_lint,"$(PWD)/src")
+
+test: lint phpstan
 	$(call _codecept_run,unit)
 	$(call _codecept_run,dbunit)
 	$(call _codecept_run,acceptance)
@@ -351,6 +369,12 @@ clean: wp_remove php_container_remove db_remove chromedriver_remove
 
 state:
 	docker ps -a --filter label=wp-browser.service --format="table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}"
+
+phpstan_container:
+	docker build \
+		--tag $(PROJECT_NAME)_phpstan:latest \
+		--label $(PROJECT_NAME).service=phpstan \
+		_build/_container/phpstan
 
 db_up:
 	$(call _db_setup_conf)
@@ -424,7 +448,7 @@ php_container_stop:
 	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
 	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
 
-php_container_remove:
+php_container_remove: php_container_stop
 	-docker image rm $$(docker images $(PROJECT_NAME)_php -q)
 
 php_container_shell: chromedriver_up

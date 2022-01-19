@@ -33,3 +33,5 @@ RUN echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /home/$USER_UNAME/.bashrc 
 COPY bashrc_scripts.sh /home/$USER_UNAME/bashrc_scripts.sh
 RUN chmod -R a+rwx /usr/local/etc/php/conf.d
 RUN sed -i '/^zend_extension/ s/zend_extension/;zend_extension/g' "/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
+COPY phplint.sh /usr/local/bin/phplint
+RUN chmod a+x /usr/local/bin/phplint
