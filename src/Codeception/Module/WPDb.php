@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Exception\ModuleRequireException;
+use Codeception\Lib\Driver\Db as Driver;
 use Codeception\Lib\ModuleContainer;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
@@ -178,6 +179,13 @@ class WPDb extends Db
      * @var \Codeception\Lib\Driver\Db
      */
     protected $driver;
+
+    /**
+     * A map from the database keys to the drivers for them.
+     *
+     * @var array<string,Driver>
+     */
+    public $drivers = [];
 
     /**
      * Whether the database has been previously populated or not.
@@ -3409,9 +3417,10 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function _setDriver($driver)
+    public function _setDriver($driver, $forDatabase = 'default')
     {
         $this->driver = $driver;
+        $this->drivers[$forDatabase] = $driver;
     }
 
     /**

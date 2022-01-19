@@ -2,6 +2,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\Lib\Di;
 use Codeception\Lib\Driver\ExtendedMySql;
 use Codeception\Lib\ModuleContainer;
 use org\bovigo\vfs\vfsStream;
@@ -68,7 +69,7 @@ class WPDbTest extends \Codeception\Test\Unit
         $path = $root->url() . '/foo.sql';
 
         $driver = $this->stubProphecy(ExtendedMySql::class);
-        $driver->load($path)->shouldBeCalled();
+        $driver->load([])->shouldBeCalled();
 
         $sut = $this->make_instance();
         $sut->_setDriver($driver->reveal());
