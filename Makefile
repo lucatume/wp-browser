@@ -2,12 +2,12 @@
 SHELL := /bin/bash
 
 # Functions
+define _host_ip_from_container
+$(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
+endef
+
 define _host_ip
-$(if\
-	$(findstring 'Linux',$(OS)),\
-	$(shell echo host.docker.internal),\
-	$(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')\
-)
+$(if $(findstring 'Linux',$(OS)),$(call _host_ip_from_container),host.docker.internal)
 endef
 
 define _db_setup_conf
