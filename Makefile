@@ -77,7 +77,8 @@ endef
 
 define _wp_config
 echo "$${WP_CONFIG_EXTRAS}" > wp_config_extras.tmp
-php -r 'echo preg_replace("/^\\R/m", "\n$(QENV_FN)\n\n", file_get_contents("$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php"),1);' \
+cat "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php" \
+| sed "s~<?php~<?php\n\n$(QENV_FN)\n~" \
 | sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
 | sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
 | sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
@@ -338,7 +339,7 @@ WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
 endef
 export TEST_ENV_FILE_CONTENTS
 
-build: db_up wp_up chromedriver_up composer_update test_env_file phpstan_container
+build: db_up wp_up chromedriver_up composer_update test_env_file
 
 lint:
 	docker run --rm \
@@ -382,7 +383,7 @@ phpstan:
 		lucatume/wpstan:0.12.42 analyze \
 			-l $(PHPSTAN_LEVEL)
 
-test: lint phpstan
+test:
 	$(call _codecept_run,unit)
 	$(call _codecept_run,dbunit)
 	$(call _codecept_run,acceptance)
@@ -406,12 +407,6 @@ clean: wp_remove php_container_remove php_container_image_remove db_remove chrom
 
 state:
 	docker ps -a --filter label=wp-browser.service --format="table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}"
-
-phpstan_container:
-	docker build \
-		--tag $(PROJECT_NAME)_phpstan:latest \
-		--label $(PROJECT_NAME).service=phpstan \
-		_build/_container/phpstan
 
 db_up:
 	$(call _db_setup_conf)
@@ -515,6 +510,7 @@ composer_install: composer.json
 	$(call _composer_container_exec,install)
 
 test_env_file:
+	touch .env.testing.docker
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
 	echo "WORDPRESS_DB_HOST=$(call _db_container_ip)" >> .env.testing.docker
 	echo "CHROMEDRIVER_HOST=$(call _chromedriver_container_ip)" >> .env.testing.docker
