@@ -26,7 +26,8 @@ RUN if [ $(getent group $USER_GID) ]; then \
       addgroup --gid $USER_GID $USER_UNAME; \
       adduser --uid $USER_UID --gid $USER_GID --home /home/$USER_UNAME --shell /bin/sh --disabled-password --gecos "" $USER_UNAME; \
     fi;
-RUN echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /home/$USER_UNAME/.bashrc && \
+RUN mkdir -p /home/$USER_UNAME && \
+    echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /home/$USER_UNAME/.bashrc && \
     echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /root/.bashrc && \
     echo "source /home/$USER_UNAME/bashrc_scripts.sh" >> /home/$USER_UNAME/.bashrc && \
     echo "source /home/$USER_UNAME/bashrc_scripts.sh" >> /root/.bashrc
