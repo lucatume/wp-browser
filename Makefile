@@ -29,7 +29,7 @@ endef
 
 define _db_container_start
 docker run --name $(PROJECT_NAME)_db -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
-	--publish "$(WORDPRESS_DB_PORT):3306" \
+	--publish "$(WORDPRESS_DB_LOCALHOST_PORT):3306" \
 	--volume "$(WORDPRESS_PARENT_DIR)/my.cnf:/etc/mysql/conf.d/docker.cnf" \
 	--health-cmd='mysqladmin ping --silent' \
 	--label $(PROJECT_NAME).service=mysql \
@@ -58,6 +58,10 @@ define _db_remove
 rm -rf "$(WORDPRESS_PARENT_DIR)/my.cnf"
 endef
 
+define _db_container_ip
+$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_db)
+endef
+
 define _wp_salt
 awk '/put your unique phrase here/ && ++count==1{sub(/put your unique phrase here/,"$(shell LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 64)")} 1'
 endef
@@ -77,7 +81,7 @@ php -r 'echo preg_replace("/^\\R/m", "\n$(QENV_FN)\n\n", file_get_contents("$(WO
 | sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
 | sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
 | sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
-| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(WORDPRESS_DB_HOST)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
+| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(call _db_container_ip)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
 | sed '/Happy publishing/r wp_config_extras.tmp' \
 | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) \
 | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) \
@@ -106,12 +110,11 @@ docker run --detach --name $(PHP_CONTAINER_NAME) \
 	--add-host=blog2.$(WORDPRESS_DOMAIN):127.0.0.1 \
 	-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-	-e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
+	-e WORDPRESS_DB_HOST=$(call _db_container_ip) \
 	-e WORDPRESS_DB_PORT=3306 \
 	-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
 	--label $(PROJECT_NAME).service=php \
-	--link $(MYSQL_CONTAINER_NAME) \
 	--volume "$(PWD):$(PWD)" \
 	--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
 	--workdir "$(PWD)" \
@@ -210,7 +213,7 @@ docker exec --interactive \
   -e CHROMEDRIVER_HOST=$(call _chromedriver_container_ip) \
   -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
   -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
+  -e WORDPRESS_DB_HOST=$(call _db_container_ip) \
   -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
   -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
   $(PHP_CONTAINER_NAME) \
@@ -231,8 +234,7 @@ WORDPRESS_URL ?= http://wordpress.test
 WORDPRESS_ROOT_DIR ?= $(WORDPRESS_PARENT_DIR)/wordpress
 WORDPRESS_DB_USER ?= $(PROJECT_NAME)
 WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
-WORDPRESS_DB_HOST ?= $(MYSQL_CONTAINER_NAME)
-WORDPRESS_DB_PORT ?= 9306
+WORDPRESS_DB_LOCALHOST_PORT ?= 9306
 WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
 WORDPRESS_TABLE_PREFIX ?= wp_
 WORDPRESS_ADMIN_USER ?= admin
@@ -312,7 +314,7 @@ WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
 WORDPRESS_URL=$(WORDPRESS_URL)
 WORDPRESS_ROOT_DIR=$(notdir $(WORDPRESS_PARENT_DIR))/wordpress
 WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME)
-WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST)
+WORDPRESS_DB_HOST=$(call _db_container_ip)
 WORDPRESS_DB_USER=$(WORDPRESS_DB_USER)
 WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD)
 WORDPRESS_TABLE_PREFIX=$(WORDPRESS_TABLE_PREFIX)
@@ -486,7 +488,7 @@ php_container_shell: chromedriver_up
 	  -e CHROMEDRIVER_HOST=$(call _chromedriver_container_ip) \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-	  -e WORDPRESS_DB_HOST=$(WORDPRESS_DB_HOST) \
+	  -e WORDPRESS_DB_HOST=$(call _db_container_ip) \
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_MODE=develop,debug \
