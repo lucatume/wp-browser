@@ -262,6 +262,7 @@ CHROMEDRIVER_LOCALHOST_PORT ?= 9344
 CHROMEDRIVER_VNC_PORT ?= 5993
 CHROMEDRIVER_VERSION ?= latest
 CODECEPTION_MAJOR_VERSION ?= 4
+PHPSTAN_LEVEL ?= max
 
 ifeq (1, $(ROOT))
 DOCKER_USER ?= "0:0"
@@ -335,15 +336,40 @@ export TEST_ENV_FILE_CONTENTS
 
 build: db_up wp_up chromedriver_up composer_update test_env_file phpstan_container
 
-phpstan:
-	docker run --rm --interactive --tty \
-		--user "$$(id -u):$$(id -g)" \
-		--workdir "$(PWD)" \
-		--volume "$(PWD):$(PWD)" \
-		wp-browser_phpstan analyze "$(PWD)/src"
-
 lint:
 	$(call _php_lint,"$(PWD)/src")
+
+phpcs_fix:
+	docker run --rm \
+		--volume "$(PWD):$(PWD):ro" \
+		--workdir "$(PWD)" \
+		cytopia/phpcs \
+		--colors \
+		-p \
+		-s \
+		--standard=phpcs.xml $(SRC) \
+		--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
+		src
+
+phpcs:
+	docker run --rm \
+		--volume "$(PWD):$(PWD)" \
+		--workdir "$(PWD)" \
+		cytopia/phpcbf \
+		--colors \
+		-p \
+		-s \
+		--standard=phpcs.xml $(SRC) \
+		--ignore=src/data,src/includes,src/tad/scripts,_build \
+		src tests
+
+phpcs_fix_and_sniff: phpcs_fix phpcs
+
+phpstan:
+	docker run --rm \
+		--volume "$(PWD):$(PWD):ro" \
+		--workdir "$(PWD)" \
+		lucatume/wpstan:0.12.42 analyze -l $(PHPSTAN_LEVEL)
 
 test: lint phpstan
 	$(call _codecept_run,unit)

@@ -2,7 +2,6 @@ includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
   - /composer/vendor/szepeviktor/phpstan-wordpress/extension.neon
 parameters:
-  phpVersion: 70100
   parallel:
     jobSize: 10
     maximumNumberOfProcesses: 32
@@ -14,7 +13,6 @@ parameters:
     - %currentWorkingDirectory%/src/Codeception/
     - %currentWorkingDirectory%/src/tad/
   scanDirectories:
-    - %currentWorkingDirectory%/vendor
     - %currentWorkingDirectory%/src/includes
     # Patchwork bootstrap and autoloading.
     - %currentWorkingDirectory%/vendor/antecedent/patchwork
@@ -29,11 +27,7 @@ parameters:
     - %currentWorkingDirectory%/vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
     # WP_CLI_Command class definition.
     - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
-  excludePaths:
-    - %currentWorkingDirectory%/vendor
-    - %currentWorkingDirectory%/tests
-    - %currentWorkingDirectory%/src/includes
-    - %currentWorkingDirectory%/src/data
+  excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
     - %currentWorkingDirectory%/src/tad/scripts
