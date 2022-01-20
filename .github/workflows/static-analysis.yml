@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Lint files
-        run: make code_lint
+        run: make lint
 
   phpcs:
     name: phpcs
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Sniff files
-        run: make code_sniff
+        run: make sniff
 
   phpstsan:
     name: phpstan
@@ -38,8 +38,6 @@ jobs:
       - name: Prepare Composer dependencies
         run: test -d vendor || make composer_vendor_prepare PHP_VERSION=5.6 CODECEPTION_VERSION=4.0 COMPOSER_VERSION=2
       - name: Dump autoload
-        run: make composer_dump_autoload PHP_VERSION=5.6
+        run: make PHP_VERSION=5.6 CODECEPTION_MAJOR_VERSION=4 composer_install
       - name: Run PHPStan static analysis
-        run: make phpstan
-        env:
-          PHPSTAN_LEVEL: max
+        run: make PHPSTAN_LEVEL=max phpstan
