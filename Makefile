@@ -49,17 +49,20 @@ define _db_setup_query
 docker exec -i $(PROJECT_NAME)_db mysql -uroot -p$(MYSQL_ROOT_PASSWORD) -e "$${DB_SETUP_QUERY}"
 endef
 
-define _db_stop
+define _db_container_stop
 -docker stop "$(PROJECT_NAME)_db"
 endef
 
-define _db_remove
+define _db_container_remove
 -docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=mysql)
 rm -rf "$(WORDPRESS_PARENT_DIR)/my.cnf"
 endef
 
 define _db_container_ip
-$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_db)
+$(if \
+	$(call _db_container_is_running),\
+	$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_db),\
+)
 endef
 
 define _wp_salt
@@ -128,6 +131,7 @@ docker restart $$(docker ps -aq --filter name=$(PHP_CONTAINER_NAME));
 endef
 
 define _php_container_healthcheck
+$(if $(call _db_container_is_running),,$(shell exit 0))
 echo -n "Waiting for PHP ready ..."
 export C=0 && \
 until [ "$$(curl -s http://localhost:$(WORDPRESS_LOCALHOST_PORT) && echo "$$?")" == 0 ]; \
@@ -187,7 +191,10 @@ echo " ready"
 endef
 
 define _chromedriver_container_ip
-$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome)
+$(if\
+	$(call _chromedriver_container_is_running),\
+	$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome),\
+)
 endef
 
 define _xdebug_2_config
@@ -391,7 +398,7 @@ test: lint phpstan
 	$(call _codecept_run,wploadersuite)
 	$(call _codecept_run,wpmodule)
 
-clean: wp_remove php_container_remove db_remove chromedriver_remove
+clean: wp_remove php_container_remove php_container_image_remove db_remove chromedriver_remove
 	rm -f .env.testing.docker
 
 state:
@@ -418,13 +425,13 @@ db_up:
 	$(call _db_setup_query)
 
 db_stop:
-	$(if $(call _db_is_running),$(call _db_stop))
+	$(if $(call _db_container_is_running),$(call _db_container_stop))
 
 db_cli:
 	docker exec -it $(PROJECT_NAME)_db mysql -uroot -p$(MYSQL_ROOT_PASSWOR)
 
 db_remove: db_stop
-	$(if $(call _db_exists),$(call _db_remove))
+	$(if $(call _db_container_exists),$(call _db_container_remove))
 
 wp_config:
 	$(call _wp_download)
@@ -473,9 +480,11 @@ php_container_up:
 
 php_container_stop:
 	-docker stop $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
-	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
 
 php_container_remove: php_container_stop
+	-docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=php)
+
+php_container_image_remove:
 	-docker image rm $$(docker images $(PROJECT_NAME)_php -q)
 
 php_container_shell: chromedriver_up
@@ -504,7 +513,7 @@ composer_update: composer.json
 	  $(PHP_CONTAINER_NAME) \
 	  composer update --lock
 
-composer_install:
+composer_install: composer.json
 	docker exec --interactive \
       --user "$$(id -u):$$(id -g)" \
 	  --workdir "$(PWD)" \
