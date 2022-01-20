@@ -65,7 +65,7 @@ function slug($string, $sep = '-', $let = false)
         $step3 = preg_replace('/[^A-Za-z0-9' . preg_quote($sep, '/') . ']/', '-', $step2);
     }
 
-    if ($step3 === false) {
+    if (!is_string($step3)) {
         throw new \InvalidArgumentException('Failed to slugify string');
     }
 

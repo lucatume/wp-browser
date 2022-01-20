@@ -33,7 +33,7 @@ function envFile($file)
         throw new \InvalidArgumentException('Could not read ' . $file . ' contents.');
     }
 
-    $envFileContents = str_replace( "\r\n", "\n", $envFileContents );
+    $envFileContents = str_replace("\r\n", "\n", $envFileContents);
 
     $pattern = '/^(?<key>.*?)=("(?<q_value>.*)(?<!\\\\)"|(?<value>.*?))([\\s]*#.*)*$/ui';
 

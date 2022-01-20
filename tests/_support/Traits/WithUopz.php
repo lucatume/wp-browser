@@ -19,7 +19,7 @@ trait WithUopz
      */
     function replacingWithUopz(array $what, callable $do)
     {
-        if ( ! function_exists('uopz_set_return')) {
+        if (! function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
         }
 

@@ -2,14 +2,19 @@
 
 namespace Codeception\Module;
 
+use BadMethodCallException;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Exception\ModuleRequireException;
 use Codeception\Lib\Driver\Db as Driver;
 use Codeception\Lib\ModuleContainer;
+use Exception;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
+use InvalidArgumentException;
 use PDO;
+use PDOException;
+use RuntimeException;
 use tad\WPBrowser\Exceptions\DumpException;
 use tad\WPBrowser\Generators\Blog;
 use tad\WPBrowser\Generators\Comment;
@@ -20,6 +25,8 @@ use tad\WPBrowser\Generators\User;
 use tad\WPBrowser\Generators\WpPassword;
 use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Traits\WithEvents;
+
+use function is_array;
 use function tad\WPBrowser\db;
 use function tad\WPBrowser\dbDsnString;
 use function tad\WPBrowser\dbDsnToMap;
@@ -49,7 +56,7 @@ class WPDb extends Db
     const ADMIN_EMAIL_LIFESPAN = 2533080438;
 
     /**
-     * @var \tad\WPBrowser\Module\Support\DbDump
+     * @var DbDump
      */
     protected $dbDump;
 
@@ -176,7 +183,7 @@ class WPDb extends Db
     /**
      * The database driver object.
      *
-     * @var \Codeception\Lib\Driver\Db
+     * @var Driver
      */
     protected $driver;
 
@@ -256,13 +263,13 @@ class WPDb extends Db
      *
      * @return void
      *
-     * @throws \InvalidArgumentException If the specified file does not exist.
+     * @throws InvalidArgumentException If the specified file does not exist.
      */
     public function importSqlDumpFile($dumpFile = null)
     {
         if ($dumpFile !== null) {
             if (!file_exists($dumpFile) || !is_readable($dumpFile)) {
-                throw new \InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
+                throw new InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
             }
 
             $this->_getDriver()->load(file($dumpFile));
@@ -607,7 +614,7 @@ class WPDb extends Db
      *
      * @return int post_id The inserted post ID.
      *
-     * @throws \Exception If there's an exception during the insertion.
+     * @throws Exception If there's an exception during the insertion.
      *
      * @example
      * ```php
@@ -762,10 +769,10 @@ class WPDb extends Db
     public function havePostmetaInDatabase($postId, $meta_key, $meta_value)
     {
         if (!is_int($postId)) {
-            throw new \BadMethodCallException('Post id must be an int', 1);
+            throw new BadMethodCallException('Post id must be an int', 1);
         }
         if (!is_string($meta_key)) {
-            throw new \BadMethodCallException('Meta key must be an string', 3);
+            throw new BadMethodCallException('Meta key must be an string', 3);
         }
         $tableName = $this->grabPostMetaTableName();
 
@@ -932,10 +939,10 @@ class WPDb extends Db
     public function haveTermMetaInDatabase($term_id, $meta_key, $meta_value)
     {
         if (!is_int($term_id)) {
-            throw new \BadMethodCallException('Term id must be an int');
+            throw new BadMethodCallException('Term id must be an int');
         }
         if (!is_string($meta_key)) {
-            throw new \BadMethodCallException('Meta key must be an string');
+            throw new BadMethodCallException('Meta key must be an string');
         }
         $tableName = $this->grabTermMetaTableName();
 
@@ -1037,7 +1044,7 @@ class WPDb extends Db
      *
      * @return bool Whether the update happened correctly or not.
      *
-     * @throws \Exception If there's any error during the update.
+     * @throws Exception If there's any error during the update.
      */
     protected function increaseTermCountBy($termTaxonomyId, $by = 1)
     {
@@ -1306,7 +1313,7 @@ class WPDb extends Db
     {
         try {
             $this->_getDriver()->deleteQueryByCriteria($table, $criteria);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->debug("Couldn't delete record(s) from {$table} with criteria " . json_encode($criteria));
         }
     }
@@ -1390,7 +1397,7 @@ class WPDb extends Db
      *
      * @return array<string,mixed> An associative array of meta key/values.
      *
-     * @throws \Exception If the search criteria is incoherent.
+     * @throws Exception If the search criteria is incoherent.
      */
     public function grabUserMetaFromDatabase($userId, $meta_key)
     {
@@ -1418,7 +1425,7 @@ class WPDb extends Db
      *
      * @return array<string,mixed> An array of results.
      *
-     * @throws \Exception If the criteria is inconsistent.
+     * @throws Exception If the criteria is inconsistent.
      */
     public function grabAllFromDatabase($table, $column, $criteria)
     {
@@ -1590,7 +1597,7 @@ class WPDb extends Db
     public function useBlog($blogId = 0)
     {
         if (!(is_numeric($blogId) && intval($blogId) === $blogId && intval($blogId) >= 0)) {
-            throw new \InvalidArgumentException('Id must be an integer greater than or equal to 0');
+            throw new InvalidArgumentException('Id must be an integer greater than or equal to 0');
         }
         $this->blogId = intval($blogId);
     }
@@ -1851,7 +1858,7 @@ class WPDb extends Db
     public function haveManyPostsInDatabase($count, array $overrides = [])
     {
         if (!is_int($count)) {
-            throw new \InvalidArgumentException('Count must be an integer value');
+            throw new InvalidArgumentException('Count must be an integer value');
         }
         $overrides = $this->setTemplateData($overrides);
         $ids = [];
@@ -2071,7 +2078,7 @@ class WPDb extends Db
     public function haveManyCommentsInDatabase($count, $comment_post_ID, array $overrides = [])
     {
         if (!is_int($count)) {
-            throw new \InvalidArgumentException('Count must be an integer value');
+            throw new InvalidArgumentException('Count must be an integer value');
         }
         $overrides = $this->setTemplateData($overrides);
         $ids = [];
@@ -2099,7 +2106,7 @@ class WPDb extends Db
     public function haveCommentInDatabase($comment_post_ID, array $data = [])
     {
         if (!is_int($comment_post_ID)) {
-            throw new \BadMethodCallException('Comment post ID must be int');
+            throw new BadMethodCallException('Comment post ID must be int');
         }
 
         $has_meta = !empty($data['meta']);
@@ -2161,10 +2168,10 @@ class WPDb extends Db
     public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value)
     {
         if (!is_int($comment_id)) {
-            throw new \BadMethodCallException('Comment id must be an int');
+            throw new BadMethodCallException('Comment id must be an int');
         }
         if (!is_string($meta_key)) {
-            throw new \BadMethodCallException('Meta key must be an string');
+            throw new BadMethodCallException('Meta key must be an string');
         }
 
         return $this->haveInDatabase($this->grabCommentmetaTableName(), [
@@ -2226,7 +2233,7 @@ class WPDb extends Db
      *
      * @return void
      *
-     * @throws \Exception In case of incoherent query criteria.
+     * @throws Exception In case of incoherent query criteria.
      */
     public function dontHaveCommentInDatabase(array $criteria, $purgeMeta = true)
     {
@@ -2302,7 +2309,7 @@ class WPDb extends Db
     public function haveManyLinksInDatabase($count, array $overrides = [])
     {
         if (!is_int($count)) {
-            throw new \InvalidArgumentException('Count must be an integer value');
+            throw new InvalidArgumentException('Count must be an integer value');
         }
         $overrides = $this->setTemplateData($overrides);
         $ids = [];
@@ -2378,7 +2385,7 @@ class WPDb extends Db
     public function haveManyUsersInDatabase($count, $user_login, $role = 'subscriber', array $overrides = [])
     {
         if (!is_int($count)) {
-            throw new \InvalidArgumentException('Count must be an integer value');
+            throw new InvalidArgumentException('Count must be an integer value');
         }
         $ids = [];
         $overrides = $this->setTemplateData($overrides);
@@ -2671,7 +2678,7 @@ class WPDb extends Db
     public function haveManyTermsInDatabase($count, $name, $taxonomy, array $overrides = [])
     {
         if (!is_int($count)) {
-            throw new \InvalidArgumentException('Count must be an integer value');
+            throw new InvalidArgumentException('Count must be an integer value');
         }
         $ids = [];
         $overrides = $this->setTemplateData($overrides);
@@ -3146,7 +3153,7 @@ class WPDb extends Db
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function dontHaveBlogInDatabase(array $criteria, $removeTables = true, $removeUploads = true)
     {
@@ -3190,7 +3197,7 @@ class WPDb extends Db
      * @return array<string> An array of tables for the blog, it does not include the tables common to all blogs; an
      *                       empty array if the tables for the blog do not exist.
      *
-     * @throws \Exception If there is any error while preparing the query.
+     * @throws Exception If there is any error while preparing the query.
      * @example
      *      ```php
      *      $blogId = $I->haveBlogInDatabase('test');
@@ -3225,7 +3232,7 @@ class WPDb extends Db
      *
      * @return void
      *
-     * @throws \Exception If there is an error while dropping the table.
+     * @throws Exception If there is an error while dropping the table.
      */
     public function dontHaveTableInDatabase($fullTableName)
     {
@@ -3233,7 +3240,7 @@ class WPDb extends Db
 
         try {
             $this->_getDriver()->executeQuery($drop, []);
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (false === strpos($e->getMessage(), 'table or view not found')) {
                 throw $e;
             }
@@ -3314,14 +3321,14 @@ class WPDb extends Db
     public function haveMenuInDatabase($slug, $location, array $overrides = [])
     {
         if (!is_string($slug)) {
-            throw new \InvalidArgumentException('Menu slug must be a string.');
+            throw new InvalidArgumentException('Menu slug must be a string.');
         }
         if (!is_string($location)) {
-            throw new \InvalidArgumentException('Menu location must be a string.');
+            throw new InvalidArgumentException('Menu location must be a string.');
         }
 
         if (empty($this->stylesheet)) {
-            throw new \RuntimeException('Stylesheet must be set to add menus, use `useTheme` first.');
+            throw new RuntimeException('Stylesheet must be set to add menus, use `useTheme` first.');
         }
 
         $title = empty($overrides['title']) ? ucwords($slug, ' -_') : $overrides['title'];
@@ -3362,14 +3369,14 @@ class WPDb extends Db
     public function haveMenuItemInDatabase($menuSlug, $title, $menuOrder = null, array $meta = [])
     {
         if (!is_string($menuSlug)) {
-            throw new \InvalidArgumentException('Menu slug must be a string.');
+            throw new InvalidArgumentException('Menu slug must be a string.');
         }
 
         if (empty($this->stylesheet)) {
-            throw new \RuntimeException('Stylesheet must be set to add menus, use `useTheme` first.');
+            throw new RuntimeException('Stylesheet must be set to add menus, use `useTheme` first.');
         }
         if (!array_key_exists($menuSlug, $this->menus[$this->stylesheet])) {
-            throw new \RuntimeException("Menu $menuSlug is not a registered menu for the current theme.");
+            throw new RuntimeException("Menu $menuSlug is not a registered menu for the current theme.");
         }
         $menuOrder = $menuOrder ?: count($this->menuItems[$this->stylesheet][$menuSlug]) + 1;
         $menuItemId = $this->havePostInDatabase([
@@ -3413,7 +3420,9 @@ class WPDb extends Db
     /**
      * Sets the database driver of this object.
      *
-     * @param mixed $driver
+     * @param Driver $driver      A reference to the database driver being set.
+     * @param string $forDatabase The database key to set the
+     *                            database driver for.
      *
      * @return void
      */
@@ -3439,7 +3448,7 @@ class WPDb extends Db
      * @throws ModuleException If the WPFilesystem module is not loaded in the suite or the file to attach is not
      *                         readable
      *
-     * @throws \Gumlet\ImageResizeException If the image resize operation fails while trying to create the image sizes.
+     * @throws ImageResizeException If the image resize operation fails while trying to create the image sizes.
      *
      * @throws ModuleRequireException If the `WPFileSystem` module is not loaded in the suite or if the
      *                                'gumlet/php-image-resize:^1.6' package is not installed.
@@ -4135,7 +4144,7 @@ class WPDb extends Db
         }
 
         try {
-            if (\is_array($sql)) {
+            if (is_array($sql)) {
                 $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
                 $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
             } else {
@@ -4165,7 +4174,7 @@ class WPDb extends Db
         }
         $tableName = $this->grabPrefixedTableNameFor('terms');
         if (!$this->grabFromDatabase($tableName, 'term_id', ['term_id' => $term_id])) {
-            throw new \RuntimeException("A term with an id of $term_id does not exist", 1);
+            throw new RuntimeException("A term with an id of $term_id does not exist", 1);
         }
     }
 
@@ -4319,7 +4328,7 @@ class WPDb extends Db
                     unset($dsnMap['dbname']);
                     $db = db(dbDsnString($dsnMap), $user, $pass);
                     $db("CREATE DATABASE IF NOT EXISTS `{$dbname}`");
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new ModuleException(
                         $this,
                         sprintf('Failed to create database; error: .' . $e->getMessage())
