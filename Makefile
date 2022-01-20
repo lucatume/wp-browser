@@ -355,13 +355,13 @@ lint:
 
 phpcs_fix:
 	docker run --rm \
-		--volume "$(PWD):$(PWD):ro" \
+		--volume "$(PWD):$(PWD)" \
 		--workdir "$(PWD)" \
-		cytopia/phpcs \
+		cytopia/phpcbf \
 			--colors \
 			-p \
 			-s \
-			--standard=phpcs.xml $(SRC) \
+			--standard=phpcs.xml \
 			--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
 			src
 
@@ -373,7 +373,7 @@ phpcs:
 			--colors \
 			-p \
 			-s \
-			--standard=phpcs.xml $(SRC) \
+			--standard=phpcs.xml \
 			--ignore=src/data,src/includes,src/tad/scripts,_build \
 			src tests
 

@@ -30,10 +30,10 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
     }
 
     $command = [mysqlBin(), '--host=' . escapeshellarg($dbHost), '--user=' . escapeshellarg($dbUser)];
-    if ( ! empty($dbPass)) {
+    if (! empty($dbPass)) {
         $command[] = '--password=' . escapeshellarg($dbPass);
     }
-    if ( ! empty($dbPort)) {
+    if (! empty($dbPort)) {
         $command[] = '--port=' . escapeshellarg($dbPort);
     }
 
