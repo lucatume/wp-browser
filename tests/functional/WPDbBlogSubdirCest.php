@@ -128,7 +128,7 @@ class WPDbBlogSubdirCest
             $I->dontSeeBlogInDatabase(['blog_id' => $blogId]);
             $blogTablesAfter = $I->grabBlogTableNames($blogId);
             $I->assertEmpty($blogTablesAfter);
-            $I->seeFileFound($blogUploadsDir[$blogId]);
+            $I->assertDirectoryExists($blogUploadsDir[$blogId]);
         }
     }
 
