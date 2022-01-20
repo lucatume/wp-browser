@@ -1,4 +1,4 @@
-.SILENT:
+#.SILENT:
 SHELL := /bin/bash
 
 # Functions
@@ -59,10 +59,7 @@ rm -rf "$(WORDPRESS_PARENT_DIR)/my.cnf"
 endef
 
 define _db_container_ip
-$(if \
-	$(call _db_container_is_running),\
-	$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_db),\
-)
+$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_db)
 endef
 
 define _wp_salt
@@ -131,13 +128,23 @@ docker restart $$(docker ps -aq --filter name=$(PHP_CONTAINER_NAME));
 endef
 
 define _php_container_healthcheck
-$(if $(call _db_container_is_running),,$(shell exit 0))
 echo -n "Waiting for PHP ready ..."
 export C=0 && \
 until [ "$$(curl -s http://localhost:$(WORDPRESS_LOCALHOST_PORT) && echo "$$?")" == 0 ]; \
 	do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
 done
 echo " ready"
+endef
+
+define _composer_container_exec
+docker run --rm --interactive --name $(PHP_CONTAINER_NAME)_composer_$(COMPOSER_VERSION) \
+	--label $(PROJECT_NAME).service=composer \
+	--volume "$(PWD):$(PWD)" \
+	--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
+    --user "$$(id -u):$$(id -g)" \
+    -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
+	--workdir "$(PWD)" \
+	$(PROJECT_NAME)_php:$(PHP_VERSION) composer $(1)
 endef
 
 define _chromedriver_container_is_running
@@ -191,10 +198,7 @@ echo " ready"
 endef
 
 define _chromedriver_container_ip
-$(if\
-	$(call _chromedriver_container_is_running),\
-	$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome),\
-)
+$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(PROJECT_NAME)_chrome)
 endef
 
 define _xdebug_2_config
@@ -321,7 +325,6 @@ WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
 WORDPRESS_URL=$(WORDPRESS_URL)
 WORDPRESS_ROOT_DIR=$(notdir $(WORDPRESS_PARENT_DIR))/wordpress
 WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME)
-WORDPRESS_DB_HOST=$(call _db_container_ip)
 WORDPRESS_DB_USER=$(WORDPRESS_DB_USER)
 WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD)
 WORDPRESS_TABLE_PREFIX=$(WORDPRESS_TABLE_PREFIX)
@@ -506,23 +509,15 @@ php_container_shell: chromedriver_up
 	  bash
 
 composer_update: composer.json
-	docker exec --interactive \
-      --user "$$(id -u):$$(id -g)" \
-	  --workdir "$(PWD)" \
-      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
-	  $(PHP_CONTAINER_NAME) \
-	  composer update --lock
+	$(call _composer_container_exec,update --lock)
 
 composer_install: composer.json
-	docker exec --interactive \
-      --user "$$(id -u):$$(id -g)" \
-	  --workdir "$(PWD)" \
-      -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
-	  $(PHP_CONTAINER_NAME) \
-	  composer install
+	$(call _composer_container_exec,install)
 
 test_env_file:
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
+	echo "WORDPRESS_DB_HOST=$(call _db_container_ip)" >> .env.testing.docker
+	echo "CHROMEDRIVER_HOST=$(call _chromedriver_container_ip)" >> .env.testing.docker
 
 chromedriver_up:
 	$(if\
