@@ -1,0 +1,36 @@
+name: Test
+on: [ push ]
+jobs:
+  test:
+    strategy:
+      matrix:
+        # php_version: [ '5.6', '7.0', '7.4', '8.0', '8.1' ]
+        php_version: [ '7.4' ]
+        # codeception_version: [ 2, 3, 4 ]
+        codeception_version: [ 2 ]
+        # composer_version: [ 1, 2 ]
+        composer_version: [ 2 ]
+    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set src directory hash
+        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1
+        with:
+          path: vendor
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - name: Build
+        run: make build
+        env:
+          PHP_VERSION: ${{ matrix.php_version }}
+          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
+          COMPOSER_VERSION: ${{ matrix.composer_version }}
+      - name: Run
+        run: make test
+        env:
+          PHP_VERSION: ${{ matrix.php_version }}
+          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
+          COMPOSER_VERSION: ${{ matrix.composer_version }}
