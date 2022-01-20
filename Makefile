@@ -82,7 +82,7 @@ cat "$(WORDPRESS_PARENT_DIR)/wordpress/wp-config-sample.php" \
 | sed "s/'database_name_here'/qenv('WORDPRESS_DB_NAME', '$(WORDPRESS_DB_NAME)')/g" \
 | sed "s/'username_here'/qenv('WORDPRESS_DB_USER', '$(WORDPRESS_DB_USER)')/g" \
 | sed "s/'password_here'/qenv('WORDPRESS_DB_PASSWORD', '$(WORDPRESS_DB_PASSWORD)')/g" \
-| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(call _db_container_ip)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
+| sed "s/'localhost'/qenv('WORDPRESS_DB_HOST', '$(MYSQL_CONTAINER_NAME)') . \':\' . qenv('WORDPRESS_DB_PORT', '3306')/g" \
 | sed '/Happy publishing/r wp_config_extras.tmp' \
 | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) \
 | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) | $(call _wp_salt) \
@@ -109,9 +109,10 @@ docker run --detach --name $(PHP_CONTAINER_NAME) \
 	--add-host=blog0.$(WORDPRESS_DOMAIN):127.0.0.1 \
 	--add-host=blog1.$(WORDPRESS_DOMAIN):127.0.0.1 \
 	--add-host=blog2.$(WORDPRESS_DOMAIN):127.0.0.1 \
+	--add-host=$(MYSQL_CONTAINER_NAME):$(call _db_container_ip) \
 	-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
-	-e WORDPRESS_DB_HOST=$(call _db_container_ip) \
+	-e WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME) \
 	-e WORDPRESS_DB_PORT=3306 \
 	-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
@@ -225,7 +226,7 @@ docker exec --interactive \
   -e CHROMEDRIVER_HOST=$(call _chromedriver_container_ip) \
   -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
   -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-  -e WORDPRESS_DB_HOST=$(call _db_container_ip) \
+  -e WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME) \
   -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
   -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
   $(PHP_CONTAINER_NAME) \
@@ -325,6 +326,7 @@ CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT)
 WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
 WORDPRESS_URL=$(WORDPRESS_URL)
 WORDPRESS_ROOT_DIR=$(notdir $(WORDPRESS_PARENT_DIR))/wordpress
+WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME)
 WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME)
 WORDPRESS_DB_USER=$(WORDPRESS_DB_USER)
 WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD)
@@ -336,6 +338,7 @@ WORDPRESS_SUBDIR_DB_NAME=$(WORDPRESS_SUBDIR_DB_NAME)
 WORDPRESS_SUBDOMAIN_URL=$(WORDPRESS_SUBDOMAIN_URL)
 WORDPRESS_SUBDOMAIN_DB_NAME=$(WORDPRESS_SUBDOMAIN_DB_NAME)
 WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
+CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome
 endef
 export TEST_ENV_FILE_CONTENTS
 
@@ -492,10 +495,10 @@ php_container_shell: chromedriver_up
       -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	  -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	  -e MYSQL_DATABASE=$(PROJECT_NAME) \
-	  -e CHROMEDRIVER_HOST=$(call _chromedriver_container_ip) \
+	  -e CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome \
 	  -e CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT) \
 	  -e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
-	  -e WORDPRESS_DB_HOST=$(call _db_container_ip) \
+	  -e WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME) \
 	  -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	  -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	  -e XDEBUG_MODE=develop,debug \
@@ -512,8 +515,6 @@ composer_install: composer.json
 test_env_file:
 	touch .env.testing.docker
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
-	echo "WORDPRESS_DB_HOST=$(call _db_container_ip)" >> .env.testing.docker
-	echo "CHROMEDRIVER_HOST=$(call _chromedriver_container_ip)" >> .env.testing.docker
 
 chromedriver_up:
 	$(if\
