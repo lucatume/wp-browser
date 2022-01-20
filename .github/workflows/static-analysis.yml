@@ -36,6 +36,6 @@ jobs:
           path: vendor
           key: composer-5.6-cc-4.0-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Install Composer dependencies
-        run: make PHP_VERSION=5.6 CODECEPTION_MAJOR_VERSION=4 composer_install
+        run: make PHP_VERSION=5.6 CODECEPTION_MAJOR_VERSION=4 php_container php_container_up composer_install
       - name: Run PHPStan static analysis
         run: make PHP_VERSION=5.6 PHPSTAN_LEVEL=max phpstan
