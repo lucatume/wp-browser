@@ -81,6 +81,9 @@ class FunctionProphecy
             return $prophecy->reveal()->{$safeName}(...$args);
         };
 
+        // Pre-load the dependency tree if the replaced function is about files.
+        class_exists(MethodProphecy::class, true);
+
         if (function_exists('uopz_set_return')) {
             uopz_set_return($name, $closure, true);
             static::$replacedFunction[] = $name;
