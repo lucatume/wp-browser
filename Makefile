@@ -518,6 +518,9 @@ composer_update: composer.json
 composer_install: composer.json
 	$(call _composer_container_exec,install)
 
+composer_dump_autoload: composer.json
+	$(call _composer_container_exec,dump-autoload)
+
 test_env_file:
 	touch .env.testing.docker
 	echo "$${TEST_ENV_FILE_CONTENTS}" > .env.testing.docker
