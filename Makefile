@@ -72,7 +72,7 @@ mkdir -p "$(WORDPRESS_PARENT_DIR)"
 endef
 
 define _wp_unzip
-[ -d "$(WORDPRESS_ROOT_DIR)" ] || unzip -u "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"
+[ -d "$(WORDPRESS_ROOT_DIR)" ] || unzip -uq "$(WORDPRESS_PARENT_DIR)/wordpress.zip" -d "$(WORDPRESS_PARENT_DIR)"
 endef
 
 define _wp_config
@@ -505,7 +505,7 @@ php_container_shell: chromedriver_up
 	  bash
 
 composer_update: composer.json
-	$(call _composer_container_exec,update --lock)
+	$(call _composer_container_exec,update)
 
 composer_install: composer.json
 	$(call _composer_container_exec,install)
