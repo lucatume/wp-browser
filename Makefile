@@ -1,6 +1,118 @@
 .SILENT:
 SHELL := /bin/bash
 
+# Vars
+PROJECT_NAME = $(notdir $(PWD))
+REBUILD ?=0
+ROOT ?= 0
+MYSQL_ROOT_PASSWORD ?= root
+MYSQL_LOCALHOST_PORT ?= 9306
+MYSQL_IMAGE ?= mariadb:latest
+MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
+WORDPRESS_VERSION ?= latest
+WORDPRESS_PARENT_DIR ?= $(PWD)/_wordpress
+WORDPRESS_DOMAIN ?= wordpress.test
+WORDPRESS_URL ?= http://wordpress.test
+WORDPRESS_ROOT_DIR ?= $(WORDPRESS_PARENT_DIR)/wordpress
+WORDPRESS_DB_USER ?= $(PROJECT_NAME)
+WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
+WORDPRESS_DB_LOCALHOST_PORT ?= 9306
+WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
+WORDPRESS_TABLE_PREFIX ?= wp_
+WORDPRESS_ADMIN_USER ?= admin
+WORDPRESS_ADMIN_PASSWORD ?= admin
+WORDPRESS_LOCALHOST_PORT ?= 9380
+WORDPRESS_SUBDIR_URL ?= http://$(WORDPRESS_DOMAIN)/subdir-one
+WORDPRESS_SUBDIR_DB_NAME ?= test_subdir
+WORDPRESS_SUBDOMAIN_DOMAIN ?= one.$(WORDPRESS_DOMAIN)
+WORDPRESS_SUBDOMAIN_URL ?= http://$(WORDPRESS_SUBDOMAIN_DOMAIN)
+WORDPRESS_SUBDOMAIN_DB_NAME ?= test_subdomain
+WORDPRESS_EMPTY_DB_NAME ?= test_empty
+PHP_VERSION ?= 5.6
+PHP_CONTAINER_NAME = $(PROJECT_NAME)_php_$(PHP_VERSION)
+COMPOSER_VERSION ?= 2
+COMPOSER_CACHE_DIR ?= $(PWD)/.cache/composer
+XDEBUG_REMOTE_PORT ?= 9003
+CHROMEDRIVER_PORT ?= 4444
+CHROMEDRIVER_LOCALHOST_PORT ?= 9344
+CHROMEDRIVER_VNC_PORT ?= 5993
+CHROMEDRIVER_VERSION ?= latest
+CODECEPTION_MAJOR_VERSION ?= 4
+PHPSTAN_LEVEL ?= max
+
+ifeq (1, $(ROOT))
+DOCKER_USER ?= "0:0"
+else
+DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
+endif
+
+ifeq (4, $(CODECEPTION_MAJOR_VERSION))
+COMPOSER_JSON_FILE = "$(PWD)/composer.codecept-4.json"
+else
+COMPOSER_JSON_FILE = "$(PWD)/composer.json"
+endif
+
+
+
+# Definitions
+define MYSQL_CONFIG
+[mysqld]
+bind_address=*
+collation_server=utf8_unicode_ci
+character-set-server=utf8
+
+[client]
+default-character-set=utf8
+endef
+export MYSQL_CONFIG
+
+define DB_SETUP_QUERY
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'localhost' IDENTIFIED BY '$(PROJECT_NAME)';
+CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'%' IDENTIFIED BY '$(PROJECT_NAME)';
+CREATE DATABASE IF NOT EXISTS `$(PROJECT_NAME)`;
+GRANT ALL ON *.* TO '$(PROJECT_NAME)'@'localhost';
+GRANT ALL ON *.* TO '$(PROJECT_NAME)'@'%';
+FLUSH PRIVILEGES;
+endef
+export DB_SETUP_QUERY
+
+define QENV_FN
+function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
+endef
+
+define WP_CONFIG_EXTRAS
+define( 'WP_ALLOW_MULTISITE', true );
+define( 'MULTISITE', true );
+define( 'SUBDOMAIN_INSTALL', false );
+$$base = '/';
+define( 'DOMAIN_CURRENT_SITE', '$(WORDPRESS_DOMAIN)' );
+define( 'PATH_CURRENT_SITE', '/' );
+define( 'SITE_ID_CURRENT_SITE', 1 );
+define( 'BLOG_ID_CURRENT_SITE', 1 );
+endef
+export WP_CONFIG_EXTRAS
+
+define TEST_ENV_FILE_CONTENTS
+CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT)
+WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
+WORDPRESS_URL=$(WORDPRESS_URL)
+WORDPRESS_ROOT_DIR=$(notdir $(WORDPRESS_PARENT_DIR))/wordpress
+WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME)
+WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME)
+WORDPRESS_DB_USER=$(WORDPRESS_DB_USER)
+WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD)
+WORDPRESS_TABLE_PREFIX=$(WORDPRESS_TABLE_PREFIX)
+WORDPRESS_ADMIN_USER=$(WORDPRESS_ADMIN_USER)
+WORDPRESS_ADMIN_PASSWORD=$(WORDPRESS_ADMIN_PASSWORD)
+WORDPRESS_SUBDIR_URL=$(WORDPRESS_SUBDIR_URL)
+WORDPRESS_SUBDIR_DB_NAME=$(WORDPRESS_SUBDIR_DB_NAME)
+WORDPRESS_SUBDOMAIN_URL=$(WORDPRESS_SUBDOMAIN_URL)
+WORDPRESS_SUBDOMAIN_DB_NAME=$(WORDPRESS_SUBDOMAIN_DB_NAME)
+WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
+CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome
+endef
+export TEST_ENV_FILE_CONTENTS
+
 # Functions
 define _host_ip_from_container
 $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
@@ -68,7 +180,7 @@ endef
 
 define _wp_download
 mkdir -p "$(WORDPRESS_PARENT_DIR)"
-[ -f  "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ] || curl https://wordpress.org/latest.zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"
+[ -f  "$(WORDPRESS_PARENT_DIR)/wordpress.zip" ] || curl https://wordpress.org/$(WORDPRESS_VERSION).zip -o "$(WORDPRESS_PARENT_DIR)/wordpress.zip"
 endef
 
 define _wp_unzip
@@ -215,7 +327,7 @@ $(shell [ '7.2' = '$(word 1, $(sort 7.2 $(PHP_VERSION)))' ] \
 	|| echo '$(call _xdebug_2_config)';)
 endef
 
-define _codecept_run
+define _codecept
 docker exec --interactive \
   --user "$$(id -u):$$(id -g)" \
   --workdir "$(PWD)" \
@@ -228,117 +340,12 @@ docker exec --interactive \
   -e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
   -e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
   $(PHP_CONTAINER_NAME) \
-  vendor/bin/codecept run $(1)
+  vendor/bin/codecept $(1)
 endef
 
-# Vars
-PROJECT_NAME = $(notdir $(PWD))
-REBUILD ?=0
-ROOT ?= 0
-MYSQL_ROOT_PASSWORD ?= root
-MYSQL_LOCALHOST_PORT ?= 9306
-MYSQL_IMAGE ?= mariadb:latest
-MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
-WORDPRESS_PARENT_DIR ?= $(PWD)/_wordpress
-WORDPRESS_DOMAIN ?= wordpress.test
-WORDPRESS_URL ?= http://wordpress.test
-WORDPRESS_ROOT_DIR ?= $(WORDPRESS_PARENT_DIR)/wordpress
-WORDPRESS_DB_USER ?= $(PROJECT_NAME)
-WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
-WORDPRESS_DB_LOCALHOST_PORT ?= 9306
-WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
-WORDPRESS_TABLE_PREFIX ?= wp_
-WORDPRESS_ADMIN_USER ?= admin
-WORDPRESS_ADMIN_PASSWORD ?= admin
-WORDPRESS_LOCALHOST_PORT ?= 9380
-WORDPRESS_SUBDIR_URL ?= http://$(WORDPRESS_DOMAIN)/subdir-one
-WORDPRESS_SUBDIR_DB_NAME ?= test_subdir
-WORDPRESS_SUBDOMAIN_DOMAIN ?= one.$(WORDPRESS_DOMAIN)
-WORDPRESS_SUBDOMAIN_URL ?= http://$(WORDPRESS_SUBDOMAIN_DOMAIN)
-WORDPRESS_SUBDOMAIN_DB_NAME ?= test_subdomain
-WORDPRESS_EMPTY_DB_NAME ?= test_empty
-PHP_VERSION ?= 5.6
-PHP_CONTAINER_NAME = $(PROJECT_NAME)_php_$(PHP_VERSION)
-COMPOSER_VERSION ?= 2
-COMPOSER_CACHE_DIR ?= $(PWD)/.cache/composer
-XDEBUG_REMOTE_PORT ?= 9003
-CHROMEDRIVER_PORT ?= 4444
-CHROMEDRIVER_LOCALHOST_PORT ?= 9344
-CHROMEDRIVER_VNC_PORT ?= 5993
-CHROMEDRIVER_VERSION ?= latest
-CODECEPTION_MAJOR_VERSION ?= 4
-PHPSTAN_LEVEL ?= max
-
-ifeq (1, $(ROOT))
-DOCKER_USER ?= "0:0"
-else
-DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
-endif
-
-ifeq (4, $(CODECEPTION_MAJOR_VERSION))
-COMPOSER_JSON_FILE = "$(PWD)/composer.codecept-4.json"
-else
-COMPOSER_JSON_FILE = "$(PWD)/composer.json"
-endif
-
-# Definitions
-define MYSQL_CONFIG
-[mysqld]
-bind_address=*
-collation_server=utf8_unicode_ci
-character-set-server=utf8
-
-[client]
-default-character-set=utf8
+define _codecept_run
+$(call _codecept,run ($1))
 endef
-export MYSQL_CONFIG
-
-define DB_SETUP_QUERY
-CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'localhost' IDENTIFIED BY '$(PROJECT_NAME)';
-CREATE USER IF NOT EXISTS '$(PROJECT_NAME)'@'%' IDENTIFIED BY '$(PROJECT_NAME)';
-CREATE DATABASE IF NOT EXISTS `$(PROJECT_NAME)`;
-GRANT ALL ON *.* TO '$(PROJECT_NAME)'@'localhost';
-GRANT ALL ON *.* TO '$(PROJECT_NAME)'@'%';
-FLUSH PRIVILEGES;
-endef
-export DB_SETUP_QUERY
-
-define QENV_FN
-function qenv(\$$key, \$$default) {\n\treturn (\$$value = getenv(\$$key)) === false ? \$$default : \$$value;\n}
-endef
-
-define WP_CONFIG_EXTRAS
-define( 'WP_ALLOW_MULTISITE', true );
-define( 'MULTISITE', true );
-define( 'SUBDOMAIN_INSTALL', false );
-$$base = '/';
-define( 'DOMAIN_CURRENT_SITE', '$(WORDPRESS_DOMAIN)' );
-define( 'PATH_CURRENT_SITE', '/' );
-define( 'SITE_ID_CURRENT_SITE', 1 );
-define( 'BLOG_ID_CURRENT_SITE', 1 );
-endef
-export WP_CONFIG_EXTRAS
-
-define TEST_ENV_FILE_CONTENTS
-CHROMEDRIVER_PORT=$(CHROMEDRIVER_PORT)
-WORDPRESS_DOMAIN=$(WORDPRESS_DOMAIN)
-WORDPRESS_URL=$(WORDPRESS_URL)
-WORDPRESS_ROOT_DIR=$(notdir $(WORDPRESS_PARENT_DIR))/wordpress
-WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME)
-WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME)
-WORDPRESS_DB_USER=$(WORDPRESS_DB_USER)
-WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD)
-WORDPRESS_TABLE_PREFIX=$(WORDPRESS_TABLE_PREFIX)
-WORDPRESS_ADMIN_USER=$(WORDPRESS_ADMIN_USER)
-WORDPRESS_ADMIN_PASSWORD=$(WORDPRESS_ADMIN_PASSWORD)
-WORDPRESS_SUBDIR_URL=$(WORDPRESS_SUBDIR_URL)
-WORDPRESS_SUBDIR_DB_NAME=$(WORDPRESS_SUBDIR_DB_NAME)
-WORDPRESS_SUBDOMAIN_URL=$(WORDPRESS_SUBDOMAIN_URL)
-WORDPRESS_SUBDOMAIN_DB_NAME=$(WORDPRESS_SUBDOMAIN_DB_NAME)
-WORDPRESS_EMPTY_DB_NAME=$(WORDPRESS_EMPTY_DB_NAME)
-CHROMEDRIVER_HOST=$(PROJECT_NAME)_chrome
-endef
-export TEST_ENV_FILE_CONTENTS
 
 build: db_up wp_up chromedriver_up composer_update test_env_file
 
@@ -385,6 +392,7 @@ phpstan:
 			-l $(PHPSTAN_LEVEL)
 
 test:
+	$(call _codecept,build)
 	$(call _codecept_run,unit)
 	$(call _codecept_run,dbunit)
 	$(call _codecept_run,acceptance)

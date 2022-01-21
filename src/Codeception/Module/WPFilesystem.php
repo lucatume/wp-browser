@@ -10,6 +10,9 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\TestInterface;
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Filesystem\Utils;
@@ -84,7 +87,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      *
-     * @throws \Codeception\Exception\ModuleConfigException If one of the paths does not exist.
+     * @throws ModuleConfigException If one of the paths does not exist.
      */
     protected function ensureOptionalPaths($check = true)
     {
@@ -153,10 +156,10 @@ class WPFilesystem extends Filesystem
     /**
      * Checks the WordPress root folder exists and is a WordPress root folder.
      *
-     * @throws \Codeception\Exception\ModuleConfigException if the WordPress root folder does not exist
+     * @return void
+     * @throws ModuleConfigException if the WordPress root folder does not exist
      *                                                      or is not a valid WordPress root folder.
      *
-     * @return void
      */
     protected function ensureWpRootFolder()
     {
@@ -184,7 +187,7 @@ class WPFilesystem extends Filesystem
      * Runs after a test failure.
      *
      * @param TestInterface $test The test that just ran.
-     * @param \Exception    $fail The failure
+     * @param Exception    $fail The failure
      *
      * @return void;
      */
@@ -229,7 +232,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      *
-     * @throws \Exception If the path is a date string and is not parsable by the `strtotime` function.
+     * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      */
     public function amInUploadsPath($path = null)
     {
@@ -326,7 +329,7 @@ class WPFilesystem extends Filesystem
     {
         try {
             $date = buildDate($date);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $date;
         }
 
@@ -419,16 +422,16 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @example
+     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
+     *@example
      * ``` php
      * $I->deleteUploadedDir('folder');
      * $I->deleteUploadedDir('folder', 'today');
      * ```
      *
-     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
-     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
      */
     public function deleteUploadedDir($dir, $date = null)
     {
@@ -466,16 +469,16 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @example
+     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
+     *@example
      * ``` php
      * $I->cleanUploadsDir('some/folder');
      * $I->cleanUploadsDir('some/folder', 'today');
      * ```
      *
-     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
-     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
      */
     public function cleanUploadsDir($dir = null, $date = null)
     {
@@ -492,17 +495,17 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @example
+     * @param  string $src The path to the source file, relative to the current uploads folder.
+     * @param  string $dst The path to the destination file, relative to the current uploads folder.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
+     *@example
      * ``` php
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo');
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');
      * ```
      *
-     * @param  string $src The path to the source file, relative to the current uploads folder.
-     * @param  string $dst The path to the destination file, relative to the current uploads folder.
-     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
      */
     public function copyDirToUploads($src, $dst, $date = null)
     {
@@ -515,20 +518,20 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @example
-     * ``` php
-     * $I->writeToUploadedFile('some-file.txt', 'foo bar');
-     * $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
-     * ```
-     *
      * @param  string $filename The path to the destination file, relative to the current uploads folder.
      * @param  string $data The data to write to the file.
-     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
      *
      * @return string The absolute path to the destination file.
      *
      * @throws ModuleException If the destination folder could not be created or the destination
      *                                                file could not be written.
+     *@example
+     * ``` php
+     * $I->writeToUploadedFile('some-file.txt', 'foo bar');
+     * $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
+     * ```
+     *
      */
     public function writeToUploadedFile($filename, $data, $date = null)
     {
@@ -555,16 +558,16 @@ class WPFilesystem extends Filesystem
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @example
+     * @param  string $filename The path to the file, relative to the current uploads folder.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @return void
+     *@example
      * ``` php
      * $I->openUploadedFile('some-file.txt');
      * $I->openUploadedFile('some-file.txt', 'time');
      * ```
      *
-     * @param  string $filename The path to the file, relative to the current uploads folder.
-     * @param  string|int|\DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
      */
     public function openUploadedFile($filename, $date = null)
     {
@@ -1321,23 +1324,23 @@ CSS;
     /**
      * Returns the absolute path to a blog uploads folder or file.
      *
-     * @example
+     * @param int                                    $blogId   The blog ID to get the path for.
+     * @param string                                 $file     The path, relatitve to the blog uploads folder, to the
+     *                                                         file or folder.
+     * @param null|string|DateTime|DateTimeImmutable $date     The date that should be used to build the uploads
+     *                                                         sub-folders in the year/month format; a UNIX timestamp or
+     *                                                         a string supported by the `strtotime` function; defaults
+     *                                                         to `now`.
+     *
+     * @return string The absolute path to a blog uploads folder or file.
+     * @throws Exception If the date is not a valid format.
+     *@example
      * ```php
      * $blogId = $I->haveBlogInDatabase('test');
      * $testTodayUploads = $I->getBlogUploadsPath($blogId);
      * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
      * ```
      *
-     * @param int                                      $blogId The blog ID to get the path for.
-     * @param string $file                                     The path, relatitve to the blog uploads folder, to the
-     *                                                         file or folder.
-     * @param null|string|\DateTime|\DateTimeImmutable $date   The date that should be used to build the uploads
-     *                                                         sub-folders in the year/month format; a UNIX timestamp or
-     *                                                         a string supported by the `strtotime` function; defaults
-     *                                                         to `now`.
-     *
-     * @return string The absolute path to a blog uploads folder or file.
-     * @throws \Exception If the date is not a valid format.
      */
     public function getBlogUploadsPath($blogId, $file = '', $date = null)
     {
@@ -1388,7 +1391,7 @@ CSS;
             }
         } catch (ModuleException $e) {
             throw $e;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ModuleException($this, sprintf(
                 "Could not create uploads folder '%s'\nreason: %s\nuser: %s",
                 $path,
@@ -1417,5 +1420,16 @@ CSS;
         $code = preg_replace('/^\<\?php\\s*/', '', $code) ?: '';
 
         return $code;
+    }
+
+    /**
+     * @param string $directory The directory to check.
+     * @param string $message An optional message to display if the directory does not exist.
+     *
+     * @return void
+     */
+    public function assertDirectoryExists($directory, $message = '')
+    {
+        PHPUnitAssert::assertDirectoryExists($directory, $message);
     }
 }
