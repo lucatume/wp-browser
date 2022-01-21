@@ -1,4 +1,4 @@
-#.SILENT:
+.SILENT:
 SHELL := /bin/bash
 
 # Functions
@@ -169,13 +169,11 @@ define _chromedriver_container_remove
 -docker rm --volumes $$(docker ps -aq --filter label=$(PROJECT_NAME).service=chrome)
 endef
 
-ARCHITECTURE=$(shell uname -p)
-define _chromedriver_image
-$(if $(ARCHITECTURE) == 'arm',\
-	$(shell echo 'seleniarm/standalone-chromium'),\
-	$(shell echo 'selenium/standalone-chrome')\
-)
-endef
+ifeq "$(shell uname -p)" "arm"
+CHROMEDRIVER_IMAGE ?= $(shell echo 'seleniarm/standalone-chromium')
+else
+CHROMEDRIVER_IMAGE ?= $(shell echo 'selenium/standalone-chrome')
+endif
 
 define _chromedriver_container_start
 docker run --detach \
@@ -187,7 +185,7 @@ docker run --detach \
 	--link $(PHP_CONTAINER_NAME):test2.$(WORDPRESS_DOMAIN) \
 	--shm-size="2g" \
 	--label $(PROJECT_NAME).service=chrome \
-	$(call _chromedriver_image):$(CHROMEDRIVER_VERSION);
+	$(CHROMEDRIVER_IMAGE):$(CHROMEDRIVER_VERSION);
 endef
 
 define _chromedriver_container_healthcheck
