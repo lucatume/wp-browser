@@ -505,7 +505,7 @@ php_container_shell: chromedriver_up
 	  bash
 
 composer_update: composer.json
-	$(call _composer_container_exec,update)
+	$(call _composer_container_exec,update --with codeception/codeception:$(CODECEPTION_MAJOR_VERSION).*)
 
 composer_install: composer.json
 	$(call _composer_container_exec,install)
