@@ -344,7 +344,7 @@ docker exec --interactive \
 endef
 
 define _codecept_run
-$(call _codecept,run ($1))
+$(call _codecept,run $(1))
 endef
 
 build: db_up wp_up chromedriver_up composer_update test_env_file
