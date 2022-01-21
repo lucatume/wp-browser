@@ -56,7 +56,8 @@
   "autoload-dev": {
     "psr-4": {
       "tad\\Test\\": "tests/_support/lib",
-      "Codeception\\": "tests/_data/classes/Codeception"
+      "Codeception\\": "tests/_data/classes/Codeception",
+      "lucatume\\WPBrowser\\Tests\\": "tests/_support"
     },
     "files": [
       "tests/_support/functions.php"
