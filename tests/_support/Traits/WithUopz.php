@@ -13,9 +13,8 @@ trait WithUopz
      * @param callable            $do   The callback that will be called while replacements are in place.
      *
      * @return void
-     * @throws \RuntimeException If the uopz extension is not loaded or a defined replacement is neither a function nor
-     *                           a static method.
-     *
+     * @throws \RuntimeException|\Exception If the uopz extension is not loaded or a defined replacement is neither
+     *                                      a function nor a static method.
      */
     function replacingWithUopz(array $what, callable $do)
     {
