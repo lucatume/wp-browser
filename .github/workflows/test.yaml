@@ -21,15 +21,20 @@ jobs:
         with:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - run: whoami
+      - run: id -u
+      - run: id -g
       - name: Build
         run: make build
         env:
           PHP_VERSION: ${{ matrix.php_version }}
           CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
           COMPOSER_VERSION: ${{ matrix.composer_version }}
-      - name: Run
-        run: make test
-        env:
-          PHP_VERSION: ${{ matrix.php_version }}
-          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
-          COMPOSER_VERSION: ${{ matrix.composer_version }}
+      - run: ls -la _wordpress
+      - run: ls -la _wordpress/wordpress
+#      - name: Test
+#        run: make test
+#        env:
+#          PHP_VERSION: ${{ matrix.php_version }}
+#          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
+#          COMPOSER_VERSION: ${{ matrix.composer_version }}
