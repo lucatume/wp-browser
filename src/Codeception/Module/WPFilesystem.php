@@ -426,6 +426,8 @@ class WPFilesystem extends Filesystem
      * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
      *
      * @return void
+     *
+     * @throws ModuleException If the destination folder could not be removed.
      *@example
      * ``` php
      * $I->deleteUploadedDir('folder');
@@ -437,7 +439,9 @@ class WPFilesystem extends Filesystem
     {
         $dir = $this->getUploadsPath($dir, $date);
         $this->debug('Deleting folder ' . $dir);
-        $this->deleteDir($dir);
+        if (!rrmdir($dir)) {
+            throw new ModuleException(__CLASS__, "Could not remove the [{$dir}] folder.");
+        }
     }
 
     /**
