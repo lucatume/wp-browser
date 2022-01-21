@@ -1,4 +1,4 @@
-.SILENT:
+#.SILENT:
 SHELL := /bin/bash
 
 # Vars
@@ -255,7 +255,7 @@ docker run --rm --interactive --name $(PHP_CONTAINER_NAME)_composer_$(COMPOSER_V
 	--label $(PROJECT_NAME).service=composer \
 	--volume "$(PWD):$(PWD)" \
 	--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
-    --user "$$(id -u):$$(id -g)" \
+    --user "$(shell id -u):$(shell id -g)" \
     -e COMPOSER_CACHE_DIR=$(COMPOSER_CACHE_DIR) \
 	--workdir "$(PWD)" \
 	$(PROJECT_NAME)_php:$(PHP_VERSION) composer $(1)
@@ -329,7 +329,7 @@ endef
 
 define _codecept
 docker exec --interactive \
-  --user "$$(id -u):$$(id -g)" \
+  --user "$(shell id -u):$(shell id -g)" \
   --workdir "$(PWD)" \
   -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
   -e MYSQL_DATABASE=$(PROJECT_NAME) \
@@ -464,9 +464,9 @@ wp_logs:
 php_container:
 	if [ $(REBUILD) = 1 ] || [ -z "$$(docker images $(PROJECT_NAME)_php:$(PHP_VERSION) -q)" ]; then \
 		docker build _build/_container/php \
-			--build-arg USER_UID=$$(id -u) \
-			--build-arg USER_GID=$$(id -g) \
-			--build-arg USER_UNAME=$$(whoami) \
+			--build-arg USER_UID=$(shell id -u) \
+			--build-arg USER_GID=$(shell id -g) \
+			--build-arg USER_UNAME=$(shell whoami) \
 			--build-arg PHP_VERSION=$(PHP_VERSION) \
 			--build-arg CONTAINER_NAME=$(PROJECT_NAME)_php_$(PHP_VERSION) \
 			--tag $(PROJECT_NAME)_php:$(PHP_VERSION) \

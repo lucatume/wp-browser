@@ -5204,6 +5204,8 @@ trait FunctionalTesterActions
      * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
      *
      * @return void
+     *
+     * @throws ModuleException If the destination folder could not be removed.
      *@example
      * ``` php
      * $I->deleteUploadedDir('folder');
@@ -6302,7 +6304,10 @@ trait FunctionalTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
+     * @param string $directory The directory to check.
+     * @param string $message An optional message to display if the directory does not exist.
      *
+     * @return void
      * @see \Codeception\Module\WPFilesystem::assertDirectoryExists()
      */
     public function assertDirectoryExists($directory, $message = null) {
