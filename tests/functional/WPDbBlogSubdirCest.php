@@ -21,26 +21,16 @@ class WPDbBlogSubdirCest
         $month              = date('m');
         $fullBlogUploadsDir = $blogUploadsDir . "/$year/$month";
         codecept_debug('Blog uploads dir: ' . $fullBlogUploadsDir);
-        $debug = static function () use ($blogUploadsDir, $fullBlogUploadsDir) {
-            $root = dirname(dirname($blogUploadsDir));
-            $dir  = $fullBlogUploadsDir;
-            $output = [];
-            while ($dir && $dir !== $root) {
-                if (is_dir($dir)) {
-                    $output[$dir] = shell_exec('ls -la "' . $dir . '"');
-                }
-                $dir    = dirname($dir);
-            }
-            codecept_debug($output);
-        };
-        $debug();
 
-        if ( ! is_dir($fullBlogUploadsDir) && ! mkdir($fullBlogUploadsDir, 0744,
-                true) && ! is_dir($fullBlogUploadsDir)) {
+        if (! is_dir($fullBlogUploadsDir) && ! mkdir(
+            $fullBlogUploadsDir,
+            0744,
+            true
+        ) && ! is_dir($fullBlogUploadsDir)) {
             throw new RuntimeException('Failed to create blog uploads directory.');
         }
 
-        if ( ! touch($fullBlogUploadsDir . "/test.txt")) {
+        if (! touch($fullBlogUploadsDir . "/test.txt")) {
             throw new RuntimeException('Failed to create blog uploads test file.');
         }
     }
@@ -57,7 +47,7 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog ID: ' . $blogId);
         $blogTablesBefore = $I->grabBlogTableNames($blogId);
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
-        $this->scaffoldBlogUploadsDir($I,$blogId);
+        $this->scaffoldBlogUploadsDir($I, $blogId);
 
         $I->dontHaveBlogInDatabase(['blog_id' => $blogId], true);
 
@@ -78,7 +68,7 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog ID: ' . $blogId);
         $blogTablesBefore = $I->grabBlogTableNames($blogId);
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
-        $this->scaffoldBlogUploadsDir($I,$blogId);
+        $this->scaffoldBlogUploadsDir($I, $blogId);
 
         $I->dontHaveBlogInDatabase(['blog_id' => $blogId], false);
 
@@ -100,7 +90,7 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
         $blogUploadsDir = $I->getBlogUploadsPath($blogId);
         codecept_debug('Blog uploads dir: ' . $blogUploadsDir);
-        $this->scaffoldBlogUploadsDir($I,$blogId);
+        $this->scaffoldBlogUploadsDir($I, $blogId);
 
         $I->dontHaveBlogInDatabase(['blog_id' => $blogId], true, true);
 
@@ -123,7 +113,7 @@ class WPDbBlogSubdirCest
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
         $blogUploadsDir = $I->getBlogUploadsPath($blogId);
         codecept_debug('Blog uploads dir: ' . $blogUploadsDir);
-        $this->scaffoldBlogUploadsDir($I,$blogId);
+        $this->scaffoldBlogUploadsDir($I, $blogId);
 
         $I->dontHaveBlogInDatabase(['blog_id' => $blogId], false, true);
 
@@ -153,7 +143,7 @@ class WPDbBlogSubdirCest
         }, $blogIds));
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
         $blogUploadsDir = array_combine($blogIds, array_map(function ($blogId) use ($I) {
-            $this->scaffoldBlogUploadsDir($I,$blogId);
+            $this->scaffoldBlogUploadsDir($I, $blogId);
             return $I->getBlogUploadsPath($blogId);
         }, $blogIds));
         codecept_debug('Blog uploads dir: ' . json_encode($blogUploadsDir, JSON_PRETTY_PRINT));
@@ -190,7 +180,7 @@ class WPDbBlogSubdirCest
         }, $blogIds));
         codecept_debug('Blog tables: ' . json_encode($blogTablesBefore, JSON_PRETTY_PRINT));
         $blogUploadsDir = array_combine($blogIds, array_map(function ($blogId) use ($I) {
-            $this->scaffoldBlogUploadsDir($I,$blogId);
+            $this->scaffoldBlogUploadsDir($I, $blogId);
             return $I->getBlogUploadsPath($blogId);
         }, $blogIds));
         codecept_debug('Blog uploads dir: ' . json_encode($blogUploadsDir, JSON_PRETTY_PRINT));
@@ -218,7 +208,7 @@ class WPDbBlogSubdirCest
         $blogTables = $I->grabBlogTableNames($blogId);
         sort($blogTables);
         codecept_debug('Blog tables: ' . json_encode($blogTables, JSON_PRETTY_PRINT));
-        $this->scaffoldBlogUploadsDir($I,$blogId);
+        $this->scaffoldBlogUploadsDir($I, $blogId);
 
         $tablePrefix = $I->grabBlogTablePrefix($blogId);
         $expectedTables = array_map(function ($table) use ($tablePrefix) {
