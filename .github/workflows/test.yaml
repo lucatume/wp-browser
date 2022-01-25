@@ -1,11 +1,11 @@
 name: Test
 on: [ push ]
 jobs:
-  test_codeception_2:
+  test_codeception_lt_4:
     strategy:
       matrix:
         php_version: [ '5.6', '7.4' ]
-        codeception_version: [ 2 ]
+        codeception_version: [ 2, 3 ]
         composer_version: [ 2 ]
     name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
     runs-on: ubuntu-18.04
@@ -31,11 +31,11 @@ jobs:
           PHP_VERSION: ${{ matrix.php_version }}
           CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
           COMPOSER_VERSION: ${{ matrix.composer_version }}
-  test_codeception_gte_3:
+  test_codeception_4:
     strategy:
       matrix:
         php_version: [ '5.6', '7.4', '8.0' ]
-        codeception_version: [ 3, 4 ]
+        codeception_version: [ 4 ]
         composer_version: [ 2 ]
     name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
     runs-on: ubuntu-18.04
