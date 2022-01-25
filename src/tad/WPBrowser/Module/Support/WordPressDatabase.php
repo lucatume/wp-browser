@@ -124,12 +124,12 @@ class WordPressDatabase
             return $default;
         }
 
-        if ( null === $this->optionTableExists) {
+        if (null === $this->optionTableExists) {
             $existsQuery = $this->pdo->query("SHOW TABLES LIKE '{$this->getTable('options')}'");
             $this->optionTableExists = $existsQuery->fetch(PDO::FETCH_COLUMN);
         }
 
-        if(!$this->optionTableExists){
+        if (!$this->optionTableExists) {
             return $default;
         }
 
