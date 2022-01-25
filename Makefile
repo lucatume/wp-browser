@@ -218,13 +218,13 @@ docker run --detach --name $(PHP_CONTAINER_NAME) \
 	--add-host=blog0.$(WORDPRESS_DOMAIN):127.0.0.1 \
 	--add-host=blog1.$(WORDPRESS_DOMAIN):127.0.0.1 \
 	--add-host=blog2.$(WORDPRESS_DOMAIN):127.0.0.1 \
-	--add-host=$(MYSQL_CONTAINER_NAME):$(call _db_container_ip) \
 	-e WORDPRESS_DB_USER=$(WORDPRESS_DB_USER) \
 	-e WORDPRESS_DB_PASSWORD=$(WORDPRESS_DB_PASSWORD) \
 	-e WORDPRESS_DB_HOST=$(MYSQL_CONTAINER_NAME) \
 	-e WORDPRESS_DB_PORT=3306 \
 	-e WORDPRESS_DB_NAME=$(WORDPRESS_DB_NAME) \
 	-e WORDPRESS_LOCALHOST_PORT=$(WORDPRESS_LOCALHOST_PORT) \
+	--link $(MYSQL_CONTAINER_NAME) \
 	--label $(PROJECT_NAME).service=php \
 	--volume "$(PWD):$(PWD)" \
 	--volume "$(COMPOSER_JSON_FILE):$(PWD)/composer.json" \
