@@ -358,11 +358,11 @@ lint:
 			--exclude /project/src/tad/WPBrowser/Traits/_WithSeparateProcessChecksPHPUnitGte70.php \
 			"$(PWD)/src"
 
-phpcs_fix:
+phpcs:
 	docker run --rm \
 		--volume "$(PWD):$(PWD)" \
 		--workdir "$(PWD)" \
-		cytopia/phpcbf \
+		cytopia/phpcs \
 			--colors \
 			-p \
 			-s \
@@ -370,7 +370,7 @@ phpcs_fix:
 			--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
 			src
 
-phpcs:
+phpcs_fix:
 	docker run --rm \
 		--volume "$(PWD):$(PWD)" \
 		--workdir "$(PWD)" \
@@ -393,23 +393,23 @@ phpstan:
 
 test:
 	$(call _codecept,build)
-#	$(call _codecept_run,unit)
-#	$(call _codecept_run,dbunit)
-#	$(call _codecept_run,acceptance)
-#	$(call _codecept_run,cli)
-#	$(call _codecept_run,climodule)
-#	$(call _codecept_run,events)
-	$(call _codecept_run,functional --debug)
-#	$(call _codecept_run,init)
-#	$(call _codecept_run,isolated)
-#	$(call _codecept_run,muloader)
-#	$(call _codecept_run,webdriver)
-#	$(call _codecept_run,wpcli_module)
-#	$(call _codecept_run,wpfunctional)
-#	$(call _codecept_run,wploader_multisite)
-#	$(call _codecept_run,wploader_wpdb_interaction)
-#	$(call _codecept_run,wploadersuite)
-#	$(call _codecept_run,wpmodule)
+	$(call _codecept_run,unit)
+	$(call _codecept_run,dbunit)
+	$(call _codecept_run,acceptance)
+	$(call _codecept_run,cli)
+	$(call _codecept_run,climodule)
+	$(call _codecept_run,events)
+	$(call _codecept_run,functional)
+	$(call _codecept_run,init)
+	$(call _codecept_run,isolated)
+	$(call _codecept_run,muloader)
+	$(call _codecept_run,webdriver)
+	$(call _codecept_run,wpcli_module)
+	$(call _codecept_run,wpfunctional)
+	$(call _codecept_run,wploader_multisite)
+	$(call _codecept_run,wploader_wpdb_interaction)
+	$(call _codecept_run,wploadersuite)
+	$(call _codecept_run,wpmodule)
 
 clean: wp_remove php_container_remove php_container_image_remove db_remove chromedriver_remove
 	rm -f .env.testing.docker
