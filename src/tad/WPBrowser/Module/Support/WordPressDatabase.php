@@ -7,6 +7,9 @@
 
 namespace tad\WPBrowser\Module\Support;
 
+use PDO;
+use PDOException;
+use PDOStatement;
 use tad\WPBrowser\Environment\Constants;
 
 /**
@@ -20,19 +23,28 @@ class WordPressDatabase
      *
      * @var string|null
      */
-    protected $dbConnectionError;
+    private $dbConnectionError;
+
     /**
      * The current PDO object, if any.
      *
-     * @var \PDO
+     * @var PDO
      */
-    protected $pdo;
+    private $pdo;
+
     /**
      * An instance of the constants wrapper/adapter.
      *
      * @var Constants
      */
-    protected $constants;
+    private $constants;
+
+    /**
+     * Whether the options table exists or not. Cached value.
+     *
+     * @var bool|null
+     */
+    private $optionTableExists;
 
     /**
      * WordPressDatabase constructor.
@@ -58,7 +70,7 @@ class WordPressDatabase
             return false;
         }
 
-        if (!$force && $this->pdo instanceof \PDO) {
+        if (!$force && $this->pdo instanceof PDO) {
             return true;
         }
 
@@ -84,8 +96,8 @@ class WordPressDatabase
             return false;
         }
         try {
-            $this->pdo = new \PDO($dsn, $dbUser, $dbPassword);
-        } catch (\PDOException $e) {
+            $this->pdo = new PDO($dsn, $dbUser, $dbPassword);
+        } catch (PDOException $e) {
             $this->dbConnectionError = $e->getMessage();
             return false;
         }
@@ -111,6 +123,16 @@ class WordPressDatabase
         if (!$this->checkDbConnection()) {
             return $default;
         }
+
+        if ( null === $this->optionTableExists) {
+            $existsQuery = $this->pdo->query("SHOW TABLES LIKE '{$this->getTable('options')}'");
+            $this->optionTableExists = $existsQuery->fetch(PDO::FETCH_COLUMN);
+        }
+
+        if(!$this->optionTableExists){
+            return $default;
+        }
+
         $query = $this->pdo->query(
             "SELECT option_value FROM {$this->getTable('options')} WHERE option_name = '{$optionName}'"
         );
@@ -119,7 +141,7 @@ class WordPressDatabase
             return $default;
         }
 
-        $value = $query->fetch(\PDO::FETCH_COLUMN);
+        $value = $query->fetch(PDO::FETCH_COLUMN);
         return false === $value ? $default : $value;
     }
 
@@ -155,7 +177,7 @@ class WordPressDatabase
     /**
      * Returns the PDO instance used by the class, if any.
      *
-     * @return \PDO|null The PDO instance used by the class or `null` if not set.
+     * @return PDO|null The PDO instance used by the class or `null` if not set.
      */
     public function getPDO()
     {
@@ -165,11 +187,11 @@ class WordPressDatabase
     /**
      * Sets the PDO object to use to run the checks.
      *
-     * @param \PDO $pdo The PDO object to use to run the checks.
+     * @param PDO $pdo The PDO object to use to run the checks.
      *
      * @return void
      */
-    public function setPDO(\PDO $pdo)
+    public function setPDO(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
@@ -179,7 +201,7 @@ class WordPressDatabase
      *
      * @param string $query The custom query to run.
      *
-     * @return false|\PDOStatement The statement result of the query, or `false` if the query fails.
+     * @return false|PDOStatement The statement result of the query, or `false` if the query fails.
      */
     public function query($query)
     {
