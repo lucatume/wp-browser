@@ -7,7 +7,7 @@ REBUILD ?=0
 ROOT ?= 0
 PHP_VERSION ?= 5.6
 MYSQL_ROOT_PASSWORD ?= root
-MYSQL_LOCALHOST_PORT ?= 9306
+MYSQL_LOCALHOST_PORT ?= 93$(subst .,,$(PHP_VERSION))
 MYSQL_IMAGE ?= mariadb:latest
 MYSQL_CONTAINER_NAME ?= $(PROJECT_NAME)_db
 WORDPRESS_VERSION ?= latest
@@ -17,7 +17,6 @@ WORDPRESS_URL ?= http://wordpress.test
 WORDPRESS_ROOT_DIR ?= $(WORDPRESS_PARENT_DIR)/wordpress
 WORDPRESS_DB_USER ?= $(PROJECT_NAME)
 WORDPRESS_DB_PASSWORD ?= $(PROJECT_NAME)
-WORDPRESS_DB_LOCALHOST_PORT ?= 93$(subst .,,$(PHP_VERSION))
 WORDPRESS_DB_NAME ?= $(PROJECT_NAME)
 WORDPRESS_TABLE_PREFIX ?= wp_
 WORDPRESS_ADMIN_USER ?= admin
@@ -51,8 +50,6 @@ COMPOSER_JSON_FILE = "$(PWD)/composer.codecept-4.json"
 else
 COMPOSER_JSON_FILE = "$(PWD)/composer.json"
 endif
-
-
 
 # Definitions
 define MYSQL_CONFIG
@@ -141,7 +138,7 @@ endef
 
 define _db_container_start
 docker run --name $(PROJECT_NAME)_db -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
-	--publish "$(WORDPRESS_DB_LOCALHOST_PORT):3306" \
+	--publish "$(MYSQL_LOCALHOST_PORT):3306" \
 	--volume "$(WORDPRESS_PARENT_DIR)/my.cnf:/etc/mysql/conf.d/docker.cnf" \
 	--health-cmd='mysqladmin ping --silent' \
 	--label $(PROJECT_NAME).service=mysql \
