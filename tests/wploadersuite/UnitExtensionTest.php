@@ -89,12 +89,15 @@ class UnitExtensionTest extends \Codeception\TestCase\WPTestCase
      */
     public function should_allow_using_methods_provided_from_a_module_on_the_tester()
     {
-        $first_post = $this->tester->create_a_post();
+        $posts = $this->tester->create_a_post();
 
-        $this->assertInstanceOf(WP_Post::class, get_post($first_post));
+        $firstPost = $posts->current();
+        $posts->next();
 
-        $second_post = $this->tester->create_a_post();
+        $this->assertInstanceOf(WP_Post::class, get_post($firstPost));
 
-        $this->assertInstanceOf(WP_Post::class, get_post($second_post));
+        $secondPost = $posts->current();
+
+        $this->assertInstanceOf(WP_Post::class, get_post($secondPost));
     }
 }
