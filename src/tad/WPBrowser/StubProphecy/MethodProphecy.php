@@ -127,7 +127,7 @@ class MethodProphecy
                         continue;
                     }
                 }
-                if (!($parameter->isOptional() || $parameter->isDefaultValueAvailable())) {
+                if (!($parameter->isOptional() || $parameter->isDefaultValueAvailable() || $parameter->allowsNull())) {
                     throw new StubProphecyException(
                         sprintf(
                             '%s %s parameter %d (%s) does not have a default value: you must specify an ' .

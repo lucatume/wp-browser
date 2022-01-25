@@ -112,8 +112,9 @@ class FunctionProphecy
         return implode(', ', array_map(static function (\ReflectionParameter $parameter) {
             $default = '';
             if ($parameter->isDefaultValueAvailable()) {
-                $default = print_r($parameter->getDefaultValue(), true);
-            } elseif ($parameter->isOptional()) {
+                $defaultValue = $parameter->getDefaultValue();
+                $default = $defaultValue === null ? 'null' : print_r($defaultValue, true);
+            } elseif ($parameter->isOptional() || $parameter->allowsNull()) {
                 $default = 'null';
             }
             /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
@@ -121,7 +122,7 @@ class FunctionProphecy
                 '%s$%s%s',
                 ($parameter->getType() instanceof \ReflectionType ? $parameter->getType()->__toString() . ' ' : ''),
                 $parameter->name,
-                ($default ? '= ' . $default : '')
+                ($default ? ' = ' . $default : '')
             );
         }, $reflectionFunction->getParameters()));
     }
