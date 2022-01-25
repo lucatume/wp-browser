@@ -126,7 +126,9 @@ class WordPressDatabase
 
         if (null === $this->optionTableExists) {
             $existsQuery = $this->pdo->query("SHOW TABLES LIKE '{$this->getTable('options')}'");
-            $this->optionTableExists = $existsQuery->fetch(PDO::FETCH_COLUMN);
+            $this->optionTableExists = $existsQuery instanceof PDOStatement
+                ? $existsQuery->fetch(PDO::FETCH_COLUMN)
+                : false;
         }
 
         if (!$this->optionTableExists) {
