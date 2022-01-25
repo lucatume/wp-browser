@@ -393,13 +393,13 @@ phpstan:
 
 test:
 	$(call _codecept,build)
+	$(call _codecept_run,functional)
 	$(call _codecept_run,unit)
 	$(call _codecept_run,dbunit)
 	$(call _codecept_run,acceptance)
 	$(call _codecept_run,cli)
 	$(call _codecept_run,climodule)
 	$(call _codecept_run,events)
-	$(call _codecept_run,functional)
 	$(call _codecept_run,init)
 	$(call _codecept_run,isolated)
 	$(call _codecept_run,muloader)
