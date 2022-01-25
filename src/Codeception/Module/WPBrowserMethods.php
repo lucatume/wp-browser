@@ -5,7 +5,6 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleException;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use Symfony\Component\BrowserKit\Cookie;
-use function GuzzleHttp\Psr7\build_query;
 
 trait WPBrowserMethods
 {
@@ -423,7 +422,7 @@ trait WPBrowserMethods
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
-            $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
+            $path .= '?' . (is_array($queryVars) ? http_build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
         return $this->amOnAdminPage($path);
@@ -446,7 +445,7 @@ trait WPBrowserMethods
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {
-            $path .= '?' . (is_array($queryVars) ? build_query($queryVars) : ltrim($queryVars, '?'));
+            $path .= '?' . (is_array($queryVars) ? http_build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
         return $this->amOnPage($path);
