@@ -4,10 +4,8 @@ jobs:
   test:
     strategy:
       matrix:
-        # php_version: [ '5.6', '7.0', '7.4', '8.0', '8.1' ]
-        php_version: [ '5.6', '7.4' ]
-        # codeception_version: [ 2, 3, 4 ]
-        codeception_version: [ 2 ]
+        php_version: [ '5.6', '7.4', '8.0' ]
+        codeception_version: [ 2, 3, 4 ]
         composer_version: [ 2 ]
     name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
     runs-on: ubuntu-18.04
