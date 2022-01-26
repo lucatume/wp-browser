@@ -400,8 +400,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $this->database = $database->reveal();
         $sut = $this->make_instance();
@@ -429,8 +429,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('');
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $database->getTable('options')->willReturn('wp_options');
         $this->database = $database->reveal();
@@ -461,8 +461,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->query(Arg::containingString('FROM wp_blogs'))->willReturn(false);
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $database->getTable('blogs')->willReturn('wp_blogs');
         $this->database = $database->reveal();
@@ -496,8 +496,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $realDb->checkDbConnection();
         $statement = $realDb->query('SELECT * FROM wp_blogs WHERE 1 = 0');
         $database->query(Arg::containingString('FROM wp_blogs'))->willReturn($statement);
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $database->getTable('blogs')->willReturn('wp_blogs');
         $this->database = $database->reveal();
@@ -541,8 +541,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             'getThemesDir' => codecept_data_dir('themes')
         ]);
 
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $database->getTable('blogs')->willReturn('wp_blogs');
         $this->database = $database->reveal();
@@ -587,8 +587,8 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             'getThemesDir' => codecept_data_dir('themes')
         ]);
 
-        $database->getOption('template', false)->willReturn('twentynineteen');
-        $database->getOption('stylesheet', false)->willReturn('twentynineteen');
+        $database->getOption('template', false)->willReturn('twentytwenty');
+        $database->getOption('stylesheet', false)->willReturn('twentytwenty');
         $database->getOption('active_plugins', false)->willReturn(serialize([]));
         $database->getTable('blogs')->willReturn('wp_blogs');
         $this->database = $database->reveal();

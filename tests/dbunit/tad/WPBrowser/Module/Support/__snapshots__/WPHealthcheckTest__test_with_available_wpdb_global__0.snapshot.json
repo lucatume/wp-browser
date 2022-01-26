@@ -25,9 +25,9 @@
         "Database structure as expected": "No, structure errors: the $wpdb global object has no registered tables.",
         "Blog installed": "Yes, blog is installed.",
         "Theme :": {
-            "template": "twentytwenty",
-            "stylesheet": "twentytwenty",
-            "twentytwenty directory": "_wordpress/wordpress/wp-content/themes/twentytwenty"
+            "template": "twentytwentyone",
+            "stylesheet": "twentytwentyone",
+            "twentytwentyone directory": "_wordpress/wordpress/wp-content/themes/twentytwentyone"
         },
         "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {

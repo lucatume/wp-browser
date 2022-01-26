@@ -25,9 +25,9 @@
         "Database structure as expected": "Yes, as expected.",
         "Blog installed": "Yes, blog is installed.",
         "Theme :": {
-            "template": "twentytwenty",
-            "stylesheet": "twentytwenty",
-            "twentytwenty directory": "_wordpress/wordpress/wp-content/themes/twentytwenty"
+            "template": "twentytwentyone",
+            "stylesheet": "twentytwentyone",
+            "twentytwentyone directory": "_wordpress/wordpress/wp-content/themes/twentytwentyone"
         },
         "Must-use plugins health-check:": "No mu-plugins found in mu-plugins directory.",
         "Plugins health-check:": {
