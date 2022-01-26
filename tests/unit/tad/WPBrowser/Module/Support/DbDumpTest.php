@@ -2,11 +2,11 @@
 
 namespace tad\WPBrowser\Module\Support;
 
+use Codeception\Util\Debug;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 
 class DbDumpTest extends \Codeception\Test\Unit
 {
-
     /**
      * @var string
      */
@@ -285,11 +285,26 @@ SQL;
     {
         $inputFile = codecept_data_dir('dump-test/mu-01-input.sql');
         $inputFileHandle = fopen($inputFile, 'rb');
-        $expectedFileHandle = fopen(codecept_data_dir('dump-test/mu-01-expected.sql'), 'rb');
+        $expectedFile = codecept_data_dir('dump-test/mu-01-expected.sql');
+        $expectedFileExists = file_exists($expectedFile);
+        $expectedFileHandle = $expectedFileExists ? fopen($expectedFile, 'rb') : fopen($expectedFile, 'wb');
 
         $dbDump = $this->make_instance();
         $dbDump->setUrl('http://wordpress.localhost');
         $dbDump->setOriginalUrl($dbDump->getOriginalUrlFromSqlString(file_get_contents($inputFile)));
+
+        if ( ! $expectedFileExists && Debug::isEnabled()) {
+            while ( ! feof($inputFileHandle)) {
+                $inputLine = fgets($inputFileHandle);
+                $replaced  = $dbDump->replaceSiteDomainInSqlString($inputLine);
+                $replaced  = $dbDump->replaceSiteDomainInMultisiteSqlString($replaced);
+                fwrite($expectedFileHandle, $replaced, strlen($replaced));
+            }
+            fclose($expectedFileHandle);
+            fclose($inputFileHandle);
+            return;
+        }
+
         $lineNumber = 0;
         while (!feof($inputFileHandle)) {
             if (feof($expectedFileHandle)) {
