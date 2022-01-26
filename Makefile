@@ -393,7 +393,7 @@ test:
 	$(call _codecept,build)
 	$(call _codecept_run,functional)
 	$(call _codecept_run,unit)
-	$(call _codecept_run,dbunit --debug)
+	$(call _codecept_run,dbunit)
 	$(call _codecept_run,acceptance)
 	$(call _codecept_run,cli)
 	$(call _codecept_run,climodule)
@@ -549,9 +549,9 @@ chromedriver_remove: chromedriver_stop
 	$(if $(call _chromedriver_container_exists),$(call _chromedriver_container_remove))
 
 wp_update_dumps: # Exec in container!
-	wp db import tests/_data/mu-subdomain-dump.sql && wp theme activate twentytwentyone && wp db export tests/_data/mu-subdomain-dump.sql
-	wp db import tests/_data/mu-subdir-dump.sql && wp --url=mu-subdir.test theme activate twentytwentyone && wp --url=mu-subdir.test db export tests/_data/mu-subdir-dump.sql
-	wp db import tests/_data/dump.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress db export tests/_data/dump.sql
-	wp db import tests/_data/dump-test/mu-01-expected.sql && wp --url=wordpress.localhost theme activate twentytwentyone && wp --url=wordpress.localhost db export tests/_data/dump-test/mu-01-expected.sql
-	wp db import tests/_data/dump-test/mu-01-input.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress db export tests/_data/dump-test/mu-01-input.sql
-	wp db import tests/_data/wploader-wpdb-dump.sql && wp --url=wp.test theme activate twentytwentyone && wp --url=wp.test db export tests/_data/wploader-wpdb-dump.sql
+	wp db import tests/_data/mu-subdomain-dump.sql && wp theme activate twentytwentyone && wp core update-db --network && wp db export tests/_data/mu-subdomain-dump.sql
+	wp db import tests/_data/mu-subdir-dump.sql && wp --url=mu-subdir.test theme activate twentytwentyone && wp --url=mu-subdir.test core update-db --network && wp --url=mu-subdir.test db export tests/_data/mu-subdir-dump.sql
+	wp db import tests/_data/dump.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress core update-db --network && wp --url=wordpress db export tests/_data/dump.sql
+	wp db import tests/_data/dump-test/mu-01-expected.sql && wp --url=wordpress.localhost theme activate twentytwentyone && wp --url=wordpress.localhost core update-db --network && wp --url=wordpress.localhost db export tests/_data/dump-test/mu-01-expected.sql
+	wp db import tests/_data/dump-test/mu-01-input.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress core update-db --network && wp --url=wordpress db export tests/_data/dump-test/mu-01-input.sql
+	wp db import tests/_data/wploader-wpdb-dump.sql && wp --url=wp.test theme activate twentytwentyone && wp --url=wp.test core update-db --network && wp --url=wp.test db export tests/_data/wploader-wpdb-dump.sql
