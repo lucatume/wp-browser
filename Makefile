@@ -442,6 +442,7 @@ wp_config:
 	$(call _wp_download)
 	$(call _wp_unzip)
 	$(call _wp_config)
+	echo "path: _wordpress/wordpress" > "$(PWD)/wp-cli.yml"
 
 wp_up: db_up php_container wp_config php_container_up
 	echo "Server address: http://localhost:$(WORDPRESS_LOCALHOST_PORT)"
@@ -546,3 +547,11 @@ chromedriver_shell:
 
 chromedriver_remove: chromedriver_stop
 	$(if $(call _chromedriver_container_exists),$(call _chromedriver_container_remove))
+
+wp_update_dumps: # Exec in container!
+	wp db import tests/_data/mu-subdomain-dump.sql && wp theme activate twentytwentyone && wp db export tests/_data/mu-subdomain-dump.sql
+	wp db import tests/_data/mu-subdir-dump.sql && wp --url=mu-subdir.test theme activate twentytwentyone && wp --url=mu-subdir.test db export tests/_data/mu-subdir-dump.sql
+	wp db import tests/_data/dump.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress db export tests/_data/dump.sql
+	wp db import tests/_data/dump-test/mu-01-expected.sql && wp --url=wordpress.localhost theme activate twentytwentyone && wp --url=wordpress.localhost db export tests/_data/dump-test/mu-01-expected.sql
+	wp db import tests/_data/dump-test/mu-01-input.sql && wp --url=wordpress theme activate twentytwentyone && wp --url=wordpress db export tests/_data/dump-test/mu-01-input.sql
+	wp db import tests/_data/wploader-wpdb-dump.sql && wp --url=wp.test theme activate twentytwentyone && wp --url=wp.test db export tests/_data/wploader-wpdb-dump.sql
