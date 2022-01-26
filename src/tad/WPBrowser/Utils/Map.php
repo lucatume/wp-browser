@@ -57,7 +57,7 @@ class Map implements \ArrayAccess
     /**
      * Allows invoking the object as if it's a function.
      *
-     * @param string     $key     The key to get the value for.
+     * @param string|int     $key     The key to get the value for.
      * @param null|mixed $default The value that will be returned if the key is not set.
      *
      * @return mixed|null The value associated with the key.
@@ -68,14 +68,14 @@ class Map implements \ArrayAccess
         return isset($this->map[$key]) ? $this->map[$key] : $default;
     }
 
-
     /**
      * Whether a map key exists or not.
      *
-     * @param string $offset The key of the value to check.
+     * @param string|int $offset The key of the value to check.
      *
      * @return bool Whether the key is set on the map or not.
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $offset = $this->redirectAlias($offset);
@@ -85,10 +85,11 @@ class Map implements \ArrayAccess
     /**
      * Gets a map value.
      *
-     * @param string $offset The key of the value to get.
+     * @param string|int $offset The key of the value to get.
      *
      * @return mixed|null The map value of `null` if not found.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $offset = $this->redirectAlias($offset);
@@ -103,6 +104,7 @@ class Map implements \ArrayAccess
      *
      * @return $this For chaining.
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $offset = $this->redirectAlias($offset);
@@ -118,6 +120,7 @@ class Map implements \ArrayAccess
      *
      * @return $this For chaining.
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $offset = $this->redirectAlias($offset);
@@ -143,7 +146,7 @@ class Map implements \ArrayAccess
     /**
      * Returns a value defined in the map, falling back to a default if the value is not defined.
      *
-     * @param string     $offset  The name of the value to return from the map.
+     * @param string|int     $offset  The name of the value to return from the map.
      * @param null|mixed $default A default value to return if the value associated with the key is not set in the map.
      *
      * @return mixed|null The value associated with the key in the map, or a default value if the key is not set in

@@ -29,6 +29,7 @@ class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
      *
      * @return bool True if the current element is acceptable, otherwise false.
      */
+    #[\ReturnTypeWillChange]
     public function accept()
     {
         $query = $this->getInnerIterator()->current();
