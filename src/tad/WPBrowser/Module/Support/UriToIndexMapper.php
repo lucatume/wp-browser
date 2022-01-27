@@ -29,7 +29,7 @@ class UriToIndexMapper
      */
     public function __construct($root)
     {
-        $this->root = rtrim($root, '/');
+        $this->root = rtrim((string)$root, '/');
     }
 
     /**
