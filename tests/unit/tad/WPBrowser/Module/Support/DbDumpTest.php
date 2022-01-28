@@ -293,8 +293,8 @@ SQL;
         $dbDump->setUrl('http://wordpress.localhost');
         $dbDump->setOriginalUrl($dbDump->getOriginalUrlFromSqlString(file_get_contents($inputFile)));
 
-        if ( ! $expectedFileExists && Debug::isEnabled()) {
-            while ( ! feof($inputFileHandle)) {
+        if (! $expectedFileExists && Debug::isEnabled()) {
+            while (! feof($inputFileHandle)) {
                 $inputLine = fgets($inputFileHandle);
                 $replaced  = $dbDump->replaceSiteDomainInSqlString($inputLine);
                 $replaced  = $dbDump->replaceSiteDomainInMultisiteSqlString($replaced);
