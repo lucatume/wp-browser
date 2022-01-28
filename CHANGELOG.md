@@ -7,10 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - correctly escape the database name in the `WPDb::createDatabasesIfNotExist` method.
+- first round of PHP 8.1 compatibility updates.
 
 ### Changed
 
-- rework the build and test flow to reduce complexity and leverage `make`.
+- rework the build and test flow to leverage `make`.
 
 ## [3.0.22] 2022-01-14;
 
