@@ -2,14 +2,6 @@
 
 class stringTest extends \Codeception\Test\Unit
 {
-    /**
-     * @dataProvider buildCommandlineDataProvider
-     */
-    public function test_build_commandline($input, $expected)
-    {
-        $this->assertEquals($expected, buildCommandline($input));
-    }
-
     public function buildCommandlineDataProvider()
     {
         return [
@@ -41,8 +33,40 @@ class stringTest extends \Codeception\Test\Unit
             'issue_310' => [
                 "post create --format=json --porcelain --post_title='Post for ALC newsletter testing'",
                 ["'post'", "'create'", "'--format=json'", "'--porcelain'", "--post_title='Post for ALC newsletter testing'"]
-            ]
+            ],
+            'issue_528_1' => [
+                [ 'post', 'meta', 'set', 'test_key', '0' ],
+                [ 'post', 'meta', 'set', 'test_key', '0' ]
+            ],
+            'issue_528_2' => [
+                [ 'post', 'meta', 'set', 'test_key', 0 ],
+                [ 'post', 'meta', 'set', 'test_key', 0 ],
+            ],
+            'issue_528_3' => [
+                [ 'post', 'meta', 'set', '0', 'test_key', 0 ],
+                [ 'post', 'meta', 'set', '0', 'test_key', 0 ],
+            ],
+            'empty_array_input' => [
+                [],
+                []
+            ],
+            'empty_array_input_2' => [
+                ['','',''],
+                []
+            ],
+            'array_input_of_empty_values' => [
+                ['', '0', 0, false, null],
+                ['0', 0 ],
+            ],
         ];
+    }
+
+    /**
+     * @dataProvider buildCommandlineDataProvider
+     */
+    public function test_build_commandline($input, $expected)
+    {
+        $this->assertEquals($expected, buildCommandline($input));
     }
 
     /**

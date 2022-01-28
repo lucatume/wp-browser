@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- handle empty numeric values correctly int he `WPCLI` module, fixes #528.
+
 ## [3.1.1] 2022-01-28;
 
 ### Fixed
