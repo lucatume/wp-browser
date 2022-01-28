@@ -165,7 +165,10 @@ function process($cmd = [], $cwd = null, $env = null)
 function buildCommandline($command)
 {
     if (empty($command) || is_array($command)) {
-        return array_filter((array) $command);
+        return array_values(array_filter((array)$command, static function ($commandArg) {
+            // Drop only the empty fragments.
+            return ! empty($commandArg) || is_numeric($commandArg);
+        }));
     }
     $escapedCommandLine = [];
     $pattern = '/' .
