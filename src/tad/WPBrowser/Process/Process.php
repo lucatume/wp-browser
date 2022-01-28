@@ -3,8 +3,6 @@
  * Extends the `mikehaertl/php-shellcommand\Command` class to add API to it to wrap it in a Symfony/Process like
  * API.
  *
- * @since TBD
- *
  * @package tad\WPBrowser\Process
  */
 

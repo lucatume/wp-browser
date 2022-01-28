@@ -3,7 +3,6 @@
  * A table generator implementation for the PHPDocsMD package.
  *
  * @package tad\WPBrowser\Documentation
- * @since   TBD
  */
 
 namespace tad\WPBrowser\Documentation;
@@ -44,8 +43,6 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
 
     /**
      * The Markdown parser instance dedicated to formatting examples only.
-     *
-     * @since TBD
      *
      * @var \Parsedown
      */

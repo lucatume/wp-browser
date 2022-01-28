@@ -85,8 +85,6 @@ class FactoryStore
     /**
      * Returns a factory of the required type.
      *
-     * @since TBD
-     *
      * @param string $name The slug of the factory to return an instance of.
      *
      * @return ThingFactory The factory instance for the required slug.

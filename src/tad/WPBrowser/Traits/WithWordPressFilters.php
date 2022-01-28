@@ -2,8 +2,6 @@
 /**
  * Provides methods to debug WordPress filters using Codeception debug functions.
  *
- * @since   TBD
- *
  * @package tad\WPBrowser\Traits
  */
 

@@ -15,8 +15,6 @@ use function tad\WPBrowser\vendorDir;
 /**
  * Trait WithLateModuleConfig
  *
- * @since   TBD
- *
  * @package tad\WPBrowser\Traits
  */
 trait WithCodeceptionModuleConfig
