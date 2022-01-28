@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- in the context of the `WPLoader` module, construct the `PHPMailer` instance to throw exceptions.
+- remove left-over `@since TBD` tags from doc-blocks.
+
 ## [3.1.0] 2022-01-28;
 
 ### Fixed
