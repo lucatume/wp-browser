@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.1.0] 2022-01-28;
+
 ### Fixed
 
 - correctly escape the database name in the `WPDb::createDatabasesIfNotExist` method.
@@ -1753,4 +1755,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.0.20]: https://github.com/lucatume/wp-browser/compare/3.0.19...3.0.20
 [3.0.21]: https://github.com/lucatume/wp-browser/compare/3.0.20...3.0.21
 [3.0.22]: https://github.com/lucatume/wp-browser/compare/3.0.21...3.0.22
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.0.22...HEAD
+[3.1.0]: https://github.com/lucatume/wp-browser/compare/3.0.22...3.1.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.0...HEAD
