@@ -72,7 +72,7 @@ if ("1" == getenv('WP_MULTISITE') ||
 
 // Override the PHPMailer
 require_once dirname(__FILE__) . '/mock-mailer.php';
-$phpmailer = new MockPHPMailer();
+$phpmailer = new MockPHPMailer(true);
 
 if (!defined('WP_DEFAULT_THEME')) {
 	define('WP_DEFAULT_THEME', 'default');
