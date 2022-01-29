@@ -1717,7 +1717,7 @@ class WPDb extends Db
     /**
      * Unserializes serialized values.
      *
-     * @param mixed $value The value to unserialize, if seriealized.
+     * @param mixed $value The value to unserialize, if serialized.
      *
      * @return mixed The unserialized value.
      */
