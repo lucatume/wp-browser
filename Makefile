@@ -148,10 +148,7 @@ endef
 
 define _db_healthcheck
 echo -n "Waiting for db ready ..."
-export C=0 && \
-until [ "$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_db)" == "healthy" ]; \
-	do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
-done
+$(call _wait_for_it,"$$(docker inspect --format "{{.State.Health.Status}}" $(PROJECT_NAME)_db)" = "healthy",30)
 echo " ready"
 endef
 
@@ -241,10 +238,7 @@ endef
 
 define _php_container_healthcheck
 echo -n "Waiting for PHP ready ..."
-export C=0 && \
-until [ "$$(curl -s http://localhost:$(WORDPRESS_LOCALHOST_PORT) && echo "$$?")" == 0 ]; \
-	do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
-done
+$(call _wait_for_it,"$$(curl -s http://localhost:$(WORDPRESS_LOCALHOST_PORT) && echo "$$?")",30)
 echo " ready"
 endef
 
@@ -300,10 +294,7 @@ endef
 
 define _chromedriver_container_healthcheck
 echo -n "Waiting for Chromedriver ready ..."
-export C=0 && \
-until [ $$(curl --silent 'http://localhost:$(CHROMEDRIVER_LOCALHOST_PORT)/wd/hub/status' 2>/dev/null | grep --quiet  -e 'ready.*true'; echo $$?) == 0 ]; \
-	do echo -n '.' &&  sleep 1 && ((C=C+1)) && ([ $$C -le 30 ] || exit 1); \
-done
+$(call _wait_for_it,"$$(curl --silent 'http://localhost:$(CHROMEDRIVER_LOCALHOST_PORT)/wd/hub/status' | jq '.value.ready')" = "true",30)
 echo " ready"
 endef
 
@@ -343,6 +334,16 @@ endef
 
 define _codecept_run
 $(call _codecept,run $(1))
+endef
+
+define _wait_for_it
+loop=0 && \
+until [ $(1) ]; do \
+	loop=$$((loop+1)); \
+	echo -n "."; \
+	sleep 1; \
+	if [ $${loop} -gt $(2) ]; then exit 124; fi; \
+done
 endef
 
 build: db_up wp_up chromedriver_up composer_update test_env_file
