@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- improve `psalm`, and other static analysis tools compatibility, in the `WPLoader` module (thanks @calvinalkan).
+
 ## [3.1.2] 2022-01-28;
 
 ### Fixed
