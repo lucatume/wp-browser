@@ -10,6 +10,9 @@ use tad\WPBrowser\Compat\Compatibility;
 use tad\WPBrowser\Traits\WithCodeceptionTestCaseEnhancements;
 use tad\WPBrowser\Traits\WithRequestTime;
 
+use function class_alias;
+use function version_compare;
+
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
 }
@@ -23,7 +26,18 @@ if (!WPLoader::$didInit) {
 }
 
 // Load the PHPUnit compatibility layer.
-require_once __DIR__ . '/../../tad/WPBrowser/phpunit-compat.php';
+// @phpstan-ignore-next-line
+if (version_compare(\Codeception\Codecept::VERSION, '3.0.0', '<')) {
+    class_alias(
+        '\\tad\WPBrowser\\Compat\\Codeception\\Version2\\Unit',
+        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
+    );
+} else {
+    class_alias(
+        '\\Codeception\\Test\\Unit',
+        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
+    );
+}
 // phpcs:enable
 
 
