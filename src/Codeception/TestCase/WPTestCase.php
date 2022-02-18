@@ -20,9 +20,13 @@ if (!class_exists('TracTickets')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
 }
 
-// Require the WordPress bootstrap file if not already loaded; this will deal with test methods running in isolation.
-if (!WPLoader::$didInit) {
-	require_once( __DIR__ . '/../../includes/bootstrap.php' );
+/*
+ * When tests run in isolation, WPLoader might not have loaded yet at this step: let's do it now.
+ * Set WPTESTCASE_NO_INIT env var to prevent the bootstrap file from being loaded, e.g. in static
+ * analysis context.
+ */
+if (empty(getenv('WPTESTCASE_NO_INIT')) && ! WPLoader::$didInit) {
+    require_once(__DIR__ . '/../../includes/bootstrap.php');
 }
 
 // Load the PHPUnit compatibility layer.

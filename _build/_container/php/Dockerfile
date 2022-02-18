@@ -14,7 +14,7 @@ ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /u
 RUN chmod a+rx /usr/local/bin/wp
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod a+x /usr/local/bin/install-php-extensions && \
-    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip uopz
+    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip uopz pcntl sockets
 RUN apt-get update && apt-get install -y \
     default-mysql-client curl git zip unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
