@@ -83,7 +83,7 @@ class MonkeyPatcher
      */
     public static function register()
     {
-        if ( ! self::$registered) {
+        if (! self::$registered) {
             self::$registered = stream_wrapper_unregister('file') && stream_wrapper_register('file', __CLASS__);
         }
 
@@ -128,7 +128,7 @@ class MonkeyPatcher
 
         $useIncludePath = (bool)(STREAM_USE_PATH & $options);
 
-        if ( ! empty(self::$fileTargets[$realpath])) {
+        if (! empty(self::$fileTargets[$realpath])) {
             $patcher    = self::$fileTargets[$realpath];
             $openedPath = $realpath;
             $this->setupPatchedFileResource($realpath, $patcher);
@@ -175,7 +175,7 @@ class MonkeyPatcher
             fopen($patchedFilePath, 'rb+', false, $this->context)
             : fopen($patchedFilePath, 'rb+', false);
 
-        if ( ! is_resource($stream)) {
+        if (! is_resource($stream)) {
             throw new RuntimeException("Could not open stream for file {$path}.");
         }
 
@@ -252,11 +252,13 @@ class MonkeyPatcher
             case STREAM_OPTION_READ_TIMEOUT:
                 return is_resource($this->fileResource) ?
                     (bool)stream_set_timeout($this->fileResource, (int)$arg1, (int)$arg2) : false;
-            case  STREAM_OPTION_WRITE_BUFFER:
+            case STREAM_OPTION_WRITE_BUFFER:
                 $bufferSize = STREAM_BUFFER_NONE === (int)$arg1 ? 0 : (int)$arg2;
 
-                return is_resource($this->fileResource) && (bool)stream_set_write_buffer($this->fileResource,
-                        $bufferSize);
+                return is_resource($this->fileResource) && (bool)stream_set_write_buffer(
+                    $this->fileResource,
+                    $bufferSize
+                );
         }
     }
 
@@ -584,7 +586,7 @@ class MonkeyPatcher
      */
     public static function patchFileWith($file, $patcher)
     {
-        if ( ! self::$patchers instanceof SplObjectStorage) {
+        if (! self::$patchers instanceof SplObjectStorage) {
             self::$patchers = new SplObjectStorage();
         }
 
@@ -615,7 +617,7 @@ class MonkeyPatcher
      */
     public static function removePatcher(callable $patcher)
     {
-        if ( ! self::$patchers->contains($patcher)) {
+        if (! self::$patchers->contains($patcher)) {
             return;
         }
         foreach (self::$patchers[$patcher] as $file) {

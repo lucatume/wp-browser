@@ -33,7 +33,7 @@ trait WithForks
     {
         $isTestCase = method_exists($this, 'markTestSkipped');
 
-        if ( ! function_exists('pcntl_fork')) {
+        if (! function_exists('pcntl_fork')) {
             if ($isTestCase) {
                 $this->markTestSkipped('This test requires the pcntl_fork function');
             } else {
@@ -41,7 +41,7 @@ trait WithForks
             }
         }
 
-        if ( ! function_exists('socket_create_pair')) {
+        if (! function_exists('socket_create_pair')) {
             if ($isTestCase) {
                 $this->markTestSkipped('This test requires the socket_create_pair function');
             } else {
@@ -50,7 +50,7 @@ trait WithForks
         }
 
         $ipcSockets = [];
-        if ( ! socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $ipcSockets)) {
+        if (! socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $ipcSockets)) {
             throw new RuntimeException('Failed to crate IPC socket pair.');
         }
 

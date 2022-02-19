@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Changed
+
+- Allow skipping `includes/bootstra.php` file inclusion in `WPTestCase` setting the `WPTESTCASE_NO_INIT` env var.
+
 ## [3.1.3] 2022-02-01;
 
 ### Changed
