@@ -22,10 +22,12 @@ if (!class_exists('TracTickets')) {
 
 /*
  * When tests run in isolation, WPLoader might not have loaded yet at this step: let's do it now.
- * Set WPTESTCASE_NO_INIT env var to prevent the bootstrap file from being loaded, e.g. in static
- * analysis context.
+ * Since PHPUnit will not reliably set an env var or constant that would indicate whether the
+ * test case is running in a separate process or not, we look for the function it will define in
+ * the `TestCaseMethod.tpl.dist` file.
  */
-if (empty(getenv('WPTESTCASE_NO_INIT')) && ! WPLoader::$didInit) {
+$runningInSeparateProcess = function_exists('__phpunit_run_isolated_test');
+if ($runningInSeparateProcess && ! WPLoader::$didInit) {
     require_once(__DIR__ . '/../../includes/bootstrap.php');
 }
 

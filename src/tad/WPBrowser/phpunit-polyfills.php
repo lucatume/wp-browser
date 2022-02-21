@@ -11,7 +11,6 @@
  * This will not be defined when NOT in separate process context, but it will be required to run tests in separate
  * process. So let's define it if not already defined.
  */
-
 if (! defined('PHPUNIT_COMPOSER_INSTALL')) {
     if (isset($GLOBALS['composerAutoload'], $GLOBALS['phar'])) {
         /*
@@ -21,5 +20,12 @@ if (! defined('PHPUNIT_COMPOSER_INSTALL')) {
         return;
     }
 
-    define('PHPUNIT_COMPOSER_INSTALL', tad\WPBrowser\vendorDir('autoload.php'));
+    try {
+        $autoloadPath = isset($GLOBALS['_composer_autoload_path']) ?
+            $GLOBALS['_composer_autoload_path']
+            : tad\WPBrowser\vendorDir('autoload.php');
+        define('PHPUNIT_COMPOSER_INSTALL', $autoloadPath);
+    } catch (Exception $e) {
+        // No-op: we might be running in a context that will not allow it to be found.
+    }
 }
