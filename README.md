@@ -30,7 +30,7 @@ Add the following requirements in your `composer.json` file, in the `require-dev
 ```json
 {
   "require-dev": {
-    "lucatume/wp-browser": "^2.4",
+    "lucatume/wp-browser": "^3.0",
     "codeception/module-asserts": "^1.0",
     "codeception/module-phpbrowser": "^1.0",
     "codeception/module-webdriver": "^1.0",
