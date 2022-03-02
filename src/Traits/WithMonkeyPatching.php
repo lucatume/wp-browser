@@ -35,6 +35,6 @@ trait WithMonkeyPatching
             return $newFileContents;
         };
 
-        MonkeyPatcher::patchFileWith($file, $patcher);
+        MonkeyPatcher::atchFileWith($file, $patcher);
     }
 }

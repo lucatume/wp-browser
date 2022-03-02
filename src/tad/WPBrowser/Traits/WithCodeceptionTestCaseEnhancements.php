@@ -12,6 +12,7 @@ use Codeception\Exception\TestRuntimeException;
 use Codeception\Lib\Di;
 use Codeception\Module\WPLoader;
 use Codeception\Test\Loader\Unit as CodeceptionUnitLoader;
+use PHPUnit\Util\Test;
 use ReflectionMethod;
 use tad\WPBrowser\PHPUnit\TestListener;
 
@@ -49,61 +50,6 @@ trait WithCodeceptionTestCaseEnhancements
             $reflectionMethod->setAccessible(true);
             $reflectionMethod->invoke($loader, $this);
             $this->getMetadata()->setServices([ 'di' => new Di() ]);
-        }
-    }
-
-    /**
-     * Checks the test method is correctly configured to run in a separate process.
-     *
-     * @throws TestRuntimeException If the test method, or test case, is configured to run in a separate process
-     *                              preserving the global state.
-     */
-    protected function checkSeparateProcessConfiguration()
-    {
-        //phpcs:ignore PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace
-        if (
-            !class_exists('\PHPUnit\Util\Test') ||
-            !method_exists('\PHPUnit\Util\Test', 'parseTestMethodAnnotations') ||
-            !property_exists($this, 'name')
-        ) {
-            return;
-        }
-
-        $annotationGroups = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($this),
-            $this->name
-        );
-
-        foreach ([ 'class', 'method' ] as $annotationGroup) {
-            if (! isset($annotationGroups[ $annotationGroup ])) {
-                continue;
-            }
-
-            $a = array_combine(
-                array_keys($annotationGroups[ $annotationGroup ]),
-                array_column((array) $annotationGroups[ $annotationGroup ], 0)
-            );
-
-            if (isset($a['runInSeparateProcess'])) {
-                if (isset($a['preserveGlobalState']) && $a['preserveGlobalState'] !== 'disabled'
-                    || ! isset($a['preserveGlobalState'])
-                ) {
-                    $message = <<< OUT
-Running WPTestCase tests in a separate processes requires the following annotations on the test case or test methods:
-
-/**
- * @runInSeparateProcess
- * @preserveGlobalState disabled
- */
- 
-Read more at: 
-* https://phpunit.readthedocs.io/en/9.1/annotations.html?highlight=runInSeparateProcess#runinseparateprocess
-* https://wpbrowser.wptestkit.dev/advanced/run-in-separate-process
-
-OUT;
-                    throw new TestRuntimeException($message);
-                }
-            }
         }
     }
 }

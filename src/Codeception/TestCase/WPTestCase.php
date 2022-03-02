@@ -2,15 +2,29 @@
 namespace Codeception\TestCase;
 
 // phpcs:disable
+use Codeception\Codecept;
 use Codeception\Exception\ModuleException;
 use Codeception\Module\WPLoader;
 use Codeception\Module\WPQueries;
 use Codeception\Test\Unit;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
 use tad\WPBrowser\Compat\Compatibility;
 use tad\WPBrowser\Traits\WithCodeceptionTestCaseEnhancements;
 use tad\WPBrowser\Traits\WithRequestTime;
+use TracTickets;
+use WP;
+use WP_Object_Cache;
+use WP_Post_Type;
+use WP_Query;
+use WP_Rewrite;
+use WP_UnitTest_Factory;
+use wpdb;
+use WPDieException;
 
 use function class_alias;
+use function tad\WPBrowser\setupPhpunitBootstrapGlobal;
 use function version_compare;
 
 if (!class_exists('WP_UnitTest_Factory')) {
@@ -28,12 +42,16 @@ if (!class_exists('TracTickets')) {
  */
 $runningInSeparateProcess = function_exists('__phpunit_run_isolated_test');
 if ($runningInSeparateProcess && ! WPLoader::$didInit) {
+    // Separate process PHP thread.
     require_once(__DIR__ . '/../../includes/bootstrap.php');
+} elseif ( ! isset($GLOBALS['__PHPUNIT_BOOTSTRAP'])) {
+    // Main PHP thread context.
+    setupPhpunitBootstrapGlobal();
 }
 
 // Load the PHPUnit compatibility layer.
 // @phpstan-ignore-next-line
-if (version_compare(\Codeception\Codecept::VERSION, '3.0.0', '<')) {
+if (version_compare(Codecept::VERSION, '3.0.0', '<')) {
     class_alias(
         '\\tad\WPBrowser\\Compat\\Codeception\\Version2\\Unit',
         '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
@@ -132,7 +150,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     {
         static $factory = null;
         if (!$factory) {
-            $factory = new \WP_UnitTest_Factory();
+            $factory = new WP_UnitTest_Factory();
         }
         return $factory;
     }
@@ -160,7 +178,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $wp_object_cache->stats = array();
         $wp_object_cache->memcache_debug = array();
 
-        if ($wp_object_cache instanceof \WP_Object_Cache) {
+        if ($wp_object_cache instanceof WP_Object_Cache) {
             $wp_object_cache->flush();
         } elseif (isset($wp_object_cache->cache)) {
             $wp_object_cache->cache = [];
@@ -221,7 +239,6 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public function _setUp()
     {
         $this->requestTimeSetUp();
-        $this->checkSeparateProcessConfiguration();
 
         set_time_limit(0);
 
@@ -291,8 +308,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             return array();
         }
 
-        $iterator = new \RecursiveDirectoryIterator($dir);
-        $objects = new \RecursiveIteratorIterator($iterator);
+        $iterator = new RecursiveDirectoryIterator($dir);
+        $objects = new RecursiveIteratorIterator($iterator);
         foreach ($objects as $name => $object) {
             if (is_file($name)) {
                 $files[] = $name;
@@ -351,7 +368,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     protected function reset_post_types()
     {
-        /** @var \WP_Post_Type $pt */
+        /** @var WP_Post_Type $pt */
         foreach (get_post_types(array(), 'objects') as $pt) {
             if (empty($pt->tests_no_auto_unregister)) {
                 _unregister_post_type($pt->name);
@@ -398,7 +415,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      *
      * @since 4.4.0
      *
-     * @global \WP_Rewrite $wp_rewrite
+     * @global WP_Rewrite $wp_rewrite
      *
      * @param string      $structure Optional. Permalink structure to set. Default empty.
      */
@@ -458,7 +475,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     {
         global $wpdb, $wp_query, $wp;
 
-        if (empty($wpdb) || !$wpdb instanceof \wpdb) {
+        if (empty($wpdb) || !$wpdb instanceof wpdb) {
             return;
         }
 
@@ -468,8 +485,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
                 restore_current_blog();
             }
         }
-        $wp_query = new \WP_Query();
-        $wp = new \WP();
+        $wp_query = new WP_Query();
+        $wp = new WP();
 
         // Reset globals related to the post loop and `setup_postdata()`.
         $post_globals = array(
@@ -563,7 +580,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
         $message = is_string($message) ? $message : 'Message is not a string';
 
-        throw new \WPDieException($message);
+        throw new WPDieException($message);
     }
 
     /**
@@ -712,13 +729,13 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
         self::flush_cache();
         unset($GLOBALS['wp_query'], $GLOBALS['wp_the_query']);
-        $GLOBALS['wp_the_query'] = new \WP_Query();
+        $GLOBALS['wp_the_query'] = new WP_Query();
         $GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
 
         $public_query_vars = $GLOBALS['wp']->public_query_vars;
         $private_query_vars = $GLOBALS['wp']->private_query_vars;
 
-        $GLOBALS['wp'] = new \WP();
+        $GLOBALS['wp'] = new WP();
         $GLOBALS['wp']->public_query_vars = $public_query_vars;
         $GLOBALS['wp']->private_query_vars = $private_query_vars;
 
@@ -912,7 +929,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $id = wp_insert_attachment($attachment, $upload['file'], $parent_post_id);
 
         if (!is_int($id)) {
-            throw new \RuntimeException('Attachment insert failed.');
+            throw new RuntimeException('Attachment insert failed.');
         }
 
         wp_update_attachment_metadata($id, wp_generate_attachment_metadata($id, $upload['file']));
@@ -970,7 +987,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         || in_array($ticket_id, self::$forced_tickets, true)) {
             return;
         }
-        if (!\TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
+        if (! TracTickets::isTracTicketClosed('https://core.trac.wordpress.org', $ticket_id)) {
             $this->markTestSkipped(sprintf('WordPress Ticket #%d is not fixed', $ticket_id));
         }
     }
@@ -984,7 +1001,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         || in_array('UT' . $ticket_id, self::$forced_tickets, true)) {
             return;
         }
-        if (!\TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
+        if (! TracTickets::isTracTicketClosed('https://unit-tests.trac.wordpress.org', $ticket_id)) {
             $this->markTestSkipped(sprintf('Unit Tests Ticket #%d is not fixed', $ticket_id));
         }
     }
@@ -998,7 +1015,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             || in_array('Plugin' . $ticket_id, self::$forced_tickets, true)) {
             return;
         }
-        if (!\TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
+        if (! TracTickets::isTracTicketClosed('https://plugins.trac.wordpress.org', $ticket_id)) {
             $this->markTestSkipped(sprintf('WordPress Plugin Ticket #%d is not fixed', $ticket_id));
         }
     }
