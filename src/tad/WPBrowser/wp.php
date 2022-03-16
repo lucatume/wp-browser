@@ -22,7 +22,7 @@ function dropWpTables(\wpdb $wpdb, array $tables = null)
     $droppedTables = [];
 
     foreach ($tablesList as $table => $prefixedTable) {
-        $dropped = $wpdb->query("DROP TABLE {$prefixedTable} IF EXISTS");
+        $dropped = $wpdb->query("DROP TABLE IF EXISTS {$prefixedTable}");
 
         if ($dropped !== true) {
             throw new \RuntimeException("Could not DROP table {$prefixedTable}: " . $wpdb->last_error);

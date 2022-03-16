@@ -1106,7 +1106,7 @@ class WPLoader extends Module
     }
 
     /**
-     * Returns the WordPress installation configuration as created from the currrent module configuration.
+     * Returns the WordPress installation configuration as created from the current module configuration.
      *
      * @return Configuration The WordPress installation configuration, as created from the module configuration.
      */
