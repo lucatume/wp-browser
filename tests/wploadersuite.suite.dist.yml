@@ -20,4 +20,5 @@ modules:
             theme: dummy
             plugins: ['mu-plugin-1/plugin.php']
             activatePlugins: ['mu-plugin-1/plugin.php']
+            installationTableHandling: drop
             booststrapActions: []
