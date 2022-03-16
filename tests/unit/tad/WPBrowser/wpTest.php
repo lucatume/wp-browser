@@ -2,6 +2,8 @@
 
 use tad\WPBrowser\Traits\WithStubProphecy;
 
+use function tad\WPBrowser\Tests\Support\testEnvFile;
+
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 
 class wpTest extends \Codeception\Test\Unit
@@ -26,9 +28,9 @@ class wpTest extends \Codeception\Test\Unit
         $dropped = dropWpTables($wpdb);
 
         $this->assertEquals([
-            'DROP TABLE wp_options IF EXISTS',
-            'DROP TABLE wp_posts IF EXISTS',
-            'DROP TABLE wp_users IF EXISTS'
+            'DROP TABLE IF EXISTS wp_options',
+            'DROP TABLE IF EXISTS wp_posts',
+            'DROP TABLE IF EXISTS wp_users'
         ], $queries);
         $this->assertEquals(['wp_options', 'wp_posts', 'wp_users'], $dropped);
     }
@@ -51,8 +53,8 @@ class wpTest extends \Codeception\Test\Unit
         $dropped = dropWpTables($wpdb, ['wp_posts', 'wp_users', 'foo_bar']);
 
         $this->assertEquals([
-            'DROP TABLE wp_posts IF EXISTS',
-            'DROP TABLE wp_users IF EXISTS',
+            'DROP TABLE IF EXISTS wp_posts',
+            'DROP TABLE IF EXISTS wp_users',
         ], $queries);
         $this->assertEquals(['wp_posts', 'wp_users'], $dropped);
     }
