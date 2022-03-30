@@ -31,13 +31,13 @@ Add the following requirements in your `composer.json` file, in the `require-dev
 {
   "require-dev": {
     "lucatume/wp-browser": "^3.0",
-    "codeception/module-asserts": "^1.0",
-    "codeception/module-phpbrowser": "^1.0",
-    "codeception/module-webdriver": "^1.0",
-    "codeception/module-db": "^1.0",
-    "codeception/module-filesystem": "^1.0",
-    "codeception/module-cli": "^1.0",
-    "codeception/util-universalframework": "^1.0"
+    "codeception/module-asserts": "^1.0 || ^2.0 || ^3.0",
+    "codeception/module-phpbrowser": "^1.0 || ^2.0 || ^3.0",
+    "codeception/module-webdriver": "^1.0 || ^2.0 || ^3.0",
+    "codeception/module-db": "^1.0 || ^2.0 || ^3.0",
+    "codeception/module-filesystem": "^1.0 || ^2.0 || ^3.0",
+    "codeception/module-cli": "^1.0 || ^2.0 || ^3.0",
+    "codeception/util-universalframework": "^1.0 || ^2.0 || ^3.0"
   }
 }
 ```
