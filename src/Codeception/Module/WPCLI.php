@@ -7,6 +7,7 @@
 
 namespace Codeception\Module;
 
+use RuntimeException;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
@@ -313,7 +314,20 @@ class WPCLI extends Module
             throw new ModuleException(__CLASS__, $message);
         }
     }
-
+    
+    /**
+     * Returns the shell output of the last command.
+     *
+     * @return string
+     */
+    public function grabLastShellOutput()
+    {
+        if(!isset($this->lastOutput)){
+            throw new RuntimeException('No output is set yet. Did you forget to run a command?');
+        }
+        return $this->lastOutput;
+    }
+    
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
