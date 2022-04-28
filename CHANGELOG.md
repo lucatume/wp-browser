@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Add the `WPCLI::grabLastShellOutput` method (thanks @calvinalkan).
+
 ## [3.1.5] 2022-03-16;
 
 ## Fixed

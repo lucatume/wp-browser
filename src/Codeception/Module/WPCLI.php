@@ -7,6 +7,7 @@
 
 namespace Codeception\Module;
 
+use RuntimeException;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
@@ -94,11 +95,11 @@ class WPCLI extends Module
      */
     protected $timeout;
     /**
-     * @var string
+     * @var string|null
      */
     protected $lastOutput;
     /**
-     * @var int
+     * @var int|null
      */
     protected $lastResultCode;
 
@@ -315,6 +316,22 @@ class WPCLI extends Module
     }
 
     /**
+     * Returns the shell output of the last command.
+     *
+     * @return string The output produced by the last shell command, if any.
+     *
+     * @throws ModuleException If no prior command ran.
+     */
+    public function grabLastShellOutput()
+    {
+        if (! isset($this->lastOutput)) {
+            throw new ModuleException($this, 'No output is set yet. Did you forget to run a command?');
+        }
+
+        return $this->lastOutput;
+    }
+
+    /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
      * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
@@ -439,7 +456,7 @@ class WPCLI extends Module
      */
     public function dontSeeInShellOutput($text)
     {
-        Assert::assertStringNotContainsString($text, $this->lastOutput);
+        Assert::assertStringNotContainsString($text, (string)$this->lastOutput);
     }
 
     /**
@@ -458,7 +475,7 @@ class WPCLI extends Module
      */
     public function seeShellOutputMatches($regex)
     {
-        \PHPUnit\Framework\Assert::assertRegExp($regex, $this->lastOutput);
+        \PHPUnit\Framework\Assert::assertRegExp($regex, (string)$this->lastOutput);
     }
 
     /**

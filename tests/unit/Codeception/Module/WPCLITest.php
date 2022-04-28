@@ -5,6 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
+use http\Exception\RuntimeException;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use tad\WPBrowser\Process\Process;
@@ -825,5 +826,73 @@ class WPCLITest extends \Codeception\Test\Unit
             codecept_root_dir('vendor/wp-cli/wp-cli/php/boot-fs.php'),
             '--path=' . $this->root->url() . '/wp'
         ], $arr);
+    }
+
+    /**
+     * It should throw if trying to grab output from last command when no command ever ran
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_grab_output_from_last_command_when_no_command_ever_ran()
+    {
+        $this->expectException(ModuleException::class);
+
+        $this->makeInstance()->grabLastShellOutput();
+    }
+
+    /**
+     * It should return empty string when grabbing output of last command that produced no output
+     *
+     * @test
+     */
+    public function should_return_empty_string_when_grabbing_output_of_last_command_that_produced_no_output()
+    {
+        $this->process = $this->stubProphecy(
+            Process::class,
+            [
+                'getExitCode' => 0,
+                'getOutput'   => '',
+                'getError'    => ''
+            ]
+        );
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCommand(
+            $this->buildExpectedCommand(['test']),
+            $this->root->url() . '/wp'
+        )->willReturn($this->process->reveal(true));
+
+        $cli = $this->makeInstance();
+        $cli->cli(['test']);
+        $lastOutput = $cli->grabLastShellOutput();
+
+        $this->assertEquals('', $lastOutput);
+    }
+
+    /**
+     * It should allow grabbing the output of the last ran command
+     *
+     * @test
+     */
+    public function should_allow_grabbing_the_output_of_the_last_ran_command()
+    {
+        $this->process = $this->stubProphecy(
+            Process::class,
+            [
+                'getExitCode' => 0,
+                'getOutput'   => 'some output from the command',
+                'getError'    => ''
+            ]
+        );
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCommand(
+            $this->buildExpectedCommand(['test']),
+            $this->root->url() . '/wp'
+        )->willReturn($this->process->reveal(true));
+
+        $cli = $this->makeInstance();
+        $cli->cli(['test']);
+        $lastOutput = $cli->grabLastShellOutput();
+
+        $this->assertEquals('some output from the command', $lastOutput);
     }
 }
