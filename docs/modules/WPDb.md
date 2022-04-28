@@ -14,12 +14,12 @@ composer require --dev codeception/module-db:^1.0
 ```
 
 ## Backup your content
-This module, like the [Codeception Db](https://codeception.com/docs/modules/Db) one it extends, by default **will load a databse dump in the database it's using.**  
+This module, like the [Codeception Db](https://codeception.com/docs/modules/Db) one it extends, by default **will load a database dump in the database it's using.**  
 This means that **the database contents will be replaced by the dump contents** on each run of a suite using the module.  
 You can set the `populate` and `cleanup` parameters to `false` to prevent this default behavior but it's usually not what you need in an automated test.  
 **Make a backup of any database you're using in tests that contains any information you care about before you run any test!**
 
-## Change the databse used depending on whether you're running tests or not
+## Change the database used depending on whether you're running tests or not
 The chore of having to plug different databases, or backup them, depending on whether you're manually testing the site or automatically testing can be mitigated switching them automatically depending on the browser user agent or request headers.  
 This module was born to be used in acceptance and functional tests (see [levels of testing for more information](./../levels-of-testing.md)) and will often be coupled with modules like the [WPBrowser](WPBrowser.md) one or the [WPWebDriver](WPWebDriver.md) one.  
 Depending on which of the two modules is being used in the suite there are different ways to automate the "database switching".
