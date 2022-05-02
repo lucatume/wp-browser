@@ -29,10 +29,8 @@ tags
 # Backup files and folders
 *.bak
 
-# WordPress test directory.
-_wordpress
-wp-cli.yml
-
 # The docker configuration file, produced in the make `build` target.
 .env.testing.docker
 
+# iidfiles for containers
+_build/_container/php/iidfile

@@ -1,0 +1,4 @@
+user: dev
+group: dev
+paths:
+  - /
