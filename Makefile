@@ -6,6 +6,20 @@ CONTAINERS_VERSION = 4.0.0-dev
 PROJECT_NAME = $(notdir $(PWD))
 PHP_VERSION ?= 8.0
 TTY_FLAG := $(shell [ -t 0 ] && echo '-t')
+WORDPRESS_VERSION ?= latest
+WORDPRESS_BASE_IMAGE ?= wordpress:apache
+WORDPRESS_LOCALHOST_PORT ?= 3380
+UID ?= $(shell id -u)
+GID ?= $(shell id -g)
+CHROME_LOCALHOST_PORT ?= 34444
+CHROME_LOCALHOST_VNC_PORT ?= 37900
+DB_LOCALHOST_PORT ?= 33306
+
+define host_ip
+$(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
+endef
+
+build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up
 
 _build/_container/php/iidfile:
 	docker build \
@@ -18,6 +32,18 @@ _build/_container/php/iidfile:
 		$(PWD)/_build/_container/php
 
 php_container_build: _build/_container/php/iidfile
+
+_build/_container/wordpress/iidfile:
+	docker build \
+		--build-arg WORDPRESS_BASE_IMAGE=$(WORDPRESS_BASE_IMAGE) \
+		--label "project=wp-browser" \
+		--label "service=wordpress" \
+		--iidfile $(PWD)/_build/_container/wordpress/iidfile \
+		--tag lucatume/wp-browser_wordpress:latest \
+		--tag lucatume/wp-browser_wordpress:$(CONTAINERS_VERSION) \
+		$(PWD)/_build/_container/wordpress
+
+wordpress_container_build: _build/_container/wordpress/iidfile
 
 network_up:
 	$(if \
@@ -44,6 +70,7 @@ database_up: network_up
 				--env MYSQL_PASSWORD=test \
 				--env MYSQL_ROOT_PASSWORD=password \
 				--env MYSQL_DATABASE=test \
+				--publish "$(DB_LOCALHOST_PORT):3306" \
 				--health-cmd 'mysqlshow -uroot -ppassword test' \
 				--health-interval 1s \
 				--health-retries 30 \
@@ -71,12 +98,13 @@ php_container_up: _build/_container/php/iidfile network_up
 				--network-alias php_$(PHP_VERSION) \
 				--volume "$(PWD):$(PWD)" \
 				--workdir "$(PWD)" \
-				--user "$(shell id -u):$(shell id -g)" \
+				--user "$(UID):$(GID)" \
+				--env XDEBUG_CONFIG="idekey=wp-browser client_host=$(call host_ip) client_port=9003 log_level=0" \
 				lucatume/wp-browser_php_$(PHP_VERSION) \
 		) \
 	)
 
-up: network_up database_up php_container_up
+up: network_up database_up php_container_up wordpress_up chromedriver_up
 
 down:
 	$(if $(shell docker ps -aq --filter "label=project=wp-browser"), \
@@ -84,16 +112,25 @@ down:
 	$(if $(shell docker network ls -q --filter label=project=wp-browser), \
 		docker network rm $$(docker network ls -q --filter label=project=wp-browser))
 
-build: _build/_container/php/iidfile up
-
 clean: down
 	rm -f _build/_container/php/iidfile
+	rm -f _build/_container/wordpress/iidfile
+	rm -rf vendor/wordpress/wordpress
 
-test_config:
+config:
 	echo "CONTAINERS_VERSION => $(CONTAINERS_VERSION)"
 	echo "PROJECT_NAME => $(PROJECT_NAME)"
 	echo "PHP_VERSION => $(PHP_VERSION)"
 	echo "TTY_FLAG => $(TTY_FLAG)"
+	echo "WORDPRESS_VERSION => $(WORDPRESS_VERSION)"
+	echo "WORDPRESS_BASE_IMAGE => $(WORDPRESS_BASE_IMAGE)"
+	echo "WORDPRESS_LOCALHOST_PORT => $(WORDPRESS_LOCALHOST_PORT)"
+	echo "UID => $(UID)"
+	echo "GID => $(GID)"
+	echo "host IP from container => $(call host_ip)"
+	echo "CHROME_LOCALHOST_PORT => $(CHROME_LOCALHOST_PORT)"
+	echo "CHROME_LOCALHOST_VNC_PORT => $(CHROME_LOCALHOST_VNC_PORT)"
+	echo "DB_LOCALHOST_PORT => $(DB_LOCALHOST_PORT)"
 
 ssh: php_container_up
 	docker exec -it -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) bash
@@ -110,6 +147,101 @@ composer_update: network_up php_container_up
 wp_cli_version:
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) wp --version
 
-wordpress_up: php_container_up database_up
-	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) wordpress_up
+define HTACCESS_CONTENTS
+# BEGIN WordPress Multisite
+# Using subfolder network type: https://wordpress.org/support/article/htaccess/#multisite
 
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$$ - [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$$ $$1wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $$2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$$ $$2 [L]
+RewriteRule . index.php [L]
+
+# END WordPress Multisite
+endef
+export HTACCESS_CONTENTS
+
+wordpress_up: network_up php_container_up database_up
+	if [ ! -f vendor/wordpress/wordpress/wp-load.php ]; then \
+		mkdir -p vendor/wordpress/wordpress; \
+		docker exec $(TTY_FLAG) -u "$(UID):$(GID)" \
+			--workdir "$(PWD)/vendor/wordpress/wordpress" \
+			wp-browser_php_$(PHP_VERSION) \
+			wp core download --version=$(WORDPRESS_VERSION); \
+	fi
+	if [ ! -f vendor/wordpress/wordpress/wp-config.php ]; then \
+		docker exec $(TTY_FLAG) -u "$(UID):$(GID)" \
+			--workdir "$(PWD)/vendor/wordpress/wordpress" \
+			wp-browser_php_$(PHP_VERSION) \
+			wp config create \
+				--dbname=test \
+				--dbuser=test \
+				--dbpass=test \
+				--dbhost=db \
+				--dbprefix=wp_; \
+	fi
+	docker exec $(TTY_FLAG) -u "$(UID):$(GID)" \
+		--workdir "$(PWD)/vendor/wordpress/wordpress" \
+		wp-browser_php_$(PHP_VERSION) \
+		bash -c 'if ! wp core is-installed --network; then \
+			wp core multisite-install --url=http://wordpress.test \
+			--title=Test --admin_user=admin --admin_password=password \
+			--admin_email=admin@wordpress.test --skip-email; \
+			fi'
+	echo "$${HTACCESS_CONTENTS}" > "$(PWD)/vendor/wordpress/wordpress/.htaccess"
+	$(if \
+		$(shell docker ps -q --filter "name=wp-browser_wordpress"), \
+		, \
+		$(if \
+			$(shell docker ps -aq --filter "name=wp-browser_wordpress"), \
+				docker restart wp-browser_wordpress, \
+				docker run --detach --name wp-browser_wordpress \
+					--label "project=wp-browser" \
+					--label "service=apache" \
+					--label "php_version=$(PHP_VERSION)" \
+					--network wp-browser \
+					--network-alias apache_php_$(PHP_VERSION) \
+					--volume "$(PWD)/vendor/wordpress/wordpress:/var/www/html" \
+					--user "$(UID):$(GID)" \
+					--publish "$(WORDPRESS_LOCALHOST_PORT):80" \
+					--env XDEBUG_CONFIG="idekey=wp-browser-apache client_host=$(call host_ip) client_port=9004 log_level=0" \
+					lucatume/wp-browser_wordpress:latest \
+		) \
+	)
+
+define wordpress_container_ip
+$(shell docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wp-browser_wordpress)
+endef
+
+chromedriver_up: wordpress_up
+	$(if \
+		$(shell docker ps -q --filter "name=wp-browser_chrome"), \
+		, \
+		$(if \
+			$(shell docker ps -aq --filter "name=wp-browser_chrome" ), \
+				docker restart wp-browser_chrome, \
+				docker run --detach \
+					--name wp-browser_chrome \
+					--label "project=wp-browser" \
+					--label "service=chrome" \
+					--add-host "wordpress.test:$(call wordpress_container_ip)" \
+					--network wp-browser \
+					--network-alias chrome \
+					--publish "$(CHROME_LOCALHOST_PORT):4444" \
+					--publish "$(CHROME_LOCALHOST_VNC_PORT):7900" \
+					--shm-size 3g \
+					seleniarm/standalone-chromium:101.0 \
+		) \
+	)
+
+ps:
+	docker ps -a --filter label=project=wp-browser --filter status=running

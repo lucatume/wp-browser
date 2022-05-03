@@ -34,3 +34,4 @@ tags
 
 # iidfiles for containers
 _build/_container/php/iidfile
+_build/_container/wordpress/iidfile
