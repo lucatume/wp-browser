@@ -26,7 +26,7 @@ define host_ip
 $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
 endef
 
-build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up
+build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up healthcheck
 
 _build/_container/php/iidfile:
 	docker build \
@@ -257,3 +257,17 @@ chromedriver_up: wordpress_up
 
 ps:
 	docker ps -a --filter label=project=wp-browser --filter status=running
+
+healthcheck:
+	echo -n "PHP container can reach WordPress container ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "Chrome container can reach WordPress container ... "
+	docker exec wp-browser_chrome bash -c 'curl -Ifs http://wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "PHP container can reach database ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'test'\" | grep 'test' > /dev/null"
+	echo "yes"
+	echo -n "WordPress container can reach database ... "
+	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"test\");" > /dev/null'
+	echo "yes"
