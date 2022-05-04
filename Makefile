@@ -14,6 +14,13 @@ GID ?= $(shell id -g)
 CHROME_LOCALHOST_PORT ?= 34444
 CHROME_LOCALHOST_VNC_PORT ?= 37900
 DB_LOCALHOST_PORT ?= 33306
+ROOT ?= 0
+
+ifeq ($(ROOT),1)
+USER_OPTION ?= --user "0:0"
+else
+USER_OPTION ?= --user "$(shell id -u):$(shell id -g)"
+endif
 
 define host_ip
 $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
@@ -131,9 +138,11 @@ config:
 	echo "CHROME_LOCALHOST_PORT => $(CHROME_LOCALHOST_PORT)"
 	echo "CHROME_LOCALHOST_VNC_PORT => $(CHROME_LOCALHOST_VNC_PORT)"
 	echo "DB_LOCALHOST_PORT => $(DB_LOCALHOST_PORT)"
+	echo "ROOT => $(ROOT)"
+	echo "USER_OPTION => $(USER_OPTION)"
 
 ssh: php_container_up
-	docker exec -it -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) bash
+	docker exec -it $(USER_OPTION) wp-browser_php_$(PHP_VERSION) bash
 
 composer_version: network_up php_container_up
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) composer --version
@@ -146,6 +155,10 @@ composer_update: network_up php_container_up
 
 wp_cli_version:
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) wp --version
+
+define wordpress_container_ip
+$(shell docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wp-browser_wordpress)
+endef
 
 define HTACCESS_CONTENTS
 # BEGIN WordPress Multisite
@@ -169,6 +182,7 @@ RewriteRule . index.php [L]
 # END WordPress Multisite
 endef
 export HTACCESS_CONTENTS
+
 
 wordpress_up: network_up php_container_up database_up
 	if [ ! -f vendor/wordpress/wordpress/wp-load.php ]; then \
@@ -217,10 +231,8 @@ wordpress_up: network_up php_container_up database_up
 					lucatume/wp-browser_wordpress:latest \
 		) \
 	)
-
-define wordpress_container_ip
-$(shell docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wp-browser_wordpress)
-endef
+	export _IP=$$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wp-browser_wordpress) && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts"
 
 chromedriver_up: wordpress_up
 	$(if \
