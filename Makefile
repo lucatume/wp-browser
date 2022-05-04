@@ -92,6 +92,7 @@ database_up: network_up
 	done;
 
 php_container_up: _build/_container/php/iidfile network_up
+	mkdir -p $(PWD)/.cache/composer
 	$(if \
 		$(shell docker ps -q --filter "name=wp-browser_php_$(PHP_VERSION)"), \
 		, \
@@ -107,6 +108,7 @@ php_container_up: _build/_container/php/iidfile network_up
 				--workdir "$(PWD)" \
 				--user "$(UID):$(GID)" \
 				--env XDEBUG_CONFIG="idekey=wp-browser client_host=$(call host_ip) client_port=9003 log_level=0" \
+				--env COMPOSER_CACHE_DIR="$(PWD)/.cache/composer" \
 				lucatume/wp-browser_php_$(PHP_VERSION) \
 		) \
 	)
