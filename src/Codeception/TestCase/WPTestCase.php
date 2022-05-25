@@ -145,7 +145,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         global $wpdb;
         $wpdb->query('COMMIT;');
     }
-
+    
+    /**
+     * @return WP_UnitTest_Factory
+     */
     protected static function factory()
     {
         static $factory = null;
