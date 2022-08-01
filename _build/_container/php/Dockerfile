@@ -21,9 +21,9 @@ COPY php.ini /usr/local/etc/php/conf.d/docker-php-defaults.ini
 COPY docker-php-ext-uopz.ini /usr/local/etc/php/conf.d/docker-php-ext-uopz.ini
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 RUN chmod a+x /usr/local/bin/composer
-RUN [ $(getent group $USER_GID) ] || addgroup --gid $USER_GID $USER_UNAME
-RUN [ $(id -u ${USER_UID}) ] || adduser --uid $USER_UID --gid $USER_GID --home /home/$USER_UNAME --shell /bin/sh --disabled-password --gecos "" $USER_UNAME
-RUN mkdir -p /home/$USER_UNAME && \
+RUN [ $(getent group $USER_GID) ] || addgroup --gid $USER_GID $USER_UNAME && \
+    [ $(id -u ${USER_UID}) ] || adduser --uid $USER_UID --gid $USER_GID --home /home/$USER_UNAME --shell /bin/sh --disabled-password --gecos "" $USER_UNAME && \
+    mkdir -p /home/$USER_UNAME && \
     echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /home/$USER_UNAME/.bashrc && \
     echo "PS1=\"[\\u@$CONTAINER_NAME] \\w\\n ~ \"" >> /root/.bashrc && \
     echo "source /home/$USER_UNAME/bashrc_scripts.sh" >> /home/$USER_UNAME/.bashrc && \

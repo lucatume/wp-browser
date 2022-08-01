@@ -94,13 +94,13 @@ function db($dsn, $user, $pass, $dbName = null)
     return static function ($query) use ($pdo, $dsn, $user, $pass) {
         $result = $pdo->query($query);
         if (!$result instanceof \PDOStatement) {
-            throw new \RuntimeException('Query failed: ' . json_encode([
-                    'dsn' => $dsn,
-                    'user' => $user,
-                    'pass' => $pass,
-                    'query' => $query,
-                    'error' => $pdo->errorInfo(),
-                ], JSON_PRETTY_PRINT));
+            throw new \RuntimeException( 'Query failed: ' . json_encode( [
+		            'dsn'   => $dsn,
+		            'user'  => $user,
+		            'pass'  => $pass,
+		            'query' => $query,
+		            'error' => $pdo->errorInfo(),
+	            ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT ) );
         }
 
         return $result;

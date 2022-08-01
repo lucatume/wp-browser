@@ -4,6 +4,7 @@ paths:
     log: tests/_output
     data: tests/_data
     helpers: tests/_support
+    output: tests/_output
 settings:
     colors: true
     memory_limit: 1024M

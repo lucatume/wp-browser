@@ -22,11 +22,43 @@ else
 USER_OPTION ?= --user "$(shell id -u):$(shell id -g)"
 endif
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME), Linux)
 define host_ip
 $(shell docker run --rm --entrypoint sh busybox -c '/bin/ip route | awk "/default/ { print $$3 }" | cut -d" " -f3')
 endef
+else
+define host_ip
+host.docker.internal
+endef
+endif
 
-build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up healthcheck
+
+build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up build_db healthcheck .env.testing.docker
+
+define ENV_TESTING_FILE_CONTENTS
+WORDPRESS_ROOT_DIR=vendor/wordrpess/wordpress
+WORDPRESS_URL=http://wordpress.test
+WORDPRESS_DOMAIN=wordpress.test
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=password
+WORDPRESS_DB_HOST=db
+WORDPRESS_DB_NAME=test
+WORDPRESS_DB_USER=test
+WORDPRESS_DB_PASSWORD=test
+WORDPRESS_TABLE_PREFIX=wp_
+WORDPRESS_SUBDOMAIN_URL=http://sub1.wordpresss.test
+WORDPRESS_SUBDOMAIN_DB_NAME=subdomain_test
+WORDPRESS_SUBDIR_URL=http://wordpress.test/test-1
+WORDPRESS_SUBDIR_DB_NAME=subdir_test
+WORDPRESS_EMPTY_DB_NAME=empty
+CHROMEDRIVER_HOST=chrome
+CHROMEDRIVER_PORT=4444
+endef
+export ENV_TESTING_FILE_CONTENTS
+
+.env.testing.docker:
+	echo "$${ENV_TESTING_FILE_CONTENTS}" > .env.testing.docker
 
 _build/_container/php/iidfile:
 	docker build \
@@ -90,6 +122,8 @@ database_up: network_up
 		echo "Waiting for database ready ..."; \
 		if [ $$(date +"%s") -gt $${T} ]; then echo "Database timed out"; exit 1; fi; \
 	done;
+	docker exec wp-browser_db mysql -uroot -ppassword -e "create database if not exists subdir_test"
+	docker exec wp-browser_db mysql -uroot -ppassword -e "create database if not exists subdomain_test"
 
 php_container_up: _build/_container/php/iidfile network_up
 	mkdir -p $(PWD)/.cache/composer
@@ -107,7 +141,7 @@ php_container_up: _build/_container/php/iidfile network_up
 				--volume "$(PWD):$(PWD)" \
 				--workdir "$(PWD)" \
 				--user "$(UID):$(GID)" \
-				--env XDEBUG_CONFIG="idekey=wp-browser client_host=$(call host_ip) client_port=9003 log_level=0" \
+				--env XDEBUG_CONFIG="idekey=wp-browser client_host=$(call host_ip) client_port=9003 start_with_request=yes log_level=0" \
 				--env COMPOSER_CACHE_DIR="$(PWD)/.cache/composer" \
 				lucatume/wp-browser_php_$(PHP_VERSION) \
 		) \
@@ -125,6 +159,7 @@ clean: down
 	rm -f _build/_container/php/iidfile
 	rm -f _build/_container/wordpress/iidfile
 	rm -rf vendor/wordpress/wordpress
+	rm -f .env.testing.docker
 
 config:
 	echo "CONTAINERS_VERSION => $(CONTAINERS_VERSION)"
@@ -184,7 +219,6 @@ RewriteRule . index.php [L]
 # END WordPress Multisite
 endef
 export HTACCESS_CONTENTS
-
 
 wordpress_up: network_up php_container_up database_up
 	if [ ! -f vendor/wordpress/wordpress/wp-load.php ]; then \
@@ -260,6 +294,13 @@ chromedriver_up: wordpress_up
 ps:
 	docker ps -a --filter label=project=wp-browser --filter status=running
 
+build_db:
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS test\""
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS subdomain_test\""
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS subdir_test\""
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS empty\""
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"GRANT ALL ON *.* TO 'test'@'%'\""
+
 healthcheck:
 	echo -n "PHP container can reach WordPress container ... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://wordpress.test > /dev/null'
@@ -267,9 +308,30 @@ healthcheck:
 	echo -n "Chrome container can reach WordPress container ... "
 	docker exec wp-browser_chrome bash -c 'curl -Ifs http://wordpress.test > /dev/null'
 	echo "yes"
-	echo -n "PHP container can reach database ... "
+	echo -n "PHP container can reach database test... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'test'\" | grep 'test' > /dev/null"
 	echo "yes"
-	echo -n "WordPress container can reach database ... "
+	echo -n "PHP container can reach database subdomain_test... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'subdomain_test'\" | grep 'subdomain_test' > /dev/null"
+	echo "yes"
+	echo -n "PHP container can reach database subdir_test... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'subdir_test'\" | grep 'subdir_test' > /dev/null"
+	echo "yes"
+	echo -n "PHP container can reach database empty... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'empty'\" | grep 'empty' > /dev/null"
+	echo "yes"
+	echo -n "WordPress container can reach database test... "
 	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"test\");" > /dev/null'
 	echo "yes"
+	echo -n "WordPress container can reach database subdomain_test... "
+	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"subdomain_test\");" > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach database subdir_test... "
+	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"subdir_test\");" > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach database empty... "
+	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"empty\");" > /dev/null'
+	echo "yes"
+
+test_host_ip:
+	echo "Host IP: $(call host_ip)"
