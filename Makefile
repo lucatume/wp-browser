@@ -37,7 +37,7 @@ endif
 build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up build_db healthcheck .env.testing.docker
 
 define ENV_TESTING_FILE_CONTENTS
-WORDPRESS_ROOT_DIR=vendor/wordrpess/wordpress
+WORDPRESS_ROOT_DIR=vendor/wordpress/wordpress
 WORDPRESS_URL=http://wordpress.test
 WORDPRESS_DOMAIN=wordpress.test
 WORDPRESS_ADMIN_USER=admin
