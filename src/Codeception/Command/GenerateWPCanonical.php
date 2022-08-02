@@ -13,7 +13,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase extension with Codeception super-powers.';
     }
@@ -21,12 +21,12 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
     /**
      * Returns the built generator.
      *
-     * @param array<string,mixed>  $config The generator configuration.
+     * @param array $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The built generator.
      */
-    protected function getGenerator($config, $class)
+    protected function getGenerator(array $config, string $class): \Codeception\Lib\Generator\WPUnit
     {
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPCanonicalTestCase');
     }
@@ -36,7 +36,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wpcanonical';
     }

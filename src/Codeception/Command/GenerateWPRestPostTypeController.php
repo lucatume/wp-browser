@@ -2,20 +2,23 @@
 
 namespace Codeception\Command;
 
+use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Command\Shared\FileSystemTrait;
 use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
+use Codeception\TestCase\WPRestPostTypeControllerTestCase;
 
 class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomCommandInterface
 {
-    use Shared\FileSystem;
-    use Shared\Config;
+    use FileSystemTrait;
+    use ConfigTrait;
 
     /**
      * Returns the command description.
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_Post_Type_Controller_Testcase extension '
                . 'with Codeception super-powers.';
@@ -24,14 +27,14 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
     /**
      * Returns the command generator.
      *
-     * @param array<string,mixed>  $config The generator configuration.
+     * @param array $config The generator configuration.
      * @param string $class The class to generate the template for.
      *
      * @return WPUnit The generator instance.
      */
-    protected function getGenerator($config, $class)
+    protected function getGenerator(array $config, string $class): WPUnit
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestPostTypeControllerTestCase');
+        return new WPUnit($config, $class, WPRestPostTypeControllerTestCase::class);
     }
 
     /**
@@ -39,7 +42,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wprestposttypecontroller';
     }

@@ -2,20 +2,23 @@
 
 namespace Codeception\Command;
 
+use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Command\Shared\FileSystemTrait;
 use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
+use Codeception\TestCase\WPRestApiTestCase;
 
 class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
 {
-    use Shared\FileSystem;
-    use Shared\Config;
+    use FileSystemTrait;
+    use ConfigTrait;
 
     /**
      * Returns the command description.
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_TestCase extension with Codeception super-powers.';
     }
@@ -23,14 +26,14 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
     /**
      * Builds and returns the test case generator.
      *
-     * @param array<string,mixed>  $config The generator configuration.
+     * @param array $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The built generator.
      */
-    protected function getGenerator($config, $class)
+    protected function getGenerator(array $config, string $class): WPUnit
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestApiTestCase');
+        return new WPUnit($config, $class, WPRestApiTestCase::class);
     }
 
     /**
@@ -38,7 +41,7 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wprest';
     }

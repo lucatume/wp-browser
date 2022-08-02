@@ -12,7 +12,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase extension with Codeception super-powers.';
     }
@@ -20,12 +20,12 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
     /**
      * Returns the built generator.
      *
-     * @param array<string,mixed> $config The generator configuration.
+     * @param array $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The built generator.
      */
-    protected function getGenerator($config, $class)
+    protected function getGenerator(array $config, string $class): \Codeception\Lib\Generator\WPUnit
     {
         return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPAjaxTestCase');
     }
@@ -35,7 +35,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
 
         return 'generate:wpajax';

@@ -2,6 +2,8 @@
 
 namespace Codeception\Command;
 
+use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Command\Shared\FileSystemTrait;
 use Codeception\CustomCommandInterface;
 use Codeception\Lib\Generator\WPUnit;
 use Codeception\Lib\Generator\WPUnit as WPUnitGenerator;
@@ -9,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Codeception\TestCase\WPTestCase;
 
 /**
  * Generates skeleton for unit test as in classical PHPUnit.
@@ -20,15 +23,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 {
-    use Shared\FileSystem;
-    use Shared\Config;
+    use FileSystemTrait;
+    use ConfigTrait;
 
     /**
      * Returns the name of the command.
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return "generate:wpunit";
     }
@@ -38,7 +41,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception super-powers.';
     }
@@ -46,12 +49,12 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Executes the command.
      *
-     * @param InputInterface  $input The inputl
+     * @param InputInterface $input The inputl
      * @param OutputInterface $output The output.
      *
-     * @return int|null Either the command return value or `null`.
+     * @return int Either the command return value or `null`.
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $suite = $input->getArgument('suite');
         /** @var string $class */
@@ -63,9 +66,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 
         $gen = $this->getGenerator($config, $class);
 
-        $res = $this->createFile($filename, $gen->produce());
-
-        if (! $res) {
+        if (!$this->createFile($filename, $gen->produce())) {
             $output->writeln("<error>Test $filename already exists</error>");
             return 1;
         }
@@ -83,7 +84,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return string The built path.
      */
-    protected function buildPath($path, $class)
+    protected function buildPath(string $path, string $class): string
     {
         $className = $this->getShortClassName($class);
         $path = $this->createDirectoryFor($path, $class);
@@ -101,20 +102,17 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return WPUnitGenerator An instance of the test case code generator.
      */
-    protected function getGenerator($config, $class)
+    protected function getGenerator(array $config, string $class): WPUnitGenerator
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPTestCase');
+        return new WPUnit($config, $class, WPTestCase::class);
     }
 
     /**
      * Configures the generator.
-     *
-     * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDefinition([
-
             new InputArgument('suite', InputArgument::REQUIRED, 'suite where tests will be put'),
             new InputArgument('class', InputArgument::REQUIRED, 'class name'),
             new InputOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Use custom path for config'),
