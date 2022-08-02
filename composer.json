@@ -50,7 +50,8 @@
     "victorjonsson/markdowndocs": "dev-master",
     "gumlet/php-image-resize": "^1.6",
     "vlucas/phpdotenv": "^5.0",
-    "wp-cli/wp-cli-bundle": "*"
+    "wp-cli/wp-cli-bundle": "*",
+    "rector/rector": "^0.13.9"
   },
   "autoload": {
     "psr-4": {
