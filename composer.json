@@ -61,7 +61,8 @@
     },
     "files": [
       "src/tad/WPBrowser/utils.php",
-      "src/tad/WPBrowser/wp-polyfills.php"
+      "src/tad/WPBrowser/wp-polyfills.php",
+      "src/version-4-aliases.php"
     ]
   },
   "autoload-dev": {
