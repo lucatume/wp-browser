@@ -3,9 +3,12 @@
 declare( strict_types=1 );
 
 use Rector\CodeQuality\Rector\ClassMethod\ReturnTypeFromStrictScalarReturnExprRector;
+use Rector\CodeQuality\Rector\If_\ConsecutiveNullCompareReturnsToNullCoalesceQueueRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfIssetToNullCoalescingRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfNotNullReturnRector;
+use Rector\CodeQuality\Rector\Ternary\ArrayKeyExistsTernaryThenValueToCoalescingRector;
 use Rector\Config\RectorConfig;
+use Rector\Php70\Rector\Ternary\TernaryToNullCoalescingRector;
 use Rector\PostRector\Rector\NameImportingPostRector;
 use Rector\PostRector\Rector\UseAddingPostRector;
 use Rector\Set\ValueObject\SetList;
@@ -40,4 +43,8 @@ return static function ( RectorConfig $rectorConfig ): void {
     $rectorConfig->rule(SimplifyIfNotNullReturnRector::class);
     $rectorConfig->rule(NameImportingPostRector::class);
     $rectorConfig->rule(UseAddingPostRector::class);
+    $rectorConfig->rule(ArrayKeyExistsTernaryThenValueToCoalescingRector::class);
+    $rectorConfig->rule(ConsecutiveNullCompareReturnsToNullCoalesceQueueRector::class);
+    $rectorConfig->rule(SimplifyIfIssetToNullCoalescingRector::class);
+    $rectorConfig->rule(TernaryToNullCoalescingRector::class);
 };
