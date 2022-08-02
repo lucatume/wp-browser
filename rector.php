@@ -9,8 +9,10 @@ use Rector\CodeQuality\Rector\If_\SimplifyIfNotNullReturnRector;
 use Rector\CodeQuality\Rector\Ternary\ArrayKeyExistsTernaryThenValueToCoalescingRector;
 use Rector\Config\RectorConfig;
 use Rector\Php70\Rector\Ternary\TernaryToNullCoalescingRector;
+use Rector\Php74\Rector\Property\TypedPropertyRector;
 use Rector\PostRector\Rector\NameImportingPostRector;
 use Rector\PostRector\Rector\UseAddingPostRector;
+use Rector\Restoration\Rector\Property\MakeTypedPropertyNullableIfCheckedRector;
 use Rector\Set\ValueObject\SetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddReturnTypeDeclarationBasedOnParentClassMethodRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
@@ -47,4 +49,6 @@ return static function ( RectorConfig $rectorConfig ): void {
     $rectorConfig->rule(ConsecutiveNullCompareReturnsToNullCoalesceQueueRector::class);
     $rectorConfig->rule(SimplifyIfIssetToNullCoalescingRector::class);
     $rectorConfig->rule(TernaryToNullCoalescingRector::class);
+    $rectorConfig->rule(TypedPropertyRector::class);
+    $rectorConfig->rule(MakeTypedPropertyNullableIfCheckedRector::class);
 };
