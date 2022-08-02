@@ -5,8 +5,11 @@
  * @package Codeception\Module
  */
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Codeception\Module;
 
+use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
+use Codeception\Module\PhpBrowser;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use Symfony\Component\BrowserKit\Cookie;
 use function tad\WPBrowser\requireCodeceptionModules;
@@ -29,7 +32,7 @@ class WPBrowser extends PhpBrowser
      *
      * @var array<string>
      */
-    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
+    protected array $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * Returns all the cookies whose name matches a regex pattern.
@@ -40,12 +43,11 @@ class WPBrowser extends PhpBrowser
      * $I->amOnPage('/shop');
      * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
      * ```
-     *
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
+     * @return array|null An array of cookies matching the pattern.
      */
-    public function grabCookiesWithPattern($cookiePattern)
+    public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
         /**
          * @var array<FacebookWebdriverCookie|Cookie>
@@ -55,10 +57,10 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
+        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern): int|bool {
             return preg_match($cookiePattern, $cookie->getName());
         });
-        $cookieList = array_map(static function ($cookie) {
+        $cookieList = array_map(static function ($cookie): string {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 
@@ -85,10 +87,8 @@ class WPBrowser extends PhpBrowser
      * ```
      *
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-     *
-     * @return void
      */
-    public function activatePlugin($pluginSlug)
+    public function activatePlugin(string|array $pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
@@ -115,10 +115,8 @@ class WPBrowser extends PhpBrowser
      * ```
      *
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
-     *
-     * @return void
      */
-    public function deactivatePlugin($pluginSlug)
+    public function deactivatePlugin(string|array $pluginSlug): void
     {
         foreach ((array) $pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
@@ -130,11 +128,10 @@ class WPBrowser extends PhpBrowser
     /**
      * Validates the module configuration.
      *
-     * @return void
      *
-     * @throws \Codeception\Exception\ModuleConfigException|\Codeception\Exception\ModuleException If there's any issue.
+     * @throws ModuleConfigException|ModuleException If there's any issue.
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         $this->configBackCompat();
 

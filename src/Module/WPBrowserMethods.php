@@ -1,9 +1,10 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Codeception\Module;
 
 use Codeception\Exception\ModuleException;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use JsonException;
 use Symfony\Component\BrowserKit\Cookie;
 
 trait WPBrowserMethods
@@ -13,21 +14,21 @@ trait WPBrowserMethods
      *
      * @var string|null
      */
-    protected $pluginsPath;
+    protected ?string $pluginsPath;
 
     /**
      * The admin UI path, relative to the WordPress installation root URL.
      *
      * @var string
      */
-    protected $adminPath = '/wp-admin';
+    protected string $adminPath = '/wp-admin';
 
     /**
      * The login screen absolute URL
      *
      * @var string
      */
-    protected $loginUrl;
+    protected string $loginUrl;
 
     /**
      * Navigate to the default WordPress logout page and click the logout link.
@@ -44,9 +45,9 @@ trait WPBrowserMethods
      *
      * @param bool|string $redirectTo Whether to redirect to another (optionally specified) page after the logout.
      *
-     * @return void
+     * @throws ModuleException IF the current URI cannot be retrieved from the inner browser.
      */
-    public function logOut($redirectTo = false)
+    public function logOut(bool|string $redirectTo = false): void
     {
         $previousUri = $this->_getCurrentUri();
         $loginUri = $this->getLoginUrl();
@@ -71,10 +72,8 @@ trait WPBrowserMethods
      * $I->amOnAdminPage('/');
      * $I->see('Dashboard');
      * ```
-     *
-     * @return void
      */
-    public function loginAsAdmin()
+    public function loginAsAdmin(): void
     {
         $this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
     }
@@ -93,10 +92,8 @@ trait WPBrowserMethods
      *
      * @param string $username The user login name.
      * @param string $password The user password in plain text.
-     *
-     * @return void
      */
-    public function loginAs($username, $password)
+    public function loginAs(string $username, string $password): void
     {
         $this->amOnPage($this->loginUrl);
 
@@ -110,10 +107,8 @@ trait WPBrowserMethods
 
     /**
      * Initializes the module setting the properties values.
-     *
-     * @return void
      */
-    public function _initialize()
+    public function _initialize(): void
     {
         parent::_initialize();
 
@@ -132,13 +127,9 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress authorization cookie or `null` if not found.
      */
-    protected function grabWordPressAuthCookie($pattern = null)
+    protected function grabWordPressAuthCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
-        if (! method_exists($this, 'grabCookiesWithPattern')) {
-            return null;
-        }
-
-        $pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
+        $pattern = $pattern ?: '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
 
         return empty($cookies) ? null : array_pop($cookies);
@@ -151,13 +142,9 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress login cookie or `null` if not found.
      */
-    protected function grabWordPressLoginCookie($pattern = null)
+    protected function grabWordPressLoginCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
-        if (! method_exists($this, 'grabCookiesWithPattern')) {
-            return null;
-        }
-
-        $pattern = $pattern ? $pattern : '/^wordpress_logged_in_[a-z0-9]{32}$/';
+        $pattern = $pattern ?: '/^wordpress_logged_in_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
 
         return empty($cookies) ? null : array_pop($cookies);
@@ -176,8 +163,10 @@ trait WPBrowserMethods
      * ```
      *
      * @return void
+     *
+     * @throws ModuleException If the class `pluginsPath` property is not set when the method is called.
      */
-    public function amOnPluginsPage()
+    public function amOnPluginsPage(): void
     {
         if (!isset($this->pluginsPath)) {
             throw new ModuleException($this, 'Plugins path is not set.');
@@ -196,10 +185,8 @@ trait WPBrowserMethods
      * $I->amOnPagesPage();
      * $I->see('Add New');
      * ```
-     *
-     * @return void
      */
-    public function amOnPagesPage()
+    public function amOnPagesPage(): void
     {
         $this->amOnPage($this->adminPath . '/edit.php?post_type=page');
     }
@@ -218,9 +205,9 @@ trait WPBrowserMethods
      *
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seePluginDeactivated($pluginSlug)
+    public function seePluginDeactivated(string $pluginSlug): void
     {
         $this->seePluginInstalled($pluginSlug);
         $this->seeElement("table.plugins tr[data-slug='$pluginSlug'].inactive");
@@ -240,9 +227,9 @@ trait WPBrowserMethods
      *
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seePluginInstalled($pluginSlug)
+    public function seePluginInstalled(string $pluginSlug): void
     {
         $this->seeElement("table.plugins tr[data-slug='$pluginSlug']");
     }
@@ -261,9 +248,9 @@ trait WPBrowserMethods
      *
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seePluginActivated($pluginSlug)
+    public function seePluginActivated(string $pluginSlug): void
     {
         $this->seePluginInstalled($pluginSlug);
         $this->seeElement("table.plugins tr[data-slug='$pluginSlug'].active");
@@ -283,9 +270,9 @@ trait WPBrowserMethods
      *
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function dontSeePluginInstalled($pluginSlug)
+    public function dontSeePluginInstalled(string $pluginSlug): void
     {
         $this->dontSeeElement("table.plugins tr[data-slug='$pluginSlug']");
     }
@@ -296,10 +283,6 @@ trait WPBrowserMethods
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the
-     *                                      `.notice.notice-error` ones.
-     *
-     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()
@@ -307,8 +290,12 @@ trait WPBrowserMethods
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seeErrorMessage($classes = '')
+    public function seeErrorMessage(string|array $classes = ''): void
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -327,10 +314,9 @@ trait WPBrowserMethods
      * $I->amOnAdminPage('/forbidden');
      * $I->seeWpDiePage();
      * ```
-     *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seeWpDiePage()
+    public function seeWpDiePage(): void
     {
         $this->seeElement('body#error-page');
     }
@@ -350,9 +336,9 @@ trait WPBrowserMethods
      *
      * @param array<string>|string $classes A list of classes the message should have in addition to the `.notice` one.
      *
-     * @return void
+     * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seeMessage($classes = '')
+    public function seeMessage(array|string $classes = ''): void
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -371,11 +357,11 @@ trait WPBrowserMethods
      * ```
      *
      *
-     * @param string $name Optional, overrides the default cookie name.
+     * @param string|null $name Optional, overrides the default cookie name.
      *
-     * @return \Symfony\Component\BrowserKit\Cookie|null Either a cookie object or `null`.
+     * @return Cookie|null Either a cookie object or `null`.
      */
-    public function grabWordPressTestCookie($name = null)
+    public function grabWordPressTestCookie(string $name = null): ?Cookie
     {
         $name = $name ?: 'wordpress_test_cookie';
 
@@ -397,11 +383,11 @@ trait WPBrowserMethods
      *
      * @param string $page The path, relative to the admin area URL, to the page.
      *
-     * @return string The admin page path.
+     * @return void
      */
-    public function amOnAdminPage($page)
+    public function amOnAdminPage(string $page): void
     {
-        return $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
+        $this->amOnPage($this->adminPath . '/' . ltrim($page, '/'));
     }
 
     /**
@@ -416,16 +402,16 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
-     * @return string The admin page path.
+     * @return void
      */
-    public function amOnAdminAjaxPage($queryVars = null)
+    public function amOnAdminAjaxPage(string|array $queryVars = null): void
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
             $path .= '?' . (is_array($queryVars) ? http_build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
-        return $this->amOnAdminPage($path);
+        $this->amOnAdminPage($path);
     }
 
     /**
@@ -439,16 +425,16 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
-     * @return string The page path.
+     * @return void
      */
-    public function amOnCronPage($queryVars = null)
+    public function amOnCronPage(string|array $queryVars = null) : void
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {
             $path .= '?' . (is_array($queryVars) ? http_build_query($queryVars) : ltrim($queryVars, '?'));
         }
 
-        return $this->amOnPage($path);
+        $this->amOnPage($path);
     }
 
     /**
@@ -465,24 +451,16 @@ trait WPBrowserMethods
      * ```
      *
      * @param int $id The post ID.
-     *
-     * @return void
      */
-    public function amEditingPostWithId($id)
+    public function amEditingPostWithId(int $id): void
     {
-        if (!is_numeric($id) || (int)$id !== $id) {
-            throw new \InvalidArgumentException('ID must be an int value');
-        }
-
         $this->amOnAdminPage('/post.php?post=' . $id . '&action=edit');
     }
 
     /**
      * Configures for back-compatibility.
-     *
-     * @return void
      */
-    protected function configBackCompat()
+    protected function configBackCompat(): void
     {
         if (isset($this->config['adminUrl']) && ! isset($this->config['adminPath'])) {
             $this->config['adminPath'] = $this->config['adminUrl'];
@@ -493,10 +471,8 @@ trait WPBrowserMethods
      * Sets the admin path.
      *
      * @param string $adminPath The admin path.
-     *
-     * @return void
      */
-    protected function setAdminPath($adminPath)
+    protected function setAdminPath(string $adminPath): void
     {
         $this->adminPath = $adminPath;
     }
@@ -506,7 +482,7 @@ trait WPBrowserMethods
      *
      * @return string The admin path.
      */
-    protected function getAdminPath()
+    protected function getAdminPath(): string
     {
         return $this->adminPath;
     }
@@ -515,10 +491,8 @@ trait WPBrowserMethods
      * Sets the login URL.
      *
      * @param string $loginUrl The login URL.
-     *
-     * @return void
      */
-    protected function setLoginUrl($loginUrl)
+    protected function setLoginUrl(string $loginUrl): void
     {
         $this->loginUrl = $loginUrl;
     }
@@ -528,7 +502,7 @@ trait WPBrowserMethods
      *
      * @return string The login URL.
      */
-    private function getLoginUrl()
+    private function getLoginUrl(): string
     {
         return $this->loginUrl;
     }
