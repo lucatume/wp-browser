@@ -20,10 +20,10 @@
   "minimum-stability": "dev",
   "prefer-stable" : true,
   "require": {
+    "php": "^8.0",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-json": "*",
-    "php": "^8.0",
     "codeception/codeception": "^5.0",
     "codeception/module-asserts":">=2.0",
     "codeception/module-phpbrowser":">=2.0",
