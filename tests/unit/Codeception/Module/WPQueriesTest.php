@@ -6,7 +6,7 @@ use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Traits\WithStubProphecy;
 
-class WPQueriesTest extends \Codeception\TestCase\Test
+class WPQueriesTest extends \Codeception\Test\Unit
 {
     use WithStubProphecy;
 

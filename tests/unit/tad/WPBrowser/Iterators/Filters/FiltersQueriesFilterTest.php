@@ -3,7 +3,7 @@ namespace tad\WPBrowser\Iterators\Filters;
 
 use tad\WPBrowser\Iterators\Filters\FiltersQueriesFilter as Filter;
 
-class FiltersQueriesFilterTest extends \Codeception\TestCase\Test
+class FiltersQueriesFilterTest extends \Codeception\Test\Unit
 {
     protected $backupGlobals = false;
     /**

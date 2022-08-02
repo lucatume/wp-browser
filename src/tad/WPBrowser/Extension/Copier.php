@@ -12,6 +12,7 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\recurseCopy;
+use function tad\WPBrowser\rrmdir;
 
 /**
  * Class Copier
@@ -24,7 +25,7 @@ class Copier extends Extension
      * A map of the events and callbacks the extension hooks on.
      * @var array<string,string>
      */
-    public static $events = [
+    public static array $events = [
         Events::MODULE_INIT => 'copyFiles',
         Events::SUITE_AFTER => 'removeFiles'
     ];
@@ -35,7 +36,7 @@ class Copier extends Extension
      * @param array<string,mixed> $config The extension configuration.
      * @param array<string,mixed> $options The extension options.
      */
-    public function __construct($config, $options)
+    public function __construct(array $config, array $options)
     {
         if (!empty($config['files'])) {
             $sources = array_keys($config['files']);
@@ -48,10 +49,8 @@ class Copier extends Extension
 
     /**
      * Copies the directory and files from the extension configuration.
-     *
-     * @return void
      */
-    public function copyFiles()
+    public function copyFiles(): void
     {
         if (empty($this->config['files'])) {
             return;
@@ -62,10 +61,8 @@ class Copier extends Extension
 
     /**
      * Removes the copied directories and files.
-     *
-     * @return void
      */
-    public function removeFiles()
+    public function removeFiles(): void
     {
         if (empty($this->config['files'])) {
             return;
@@ -79,11 +76,10 @@ class Copier extends Extension
      *
      * @param string $source The path to the source directory or file.
      *
-     * @return void
      *
      * @throws ExtensionException If the source directory or file is not readable or not accessible.
      */
-    protected function ensureSource($source)
+    protected function ensureSource(string $source): void
     {
         if (!(
             file_exists($source)
@@ -102,20 +98,19 @@ class Copier extends Extension
      *
      * @param string $destination The path to the copy destination.
      *
-     * @return void
      *
      * @throws ExtensionException If the destination is not accessible.
      */
-    protected function ensureDestination($destination)
+    protected function ensureDestination(string $destination): void
     {
-        $filename = dirname($destination);
+        $destinationDir = dirname($destination);
 
-        if (!(is_dir($filename))) {
-            throw new ExtensionException($this, sprintf('Destination parent dir [%s] does not exist.', $filename));
+        if (!(is_dir($destinationDir))) {
+            throw new ExtensionException($this, sprintf('Destination parent dir [%s] does not exist.', $destinationDir));
         }
 
-        if (!is_writable($filename)) {
-            throw new ExtensionException($this, sprintf('Destination parent dir [%s] is not writeable.', $filename));
+        if (!is_writable($destinationDir)) {
+            throw new ExtensionException($this, sprintf('Destination parent dir [%s] is not writable.', $destinationDir));
         }
 
         if (file_exists($destination)) {
@@ -128,17 +123,16 @@ class Copier extends Extension
      *
      * @param string $destination The absolute path to the destination to remove.
      *
-     * @return void
      *
      * @throws ExtensionException If the destination directory of file removal fails.
      */
-    protected function remove($destination)
+    protected function remove(string $destination): void
     {
         if (!file_exists($destination)) {
             return;
         }
 
-        if (!\tad\WPBrowser\rrmdir($destination)) {
+        if (!rrmdir($destination)) {
             throw new ExtensionException($this, sprintf('Removal of [%s] failed.', $destination));
         }
     }
@@ -149,11 +143,10 @@ class Copier extends Extension
      * @param string $destination The absolute path to the destination.
      * @param string $source The absolute path to the source.
      *
-     * @return void
      *
      * @throws ExtensionException If the copy from the source to the destination fails.
      */
-    protected function copy($destination, $source)
+    protected function copy(string $destination, string $source): void
     {
         if (!is_dir($source)) {
             copy($source, $destination);

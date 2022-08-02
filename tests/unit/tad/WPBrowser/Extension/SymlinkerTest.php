@@ -4,43 +4,29 @@ namespace tad\WPBrowser\Extension;
 
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
+use Codeception\Lib\Console\Output;
+use Codeception\Test\Unit;
+use Exception;
 use PHPUnit\Framework\AssertionFailedError;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Exception\IOException;
 use tad\WPBrowser\StubProphecy\Arg;
 use tad\WPBrowser\StubProphecy\FunctionProphecy as the_function;
+use tad\WPBrowser\StubProphecy\StubProphecy;
 use tad\WPBrowser\Traits\WithStubProphecy;
+use UnitTester;
+use Codeception\Event\PrintResultEvent;
 
-class SymlinkerTest extends \Codeception\TestCase\Test
+class SymlinkerTest extends Unit
 {
     use WithStubProphecy;
 
     protected $backupGlobals = false;
-
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
-
-    /**
-     * @var array
-     */
-    protected $config = ['mode' => 'plugin', 'destination' => __DIR__];
-
-    /**
-     * @var array
-     */
-    protected $options = ['silent' => true];
-
-    /**
-     * @var SuiteEvent
-     */
-    protected $event;
-
-    /**
-     * @var string
-     */
-    protected $filename;
+    protected UnitTester $tester;
+    protected array $config = ['mode' => 'plugin', 'destination' => __DIR__];
+    private array $options = ['silent' => true];
+    protected StubProphecy $event;
+    protected string $filename;
+    protected StubProphecy $printEvent;
 
     /**
      * @test
@@ -66,7 +52,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = [];
 
-        $this->expectException('Codeception\Exception\ExtensionException');
+        $this->expectException(ExtensionException::class);
 
         $this->make_instance();
     }
@@ -79,7 +65,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = ['mode' => 'plugin'];
 
-        $this->expectException('Codeception\Exception\ExtensionException');
+        $this->expectException(ExtensionException::class);
 
         $this->make_instance();
     }
@@ -92,7 +78,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
     {
         $this->config = ['mode' => 'something', 'destination' => __DIR__];
 
-        $this->expectException('Codeception\Exception\ExtensionException');
+        $this->expectException(ExtensionException::class);
 
         $this->make_instance();
     }
@@ -106,7 +92,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->config = ['mode' => 'something', 'destination' => __DIR__];
         the_function::is_dir(__DIR__)->willReturn(false);
 
-        $this->expectException('Codeception\Exception\ExtensionException');
+        $this->expectException(ExtensionException::class);
 
         $this->make_instance();
     }
@@ -121,7 +107,7 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         the_function::is_dir(__DIR__)->willReturn(true);
         the_function::is_writable(__DIR__)->willReturn(false);
 
-        $this->expectException('Codeception\Exception\ExtensionException');
+        $this->expectException(ExtensionException::class);
 
         $this->make_instance();
     }
@@ -778,37 +764,44 @@ class SymlinkerTest extends \Codeception\TestCase\Test
         $this->config = ['mode' => 'plugin', 'destination' => ['foo' => '/foo']];
         $this->event->getSettings()->willReturn([]);
         the_function::is_dir(Arg::type('string'))->will(static function ($filename) {
-            return $filename === '/foo' ?: is_dir($filename);
+            return $filename === '/foo' || is_dir($filename);
         });
         the_function::is_writable(Arg::type('string'))->will(static function ($filename) {
-            return $filename === '/foo' ?: is_writable($filename);
+            return $filename === '/foo' || is_writable($filename);
         });
         the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($dest) {
-            return $filename === $dest ?: is_file($filename);
+            return $filename === $dest || is_file($filename);
         });
         the_function::unlink(Arg::type('string'))->will(static function ($filename) use ($dest) {
             if ($filename !== $dest) {
                 return unlink($filename);
             }
 
-            throw new \Exception('Something happened');
+            throw new Exception('Something happened');
         });
         $sut = $this->make_instance();
-        $sut->setOutput(new BufferedOutput());
+        $testOutput = new class extends Output{
+            public function __construct()
+            {
+                parent::__construct([]);
+            }
+        };
+
+        $sut->setOutput($testOutput);
 
         $sut->unlink($this->event->reveal());
     }
 
     protected function _before()
     {
-        if (!(PHP_VERSION_ID >= 70000 && extension_loaded('uopz'))) {
+        if (!extension_loaded('uopz')) {
             $this->markTestSkipped('This test will require PHP 7.0+ and the uopz extension to run.');
         }
 
         $this->filename = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
 
-        $this->event = $this->stubProphecy('\Codeception\Event\SuiteEvent');
-        $this->printEvent = $this->stubProphecy('\Codeception\Event\PrintResultEvent');
+        $this->event = $this->stubProphecy(SuiteEvent::class);
+        $this->printEvent = $this->stubProphecy(PrintResultEvent::class);
     }
 
     protected function _after()
