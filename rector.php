@@ -24,6 +24,8 @@ return static function ( RectorConfig $rectorConfig ): void {
 	] );
 
 	$rectorConfig->import( SetList::PHP_80 );
+    $rectorConfig->import( SetList::TYPE_DECLARATION_STRICT );
+    $rectorConfig->import( SetList::PSR_4 );
 	$rectorConfig->rule(ReturnTypeFromStrictScalarReturnExprRector::class);
 	$rectorConfig->rule(AddClosureReturnTypeRector::class);
 	$rectorConfig->rule(AddReturnTypeDeclarationBasedOnParentClassMethodRector::class);
