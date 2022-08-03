@@ -3,11 +3,6 @@ namespace cli;
 
 use ClimoduleTester;
 
-use function putenv;
-use function sys_get_temp_dir;
-
-use const PHP_VERSION_ID;
-
 class EnvironmentCest
 {
     
@@ -131,9 +126,46 @@ class EnvironmentCest
         
         putenv('BAZ=global_BIZ');
     
-        // per process has priority.
-        $I->cli(['eval','"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"'], ['BAZ' => 'BIZ']);
+        try {
+            // per process has priority.
+            $I->cli(['eval','"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"'], ['BAZ' => 'BIZ']);
+            $I->seeInShellOutput('BIZ');
+        }finally {
+            putenv('BAZ');
+        }
+
+    }
+    
+    /**
+     * @test
+     */
+    public function that_global_env_variables_can_be_set_in_the_module(ClimoduleTester $I)
+    {
+        $I->haveInShellEnvironment(['FOO' => 'BAR']);
+        
+        $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+        $I->seeInShellOutput('BAR');
+        
+        $I->haveInShellEnvironment(['BAZ' => 'BIZ']);
+        // Present for all commands
+        $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+        $I->seeInShellOutput('BAR');
+        // Merged between calls
+        $I->cli(['eval','"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"']);
         $I->seeInShellOutput('BIZ');
+        
+        putenv('FOO=global_BAR');
+    
+        try {
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('BAR');
+    
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], ['FOO' => 'BAR_PROCESS']);
+            $I->seeInShellOutput('BAR_PROCESS');
+        }finally {
+            putenv('FOO');
+        }
+        
     }
     
 }

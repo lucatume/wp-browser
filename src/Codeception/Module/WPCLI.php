@@ -7,6 +7,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\TestInterface;
 use RuntimeException;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
@@ -17,6 +18,7 @@ use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Traits\WithWpCli;
 
+use function array_merge;
 use function array_replace;
 use function tad\WPBrowser\buildCommandline;
 use function tad\WPBrowser\requireCodeceptionModules;
@@ -104,7 +106,12 @@ class WPCLI extends Module
      * @var int|null
      */
     protected $lastResultCode;
-
+    
+    /**
+     * @var array
+     */
+    protected $global_env_vars = [];
+    
     /**
      * WPCLI constructor.
      *
@@ -118,6 +125,12 @@ class WPCLI extends Module
         $this->wpCliProcess = $process ?: new Process();
     }
 
+    public function _before(TestInterface $test)
+    {
+        parent::_before($test);
+        $this->global_env_vars = [];
+    }
+    
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
@@ -150,7 +163,16 @@ class WPCLI extends Module
 
         return $return[1];
     }
-
+    
+    /**
+     * @param  array<string,mixed> $env_vars Environment variables that are added to all commands.
+     *
+     * @return void
+     */
+    public function haveInShellEnvironment(array $env_vars) {
+        $this->global_env_vars = array_merge($this->global_env_vars, $env_vars);
+    }
+    
     /**
      * Runs a wp-cli command and returns its output and status.
      *
@@ -282,7 +304,7 @@ class WPCLI extends Module
      */
     protected function buildProcessEnv()
     {
-        return array_filter([
+        $wp_cli_env_args = array_filter([
             'WP_CLI_CACHE_DIR' => isset($this->config['env']['cache-dir']) ? $this->config['env']['cache-dir'] : false,
             'WP_CLI_CONFIG_PATH' => isset($this->config['env']['config-path']) ?
                 $this->config['env']['config-path']
@@ -298,6 +320,8 @@ class WPCLI extends Module
             'WP_CLI_PHP_ARGS' => isset($this->config['env']['php-args']) ? $this->config['env']['php-args'] : false,
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
+        
+        return array_replace($wp_cli_env_args, $this->global_env_vars);
     }
 
     /**
