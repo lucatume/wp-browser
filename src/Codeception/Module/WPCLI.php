@@ -146,6 +146,10 @@ class WPCLI extends Module
      *
      * @param array<string,string> $env Additional environment per process.
      *
+     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
+     *                          Env variables passed from the yaml configuration are still inherited if set to false.
+     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
+     *
      * @return int|string The command exit value; `0` usually means success.
      *
      *
@@ -162,9 +166,9 @@ class WPCLI extends Module
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
      */
-    public function cli($userCommand = 'core version', array $env = [])
+    public function cli($userCommand = 'core version', array $env = [], $inherit_env = true)
     {
-        $return = $this->run($userCommand, $env);
+        $return = $this->run($userCommand, $env, $inherit_env);
 
         return $return[1];
     }
@@ -182,37 +186,47 @@ class WPCLI extends Module
      * Runs a wp-cli command and returns its output and status.
      *
      * @param string|array<string> $userCommand The user command, in the format supported by the Symfony Process class.
-     * @param array<string,string> $env Additional environment per process.
+     *
+     * @param array<string,string> $process_env Additional environment per process.
+     *
+     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
+     *                          Env variables passed from the yaml configuration are still inherited if set to false.
+     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
      *
      * @return array<string|int> The command process output and status.
      *
      * @throws ModuleConfigException If the wp-cli path is wrong.
      * @throws ModuleException If there's an issue while running the command.
      */
-    protected function run($userCommand, array $env = [])
+    protected function run($userCommand, array $process_env = [], $inherit_env = true)
     {
         $this->validatePath();
 
         $userCommand = buildCommandline($userCommand);
 
+        $this->debugSection('command', $userCommand);
+
+        $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
+        $global_process_env = $this->buildProcessEnv();
+        // Allow per process env vars to overwrite global env vars.
+        $process_env = array_replace($global_process_env, $process_env);
+        
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that the process will pick it up while populating the env.
          */
-        putenv('WPBROWSER_HOST_REQUEST="1"');
-        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
-
-        $this->debugSection('command', $userCommand);
-
-        $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
-        // Allow per process env vars to overwrite global env vars.
-        $env = array_replace($this->buildProcessEnv(), $env);
-
+        if($inherit_env){
+            putenv('WPBROWSER_HOST_REQUEST="1"');
+            $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
+        }else {
+            $process_env = array_merge(['WPBROWSER_HOST_REQUEST' => '1'], $process_env);
+        }
+        
         $this->debugSection('command with configuration options', $command);
-        $this->debugSection('command with environment', $env);
+        $this->debugSection('command with environment', $process_env);
 
         try {
-            $process = $this->executeWpCliCommand($command, $this->timeout, $env);
+            $process = $this->executeWpCliCommand($command, $this->timeout, $process_env, $inherit_env);
         } catch (WpCliException $e) {
             if (!empty($this->config['throw'])) {
                 throw new ModuleException($this, $e->getMessage());
@@ -326,8 +340,7 @@ class WPCLI extends Module
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
         
-        $config_env_vars = $this->config['env'];
-        
+        $config_env_vars = isset($this->config['env']) ? $this->config['env'] : [];
         $config_env_vars = array_diff($config_env_vars, array_flip([
             'cache-dir',
             'config-path',
@@ -407,9 +420,9 @@ class WPCLI extends Module
      * });
      * ```
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null, array $env = [])
+    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null, array $env = [], $inherit_env = true)
     {
-        $output = (string)$this->cliToString($userCommand, $env);
+        $output = (string)$this->cliToString($userCommand, $env, $inherit_env);
 
         if (empty($output)) {
             return [];
@@ -466,9 +479,9 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      */
-    public function cliToString($userCommand, array $env = [])
+    public function cliToString($userCommand, array $env = [], $inherit_env = true)
     {
-        $return = $this->run($userCommand, $env);
+        $return = $this->run($userCommand, $env, $inherit_env);
 
         return $return[0];
     }

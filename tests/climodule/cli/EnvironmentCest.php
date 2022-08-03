@@ -210,4 +210,31 @@ class EnvironmentCest
             putenv('FOO');
         }
     }
+    
+    /**
+     * @test
+     */
+    public function that_inheriting_from_the_global_environment_can_be_prevented(ClimoduleTester $I)
+    {
+        putenv('FOO=global_BAR');
+    
+        try {
+            
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], [], false);
+            $I->seeInShellOutput('Not set');
+            
+            // This still works.
+            $I->haveInShellEnvironment(['FOO' => 'BAR']);
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], [], false);
+            $I->seeInShellOutput('BAR');
+            
+            // WP_BROWSER_HOST request marker is still set.
+            $I->cli(['eval','"var_dump(\$_SERVER[\'WPBROWSER_HOST_REQUEST\'] ?? \'Not set\');"'], [], false);
+            $I->seeInShellOutput('1');
+            
+        }finally {
+            putenv('FOO');
+        }
+    }
+    
 }
