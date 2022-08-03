@@ -16,6 +16,8 @@ use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Traits\WithWpCli;
+
+use function array_replace;
 use function tad\WPBrowser\buildCommandline;
 use function tad\WPBrowser\requireCodeceptionModules;
 
@@ -124,6 +126,8 @@ class WPCLI extends Module
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
      *
+     * @param array<string,string> $env Additional environment per process.
+     *
      * @return int|string The command exit value; `0` usually means success.
      *
      *
@@ -140,9 +144,9 @@ class WPCLI extends Module
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
      */
-    public function cli($userCommand = 'core version')
+    public function cli($userCommand = 'core version', array $env = [])
     {
-        $return = $this->run($userCommand);
+        $return = $this->run($userCommand, $env);
 
         return $return[1];
     }
@@ -151,13 +155,14 @@ class WPCLI extends Module
      * Runs a wp-cli command and returns its output and status.
      *
      * @param string|array<string> $userCommand The user command, in the format supported by the Symfony Process class.
+     * @param array<string,string> $env Additional environment per process.
      *
      * @return array<string|int> The command process output and status.
      *
      * @throws ModuleConfigException If the wp-cli path is wrong.
      * @throws ModuleException If there's an issue while running the command.
      */
-    protected function run($userCommand)
+    protected function run($userCommand, array $env = [])
     {
         $this->validatePath();
 
@@ -173,7 +178,8 @@ class WPCLI extends Module
         $this->debugSection('command', $userCommand);
 
         $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
-        $env = $this->buildProcessEnv();
+        // Allow per process env vars to overwrite global env vars.
+        $env = array_replace($this->buildProcessEnv(), $env);
 
         $this->debugSection('command with configuration options', $command);
         $this->debugSection('command with environment', $env);
@@ -340,6 +346,8 @@ class WPCLI extends Module
      *                                            supported method.
      * @param callable             $splitCallback An optional callback function to split the results array.
      *
+     * @param array<string,string> $env Additional environment per process.
+     *
      * @return array<string> An array containing the output of wp-cli split into single elements.
      *
      * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
@@ -357,9 +365,9 @@ class WPCLI extends Module
      * });
      * ```
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
+    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null, array $env = [])
     {
-        $output = (string)$this->cliToString($userCommand);
+        $output = (string)$this->cliToString($userCommand, $env);
 
         if (empty($output)) {
             return [];
@@ -400,6 +408,8 @@ class WPCLI extends Module
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
      *
+     * @param array<string,string> $env Additional environment per process.
+     *
      * @return int|string The command output, if any.
      *
      * @throws ModuleConfigException If the path to the WordPress installation does not exist.
@@ -414,9 +424,9 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      */
-    public function cliToString($userCommand)
+    public function cliToString($userCommand, array $env = [])
     {
-        $return = $this->run($userCommand);
+        $return = $this->run($userCommand, $env);
 
         return $return[0];
     }

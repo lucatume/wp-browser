@@ -121,4 +121,19 @@ class EnvironmentCest
 
     }
     
+    /**
+     * @test
+     */
+    public function that_per_process_environment_variables_can_be_set(ClimoduleTester $I)
+    {
+        $I->cli(['eval','"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"'], ['BAZ' => 'BIZ']);
+        $I->seeInShellOutput('BIZ');
+        
+        putenv('BAZ=global_BIZ');
+    
+        // per process has priority.
+        $I->cli(['eval','"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"'], ['BAZ' => 'BIZ']);
+        $I->seeInShellOutput('BIZ');
+    }
+    
 }
