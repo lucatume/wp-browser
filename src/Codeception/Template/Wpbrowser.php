@@ -19,8 +19,6 @@ use function tad\WPBrowser\dbDsnMap;
 use function tad\WPBrowser\dbDsnString;
 use function tad\WPBrowser\envFile;
 use function tad\WPBrowser\loadEnvMap;
-use function tad\WPBrowser\resolvePath;
-use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\urlDomain;
 
 /**
@@ -563,7 +561,7 @@ class Wpbrowser extends Bootstrap
         }
         foreach ($dirs as $dir) {
             if (file_exists(getcwd() . '/' . $dir)) {
-                rrmdir(getcwd() . '/' . $dir);
+                FS::rrmdir(getcwd() . '/' . $dir);
             }
         }
     }
@@ -978,7 +976,7 @@ EOF;
         /** @noinspection PhpUnhandledExceptionInspection */
         // @phpstan-ignore-next-line
         if (version_compare(Codecept::VERSION, '4.0.0', '>=')) {
-            checkComposerDependencies(composerFile(resolvePath('composer.json', $this->workDir)), [
+            checkComposerDependencies(composerFile(FS::resolvePath('composer.json', $this->workDir)), [
                 'codeception/module-asserts'          => '^1.0',
                 'codeception/module-phpbrowser'       => '^1.0',
                 'codeception/module-webdriver'        => '^1.0',

@@ -1,8 +1,12 @@
-<?php namespace tad\WPBrowser;
+<?php
 
-class filesystemTest extends \Codeception\Test\Unit
+namespace Unit\lucatume\WPBrowser\Utils;
+
+use Codeception\Test\Unit;
+use lucatume\WPBrowser\Utils\Filesystem;
+
+class FilesystemTest extends Unit
 {
-
     public function resolvePathDataSet()
     {
         return [
@@ -22,7 +26,7 @@ class filesystemTest extends \Codeception\Test\Unit
      */
     public function test_resolve_path($path, $root, $expected)
     {
-        $this->assertEquals($expected, resolvePath($path, $root));
+        $this->assertEquals($expected, Filesystem::resolvePath($path, $root));
     }
 
     public function findHereOrInParentDataSet()
@@ -41,7 +45,7 @@ class filesystemTest extends \Codeception\Test\Unit
      */
     public function test_find_here_or_in_parent($path, $root, $expected)
     {
-        $this->assertEquals($expected, findHereOrInParent($path, $root));
+        $this->assertEquals($expected, Filesystem::findHereOrInParent($path, $root));
     }
 
     public function test_rrmdir()
@@ -63,7 +67,7 @@ class filesystemTest extends \Codeception\Test\Unit
                 throw new \RuntimeException("Could not put file contents in file {$key}");
             }
         };
-        mkdirp($root, [
+        Filesystem::mkdirp($root, [
             'sub-dir-1' => [
                 'delme.txt' => 'delme'
             ],
@@ -110,11 +114,11 @@ class filesystemTest extends \Codeception\Test\Unit
         $this->assertDirectoryExists($root . '/sub-dir-3/sub-dir-3-3/sub-dir-3-3-1');
         $this->assertDirectoryExists($root . '/sub-dir-3/sub-dir-3-3/sub-dir-3-3-1/sub-dir-3-3-1-1');
 
-        rrmdir($root  .'/sub-dir-1/delme.txt');
+        Filesystem::rrmdir($root  .'/sub-dir-1/delme.txt');
 
         $this->assertFileNotExists($root  .'/sub-dir-1/delme.txt');
 
-        rrmdir($root);
+        Filesystem::rrmdir($root);
 
         if (method_exists($this, 'assertDirectoryDoesNotExist')) {
             $this->assertDirectoryDoesNotExist($root);
@@ -127,7 +131,7 @@ class filesystemTest extends \Codeception\Test\Unit
     {
         $dir = codecept_output_dir('one/two/three/four');
 
-        mkdirp($dir);
+        Filesystem::mkdirp($dir);
 
         $this->assertDirectoryExists(codecept_output_dir('one'));
         $this->assertDirectoryExists(codecept_output_dir('one/two'));

@@ -3,8 +3,8 @@
 namespace Step\Cli;
 
 use Symfony\Component\Yaml\Yaml;
-use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\vendorDir;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class CodeceptionCommand extends \CliTester
 {
@@ -63,6 +63,6 @@ class CodeceptionCommand extends \CliTester
 
     public function deleteSandbox()
     {
-        rrmdir($this->sandboxPath());
+        FS::rrmdir($this->sandboxPath());
     }
 }

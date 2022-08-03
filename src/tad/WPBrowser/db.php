@@ -8,6 +8,7 @@
 namespace tad\WPBrowser;
 
 use tad\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 /**
  * Imports a dump file using the `mysql` binary.
@@ -196,7 +197,7 @@ function dbDsnMap($dbHost)
             $map['type'] = $type ?: 'mysql';
             $unixSocket = $unixSocketMatches['socket'];
             if (strpos($unixSocket, '~') === 0) {
-                $unixSocket = str_replace('~', homeDir(), $unixSocket);
+                $unixSocket = str_replace('~', FS::homeDir(), $unixSocket);
             }
             $map['unix_socket'] = $unixSocket;
             break;

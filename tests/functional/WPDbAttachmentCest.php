@@ -1,7 +1,6 @@
 <?php
 
-
-use function tad\WPBrowser\rrmdir;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class WPDbAttachmentCest
 {
@@ -22,7 +21,7 @@ class WPDbAttachmentCest
     {
         foreach ($this->dirs as $dir) {
             if (is_dir($dir)) {
-                rrmdir($dir);
+                FS::rrmdir($dir);
             }
         }
     }

@@ -11,11 +11,10 @@ use Codeception\TestInterface;
 use tad\WPBrowser\Connector\WordPress as WordPressConnector;
 use function tad\WPBrowser\parseUrl;
 use function tad\WPBrowser\requireCodeceptionModules;
-use function tad\WPBrowser\resolvePath;
-use function tad\WPBrowser\untrailslashit;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 //phpcs:disable
-requireCodeceptionModules('WordPress', [ '\\Codeception\\Lib\\Framework' ]);
+requireCodeceptionModules('WordPress', [Framework::class]);
 //phpcs:enable
 
 /**
@@ -368,7 +367,7 @@ EOF;
     {
         if (empty($this->wpRootFolder)) {
             try {
-                $resolvedWpRoot = resolvePath((string)$this->config['wpRootFolder']);
+                $resolvedWpRoot = FS::resolvePath((string)$this->config['wpRootFolder']);
 
                 if ($resolvedWpRoot === false) {
                     throw new ModuleConfigException(
@@ -384,7 +383,7 @@ EOF;
                     'installation folder: directory not found.'
                 );
             }
-            if (!file_exists(untrailslashit((string)$this->wpRootFolder) . '/wp-settings.php')) {
+            if (!file_exists(FS::untrailslashit((string)$this->wpRootFolder) . '/wp-settings.php')) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "\nThe `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress installation " .

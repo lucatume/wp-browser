@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 use tad\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class WpbrowserTest extends \Codeception\Test\Unit
 {
@@ -206,7 +207,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         ));
         $workDir        = codecept_output_dir('Wpbrowser/' . __FUNCTION__);
         if (is_dir($workDir)) {
-            \tad\WPBrowser\rrmdir($workDir);
+            FS::rrmdir($workDir);
         }
         if (! ( mkdir($workDir, 0777, true) && is_dir($workDir) )) {
             throw new \RuntimeException('Could not create test output directory.');

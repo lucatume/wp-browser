@@ -15,12 +15,9 @@ use DateTimeImmutable;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\buildDate;
 use function tad\WPBrowser\requireCodeceptionModules;
-use function tad\WPBrowser\rrmdir;
-use function tad\WPBrowser\unleadslashit;
-use function tad\WPBrowser\untrailslashit;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 //phpcs:disable
 requireCodeceptionModules('WPFilesystem', [ 'Filesystem' ]);
@@ -109,7 +106,7 @@ class WPFilesystem extends Filesystem
                 'default' => '/wp-content/uploads',
             ],
         ];
-        $wpRoot = untrailslashit($this->config['wpRootFolder']);
+        $wpRoot = FS::untrailslashit($this->config['wpRootFolder']);
         foreach ($optionalPaths as $configKey => $info) {
             if (empty($this->config[$configKey])) {
                 $path = $info['default'];
@@ -117,7 +114,7 @@ class WPFilesystem extends Filesystem
                 $path = $this->config[$configKey];
             }
             if (!is_dir($path) || ($configKey === 'mu-plugins' && !is_dir(dirname($path)))) {
-                $path = unleadslashit(str_replace($wpRoot, '', $path));
+                $path = FS::unleadslashit(str_replace($wpRoot, '', $path));
                 $absolutePath = $wpRoot . DIRECTORY_SEPARATOR . $path;
             } else {
                 $absolutePath = $path;
@@ -136,7 +133,7 @@ class WPFilesystem extends Filesystem
                 }
             }
 
-            $this->config[$configKey] = untrailslashit($absolutePath) . DIRECTORY_SEPARATOR;
+            $this->config[$configKey] = FS::untrailslashit($absolutePath) . DIRECTORY_SEPARATOR;
         }
     }
 
@@ -166,7 +163,7 @@ class WPFilesystem extends Filesystem
         $wpRoot = $this->config['wpRootFolder'];
 
         if (!is_dir($wpRoot)) {
-            $wpRoot = codecept_root_dir(unleadslashit($wpRoot));
+            $wpRoot = codecept_root_dir(FS::unleadslashit($wpRoot));
         }
 
         $message = "[{$wpRoot}] is not a valid WordPress root folder.\n\nThe WordPress root folder is the one that "
@@ -180,7 +177,7 @@ class WPFilesystem extends Filesystem
             throw new ModuleConfigException(__CLASS__, $message);
         }
 
-        $this->config['wpRootFolder'] = untrailslashit($wpRoot) . DIRECTORY_SEPARATOR;
+        $this->config['wpRootFolder'] = FS::untrailslashit($wpRoot) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -210,7 +207,7 @@ class WPFilesystem extends Filesystem
             foreach ($this->toClean as $target) {
                 if (is_dir($target)) {
                     $this->debug("Removing [{$target}]...");
-                    rrmdir($target);
+                    FS::rrmdir($target);
                 } elseif (file_exists($target)) {
                     $this->debug("Removing [{$target}]...");
                     unlink($target);
@@ -240,8 +237,8 @@ class WPFilesystem extends Filesystem
             $path = $this->config['uploads'];
         } else {
             $path = (string)$path;
-            if (is_dir($this->config['uploads'] . DIRECTORY_SEPARATOR . unleadslashit($path))) {
-                $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . unleadslashit($path);
+            if (is_dir($this->config['uploads'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path))) {
+                $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path);
             } else {
                 // time based?
                 $date = buildDate($path);
@@ -304,13 +301,13 @@ class WPFilesystem extends Filesystem
             $this->buildDateFrag($date)
             : '';
 
-        $uploads = untrailslashit($this->config['uploads']);
+        $uploads = FS::untrailslashit($this->config['uploads']);
         $path = $file;
         if (false === strpos($file, $uploads)) {
             $path = implode(DIRECTORY_SEPARATOR, array_filter([
                 $uploads,
                 $dateFrag,
-                unleadslashit($file),
+                FS::unleadslashit($file),
             ]));
         }
 
@@ -439,7 +436,7 @@ class WPFilesystem extends Filesystem
     {
         $dir = $this->getUploadsPath($dir, $date);
         $this->debug('Deleting folder ' . $dir);
-        if (!rrmdir($dir)) {
+        if (!FS::rrmdir($dir)) {
             throw new ModuleException(__CLASS__, "Could not remove the [{$dir}] folder.");
         }
     }
@@ -592,7 +589,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInPluginPath($path)
     {
-        $this->amInPath($this->config['plugins'] . DIRECTORY_SEPARATOR . unleadslashit($path));
+        $this->amInPath($this->config['plugins'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
     }
 
     /**
@@ -613,7 +610,7 @@ class WPFilesystem extends Filesystem
     {
         $this->copyDir(
             $src,
-            $this->config['plugins'] . unleadslashit($pluginDst)
+            $this->config['plugins'] . FS::unleadslashit($pluginDst)
         );
     }
 
@@ -631,7 +628,7 @@ class WPFilesystem extends Filesystem
      */
     public function deletePluginFile($file)
     {
-        $this->deleteFile($this->config['plugins'] . unleadslashit($file));
+        $this->deleteFile($this->config['plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -650,7 +647,7 @@ class WPFilesystem extends Filesystem
     public function writeToPluginFile($file, $data)
     {
         $this->writeToFile(
-            $this->config['plugins'] . unleadslashit($file),
+            $this->config['plugins'] . FS::unleadslashit($file),
             $data
         );
     }
@@ -669,7 +666,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeePluginFileFound($file)
     {
-        $this->dontSeeFileFound($this->config['plugins'] . unleadslashit($file));
+        $this->dontSeeFileFound($this->config['plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -686,7 +683,7 @@ class WPFilesystem extends Filesystem
      */
     public function seePluginFileFound($file)
     {
-        $this->seeFileFound($this->config['plugins'] . unleadslashit($file));
+        $this->seeFileFound($this->config['plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -705,7 +702,7 @@ class WPFilesystem extends Filesystem
     public function seeInPluginFile($file, $contents)
     {
         PHPUnitAssert::assertStringEqualsFile(
-            $this->config['plugins'] . unleadslashit($file),
+            $this->config['plugins'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -726,7 +723,7 @@ class WPFilesystem extends Filesystem
     public function dontSeeInPluginFile($file, $contents)
     {
         PHPUnitAssert::assertStringNotEqualsFile(
-            $this->config['plugins'] . unleadslashit($file),
+            $this->config['plugins'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -745,7 +742,7 @@ class WPFilesystem extends Filesystem
      */
     public function cleanPluginDir($dir)
     {
-        $this->cleanDir($this->config['plugins'] . unleadslashit($dir));
+        $this->cleanDir($this->config['plugins'] . FS::unleadslashit($dir));
     }
 
     /**
@@ -762,7 +759,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInThemePath($path)
     {
-        $this->amInPath($this->config['themes'] . DIRECTORY_SEPARATOR . unleadslashit($path));
+        $this->amInPath($this->config['themes'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
     }
 
     /**
@@ -782,7 +779,7 @@ class WPFilesystem extends Filesystem
     {
         $this->copyDir(
             $src,
-            $this->config['themes'] . unleadslashit($themeDst)
+            $this->config['themes'] . FS::unleadslashit($themeDst)
         );
     }
 
@@ -800,7 +797,7 @@ class WPFilesystem extends Filesystem
      */
     public function deleteThemeFile($file)
     {
-        $this->deleteFile($this->config['themes'] . unleadslashit($file));
+        $this->deleteFile($this->config['themes'] . FS::unleadslashit($file));
     }
 
     /**
@@ -819,7 +816,7 @@ class WPFilesystem extends Filesystem
     public function writeToThemeFile($file, $data)
     {
         $this->writeToFile(
-            $this->config['themes'] . unleadslashit($file),
+            $this->config['themes'] . FS::unleadslashit($file),
             $data
         );
     }
@@ -838,7 +835,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeThemeFileFound($file)
     {
-        $this->dontSeeFileFound($this->config['themes'] . unleadslashit($file));
+        $this->dontSeeFileFound($this->config['themes'] . FS::unleadslashit($file));
     }
 
     /**
@@ -855,7 +852,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeThemeFileFound($file)
     {
-        $this->seeFileFound($this->config['themes'] . unleadslashit($file));
+        $this->seeFileFound($this->config['themes'] . FS::unleadslashit($file));
     }
 
     /**
@@ -876,7 +873,7 @@ class WPFilesystem extends Filesystem
     public function seeInThemeFile($file, $contents)
     {
         PHPUnitAssert::assertStringEqualsFile(
-            $this->config['themes'] . unleadslashit($file),
+            $this->config['themes'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -897,7 +894,7 @@ class WPFilesystem extends Filesystem
     public function dontSeeInThemeFile($file, $contents)
     {
         PHPUnitAssert::assertStringNotEqualsFile(
-            $this->config['themes'] . unleadslashit($file),
+            $this->config['themes'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -916,7 +913,7 @@ class WPFilesystem extends Filesystem
      */
     public function cleanThemeDir($dir)
     {
-        $this->cleanDir($this->config['themes'] . unleadslashit($dir));
+        $this->cleanDir($this->config['themes'] . FS::unleadslashit($dir));
     }
 
     /**
@@ -933,7 +930,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInMuPluginPath($path)
     {
-        $this->amInPath($this->config['mu-plugins'] . DIRECTORY_SEPARATOR . unleadslashit($path));
+        $this->amInPath($this->config['mu-plugins'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
     }
 
     /**
@@ -953,7 +950,7 @@ class WPFilesystem extends Filesystem
     {
         $this->copyDir(
             $src,
-            $this->config['mu-plugins'] . unleadslashit($pluginDst)
+            $this->config['mu-plugins'] . FS::unleadslashit($pluginDst)
         );
     }
 
@@ -971,7 +968,7 @@ class WPFilesystem extends Filesystem
      */
     public function deleteMuPluginFile($file)
     {
-        $this->deleteFile($this->config['mu-plugins'] . unleadslashit($file));
+        $this->deleteFile($this->config['mu-plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -990,7 +987,7 @@ class WPFilesystem extends Filesystem
     public function writeToMuPluginFile($file, $data)
     {
         $this->writeToFile(
-            $this->config['mu-plugins'] . unleadslashit($file),
+            $this->config['mu-plugins'] . FS::unleadslashit($file),
             $data
         );
     }
@@ -1009,7 +1006,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeMuPluginFileFound($file)
     {
-        $this->dontSeeFileFound($this->config['mu-plugins'] . unleadslashit($file));
+        $this->dontSeeFileFound($this->config['mu-plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -1026,7 +1023,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeMuPluginFileFound($file)
     {
-        $this->seeFileFound($this->config['mu-plugins'] . unleadslashit($file));
+        $this->seeFileFound($this->config['mu-plugins'] . FS::unleadslashit($file));
     }
 
     /**
@@ -1045,7 +1042,7 @@ class WPFilesystem extends Filesystem
     public function seeInMuPluginFile($file, $contents)
     {
         PHPUnitAssert::assertStringEqualsFile(
-            $this->config['mu-plugins'] . unleadslashit($file),
+            $this->config['mu-plugins'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -1066,7 +1063,7 @@ class WPFilesystem extends Filesystem
     public function dontSeeInMuPluginFile($file, $contents)
     {
         PHPUnitAssert::assertStringNotEqualsFile(
-            $this->config['mu-plugins'] . unleadslashit($file),
+            $this->config['mu-plugins'] . FS::unleadslashit($file),
             $contents
         );
     }
@@ -1085,7 +1082,7 @@ class WPFilesystem extends Filesystem
      */
     public function cleanMuPluginDir($dir)
     {
-        $this->cleanDir($this->config['mu-plugins'] . unleadslashit($dir));
+        $this->cleanDir($this->config['mu-plugins'] . FS::unleadslashit($dir));
     }
 
     /**
@@ -1112,7 +1109,7 @@ class WPFilesystem extends Filesystem
     public function havePlugin($path, $code)
     {
         $path = str_replace('\\', '/', $path);
-        $fullPath = $this->config['plugins'] . unleadslashit($path);
+        $fullPath = $this->config['plugins'] . FS::unleadslashit($path);
 
         if (!isset(pathinfo($fullPath)['extension'])) {
             $fullPath .= '.php';
@@ -1182,7 +1179,7 @@ PHP;
      */
     public function haveMuPlugin($filename, $code)
     {
-        $fullPath = $this->config['mu-plugins'] . unleadslashit($filename);
+        $fullPath = $this->config['mu-plugins'] . FS::unleadslashit($filename);
 
         if (!isset(pathinfo($fullPath)['extension'])) {
             $fullPath .= '.php';
@@ -1251,7 +1248,7 @@ PHP;
      */
     public function haveTheme($folder, $indexFileCode, $functionsFileCode = '')
     {
-        $dir = $this->config['themes'] . untrailslashit(unleadslashit($folder));
+        $dir = $this->config['themes'] . FS::untrailslashit(FS::unleadslashit($folder));
         $styleFile = $dir . DIRECTORY_SEPARATOR . 'style.css';
         $indexFile = $dir . DIRECTORY_SEPARATOR . 'index.php';
         $functionsFile = $dir . DIRECTORY_SEPARATOR . 'functions.php';
@@ -1322,7 +1319,7 @@ CSS;
      */
     public function getWpRootFolder()
     {
-        return untrailslashit($this->config['wpRootFolder']);
+        return FS::untrailslashit($this->config['wpRootFolder']);
     }
 
     /**
@@ -1352,14 +1349,14 @@ CSS;
             $this->buildDateFrag($date)
             : '';
 
-        $uploads = untrailslashit($this->config['uploads']) . "/sites/{$blogId}";
+        $uploads = FS::untrailslashit($this->config['uploads']) . "/sites/{$blogId}";
         $path = $file;
 
         if (false === strpos($file, $uploads)) {
             $path = implode(DIRECTORY_SEPARATOR, array_filter([
                 $uploads,
                 $dateFrag,
-                unleadslashit($file),
+                FS::unleadslashit($file),
             ]));
         }
 

@@ -10,9 +10,7 @@ namespace tad\WPBrowser\Extension;
 use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
-use tad\WPBrowser\Filesystem\Utils;
-use function tad\WPBrowser\recurseCopy;
-use function tad\WPBrowser\rrmdir;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 /**
  * Class Copier
@@ -132,7 +130,7 @@ class Copier extends Extension
             return;
         }
 
-        if (!rrmdir($destination)) {
+        if (!FS::rrmdir($destination)) {
             throw new ExtensionException($this, sprintf('Removal of [%s] failed.', $destination));
         }
     }
@@ -152,7 +150,7 @@ class Copier extends Extension
             copy($source, $destination);
             return;
         }
-        if (!recurseCopy($source, $destination)) {
+        if (!FS::recurseCopy($source, $destination)) {
             throw new ExtensionException(
                 $this,
                 sprintf('Copy of [%s:%s] failed.', $source, $destination)

@@ -7,13 +7,11 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use tad\WPBrowser\Filesystem\Utils;
 use tad\WPBrowser\Traits\WithStubProphecy;
 use function tad\WPBrowser\normalizeNewLine;
 use function tad\WPBrowser\readPrivateProperty;
-use function tad\WPBrowser\rrmdir;
 use function tad\WPBrowser\setPrivateProperties;
-use function tad\WPBrowser\untrailslashit;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {
@@ -67,7 +65,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $this->sandbox = codecept_output_dir('sandbox' . $wpFolder);
 
-        rrmdir($this->sandbox);
+        FS::rrmdir($this->sandbox);
 
         mkdir($this->sandbox . $wpFolder, 0777, true);
         file_put_contents($this->sandbox . '/wp-load.php', '<?php //silence is golden;');
@@ -124,7 +122,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->_initialize();
 
         $moduleConfig = $sut->_getConfig();
-        $this->assertEquals(untrailslashit($wpRoot) . '/', $moduleConfig['wpRootFolder']);
+        $this->assertEquals(FS::untrailslashit($wpRoot) . '/', $moduleConfig['wpRootFolder']);
         $this->assertEquals($wpRoot . '/wp-content/themes/', $moduleConfig['themes']);
         $this->assertEquals($wpRoot . '/wp-content/plugins/', $moduleConfig['plugins']);
         $this->assertEquals($wpRoot . '/wp-content/mu-plugins/', $moduleConfig['mu-plugins']);
@@ -770,7 +768,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
     protected function _after()
     {
         if (! empty($this->sandbox) && file_exists($this->sandbox)) {
-            rrmdir($this->sandbox);
+            FS::rrmdir($this->sandbox);
         }
     }
 

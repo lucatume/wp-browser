@@ -4,7 +4,7 @@ namespace tad\WPBrowser\Extension;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use org\bovigo\vfs\vfsStream;
-use function tad\WPBrowser\rrmdir;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class CopierTest extends \Codeception\Test\Unit
 {
@@ -333,7 +333,7 @@ class CopierTest extends \Codeception\Test\Unit
     {
         $destination = codecept_data_dir('destination');
         if (file_exists($destination)) {
-            rrmdir($destination);
+            FS::rrmdir($destination);
         }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+
 namespace tad\WPBrowser\Tests;
 
 abstract class BaseTest extends \Codeception\Test\Unit
@@ -7,7 +9,7 @@ abstract class BaseTest extends \Codeception\Test\Unit
     protected function createWorkDir($workDir)
     {
         if (is_dir($workDir)) {
-            \tad\WPBrowser\rrmdir($workDir);
+            FS::rrmdir($workDir);
         }
 
         if (! mkdir($workDir, 0777, true)) {

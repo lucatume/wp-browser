@@ -24,10 +24,7 @@ use tad\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
-use function tad\WPBrowser\findHereOrInParent;
-use function tad\WPBrowser\resolvePath;
-use function tad\WPBrowser\unleadslashit;
-use function tad\WPBrowser\untrailslashit;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 /**
  * Class WPLoader
@@ -406,7 +403,7 @@ class WPLoader extends Module
         if (empty($this->wpRootFolder)) {
             $wpRootFolder = $this->config['wpRootFolder'];
             // Maybe the user is using the `~` symbol for home?
-            $wpRootFolder = (string)resolvePath($wpRootFolder);
+            $wpRootFolder = (string)FS::resolvePath($wpRootFolder);
             // Remove `\ ` spaces in folder paths.
             $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
             // Resolve to real path if relative or symlinked.
@@ -414,10 +411,10 @@ class WPLoader extends Module
                 $wpRootFolder = $realPath;
             }
             // Allow me not to bother with trailing slashes.
-            $this->wpRootFolder = untrailslashit($wpRootFolder) . '/';
+            $this->wpRootFolder = FS::untrailslashit($wpRootFolder) . '/';
         }
 
-        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . unleadslashit($path);
+        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
     }
 
     /**
@@ -596,7 +593,7 @@ class WPLoader extends Module
         }
 
         try {
-            $resolved = resolvePath($candidate, $this->getWpRootFolder());
+            $resolved = FS::resolvePath($candidate, $this->getWpRootFolder());
             if ($resolved === false) {
                 throw new \RuntimeException('Could not resolve path.');
             }
@@ -607,7 +604,7 @@ class WPLoader extends Module
             );
         }
 
-        $this->pluginDir = (string)untrailslashit($resolved);
+        $this->pluginDir = FS::untrailslashit($resolved);
 
         return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
     }
@@ -622,7 +619,7 @@ class WPLoader extends Module
         $this->ensureServerVars();
 
         $this->setupLoadWatchers();
-        include_once untrailslashit($this->wpRootFolder) . '/wp-load.php';
+        include_once FS::untrailslashit($this->wpRootFolder) . '/wp-load.php';
         $this->removeLoadWatchers();
 
         $this->setupCurrentSite();
@@ -1028,7 +1025,7 @@ class WPLoader extends Module
 
         foreach ((array)$candidates as $candidate) {
             if (! empty($candidate)) {
-                $configFile = (string)findHereOrInParent($candidate, $root);
+                $configFile = (string)FS::findHereOrInParent($candidate, $root);
                 if (! is_file($configFile)) {
                     throw new ModuleConfigException(
                         __CLASS__,
@@ -1089,7 +1086,7 @@ class WPLoader extends Module
         }
 
         try {
-            $resolved = resolvePath($candidate, $this->getWpRootFolder());
+            $resolved = FS::resolvePath($candidate, $this->getWpRootFolder());
             if ($resolved === false) {
                 throw new \RuntimeException('Could not resolve path.');
             }
@@ -1100,7 +1097,7 @@ class WPLoader extends Module
             );
         }
 
-        $this->contentDir = (string)untrailslashit($resolved);
+        $this->contentDir = FS::untrailslashit($resolved);
 
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
     }
