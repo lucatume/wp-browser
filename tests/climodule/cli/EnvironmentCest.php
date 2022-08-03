@@ -3,6 +3,8 @@ namespace cli;
 
 use ClimoduleTester;
 
+use function putenv;
+
 class EnvironmentCest
 {
     
@@ -168,4 +170,44 @@ class EnvironmentCest
         
     }
     
+    /**
+     * @test
+     */
+    public function that_global_env_variables_can_be_passed_from_the_config_file(ClimoduleTester $I)
+    {
+        // This emulates having a FOO key under the env config.
+        $I->setCliEnv('FOO', 'BAR');
+        $I->setCliEnv('disable-auto-check-update','1');
+        
+        $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+        $I->seeInShellOutput('BAR');
+        
+        $I->cli(['eval','"var_dump(\$_SERVER[\'disable-auto-check-update\'] ?? \'Not set\');"']);
+        $I->seeInShellOutput('Not set');
+    
+        $I->cli(['eval','"var_dump(\$_SERVER[\'WP_CLI_DISABLE_AUTO_CHECK_UPDATE\'] ?? \'Not set\');"']);
+        $I->seeInShellOutput('1');
+        
+        putenv('FOO=global_BAR');
+        
+        try {
+            // per process putenv() DOES NOT HAVE priority. Use $I->haveInShellEnvironment() for that.
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('BAR');
+    
+            putenv('FOO');
+            
+            $I->haveInShellEnvironment(['FOO' => 'BAR_SHELL_ENV']);
+    
+            // per process global env variables still have priority.
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('BAR_SHELL_ENV');
+            
+            // per process env variables still have priority.
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], ['FOO' => 'BAR_PROCESS']);
+            $I->seeInShellOutput('BAR_PROCESS');
+        }finally {
+            putenv('FOO');
+        }
+    }
 }

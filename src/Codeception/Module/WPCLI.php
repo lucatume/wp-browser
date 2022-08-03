@@ -18,10 +18,15 @@ use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Traits\WithWpCli;
 
+use function array_diff;
+use function array_flip;
+use function array_intersect_key;
+use function array_keys;
 use function array_merge;
 use function array_replace;
 use function tad\WPBrowser\buildCommandline;
 use function tad\WPBrowser\requireCodeceptionModules;
+use function var_dump;
 
 //phpcs:disable
 requireCodeceptionModules('WPCLI', [ 'Cli' ]);
@@ -321,7 +326,20 @@ class WPCLI extends Module
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
         
-        return array_replace($wp_cli_env_args, $this->global_env_vars);
+        $config_env_vars = $this->config['env'];
+        
+        $config_env_vars = array_diff($config_env_vars, array_flip([
+            'cache-dir',
+            'config-path',
+            'custom-shell',
+            'disable-auto-check-update',
+            'packages-dir',
+            'php',
+            'php-args',
+            'strict-args'
+        ]));
+    
+        return array_merge($config_env_vars, $wp_cli_env_args, $this->global_env_vars);
     }
 
     /**
