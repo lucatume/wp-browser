@@ -269,6 +269,33 @@ class EnvironmentCest
         }
     }
     
+    /**
+     * @test
+     */
+    public function that_inheriting_some_global_environment_variables_can_be_prevented_from_the_configuration(ClimoduleTester $I)
+    {
+        if(PHP_VERSION_ID < 70100) {
+            $I->markTestSkipped('Blocking some global env vars is not possible on PHP < 7.1');
+            return;
+        }
+        
+        putenv('FOO_BLOCKED=global_FOO');
+        try {
+            
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('Not set');
     
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'], ['FOO_BLOCKED'=> 'THIS_WORKS']);
+            $I->seeInShellOutput('THIS_WORKS');
+            
+            $I->haveInShellEnvironment(['FOO_BLOCKED', 'THIS_WORKS_TOO']);
+    
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'], ['FOO_BLOCKED'=> 'THIS_WORKS_TOO']);
+            $I->seeInShellOutput('THIS_WORKS_TOO');
+            
+        }finally {
+            putenv('FOO_BLOCKED');
+        }
+    }
     
 }

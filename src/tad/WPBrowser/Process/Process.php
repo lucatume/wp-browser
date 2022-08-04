@@ -124,7 +124,7 @@ class Process extends Command
      *
      * @return Process A modified clone of the current process.
      */
-    public function withBlockGlobalEnv(array $env_var_names)
+    public function withBlockedGlobalEnv(array $env_var_names)
     {
         $clone = clone $this;
         $clone->blockEnvVars = $env_var_names;
@@ -208,6 +208,8 @@ class Process extends Command
          *
          * In that case we want to use the global environment.
          */
+        $blocked_env = array_flip($this->blockEnvVars);
+        
         if (empty($explicit_env)) {
             /*
              * On PHP < 7.1 we can't call getenv() to get all env vars.
@@ -224,9 +226,10 @@ class Process extends Command
              * On PHP >=7.1 we can merge $_ENV and getenv() so that also
              * $_ENV variables are inherited and not only those set by putenv
              */
-            $env = array_merge($_ENV, getenv());
-            
-            return array_diff_key($env, array_flip($this->blockEnvVars));
+            return array_diff_key(
+                array_merge($_ENV,getenv()),
+                $blocked_env
+            );
         }
         /*
          * 3. Case: The user wants to give this process additional env args.
@@ -243,12 +246,15 @@ class Process extends Command
              * However values set by users with putenv() are not passed. But this
              * was broken previously anyway.
              */
-            $env = array_merge($_ENV, $explicit_env);
+            $runner_env = array_diff_key($_ENV, $blocked_env);
         }else {
-            $env = array_merge($_ENV, getenv(), $explicit_env);
+            $runner_env = array_diff_key(
+                array_merge($_ENV, getenv()),
+                $blocked_env
+            );
         }
     
-        return array_diff_key($env, array_flip($this->blockEnvVars));
+        return array_merge($runner_env, $explicit_env);
     }
     
 }

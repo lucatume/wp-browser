@@ -10,6 +10,8 @@ modules:
         WPCLI:
             path: '%WORDPRESS_ROOT_DIR%'
             allow-root: 1
+            without_env:
+              - FOO_BLOCKED
         WPDb:
               dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
               user: %WORDPRESS_DB_USER%

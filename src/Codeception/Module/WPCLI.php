@@ -57,7 +57,8 @@ class WPCLI extends Module
         'quiet' => true,
         'env' => [
             'strict-args' => false
-        ]
+        ],
+        'without_env' => true,
     ];
 
     /**
@@ -139,7 +140,12 @@ class WPCLI extends Module
     {
         parent::_before($test);
         $this->global_env_vars = [];
-        $this->blocked_global_env_vars = [];
+        
+        if(isset($this->config['without_env'])){
+            $this->blocked_global_env_vars = (array) $this->config['without_env'];
+        }else {
+            $this->blocked_global_env_vars = [];
+        }
     }
     
     /**
@@ -185,7 +191,10 @@ class WPCLI extends Module
      * @return void
      */
     public function haveInShellEnvironment(array $env_vars) {
-        $this->global_env_vars = array_merge($this->global_env_vars, $env_vars);
+        $this->global_env_vars = array_merge(
+            $this->global_env_vars,
+            $env_vars
+        );
     }
     
     /**
@@ -197,7 +206,10 @@ class WPCLI extends Module
      */
     public function dontInheritShellEnvironment(array $blocked_env_var_names)
     {
-        $this->blocked_global_env_vars = $blocked_env_var_names;
+        $this->blocked_global_env_vars = array_merge(
+            $this->blocked_global_env_vars,
+            $blocked_env_var_names
+        );
     }
     
     /**

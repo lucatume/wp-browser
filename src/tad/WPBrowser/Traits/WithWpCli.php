@@ -217,7 +217,7 @@ trait WithWpCli
         
         $process = $this->wpCliProcess->withCommand($fullCommand)
                                       ->withCwd($this->wpCliWpRootDir)
-                                      ->withBlockGlobalEnv($this->blocked_global_env_vars);
+                                      ->withBlockedGlobalEnv($this->blocked_global_env_vars);
         
         $process->setTimeout($timeout);
         $process->inheritEnvironmentVariables($inherit_env);
