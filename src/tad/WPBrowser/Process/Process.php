@@ -10,6 +10,8 @@ namespace tad\WPBrowser\Process;
 
 use mikehaertl\shellcommand\Command;
 
+use function array_diff_key;
+use function array_flip;
 use function array_merge;
 use function getenv;
 
@@ -22,6 +24,11 @@ class Process extends Command
      * @var bool
      */
     protected $inheritEnvironmentVariables;
+    
+    /**
+     * @var string[]
+     */
+    private $blockEnvVars = [];
     
     /**
      * Sets the process output.
@@ -107,6 +114,20 @@ class Process extends Command
     {
         $clone = clone $this;
         $clone->procEnv = $env;
+        return $clone;
+    }
+    
+    /**
+     * Returns an instance of this process that will not inherit the specified env var names.
+     *
+     * @param string[] $env_var_names Global env vars not to inherit.
+     *
+     * @return Process A modified clone of the current process.
+     */
+    public function withBlockGlobalEnv(array $env_var_names)
+    {
+        $clone = clone $this;
+        $clone->blockEnvVars = $env_var_names;
         return $clone;
     }
     
@@ -203,7 +224,9 @@ class Process extends Command
              * On PHP >=7.1 we can merge $_ENV and getenv() so that also
              * $_ENV variables are inherited and not only those set by putenv
              */
-            return array_merge($_ENV, getenv());
+            $env = array_merge($_ENV, getenv());
+            
+            return array_diff_key($env, array_flip($this->blockEnvVars));
         }
         /*
          * 3. Case: The user wants to give this process additional env args.
@@ -220,9 +243,12 @@ class Process extends Command
              * However values set by users with putenv() are not passed. But this
              * was broken previously anyway.
              */
-            return array_merge($_ENV, $explicit_env);
+            $env = array_merge($_ENV, $explicit_env);
+        }else {
+            $env = array_merge($_ENV, getenv(), $explicit_env);
         }
-        return array_merge($_ENV, getenv(), $explicit_env);
+    
+        return array_diff_key($env, array_flip($this->blockEnvVars));
     }
     
 }

@@ -118,6 +118,11 @@ class WPCLI extends Module
     protected $global_env_vars = [];
     
     /**
+     * @var array
+     */
+    protected $blocked_global_env_vars = [];
+    
+    /**
      * WPCLI constructor.
      *
      * @param ModuleContainer $moduleContainer The module container containing this module.
@@ -134,6 +139,7 @@ class WPCLI extends Module
     {
         parent::_before($test);
         $this->global_env_vars = [];
+        $this->blocked_global_env_vars = [];
     }
     
     /**
@@ -174,12 +180,24 @@ class WPCLI extends Module
     }
     
     /**
-     * @param  array<string,mixed> $env_vars Environment variables that are added to all commands.
+     * @param array<string,mixed> $env_vars Environment variables that are added to all commands.
      *
      * @return void
      */
     public function haveInShellEnvironment(array $env_vars) {
         $this->global_env_vars = array_merge($this->global_env_vars, $env_vars);
+    }
+    
+    /**
+     * @note PHP7.1+ only
+     *
+     * @param string[] $blocked_env_var_names Environment variables names that are not inherited from the (global) runner shell.
+     *
+     * @return void
+     */
+    public function dontInheritShellEnvironment(array $blocked_env_var_names)
+    {
+        $this->blocked_global_env_vars = $blocked_env_var_names;
     }
     
     /**

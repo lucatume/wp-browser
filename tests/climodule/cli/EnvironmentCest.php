@@ -214,7 +214,7 @@ class EnvironmentCest
     /**
      * @test
      */
-    public function that_inheriting_from_the_global_environment_can_be_prevented(ClimoduleTester $I)
+    public function that_inheriting_anything_from_the_global_environment_can_be_prevented(ClimoduleTester $I)
     {
         putenv('FOO=global_BAR');
     
@@ -236,5 +236,39 @@ class EnvironmentCest
             putenv('FOO');
         }
     }
+    
+    /**
+     * @test
+     */
+    public function that_inheriting_some_global_environment_variables_can_be_prevented(ClimoduleTester $I)
+    {
+        if(PHP_VERSION_ID < 70100) {
+            $I->markTestSkipped('Blocking some global env vars is not possible on PHP < 7.1');
+            return;
+        }
+        
+        putenv('FOO=global_FOO');
+        putenv('BAR=global_BAR');
+        try {
+            
+            $I->dontInheritShellEnvironment(['FOO']);
+            
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('Not set');
+    
+            // Also blocked when passing explicit env
+            $I->cli(['eval','"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], ['SOMETHING' => 'WHATEVER']);
+            $I->seeInShellOutput('Not set');
+    
+            $I->cli(['eval','"var_dump(\$_SERVER[\'BAR\'] ?? \'Not set\');"']);
+            $I->seeInShellOutput('global_BAR');
+            
+        }finally {
+            putenv('FOO');
+            putenv('BAR');
+        }
+    }
+    
+    
     
 }
