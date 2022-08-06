@@ -327,7 +327,7 @@ To complete the setup I have removed any demo content from the site and activate
 In the `tests/acceptance.suite.yml` file and in the `tests/functional.suite.yml` file, the configuration file for the `acceptance` and `functional` suites respectively, the `WPDb` module configuration contains a `dump` configuration parameter:
 
 ```yaml
-class_name: AcceptanceTester
+actor: AcceptanceTester
 modules:
     enabled:
         - WPDb

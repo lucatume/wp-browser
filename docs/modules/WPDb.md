@@ -51,7 +51,7 @@ if (
 
 If you're using the [WPWebDriver](WPWebDriver.md) module set the user agent in the browser, in this example I'm setting the user agent in Chromedriver:
 ```yaml
-class_name: AcceptanceTester
+actor: AcceptanceTester
 modules:
     enabled:
         - \Helper\Acceptance
@@ -89,7 +89,7 @@ modules:
 
 If you're using the [WPBrowser](WPBrowser.md) module send a specific header in the context of test requests: 
 ```yaml
-class_name: AcceptanceTester
+actor: AcceptanceTester
 modules:
     enabled:
         - \Helper\Acceptance
