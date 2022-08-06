@@ -268,7 +268,12 @@ wordpress_up: network_up php_container_up database_up
 		) \
 	)
 	export _IP=$$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wp-browser_wordpress) && \
-		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts"
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts"
 
 chromedriver_up: wordpress_up
 	$(if \
@@ -302,8 +307,23 @@ build_db:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"GRANT ALL ON *.* TO 'test'@'%'\""
 
 healthcheck:
-	echo -n "PHP container can reach WordPress container ... "
+	echo -n "PHP container can reach WordPress container at wordpress.test ... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "PHP container can reach WordPress container at test1.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://test1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "PHP container can reach WordPress container at test2.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://test2.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach WordPress container at wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach WordPress container at test1.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://test1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach WordPress container at test2.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://test2.wordpress.test > /dev/null'
 	echo "yes"
 	echo -n "Chrome container can reach WordPress container ... "
 	docker exec wp-browser_chrome bash -c 'curl -Ifs http://wordpress.test > /dev/null'
