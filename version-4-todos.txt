@@ -1,0 +1,8 @@
+[] refactor all functions in the tad\WPBrowser ns to static method classes in the lucatume\WPBrowser\Utils ns
+    [] deprecated the original functions
+    [] report deprecations in changelog
+[] write version 3 to version 4 migration guide
+[] regen documentation
+[] update documentation
+[] move all tests to new lucatume\WPBrowser workskpace
+[] update PHP stan version

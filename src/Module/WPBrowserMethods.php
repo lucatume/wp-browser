@@ -1,6 +1,6 @@
 <?php
 
-namespace lucatume\WPBrowser\Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleException;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;

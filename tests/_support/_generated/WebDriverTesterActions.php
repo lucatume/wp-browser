@@ -5,6 +5,8 @@ namespace _generated;
 // You should not change it manually as it will be overwritten on next build
 // @codingStandardsIgnoreFile
 
+use lucatume\WPBrowser\Module\WPDb;
+
 trait WebDriverTesterActions
 {
     /**
@@ -12,7 +14,7 @@ trait WebDriverTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -39,7 +41,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAsAdmin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -71,7 +73,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAs', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -93,7 +95,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCookiesWithPattern', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -115,7 +117,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForJqueryAjax', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -135,7 +137,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFullUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -164,7 +166,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deactivatePlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -193,7 +195,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('activatePlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -206,7 +208,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWebDriverLogs', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -234,7 +236,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnSubdomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -256,7 +258,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('makeScreenshot', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -278,7 +280,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('makeHtmlSnapshot', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -298,7 +300,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('resizeWindow', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -341,7 +343,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -374,7 +376,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -398,7 +400,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('setCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -415,7 +417,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('resetCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -432,7 +434,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -447,7 +449,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPageSource', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -465,7 +467,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -486,7 +488,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -563,7 +565,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('see', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -636,7 +638,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSee', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -673,7 +675,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInSource', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -710,7 +712,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInSource', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -745,7 +747,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInPageSource', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -770,7 +772,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInPageSource', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -809,7 +811,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('click', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -852,7 +854,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeLink', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -895,7 +897,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeLink', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -938,7 +940,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInCurrentUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -979,7 +981,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCurrentUrlEquals', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1018,7 +1020,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCurrentUrlMatches', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1055,7 +1057,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInCurrentUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1096,7 +1098,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCurrentUrlEquals', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1135,7 +1137,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCurrentUrlMatches', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1158,7 +1160,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFromCurrentUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1199,7 +1201,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCheckboxIsChecked', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1238,7 +1240,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCheckboxIsChecked', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1289,7 +1291,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInField', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1340,7 +1342,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInField', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1477,7 +1479,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInFormFields', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1574,7 +1576,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInFormFields', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1613,7 +1615,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('selectOption', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1627,7 +1629,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('unselectOption', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1646,7 +1648,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('checkOption', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1665,7 +1667,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('uncheckOption', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1686,7 +1688,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('fillField', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1704,7 +1706,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('clearField', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1725,7 +1727,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('attachFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1750,7 +1752,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTextFrom', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1774,7 +1776,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttributeFrom', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1799,7 +1801,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabValueFrom', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1831,7 +1833,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabMultiple', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1886,7 +1888,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeElement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1933,7 +1935,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeElement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1972,7 +1974,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeElementInDOM', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1999,7 +2001,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeElementInDOM', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2038,7 +2040,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumberOfElements', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2059,7 +2061,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumberOfElementsInDOM', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2102,7 +2104,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeOptionIsSelected', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2145,7 +2147,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeOptionIsSelected', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2186,7 +2188,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInTitle', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2215,7 +2217,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInTitle', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2228,7 +2230,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('acceptPopup', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2239,7 +2241,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cancelPopup', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2270,7 +2272,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInPopup', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2301,7 +2303,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInPopup', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2316,7 +2318,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('typeInPopup', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2327,7 +2329,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('reloadPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2338,7 +2340,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('moveBack', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2349,7 +2351,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('moveForward', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2516,7 +2518,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('submitForm', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2543,7 +2545,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForElementChange', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2566,7 +2568,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForElement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2589,7 +2591,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForElementVisible', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2611,7 +2613,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForElementNotVisible', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2634,7 +2636,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForElementClickable', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2661,7 +2663,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForText', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2675,7 +2677,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('wait', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2700,7 +2702,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('executeInSelenium', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2744,7 +2746,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('switchToWindow', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2772,7 +2774,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('switchToIFrame', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2794,7 +2796,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForJS', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2820,7 +2822,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('executeJS', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2846,7 +2848,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('executeAsyncJS', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2857,7 +2859,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('maximizeWindow', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2877,7 +2879,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dragAndDrop', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2906,7 +2908,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('moveMouseOver', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2935,7 +2937,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('clickWithLeftButton', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2964,7 +2966,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('clickWithRightButton', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2978,7 +2980,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('doubleClick', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3007,7 +3009,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('pressKey', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3030,7 +3032,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('appendField', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3068,7 +3070,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('saveSessionSnapshot', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3085,7 +3087,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loadSessionSnapshot', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3101,7 +3103,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteSessionSnapshot', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3124,7 +3126,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('scrollTo', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3145,7 +3147,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('openNewTab', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3163,7 +3165,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('closeTab', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3187,7 +3189,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('switchToNextTab', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3211,7 +3213,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('switchToPreviousTab', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3262,7 +3264,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('performOn', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3287,7 +3289,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('logOut', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3309,7 +3311,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPluginsPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3331,7 +3333,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPagesPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3378,7 +3380,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginDeactivated', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3425,7 +3427,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginInstalled', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3472,7 +3474,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginActivated', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3519,7 +3521,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePluginInstalled', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3570,7 +3572,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeErrorMessage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3613,7 +3615,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeWpDiePage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3662,7 +3664,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeMessage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3685,7 +3687,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabWordPressTestCookie', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3710,7 +3712,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3732,7 +3734,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminAjaxPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3753,7 +3755,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnCronPage', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3778,7 +3780,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingPostWithId', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3803,7 +3805,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('importSqlDumpFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3856,7 +3858,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3884,7 +3886,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPrefixedTableNameFor', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3929,7 +3931,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3974,7 +3976,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4015,7 +4017,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4060,7 +4062,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4127,7 +4129,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4176,7 +4178,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4221,7 +4223,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4246,7 +4248,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4282,7 +4284,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4304,7 +4306,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4328,7 +4330,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLatestEntryByFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4357,7 +4359,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostmetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4379,7 +4381,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4405,7 +4407,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4427,7 +4429,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4457,7 +4459,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4479,7 +4481,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4508,7 +4510,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4530,7 +4532,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4555,7 +4557,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4581,7 +4583,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4599,7 +4601,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermRelationshipsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4644,7 +4646,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4689,7 +4691,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4734,7 +4736,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4779,7 +4781,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4822,7 +4824,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4871,7 +4873,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4918,7 +4920,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4967,7 +4969,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5006,7 +5008,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5051,7 +5053,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5071,7 +5073,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5093,7 +5095,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5116,7 +5118,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5139,7 +5141,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5162,7 +5164,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5188,7 +5190,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5213,7 +5215,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAllFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5239,7 +5241,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5264,7 +5266,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5285,7 +5287,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5309,7 +5311,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5332,7 +5334,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5353,7 +5355,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useMainBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5378,7 +5380,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5402,7 +5404,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5426,7 +5428,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5446,7 +5448,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5466,7 +5468,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5486,7 +5488,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5507,7 +5509,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTransientFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5554,7 +5556,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5607,7 +5609,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5654,7 +5656,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5684,7 +5686,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyPostsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5729,7 +5731,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5751,7 +5753,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5774,7 +5776,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5825,7 +5827,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5851,7 +5853,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyCommentsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5872,7 +5874,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5898,7 +5900,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5918,7 +5920,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5943,7 +5945,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('countRowsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5966,7 +5968,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -5988,7 +5990,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6011,7 +6013,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6035,7 +6037,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyLinksInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6055,7 +6057,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6077,7 +6079,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLinksTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6106,7 +6108,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyUsersInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6162,7 +6164,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6185,7 +6187,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6207,7 +6209,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6252,7 +6254,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserCapabilitiesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6276,7 +6278,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6298,7 +6300,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsermetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6323,7 +6325,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserLevelsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6348,7 +6350,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyTermsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6389,7 +6391,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6430,7 +6432,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6473,7 +6475,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6516,7 +6518,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6557,7 +6559,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6579,7 +6581,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogVersionsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6601,7 +6603,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6623,7 +6625,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSignupsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6645,7 +6647,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabRegistrationLogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6667,7 +6669,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6712,7 +6714,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6734,7 +6736,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6761,7 +6763,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyBlogsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6787,7 +6789,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6808,7 +6810,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getSiteDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6837,7 +6839,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6864,7 +6866,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableNames', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6888,7 +6890,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6929,7 +6931,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6955,7 +6957,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useTheme', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -6977,7 +6979,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7003,7 +7005,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuItemInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7044,7 +7046,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7083,7 +7085,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7103,7 +7105,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7142,7 +7144,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7183,7 +7185,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7218,7 +7220,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7244,7 +7246,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentFilesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7267,7 +7269,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentAttachedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7290,7 +7292,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentMetadata', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7312,7 +7314,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7333,7 +7335,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7355,7 +7357,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabaseWithEmail', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7377,7 +7379,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7403,7 +7405,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7423,7 +7425,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7445,7 +7447,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7469,7 +7471,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7512,7 +7514,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7534,7 +7536,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7557,7 +7559,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7580,7 +7582,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7649,7 +7651,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7672,7 +7674,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7699,7 +7701,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7727,7 +7729,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('importSql', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7776,7 +7778,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7797,7 +7799,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amConnectedToDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7839,7 +7841,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('performInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7861,7 +7863,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7924,7 +7926,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -7965,7 +7967,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8030,7 +8032,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8053,7 +8055,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabColumnFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8085,7 +8087,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8101,7 +8103,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8122,7 +8124,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('updateInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8139,13 +8141,13 @@ trait WebDriverTesterActions
      * @return void
      *
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
-     * @see \Codeception\Module\WPFilesystem::amInUploadsPath()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::amInUploadsPath()
      */
     public function amInUploadsPath($path = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amInUploadsPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8165,7 +8167,7 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeUploadedFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeUploadedFileFound()
      */
     public function seeUploadedFileFound($filename, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeUploadedFileFound', func_get_args()));
@@ -8190,13 +8192,13 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeUploadedFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeUploadedFileFound()
      */
     public function canSeeUploadedFileFound($filename, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUploadedFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8214,13 +8216,13 @@ trait WebDriverTesterActions
      * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date object.
      *
      * @return string The absolute path to an uploaded file.
-     * @see \Codeception\Module\WPFilesystem::getUploadsPath()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::getUploadsPath()
      */
     public function getUploadsPath($file = null, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getUploadsPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8239,7 +8241,7 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeUploadedFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeUploadedFileFound()
      */
     public function dontSeeUploadedFileFound($file, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeUploadedFileFound', func_get_args()));
@@ -8263,13 +8265,13 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeUploadedFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeUploadedFileFound()
      */
     public function cantSeeUploadedFileFound($file, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUploadedFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8289,7 +8291,7 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInUploadedFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInUploadedFile()
      */
     public function seeInUploadedFile($file, $contents, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInUploadedFile', func_get_args()));
@@ -8314,13 +8316,13 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInUploadedFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInUploadedFile()
      */
     public function canSeeInUploadedFile($file, $contents, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInUploadedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8340,7 +8342,7 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInUploadedFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInUploadedFile()
      */
     public function dontSeeInUploadedFile($file, $contents, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInUploadedFile', func_get_args()));
@@ -8365,13 +8367,13 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInUploadedFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInUploadedFile()
      */
     public function cantSeeInUploadedFile($file, $contents, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInUploadedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8380,25 +8382,25 @@ trait WebDriverTesterActions
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
-     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
-     *
-     * @throws ModuleException If the destination folder could not be removed.
-     *@example
+     * @example
      * ``` php
      * $I->deleteUploadedDir('folder');
      * $I->deleteUploadedDir('folder', 'today');
      * ```
      *
-     * @see \Codeception\Module\WPFilesystem::deleteUploadedDir()
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @return void
+     *
+     * @throws ModuleException If the destination folder could not be removed.
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::deleteUploadedDir()
      */
     public function deleteUploadedDir($dir, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteUploadedDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8417,13 +8419,13 @@ trait WebDriverTesterActions
      * @param string|int $date A string compatible with `strtotime` or a Unix timestamp.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::deleteUploadedFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::deleteUploadedFile()
      */
     public function deleteUploadedFile($file, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteUploadedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8432,23 +8434,23 @@ trait WebDriverTesterActions
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
-     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
-     *@example
+     * @example
      * ``` php
      * $I->cleanUploadsDir('some/folder');
      * $I->cleanUploadsDir('some/folder', 'today');
      * ```
      *
-     * @see \Codeception\Module\WPFilesystem::cleanUploadsDir()
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @return void
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::cleanUploadsDir()
      */
     public function cleanUploadsDir($dir = null, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cleanUploadsDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8457,24 +8459,24 @@ trait WebDriverTesterActions
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @param  string $src The path to the source file, relative to the current uploads folder.
-     * @param  string $dst The path to the destination file, relative to the current uploads folder.
-     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
-     *@example
+     * @example
      * ``` php
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo');
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');
      * ```
      *
-     * @see \Codeception\Module\WPFilesystem::copyDirToUploads()
+     * @param  string $dst The path to the destination file, relative to the current uploads folder.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @param  string $src The path to the source file, relative to the current uploads folder.
+     * @return void
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::copyDirToUploads()
      */
     public function copyDirToUploads($src, $dst, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('copyDirToUploads', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8483,27 +8485,27 @@ trait WebDriverTesterActions
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @param  string $filename The path to the destination file, relative to the current uploads folder.
-     * @param  string $data The data to write to the file.
-     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return string The absolute path to the destination file.
-     *
-     * @throws ModuleException If the destination folder could not be created or the destination
-     *                                                file could not be written.
-     *@example
+     * @example
      * ``` php
      * $I->writeToUploadedFile('some-file.txt', 'foo bar');
      * $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
      * ```
      *
-     * @see \Codeception\Module\WPFilesystem::writeToUploadedFile()
+     * @param  string $data The data to write to the file.
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @param  string $filename The path to the destination file, relative to the current uploads folder.
+     * @return string The absolute path to the destination file.
+     *
+     * @throws ModuleException If the destination folder could not be created or the destination
+     *                                                file could not be written.
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::writeToUploadedFile()
      */
     public function writeToUploadedFile($filename, $data, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('writeToUploadedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8512,23 +8514,23 @@ trait WebDriverTesterActions
      * The date argument can be a string compatible with `strtotime` or a Unix
      * timestamp that will be used to build the `Y/m` uploads subfolder path.
      *
-     * @param  string $filename The path to the file, relative to the current uploads folder.
-     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
-     *
-     * @return void
-     *@example
+     * @example
      * ``` php
      * $I->openUploadedFile('some-file.txt');
      * $I->openUploadedFile('some-file.txt', 'time');
      * ```
      *
-     * @see \Codeception\Module\WPFilesystem::openUploadedFile()
+     * @param  string|int|DateTime $date The date of the uploads to delete, will default to `now`.
+     *
+     * @param  string $filename The path to the file, relative to the current uploads folder.
+     * @return void
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::openUploadedFile()
      */
     public function openUploadedFile($filename, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('openUploadedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8542,13 +8544,13 @@ trait WebDriverTesterActions
      * @param  string $path The folder path, relative to the root uploads folder, to change to.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::amInPluginPath()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::amInPluginPath()
      */
     public function amInPluginPath($path) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amInPluginPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8564,13 +8566,13 @@ trait WebDriverTesterActions
      * @param  string $pluginDst The destination path, relative to the plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::copyDirToPlugin()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::copyDirToPlugin()
      */
     public function copyDirToPlugin($src, $pluginDst) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('copyDirToPlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8584,13 +8586,13 @@ trait WebDriverTesterActions
      * @param  string $file The folder path, relative to the plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::deletePluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::deletePluginFile()
      */
     public function deletePluginFile($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deletePluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8605,13 +8607,13 @@ trait WebDriverTesterActions
      * @param  string $data The data to write in the file.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::writeToPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::writeToPluginFile()
      */
     public function writeToPluginFile($file, $data) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('writeToPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8625,7 +8627,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeePluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeePluginFileFound()
      */
     public function dontSeePluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePluginFileFound', func_get_args()));
@@ -8644,13 +8646,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeePluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeePluginFileFound()
      */
     public function cantSeePluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePluginFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8664,7 +8666,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to thep plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seePluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seePluginFileFound()
      */
     public function seePluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginFileFound', func_get_args()));
@@ -8683,13 +8685,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to thep plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seePluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seePluginFileFound()
      */
     public function canSeePluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8704,7 +8706,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInPluginFile()
      */
     public function seeInPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInPluginFile', func_get_args()));
@@ -8724,13 +8726,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInPluginFile()
      */
     public function canSeeInPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8745,7 +8747,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInPluginFile()
      */
     public function dontSeeInPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInPluginFile', func_get_args()));
@@ -8765,13 +8767,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInPluginFile()
      */
     public function cantSeeInPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8785,13 +8787,13 @@ trait WebDriverTesterActions
      * @param  string $dir The path to the folder, relative to the plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::cleanPluginDir()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::cleanPluginDir()
      */
     public function cleanPluginDir($dir) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cleanPluginDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8805,13 +8807,13 @@ trait WebDriverTesterActions
      * @param  string $path The path to the theme folder, relative to themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::amInThemePath()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::amInThemePath()
      */
     public function amInThemePath($path) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amInThemePath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8826,13 +8828,13 @@ trait WebDriverTesterActions
      * @param  string $themeDst The path to the destination folder, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::copyDirToTheme()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::copyDirToTheme()
      */
     public function copyDirToTheme($src, $themeDst) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('copyDirToTheme', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8846,13 +8848,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file to delete, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::deleteThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::deleteThemeFile()
      */
     public function deleteThemeFile($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteThemeFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8867,13 +8869,13 @@ trait WebDriverTesterActions
      * @param  string $data The data to write to the file.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::writeToThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::writeToThemeFile()
      */
     public function writeToThemeFile($file, $data) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('writeToThemeFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8887,7 +8889,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeThemeFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeThemeFileFound()
      */
     public function dontSeeThemeFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeThemeFileFound', func_get_args()));
@@ -8906,13 +8908,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeThemeFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeThemeFileFound()
      */
     public function cantSeeThemeFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeThemeFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8926,7 +8928,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeThemeFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeThemeFileFound()
      */
     public function seeThemeFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeThemeFileFound', func_get_args()));
@@ -8945,13 +8947,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the themes root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeThemeFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeThemeFileFound()
      */
     public function canSeeThemeFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeThemeFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -8968,7 +8970,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInThemeFile()
      */
     public function seeInThemeFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInThemeFile', func_get_args()));
@@ -8990,13 +8992,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInThemeFile()
      */
     public function canSeeInThemeFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInThemeFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9011,7 +9013,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInThemeFile()
      */
     public function dontSeeInThemeFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInThemeFile', func_get_args()));
@@ -9031,13 +9033,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInThemeFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInThemeFile()
      */
     public function cantSeeInThemeFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInThemeFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9051,13 +9053,13 @@ trait WebDriverTesterActions
      * @param  string $dir The path to the folder, relative to the themese root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::cleanThemeDir()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::cleanThemeDir()
      */
     public function cleanThemeDir($dir) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cleanThemeDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9071,13 +9073,13 @@ trait WebDriverTesterActions
      * @param  string $path The path to the folder, relative to the mu-plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::amInMuPluginPath()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::amInMuPluginPath()
      */
     public function amInMuPluginPath($path) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amInMuPluginPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9092,13 +9094,13 @@ trait WebDriverTesterActions
      * @param  string $pluginDst The path to the destination folder, relative to the mu-plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::copyDirToMuPlugin()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::copyDirToMuPlugin()
      */
     public function copyDirToMuPlugin($src, $pluginDst) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('copyDirToMuPlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9112,13 +9114,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the mu-plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::deleteMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::deleteMuPluginFile()
      */
     public function deleteMuPluginFile($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteMuPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9133,13 +9135,13 @@ trait WebDriverTesterActions
      * @param  string $data The data to write to the file.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::writeToMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::writeToMuPluginFile()
      */
     public function writeToMuPluginFile($file, $data) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('writeToMuPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9153,7 +9155,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the mu-plugins folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeMuPluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeMuPluginFileFound()
      */
     public function dontSeeMuPluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeMuPluginFileFound', func_get_args()));
@@ -9172,13 +9174,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the mu-plugins folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeMuPluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeMuPluginFileFound()
      */
     public function cantSeeMuPluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeMuPluginFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9192,7 +9194,7 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the mu-plugins folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeMuPluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeMuPluginFileFound()
      */
     public function seeMuPluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeMuPluginFileFound', func_get_args()));
@@ -9211,13 +9213,13 @@ trait WebDriverTesterActions
      * @param  string $file The path to the file, relative to the mu-plugins folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeMuPluginFileFound()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeMuPluginFileFound()
      */
     public function canSeeMuPluginFileFound($file) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeMuPluginFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9232,7 +9234,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInMuPluginFile()
      */
     public function seeInMuPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInMuPluginFile', func_get_args()));
@@ -9252,13 +9254,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::seeInMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInMuPluginFile()
      */
     public function canSeeInMuPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInMuPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9273,7 +9275,7 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInMuPluginFile()
      */
     public function dontSeeInMuPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInMuPluginFile', func_get_args()));
@@ -9293,13 +9295,13 @@ trait WebDriverTesterActions
      * @param  string $contents The contents to check the file for.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::dontSeeInMuPluginFile()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInMuPluginFile()
      */
     public function cantSeeInMuPluginFile($file, $contents) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInMuPluginFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9313,13 +9315,13 @@ trait WebDriverTesterActions
      * @param  string $dir The path to the directory, relative to the mu-plugins root folder.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::cleanMuPluginDir()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::cleanMuPluginDir()
      */
     public function cleanMuPluginDir($dir) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cleanMuPluginDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9339,16 +9341,16 @@ trait WebDriverTesterActions
      * @param string $path The path to the file to create, relative to the plugins folder.
      * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
+     * @return void
      * @throws ModuleException If the plugin folder and/or files could not be created.
      *
-     * @return void
-     * @see \Codeception\Module\WPFilesystem::havePlugin()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::havePlugin()
      */
     public function havePlugin($path, $code) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9368,16 +9370,16 @@ trait WebDriverTesterActions
      * @param string $filename The path to the file to create, relative to the plugins root folder.
      * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
+     * @return void
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      *
-     * @return void
-     * @see \Codeception\Module\WPFilesystem::haveMuPlugin()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::haveMuPlugin()
      */
     public function haveMuPlugin($filename, $code) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMuPlugin', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9400,16 +9402,16 @@ trait WebDriverTesterActions
      * @param string $indexFileCode     The content of the theme index.php file with or without the opening PHP tag.
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
+     * @return void
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      *
-     * @return void
-     * @see \Codeception\Module\WPFilesystem::haveTheme()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::haveTheme()
      */
     public function haveTheme($folder, $indexFileCode, $functionsFileCode = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTheme', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9422,19 +9424,25 @@ trait WebDriverTesterActions
      * ```
      *
      * @return string The absolute path to the WordPress root folder.
-     * @see \Codeception\Module\WPFilesystem::getWpRootFolder()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::getWpRootFolder()
      */
     public function getWpRootFolder() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getWpRootFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Returns the absolute path to a blog uploads folder or file.
      *
-     * @param int                                    $blogId   The blog ID to get the path for.
+     * @example
+     * ```php
+     * $blogId = $I->haveBlogInDatabase('test');
+     * $testTodayUploads = $I->getBlogUploadsPath($blogId);
+     * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
+     * ```
+     *
      * @param string                                 $file     The path, relatitve to the blog uploads folder, to the
      *                                                         file or folder.
      * @param null|string|DateTime|DateTimeImmutable $date     The date that should be used to build the uploads
@@ -9442,22 +9450,16 @@ trait WebDriverTesterActions
      *                                                         a string supported by the `strtotime` function; defaults
      *                                                         to `now`.
      *
+     * @param int                                    $blogId   The blog ID to get the path for.
      * @return string The absolute path to a blog uploads folder or file.
      * @throws Exception If the date is not a valid format.
-     *@example
-     * ```php
-     * $blogId = $I->haveBlogInDatabase('test');
-     * $testTodayUploads = $I->getBlogUploadsPath($blogId);
-     * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
-     * ```
-     *
-     * @see \Codeception\Module\WPFilesystem::getBlogUploadsPath()
+     *@see \lucatume\WPBrowser\Module\WPFilesystem::getBlogUploadsPath()
      */
     public function getBlogUploadsPath($blogId, $file = null, $date = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getBlogUploadsPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9474,13 +9476,13 @@ trait WebDriverTesterActions
      * @return string The absolute path to the created folder.
      *
      * @throws ModuleException
-     * @see \Codeception\Module\WPFilesystem::makeUploadsDir()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::makeUploadsDir()
      */
     public function makeUploadsDir($path) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('makeUploadsDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9488,13 +9490,13 @@ trait WebDriverTesterActions
      * @param string $message An optional message to display if the directory does not exist.
      *
      * @return void
-     * @see \Codeception\Module\WPFilesystem::assertDirectoryExists()
+     * @see \lucatume\WPBrowser\Module\WPFilesystem::assertDirectoryExists()
      */
     public function assertDirectoryExists($directory, $message = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertDirectoryExists', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9508,7 +9510,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amInPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9530,7 +9532,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('openFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9549,7 +9551,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9568,7 +9570,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9588,7 +9590,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('copyDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9631,7 +9633,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInThisFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9674,7 +9676,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumberNewLines', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9699,7 +9701,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeThisFileMatches', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9744,7 +9746,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeFileContentsEqual', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9783,7 +9785,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInThisFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9794,7 +9796,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deleteThisFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9835,7 +9837,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9862,7 +9864,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeFileFound', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -9881,7 +9883,7 @@ trait WebDriverTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cleanDir', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *

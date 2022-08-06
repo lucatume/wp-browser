@@ -1,6 +1,6 @@
 <?php namespace tad\WPBrowser\Traits;
 
-use Codeception\Module\WPFilesystem;
+use lucatume\WPBrowser\Module\WPFilesystem;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\WPBrowser\StubProphecy\Arg;

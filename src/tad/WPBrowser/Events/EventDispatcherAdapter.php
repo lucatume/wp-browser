@@ -9,6 +9,7 @@ namespace tad\WPBrowser\Events;
 
 use Codeception\Application;
 use Codeception\Codecept;
+use Codeception\Events;
 use Codeception\Exception\TestRuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
@@ -54,27 +55,26 @@ class EventDispatcherAdapter
      *
      * @var array<string>
      */
-    protected static $allCodeceptionEvents = [
-        '\Codeception\Events::MODULE_INIT',
-        '\Codeception\Events::TEST_BEFORE',
-        '\Codeception\Events::TEST_START',
-        '\Codeception\Events::SUITE_BEFORE',
-        '\Codeception\Events::STEP_BEFORE',
-        '\Codeception\Events::SUITE_INIT',
-        '\Codeception\Events::RESULT_PRINT_AFTER',
-        '\Codeception\Events::STEP_AFTER',
-        '\Codeception\Events::SUITE_AFTER',
-        '\Codeception\Events::TEST_AFTER',
-        '\Codeception\Events::TEST_END',
-        '\Codeception\Events::TEST_ERROR',
-        '\Codeception\Events::TEST_FAIL',
-        '\Codeception\Events::TEST_FAIL_PRINT',
-        '\Codeception\Events::TEST_INCOMPLETE',
-        '\Codeception\Events::TEST_PARSED',
-        '\Codeception\Events::TEST_SKIPPED',
-        '\Codeception\Events::TEST_SUCCESS',
-        '\Codeception\Events::TEST_WARNING'
-    ];
+    protected static $allCodeceptionEvents = array(
+        Events::TEST_BEFORE,
+        Events::TEST_START,
+        Events::SUITE_BEFORE,
+        Events::STEP_BEFORE,
+        Events::SUITE_INIT,
+        Events::RESULT_PRINT_AFTER,
+        Events::STEP_AFTER,
+        Events::SUITE_AFTER,
+        Events::TEST_AFTER,
+        Events::TEST_END,
+        Events::TEST_ERROR,
+        Events::TEST_FAIL,
+        Events::TEST_FAIL_PRINT,
+        Events::TEST_INCOMPLETE,
+        Events::TEST_PARSED,
+        Events::TEST_SKIPPED,
+        Events::TEST_SUCCESS,
+        Events::TEST_WARNING
+    );
 
     /**
      * Whether the fallback provided by the Events extension to attach listeners to Codeception 4.0+ events is available

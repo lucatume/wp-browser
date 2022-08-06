@@ -5,6 +5,8 @@ namespace _generated;
 // You should not change it manually as it will be overwritten on next build
 // @codingStandardsIgnoreFile
 
+use lucatume\WPBrowser\Module\WPDb;
+
 trait EventsTesterActions
 {
     /**
@@ -12,7 +14,7 @@ trait EventsTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -37,7 +39,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('importSqlDumpFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -90,7 +92,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -118,7 +120,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPrefixedTableNameFor', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -163,7 +165,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -208,7 +210,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -249,7 +251,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -294,7 +296,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -361,7 +363,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -410,7 +412,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -455,7 +457,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -480,7 +482,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -516,7 +518,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -538,7 +540,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -562,7 +564,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLatestEntryByFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -591,7 +593,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostmetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -613,7 +615,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -639,7 +641,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -661,7 +663,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -691,7 +693,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -713,7 +715,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -742,7 +744,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -764,7 +766,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -789,7 +791,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -815,7 +817,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -833,7 +835,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermRelationshipsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -878,7 +880,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -923,7 +925,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -968,7 +970,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1013,7 +1015,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1056,7 +1058,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1105,7 +1107,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1152,7 +1154,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1201,7 +1203,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1240,7 +1242,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1285,7 +1287,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1305,7 +1307,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1327,7 +1329,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1350,7 +1352,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1373,7 +1375,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1396,7 +1398,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1422,7 +1424,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1447,7 +1449,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAllFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1473,7 +1475,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1498,7 +1500,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1519,7 +1521,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1543,7 +1545,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1566,7 +1568,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1587,7 +1589,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useMainBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1612,7 +1614,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1636,7 +1638,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1660,7 +1662,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1680,7 +1682,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1700,7 +1702,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1720,7 +1722,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1741,7 +1743,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTransientFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1788,7 +1790,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1841,7 +1843,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1888,7 +1890,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1918,7 +1920,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyPostsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1963,7 +1965,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1985,7 +1987,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2008,7 +2010,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2059,7 +2061,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2085,7 +2087,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyCommentsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2106,7 +2108,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2132,7 +2134,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2152,7 +2154,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2177,7 +2179,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('countRowsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2200,7 +2202,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2222,7 +2224,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2245,7 +2247,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2269,7 +2271,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyLinksInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2289,7 +2291,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2311,7 +2313,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLinksTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2340,7 +2342,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyUsersInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2396,7 +2398,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2419,7 +2421,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2441,7 +2443,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2486,7 +2488,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserCapabilitiesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2510,7 +2512,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2532,7 +2534,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsermetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2557,7 +2559,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserLevelsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2582,7 +2584,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyTermsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2623,7 +2625,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2664,7 +2666,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2707,7 +2709,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2750,7 +2752,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2791,7 +2793,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2813,7 +2815,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogVersionsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2835,7 +2837,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2857,7 +2859,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSignupsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2879,7 +2881,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabRegistrationLogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2901,7 +2903,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2946,7 +2948,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2968,7 +2970,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2995,7 +2997,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyBlogsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3021,7 +3023,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3042,7 +3044,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getSiteDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3071,7 +3073,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3098,7 +3100,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableNames', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3122,7 +3124,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3163,7 +3165,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3189,7 +3191,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('useTheme', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3211,7 +3213,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3237,7 +3239,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuItemInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3278,7 +3280,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3317,7 +3319,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3337,7 +3339,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3376,7 +3378,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3417,7 +3419,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3452,7 +3454,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3478,7 +3480,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentFilesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3501,7 +3503,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentAttachedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3524,7 +3526,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentMetadata', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3546,7 +3548,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3567,7 +3569,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3589,7 +3591,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabaseWithEmail', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3611,7 +3613,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3637,7 +3639,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3657,7 +3659,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3679,7 +3681,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3703,7 +3705,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3746,7 +3748,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3768,7 +3770,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3791,7 +3793,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3814,7 +3816,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3883,7 +3885,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3906,7 +3908,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3933,7 +3935,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3961,7 +3963,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('importSql', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4010,7 +4012,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4031,7 +4033,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amConnectedToDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4073,7 +4075,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('performInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4095,7 +4097,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4158,7 +4160,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4199,7 +4201,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4264,7 +4266,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4287,7 +4289,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabColumnFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4319,7 +4321,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4335,7 +4337,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4356,7 +4358,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('updateInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4383,7 +4385,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4407,7 +4409,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4431,7 +4433,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getContentFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4460,7 +4462,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4484,7 +4486,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4512,7 +4514,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4540,7 +4542,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4568,7 +4570,7 @@ trait EventsTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *

@@ -5,7 +5,7 @@
  * @package Codeception\Module
  */
 
-namespace lucatume\WPBrowser\Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
