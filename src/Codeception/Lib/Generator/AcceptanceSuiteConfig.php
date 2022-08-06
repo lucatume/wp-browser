@@ -13,7 +13,7 @@ class AcceptanceSuiteConfig extends AbstractGenerator implements GeneratorInterf
      * @var string
      */
     protected $template = <<< YAML
-class_name: {{className}}
+actor: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}

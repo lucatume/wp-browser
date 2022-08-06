@@ -13,7 +13,7 @@ class IntegrationSuiteThemeConfig extends AbstractGenerator implements Generator
      * @var string
      */
     protected $template = <<< YAML
-class_name: {{className}}
+actor: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}

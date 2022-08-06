@@ -14,7 +14,7 @@ class IntegrationSuiteConfig extends AbstractGenerator implements GeneratorInter
      * @var string
      */
     protected $template = <<< YAML
-class_name: {{className}}
+actor: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}
