@@ -1,5 +1,6 @@
 alias c="vendor/bin/codecept"
 alias cr="vendor/bin/codecept run"
+alias r="vendor/bin/rector process"
 
 function xdebug_config_file(){
   echo "$(php --ini | grep xdebug | cut -d, -f1)"
