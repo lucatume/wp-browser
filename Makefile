@@ -271,9 +271,11 @@ wordpress_up: network_up php_container_up database_up
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
-		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts"
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts"
 
 chromedriver_up: wordpress_up
 	$(if \
