@@ -1,4 +1,4 @@
-class_name: ClimoduleTester
+actor: ClimoduleTester
 modules:
     enabled:
         - \Helper\Climodule

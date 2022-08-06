@@ -1,4 +1,4 @@
-class_name: WebDriverTester
+actor: WebDriverTester
 modules:
   enabled:
     - \Helper\WebDriver

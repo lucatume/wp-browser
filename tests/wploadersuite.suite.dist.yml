@@ -1,4 +1,4 @@
-class_name: WploaderTester
+actor: WploaderTester
 modules:
     enabled:
         - \Helper\Wploadersuite

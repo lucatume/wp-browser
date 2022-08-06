@@ -1,4 +1,4 @@
-class_name: WpmoduleTester
+actor: WpmoduleTester
 modules:
   enabled:
     - \Helper\Wpmodule

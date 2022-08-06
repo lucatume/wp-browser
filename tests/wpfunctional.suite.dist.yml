@@ -1,4 +1,4 @@
-class_name: WpfunctionalTester
+actor: WpfunctionalTester
 modules:
     enabled:
         - \Helper\Wpfunctional
