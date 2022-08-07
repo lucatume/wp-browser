@@ -6,3 +6,6 @@
 [] update documentation
 [] move all tests to new lucatume\WPBrowser workskpace
 [] update PHP stan version
+[] upgrade db dumps command following WordPress updates
+[] content seeder
+[] docker copilot

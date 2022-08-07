@@ -1156,15 +1156,14 @@ PHP;
      * $I->haveTheme('foo', $indexCode, $functionsCode);
      * ```
      *
-     * @param string $folder            The path to the theme to create, relative to the themes root folder.
-     * @param string $indexFileCode     The content of the theme index.php file with or without the opening PHP tag.
+     * @param string $folder The path to the theme to create, relative to the themes root folder.
+     * @param string $indexFileCode The content of the theme index.php file with or without the opening PHP tag.
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
      * @return void
-     *@throws ModuleException If the mu-plugin folder and/or files could not be created.
-     *
+     * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      */
-    public function haveTheme(string $folder, string $indexFileCode, string $functionsFileCode): void
+    public function haveTheme(string $folder, string $indexFileCode, string $functionsFileCode = ''): void
     {
         $dir = $this->config['themes'] . FS::untrailslashit(FS::unleadslashit($folder));
         $styleFile = $dir . DIRECTORY_SEPARATOR . 'style.css';

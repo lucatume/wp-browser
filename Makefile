@@ -41,7 +41,7 @@ WORDPRESS_ROOT_DIR=vendor/wordpress/wordpress
 WORDPRESS_URL=http://wordpress.test
 WORDPRESS_DOMAIN=wordpress.test
 WORDPRESS_ADMIN_USER=admin
-WORDPRESS_ADMIN_PASSWORD=password
+WORDPRESS_ADMIN_PASSWORD=admin
 WORDPRESS_DB_HOST=db
 WORDPRESS_DB_NAME=test
 WORDPRESS_DB_USER=test
@@ -244,7 +244,7 @@ wordpress_up: network_up php_container_up database_up
 		wp-browser_php_$(PHP_VERSION) \
 		bash -c 'if ! wp core is-installed --network; then \
 			wp core multisite-install --url=http://wordpress.test \
-			--title=Test --admin_user=admin --admin_password=password \
+			--title=Test --admin_user=admin --admin_password=admin \
 			--admin_email=admin@wordpress.test --skip-email; \
 			fi'
 	echo "$${HTACCESS_CONTENTS}" > "$(PWD)/vendor/wordpress/wordpress/.htaccess"
@@ -272,10 +272,16 @@ wordpress_up: network_up php_container_up database_up
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} blog0.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} blog1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_php_$(PHP_VERSION) bash -c "echo '$${_IP} blog2.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
-		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts"
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} blog0.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} blog1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} blog2.wordpress.test' >> /etc/hosts"
 
 chromedriver_up: wordpress_up
 	$(if \
@@ -301,7 +307,10 @@ chromedriver_up: wordpress_up
 		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} test1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} test2.wordpress.test' >> /etc/hosts" && \
-		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts"
+		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} sub1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} blog0.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} blog1.wordpress.test' >> /etc/hosts" && \
+		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} blog2.wordpress.test' >> /etc/hosts"
 
 ps:
 	docker ps -a --filter label=project=wp-browser --filter status=running
@@ -326,6 +335,15 @@ healthcheck:
 	echo -n "PHP container can reach WordPress container at sub1.wordpress.test ... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://sub1.wordpress.test > /dev/null'
 	echo "yes"
+	echo -n "PHP container can reach WordPress container at blog0.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://blog0.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "PHP container can reach WordPress container at blog1.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://blog1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "PHP container can reach WordPress container at blog2.wordpress.test ... "
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://blog2.wordpress.test > /dev/null'
+	echo "yes"
 	echo -n "WordPress container can reach WordPress container at wordpress.test ... "
 	docker exec wp-browser_wordpress bash -c 'curl -Ifs http://wordpress.test > /dev/null'
 	echo "yes"
@@ -338,6 +356,15 @@ healthcheck:
 	echo -n "WordPress container can reach WordPress container at sub1.wordpress.test ... "
 	docker exec wp-browser_wordpress bash -c 'curl -Ifs http://sub1.wordpress.test > /dev/null'
 	echo "yes"
+	echo -n "WordPress container can reach WordPress container at blog0.wordpress.test ... "
+	docker exec wp-browser_wordpress bash -c 'curl -Ifs http://blog0.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach WordPress container at blog1.wordpress.test ... "
+	docker exec wp-browser_wordpress bash -c 'curl -Ifs http://blog1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "WordPress container can reach WordPress container at blog2.wordpress.test ... "
+	docker exec wp-browser_wordpress bash -c 'curl -Ifs http://blog2.wordpress.test > /dev/null'
+	echo "yes"
 	echo -n "Chrome  container can reach WordPress container at wordpress.test ... "
 	docker exec wp-browser_chrome bash -c 'curl -Ifs http://wordpress.test > /dev/null'
 	echo "yes"
@@ -349,6 +376,15 @@ healthcheck:
 	echo "yes"
 	echo -n "Chrome container can reach WordPress container at sub1.wordpress.test ... "
 	docker exec wp-browser_chrome bash -c 'curl -Ifs http://sub1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "Chrome container can reach WordPress container at blog0.wordpress.test ... "
+	docker exec wp-browser_chrome bash -c 'curl -Ifs http://blog0.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "Chrome container can reach WordPress container at blog1.wordpress.test ... "
+	docker exec wp-browser_chrome bash -c 'curl -Ifs http://blog1.wordpress.test > /dev/null'
+	echo "yes"
+	echo -n "Chrome container can reach WordPress container at blog2.wordpress.test ... "
+	docker exec wp-browser_chrome bash -c 'curl -Ifs http://blog2.wordpress.test > /dev/null'
 	echo "yes"
 	echo -n "PHP container can reach database test... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -utest -ptest -hdb -e \"show databases like 'test'\" | grep 'test' > /dev/null"

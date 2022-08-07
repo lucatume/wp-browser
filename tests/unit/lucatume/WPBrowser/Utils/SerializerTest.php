@@ -33,6 +33,7 @@ class SerializerTest extends Unit
         yield 'null' => [null, null];
         yield 'serialized null' => [serialize(null), null];
         yield 'empty string' => ['', ''];
+        yield 'serialized empty string' => [serialize(''), ''];
         yield 'boolean true' => [true, true];
         yield 'serialized boolean true' => [serialize(true), true];
         yield 'boolean false' => [false, false];
@@ -138,7 +139,8 @@ class SerializerTest extends Unit
 
         yield 'null' => [null, serialize(null)];
         yield 'serialized null' => [serialize(null), serialize(null)];
-        yield 'empty string' => ['', serialize('')];
+        yield 'empty string' => ['', ''];
+        yield 'serialized empty string' => [serialize(''), serialize('')];
         yield 'boolean true' => [true, serialize(true)];
         yield 'serialized boolean true' => [serialize(true), serialize(true)];
         yield 'boolean false' => [false, serialize(false)];
@@ -147,7 +149,7 @@ class SerializerTest extends Unit
         yield 'serialized integer' => [serialize(23), serialize(23)];
         yield 'float' => [23.89, serialize(23.89)];
         yield 'serialized float' => [serialize(23.89), serialize(23.89)];
-        yield 'string' => ['foo-bar', serialize('foo-bar')];
+        yield 'string' => ['foo-bar', 'foo-bar'];
         yield 'serialized string' => [serialize('foo-bar'), serialize('foo-bar')];
         yield 'associative array' => [
             ['string' => 'foo-bar', 'number' => 23, 'nil' => null],

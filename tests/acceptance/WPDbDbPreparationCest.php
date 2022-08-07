@@ -13,7 +13,7 @@ class WPDbDbPreparationCest
     {
         $I->seeOptionInDatabase([
             'option_name'  => 'admin_email_lifespan',
-            'option_value' => WPDb::ADMIN_EMAIL_LIFESPAN
+            'option_value' => WPDb::ADMIN_EMAIL_LIFESPAN,
         ]);
     }
 

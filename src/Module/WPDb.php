@@ -51,7 +51,7 @@ class WPDb extends Db
     public const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
     public const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
     public const EVENT_AFTER_DB_PREPARE =  'WPDb.after_db_prepare';
-    private const ADMIN_EMAIL_LIFESPAN = 2533080438;
+    public const ADMIN_EMAIL_LIFESPAN = 2533080438;
 
     protected DbDump $dbDump;
 
