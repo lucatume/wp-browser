@@ -1,4 +1,4 @@
-<?php namespace cli;
+<?php
 
 use ClimoduleTester as Tester;
 use Codeception\Exception\ModuleException;

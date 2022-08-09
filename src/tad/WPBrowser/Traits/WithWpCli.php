@@ -27,21 +27,21 @@ trait WithWpCli
      *
      * @var string|null
      */
-    protected ?string $wpCliRootDir;
+    protected ?string $wpCliRootDir = null;
 
     /**
      * The absolute path to the WordPress installation root folder.
      *
      * @var string|null
      */
-    protected ?string $wpCliWpRootDir;
+    protected ?string $wpCliWpRootDir = null;
 
     /**
      * The process adapter the implementation will use.
      *
      * @var Process|null
      */
-    protected ?Process $wpCliProcess;
+    protected ?Process $wpCliProcess = null;
 
     /**
      * Sets up the wp-cli handler in a specific directory.

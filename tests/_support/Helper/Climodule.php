@@ -9,7 +9,7 @@ class Climodule extends \Codeception\Module
     public function setCliEnv($key, $value)
     {
         /** @var \lucatume\WPBrowser\Module\WPCLI $cli */
-        $cli = $this->getModule('WPCLI');
+        $cli = $this->getModule(\lucatume\WPBrowser\Module\WPCLI::class);
         $cliConfig = $cli->_getConfig();
         $cliConfig['env'] = isset($cliConfig['env']) ?
             array_merge($cliConfig['env'], [$key => $value])

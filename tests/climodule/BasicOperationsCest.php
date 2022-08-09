@@ -1,7 +1,4 @@
 <?php
-namespace cli;
-
-use ClimoduleTester;
 
 class BasicOperationsCest
 {
