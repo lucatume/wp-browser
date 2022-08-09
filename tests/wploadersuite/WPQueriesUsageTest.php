@@ -1,8 +1,8 @@
 <?php
 
-use Codeception\Module\WPQueries;
+use lucatume\WPBrowser\Module\WPQueries;
 
-class WPQueriesUsageTest extends \Codeception\TestCase\WPTestCase
+class WPQueriesUsageTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
 
     /**

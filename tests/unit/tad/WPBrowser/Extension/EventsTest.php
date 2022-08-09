@@ -1,9 +1,10 @@
 <?php
 
-namespace tad\WPBrowser\Extension;
+namespace lucatume\WPBrowser\Extension;
 
-use tad\WPBrowser\Events\EventDispatcherAdapter;
-use tad\WPBrowser\Events\WpbrowserEvent;
+use lucatume\WPBrowser\Events\EventDispatcherAdapter;
+use lucatume\WPBrowser\Events\WpbrowserEvent;
+use lucatume\WPBrowser\Extension\Events;
 
 class EventsTest extends \Codeception\Test\Unit
 {

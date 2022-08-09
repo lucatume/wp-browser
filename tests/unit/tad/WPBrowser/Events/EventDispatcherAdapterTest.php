@@ -1,16 +1,18 @@
 <?php
 
 
-namespace tad\WPBrowser\Events;
+namespace lucatume\WPBrowser\Events;
 
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
+use lucatume\WPBrowser\Events\EventDispatcherAdapter;
+use lucatume\WPBrowser\Events\WpbrowserEvent;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use tad\WPBrowser\StubProphecy\Arg;
-use tad\WPBrowser\Traits\WithStubProphecy;
-use function tad\WPBrowser\setPrivateProperties;
+use function lucatume\WPBrowser\setPrivateProperties;
 
 class EventDispatcherAdapterTest extends \Codeception\Test\Unit
 {

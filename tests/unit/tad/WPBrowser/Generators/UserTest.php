@@ -1,4 +1,4 @@
-<?php namespace tad\WPBrowser\Generators;
+<?php namespace lucatume\WPBrowser\Generators;
 
 class UserTest extends \Codeception\Test\Unit
 {

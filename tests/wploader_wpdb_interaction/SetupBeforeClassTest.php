@@ -1,6 +1,6 @@
 <?php
 
-class SetupBeforeClassTest extends \Codeception\TestCase\WPTestCase
+class SetupBeforeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     public static function _setUpBeforeClass()
     {

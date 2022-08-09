@@ -1,13 +1,13 @@
 <?php
-namespace tad\WPBrowser\Module\Connector;
+namespace lucatume\WPBrowser\Module\Connector;
 
+use lucatume\WPBrowser\Connector\WordPress;
 use lucatume\WPBrowser\Module\Support\UriToIndexMapper;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
-use tad\WPBrowser\Connector\WordPress;
-use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WordPressTest extends \Codeception\Test\Unit
 {

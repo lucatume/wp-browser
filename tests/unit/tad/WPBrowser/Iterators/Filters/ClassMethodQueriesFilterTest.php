@@ -1,7 +1,7 @@
 <?php
-namespace tad\WPBrowser\Iterators\Filters;
+namespace lucatume\WPBrowser\Iterators\Filters;
 
-use tad\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter as Filter;
+use lucatume\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter as Filter;
 
 class ClassMethodQueriesFilterTest extends \Codeception\Test\Unit
 {

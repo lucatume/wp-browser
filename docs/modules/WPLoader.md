@@ -94,7 +94,7 @@ codecept generate:wpunit my_suite "Acme\User"
 ```
 
 Codeception will generate the `tests/my_suite/Acme/UserTest.php` class.
-The class extends the `Codeception\TestCase\WPTestCase` class provided by wp-browser; this looks like a normal PHPUnit test case but has some perks due to it's _mixed breed_ nature.  
+The class extends the `lucatume\WPBrowser\TestCase\WPTestCase` class provided by wp-browser; this looks like a normal PHPUnit test case but has some perks due to it's _mixed breed_ nature.  
 Understanding them might help you work with it:
 
 * WordPress is installed and configured for the tests **before** the test case is loaded; WordPress defined functions and classes (and those of the plugins and themes loaded with it) will be available in the `setUpBeforeClass` method. 

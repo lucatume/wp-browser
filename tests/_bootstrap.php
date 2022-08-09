@@ -2,7 +2,7 @@
 // This is global bootstrap for autoloading.
 use Codeception\Util\Autoload;
 
-use function tad\WPBrowser\Tests\Support\createTestDatabasesIfNotExist;
+use function lucatume\WPBrowser\Tests\Support\createTestDatabasesIfNotExist;
 
 createTestDatabasesIfNotExist();
 

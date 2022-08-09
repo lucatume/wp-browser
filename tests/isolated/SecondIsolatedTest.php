@@ -1,6 +1,6 @@
 <?php
 
-class SecondIsolatedTest extends \Codeception\TestCase\WPTestCase
+class SecondIsolatedTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @runInSeparateProcess

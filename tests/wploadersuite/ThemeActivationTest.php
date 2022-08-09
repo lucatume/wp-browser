@@ -1,6 +1,6 @@
 <?php
 
-class ThemeActivationTest extends \Codeception\TestCase\WPTestCase
+class ThemeActivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @test

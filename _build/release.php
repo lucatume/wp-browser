@@ -30,7 +30,7 @@
 
 namespace tad\WPBrowser;
 
-use tad\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Map;
 
 $root = dirname(__DIR__);
 

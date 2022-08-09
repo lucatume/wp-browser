@@ -2,7 +2,7 @@
 
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-namespace tad\WPBrowser\Tests;
+namespace lucatume\WPBrowser\Tests;
 
 abstract class BaseTest extends \Codeception\Test\Unit
 {

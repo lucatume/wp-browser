@@ -4374,7 +4374,7 @@ trait WpfunctionalTesterActions
      * @param string $page The path, relative to the admin area URL, to the page.
      *
      * @return string The resulting page path.
-     * @see \Codeception\Module\WordPress::amOnAdminPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnAdminPage()
      */
     public function amOnAdminPage($page) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminPage', func_get_args()));
@@ -4402,7 +4402,7 @@ trait WpfunctionalTesterActions
      * @param string $page The path to the page, relative to the the root URL.
      *
      * @return string The page path.
-     * @see \Codeception\Module\WordPress::amOnPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnPage()
      */
     public function amOnPage($page) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPage', func_get_args()));
@@ -4414,11 +4414,11 @@ trait WpfunctionalTesterActions
      *
      * Returns a list of recognized domain names for the test site.
      *
+     * @return array<string> A list of the internal domains.
      * @internal This method is public for inter-operability and compatibility purposes and should
      *           not be considered part of the API.
      *
-     * @return array<string> A list of the internal domains.
-     * @see \Codeception\Module\WordPress::getInternalDomains()
+     * @see \lucatume\WPBrowser\Module\WordPress::getInternalDomains()
      */
     public function getInternalDomains() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getInternalDomains', func_get_args()));
@@ -4439,7 +4439,7 @@ trait WpfunctionalTesterActions
      * @return string The absolute path to the WordPress root folder, without a trailing slash.
      *
      * @throws \InvalidArgumentException If the WordPress root folder is not valid.
-     * @see \Codeception\Module\WordPress::getWpRootFolder()
+     * @see \lucatume\WPBrowser\Module\WordPress::getWpRootFolder()
      */
     public function getWpRootFolder() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getWpRootFolder', func_get_args()));
@@ -4461,7 +4461,7 @@ trait WpfunctionalTesterActions
      * @return string The response content, in plain text.
      *
      * @throws \Codeception\Exception\ModuleException If the underlying modules is not available.
-     * @see \Codeception\Module\WordPress::getResponseContent()
+     * @see \lucatume\WPBrowser\Module\WordPress::getResponseContent()
      */
     public function getResponseContent() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getResponseContent', func_get_args()));
@@ -4475,10 +4475,6 @@ trait WpfunctionalTesterActions
      *
      * This method utility is to get, in the scope of test code, the value of a cookie set during the tests.
      *
-     * @param string $cookie The cookie name.
-     * @param array<string,mixed>  $params Parameters to filter the cookie value.
-     *
-     * @return string|null The cookie value or `null` if no cookie matching the parameters is found.
      * @example
      * ```php
      * $id = $I->haveUserInDatabase('user', 'subscriber', ['user_pass' => 'pass']);
@@ -4492,7 +4488,11 @@ trait WpfunctionalTesterActions
      * $I->haveHttpHeader('X-WP-Nonce', $nonce);
      * ```
      *
-     * @see \Codeception\Module\WordPress::extractCookie()
+     * @param array<string,mixed>  $params Parameters to filter the cookie value.
+     *
+     * @param string $cookie The cookie name.
+     * @return string|null The cookie value or `null` if no cookie matching the parameters is found.
+     * @see \lucatume\WPBrowser\Module\WordPress::extractCookie()
      */
     public function extractCookie($cookie, array $params = []) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('extractCookie', func_get_args()));
@@ -4517,7 +4517,7 @@ trait WpfunctionalTesterActions
      * @param string $password The user password in plain text.
      *
      * @return void
-     * @see \Codeception\Module\WordPress::loginAs()
+     * @see \lucatume\WPBrowser\Module\WordPress::loginAs()
      */
     public function loginAs($username, $password) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAs', func_get_args()));
@@ -6923,7 +6923,7 @@ trait WpfunctionalTesterActions
      * @param bool|string $redirectTo Whether to redirect to another (optionally specified) page after the logout.
      *
      * @return void
-     * @see \Codeception\Module\WordPress::logOut()
+     * @see \lucatume\WPBrowser\Module\WordPress::logOut()
      */
     public function logOut($redirectTo = false) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('logOut', func_get_args()));
@@ -6945,7 +6945,7 @@ trait WpfunctionalTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WordPress::loginAsAdmin()
+     * @see \lucatume\WPBrowser\Module\WordPress::loginAsAdmin()
      */
     public function loginAsAdmin() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAsAdmin', func_get_args()));
@@ -6967,7 +6967,7 @@ trait WpfunctionalTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WordPress::amOnPluginsPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnPluginsPage()
      */
     public function amOnPluginsPage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPluginsPage', func_get_args()));
@@ -6989,7 +6989,7 @@ trait WpfunctionalTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WordPress::amOnPagesPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnPagesPage()
      */
     public function amOnPagesPage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPagesPage', func_get_args()));
@@ -7013,7 +7013,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginDeactivated()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginDeactivated()
      */
     public function seePluginDeactivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginDeactivated', func_get_args()));
@@ -7036,7 +7036,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginDeactivated()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginDeactivated()
      */
     public function canSeePluginDeactivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginDeactivated', func_get_args()));
@@ -7060,7 +7060,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginInstalled()
      */
     public function seePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginInstalled', func_get_args()));
@@ -7083,7 +7083,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginInstalled()
      */
     public function canSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginInstalled', func_get_args()));
@@ -7107,7 +7107,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginActivated()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginActivated()
      */
     public function seePluginActivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginActivated', func_get_args()));
@@ -7130,7 +7130,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seePluginActivated()
+     * @see \lucatume\WPBrowser\Module\WordPress::seePluginActivated()
      */
     public function canSeePluginActivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginActivated', func_get_args()));
@@ -7154,7 +7154,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::dontSeePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WordPress::dontSeePluginInstalled()
      */
     public function dontSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePluginInstalled', func_get_args()));
@@ -7177,7 +7177,7 @@ trait WpfunctionalTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WordPress::dontSeePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WordPress::dontSeePluginInstalled()
      */
     public function cantSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePluginInstalled', func_get_args()));
@@ -7192,10 +7192,6 @@ trait WpfunctionalTesterActions
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the
-     *                                      `.notice.notice-error` ones.
-     *
-     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()
@@ -7203,7 +7199,11 @@ trait WpfunctionalTesterActions
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @see \Codeception\Module\WordPress::seeErrorMessage()
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @return void
+     * @see \lucatume\WPBrowser\Module\WordPress::seeErrorMessage()
      */
     public function seeErrorMessage($classes = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeErrorMessage', func_get_args()));
@@ -7217,10 +7217,6 @@ trait WpfunctionalTesterActions
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the
-     *                                      `.notice.notice-error` ones.
-     *
-     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()
@@ -7228,7 +7224,11 @@ trait WpfunctionalTesterActions
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @see \Codeception\Module\WordPress::seeErrorMessage()
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @return void
+     * @see \lucatume\WPBrowser\Module\WordPress::seeErrorMessage()
      */
     public function canSeeErrorMessage($classes = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeErrorMessage', func_get_args()));
@@ -7250,7 +7250,7 @@ trait WpfunctionalTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seeWpDiePage()
+     * @see \lucatume\WPBrowser\Module\WordPress::seeWpDiePage()
      */
     public function seeWpDiePage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeWpDiePage', func_get_args()));
@@ -7271,7 +7271,7 @@ trait WpfunctionalTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seeWpDiePage()
+     * @see \lucatume\WPBrowser\Module\WordPress::seeWpDiePage()
      */
     public function canSeeWpDiePage() {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeWpDiePage', func_get_args()));
@@ -7296,7 +7296,7 @@ trait WpfunctionalTesterActions
      * @param array<string>|string $classes A list of classes the message should have in addition to the `.notice` one.
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seeMessage()
+     * @see \lucatume\WPBrowser\Module\WordPress::seeMessage()
      */
     public function seeMessage($classes = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeMessage', func_get_args()));
@@ -7320,7 +7320,7 @@ trait WpfunctionalTesterActions
      * @param array<string>|string $classes A list of classes the message should have in addition to the `.notice` one.
      *
      * @return void
-     * @see \Codeception\Module\WordPress::seeMessage()
+     * @see \lucatume\WPBrowser\Module\WordPress::seeMessage()
      */
     public function canSeeMessage($classes = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeMessage', func_get_args()));
@@ -7343,7 +7343,7 @@ trait WpfunctionalTesterActions
      * @param string $name Optional, overrides the default cookie name.
      *
      * @return \Symfony\Component\BrowserKit\Cookie|null Either a cookie object or `null`.
-     * @see \Codeception\Module\WordPress::grabWordPressTestCookie()
+     * @see \lucatume\WPBrowser\Module\WordPress::grabWordPressTestCookie()
      */
     public function grabWordPressTestCookie($name = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabWordPressTestCookie', func_get_args()));
@@ -7365,7 +7365,7 @@ trait WpfunctionalTesterActions
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
      * @return string The admin page path.
-     * @see \Codeception\Module\WordPress::amOnAdminAjaxPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnAdminAjaxPage()
      */
     public function amOnAdminAjaxPage($queryVars = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminAjaxPage', func_get_args()));
@@ -7386,7 +7386,7 @@ trait WpfunctionalTesterActions
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
      * @return string The page path.
-     * @see \Codeception\Module\WordPress::amOnCronPage()
+     * @see \lucatume\WPBrowser\Module\WordPress::amOnCronPage()
      */
     public function amOnCronPage($queryVars = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnCronPage', func_get_args()));
@@ -7411,7 +7411,7 @@ trait WpfunctionalTesterActions
      * @param int $id The post ID.
      *
      * @return void
-     * @see \Codeception\Module\WordPress::amEditingPostWithId()
+     * @see \lucatume\WPBrowser\Module\WordPress::amEditingPostWithId()
      */
     public function amEditingPostWithId($id) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingPostWithId', func_get_args()));

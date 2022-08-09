@@ -35,7 +35,7 @@ trait WebDriverTesterActions
      * @return void
      *
      * @throws ModuleException If all the attempts of obtaining the cookie fail.
-     * @see \Codeception\Module\WPWebDriver::loginAsAdmin()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::loginAsAdmin()
      */
     public function loginAsAdmin($timeout = null, $maxAttempts = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAsAdmin', func_get_args()));
@@ -64,10 +64,10 @@ trait WebDriverTesterActions
      * @param int    $timeout The max time, in seconds, to try to login.
      * @param int    $maxAttempts The max number of attempts to try to login.
      *
+     * @return void
      * @throws ModuleException If all the attempts of obtaining the cookie fail.
      *
-     * @return void
-     * @see \Codeception\Module\WPWebDriver::loginAs()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::loginAs()
      */
     public function loginAs($username, $password, $timeout = null, $maxAttempts = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('loginAs', func_get_args()));
@@ -89,7 +89,7 @@ trait WebDriverTesterActions
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
      * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
-     * @see \Codeception\Module\WPWebDriver::grabCookiesWithPattern()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::grabCookiesWithPattern()
      */
     public function grabCookiesWithPattern($cookiePattern) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCookiesWithPattern', func_get_args()));
@@ -111,7 +111,7 @@ trait WebDriverTesterActions
      * @param int $time The max time to wait for AJAX requests to complete.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::waitForJqueryAjax()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::waitForJqueryAjax()
      */
     public function waitForJqueryAjax($time = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('waitForJqueryAjax', func_get_args()));
@@ -131,7 +131,7 @@ trait WebDriverTesterActions
      * ```
      *
      * @return string The full page URL.
-     * @see \Codeception\Module\WPWebDriver::grabFullUrl()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::grabFullUrl()
      */
     public function grabFullUrl() {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFullUrl', func_get_args()));
@@ -160,7 +160,7 @@ trait WebDriverTesterActions
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::deactivatePlugin()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::deactivatePlugin()
      */
     public function deactivatePlugin($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('deactivatePlugin', func_get_args()));
@@ -189,7 +189,7 @@ trait WebDriverTesterActions
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::activatePlugin()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::activatePlugin()
      */
     public function activatePlugin($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('activatePlugin', func_get_args()));
@@ -3283,7 +3283,7 @@ trait WebDriverTesterActions
      * @param bool|string $redirectTo Whether to redirect to another (optionally specified) page after the logout.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::logOut()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::logOut()
      */
     public function logOut($redirectTo = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('logOut', func_get_args()));
@@ -3305,7 +3305,7 @@ trait WebDriverTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::amOnPluginsPage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amOnPluginsPage()
      */
     public function amOnPluginsPage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPluginsPage', func_get_args()));
@@ -3327,7 +3327,7 @@ trait WebDriverTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::amOnPagesPage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amOnPagesPage()
      */
     public function amOnPagesPage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnPagesPage', func_get_args()));
@@ -3351,7 +3351,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginDeactivated()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginDeactivated()
      */
     public function seePluginDeactivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginDeactivated', func_get_args()));
@@ -3374,7 +3374,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginDeactivated()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginDeactivated()
      */
     public function canSeePluginDeactivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginDeactivated', func_get_args()));
@@ -3398,7 +3398,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginInstalled()
      */
     public function seePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginInstalled', func_get_args()));
@@ -3421,7 +3421,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginInstalled()
      */
     public function canSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginInstalled', func_get_args()));
@@ -3445,7 +3445,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginActivated()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginActivated()
      */
     public function seePluginActivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePluginActivated', func_get_args()));
@@ -3468,7 +3468,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seePluginActivated()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seePluginActivated()
      */
     public function canSeePluginActivated($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePluginActivated', func_get_args()));
@@ -3492,7 +3492,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::dontSeePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::dontSeePluginInstalled()
      */
     public function dontSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePluginInstalled', func_get_args()));
@@ -3515,7 +3515,7 @@ trait WebDriverTesterActions
      * @param string $pluginSlug The plugin slug, like "hello-dolly".
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::dontSeePluginInstalled()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::dontSeePluginInstalled()
      */
     public function cantSeePluginInstalled($pluginSlug) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePluginInstalled', func_get_args()));
@@ -3530,10 +3530,6 @@ trait WebDriverTesterActions
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the
-     *                                      `.notice.notice-error` ones.
-     *
-     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()
@@ -3541,7 +3537,11 @@ trait WebDriverTesterActions
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @see \Codeception\Module\WPWebDriver::seeErrorMessage()
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @return void
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeErrorMessage()
      */
     public function seeErrorMessage($classes = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeErrorMessage', func_get_args()));
@@ -3555,10 +3555,6 @@ trait WebDriverTesterActions
      * The check is class-based to decouple from internationalization.
      * The method will **not** handle authentication and navigation the administration area.
      *
-     * @param string|array<string> $classes A list of classes the notice should have other than the
-     *                                      `.notice.notice-error` ones.
-     *
-     * @return void
      * @example
      * ```php
      * $I->loginAsAdmin()
@@ -3566,7 +3562,11 @@ trait WebDriverTesterActions
      * $I->seeErrorMessage('.my-plugin');
      * ```
      *
-     * @see \Codeception\Module\WPWebDriver::seeErrorMessage()
+     * @param string|array<string> $classes A list of classes the notice should have other than the
+     *                                      `.notice.notice-error` ones.
+     *
+     * @return void
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeErrorMessage()
      */
     public function canSeeErrorMessage($classes = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeErrorMessage', func_get_args()));
@@ -3588,7 +3588,7 @@ trait WebDriverTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seeWpDiePage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeWpDiePage()
      */
     public function seeWpDiePage() {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeWpDiePage', func_get_args()));
@@ -3609,7 +3609,7 @@ trait WebDriverTesterActions
      * ```
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seeWpDiePage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeWpDiePage()
      */
     public function canSeeWpDiePage() {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeWpDiePage', func_get_args()));
@@ -3634,7 +3634,7 @@ trait WebDriverTesterActions
      * @param array<string>|string $classes A list of classes the message should have in addition to the `.notice` one.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seeMessage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeMessage()
      */
     public function seeMessage($classes = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeMessage', func_get_args()));
@@ -3658,7 +3658,7 @@ trait WebDriverTesterActions
      * @param array<string>|string $classes A list of classes the message should have in addition to the `.notice` one.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::seeMessage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::seeMessage()
      */
     public function canSeeMessage($classes = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeMessage', func_get_args()));
@@ -3681,7 +3681,7 @@ trait WebDriverTesterActions
      * @param string $name Optional, overrides the default cookie name.
      *
      * @return \Symfony\Component\BrowserKit\Cookie|null Either a cookie object or `null`.
-     * @see \Codeception\Module\WPWebDriver::grabWordPressTestCookie()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::grabWordPressTestCookie()
      */
     public function grabWordPressTestCookie($name = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabWordPressTestCookie', func_get_args()));
@@ -3706,7 +3706,7 @@ trait WebDriverTesterActions
      * @param string $page The path, relative to the admin area URL, to the page.
      *
      * @return string The admin page path.
-     * @see \Codeception\Module\WPWebDriver::amOnAdminPage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amOnAdminPage()
      */
     public function amOnAdminPage($page) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminPage', func_get_args()));
@@ -3728,7 +3728,7 @@ trait WebDriverTesterActions
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
      * @return string The admin page path.
-     * @see \Codeception\Module\WPWebDriver::amOnAdminAjaxPage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amOnAdminAjaxPage()
      */
     public function amOnAdminAjaxPage($queryVars = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnAdminAjaxPage', func_get_args()));
@@ -3749,7 +3749,7 @@ trait WebDriverTesterActions
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      *
      * @return string The page path.
-     * @see \Codeception\Module\WPWebDriver::amOnCronPage()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amOnCronPage()
      */
     public function amOnCronPage($queryVars = null) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnCronPage', func_get_args()));
@@ -3774,7 +3774,7 @@ trait WebDriverTesterActions
      * @param int $id The post ID.
      *
      * @return void
-     * @see \Codeception\Module\WPWebDriver::amEditingPostWithId()
+     * @see \lucatume\WPBrowser\Module\WPWebDriver::amEditingPostWithId()
      */
     public function amEditingPostWithId($id) {
         return $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingPostWithId', func_get_args()));

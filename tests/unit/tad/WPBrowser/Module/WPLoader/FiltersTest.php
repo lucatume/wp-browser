@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\WPBrowser\Module\WPLoader;
+namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
 use lucatume\WPBrowser\Module\WPLoader\Filters;

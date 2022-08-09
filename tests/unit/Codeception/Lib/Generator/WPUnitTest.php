@@ -1,8 +1,9 @@
 <?php namespace Codeception\Lib\Generator;
 
-use Codeception\TestCase\WPTestCase;
+use lucatume\WPBrowser\Compat\Compatibility;
+use lucatume\WPBrowser\Lib\Generator\WPUnit;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use tad\WPBrowser\Compat\Compatibility;
 
 class WPUnitTest extends \Codeception\Test\Unit
 {

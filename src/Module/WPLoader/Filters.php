@@ -3,14 +3,14 @@
 namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
-use function tad\WPBrowser\Module\WPLoader\count;
+use function lucatume\WPBrowser\Module\WPLoader\count;
 
 /**
  * Class Filters
  *
  * Handles operations on WordPress filters.
  *
- * @package tad\WPBrowser\Module\WPLoader
+ * @package lucatume\WPBrowser\Module\WPLoader
  */
 class Filters
 {

@@ -3,7 +3,7 @@
 use Codeception\Exception\ModuleException;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 
-class FactoryTest extends \Codeception\TestCase\WPTestCase
+class FactoryTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @var \WploaderTester

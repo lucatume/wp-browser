@@ -1,7 +1,7 @@
 <?php
 
 use Codeception\Example;
-use tad\WPBrowser\Generators\User;
+use lucatume\WPBrowser\Generators\User;
 
 class WPDbUserCest
 {

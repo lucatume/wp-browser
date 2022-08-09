@@ -1,6 +1,6 @@
 <?php
 
-class CronDeactivationTest extends \Codeception\TestCase\WPTestCase
+class CronDeactivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * It should disable CRON by default

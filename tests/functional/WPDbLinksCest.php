@@ -1,6 +1,6 @@
 <?php
-use tad\WPBrowser\Generators\Date;
-use tad\WPBrowser\Generators\Links;
+use lucatume\WPBrowser\Generators\Date;
+use lucatume\WPBrowser\Generators\Links;
 
 class WPDbLinksCest
 {

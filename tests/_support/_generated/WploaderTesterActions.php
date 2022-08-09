@@ -12,7 +12,7 @@ trait WploaderTesterActions
      */
     abstract protected function getScenario();
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -23,7 +23,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('create_a_post', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -50,7 +50,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -74,7 +74,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -98,7 +98,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getContentFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -127,7 +127,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -151,7 +151,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -179,7 +179,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -207,7 +207,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -235,7 +235,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -263,7 +263,7 @@ trait WploaderTesterActions
         return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -281,13 +281,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueries()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueries()
      */
     public function assertQueries($message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -306,13 +306,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueries()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueries()
      */
     public function assertNotQueries($message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -337,13 +337,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertCountQueries()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertCountQueries()
      */
     public function assertCountQueries($n, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertCountQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -363,13 +363,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByStatement()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByStatement()
      */
     public function assertQueriesByStatement($statement, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -389,13 +389,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByMethod()
      */
     public function assertQueriesByMethod($class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -415,13 +415,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByStatement()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByStatement()
      */
     public function assertNotQueriesByStatement($statement, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -444,13 +444,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByStatement()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByStatement()
      */
     public function assertQueriesCountByStatement($n, $statement, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatement', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -470,13 +470,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByMethod()
      */
     public function assertNotQueriesByMethod($class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -498,13 +498,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByMethod()
      */
     public function assertQueriesCountByMethod($n, $class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -522,13 +522,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByFunction()
      */
     public function assertQueriesByFunction($function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -547,13 +547,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByFunction()
      */
     public function assertNotQueriesByFunction($function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -573,13 +573,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByFunction()
      */
     public function assertQueriesCountByFunction($n, $function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -600,13 +600,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByStatementAndMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByStatementAndMethod()
      */
     public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -627,13 +627,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByStatementAndMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByStatementAndMethod()
      */
     public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -657,13 +657,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByStatementAndMethod()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByStatementAndMethod()
      */
     public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndMethod', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -683,13 +683,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByStatementAndFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByStatementAndFunction()
      */
     public function assertQueriesByStatementAndFunction($statement, $function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -710,13 +710,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByStatementAndFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByStatementAndFunction()
      */
     public function assertNotQueriesByStatementAndFunction($statement, $function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -739,13 +739,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByStatementAndFunction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByStatementAndFunction()
      */
     public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndFunction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -767,13 +767,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByAction()
      */
     public function assertQueriesByAction($action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -795,13 +795,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByAction()
      */
     public function assertNotQueriesByAction($action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -826,13 +826,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByAction()
      */
     public function assertQueriesCountByAction($n, $action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -856,13 +856,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByStatementAndAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByStatementAndAction()
      */
     public function assertQueriesByStatementAndAction($statement, $action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -886,13 +886,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByStatementAndAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByStatementAndAction()
      */
     public function assertNotQueriesByStatementAndAction($statement, $action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -920,13 +920,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByStatementAndAction()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByStatementAndAction()
      */
     public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndAction', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -952,13 +952,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByFilter()
      */
     public function assertQueriesByFilter($filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -984,13 +984,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByFilter()
      */
     public function assertNotQueriesByFilter($filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1019,13 +1019,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByFilter()
      */
     public function assertQueriesCountByFilter($n, $filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1053,13 +1053,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesByStatementAndFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesByStatementAndFilter()
      */
     public function assertQueriesByStatementAndFilter($statement, $filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1087,13 +1087,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertNotQueriesByStatementAndFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertNotQueriesByStatementAndFilter()
      */
     public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotQueriesByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1126,13 +1126,13 @@ trait WploaderTesterActions
      * @param string $message An optional message to override the default one.
      *
      * @return void
-     * @see \Codeception\Module\WPQueries::assertQueriesCountByStatementAndFilter()
+     * @see \lucatume\WPBrowser\Module\WPQueries::assertQueriesCountByStatementAndFilter()
      */
     public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertQueriesCountByStatementAndFilter', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1150,13 +1150,13 @@ trait WploaderTesterActions
      * @param \wpdb|null $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
      * @return int The current count of performed queries.
-     * @see \Codeception\Module\WPQueries::countQueries()
+     * @see \lucatume\WPBrowser\Module\WPQueries::countQueries()
      */
     public function countQueries($wpdb = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('countQueries', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1174,7 +1174,7 @@ trait WploaderTesterActions
      * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
      * @return array<string> An array of queries.
-     * @see \Codeception\Module\WPQueries::getQueries()
+     * @see \lucatume\WPBrowser\Module\WPQueries::getQueries()
      */
     public function getQueries($wpdb = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getQueries', func_get_args()));

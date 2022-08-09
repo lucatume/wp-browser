@@ -1,20 +1,21 @@
 <?php
 
-namespace tad\WPBrowser\Extension;
+namespace lucatume\WPBrowser\Extension;
 
+use Codeception\Event\PrintResultEvent;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Test\Unit;
 use Exception;
+use lucatume\WPBrowser\Extension\Symlinker;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\StubProphecy\FunctionProphecy as the_function;
+use lucatume\WPBrowser\StubProphecy\StubProphecy;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Filesystem\Exception\IOException;
-use tad\WPBrowser\StubProphecy\Arg;
-use tad\WPBrowser\StubProphecy\FunctionProphecy as the_function;
-use tad\WPBrowser\StubProphecy\StubProphecy;
-use tad\WPBrowser\Traits\WithStubProphecy;
 use UnitTester;
-use Codeception\Event\PrintResultEvent;
 
 class SymlinkerTest extends Unit
 {
@@ -36,7 +37,7 @@ class SymlinkerTest extends Unit
     {
         $sut = $this->make_instance();
 
-        $this->assertInstanceOf('tad\WPBrowser\Extension\Symlinker', $sut);
+        $this->assertInstanceOf('lucatume\WPBrowser\Extension\Symlinker', $sut);
     }
 
     private function make_instance()

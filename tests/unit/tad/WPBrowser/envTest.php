@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\WPBrowser;
+namespace lucatume\WPBrowser;
 
 class envTest extends \Codeception\Test\Unit
 {

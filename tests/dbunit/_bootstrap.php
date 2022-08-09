@@ -1,5 +1,5 @@
 <?php
 
-use function tad\WPBrowser\Tests\Support\importTestDatabasesDumps;
+use function lucatume\WPBrowser\Tests\Support\importTestDatabasesDumps;
 
 importTestDatabasesDumps();

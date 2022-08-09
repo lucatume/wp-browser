@@ -1,8 +1,6 @@
-<?php namespace tad\WPBrowser;
+<?php namespace lucatume\WPBrowser;
 
-use tad\WPBrowser\Traits\WithStubProphecy;
-
-use function tad\WPBrowser\Tests\Support\testEnvFile;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 

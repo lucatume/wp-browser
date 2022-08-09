@@ -1,6 +1,6 @@
 <?php
 
-use tad\WPBrowser\Generators\Tables;
+use lucatume\WPBrowser\Generators\Tables;
 
 class WPDbBlogSubdirCest
 {

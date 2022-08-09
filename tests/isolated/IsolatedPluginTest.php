@@ -1,8 +1,6 @@
 <?php
 
-use function tad\WPBrowser\db;
-
-class IsolatedPluginTest extends \Codeception\TestCase\WPTestCase
+class IsolatedPluginTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @runInSeparateProcess

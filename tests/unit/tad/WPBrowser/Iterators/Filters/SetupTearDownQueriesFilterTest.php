@@ -1,7 +1,7 @@
 <?php
-namespace tad\WPBrowser\Iterators\Filters;
+namespace lucatume\WPBrowser\Iterators\Filters;
 
-use tad\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter as Filter;
+use lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter as Filter;
 
 class SetupTearDownQueriesFilterTest extends \Codeception\Test\Unit
 {
@@ -24,7 +24,7 @@ class SetupTearDownQueriesFilterTest extends \Codeception\Test\Unit
     {
         $sut = $this->make_instance();
 
-        $this->assertInstanceOf('tad\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter', $sut);
+        $this->assertInstanceOf('lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter', $sut);
     }
 
     private function make_instance()
@@ -61,12 +61,12 @@ class SetupTearDownQueriesFilterTest extends \Codeception\Test\Unit
             [
                 'some SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'second SQL statement',
                 'some ms timing',
-                'a stack trace not including Codeception\TestCase\WPTestCase setUp methods'
+                'a stack trace not including lucatume\WPBrowser\TestCase\WPTestCase setUp methods'
             ],
         ];
 
@@ -92,12 +92,12 @@ class SetupTearDownQueriesFilterTest extends \Codeception\Test\Unit
             [
                 'some SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
             [
                 'second SQL statement',
                 'some ms timing',
-                'a stack trace not including Codeception\TestCase\WPTestCase tearDown methods'
+                'a stack trace not including lucatume\WPBrowser\TestCase\WPTestCase tearDown methods'
             ],
         ];
 
@@ -123,12 +123,12 @@ class SetupTearDownQueriesFilterTest extends \Codeception\Test\Unit
             [
                 'some SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'some SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 

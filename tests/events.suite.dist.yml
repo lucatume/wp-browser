@@ -3,10 +3,10 @@ bootstrap: _bootstrap.php
 modules:
     enabled:
         - \Helper\Events
-        - WPDb
-        - WPLoader
+        - lucatume\WPBrowser\Module\WPDb
+        - lucatume\WPBrowser\Module\WPLoader
     config:
-        WPDb:
+        lucatume\WPBrowser\Module\WPDb:
             dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
             user: %WORDPRESS_DB_USER%
             password: %WORDPRESS_DB_PASSWORD%
@@ -16,7 +16,7 @@ modules:
             reconnect: false
             url: '%WORDPRESS_URL%'
             tablePrefix: 'wp_'
-        WPLoader:
+        lucatume\WPBrowser\Module\WPLoader:
             loadOnly: true
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
             dbName: %WORDPRESS_DB_NAME%

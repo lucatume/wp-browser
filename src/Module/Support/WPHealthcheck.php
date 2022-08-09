@@ -2,7 +2,7 @@
 /**
  * Checks on a WordPress installation health w/o using WordPress methods.
  *
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 
 namespace lucatume\WPBrowser\Module\Support;
@@ -11,15 +11,15 @@ use CallbackFilterIterator;
 use Codeception\Util\PathResolver;
 use FilesystemIterator;
 use JsonException;
+use lucatume\WPBrowser\Environment\Constants;
 use PDO;
 use PDOStatement;
 use SplFileInfo;
-use tad\WPBrowser\Environment\Constants;
-use tad\WPBrowser\Generators\Tables;
+use lucatume\WPBrowser\Generators\Tables;
 
 /**
  * Class WPHealthcheck
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 class WPHealthcheck
 {

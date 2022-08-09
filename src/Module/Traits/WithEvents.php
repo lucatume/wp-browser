@@ -2,7 +2,7 @@
 /**
  * Provides methods to interact with Codeception `run` command event dispatch stack.
  *
- * @package tad\WPBrowser\Module\Traits
+ * @package lucatume\WPBrowser\Module\Traits
  */
 
 namespace lucatume\WPBrowser\Module\Traits;
@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 /**
  * Trait EventListener
  *
- * @package tad\WPBrowser\Module\Traits
+ * @package lucatume\WPBrowser\Module\Traits
  * @property ModuleContainer $moduleContainer
  */
 trait WithEvents

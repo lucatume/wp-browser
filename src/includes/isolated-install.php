@@ -21,8 +21,8 @@ $multisite = !empty($argv[2]) ? $argv[2] : false;
 require_once $configuration['autoload'];
 
 if (!empty($multisite)) {
-	tad\WPBrowser\configurePatchwork(
-		tad\WPBrowser\isolatedInstallPatchworkConfig( $configuration )
+	lucatume\WPBrowser\configurePatchwork(
+		lucatume\WPBrowser\isolatedInstallPatchworkConfig( $configuration )
 	);
 
 	Patchwork\redefine('is_multisite', function () {
@@ -119,11 +119,11 @@ switch ( $tables_handling ) {
 	default;
 	case 'drop':
 		echo "\nThe following tables will be dropped: ", "\n\t- ", implode( "\n\t- ", $wpdb->tables ), "\n";
-		tad\WPBrowser\dropWpTables( $wpdb );
+		lucatume\WPBrowser\dropWpTables( $wpdb );
 		break;
 	case 'empty':
 		echo "\nThe following tables will be emptied: ", "\n\t- ", implode( "\n\t- ", $wpdb->tables ), "\n";
-		tad\WPBrowser\emptyWpTables( $wpdb );
+		lucatume\WPBrowser\emptyWpTables( $wpdb );
 		break;
 	case 'let':
 		echo "\nTables will not be touched.\n";

@@ -1,6 +1,6 @@
 <?php
 
-class UnitExtensionTest extends \Codeception\TestCase\WPTestCase
+class UnitExtensionTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * It should allow accessing the tester property

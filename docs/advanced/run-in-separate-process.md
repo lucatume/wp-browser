@@ -5,7 +5,7 @@ PHPUnit offers the possibility to run tests [in a separate PHP process][1]; Code
 The wp-browser project tries to fill that gap by supporting the `@runInSeparateProcess` annotation.  
 This support comes with some caveats, though:
 
-1. The support is only for test cases extending the `Codeception\TestCase\WPTestCase` class (the base test case for integration or "WordPress unit" tests)
+1. The support is only for test cases extending the `lucatume\WPBrowser\TestCase\WPTestCase` class (the base test case for integration or "WordPress unit" tests)
 2. The support wp-browser provides only supports the `@preserveGlobalState` annotation with the `disabled` value; this means there is no support for preserving global state between tests.
 
 Read more about what this means in PHPUnit documentation.
@@ -66,7 +66,7 @@ The command scaffolds a `test/integration/apiTest.php` file that I've modified t
 ```php
 <?php
 
-class apiTest extends \Codeception\TestCase\WPTestCase
+class apiTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     public function test_get_api_exists()
     {
@@ -153,7 +153,7 @@ Some pieces of this code are worth pointing out:
 
 Yes. In the example test code in the previous section, the `test_get_api_exists` and `test_get_api_will_cache` test methods are not running in separate processes.  
 
-In your test cases extending the `Codeception\TestCase\WPTestCase`, you can mix test methods running in the primary PHP process and those running in a separate PHP process without issues.
+In your test cases extending the `lucatume\WPBrowser\TestCase\WPTestCase`, you can mix test methods running in the primary PHP process and those running in a separate PHP process without issues.
 
 ### OOP refactoring of get_api
 

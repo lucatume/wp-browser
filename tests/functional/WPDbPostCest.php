@@ -1,7 +1,7 @@
 <?php
 
-use tad\WPBrowser\Generators\Date;
-use function tad\WPBrowser\slug;
+use lucatume\WPBrowser\Generators\Date;
+use function lucatume\WPBrowser\slug;
 
 class WPDbPostCest
 {

@@ -2,9 +2,9 @@
 
 namespace Step\Cli;
 
-use Symfony\Component\Yaml\Yaml;
-use function tad\WPBrowser\vendorDir;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use Symfony\Component\Yaml\Yaml;
+use function lucatume\WPBrowser\vendorDir;
 
 class CodeceptionCommand extends \CliTester
 {
@@ -25,13 +25,13 @@ class CodeceptionCommand extends \CliTester
             $parsed['extensions'] = [];
         }
         $parsed['extensions']['commands'] = [
-            'Codeception\Command\GenerateWPAjax',
-            'Codeception\Command\GenerateWPCanonical',
-            'Codeception\Command\GenerateWPRestApi',
-            'Codeception\Command\GenerateWPRestController',
-            'Codeception\Command\GenerateWPRestPostTypeController',
-            'Codeception\Command\GenerateWPUnit',
-            'Codeception\Command\GenerateWPXMLRPC',
+            'lucatume\WPBrowser\Command\GenerateWPAjax',
+            'lucatume\WPBrowser\Command\GenerateWPCanonical',
+            'lucatume\WPBrowser\Command\GenerateWPRestApi',
+            'lucatume\WPBrowser\Command\GenerateWPRestController',
+            'lucatume\WPBrowser\Command\GenerateWPRestPostTypeController',
+            'lucatume\WPBrowser\Command\GenerateWPUnit',
+            'lucatume\WPBrowser\Command\GenerateWPXMLRPC',
         ];
         file_put_contents($config, Yaml::dump($parsed));
     }

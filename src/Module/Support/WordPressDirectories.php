@@ -2,16 +2,16 @@
 /**
  * Provides methods to retrieve information about WordPress directories based on currently defined constants.
  *
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 
 namespace lucatume\WPBrowser\Module\Support;
 
-use tad\WPBrowser\Environment\Constants;
+use lucatume\WPBrowser\Environment\Constants;
 
 /**
  * Class WordPressDirectories
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 class WordPressDirectories
 {

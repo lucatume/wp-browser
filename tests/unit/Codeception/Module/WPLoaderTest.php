@@ -4,11 +4,12 @@ namespace Codeception\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
+use lucatume\WPBrowser\Adapters\WP;
+use lucatume\WPBrowser\Module\WPLoader;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use tad\WPBrowser\Adapters\WP;
-use tad\WPBrowser\StubProphecy\Arg;
-use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPLoaderTest extends \Codeception\Test\Unit
 {
@@ -32,7 +33,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
     protected $config;
 
     /**
-     * @var WP
+     * @var \lucatume\WPBrowser\Adapters\WP
      */
     protected $wp;
 

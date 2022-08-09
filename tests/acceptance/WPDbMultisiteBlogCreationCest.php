@@ -1,7 +1,7 @@
 <?php
 
-use tad\WPBrowser\Generators\Date;
-use tad\WPBrowser\Generators\Tables;
+use lucatume\WPBrowser\Generators\Date;
+use lucatume\WPBrowser\Generators\Tables;
 
 class WPDbMultisiteBlogCreationCest
 {

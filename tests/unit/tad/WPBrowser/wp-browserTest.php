@@ -1,4 +1,4 @@
-<?php namespace tad\WPBrowser;
+<?php namespace lucatume\WPBrowser;
 
 use Codeception\Exception\ConfigurationException;
 use Codeception\Lib\ModuleContainer;

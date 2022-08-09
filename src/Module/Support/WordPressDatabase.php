@@ -2,20 +2,20 @@
 /**
  * Provides methods to check and connect to the WordPress database based on the currently defined constants.
  *
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 
 namespace lucatume\WPBrowser\Module\Support;
 
 use JsonException;
+use lucatume\WPBrowser\Environment\Constants;
 use PDO;
 use PDOException;
 use PDOStatement;
-use tad\WPBrowser\Environment\Constants;
 
 /**
  * Class WordPressDatabase
- * @package tad\WPBrowser\Module\Support
+ * @package lucatume\WPBrowser\Module\Support
  */
 class WordPressDatabase
 {

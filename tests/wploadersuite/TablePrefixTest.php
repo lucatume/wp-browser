@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\AssertionFailedError;
-use function tad\WPBrowser\importDumpWithMysqlBin;
+use function lucatume\WPBrowser\importDumpWithMysqlBin;
 
-class TablePrefixTest extends \Codeception\TestCase\WPTestCase
+class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
 
     public static $otherInstallationPrefix = 'foo_';

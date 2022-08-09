@@ -1,4 +1,6 @@
-<?php namespace tad\WPBrowser\Polyfills\Dotenv;
+<?php namespace lucatume\WPBrowser\Polyfills\Dotenv;
+
+use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class DotenvTest extends \Codeception\Test\Unit
 {

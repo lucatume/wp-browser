@@ -3,10 +3,10 @@
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
+use lucatume\WPBrowser\Events\EventDispatcherAdapter;
+use lucatume\WPBrowser\Traits\WithEvents;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use tad\WPBrowser\Events\EventDispatcherAdapter;
-use tad\WPBrowser\Traits\WithEvents;
-use function tad\WPBrowser\setPrivateProperties;
+use function lucatume\WPBrowser\setPrivateProperties;
 
 class WithEventsTest extends \Codeception\Test\Unit
 {

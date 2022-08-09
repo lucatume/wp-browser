@@ -1,10 +1,10 @@
 <?php
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
 use Codeception\Util\Debug;
+use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Module\Support\DbDump;
-use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 
 class DbDumpTest extends \Codeception\Test\Unit
 {

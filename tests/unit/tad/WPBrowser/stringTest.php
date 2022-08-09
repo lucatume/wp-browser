@@ -1,4 +1,4 @@
-<?php namespace tad\WPBrowser;
+<?php namespace lucatume\WPBrowser;
 
 class stringTest extends \Codeception\Test\Unit
 {

@@ -1,10 +1,11 @@
 <?php
-namespace tad\WPBrowser\Services\WP;
+namespace lucatume\WPBrowser\Services\WP;
 
+use lucatume\WPBrowser\Environment\System;
+use lucatume\WPBrowser\Services\WP\Bootstrapper;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\BrowserKit\Cookie;
-use tad\WPBrowser\Environment\System;
-use tad\WPBrowser\Traits\WithStubProphecy;
 
 class BootstrapperTest extends \Codeception\Test\Unit
 {
@@ -21,7 +22,7 @@ class BootstrapperTest extends \Codeception\Test\Unit
     protected $wpLoadPath;
 
     /**
-     * @var System
+     * @var \lucatume\WPBrowser\Environment\System
      */
     protected $system;
 
@@ -33,7 +34,7 @@ class BootstrapperTest extends \Codeception\Test\Unit
     {
         $sut = $this->make_instance();
 
-        $this->assertInstanceOf('tad\WPBrowser\Services\WP\Bootstrapper', $sut);
+        $this->assertInstanceOf('lucatume\WPBrowser\Services\WP\Bootstrapper', $sut);
     }
 
     /**

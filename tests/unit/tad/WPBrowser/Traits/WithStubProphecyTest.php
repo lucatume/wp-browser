@@ -1,9 +1,10 @@
-<?php namespace tad\WPBrowser\Traits;
+<?php namespace lucatume\WPBrowser\Traits;
 
 use lucatume\WPBrowser\Module\WPFilesystem;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\AssertionFailedError;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use tad\WPBrowser\StubProphecy\Arg;
 
 class TestObject
 {

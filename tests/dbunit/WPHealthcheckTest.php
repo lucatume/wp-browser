@@ -1,22 +1,22 @@
 <?php
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Environment\Constants;
 use lucatume\WPBrowser\Module\Support\WordPressDatabase;
 use lucatume\WPBrowser\Module\Support\WordPressDirectories;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PDOStatement;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\Test\Constants as TestConstants;
-use tad\WPBrowser\Environment\Constants;
-use tad\WPBrowser\Generators\Tables;
-use tad\WPBrowser\StubProphecy\Arg;
-use tad\WPBrowser\Traits\WithStubProphecy;
+use lucatume\WPBrowser\Generators\Tables;
 use UnitTester;
 use wpdb;
-use function tad\WPBrowser\envFile;
-use function tad\WPBrowser\Tests\Support\testEnvFile;
+use function lucatume\WPBrowser\envFile;
+use function lucatume\WPBrowser\Tests\Support\testEnvFile;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 

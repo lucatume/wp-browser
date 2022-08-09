@@ -5,9 +5,10 @@ require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
-use tad\WPBrowser\Connector\WordPress as Connector;
-use tad\WPBrowser\Traits\WithStubProphecy;
-use tad\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Connector\WordPress as Connector;
+use lucatume\WPBrowser\Module\WordPress;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 
 class WordPressTest extends \Codeception\Test\Unit
 {

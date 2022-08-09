@@ -25,7 +25,7 @@ function get_api()
     return $api;
 }
 
-class apiTest extends \Codeception\TestCase\WPTestCase
+class apiTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     public function test_get_api_exists()
     {

@@ -10,7 +10,7 @@ $I->wantTo('add posts and clean them up using the Events API');
  */
 $ids = $I->factory()->post->create_many(3, [ 'post_type' => 'some_post_type' ]);
 
-tad\WPBrowser\dispatch('test-event-1/setup-posts', __FILE__, [
+lucatume\WPBrowser\dispatch('test-event-1/setup-posts', __FILE__, [
     'ids' => $ids,
     'db'  => $I
 ]);

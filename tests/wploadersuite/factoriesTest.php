@@ -1,7 +1,7 @@
 <?php
 
 
-class factoriesTest extends \Codeception\TestCase\WPTestCase
+class factoriesTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @test

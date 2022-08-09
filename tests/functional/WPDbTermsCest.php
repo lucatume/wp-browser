@@ -1,6 +1,6 @@
 <?php
 
-use function tad\WPBrowser\slug;
+use function lucatume\WPBrowser\slug;
 
 class WPDbTermsCest
 {

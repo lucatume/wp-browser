@@ -13,12 +13,12 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\PHPUnit\TestCase;
 use JsonException;
-use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use tad\WPBrowser\Exceptions\WpCliException;
-use tad\WPBrowser\Process\Process;
-use tad\WPBrowser\Traits\WithWpCli;
-use function tad\WPBrowser\buildCommandline;
-use function tad\WPBrowser\requireCodeceptionModules;
+use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
+use lucatume\WPBrowser\Exceptions\WpCliException;
+use lucatume\WPBrowser\Process\Process;
+use lucatume\WPBrowser\Traits\WithWpCli;
+use function lucatume\WPBrowser\buildCommandline;
+use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
 requireCodeceptionModules('WPCLI', ['Cli']);
@@ -112,9 +112,9 @@ class WPCLI extends Module
      *
      * @param ModuleContainer $moduleContainer The module container containing this module.
      * @param array<string,mixed>|null $config The module configuration.
-     * @param Process|null $process The process adapter.
+     * @param \lucatume\WPBrowser\Process\Process|null $process The process adapter.
      *
-     * @throws WpCliException If there's an issue setting up the module using the current configuration.
+     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If there's an issue setting up the module using the current configuration.
      */
     public function __construct(ModuleContainer $moduleContainer, ?array $config = null, Process $process = null)
     {

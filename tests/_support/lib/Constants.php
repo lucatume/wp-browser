@@ -1,7 +1,7 @@
 <?php
 namespace tad\Test;
 
-class Constants extends \tad\WPBrowser\Environment\Constants
+class Constants extends \lucatume\WPBrowser\Environment\Constants
 {
     protected $buffer = [];
 

@@ -2,9 +2,10 @@
 namespace Codeception\Module;
 
 use Codeception\Lib\ModuleContainer;
+use lucatume\WPBrowser\Environment\Constants;
+use lucatume\WPBrowser\Module\WPQueries;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\AssertionFailedError;
-use tad\WPBrowser\Environment\Constants;
-use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPQueriesTest extends \Codeception\Test\Unit
 {
@@ -44,7 +45,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
     {
         $sut = $this->make_instance();
 
-        $this->assertInstanceOf('Codeception\Module\WPQueries', $sut);
+        $this->assertInstanceOf('lucatume\WPBrowser\Module\WPQueries', $sut);
     }
 
     /**
@@ -76,12 +77,12 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'first SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'second SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'third SQL statement',
@@ -106,7 +107,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'seventh SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -134,12 +135,12 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'first SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'second SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'fourth SQL statement',
@@ -154,7 +155,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'seventh SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -174,7 +175,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'first SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'second SQL statement',
@@ -184,7 +185,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'seventh SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -202,7 +203,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'first SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'second SQL statement',
@@ -212,7 +213,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'seventh SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -232,12 +233,12 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'first SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'seventh SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -255,7 +256,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'SQL statement',
@@ -270,7 +271,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -288,7 +289,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->setUp'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
                 'SQL statement',
@@ -303,7 +304,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             [
                 'SQL statement',
                 'some ms timing',
-                'a stack trace including Codeception\TestCase\WPTestCase->tearDown'
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
@@ -842,7 +843,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
     {
         $this->moduleContainer = $this->stubProphecy('Codeception\Lib\ModuleContainer');
         $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
-        $this->constants = $this->stubProphecy('tad\WPBrowser\Environment\Constants');
+        $this->constants = $this->stubProphecy('lucatume\WPBrowser\Environment\Constants');
         $this->wpdb = (object)['queries' => []];
     }
 }

@@ -5,14 +5,14 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
+use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Module\WPFilesystem;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\AssertionFailedError;
-use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use tad\WPBrowser\Traits\WithStubProphecy;
-use function tad\WPBrowser\normalizeNewLine;
-use function tad\WPBrowser\readPrivateProperty;
-use function tad\WPBrowser\setPrivateProperties;
+use function lucatume\WPBrowser\normalizeNewLine;
+use function lucatume\WPBrowser\readPrivateProperty;
+use function lucatume\WPBrowser\setPrivateProperties;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
 {

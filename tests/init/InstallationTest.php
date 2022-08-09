@@ -1,8 +1,8 @@
 <?php
 
-namespace tad\WPBrowser\Tests;
+namespace lucatume\WPBrowser\Tests;
 
-use Codeception\Template\Wpbrowser;
+use lucatume\WPBrowser\Template\Wpbrowser;
 use lucatume\WPBrowser\Tests\Traits\WithUopz;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -180,7 +180,7 @@ class InstallationTest extends BaseTest
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
 
         $this->replacingWithUopz([
-            'tad\WPBrowser\homeDir' => '/Users/test'
+            'lucatume\WPBrowser\homeDir' => '/Users/test'
         ], function () use ($workDir) {
             $input = $this->makeEmpty(ArrayInput::class, [
                 'get_option' => static function ($option) {

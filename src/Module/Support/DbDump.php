@@ -4,8 +4,8 @@ namespace lucatume\WPBrowser\Module\Support;
 
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Yaml\Exception\DumpException;
-use tad\WPBrowser\Filesystem\Utils;
-use function tad\WPBrowser\pregErrorMessage;
+use lucatume\WPBrowser\Filesystem\Utils;
+use function lucatume\WPBrowser\pregErrorMessage;
 
 class DbDump
 {

@@ -12,7 +12,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module\PhpBrowser;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use Symfony\Component\BrowserKit\Cookie;
-use function tad\WPBrowser\requireCodeceptionModules;
+use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
 requireCodeceptionModules('WPBrowser', [ 'PhpBrowser' ]);

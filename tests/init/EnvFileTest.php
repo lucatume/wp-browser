@@ -1,11 +1,11 @@
 <?php
-namespace tad\WPBrowser\Tests;
+namespace lucatume\WPBrowser\Tests;
 
-use Codeception\Template\Wpbrowser;
+use lucatume\WPBrowser\Template\Wpbrowser;
+use lucatume\WPBrowser\Utils\Map;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use tad\WPBrowser\Utils\Map;
 
 require_once __DIR__ . '/BaseTest.php';
 

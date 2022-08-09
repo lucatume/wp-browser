@@ -1,11 +1,10 @@
 <?php
 
-namespace tad\WPBrowser\Tests\Support;
+namespace lucatume\WPBrowser\Tests\Support;
 
-use tad\WPBrowser\StubProphecy\StubProphecy;
-use function tad\WPBrowser\db;
-use function tad\WPBrowser\envFile;
-use function tad\WPBrowser\importDumpWithMysqlBin;
+use function lucatume\WPBrowser\db;
+use function lucatume\WPBrowser\envFile;
+use function lucatume\WPBrowser\importDumpWithMysqlBin;
 
 /**
  * Returns the name of the environment file to load in tests.

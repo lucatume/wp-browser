@@ -14,11 +14,11 @@ use Codeception\TestInterface;
 use DateTime;
 use DateTimeImmutable;
 use Exception;
+use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Utils\Dates;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
-use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use function tad\WPBrowser\requireCodeceptionModules;
+use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
 requireCodeceptionModules('WPFilesystem', [ 'Filesystem' ]);

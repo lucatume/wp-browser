@@ -2,7 +2,7 @@
 /**
  * Models a group of WordPress filters to be added or removed together.
  *
- * @package tad\WPBrowser\Module\WPLoader
+ * @package lucatume\WPBrowser\Module\WPLoader
  */
 
 namespace lucatume\WPBrowser\Module\WPLoader;
@@ -10,7 +10,7 @@ namespace lucatume\WPBrowser\Module\WPLoader;
 /**
  * Class FiltersGroup
  *
- * @package tad\WPBrowser\Module\WPLoader
+ * @package lucatume\WPBrowser\Module\WPLoader
  */
 class FiltersGroup
 {

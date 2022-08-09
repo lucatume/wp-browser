@@ -1,7 +1,7 @@
 <?php
-namespace tad\WPBrowser\Iterators\Filters;
+namespace lucatume\WPBrowser\Iterators\Filters;
 
-use tad\WPBrowser\Iterators\Filters\FactoryQueriesFilter as Filter;
+use lucatume\WPBrowser\Iterators\Filters\FactoryQueriesFilter as Filter;
 
 class FactoryQueriesFilterTest extends \Codeception\Test\Unit
 {
@@ -24,7 +24,7 @@ class FactoryQueriesFilterTest extends \Codeception\Test\Unit
     {
         $sut = $this->make_instance();
 
-        $this->assertInstanceOf('tad\WPBrowser\Iterators\Filters\FactoryQueriesFilter', $sut);
+        $this->assertInstanceOf('lucatume\WPBrowser\Iterators\Filters\FactoryQueriesFilter', $sut);
     }
 
     private function make_instance()

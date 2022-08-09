@@ -6,13 +6,13 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use lucatume\WPBrowser\Module\WPCLI;
+use lucatume\WPBrowser\Process\Process;
+use lucatume\WPBrowser\Process\ProcessFailedException;
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\StubProphecy\StubProphecy;
+use lucatume\WPBrowser\Traits\WithStubProphecy;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use tad\WPBrowser\Process\Process;
-use tad\WPBrowser\Process\ProcessFailedException;
-use tad\WPBrowser\StubProphecy\Arg;
-use tad\WPBrowser\StubProphecy\StubProphecy;
-use tad\WPBrowser\Traits\WithStubProphecy;
 
 class WPCLITest extends \Codeception\Test\Unit
 {

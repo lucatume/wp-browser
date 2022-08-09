@@ -1,10 +1,11 @@
 <?php
-namespace tad\WPBrowser\Extension;
+namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
-use org\bovigo\vfs\vfsStream;
+use lucatume\WPBrowser\Extension\Copier;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use org\bovigo\vfs\vfsStream;
 
 class CopierTest extends \Codeception\Test\Unit
 {

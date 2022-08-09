@@ -1,7 +1,7 @@
-<?php namespace tad\WPBrowser;
+<?php namespace lucatume\WPBrowser;
 
+use lucatume\WPBrowser\Utils\Map;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-use tad\WPBrowser\Utils\Map;
 use function lucatume\WPBrowser\checkComposerDependencies;
 use function lucatume\WPBrowser\composerFile;
 

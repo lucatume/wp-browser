@@ -1,6 +1,6 @@
-<?php namespace tad\WPBrowser;
+<?php namespace lucatume\WPBrowser;
 
-use tad\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Map;
 
 class dbTest extends \Codeception\Test\Unit
 {

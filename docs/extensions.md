@@ -10,7 +10,7 @@ The package contains two additional extensions to facilitate testers' life.
 
 ### Symlinker
 
-The `tad\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
+The `lucatume\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
 
 Since version `3.9` WordPress supports this feature (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
 
@@ -31,9 +31,9 @@ The extension needs small configuration in the `codeception.yml` file:
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Symlinker
+        - lucatume\WPBrowser\Extension\Symlinker
     config:
-        tad\WPBrowser\Extension\Symlinker:
+        lucatume\WPBrowser\Extension\Symlinker:
             mode: plugin
             destination: /my/local/wordpress/installation/wp-content/plugins
             rootFolder: /some/plugin/folder
@@ -47,7 +47,7 @@ The arguments are:
 
 ### Copier
 
-The `tad\WPBrowser\Extension\Copier` extension provides an automation to have specific files and folders copied to specified destination files and folders before the suites run.
+The `lucatume\WPBrowser\Extension\Copier` extension provides an automation to have specific files and folders copied to specified destination files and folders before the suites run.
 
 While WordPress handles symbolic linking pretty well there are some cases, like themes and drop-ins, where there is a need for "real" files to be put in place.
 
@@ -59,9 +59,9 @@ The extension follows the standard Codeception extension activation and has one 
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Copier
+        - lucatume\WPBrowser\Extension\Copier
     config:
-        tad\WPBrowser\Extension\Copier:
+        lucatume\WPBrowser\Extension\Copier:
             files:
                 tests/_data/required-drop-in.php: /var/www/wordpress/wp-content/drop-in.php
                 tests/_data/themes/dummy: /var/www/wordpress/wp-content/themes/dummy
@@ -104,9 +104,9 @@ In the `codeception.yml` file specifying a `destination` for each supported envi
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Symlinker
+        - lucatume\WPBrowser\Extension\Symlinker
     config:
-        tad\WPBrowser\Extension\Symlinker:
+        lucatume\WPBrowser\Extension\Symlinker:
             mode: plugin
             destination:
                 single: /var/www/wp/wp-content/plugins
@@ -120,9 +120,9 @@ A `default` destination can be specified to override this behaviour.
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Symlinker
+        - lucatume\WPBrowser\Extension\Symlinker
     config:
-        tad\WPBrowser\Extension\Symlinker:
+        lucatume\WPBrowser\Extension\Symlinker:
             mode: plugin
             destination:
                 default: /var/www/default/wp-content/plugins
@@ -145,9 +145,9 @@ The `rootFolder` parameter too can be set to be environment-aware and it will fo
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Symlinker
+        - lucatume\WPBrowser\Extension\Symlinker
     config:
-        tad\WPBrowser\Extension\Symlinker:
+        lucatume\WPBrowser\Extension\Symlinker:
             mode: plugin
             rootFolder:
                 dev: /
@@ -180,9 +180,9 @@ You will need to enable it in your Codeception **main** configuration file (e.g.
 ```yaml
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Events
+        - lucatume\WPBrowser\Extension\Events
     config:
-      tad\WPBrowser\Extension\Events:
+      lucatume\WPBrowser\Extension\Events:
         suites: ['acceptance']
 ```
 

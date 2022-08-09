@@ -442,7 +442,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Fixed
 
-- suites configuration parameter handling in the `tad\WPBrowser\Extension\Events` extension.
+- suites configuration parameter handling in the `lucatume\WPBrowser\Extension\Events` extension.
 
 ## [2.4.2] 2020-04-11;
 
@@ -465,7 +465,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ### Added
 
 - compatibility with Codeception 4.0
-- the `tad\WPBrowser\Extension\Events` extension to enable subscribing to Codeception 4.0 events
+- the `lucatume\WPBrowser\Extension\Events` extension to enable subscribing to Codeception 4.0 events
 
 ### Fixed
 
@@ -502,8 +502,8 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ### Added
 
 - the `originalUrl` to the `WPDb` module configuration; this can help in some instances where `urlReplacement` is active but is not working correctly.
-- the `tad\WPBrowser\Traits\WithWordPressFilters` trait to provide methods, for test cases, to debug WordPress actions and filter initial and final values.
-- use the `tad\WPBrowser\Traits\WithWordPressFilters` trait in the `WPLoader` module to debug WordPress actions and filter initial and final values.
+- the `lucatume\WPBrowser\Traits\WithWordPressFilters` trait to provide methods, for test cases, to debug WordPress actions and filter initial and final values.
+- use the `lucatume\WPBrowser\Traits\WithWordPressFilters` trait in the `WPLoader` module to debug WordPress actions and filter initial and final values.
 
 ### Fixed
 
@@ -666,7 +666,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - when in debug mode the `WPLoader` module will now display a report about the bootstrapped WordPress installation
 
 ### Fixed
-- restored the `Codeception\Test\Unit` class as parent of the `\Codeception\TestCase\WPTestCase`; it was erroneously removed from the inheritance tree in 2.2.7
+- restored the `Codeception\Test\Unit` class as parent of the `\lucatume\WPBrowser\TestCase\WPTestCase`; it was erroneously removed from the inheritance tree in 2.2.7
 
 ## [2.2.9] 2019-05-24;
 ### Fixed
@@ -1217,11 +1217,11 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.10.11] 2016-05-05
 ### Added
-- environments based support in `tad\WPBrowser\Extension\Symlinker` extension
+- environments based support in `lucatume\WPBrowser\Extension\Symlinker` extension
 
 ## [1.10.10] 2016-05-04
 ### Added
-- the `tad\WPBrowser\Extension\Symlinker` extension
+- the `lucatume\WPBrowser\Extension\Symlinker` extension
 
 ### Changed
 - update check deactivation when bootstrapping WordPress using the `WPBootstrapper` module
@@ -1426,20 +1426,20 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.7.13] 2015-11-10
 ### Added
-- the `\Codeception\TestCase\WPTestCase`, an extension of the base Codeception test case and a copy of the core `WP_UnitTestCase` class
-- the `\Codeception\TestCase\WPCanonicalTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Canonical_UnitTestCase` class
-- the `\Codeception\TestCase\WPAjaxTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Ajax_UnitTestCase` class
-- the `\Codeception\TestCase\WPRestApiTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Test_REST_TestCase` class
-- the `\Codeception\TestCase\WPXMLRPCTestCase`, an extension of the base Codeception test case and a copy of the core `WP_XMLRPC_UnitTestCase` class
-- the `wpcept generate:wpcanonical` command to generate test cases extending the `\Codeception\TestCase\WPCanonicalTestCase` class
-- the `wpcept generate:wpajax` command to generate test cases extending the `\Codeception\TestCase\WPAjaxTestCase` class
-- the `wpcept generate:wprest` command to generate test cases extending the `\Codeception\TestCase\WPRestApiTestCase` class
-- the `wpcept generate:wpxmlrpc` command to generate test cases extending the `\Codeception\TestCase\WPXMLRPCTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPTestCase`, an extension of the base Codeception test case and a copy of the core `WP_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPCanonicalTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Canonical_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPAjaxTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Ajax_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPRestApiTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Test_REST_TestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPXMLRPCTestCase`, an extension of the base Codeception test case and a copy of the core `WP_XMLRPC_UnitTestCase` class
+- the `wpcept generate:wpcanonical` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPCanonicalTestCase` class
+- the `wpcept generate:wpajax` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPAjaxTestCase` class
+- the `wpcept generate:wprest` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPRestApiTestCase` class
+- the `wpcept generate:wpxmlrpc` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPXMLRPCTestCase` class
 
 ### Changed
 - updated core unit tests suite code latest version
 - bundled test case classes names will now point to the vanilla WP test cases
-- the `wpcept generate:wpunit` command will now generate test cases extending the `\Codeception\TestCase\WPTestCase` class
+- the `wpcept generate:wpunit` command will now generate test cases extending the `\lucatume\WPBrowser\TestCase\WPTestCase` class
 
 ### Fixed
 - namespaced test class generation for `generate:wp*` commands will now properly generate the namespace string

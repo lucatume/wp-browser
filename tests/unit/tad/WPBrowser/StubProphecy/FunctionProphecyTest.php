@@ -1,4 +1,7 @@
-<?php namespace tad\WPBrowser\StubProphecy;
+<?php namespace lucatume\WPBrowser\StubProphecy;
+
+use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\StubProphecy\FunctionProphecy;
 
 class FunctionProphecyTest extends \Codeception\Test\Unit
 {

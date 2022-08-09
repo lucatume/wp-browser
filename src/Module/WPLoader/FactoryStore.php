@@ -2,14 +2,15 @@
 /**
  * Handles the instantiation of the WordPress test factories.
  *
- * @package tad\WPBrowser\Module\WPLoader
+ * @package lucatume\WPBrowser\Module\WPLoader
  */
 
 namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
-use Codeception\Module\WPLoader;
+use lucatume\WPBrowser\Module\WPLoader;
 use InvalidArgumentException;
+use org\bovigo\vfs\vfsStreamException;
 use WP_UnitTest_Factory_For_Attachment;
 use WP_UnitTest_Factory_For_Blog;
 use WP_UnitTest_Factory_For_Bookmark;
@@ -19,12 +20,11 @@ use WP_UnitTest_Factory_For_Post;
 use WP_UnitTest_Factory_For_Term;
 use WP_UnitTest_Factory_For_Thing as ThingFactory;
 use WP_UnitTest_Factory_For_User;
-use const tad\WPBrowser\Module\WPLoader\ABSPATH;
 
 /**
 * Class FactoryStore
  *
- * @package tad\WPBrowser\Module\WPLoader
+ * @package lucatume\WPBrowser\Module\WPLoader
  *
  * @property WP_UnitTest_Factory_For_Post $post
  * @property WP_UnitTest_Factory_For_Bookmark $bookmark
@@ -39,44 +39,44 @@ class FactoryStore
 {
 
     /**
-     * @var WP_UnitTest_Factory_For_Post
+     * @var WP_UnitTest_Factory_For_Post|null
      */
-    protected WP_UnitTest_Factory_For_Post $post;
+    protected ?WP_UnitTest_Factory_For_Post $post = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Bookmark
+     * @var WP_UnitTest_Factory_For_Bookmark|null
      */
-    protected WP_UnitTest_Factory_For_Bookmark $bookmark;
+    protected ?WP_UnitTest_Factory_For_Bookmark $bookmark;
 
     /**
-     * @var WP_UnitTest_Factory_For_Attachment
+     * @var WP_UnitTest_Factory_For_Attachment|null
      */
-    protected WP_UnitTest_Factory_For_Attachment $attachment;
+    protected ?WP_UnitTest_Factory_For_Attachment $attachment = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_User
+     * @var WP_UnitTest_Factory_For_User|null
      */
-    protected WP_UnitTest_Factory_For_User $user;
+    protected ?WP_UnitTest_Factory_For_User $user = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Comment
+     * @var WP_UnitTest_Factory_For_Comment|null
      */
-    protected WP_UnitTest_Factory_For_Comment $comment;
+    protected ?WP_UnitTest_Factory_For_Comment $comment = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Blog
+     * @var WP_UnitTest_Factory_For_Blog|null
      */
-    protected WP_UnitTest_Factory_For_Blog $blog;
+    protected ?WP_UnitTest_Factory_For_Blog $blog = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Network
+     * @var WP_UnitTest_Factory_For_Network|null
      */
-    protected WP_UnitTest_Factory_For_Network $network;
+    protected ?WP_UnitTest_Factory_For_Network $network = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Term
+     * @var ?WP_UnitTest_Factory_For_Term|null
      */
-    protected WP_UnitTest_Factory_For_Term $term;
+    protected ?WP_UnitTest_Factory_For_Term $term = null;
 
     /**
      * Lazily instantiate the factories if required.
@@ -85,7 +85,7 @@ class FactoryStore
      *
      * @return ThingFactory The required factory instance.
      *
-     * @throws InvalidArgumentException If the required factory slug is not a supported one.
+     * @throws InvalidArgumentException|ModuleException If the required factory slug is not a supported one.
      */
     public function __get(string $name)
     {

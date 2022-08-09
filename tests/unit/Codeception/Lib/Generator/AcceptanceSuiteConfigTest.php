@@ -1,6 +1,8 @@
 <?php
 namespace Codeception\Lib\Generator;
 
+use lucatume\WPBrowser\Lib\Generator\AcceptanceSuiteConfig;
+
 class AcceptanceSuiteConfigTest extends \Codeception\Test\Unit
 {
     protected $backupGlobals = false;

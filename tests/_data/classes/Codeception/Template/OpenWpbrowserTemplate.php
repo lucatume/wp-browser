@@ -7,6 +7,7 @@
 
 namespace Codeception\Template;
 
+use lucatume\WPBrowser\Template\Wpbrowser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;

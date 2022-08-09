@@ -35,7 +35,7 @@ With that information, the costly `cleanup` procedure can be avoided.
 ```php
 <?php
 
-$registerPostsCleanup = static function (tad\WPBrowser\Events\WpbrowserEvent $event) {
+$registerPostsCleanup = static function (lucatume\WPBrowser\Events\WpbrowserEvent $event) {
     $ids = $event->get('ids', []);
     /** @var \EventsTester $db */
     $db = $event->get('db');

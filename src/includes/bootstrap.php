@@ -2,12 +2,12 @@
 /**
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  *
- * @var tad\WPBrowser\Utils\Configuration $installationConfiguration The current installation configuration.
+ * @var \lucatume\WPBrowser\Utils\Configuration $installationConfiguration The current installation configuration.
  * @var bool $skipWordPressInstall Whether WordPress shoudl be installed by this script or not.
  */
 
-use Codeception\Module\WPLoader;
-use function tad\WPBrowser\vendorDir;
+use lucatume\WPBrowser\Module\WPLoader;
+use function lucatume\WPBrowser\vendorDir;
 
 if (!function_exists('tad_functions')) {
 	require_once __DIR__ . '/tad-functions.php';

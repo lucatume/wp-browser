@@ -1,6 +1,6 @@
 <?php
 
-use tad\WPBrowser\Generators\Date;
+use lucatume\WPBrowser\Generators\Date;
 
 class WPDbCommentCest
 {

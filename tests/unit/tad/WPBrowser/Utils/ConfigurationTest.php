@@ -1,4 +1,6 @@
-<?php namespace tad\WPBrowser\Utils;
+<?php namespace lucatume\WPBrowser\Utils;
+
+use lucatume\WPBrowser\Utils\Configuration;
 
 class ConfigurationTest extends \Codeception\Test\Unit
 {

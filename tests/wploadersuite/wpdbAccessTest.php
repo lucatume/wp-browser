@@ -1,7 +1,7 @@
 <?php
 
 
-class wpdbAccessTest extends \Codeception\TestCase\WPTestCase
+class wpdbAccessTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @test
