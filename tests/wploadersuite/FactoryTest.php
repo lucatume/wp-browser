@@ -1,7 +1,7 @@
 <?php
 
 use Codeception\Exception\ModuleException;
-use tad\WPBrowser\Module\WPLoader\FactoryStore;
+use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 
 class FactoryTest extends \Codeception\TestCase\WPTestCase
 {

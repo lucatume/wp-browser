@@ -9,11 +9,11 @@ namespace tad\WPBrowser\Connector;
 
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Connector\Universal;
+use lucatume\WPBrowser\Module\Support\UriToIndexMapper;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
-use tad\WPBrowser\Module\Support\UriToIndexMapper;
 use tad\WPBrowser\Process\Process;
 
 // phpcs:disable

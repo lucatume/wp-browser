@@ -636,7 +636,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.16] 2019-07-23;
 ### Added
-- expose a `tad\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
+- expose a `lucatume\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
 
 ### Fixed
 - add explicit override of the `$tester` property when scaffolding the `WPTestCase` class (thanks @Luc45)

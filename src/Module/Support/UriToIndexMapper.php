@@ -1,22 +1,20 @@
 <?php
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
 class UriToIndexMapper
 {
     /**
      * The absolute path to the WordPress installation root folder.
-     *
-     * @var string
      */
-    protected $root;
+    protected string $root;
 
     /**
      * A map of pre-resolved URI to paths.
      *
      * @var array<string,string>
      */
-    protected $preResolvedMap = [
+    protected array $preResolvedMap = [
         '/wp-admin' => '/wp-admin/index.php',
         '/wp-login.php' => '/wp-login.php',
         '/wp-cron.php' => '/wp-cron.php'
@@ -27,7 +25,7 @@ class UriToIndexMapper
      *
      * @param string $root The absolute path to WordPress root folder.
      */
-    public function __construct($root)
+    public function __construct(string $root)
     {
         $this->root = rtrim((string)$root, '/');
     }
@@ -39,7 +37,7 @@ class UriToIndexMapper
      *
      * @return string The index file for the URI.
      */
-    public function getIndexForUri($uri)
+    public function getIndexForUri(string $uri): string
     {
         preg_match('~/?(.*?\\.php)$~', $uri, $matches);
         if (!empty($matches[1])) {
@@ -59,7 +57,7 @@ class UriToIndexMapper
             return $this->root . $uriPath;
         }
 
-        $indexFile = isset($this->preResolvedMap[$uriPath]) ? $this->preResolvedMap[$uriPath] : '/index.php';
+        $indexFile = $this->preResolvedMap[$uriPath] ?? '/index.php';
 
         return $this->root . $indexFile;
     }
@@ -67,7 +65,7 @@ class UriToIndexMapper
     /**
      * @return string
      */
-    public function getRoot()
+    public function getRoot(): string
     {
         return $this->root;
     }
@@ -76,10 +74,8 @@ class UriToIndexMapper
      * Sets the root directory for the URI mapper.
      *
      * @param string $root The root directory for the URI mapper.
-     *
-     * @return void
      */
-    public function setRoot($root)
+    public function setRoot(string $root): void
     {
         $this->root = $root;
     }

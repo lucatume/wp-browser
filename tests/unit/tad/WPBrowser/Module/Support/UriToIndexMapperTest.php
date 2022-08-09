@@ -1,6 +1,7 @@
 <?php
 namespace tad\WPBrowser\Module\Support;
 
+use lucatume\WPBrowser\Module\Support\UriToIndexMapper;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 

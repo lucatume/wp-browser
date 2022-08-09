@@ -145,7 +145,7 @@ echo "\n\nInstalling WordPress...\n";
 // Prefill a permalink structure so that WP doesn't try to determine one itself.
 add_action('populate_options', '_set_default_permalink_structure_for_tests');
 
-$installFilters = new tad\WPBrowser\Module\WPLoader\Filters( $configuration['installationFilters'] );
+$installFilters = new \lucatume\WPBrowser\Module\WPLoader\Filters( $configuration['installationFilters'] );
 
 $installFilters->toRemove()->remove();
 $installFilters->toAdd()->add();

@@ -1,8 +1,9 @@
 <?php
 
-namespace tad\WPBrowser\Module\WPLoader;
+namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
+use function tad\WPBrowser\Module\WPLoader\count;
 
 /**
  * Class Filters
@@ -88,7 +89,7 @@ class Filters
     /**
      * Returns the current state in array format.
      *
-     * @return array<array<array<mixed>>> A map of the filters to remove and to add.j:w
+     * @return array{remove: mixed[][], add: mixed[][]} A map of the filters to remove and to add.j:w
      */
     public function toArray()
     {
@@ -103,7 +104,7 @@ class Filters
      *
      * @return FiltersGroup The group of filters to remove.
      */
-    public function toRemove()
+    public function toRemove(): \lucatume\WPBrowser\Module\WPLoader\FiltersGroup
     {
         return new FiltersGroup($this->toRemove, $this->removeWith, $this->addWith);
     }
@@ -112,10 +113,8 @@ class Filters
      * Sets the callable that should be used to remove the filters.
      *
      * @param callable $removeWith The callable that should be used to remove the filters.
-     *
-     * @return void
      */
-    public function removeWith(callable $removeWith)
+    public function removeWith(callable $removeWith): void
     {
         $this->removeWith = $removeWith;
     }
@@ -124,10 +123,8 @@ class Filters
      * Sets the callable that should be used to remove the filters.
      *
      * @param callable $addWith The callable that should be used to add the filters.
-     *
-     * @return void
      */
-    public function addWith(callable $addWith)
+    public function addWith(callable $addWith): void
     {
         $this->addWith = $addWith;
     }
@@ -137,7 +134,7 @@ class Filters
      *
      * @return FiltersGroup The group of filters to add.
      */
-    public function toAdd()
+    public function toAdd(): \lucatume\WPBrowser\Module\WPLoader\FiltersGroup
     {
         return new FiltersGroup($this->toAdd, $this->removeWith, $this->addWith);
     }

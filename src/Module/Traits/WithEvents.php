@@ -5,12 +5,14 @@
  * @package tad\WPBrowser\Module\Traits
  */
 
-namespace tad\WPBrowser\Module\Traits;
+namespace lucatume\WPBrowser\Module\Traits;
 
 use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Exception\ModuleException;
+use Codeception\Lib\ModuleContainer;
 use Codeception\Util\ReflectionHelper;
+use ReflectionException;
 use Symfony\Component\Console\Application as SymfonyApp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -19,7 +21,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * Trait EventListener
  *
  * @package tad\WPBrowser\Module\Traits
- * @property \Codeception\Lib\ModuleContainer $moduleContainer
+ * @property ModuleContainer $moduleContainer
  */
 trait WithEvents
 {
@@ -29,18 +31,18 @@ trait WithEvents
      *
      * @var EventDispatcher
      */
-    protected static $dispatcher;
+    protected static EventDispatcher $dispatcher;
 
     /**
      * Adds a callback to be performed on a global runner event..
      *
-     * @param  string    $event     The event to run the callback on.
-     * @param  callable  $callback  The callback to run on the event.
-     * @param  int       $priority  The priority that will be assigned to the callback in the context of the event.
+     * @param string $event     The event to run the callback on.
+     * @param callable $callback  The callback to run on the event.
+     * @param int $priority  The priority that will be assigned to the callback in the context of the event.
      *
-     * @throws \Codeception\Exception\ModuleException If the event dispatcher cannot be found or built.
+     * @throws ModuleException If the event dispatcher cannot be found or built.
      */
-    protected function addAction($event, $callback, $priority = 0)
+    protected function addAction(string $event, callable $callback, int $priority = 0): void
     {
         $this->getEventDispatcher()->addListener($event, $callback, $priority);
     }
@@ -58,7 +60,7 @@ trait WithEvents
      *                         `run` command dispatcher property cannot be accessed or is not an `EventDispatcher`
      *                         instance.
      */
-    protected function getEventDispatcher()
+    protected function getEventDispatcher(): EventDispatcher
     {
         if (static::$dispatcher instanceof EventDispatcher) {
             return static::$dispatcher;
@@ -88,7 +90,7 @@ trait WithEvents
                 }
 
                 static::$dispatcher = $codecept->getDispatcher();
-            } catch (\ReflectionException $e) {
+            } catch (ReflectionException $e) {
                 throw new ModuleException(
                     $this,
                     'Could not get the value of the `\Codeception\Command\Run::$codecept` property, message:' .

@@ -5,10 +5,19 @@
  * @package tad\WPBrowser\Module\Support
  */
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
+use CallbackFilterIterator;
+use Codeception\Util\PathResolver;
+use FilesystemIterator;
+use JsonException;
+use PDO;
+use PDOStatement;
+use SplFileInfo;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Generators\Tables as Tables;
+use function tad\WPBrowser\Module\Support\count;
+use function tad\WPBrowser\Module\Support\sort;
 
 /**
  * Class WPHealthcheck
@@ -21,106 +30,100 @@ class WPHealthcheck
      *
      * @var string
      */
-    protected $dbStructureError;
+    protected string $dbStructureError;
 
     /**
      * The current blog installation error, if any.
      *
      * @var string
      */
-    protected $blogNotInstalledError;
+    protected string $blogNotInstalledError;
 
     /**
      * The name of the currently active theme.
      *
      * @var string|array<string,mixed>
      */
-    protected $currentTheme;
+    protected string|array $currentTheme;
 
     /**
      * The current theme error, if any.
      *
      * @var string
      */
-    protected $themeError;
+    protected string $themeError;
 
     /**
      * The current mu-plugins information, if any.
      *
      * @var string|array<string>
      */
-    protected $muPlugins;
+    protected string|array $muPlugins;
 
     /**
      * The current mu-plugins error, if any.
      *
      * @var string
      */
-    protected $muPluginsError;
+    protected string $muPluginsError;
     /**
      * The current plugins information, if any.
      *
      * @var array<string,string>
      */
-    protected $plugins;
+    protected array $plugins;
 
     /**
      * The current plugins errors, if any.
      *
      * @var string|array<string,array|string>
      */
-    protected $pluginsErrors;
+    protected string|array $pluginsErrors;
 
     /**
      * An instance of the constants wrapper.
-     *
-     * @var Constants
      */
-    protected $constants;
+    protected Constants $constants;
 
     /**
      * Whether to use relative paths or not.
      *
      * @var bool
      */
-    protected $useRelative = false;
+    protected bool $useRelative = false;
     /**
      * An instance of the WordPress database connection handler.
-     *
-     * @var WordPressDatabase
      */
-    protected $database;
+    protected WordPressDatabase $database;
 
     /**
      * An instance of the WordPress directories navigation object.
-     *
-     * @var WordPressDirectories
      */
-    protected $directories;
+    protected WordPressDirectories $directories;
 
     /**
      * WPHealthcheck constructor.
      *
      * @param Constants|null $constants An instance of the constants wrapper or null to build one.
-     * @param WordPressDatabase $database An instance of the WordPress database connection handler.
-     * @param WordPressDirectories $directories An instance of the WordPress directories handler.
+     * @param WordPressDatabase|null $database An instance of the WordPress database connection handler.
+     * @param WordPressDirectories|null $directories An instance of the WordPress directories handler.
      */
     public function __construct(
         Constants $constants = null,
         WordPressDatabase $database = null,
         WordPressDirectories $directories = null
     ) {
-        $this->constants = $constants ? $constants : new Constants();
-        $this->database = $database ? $database : new WordPressDatabase($this->constants);
-        $this->directories = $directories ? $directories : new WordPressDirectories($this->constants);
+        $this->constants = $constants ?: new Constants();
+        $this->database = $database ?: new WordPressDatabase($this->constants);
+        $this->directories = $directories ?: new WordPressDirectories($this->constants);
     }
 
     /**
      * Runs a battery of checks on the WordPress installation and returns the results.
      *
-     * @return array<string,array> An array of results, by category.
+     * @return array{constants: array<string, mixed>, globals: array<string, mixed>, checks: string[]|array[]} An array of results, by category.
      */
-    public function run()
+    public function run(): array
     {
         return [
             'constants' => $this->getConstants(),
@@ -132,9 +135,9 @@ class WPHealthcheck
     /**
      * Returns an array of WordPress constants and their value or status.
      *
-     * @return array<string,mixed> An associative array of WordPress constants and their value/status.
+     * @return array{ABSPATH: mixed, WP_DEFAULT_THEME: mixed, WP_CONTENT_DIR: mixed, WP_PLUGIN_DIR: mixed, WP_HOME: mixed, WP_SITEURL: mixed, WPMU_PLUGIN_DIR: mixed, DB_HOST: mixed, DB_NAME: mixed, DB_PASSWORD: mixed, DB_USER: mixed, CUSTOM_USER_TABLE: mixed, CUSTOM_USER_META_TABLE: mixed, DISABLE_WP_CRON: mixed} An associative array of WordPress constants and their value/status.
      */
-    protected function getConstants()
+    protected function getConstants(): array
     {
         $abspath = $this->constants->constant('ABSPATH', 'not set');
         $pluginsDir = $this->constants->constant('WP_PLUGIN_DIR', 'not set');
@@ -167,11 +170,11 @@ class WPHealthcheck
      *
      * @return string The path, relative to the WordPress root folder.
      */
-    public function relative($path, $root = null)
+    public function relative(string $path, string $root = null): string
     {
-        return \Codeception\Util\PathResolver::getRelativeDir(
+        return PathResolver::getRelativeDir(
             $path,
-            $root === null ? $this->directories->getAbspath() : $root,
+            $root ?? $this->directories->getAbspath(),
             DIRECTORY_SEPARATOR
         );
     }
@@ -179,9 +182,9 @@ class WPHealthcheck
     /**
      * Returns an array of WordPress globals and their value or status.
      *
-     * @return array<string,mixed> An associative array of WordPress globals and their value/status.
+     * @return array{table_prefix: string} An associative array of WordPress globals and their value/status.
      */
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return [
             'table_prefix' => $this->database->getTablePrefix('wp_ (guessed, global not set)'),
@@ -192,8 +195,9 @@ class WPHealthcheck
      * Runs and returns a battery of checks on the site filesystem and status.
      *
      * @return array<string,string|array> An associative array reporting the checks statuses.
+     * @throws JsonException If there's an issue encoding the failure message.
      */
-    protected function runChecks()
+    protected function runChecks(): array
     {
         $this->database->checkDbConnection(true);
 
@@ -224,7 +228,7 @@ class WPHealthcheck
      *
      * @return bool Whether the current installation is multi-site or not.
      */
-    public function isMultisite()
+    public function isMultisite(): bool
     {
         if ($this->constants->defined('MULTISITE')) {
             return (bool)$this->constants->constant('MULTISITE');
@@ -245,7 +249,7 @@ class WPHealthcheck
      *
      * @return bool Whether the `ABSPATH` constant is defined and points to a valid WordPress root directory.
      */
-    public function checkWpRoot()
+    public function checkWpRoot(): bool
     {
         return (bool)$this->directories->getWpRoot();
     }
@@ -254,8 +258,10 @@ class WPHealthcheck
      * Checks the WordPress installation structure.
      *
      * @return bool Whether the database installation structure is as expected or not.
+     *
+     * @throws JsonException If there's an issue encoding the failure message.
      */
-    public function checkDatabaseStructure()
+    public function checkDatabaseStructure(): bool
     {
         if (!$this->database->checkDbConnection()) {
             $this->dbStructureError = 'cannot connect to database to check structure.';
@@ -263,7 +269,7 @@ class WPHealthcheck
         }
 
         $tables = $this->database->query('SHOW TABLES');
-        if ($tables === false || !$tables instanceof \PDOStatement) {
+        if (!$tables instanceof PDOStatement) {
             $this->dbStructureError = 'could not check on the database tables.';
             return false;
         }
@@ -275,15 +281,15 @@ class WPHealthcheck
 
         $table_prefix = $this->database->getTablePrefix();
 
-        $allTables = $tables->fetchAll(\PDO::FETCH_COLUMN);
+        $allTables = $tables->fetchAll(PDO::FETCH_COLUMN);
 
         if ($allTables === false) {
             $this->dbStructureError = 'unable to fetch all the tables from the database.';
             return false;
         }
 
-        $matchingTables = array_filter($allTables, static function ($table) use ($table_prefix) {
-            return strpos($table, $table_prefix) === 0;
+        $matchingTables = array_filter($allTables, static function ($table) use ($table_prefix): bool {
+            return str_starts_with($table, $table_prefix);
         });
 
         if (empty($matchingTables)) {
@@ -291,7 +297,7 @@ class WPHealthcheck
             return false;
         }
 
-        if (isset($GLOBALS['wpdb']) && get_class($GLOBALS['wpdb']) === 'wpdb') {
+        if (isset($GLOBALS['wpdb']) && $GLOBALS['wpdb']::class === 'wpdb') {
             $expectedTables = $GLOBALS['wpdb']->tables('all', true);
         } else {
             $expectedTables = $this->isMultisite() ?
@@ -319,11 +325,11 @@ class WPHealthcheck
      *
      * @return array<string> A list of default multi-site tables, including the table prefix.
      */
-    public function getMultiSiteDefaultTables()
+    public function getMultiSiteDefaultTables(): array
     {
         $tablePrefix = $this->database->getTablePrefix();
 
-        $multiSiteTables = array_map(static function ($tableName) use ($tablePrefix) {
+        $multiSiteTables = array_map(static function ($tableName) use ($tablePrefix): string {
             return $tablePrefix . $tableName;
         }, Tables::multisiteTables());
 
@@ -335,11 +341,11 @@ class WPHealthcheck
      *
      * @return array<string> A list of default single site tables, including the table prefix.
      */
-    public function getSingleSiteDefaultTables()
+    public function getSingleSiteDefaultTables(): array
     {
         $tablePrefix = $this->database->getTablePrefix();
 
-        return array_map(static function ($tableName) use ($tablePrefix) {
+        return array_map(static function ($tableName) use ($tablePrefix): string {
             return $tablePrefix . $tableName;
         }, Tables::blogTables());
     }
@@ -348,8 +354,9 @@ class WPHealthcheck
      * Checks if the blog, or the main blog in a multi-site installation, is correctly installed.
      *
      * @return bool Whether the blog, or a site main blog, is installed or not.
+     * @throws JsonException If there's an issue encoding the failure message.
      */
-    public function checkBlogInstalled()
+    public function checkBlogInstalled(): bool
     {
         if (!$this->database->checkDbConnection()) {
             $this->blogNotInstalledError = 'cannot connect to database to check if blog is installed.';
@@ -405,8 +412,10 @@ class WPHealthcheck
      * Checks the theme (template and stylesheet) in the database and the filesystem.
      *
      * @return bool Whether the theme is correctly set or not.
+     *
+     * @throws JsonException If there's an issue encoding the failure message.
      */
-    public function checkTheme()
+    public function checkTheme(): bool
     {
         if (!$this->database->checkDbConnection()) {
             $this->themeError = 'Cannot connect to database to check for current theme.';
@@ -414,12 +423,8 @@ class WPHealthcheck
         }
 
         // Try to read the template and stylesheet from overriding globals if set.
-        $template   = isset($GLOBALS['wp_tests_options']['template']) ?
-            $GLOBALS['wp_tests_options']['template']
-            : $this->database->getOption('template', false);
-        $stylesheet = isset($GLOBALS['wp_tests_options']['stylesheet']) ?
-            $GLOBALS['wp_tests_options']['stylesheet']
-            : $this->database->getOption('stylesheet', false);
+        $template   = $GLOBALS['wp_tests_options']['template'] ?? $this->database->getOption('template', false);
+        $stylesheet = $GLOBALS['wp_tests_options']['stylesheet'] ?? $this->database->getOption('stylesheet', false);
 
         if (false === $template) {
             $this->themeError = "Cannot find the 'template' option in the database.";
@@ -428,7 +433,7 @@ class WPHealthcheck
 
         $themes = [
             'template' => $template,
-            'stylesheet' => $stylesheet ? $stylesheet : 'n/a',
+            'stylesheet' => $stylesheet ?: 'n/a',
         ];
 
         foreach ([$template, $stylesheet] as $target) {
@@ -453,7 +458,7 @@ class WPHealthcheck
      *
      * @return bool Whether all the active plugins are installed and ok, or not.
      */
-    public function checkMuPlugins()
+    public function checkMuPlugins(): bool
     {
         if (!$this->checkWpRoot()) {
             $this->muPluginsError = 'Cannot check on mu-plugins as root directory is not valid.';
@@ -467,9 +472,9 @@ class WPHealthcheck
             return true;
         }
 
-        $files = new \CallbackFilterIterator(
-            new \FilesystemIterator($muPluginsFolder),
-            function (\SplFileInfo $file) {
+        $files = new CallbackFilterIterator(
+            new FilesystemIterator($muPluginsFolder),
+            function (SplFileInfo $file): bool {
                 return $file->getExtension() === 'php';
             }
         );
@@ -480,7 +485,7 @@ class WPHealthcheck
         }
 
         $fileBasenames = [];
-        /** @var \SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach ($files as $file) {
             $fileBasenames[] = $file->getBasename();
         }
@@ -496,8 +501,10 @@ class WPHealthcheck
      * Checks the status of the plugins.
      *
      * @return bool Whether all the active plugins are installed and ok, or not.
+     *
+     * @throws JsonException If there's an issue encoding the failure message.
      */
-    public function checkPlugins()
+    public function checkPlugins(): bool
     {
         if (!$this->checkWpRoot()) {
             $this->pluginsErrors = 'Cannot check on plugins as root directory is not valid.';
@@ -521,10 +528,10 @@ class WPHealthcheck
         $pluginErrors = [];
         $foundPlugins = [];
         $inactivePlugins = [];
-        /** @var \SplFileInfo $file */
-        foreach (new \FilesystemIterator(
+        /** @var SplFileInfo $file */
+        foreach (new FilesystemIterator(
             $this->directories->getPluginsDir(),
-            \FilesystemIterator::SKIP_DOTS
+            FilesystemIterator::SKIP_DOTS
         ) as $file) {
             if (!$file->isDir()) {
                 continue;
@@ -572,10 +579,8 @@ class WPHealthcheck
      * Second level paths will always be printed as relative; first-level paths
      *
      * @param bool $useRelativePaths Whether to print all paths as relative paths.
-     *
-     * @return void
      */
-    public function useRelativePaths($useRelativePaths)
+    public function useRelativePaths(bool $useRelativePaths): void
     {
         $this->useRelative = (bool)$useRelativePaths;
     }

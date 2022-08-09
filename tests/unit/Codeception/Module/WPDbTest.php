@@ -2,11 +2,10 @@
 
 namespace Codeception\Module;
 
-use Codeception\Lib\Di;
 use Codeception\Lib\Driver\ExtendedMySql;
 use Codeception\Lib\ModuleContainer;
+use lucatume\WPBrowser\Module\Support\DbDump;
 use org\bovigo\vfs\vfsStream;
-use tad\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\StubProphecy\Arg;
 use tad\WPBrowser\Traits\WithStubProphecy;
 
@@ -32,7 +31,7 @@ class WPDbTest extends \Codeception\Test\Unit
     protected $config;
 
     /**
-     * @var DbDump
+     * @var \lucatume\WPBrowser\Module\Support\DbDump
      */
     protected $dbDump;
 

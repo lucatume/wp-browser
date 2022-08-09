@@ -3,6 +3,7 @@
 namespace tad\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
+use lucatume\WPBrowser\Module\WPLoader\Filters;
 
 class FiltersTest extends \Codeception\Test\Unit
 {

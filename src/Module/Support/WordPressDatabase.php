@@ -5,8 +5,9 @@
  * @package tad\WPBrowser\Module\Support
  */
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
+use JsonException;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -20,38 +21,28 @@ class WordPressDatabase
 {
     /**
      * The current database connection error message.
-     *
-     * @var string|null
      */
-    private $dbConnectionError;
+    private ?string $dbConnectionError = null;
 
     /**
      * The current PDO object, if any.
-     *
-     * @var PDO
      */
-    private $pdo;
-
-    /**
-     * An instance of the constants wrapper/adapter.
-     *
-     * @var Constants
-     */
-    private $constants;
+    private ?PDO $pdo = null;
 
     /**
      * Whether the options table exists or not. Cached value.
      *
      * @var bool|null
      */
-    private $optionTableExists;
+    private ?bool $optionTableExists = null;
 
     /**
      * WordPressDatabase constructor.
+     *
+     * @throws JsonException If there's an issue encoding the failure data.
      */
-    public function __construct(Constants $constants)
+    public function __construct(private Constants $constants)
     {
-        $this->constants = $constants;
         $this->checkDbConnection();
     }
 
@@ -63,8 +54,9 @@ class WordPressDatabase
      *
      * @return bool Whether the database credentials defined in WordPress constants allow establishing a database
      *              connection or not.
+     * @throws JsonException If there's an issue encoding the failure data.
      */
-    public function checkDbConnection($force = false)
+    public function checkDbConnection(bool $force = false): bool
     {
         if (!$force && $this->dbConnectionError !== null) {
             return false;
@@ -79,8 +71,8 @@ class WordPressDatabase
         if (!isset($dbName, $dbHost)) {
             $this->dbConnectionError = sprintf(
                 'DB_HOST and/or DB_NAME are not set: (DB_NAME: %s, DB_HOST: %s)',
-                null !== $dbName ? $dbName : 'null',
-                null !== $dbHost ? $dbHost : 'null'
+                $dbName ?? 'null',
+                $dbHost ?? 'null'
             );
             return false;
         }
@@ -92,7 +84,7 @@ class WordPressDatabase
             $this->dbConnectionError = 'DB_USER and/or DB_PASSWORD are not set: ' . json_encode([
                     'DB_USER' => $dbUser,
                     'DB_PASSWORD' => $dbPassword
-                ]);
+                ], JSON_THROW_ON_ERROR);
             return false;
         }
         try {
@@ -114,11 +106,12 @@ class WordPressDatabase
      * option.
      *
      * @param string $optionName The name of the option to return.
-     * @param mixed $default The default value to return for the option if not found.
+     * @param mixed|null $default The default value to return for the option if not found.
      *
      * @return mixed The option value, not unserialized, if serialized.
+     * @throws JsonException If there's an issue encoding the failure data.
      */
-    public function getOption($optionName, $default = null)
+    public function getOption(string $optionName, mixed $default = null): mixed
     {
         if (!$this->checkDbConnection()) {
             return $default;
@@ -155,7 +148,7 @@ class WordPressDatabase
      *
      * @return string The table name, including prefix.
      */
-    public function getTable($table, $blog_id = null)
+    public function getTable(string $table, int $blog_id = null): string
     {
         return (int)$blog_id > 1 ?
             $this->getTablePrefix() . $blog_id . '_' . $table
@@ -171,9 +164,9 @@ class WordPressDatabase
      *
      * @return string The WordPress table prefix or the default one if not found.
      */
-    public function getTablePrefix($default = 'wp_')
+    public function getTablePrefix(string $default = 'wp_'): string
     {
-        return isset($GLOBALS['table_prefix']) ? $GLOBALS['table_prefix'] : $default;
+        return $GLOBALS['table_prefix'] ?? $default;
     }
 
     /**
@@ -181,7 +174,7 @@ class WordPressDatabase
      *
      * @return PDO|null The PDO instance used by the class or `null` if not set.
      */
-    public function getPDO()
+    public function getPDO(): ?PDO
     {
         return $this->pdo;
     }
@@ -190,10 +183,8 @@ class WordPressDatabase
      * Sets the PDO object to use to run the checks.
      *
      * @param PDO $pdo The PDO object to use to run the checks.
-     *
-     * @return void
      */
-    public function setPDO(PDO $pdo)
+    public function setPDO(PDO $pdo): void
     {
         $this->pdo = $pdo;
     }
@@ -205,7 +196,7 @@ class WordPressDatabase
      *
      * @return false|PDOStatement The statement result of the query, or `false` if the query fails.
      */
-    public function query($query)
+    public function query(string $query): false|PDOStatement
     {
         return $this->pdo->query($query);
     }
@@ -215,7 +206,7 @@ class WordPressDatabase
      *
      * @return string|null The current database connection error, if any.
      */
-    public function getDbConnectionError()
+    public function getDbConnectionError(): ?string
     {
         return $this->dbConnectionError;
     }

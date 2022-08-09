@@ -1,11 +1,11 @@
 <?php
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Yaml\Exception\DumpException;
 use tad\WPBrowser\Filesystem\Utils;
 use function tad\WPBrowser\pregErrorMessage;
-use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class DbDump
 {
@@ -14,24 +14,14 @@ class DbDump
      *
      * @var array<string,string>
      */
-    protected static $urlReplacementCache = [];
-
-    /**
-     * @var string
-     */
-    protected $tablePrefix = 'wp_';
-
-    /**
-     * @var string
-     */
-    protected $url = 'http://wordpress.test';
+    protected static array $urlReplacementCache = [];
     /**
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
      *
      * @var string|false|null
      */
-    protected $originalUrl;
+    protected string|null|false $originalUrl;
 
     /**
      * Replaces the WordPress domains in an array of SQL dump string.
@@ -40,7 +30,7 @@ class DbDump
      *
      * @return array<string> The modified SQL array.
      */
-    public function replaceSiteDomainInSqlArray(array $sql)
+    public function replaceSiteDomainInSqlArray(array $sql): array
     {
         if (empty($sql)) {
             return [];
@@ -61,7 +51,7 @@ class DbDump
      *
      * @return array<string> The modified SQL array.
      */
-    public function replaceSiteDomainInMultisiteSqlArray(array $sql)
+    public function replaceSiteDomainInMultisiteSqlArray(array $sql): array
     {
         if (empty($sql)) {
             return [];
@@ -79,13 +69,12 @@ class DbDump
      * Replaces the WordPress domains in a SQL dump string.
      *
      * @param string $sql   The input SQL dump string.
-     * @param bool   $debug Whether a debug message should be printed or not.
      *
      * @return string The modified SQL string.
      *
      * @throws DumpException If the original site URL is not set and cannot be parsed from the input SQL string.
      */
-    public function replaceSiteDomainInSqlString($sql, $debug = false)
+    public function replaceSiteDomainInSqlString(string $sql): string
     {
         $cacheKey = md5($sql) . '-' . md5($this->url) . '-single' ;
 
@@ -136,19 +125,19 @@ class DbDump
             '(?<path>/+[A-z0-9/_-]*)*' .
             '~u';
 
-        $replaceCallback = static function (array $matches) use ($replaceScheme, $replaceHost, $replacePort) {
+        $replaceCallback = static function (array $matches) use ($replaceScheme, $replaceHost, $replacePort): string {
                 return $replaceScheme . '://'
-                        . (isset($matches['subdomain']) ? $matches['subdomain'] : '')
+                        . ($matches['subdomain'] ?? '')
                         . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
-                        . (isset($matches['path']) ? $matches['path'] : '');
+                        . ($matches['path'] ?? '');
         };
 
         $sql = preg_replace_callback($urlPattern, $replaceCallback, $sql);
 
-        preg_match($urlPattern, (string)$sql, $m);
+        preg_match($urlPattern, $sql);
 
         $pregLastError = preg_last_error();
-        if ($pregLastError !== 0 || $sql === null) {
+        if ($pregLastError !== 0) {
             throw new DumpException(
                 'There was an error while trying to replace the URL in the dump file: ' .
                 pregErrorMessage($pregLastError) .
@@ -169,11 +158,11 @@ class DbDump
      * Replaces the site domain in the multisite tables of a SQL dump.
      *
      * @param string $sql   The SQL code to apply the replacements to.
-     * @param bool   $debug Whether to debug the replacement operation or not.
+     * @param bool $debug Whether to debug the replacement operation or not.
      *
      * @return string The SQL code, with the URL replaced in it.
      */
-    public function replaceSiteDomainInMultisiteSqlString($sql, $debug = false)
+    public function replaceSiteDomainInMultisiteSqlString(string $sql, bool $debug = false): string
     {
         $cacheKey = md5($sql) . '-' . md5($this->url) . '-multisite' ;
 
@@ -244,16 +233,14 @@ class DbDump
      * @param string $url The URL to replace, `null` to have it inferred.
      * @param string $tablePrefix The table prefix to use.
      */
-    public function __construct($url = 'http://wordpress.test', $tablePrefix = 'wp_')
+    public function __construct(protected string $url = 'http://wordpress.test', protected string $tablePrefix = 'wp_')
     {
-        $this->url         = $url;
-        $this->tablePrefix = $tablePrefix;
     }
 
     /**
      * @return string
      */
-    public function getTablePrefix()
+    public function getTablePrefix(): string
     {
         return $this->tablePrefix;
     }
@@ -262,10 +249,8 @@ class DbDump
      * Sets the table prefix.
      *
      * @param string $tablePrefix The table prefix to use.
-     *
-     * @return void
      */
-    public function setTablePrefix($tablePrefix)
+    public function setTablePrefix(string $tablePrefix): void
     {
         $this->tablePrefix = $tablePrefix;
     }
@@ -275,7 +260,7 @@ class DbDump
      *
      * @return string The current dump URL.
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -284,10 +269,8 @@ class DbDump
      * Sets the URL that should replace the original URL in the SQL dump file.
      *
      * @param string $url The URL that should replace the original URL in the SQL dump file.
-     *
-     * @return void
      */
-    public function setUrl($url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
@@ -299,7 +282,7 @@ class DbDump
      *
      * @return string|false The first site URL or `false` if the first site URL could not be found.
      */
-    public function getOriginalUrlFromSqlString($sql)
+    public function getOriginalUrlFromSqlString(string $sql): string|false
     {
         $matches = [];
         $urlPattern = sprintf(
@@ -317,10 +300,8 @@ class DbDump
      *
      * @param string|null $originalUrl The site URL that should be replaced in the dump, or `null` to unset the
      *                                 property.
-     *
-     * @return void
      */
-    public function setOriginalUrl($originalUrl = null)
+    public function setOriginalUrl(string $originalUrl = null): void
     {
         if ($originalUrl === null) {
             $this->originalUrl = null;

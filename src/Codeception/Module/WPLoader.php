@@ -14,17 +14,17 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Util\Debug;
+use lucatume\WPBrowser\Module\Support\WPHealthcheck;
+use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use tad\WPBrowser\Adapters\WP;
-use tad\WPBrowser\Module\Support\WPHealthcheck;
-use tad\WPBrowser\Module\WPLoader\FactoryStore;
 use tad\WPBrowser\Traits\SerializableModule;
 use tad\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use tad\WPBrowser\Traits\WithEvents;
 use tad\WPBrowser\Traits\WithWordPressFilters;
 use tad\WPBrowser\Utils\Configuration;
-use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 /**
  * Class WPLoader
@@ -223,7 +223,7 @@ class WPLoader extends Module
     /**
      * An instance of the WordPress healthcheck provider object.
      *
-     * @var WPHealthcheck|null
+     * @var \lucatume\WPBrowser\Module\Support\WPHealthcheck|null
      */
     protected $healthcheck;
 
@@ -240,7 +240,7 @@ class WPLoader extends Module
      * @param ModuleContainer    $moduleContainer The current module container.
      * @param array<string,mixed>                   $config The current module configuration.
      * @param WP|null            $wp An instance of the WordPress adapter.
-     * @param WPHealthcheck|null $healthcheck An instance of the WPHealthcheck object.
+     * @param \lucatume\WPBrowser\Module\Support\WPHealthcheck|null $healthcheck An instance of the WPHealthcheck object.
      */
     public function __construct(
         ModuleContainer $moduleContainer,

@@ -5,7 +5,7 @@
  * @package tad\WPBrowser\Module\Support
  */
 
-namespace tad\WPBrowser\Module\Support;
+namespace lucatume\WPBrowser\Module\Support;
 
 use tad\WPBrowser\Environment\Constants;
 
@@ -16,18 +16,11 @@ use tad\WPBrowser\Environment\Constants;
 class WordPressDirectories
 {
     /**
-     * ${CARET}
-     * @var Constants
-     */
-    protected $constants;
-
-    /**
      * WordPressDirectories constructor.
      * @param Constants $constants An instance of the constants wrapper/adapter.
      */
-    public function __construct(Constants $constants)
+    public function __construct(protected Constants $constants)
     {
-        $this->constants = $constants;
     }
 
     /**
@@ -35,7 +28,7 @@ class WordPressDirectories
      *
      * @return string The absolute path to the mu-plugins directory.
      */
-    public function getWpmuPluginsDir()
+    public function getWpmuPluginsDir(): string
     {
         return $this->constants->constant('WPMU_PLUGIN_DIR', $this->getWpContentDir() . '/mu-plugins');
     }
@@ -45,7 +38,7 @@ class WordPressDirectories
      *
      * @return string The absolute path to the content directory.
      */
-    public function getWpContentDir()
+    public function getWpContentDir(): string
     {
         if ($this->constants->defined('WP_CONTENT_DIR')) {
             return $this->constants->constant('WP_CONTENT_DIR');
@@ -62,7 +55,7 @@ class WordPressDirectories
      *
      * @return string The absolute path to the plugins directory.
      */
-    public function getPluginsDir()
+    public function getPluginsDir(): string
     {
         return $this->constants->constant('WP_PLUGIN_DIR', $this->getWpContentDir() . '/plugins');
     }
@@ -72,7 +65,7 @@ class WordPressDirectories
      *
      * @return string The absolute path to the themes directory.
      */
-    public function getThemesDir()
+    public function getThemesDir(): string
     {
         return $this->getWpContentDir() . '/themes';
     }
@@ -82,7 +75,7 @@ class WordPressDirectories
      *
      * @return string The absolute path to the WordPress root directory.
      */
-    public function getAbspath()
+    public function getAbspath(): string
     {
         return $this->getWpRoot() ?
             $this->constants->constant('ABSPATH')
@@ -94,7 +87,7 @@ class WordPressDirectories
      *
      * @return string The absolute path, with a trailing slash, to the WordPress root folder or an empty string.
      */
-    public function getWpRoot()
+    public function getWpRoot(): string
     {
         return ($this->constants->defined('ABSPATH')
             && file_exists($this->constants->constant('ABSPATH') . '/wp-load.php'))

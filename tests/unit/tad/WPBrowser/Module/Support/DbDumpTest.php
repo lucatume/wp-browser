@@ -3,6 +3,7 @@
 namespace tad\WPBrowser\Module\Support;
 
 use Codeception\Util\Debug;
+use lucatume\WPBrowser\Module\Support\DbDump;
 use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 
 class DbDumpTest extends \Codeception\Test\Unit
