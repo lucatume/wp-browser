@@ -1,7 +1,5 @@
 <?php
 
-use Codeception\Module\WPCLI;
-
 /**
  * Inherited Methods
  * @method void wantToTest($text)

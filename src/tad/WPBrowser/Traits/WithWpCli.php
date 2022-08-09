@@ -7,6 +7,9 @@
 
 namespace tad\WPBrowser\Traits;
 
+use ReflectionClass;
+use ReflectionException;
+use Server_Command;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Process\ProcessFailedException;
@@ -22,35 +25,35 @@ trait WithWpCli
     /**
      * The absolute path to the wp-cli package root directory.
      *
-     * @var string.
+     * @var string|null
      */
-    protected $wpCliRootDir;
+    protected ?string $wpCliRootDir;
 
     /**
      * The absolute path to the WordPress installation root folder.
      *
-     * @var string
+     * @var string|null
      */
-    protected $wpCliWpRootDir;
+    protected ?string $wpCliWpRootDir;
 
     /**
      * The process adapter the implementation will use.
      *
-     * @var Process
+     * @var Process|null
      */
-    protected $wpCliProcess;
+    protected ?Process $wpCliProcess;
 
     /**
      * Sets up the wp-cli handler in a specific directory.
      *
-     * @param string       $wpRootFolderDir The absolute path to the WordPress installation root directory.
+     * @param string $wpRootFolderDir The absolute path to the WordPress installation root directory.
      * @param Process|null $process         The process wrapper instance to use.
      *
      * @return self This object instance.
      *
      * @throws WpCliException If wp-cli package files cannot be located while requiring them.
      */
-    protected function setUpWpCli($wpRootFolderDir, Process $process = null)
+    protected function setUpWpCli(string $wpRootFolderDir, Process $process = null): static
     {
         $this->requireWpCliFiles();
         $this->wpCliWpRootDir = $wpRootFolderDir;
@@ -66,7 +69,7 @@ trait WithWpCli
      *
      * @throws WpCliException If wp-cli package files cannot be located.
      */
-    protected function requireWpCliFiles()
+    protected function requireWpCliFiles(): void
     {
         if (!defined('WP_CLI_ROOT')) {
             define('WP_CLI_ROOT', $this->getWpCliRootDir());
@@ -85,12 +88,12 @@ trait WithWpCli
      *
      * @throws WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
      */
-    protected function getWpCliRootDir($path = null)
+    protected function getWpCliRootDir(string $path = null): string
     {
         if ($this->wpCliRootDir === null) {
             try {
-                $ref = new \ReflectionClass(Configurator::class);
-            } catch (\ReflectionException $e) {
+                $ref = new ReflectionClass(Configurator::class);
+            } catch (ReflectionException $e) {
                 throw WpCliException::becauseConfiguratorClassCannotBeFound();
             }
 
@@ -123,7 +126,7 @@ trait WithWpCli
      *
      * @return array<string> The formatted array of wp-cli options, in the `[ --<key> <value> ]` format.
      */
-    protected function wpCliOptions(array $options)
+    protected function wpCliOptions(array $options): array
     {
         $formatted = [];
 
@@ -147,7 +150,7 @@ trait WithWpCli
      *
      * @return array<int|string,mixed> An associative array of all the options found in the command.
      */
-    protected function parseWpCliInlineOptions($command)
+    protected function parseWpCliInlineOptions(array|string $command): array
     {
         $parsed = [];
 
@@ -176,7 +179,7 @@ trait WithWpCli
      *
      * @throws WpCliException If the option update command fails.
      */
-    protected function updateOptionWithWpcli($name, $value, $autoload = 'yes', $format = 'plaintext')
+    protected function updateOptionWithWpcli(string $name, string $value, string $autoload = 'yes', string $format = 'plaintext'): void
     {
         if (!$this->wpCliWpRootDir) {
             throw WpCliException::becauseCommandRequiresSetUp();
@@ -210,7 +213,7 @@ trait WithWpCli
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
-    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [])
+    protected function executeWpCliCommand(array $command = ['version'], ?int $timeout = 60, array $env = []): Process
     {
         $fullCommand   = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
         $process       = $this->wpCliProcess->withCommand($fullCommand)->withCwd($this->wpCliWpRootDir);
@@ -234,15 +237,8 @@ trait WithWpCli
     /**
      * Builds the full command to run including the PHP binary and the wp-cli boot file path.
      *
-     * @param array<string>|string $command The command to run.
-     *
-     * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
-     *                       file.
-     *
-     * @throws WpCliException If there's an issue building the command.
-     *
      * @example
-     * ```php
+          * ```php
      * // This method is defined in the WithWpCli trait.
      * // Set the wp-cli path, `$this` is a test case.
      * $this->setUpWpCli( '/var/www/html' );
@@ -252,8 +248,15 @@ trait WithWpCli
      * $wpCliProcess = new Process($fullCommand);
      * $wpCliProcess->run();
      * ```
+     *@param string|array<string> $command The command to run.
+     *
+     * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
+     *                       file.
+     *
+     * @throws WpCliException If there's an issue building the command.
+     *
      */
-    public function buildFullCommand($command)
+    public function buildFullCommand(array|string $command): array
     {
         $fullCommand = array_merge([
             PHP_BINARY,
@@ -274,7 +277,7 @@ trait WithWpCli
      *
      * @throws WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
      */
-    protected function getWpCliBootFilePath()
+    protected function getWpCliBootFilePath(): string
     {
         return $this->getWpCliRootDir('/php/boot-fs.php');
     }
@@ -285,18 +288,18 @@ trait WithWpCli
      * @return string The absolute path to the wp-cli server command router file.
      * @throws WpCliException If the `\Server_Command` class cannot  be autoloaded or the router file was not found.
      */
-    protected function getWpCliRouterFilePath()
+    protected function getWpCliRouterFilePath(): string
     {
         try {
-            $serverCommandFile = (new \ReflectionClass(\Server_Command::class))->getFileName();
+            $serverCommandFile = (new ReflectionClass(Server_Command::class))->getFileName();
             if ($serverCommandFile === false) {
                 throw WpCliException::becauseServerCommandClassWasNotFound();
             }
-            $routerFilePath = dirname(dirname($serverCommandFile)) . '/router.php';
+            $routerFilePath = dirname($serverCommandFile, 2) . '/router.php';
             if (!file_exists($routerFilePath)) {
                 throw WpCliException::becauseRouterFileWasNotFound($routerFilePath);
             }
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw WpCliException::becauseServerCommandClassWasNotFound();
         }
 

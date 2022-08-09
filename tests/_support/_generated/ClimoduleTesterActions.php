@@ -31,6 +31,13 @@ trait ClimoduleTesterActions
      *
      * Executes a wp-cli command targeting the test WordPress installation.
      *
+     * @example
+     * ```php
+     * // Activate a plugin via wp-cli in the test WordPress site.
+     * $I->cli(['plugin', 'activate', 'my-plugin']);
+     * // Change a user password.
+     * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
+     * ```
      * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
@@ -39,19 +46,12 @@ trait ClimoduleTesterActions
      * @return int|string The command exit value; `0` usually means success.
      *
      *
-     * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
-     *                                                parameter is set to `true`.
      * @throws ModuleConfigException If a required wp-cli file cannot be found or the WordPress path does not exist
      *                               at runtime.
      *
-     * @example
-     * ```php
-     * // Activate a plugin via wp-cli in the test WordPress site.
-     * $I->cli(['plugin', 'activate', 'my-plugin']);
-     * // Change a user password.
-     * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
-     * ```
-     * @see \Codeception\Module\WPCLI::cli()
+     * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
+     *                                                parameter is set to `true`.
+     * @see \lucatume\WPBrowser\Module\WPCLI::cli()
      */
     public function cli($userCommand = "core version") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cli', func_get_args()));
@@ -62,17 +62,6 @@ trait ClimoduleTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
-     *
-     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
-     *                                            minus `wp`. For back-compatibility purposes you can still pass the
-     *                                            commandline as a string, but the array format is the preferred and
-     *                                            supported method.
-     * @param callable             $splitCallback An optional callback function to split the results array.
-     *
-     * @return array<string> An array containing the output of wp-cli split into single elements.
-     *
-     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
      *
      * @example
      * ```php
@@ -85,7 +74,18 @@ trait ClimoduleTesterActions
      *      });
      * });
      * ```
-     * @see \Codeception\Module\WPCLI::cliToArray()
+     * @param callable             $splitCallback An optional callback function to split the results array.
+     *
+     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
+     *                                            minus `wp`. For back-compatibility purposes you can still pass the
+     *                                            commandline as a string, but the array format is the preferred and
+     *                                            supported method.
+     * @return array<string> An array containing the output of wp-cli split into single elements.
+     *
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
+     *
+     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
+     * @see \lucatume\WPBrowser\Module\WPCLI::cliToArray()
      */
     public function cliToArray($userCommand = "post list --format=ids", ?callable $splitCallback = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cliToArray', func_get_args()));
@@ -97,16 +97,6 @@ trait ClimoduleTesterActions
      *
      * Returns the output of a wp-cli command as a string.
      *
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                                          minus `wp`.
-     *                                          For back-compatibility purposes you can still pass the commandline as a
-     *                                          string, but the array format is the preferred and supported method.
-     *
-     * @return int|string The command output, if any.
-     *
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
-     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -115,7 +105,17 @@ trait ClimoduleTesterActions
      * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
-     * @see \Codeception\Module\WPCLI::cliToString()
+     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                                          minus `wp`.
+     *                                          For back-compatibility purposes you can still pass the commandline as a
+     *                                          string, but the array format is the preferred and supported method.
+     *
+     * @return int|string The command output, if any.
+     *
+     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
+     *
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
+     * @see \lucatume\WPBrowser\Module\WPCLI::cliToString()
      */
     public function cliToString($userCommand) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('cliToString', func_get_args()));
@@ -127,8 +127,6 @@ trait ClimoduleTesterActions
      *
      * Checks that output from last command contains text.
      *
-     * @param string $text The text to assert is in the output.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -136,8 +134,10 @@ trait ClimoduleTesterActions
      * $I->seeInShellOutput('admin@example.org');
      * ```
      *
+     * @param string $text The text to assert is in the output.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeInShellOutput()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeInShellOutput()
      */
     public function seeInShellOutput($text) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInShellOutput', func_get_args()));
@@ -148,8 +148,6 @@ trait ClimoduleTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that output from last command contains text.
      *
-     * @param string $text The text to assert is in the output.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -157,8 +155,10 @@ trait ClimoduleTesterActions
      * $I->seeInShellOutput('admin@example.org');
      * ```
      *
+     * @param string $text The text to assert is in the output.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeInShellOutput()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeInShellOutput()
      */
     public function canSeeInShellOutput($text) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInShellOutput', func_get_args()));
@@ -170,8 +170,6 @@ trait ClimoduleTesterActions
      *
      * Checks that output from last command doesn't contain text.
      *
-     * @param string $text The text to assert is not in the output.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -179,8 +177,10 @@ trait ClimoduleTesterActions
      * $I->dontSeeInShellOutput('my-inactive/plugin.php');
      * ```
      *
+     * @param string $text The text to assert is not in the output.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::dontSeeInShellOutput()
+     * @see \lucatume\WPBrowser\Module\WPCLI::dontSeeInShellOutput()
      */
     public function dontSeeInShellOutput($text) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInShellOutput', func_get_args()));
@@ -191,8 +191,6 @@ trait ClimoduleTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that output from last command doesn't contain text.
      *
-     * @param string $text The text to assert is not in the output.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -200,8 +198,10 @@ trait ClimoduleTesterActions
      * $I->dontSeeInShellOutput('my-inactive/plugin.php');
      * ```
      *
+     * @param string $text The text to assert is not in the output.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::dontSeeInShellOutput()
+     * @see \lucatume\WPBrowser\Module\WPCLI::dontSeeInShellOutput()
      */
     public function cantSeeInShellOutput($text) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInShellOutput', func_get_args()));
@@ -213,8 +213,6 @@ trait ClimoduleTesterActions
      *
      * Checks that output from the last command matches a given regular expression.
      *
-     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -222,8 +220,10 @@ trait ClimoduleTesterActions
      * $I->seeShellOutputMatches('/^\S+@\S+$/');
      * ```
      *
+     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeShellOutputMatches()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeShellOutputMatches()
      */
     public function seeShellOutputMatches($regex) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeShellOutputMatches', func_get_args()));
@@ -234,8 +234,6 @@ trait ClimoduleTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that output from the last command matches a given regular expression.
      *
-     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -243,8 +241,10 @@ trait ClimoduleTesterActions
      * $I->seeShellOutputMatches('/^\S+@\S+$/');
      * ```
      *
+     * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeShellOutputMatches()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeShellOutputMatches()
      */
     public function canSeeShellOutputMatches($regex) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeShellOutputMatches', func_get_args()));
@@ -256,8 +256,6 @@ trait ClimoduleTesterActions
      *
      * Checks the result code from the last command.
      *
-     * @param int $code The desired result code.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -265,8 +263,10 @@ trait ClimoduleTesterActions
      * $I->seeResultCodeIs(0);
      * ```
      *
+     * @param int $code The desired result code.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeResultCodeIs()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeResultCodeIs()
      */
     public function seeResultCodeIs($code) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeResultCodeIs', func_get_args()));
@@ -277,8 +277,6 @@ trait ClimoduleTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks the result code from the last command.
      *
-     * @param int $code The desired result code.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -286,8 +284,10 @@ trait ClimoduleTesterActions
      * $I->seeResultCodeIs(0);
      * ```
      *
+     * @param int $code The desired result code.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeResultCodeIs()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeResultCodeIs()
      */
     public function canSeeResultCodeIs($code) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeResultCodeIs', func_get_args()));
@@ -299,8 +299,6 @@ trait ClimoduleTesterActions
      *
      * Checks the result code from the last command.
      *
-     * @param int $code The result code the command should not have exited with.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -308,8 +306,10 @@ trait ClimoduleTesterActions
      * $I->seeResultCodeIsNot(0);
      * ```
      *
+     * @param int $code The result code the command should not have exited with.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeResultCodeIsNot()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeResultCodeIsNot()
      */
     public function seeResultCodeIsNot($code) {
         return $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeResultCodeIsNot', func_get_args()));
@@ -320,8 +320,6 @@ trait ClimoduleTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks the result code from the last command.
      *
-     * @param int $code The result code the command should not have exited with.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -329,8 +327,10 @@ trait ClimoduleTesterActions
      * $I->seeResultCodeIsNot(0);
      * ```
      *
+     * @param int $code The result code the command should not have exited with.
+     *
      * @return void
-     * @see \Codeception\Module\WPCLI::seeResultCodeIsNot()
+     * @see \lucatume\WPBrowser\Module\WPCLI::seeResultCodeIsNot()
      */
     public function canSeeResultCodeIsNot($code) {
         return $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeResultCodeIsNot', func_get_args()));
@@ -341,13 +341,6 @@ trait ClimoduleTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Builds the full command to run including the PHP binary and the wp-cli boot file path.
-     *
-     * @param array<string>|string $command The command to run.
-     *
-     * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
-     *                       file.
-     *
-     * @throws WpCliException If there's an issue building the command.
      *
      * @example
      * ```php
@@ -360,7 +353,14 @@ trait ClimoduleTesterActions
      * $wpCliProcess = new Process($fullCommand);
      * $wpCliProcess->run();
      * ```
-     * @see \Codeception\Module\WPCLI::buildFullCommand()
+     * @param array<string>|string $command The command to run.
+     *
+     * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
+     *                       file.
+     *
+     * @throws WpCliException If there's an issue building the command.
+     *
+     * @see \lucatume\WPBrowser\Module\WPCLI::buildFullCommand()
      */
     public function buildFullCommand($command) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('buildFullCommand', func_get_args()));

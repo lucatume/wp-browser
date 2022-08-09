@@ -5,7 +5,7 @@ namespace Codeception\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
-use http\Exception\RuntimeException;
+use lucatume\WPBrowser\Module\WPCLI;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use tad\WPBrowser\Process\Process;
