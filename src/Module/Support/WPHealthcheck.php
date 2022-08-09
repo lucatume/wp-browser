@@ -15,9 +15,7 @@ use PDO;
 use PDOStatement;
 use SplFileInfo;
 use tad\WPBrowser\Environment\Constants;
-use tad\WPBrowser\Generators\Tables as Tables;
-use function tad\WPBrowser\Module\Support\count;
-use function tad\WPBrowser\Module\Support\sort;
+use tad\WPBrowser\Generators\Tables;
 
 /**
  * Class WPHealthcheck
@@ -107,6 +105,8 @@ class WPHealthcheck
      * @param Constants|null $constants An instance of the constants wrapper or null to build one.
      * @param WordPressDatabase|null $database An instance of the WordPress database connection handler.
      * @param WordPressDirectories|null $directories An instance of the WordPress directories handler.
+     *
+     * @throws JsonException If there's an issue encoding the JSON data.
      */
     public function __construct(
         Constants $constants = null,
@@ -122,6 +122,8 @@ class WPHealthcheck
      * Runs a battery of checks on the WordPress installation and returns the results.
      *
      * @return array{constants: array<string, mixed>, globals: array<string, mixed>, checks: string[]|array[]} An array of results, by category.
+     *
+     * @throws JsonException If there's an issue encoding the JSON data.
      */
     public function run(): array
     {

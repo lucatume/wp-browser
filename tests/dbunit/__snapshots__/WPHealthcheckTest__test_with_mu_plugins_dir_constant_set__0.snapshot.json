@@ -1,16 +1,16 @@
 {
     "constants": {
-        "ABSPATH": "_wordpress/wordpress/",
+        "ABSPATH": "vendor/wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
         "WP_HOME": "http://wordpress.test",
         "WP_SITEURL": "http://wordpress.test",
-        "WPMU_PLUGIN_DIR": "../../vendor/wordpress/wordpress/wp-content/plugins",
-        "DB_HOST": "wp-browser_db",
-        "DB_NAME": "wp-browser",
-        "DB_PASSWORD": "wp-browser",
-        "DB_USER": "wp-browser",
+        "WPMU_PLUGIN_DIR": "wp-content/plugins",
+        "DB_HOST": "db",
+        "DB_NAME": "test",
+        "DB_PASSWORD": "test",
+        "DB_USER": "test",
         "CUSTOM_USER_TABLE": "not set",
         "CUSTOM_USER_META_TABLE": "not set",
         "DISABLE_WP_CRON": "not set"
@@ -22,14 +22,17 @@
         "Site is multisite": "no",
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
-        "Database structure as expected": "Yes, as expected.",
+        "Database structure as expected": "No, structure errors: some tables are missing (wp_foo, wp_bar)",
         "Blog installed": "Yes, blog is installed.",
         "Theme :": {
             "template": "twentytwentyone",
             "stylesheet": "twentytwentyone",
-            "twentytwentyone directory": "_wordpress/wordpress/wp-content/themes/twentytwentyone"
+            "twentytwentyone directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwentyone"
         },
-        "Must-use plugins health-check:": "mu-plugins directory (../../vendor/wordpress/wordpress/wp-content/plugins) does not exist.",
+        "Must-use plugins health-check:": [
+            "hello.php",
+            "index.php"
+        ],
         "Plugins health-check:": {
             "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] does not exist.",
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",

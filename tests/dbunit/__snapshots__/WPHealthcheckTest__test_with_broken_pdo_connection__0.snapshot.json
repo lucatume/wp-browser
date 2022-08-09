@@ -1,16 +1,16 @@
 {
     "constants": {
-        "ABSPATH": "_wordpress/wordpress/",
+        "ABSPATH": "vendor/wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
         "WP_HOME": "http://wordpress.test",
         "WP_SITEURL": "http://wordpress.test",
         "WPMU_PLUGIN_DIR": "not set",
-        "DB_HOST": "wp-browser_db",
-        "DB_NAME": "wp-browser",
-        "DB_PASSWORD": "wp-browser",
-        "DB_USER": "wp-browser",
+        "DB_HOST": "db",
+        "DB_NAME": "test",
+        "DB_PASSWORD": "test",
+        "DB_USER": "test",
         "CUSTOM_USER_TABLE": "not set",
         "CUSTOM_USER_META_TABLE": "not set",
         "DISABLE_WP_CRON": "not set"

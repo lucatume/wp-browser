@@ -1,16 +1,16 @@
 {
     "constants": {
-        "ABSPATH": "_wordpress/wordpress/",
+        "ABSPATH": "vendor/wordpress/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
         "WP_HOME": "http://wordpress.test",
         "WP_SITEURL": "http://wordpress.test",
         "WPMU_PLUGIN_DIR": "not set",
-        "DB_HOST": "wp-browser_db",
-        "DB_NAME": "wp-browser",
-        "DB_PASSWORD": "wp-browser",
-        "DB_USER": "wp-browser",
+        "DB_HOST": "db",
+        "DB_NAME": "test",
+        "DB_PASSWORD": "test",
+        "DB_USER": "test",
         "CUSTOM_USER_TABLE": "not set",
         "CUSTOM_USER_META_TABLE": "not set",
         "DISABLE_WP_CRON": "not set"
@@ -22,12 +22,12 @@
         "Site is multisite": "no",
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
-        "Database structure as expected": "No, structure errors: could not check on the database tables.",
+        "Database structure as expected": "No, structure errors: some tables are missing (wp_foo, wp_bar)",
         "Blog installed": "No, blog is not installed: database table [wp_options] does contain a 'siteurl' option but it's empty.",
         "Theme :": {
             "template": "twentytwenty",
             "stylesheet": "twentytwenty",
-            "twentytwenty directory": "_wordpress/wordpress/wp-content/themes/twentytwenty"
+            "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {

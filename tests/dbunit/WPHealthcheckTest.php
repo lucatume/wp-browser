@@ -2,27 +2,31 @@
 
 namespace tad\WPBrowser\Module\Support;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\Support\WordPressDatabase;
 use lucatume\WPBrowser\Module\Support\WordPressDirectories;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
+use PDOStatement;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\Test\Constants as TestConstants;
 use tad\WPBrowser\Environment\Constants;
 use tad\WPBrowser\Generators\Tables;
 use tad\WPBrowser\StubProphecy\Arg;
 use tad\WPBrowser\Traits\WithStubProphecy;
+use UnitTester;
+use wpdb;
 use function tad\WPBrowser\envFile;
 use function tad\WPBrowser\Tests\Support\testEnvFile;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 
-class WPHealthcheckTest extends \Codeception\Test\Unit
+class WPHealthcheckTest extends Unit
 {
     use WithStubProphecy;
     use SnapshotAssertions;
 
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
     protected $env;
@@ -257,7 +261,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             'DB_USER' => $this->env('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
-        $GLOBALS['wpdb'] = new \wpdb();
+        $GLOBALS['wpdb'] = new wpdb();
         $sut = $this->make_instance();
 
         $this->assertMatchesJsonSnapshot(json_encode($sut->run(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -278,7 +282,7 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
             'DB_USER' => $this->env('WORDPRESS_DB_USER')
         ]);
         $GLOBALS['table_prefix'] = 'wp_';
-        $wpdb = new \wpdb();
+        $wpdb = new wpdb();
         $wpdb->tables = ['wp_foo', 'wp_bar'];
         $GLOBALS['wpdb'] = $wpdb;
         $sut = $this->make_instance();
@@ -368,7 +372,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->getOption('template', false)->willReturn('foo-bar');
         $database->getOption('stylesheet', false)->willReturn(false);
@@ -401,7 +408,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->getOption('template', false)->willReturn('twentytwenty');
         $database->getOption('stylesheet', false)->willReturn('twentytwenty');
@@ -430,7 +440,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('');
         $database->getOption('template', false)->willReturn('twentytwenty');
         $database->getOption('stylesheet', false)->willReturn('twentytwenty');
@@ -461,7 +474,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://wp.localhost');
         $database->query(Arg::containingString('FROM wp_blogs'))->willReturn(false);
         $database->getOption('template', false)->willReturn('twentytwenty');
@@ -493,7 +509,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://foo.bar');
         $realDb = new WordPressDatabase($this->constants);
         $realDb->checkDbConnection();
@@ -528,7 +547,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://foo.bar');
         $realDb = new WordPressDatabase($this->constants);
         $realDb->checkDbConnection();
@@ -574,7 +596,10 @@ class WPHealthcheckTest extends \Codeception\Test\Unit
         $database = $this->stubProphecy(WordPressDatabase::class);
         $database->getTablePrefix(Arg::type('string'))->willReturn('wp_');
         $database->checkDbConnection(Arg::cetera())->willReturn(true);
-        $database->query('SHOW TABLES')->willReturn(Tables::blogTables('wp_'));
+        $showTablesPdoStatement = $this->stubProphecy(PDOStatement::class);
+        $showTablesPdoStatement->rowCount()->willReturn(count(Tables::blogTables('wp_')));
+        $showTablesPdoStatement->fetchAll(Arg::any())->willReturn(Tables::blogTables('wp_'));
+        $database->query('SHOW TABLES')->willReturn($showTablesPdoStatement->reveal());
         $database->getOption('siteurl', false)->willReturn('http://foo.bar');
         $realDb = new WordPressDatabase($this->constants);
         $realDb->checkDbConnection();
