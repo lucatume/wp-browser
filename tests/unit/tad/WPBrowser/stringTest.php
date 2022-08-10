@@ -146,28 +146,4 @@ class stringTest extends \Codeception\Test\Unit
             ]
         ];
     }
-
-    public function urlDomainDataSet()
-    {
-        return [
-        'empty'  => ['',''],
-        'standard'   => ['http://example.com','example.com'],
-        'w_port'     => ['http://example.com:2389','example.com:2389'],
-        'localhost'  => ['http://localhost','localhost'],
-        'localhost_w_port'   => ['http://localhost:2389','localhost:2389'],
-        'ip_address'     => ['http://1.2.3.4','1.2.3.4'],
-        'ip_address_w_port'  => ['http://1.2.3.4:2389','1.2.3.4:2389'],
-        'w_path'     => ['http://example.com/foo/bar','example.com/foo/bar'],
-        'localhost_w_path'   => ['http://localhost/foo/bar','localhost/foo/bar'],
-        'localhost_w_port_and_path'  => ['http://localhost:2389/foo/bar','localhost:2389/foo/bar'],
-        'ipaddress_w_port_and_path'  => ['http://1.2.3.4:2389/foo/bar','1.2.3.4:2389/foo/bar'],
-        ]   ;
-    }
-    /**
-     * @dataProvider urlDomainDataSet
-     */
-    public function test_urlDomain($input, $expected)
-    {
-        $this->assertEquals($expected, urlDomain($input))   ;
-    }
 }

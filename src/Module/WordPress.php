@@ -13,8 +13,8 @@ use Codeception\TestInterface;
 use lucatume\WPBrowser\Connector\WordPress as WordPressConnector;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Url;
 use function Codeception\Module\untrailslashIt;
-use function lucatume\WPBrowser\parseUrl;
 
 //phpcs:disable
 Codeception::checkModuleRequirements('WordPress', [Framework::class]);
@@ -277,7 +277,7 @@ EOF;
     {
         $this->setRequestType($page);
 
-        $parts      = parseUrl($page);
+        $parts      = Url::parseUrl($page);
         $parameters = [];
         if (!empty($parts['query'])) {
             parse_str((string)$parts['query'], $parameters);

@@ -12,6 +12,7 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Template\Bootstrap;
 use Codeception\Template\FS;
 use lucatume\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Url;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use function lucatume\WPBrowser\checkComposerDependencies;
@@ -20,7 +21,6 @@ use function lucatume\WPBrowser\dbDsnMap;
 use function lucatume\WPBrowser\dbDsnString;
 use function lucatume\WPBrowser\envFile;
 use function lucatume\WPBrowser\loadEnvMap;
-use function lucatume\WPBrowser\urlDomain;
 
 /**
  * Class Wpbrowser
@@ -417,7 +417,7 @@ class Wpbrowser extends Bootstrap
             'http://wordpress.test'
         );
         $installationData['testSiteWpUrl']         = rtrim($installationData['testSiteWpUrl'], '/');
-        $installationData['testSiteWpDomain']      = urlDomain($installationData['testSiteWpUrl']);
+        $installationData['testSiteWpDomain']      = Url::getDomain($installationData['testSiteWpUrl']);
         $adminEmailCandidate                       = "admin@{$installationData['testSiteWpDomain']}";
         $installationData['testSiteAdminEmail']    = $this->ask(
             'What is the email of the test site WordPress administrator?',
@@ -910,7 +910,7 @@ EOF;
             'TEST_DB_PASSWORD'         => $installationData['testDbPassword'],
             'TEST_TABLE_PREFIX'        => $installationData['testTablePrefix'],
             'TEST_SITE_WP_URL'         => $installationData['testSiteWpUrl'],
-            'TEST_SITE_WP_DOMAIN'      => urlDomain($installationData['testSiteWpUrl']),
+            'TEST_SITE_WP_DOMAIN'      => Url::getDomain($installationData['testSiteWpUrl']),
             'TEST_SITE_ADMIN_EMAIL'    => $installationData['testSiteAdminEmail'],
         ];
 

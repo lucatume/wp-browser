@@ -2,8 +2,8 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
+use lucatume\WPBrowser\Utils\Url;
 use function Codeception\TestCase\home_url;
-use function lucatume\WPBrowser\parseUrl;
 
 class WPCanonicalTestCase extends WPTestCase
 {
@@ -218,7 +218,7 @@ class WPCanonicalTestCase extends WPTestCase
         // Does the redirect match what's expected?
         $can_url = $this->get_canonical($test_url);
         // Make sure this is an array.
-        $parsed_can_url = parseUrl($can_url);
+        $parsed_can_url = Url::parseUrl($can_url);
 
         // Just test the Path and Query if present
         if (isset($expected['url'])) {
