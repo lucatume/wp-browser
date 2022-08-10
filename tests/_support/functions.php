@@ -13,7 +13,7 @@ use function lucatume\WPBrowser\importDumpWithMysqlBin;
  */
 function testEnvFile()
 {
-    return '.env.testing.docker';
+    return '.env.testing';
 }
 
 /**

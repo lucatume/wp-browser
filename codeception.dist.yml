@@ -9,23 +9,19 @@ settings:
     colors: true
     memory_limit: 1024M
 params:
-    - .env.testing.docker
+    - .env.testing
 bootstrap: _bootstrap.php
 coverage:
     enabled: true
     include:
         - src/*
-    exclude:
-        - src/tad/scripts/*
-        - src/data/*
-        - src/includes/*
 wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
         - lucatume\WPBrowser\Extension\Copier
         - lucatume\WPBrowser\Extension\Events
     config:
-        tad\WPBrowser\Extension\Copier:
+        lucatume\WPBrowser\Extension\Copier:
             files:
                'tests/_data/themes/dummy': '%WORDPRESS_ROOT_DIR%/wp-content/themes/dummy'
                'tests/_data/themes/isolated': '%WORDPRESS_ROOT_DIR%/wp-content/themes/isolated'
@@ -33,7 +29,7 @@ extensions:
                'tests/_data/plugins/test': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/test'
                'tests/_data/plugins/isolated-test-plugin': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin'
                'tests/_data/plugins/isolated-test-plugin-two': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin-two'
-        tad\WPBrowser\Extension\Events:
+        lucatume\WPBrowser\Extension\Events:
             suites: ['events']
     commands:
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"

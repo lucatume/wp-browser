@@ -1,4 +1,4 @@
-.env.testing.docker     	export-ignore
+.env.testing     	        export-ignore
 .git                    	export-ignore
 .gitattributes          	export-ignore
 .gitbook.yaml           	export-ignore

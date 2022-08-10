@@ -8,7 +8,6 @@ vendor/
 # Local test configuration files.
 codeception.yml
 tests/*.suite.yml
-.env.testing.local
 tests/_output
 
 # Cache folder.
@@ -29,8 +28,8 @@ tags
 # Backup files and folders
 *.bak
 
-# The docker configuration file, produced in the make `build` target.
-.env.testing.docker
+# The test env configuration file, produced in the make `build` target.
+.env.testing
 
 # iidfiles for containers
 _build/_container/php/iidfile

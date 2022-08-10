@@ -34,7 +34,7 @@ endef
 endif
 
 
-build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up build_db healthcheck .env.testing.docker
+build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up build_db healthcheck .env.testing
 
 define ENV_TESTING_FILE_CONTENTS
 WORDPRESS_ROOT_DIR=vendor/wordpress/wordpress
@@ -57,8 +57,8 @@ CHROMEDRIVER_PORT=4444
 endef
 export ENV_TESTING_FILE_CONTENTS
 
-.env.testing.docker:
-	echo "$${ENV_TESTING_FILE_CONTENTS}" > .env.testing.docker
+.env.testing:
+	echo "$${ENV_TESTING_FILE_CONTENTS}" > .env.testing
 
 _build/_container/php/iidfile:
 	docker build \
@@ -159,7 +159,7 @@ clean: down
 	rm -f _build/_container/php/iidfile
 	rm -f _build/_container/wordpress/iidfile
 	rm -rf vendor/wordpress/wordpress
-	rm -f .env.testing.docker
+	rm -f .env.testing
 
 config:
 	echo "CONTAINERS_VERSION => $(CONTAINERS_VERSION)"

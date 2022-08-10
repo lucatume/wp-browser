@@ -9,3 +9,4 @@
 [] upgrade db dumps command following WordPress updates
 [] content seeder
 [] docker copilot
+[] review .gitattributes file
