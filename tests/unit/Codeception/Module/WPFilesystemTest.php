@@ -10,7 +10,6 @@ use lucatume\WPBrowser\Module\WPFilesystem;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\AssertionFailedError;
-use function lucatume\WPBrowser\normalizeNewLine;
 use function lucatume\WPBrowser\readPrivateProperty;
 use function lucatume\WPBrowser\setPrivateProperties;
 
@@ -51,9 +50,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      */
     protected function make_instance()
     {
-        $this->config = null !== $this->config
-            ? $this->config
-            : $this->getDefaultConfig();
+        $this->config = $this->config ?? $this->getDefaultConfig();
         $instance = new WPFilesystem($this->moduleContainer->reveal(), $this->config);
         $instance->_initialize();
 
@@ -817,7 +814,7 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -850,7 +847,7 @@ Description: plugin
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -885,7 +882,7 @@ Description: Test mu-plugin 1
 echo 'Hello world';
 PHP;
 
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($muPluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -925,8 +922,8 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -967,9 +964,9 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
-        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -1005,7 +1002,7 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -1041,7 +1038,7 @@ Description: Test mu-plugin 1
 echo 'Hello world';
 PHP;
 
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($muPluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($muPluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -1083,9 +1080,9 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals(normalizeNewLine($expectedCss), normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeIndexFile)));
-        $this->assertEquals(normalizeNewLine($expectedIndex), normalizeNewLine(file_get_contents($themeFunctionsFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -1129,7 +1126,7 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals(normalizeNewLine($expected), normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
 
         $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
 
@@ -1177,5 +1174,10 @@ PHP;
         $sut->haveMuPlugin($input, '');
 
         $this->assertFileExists($muPluginFile);
+    }
+
+    private function normalizeNewLine(string $str): string
+    {
+        return (string)preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
     }
 }

@@ -7,7 +7,8 @@
 
 namespace lucatume\WPBrowser\Generators;
 
-use function lucatume\WPBrowser\slug;
+
+use lucatume\WPBrowser\Utils\Strings;
 
 /**
  * Class Post
@@ -52,7 +53,7 @@ class Post
             'comment_status'        => 'open',
             'ping_status'           => 'open',
             'post_password'         => '',
-            'post_name'             => slug($title),
+            'post_name'             => Strings::slug($title),
             'to_ping'               => '',
             'pinged'                => '',
             'post_modified'         => Date::now(),

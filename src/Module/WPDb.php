@@ -19,6 +19,7 @@ use lucatume\WPBrowser\Traits\WithEvents;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;
+use lucatume\WPBrowser\Utils\Strings;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -32,8 +33,6 @@ use lucatume\WPBrowser\Generators\WpPassword;
 use function lucatume\WPBrowser\db;
 use function lucatume\WPBrowser\dbDsnString;
 use function lucatume\WPBrowser\dbDsnToMap;
-use function lucatume\WPBrowser\renderString;
-use function lucatume\WPBrowser\slug;
 
 //phpcs:disable
 Codeception::checkModuleRequirements('WPDb', [ 'Db' ]);
@@ -839,7 +838,7 @@ class WPDb extends Db
      */
     public function haveTermInDatabase(string $name, string $taxonomy, array $overrides = []): array
     {
-        $termDefaults = ['slug' => slug($name), 'term_group' => 0];
+        $termDefaults = ['slug' => Strings::slug($name), 'term_group' => 0];
 
         $hasMeta = !empty($overrides['meta']);
         $meta = [];
@@ -1847,7 +1846,7 @@ class WPDb extends Db
         $fnArgs = [ 'n' => $i ];
         $data   = array_merge($this->templateData, $fnArgs);
 
-        return renderString($template, $data, $fnArgs);
+        return Strings::renderString($template, $data, $fnArgs);
     }
 
     /**
@@ -3362,7 +3361,7 @@ class WPDb extends Db
         }
 
         $pathInfo = pathinfo($file);
-        $slug = slug($pathInfo['filename']);
+        $slug = Strings::slug($pathInfo['filename']);
 
         if (!is_readable($file)) {
             throw new ModuleException($this, "File [{$file}] is not readable.");

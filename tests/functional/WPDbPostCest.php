@@ -1,7 +1,7 @@
 <?php
 
 use lucatume\WPBrowser\Generators\Date;
-use function lucatume\WPBrowser\slug;
+use lucatume\WPBrowser\Utils\Strings;
 
 class WPDbPostCest
 {
@@ -68,7 +68,7 @@ class WPDbPostCest
             'comment_status' => 'open',
             'ping_status' => 'open',
             'post_password' => '',
-            'post_name' => slug($title),
+            'post_name' => Strings::slug($title),
             'to_ping' => '',
             'pinged' => '',
             'post_modified' => $now,
@@ -106,7 +106,7 @@ class WPDbPostCest
             'comment_status' => 'closed',
             'ping_status' => 'closed',
             'post_password' => 'foo',
-            'post_name' => slug('Post title'),
+            'post_name' => Strings::slug('Post title'),
             'to_ping' => 1,
             'pinged' => 1,
             'post_modified' => $now,
@@ -160,7 +160,7 @@ class WPDbPostCest
             'comment_status' => 'closed',
             'ping_status' => 'closed',
             'post_password' => 'foo',
-            'post_name' => slug('Post title'),
+            'post_name' => Strings::slug('Post title'),
             'to_ping' => 1,
             'pinged' => 1,
             'post_modified' => $now,

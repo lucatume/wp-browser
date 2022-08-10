@@ -4,26 +4,30 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use InvalidArgumentException;
+
 class Url
 {
+    private static array $parserUrlDefaults = [
+        'scheme' => '',
+        'host' => '',
+        'port' => 0,
+        'user' => '',
+        'pass' => '',
+        'path' => '',
+        'query' => '',
+        'fragment' => ''
+    ];
+
     public static function parseUrl(string $url): array
     {
         $parsed = \parse_url($url);
 
         if (!is_array($parsed)) {
-            throw new \InvalidArgumentException("Failed to parse URL {$url}");
+            return self::$parserUrlDefaults;
         }
 
-        return array_replace([
-            'scheme' => '',
-            'host' => '',
-            'port' => 0,
-            'user' => '',
-            'pass' => '',
-            'path' => '',
-            'query' => '',
-            'fragment' => ''
-        ], $parsed);
+        return array_replace(self::$parserUrlDefaults, $parsed);
     }
 
     public static function getDomain(string $url): string

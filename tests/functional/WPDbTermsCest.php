@@ -1,6 +1,7 @@
 <?php
 
-use function lucatume\WPBrowser\slug;
+
+use lucatume\WPBrowser\Utils\Strings;
 
 class WPDbTermsCest
 {
@@ -14,7 +15,7 @@ class WPDbTermsCest
 
         $I->seeTermInDatabase([
             'name' => 'Term one',
-            'slug' => slug('Term One'),
+            'slug' => Strings::slug('Term One'),
             'term_group' => 0
         ]);
         $I->seeTermInDatabase([
@@ -102,7 +103,7 @@ class WPDbTermsCest
             $criteria = [
                 'term_id' => $termIds[$i],
                 'name' => $expectedTermName,
-                'slug' => slug($expectedTermName)
+                'slug' => Strings::slug($expectedTermName)
             ];
             $I->seeTermInDatabase($criteria);
         }
@@ -124,7 +125,7 @@ class WPDbTermsCest
             $criteria = [
                 'term_id' => $termId,
                 'name' => $expectedTermName,
-                'slug' => slug($expectedTermName)
+                'slug' => Strings::slug($expectedTermName)
             ];
             $I->seeTermInDatabase($criteria);
 

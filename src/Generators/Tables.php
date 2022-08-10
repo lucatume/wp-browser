@@ -7,7 +7,8 @@
 
 namespace lucatume\WPBrowser\Generators;
 
-use function lucatume\WPBrowser\renderString;
+
+use lucatume\WPBrowser\Utils\Strings;
 
 /**
  * Class Tables
@@ -37,7 +38,7 @@ class Tables
      *
      * @return array<string> The list of tables, not prefixed with the table prefix.
      */
-    public static function blogTables($table_prefix = '', $blog_id = 1): array
+    public static function blogTables(string $table_prefix = '', int $blog_id = 1): array
     {
         $blog_id = (int)$blog_id < 2 ? '' : $blog_id . '_';
         return array_map(static function ($table) use ($table_prefix, $blog_id): string {
@@ -64,7 +65,7 @@ class Tables
      *
      * @return string The SQL.
      */
-    public function getAlterTableQuery($table, $prefix)
+    public function getAlterTableQuery(string $table, string $prefix): string
     {
         $data = ['operation' => 'ALTER TABLE', 'prefix' => $prefix];
         return in_array($table, $this->alterableTables(), true) ? $this->renderQuery($table, $data) : '';
@@ -75,7 +76,7 @@ class Tables
      *
      * @return array<string> The list of alterable tables in the context of multisite installations.
      */
-    private function alterableTables()
+    private function alterableTables(): array
     {
         return [
             'users'
@@ -92,7 +93,7 @@ class Tables
      *
      * @throws \InvalidArgumentException If the table name is not a valid table name.
      */
-    protected function renderQuery($table, $data)
+    protected function renderQuery(string $table, array $data): string
     {
         if (! in_array($table, $this->tables(), true)) {
             throw new \InvalidArgumentException('Table ' . $table . ' is not a valid table name');
@@ -100,7 +101,7 @@ class Tables
 
         $template = $this->templates($table);
 
-        return renderString($template, $data);
+        return Strings::renderString($template, $data);
     }
 
     /**
@@ -124,7 +125,7 @@ class Tables
      *
      * @see Tables::blogTables()
      */
-    public static function multisiteTables($table_prefix = ''): array
+    public static function multisiteTables(string $table_prefix = ''): array
     {
         return array_map(static function ($table) use ($table_prefix): string {
             return $table_prefix . $table;
@@ -146,7 +147,7 @@ class Tables
      *
      * @throws \RuntimeException If the SQL query cannot be fetched.
      */
-    protected function templates($table)
+    protected function templates(string $table): string
     {
         $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "{$table}.handlebars";
 
@@ -171,7 +172,7 @@ class Tables
      *
      * @return string The SQL.
      */
-    public function getCreateTableQuery($table, $prefix)
+    public function getCreateTableQuery(string $table, string $prefix): string
     {
         $data = ['operation' => 'CREATE TABLE IF NOT EXISTS', 'prefix' => $prefix];
         return $this->renderQuery($table, $data);
@@ -180,20 +181,34 @@ class Tables
     /**
      * Returns the SQL code required to scaffold a blog tables.
      *
-     * @param       string $prefix The blog prefix.
-     * @param       int $blogId The blog ID.
+     * @param string $prefix The blog prefix.
+     * @param int $blogId The blog ID.
      * @param array<string,mixed> $data The blog data.
      *
      * @return string The SQL query.
      */
-    public function getBlogScaffoldQuery($prefix, $blogId, array $data)
+    public function getBlogScaffoldQuery(string $prefix, int $blogId, array $data): string
     {
         $template = $this->templates('new-blog');
         $data = array_merge([
+            'subdomain' => '',
+            'domain' => '',
+            'subfolder' => '',
+            'stylesheet' => '',
             'prefix' => $prefix,
             'blog_id' => $blogId,
             'scheme' => 'http'
         ], $data);
+
+        $data['siteurl'] = $data['siteurl'] ?? sprintf(
+            '%s://%s%s%s',
+            $data['scheme'] ?? 'http',
+            $data['subdomain'] ? $data['subdomain'] . '.' : '',
+            $data['domain'],
+            $data['subfolder'] ? '/' . $data['subfolder'] : ''
+        );
+        $data['home'] = $data['home'] ?? $data['siteurl'];
+        $data['template'] = $data['template'] ?? $data['stylesheet'];
 
         return renderString($template, $data);
     }
@@ -206,7 +221,7 @@ class Tables
      *
      * @return string SQL code.
      */
-    public function getBlogDropQuery($tablePrefix, $blogId)
+    public function getBlogDropQuery(string $tablePrefix, int $blogId): string
     {
         $template = $this->templates('drop-blog-tables');
         $data = [
