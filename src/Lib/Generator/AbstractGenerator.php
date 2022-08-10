@@ -17,18 +17,12 @@ abstract class AbstractGenerator
     protected $template = '';
 
     /**
-     * @var array<string,mixed>
-     */
-    protected $settings = [];
-
-    /**
      * AbstractGenerator constructor.
      *
      * @param array<string,mixed> $settings
      */
-    public function __construct(array $settings)
+    public function __construct(protected array $settings)
     {
-        $this->settings = $settings;
         $this->ensureSettings();
         $this->ensureSettingsAreAllStrings();
     }
@@ -38,7 +32,7 @@ abstract class AbstractGenerator
      *
      * @return bool Whether the template settings are correct or not.
      */
-    protected function ensureSettings()
+    protected function ensureSettings(): bool
     {
         if (empty(static::$requiredSettings)) {
             return true;
@@ -55,10 +49,8 @@ abstract class AbstractGenerator
 
     /**
      * Checks all settings are strings.
-     *
-     * @return bool
      */
-    protected function ensureSettingsAreAllStrings()
+    protected function ensureSettingsAreAllStrings(): bool
     {
         if (empty(static::$requiredSettings)) {
             return true;

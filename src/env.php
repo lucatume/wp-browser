@@ -18,7 +18,7 @@ use lucatume\WPBrowser\Utils\Map;
  *
  * @throws \RuntimeException If the env file does not exist or is not readable.
  */
-function envFile($file)
+function envFile($file): \lucatume\WPBrowser\Utils\Map
 {
     if (!(file_exists($file))) {
         throw new \InvalidArgumentException('File ' . $file . ' does not exist.');
@@ -40,7 +40,7 @@ function envFile($file)
     $vars = array_reduce(
         array_filter(explode("\n", $envFileContents)),
         static function (array $lines, $line) use ($pattern) {
-            if (strpos($line, '#') === 0) {
+            if (str_starts_with($line, '#')) {
                 return $lines;
             }
 
@@ -85,7 +85,7 @@ function os()
         'sol' => 'Solaris'
     ];
 
-    return isset($map[$osSlug]) ? $map[$osSlug] : 'Unknown';
+    return $map[$osSlug] ?? 'Unknown';
 }
 
 /**
@@ -94,11 +94,10 @@ function os()
  * @param \lucatume\WPBrowser\Utils\Map  $map       The map of environment variables to load.
  * @param bool $overwrite Whether to overwrite the existing env vars or not.
  *
- * @return void
  *@see envFile() For the function to load to generate a Map from an environment file.
  *
  */
-function loadEnvMap(Map $map, $overwrite = true)
+function loadEnvMap(Map $map, $overwrite = true): void
 {
     if (empty($_SERVER)) {
         $_SERVER = [];

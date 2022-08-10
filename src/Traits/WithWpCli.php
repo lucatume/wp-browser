@@ -66,7 +66,6 @@ trait WithWpCli
     /**
      * Requires some wp-cli package files that could not be autoloaded.
      *
-     * @return void
      *
      * @throws WpCliException If wp-cli package files cannot be located.
      */
@@ -94,7 +93,7 @@ trait WithWpCli
         if ($this->wpCliRootDir === null) {
             try {
                 $ref = new ReflectionClass(Configurator::class);
-            } catch (ReflectionException $e) {
+            } catch (ReflectionException) {
                 throw WpCliException::becauseConfiguratorClassCannotBeFound();
             }
 
@@ -176,7 +175,6 @@ trait WithWpCli
      * @param string $autoload One of `yes` or `no` to indicate if the option should be auto-loaded by WordPress or not.
      * @param string $format   The option serialization format, one of `plaintext` or `json`.
      *
-     * @return void
      *
      * @throws \lucatume\WPBrowser\Exceptions\WpCliException If the option update command fails.
      */
@@ -300,7 +298,7 @@ trait WithWpCli
             if (!file_exists($routerFilePath)) {
                 throw WpCliException::becauseRouterFileWasNotFound($routerFilePath);
             }
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
             throw WpCliException::becauseServerCommandClassWasNotFound();
         }
 

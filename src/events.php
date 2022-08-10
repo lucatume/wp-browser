@@ -21,10 +21,8 @@ use lucatume\WPBrowser\Events\EventDispatcherAdapter;
  *
  * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
  *                                   Codeception default events due to the Codeception version.
- *
- * @return void
  */
-function addListener($eventName, callable $listener, $priority = 0)
+function addListener($eventName, callable $listener, $priority = 0): void
 {
     EventDispatcherAdapter::getEventDispatcher()->addListener($eventName, $listener, $priority);
 }
@@ -35,10 +33,8 @@ function addListener($eventName, callable $listener, $priority = 0)
  * @param string       $eventName The event name or handle.
  * @param object|null  $origin    The dispatched event origin.
  * @param array<mixed> $context   Additional context or data for the event.
- *
- * @return void
  */
-function dispatch($eventName, $origin = null, array $context = [])
+function dispatch($eventName, $origin = null, array $context = []): void
 {
     EventDispatcherAdapter::getEventDispatcher()->dispatch($eventName, $origin, $context);
 }

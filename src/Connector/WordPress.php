@@ -68,10 +68,8 @@ class WordPress extends Universal
 
     /**
      * The URI ot file mapper.
-     *
-     * @var UriToIndexMapper
      */
-    protected $uriToIndexMapper;
+    protected \lucatume\WPBrowser\Module\Support\UriToIndexMapper $uriToIndexMapper;
 
     /**
      * WordPress constructor.
@@ -118,7 +116,7 @@ class WordPress extends Universal
             throw new \RuntimeException('Request URI could not be parsed.');
         }
 
-        $uri = isset($parseResult['path']) ? $parseResult['path'] : '/';
+        $uri = $parseResult['path'] ?? '/';
         if (array_key_exists('query', $parseResult)) {
             $uri .= '?' . $parseResult['query'];
         }
@@ -212,10 +210,8 @@ class WordPress extends Universal
      * Sets the base URL.
      *
      * @param string $url The base URL.
-     *
-     * @return void
      */
-    public function setUrl($url)
+    public function setUrl($url): void
     {
         $this->url = $url;
     }
@@ -224,10 +220,8 @@ class WordPress extends Universal
      * Sets the index file for a URI request.
      *
      * @param string $uri The request URI.
-     *
-     * @return void
      */
-    public function setIndexFor($uri)
+    public function setIndexFor($uri): void
     {
         $this->index = $this->rootFolder . $this->uriToIndexMapper->getIndexForUri($uri);
     }
@@ -282,10 +276,8 @@ class WordPress extends Universal
      * Sets the request headers.
      *
      * @param array<string,string> $headers The request headers.
-     *
-     * @return void
      */
-    public function setHeaders(array $headers = [])
+    public function setHeaders(array $headers = []): void
     {
         $this->headers = $headers;
     }
@@ -304,20 +296,16 @@ class WordPress extends Universal
      * Sets the current domain.
      *
      * @param string $domain The current domain.
-     *
-     * @return void
      */
-    public function setDomain($domain)
+    public function setDomain($domain): void
     {
         $this->domain = $domain;
     }
 
     /**
      * Resets the cookies.
-     *
-     * @return void
      */
-    public function resetCookies()
+    public function resetCookies(): void
     {
         $this->cookieJar = new CookieJar();
     }

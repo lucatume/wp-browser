@@ -18,10 +18,8 @@ class Tables
 {
     /**
      * The absolute path to the the templates directory.
-     *
-     * @var string
      */
-    protected $templatesDir;
+    protected string $templatesDir;
 
     /**
      * Tables constructor.
@@ -39,10 +37,10 @@ class Tables
      *
      * @return array<string> The list of tables, not prefixed with the table prefix.
      */
-    public static function blogTables($table_prefix = '', $blog_id = 1)
+    public static function blogTables($table_prefix = '', $blog_id = 1): array
     {
         $blog_id = (int)$blog_id < 2 ? '' : $blog_id . '_';
-        return array_map(static function ($table) use ($table_prefix, $blog_id) {
+        return array_map(static function ($table) use ($table_prefix, $blog_id): string {
             return sprintf('%s%s%s', $table_prefix, $blog_id, $table);
         }, [
             'commentmeta',
@@ -110,7 +108,7 @@ class Tables
      *
      * @return array<string> A list of all the site tables.
      */
-    protected function tables()
+    protected function tables(): array
     {
         return array_merge([], self::multisiteTables());
     }
@@ -126,9 +124,9 @@ class Tables
      *
      * @see Tables::blogTables()
      */
-    public static function multisiteTables($table_prefix = '')
+    public static function multisiteTables($table_prefix = ''): array
     {
-        return array_map(static function ($table) use ($table_prefix) {
+        return array_map(static function ($table) use ($table_prefix): string {
             return $table_prefix . $table;
         }, [
             'blogs',

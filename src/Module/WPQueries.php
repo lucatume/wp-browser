@@ -40,15 +40,9 @@ class WPQueries extends \Codeception\Module
      */
     protected $assertions = [];
 
-    /**
-     * @var \wpdb
-     */
-    protected $wpdb;
+    protected \wpdb|\lucatume\WPBrowser\Module\wpdb $wpdb;
 
-    /**
-     * @var \lucatume\WPBrowser\Environment\Constants
-     */
-    private $constants;
+    private \lucatume\WPBrowser\Environment\Constants $constants;
 
     /**
      * WPQueries constructor.
@@ -60,7 +54,7 @@ class WPQueries extends \Codeception\Module
      */
     public function __construct(
         ModuleContainer $moduleContainer,
-        $config,
+        ?array $config,
         Constants
         $constants = null,
         $wpdbInstance = null
@@ -99,10 +93,8 @@ class WPQueries extends \Codeception\Module
 
     /**
      * Runs before each test method.
-     *
-     * @return void
      */
-    public function _cleanup()
+    public function _cleanup(): void
     {
         $this->getWpdbInstance()->queries = [];
     }
@@ -136,10 +128,8 @@ class WPQueries extends \Codeception\Module
      * ```
      *
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueries($message = '')
+    public function assertQueries($message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that queries were made.';
@@ -148,10 +138,8 @@ class WPQueries extends \Codeception\Module
 
     /**
      * Reads the current queries.
-     *
-     * @return void
      */
-    private function readQueries()
+    private function readQueries(): void
     {
         $wpdb = $this->getWpdbInstance();
 
@@ -169,7 +157,7 @@ class WPQueries extends \Codeception\Module
      * @param \wpdb $wpdb
      * @return \FilterIterator
      */
-    public function _getFilteredQueriesIterator($wpdb = null)
+    public function _getFilteredQueriesIterator($wpdb = null): \lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter
     {
         if (null === $wpdb) {
             $wpdb = $this->getWpdbInstance();
@@ -195,10 +183,8 @@ class WPQueries extends \Codeception\Module
      * ```
      *
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueries($message = '')
+    public function assertNotQueries($message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that no queries were made.';
@@ -225,10 +211,8 @@ class WPQueries extends \Codeception\Module
      *
      * @param int $n The expected number of queries.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertCountQueries($n, $message = '')
+    public function assertCountQueries($n, $message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made.';
@@ -250,10 +234,8 @@ class WPQueries extends \Codeception\Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByStatement($statement, $message = '')
+    public function assertQueriesByStatement($statement, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
@@ -276,10 +258,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByMethod($class, $method, $message = '')
+    public function assertQueriesByMethod($class, $method, $message = ''): void
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
@@ -303,10 +283,8 @@ class WPQueries extends \Codeception\Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByStatement($statement, $message = '')
+    public function assertNotQueriesByStatement($statement, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries beginning with statement ['
                                . $statement . '] were made.';
@@ -331,10 +309,8 @@ class WPQueries extends \Codeception\Module
      * @param string $statement A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByStatement($n, $statement, $message = '')
+    public function assertQueriesCountByStatement($n, $statement, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries beginning with statement ['
@@ -358,10 +334,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByMethod($class, $method, $message = '')
+    public function assertNotQueriesByMethod($class, $method, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::' . $method . ']';
         $this->assertQueriesCountByMethod(0, $class, $method, $message);
@@ -384,10 +358,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByMethod($n, $class, $method, $message = '')
+    public function assertQueriesCountByMethod($n, $class, $method, $message = ''): void
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
@@ -410,10 +382,8 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByFunction($function, $message = '')
+    public function assertQueriesByFunction($function, $message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that queries were made by function [' . $function . ']';
@@ -435,10 +405,8 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByFunction($function, $message = '')
+    public function assertNotQueriesByFunction($function, $message = ''): void
     {
         $message = $message ? $message : 'Failed asserting that no queries were made by function [' . $function . ']';
         $this->assertQueriesCountByFunction(0, $function, $message);
@@ -459,10 +427,8 @@ class WPQueries extends \Codeception\Module
      * @param int $n The expected number of queries.
      * @param string $function The function to check the queries for.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByFunction($n, $function, $message = '')
+    public function assertQueriesCountByFunction($n, $function, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by function [' . $function . ']';
@@ -486,10 +452,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = '')
+    public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that queries were made by method ['
@@ -518,10 +482,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = '')
+    public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::'
                                . $method . '] containing statement [' . $statement . ']';
@@ -547,10 +509,8 @@ class WPQueries extends \Codeception\Module
      * @param string $class The fully qualified name of the class to check.
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = '')
+    public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
@@ -578,10 +538,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The fully qualified function name.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByStatementAndFunction($statement, $function, $message = '')
+    public function assertQueriesByStatementAndFunction($statement, $function, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that queries were made by function ['
@@ -609,10 +567,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The name of the function to check the assertions for.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByStatementAndFunction($statement, $function, $message = '')
+    public function assertNotQueriesByStatementAndFunction($statement, $function, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries were made by function ['
                                . $function . '] containing statement [' . $statement . ']';
@@ -637,10 +593,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $function The fully-qualified function name.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = '')
+    public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
@@ -669,10 +623,8 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByAction($action, $message = '')
+    public function assertQueriesByAction($action, $message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that queries were triggered by action [' . $action . ']';
@@ -697,10 +649,8 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByAction($action, $message = '')
+    public function assertNotQueriesByAction($action, $message = ''): void
     {
         $message = $message ? $message : 'Failed asserting that no queries were triggered by action [' . $action . ']';
         $this->assertQueriesCountByAction(0, $action, $message);
@@ -726,10 +676,8 @@ class WPQueries extends \Codeception\Module
      * @param int $n The expected number of queries.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByAction($n, $action, $message = '')
+    public function assertQueriesCountByAction($n, $action, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']';
@@ -756,10 +704,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesByStatementAndAction($statement, $action, $message = '')
+    public function assertQueriesByStatementAndAction($statement, $action, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that queries were triggered by action  ['
@@ -790,10 +736,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertNotQueriesByStatementAndAction($statement, $action, $message = '')
+    public function assertNotQueriesByStatementAndAction($statement, $action, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries were triggered by action  ['
                                . $action . '] containing statement [' . $statement . ']';
@@ -823,10 +767,8 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
-     *
-     * @return void
      */
-    public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = '')
+    public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action  ['
@@ -856,13 +798,11 @@ class WPQueries extends \Codeception\Module
      * $title = apply_filters('the_title', get_post($bookId)->post_title, $bookId);
      * $this->assertQueriesByFilter('the_title');
      * ```
-     *
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertQueriesByFilter($filter, $message = '')
+    public function assertQueriesByFilter($filter, $message = ''): void
     {
         $this->readQueries();
         $message = $message ? $message : 'Failed asserting that queries were triggered by filter [' . $filter . ']';
@@ -888,13 +828,11 @@ class WPQueries extends \Codeception\Module
      * $title = apply_filters('the_title', get_post($notABookId)->post_title, $notABookId);
      * $this->assertNotQueriesByFilter('the_title');
      * ```
-     *
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertNotQueriesByFilter($filter, $message = '')
+    public function assertNotQueriesByFilter($filter, $message = ''): void
     {
         $message = $message ? $message : 'Failed asserting that no queries were triggered by filter [' . $filter . ']';
         $this->assertQueriesCountByFilter(0, $filter, $message);
@@ -925,9 +863,8 @@ class WPQueries extends \Codeception\Module
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertQueriesCountByFilter($n, $filter, $message = '')
+    public function assertQueriesCountByFilter($n, $filter, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']';
@@ -959,9 +896,8 @@ class WPQueries extends \Codeception\Module
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertQueriesByStatementAndFilter($statement, $filter, $message = '')
+    public function assertQueriesByStatementAndFilter($statement, $filter, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that queries were triggered by filter  ['
@@ -997,9 +933,8 @@ class WPQueries extends \Codeception\Module
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = '')
+    public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = ''): void
     {
         $message = $message ?: 'Failed asserting that no queries were triggered by filter  ['
                                . $filter . '] containing statement [' . $statement . ']';
@@ -1035,9 +970,8 @@ class WPQueries extends \Codeception\Module
      * @param string $filter The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
-     * @return void
      */
-    public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = '')
+    public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = ''): void
     {
         $this->readQueries();
         $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter  ['
@@ -1086,7 +1020,7 @@ class WPQueries extends \Codeception\Module
      *
      * @return array<string> An array of queries.
      */
-    public function getQueries($wpdb = null)
+    public function getQueries($wpdb = null): array
     {
         return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
     }

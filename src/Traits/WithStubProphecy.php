@@ -32,7 +32,7 @@ trait WithStubProphecy
      *
      * @return StubProphecy The built prophecy, as per phpspec Prophecy, call `reveal` to get a usable mock.
      */
-    protected function stubProphecy($class, array $methodSet = [])
+    protected function stubProphecy($class, array $methodSet = []): \lucatume\WPBrowser\StubProphecy\StubProphecy
     {
         $stubProphecy = new StubProphecy($class, $this);
         $this->stubProphecies[] = $stubProphecy;
@@ -46,9 +46,9 @@ trait WithStubProphecy
      *
      * @postCondition
      */
-    public function _stubProphecyPostConditions()
+    public function _stubProphecyPostConditions(): void
     {
-        array_walk($this->stubProphecies, static function (StubProphecy $stubProphecy) {
+        array_walk($this->stubProphecies, static function (StubProphecy $stubProphecy): void {
             $stubProphecy->_assertPostConditions();
         });
     }

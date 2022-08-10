@@ -15,13 +15,13 @@ use DateTime;
 use DateTimeImmutable;
 use Exception;
 use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Dates;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
-use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
-requireCodeceptionModules('WPFilesystem', [ 'Filesystem' ]);
+Codeception::checkModuleRequirements('WPFilesystem', [ 'Filesystem' ]);
 //phpcs:enable
 
 /**
@@ -1024,7 +1024,6 @@ class WPFilesystem extends Filesystem
      * @param string $path The path to the file to create, relative to the plugins folder.
      * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
-     * @return void
      *@throws ModuleException If the plugin folder and/or files could not be created.
      *
      */
@@ -1093,7 +1092,6 @@ PHP;
      * @param string $filename The path to the file to create, relative to the plugins root folder.
      * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
-     * @return void
      *@throws ModuleException If the mu-plugin folder and/or files could not be created.
      *
      */
@@ -1160,7 +1158,6 @@ PHP;
      * @param string $indexFileCode The content of the theme index.php file with or without the opening PHP tag.
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
-     * @return void
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      */
     public function haveTheme(string $folder, string $indexFileCode, string $functionsFileCode = ''): void

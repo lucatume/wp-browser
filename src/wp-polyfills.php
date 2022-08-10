@@ -20,7 +20,7 @@ use VRia\Utils\NoDiacritic;
  *
  * @throws \InvalidArgumentException If the string cannot be sanitized.
  */
-function strip_all_tags($string, $removeBreaks = false)
+function strip_all_tags($string, $removeBreaks = false): string
 {
     $woTags = preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $string);
 

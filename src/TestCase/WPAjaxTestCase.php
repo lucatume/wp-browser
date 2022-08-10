@@ -128,7 +128,7 @@ abstract class WPAjaxTestCase extends WPTestCase
         'get-post-thumbnail-html',
     );
 
-    public static function _setUpBeforeClass()
+    public static function _setUpBeforeClass(): void
     {
         if (!defined('DOING_AJAX')) {
             define('DOING_AJAX', true);
@@ -155,7 +155,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      * Set up the test fixture.
      * Override wp_die(), pretend to be ajax, and suppres E_WARNINGs
      */
-    public function _setUp()
+    public function _setUp(): void
     {
         parent::_setUp();
 
@@ -178,7 +178,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      * Tear down the test fixture.
      * Reset $_POST, remove the wp_die() override, restore error reporting
      */
-    public function _tearDown()
+    public function _tearDown(): void
     {
         parent::_tearDown();
         $_POST = array();
@@ -194,7 +194,7 @@ abstract class WPAjaxTestCase extends WPTestCase
     /**
      * Clear login cookies, unset the current user
      */
-    public function logout()
+    public function logout(): void
     {
         unset($GLOBALS['current_user']);
         $cookies = array_filter(array_map(

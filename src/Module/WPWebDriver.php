@@ -12,12 +12,11 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module\WebDriver;
 use Codeception\Module\WPBrowserMethods;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use lucatume\WPBrowser\Utils\Codeception;
 use Symfony\Component\BrowserKit\Cookie;
-use function Codeception\Module\count;
-use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
-requireCodeceptionModules('WPWebDriver', [ 'WebDriver' ]);
+Codeception::checkModuleRequirements('WPWebDriver', [ 'WebDriver' ]);
 //phpcs:enable
 
 /**
@@ -146,10 +145,10 @@ class WPWebDriver extends WebDriver
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
+        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern): int|bool {
             return preg_match($cookiePattern, $cookie->getName());
         });
-        $cookieList = array_map(static function ($cookie) {
+        $cookieList = array_map(static function ($cookie): string {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
         }, $matchingCookies);
 
@@ -169,10 +168,8 @@ class WPWebDriver extends WebDriver
      * ```
      *
      * @param int $time The max time to wait for AJAX requests to complete.
-     *
-     * @return void
      */
-    public function waitForJqueryAjax($time = 10)
+    public function waitForJqueryAjax($time = 10): void
     {
         $this->waitForJS('return jQuery.active == 0', $time);
     }
@@ -202,7 +199,7 @@ class WPWebDriver extends WebDriver
      * @return void
      * @throws ModuleConfigException|ModuleException If there's an issue with the configuration.
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         $this->configBackCompat();
 
@@ -230,7 +227,7 @@ class WPWebDriver extends WebDriver
      *
      * @return void
      */
-    public function deactivatePlugin($pluginSlug)
+    public function deactivatePlugin(string|array $pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
             $option = '//*[@data-slug="' . $plugin . '"]/th/input';
@@ -263,7 +260,7 @@ class WPWebDriver extends WebDriver
      *
      * @return void
      */
-    public function activatePlugin($pluginSlug)
+    public function activatePlugin(string|array $pluginSlug): void
     {
         $plugins = (array)$pluginSlug;
         foreach ($plugins as $plugin) {

@@ -21,17 +21,17 @@ class WPCanonicalTestCase extends WPTestCase
      */
     public $structure = '/%year%/%monthnum%/%day%/%postname%/';
 
-    public static function wpSetUpBeforeClass($factory)
+    public static function wpSetUpBeforeClass($factory): void
     {
         self::generate_shared_fixtures($factory);
     }
 
-    public static function wpTearDownAfterClass()
+    public static function wpTearDownAfterClass(): void
     {
         self::delete_shared_fixtures();
     }
 
-    public function _setUp()
+    public function _setUp(): void
     {
         parent::_setUp();
 
@@ -50,7 +50,7 @@ class WPCanonicalTestCase extends WPTestCase
      *
      * @since 4.1.0
      */
-    public static function generate_shared_fixtures($factory)
+    public static function generate_shared_fixtures($factory): void
     {
         self::$old_current_user = get_current_user_id();
         self::$author_id = $factory->user->create(array('user_login' => 'canonical-author'));
@@ -174,7 +174,7 @@ class WPCanonicalTestCase extends WPTestCase
      *
      * @since 4.1.0
      */
-    public static function delete_shared_fixtures()
+    public static function delete_shared_fixtures(): void
     {
         self::$author_id = null;
         self::$post_ids = array();
@@ -193,7 +193,7 @@ class WPCanonicalTestCase extends WPTestCase
      * @since 4.1.0
      *
      */
-    public function assertCanonical($test_url, $expected, $ticket = 0, $expected_doing_it_wrong = array())
+    public function assertCanonical($test_url, string|array $expected, $ticket = 0, $expected_doing_it_wrong = array()): void
     {
         $this->expected_doing_it_wrong = array_merge($this->expected_doing_it_wrong, (array)$expected_doing_it_wrong);
 

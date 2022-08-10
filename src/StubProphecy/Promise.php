@@ -35,7 +35,7 @@ class Promise
      *
      * @return mixed The callback return value.
      */
-    public function __invoke()
+    public function __invoke(): mixed
     {
         return call_user_func($this->callback);
     }

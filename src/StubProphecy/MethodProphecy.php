@@ -20,23 +20,11 @@ use function lucatume\WPBrowser\StubProphecy\count;
 class MethodProphecy
 {
     /**
-     * The fully qualified name of the class the method belongs to.
-     * @var string
-     */
-    protected $class;
-
-    /**
-     * The name of the method this prophecy is for.
-     * @var string
-     */
-    protected $name;
-
-    /**
      * The expected call arguments for the method, if any.
      *
      * @var array<mixed>
      */
-    protected $expectedArguments = [];
+    protected array $expectedArguments;
     /**
      * The value the method prophecy should return when called, or a callback that will produce the method prophecy
      * return value when called.
@@ -85,10 +73,8 @@ class MethodProphecy
      * @throws StubProphecyException If there's an issue reflecting on the class method or the required argument
      *                               expectations are not satisfied.
      */
-    public function __construct($class, $name, array $expectedArguments = [])
+    public function __construct(protected $class, protected $name, array $expectedArguments = [])
     {
-        $this->class             = $class;
-        $this->name              = $name;
         $this->expectedArguments = $this->setupExpectedArgs($expectedArguments);
     }
 
@@ -104,7 +90,7 @@ class MethodProphecy
      * @throws StubProphecyException If there's an issue reflecting on the method or the expected arguments do not match
      *                               all the required arguments.
      */
-    protected function setupExpectedArgs(array $expectedArguments = [])
+    protected function setupExpectedArgs(array $expectedArguments = []): array
     {
         $argumentExpectations = [];
 
@@ -170,7 +156,7 @@ class MethodProphecy
      */
     public function atLeastTimes($expected)
     {
-        return function () use ($expected) {
+        return function () use ($expected): void {
             if ($this->actualCallCount < $expected) {
                 throw new AssertionFailedError(
                     $this->failedCallCountExpectationMessage($expected, $this->actualCallCount)
@@ -184,10 +170,8 @@ class MethodProphecy
      *
      * @param callable $returnValue A callable that will produce, taking as input the actual call arguments, the
      *                              return value of the prophesized method.
-     *
-     * @return void
      */
-    public function setReturnValue($returnValue)
+    public function setReturnValue($returnValue): void
     {
         $this->returnValue = $returnValue;
     }
@@ -229,7 +213,7 @@ class MethodProphecy
                     }
 
                     Assert::assertEquals($expectedArgs[ $i ], $actualArgs[ $i ]);
-                } catch (AssertionFailedError $e) {
+                } catch (AssertionFailedError) {
                     $message = $this->failedArgumentExpectationMessage($expectedArgs, $actualArgs, $i);
                     throw new ExpectationFailedException($message);
                 }
@@ -250,7 +234,7 @@ class MethodProphecy
      *
      * @return string The failure message for the method argument expectation.
      */
-    protected function failedArgumentExpectationMessage(array $expectedArgs, array $callArgs, $failIndex)
+    protected function failedArgumentExpectationMessage(array $expectedArgs, array $callArgs, $failIndex): string
     {
         return sprintf(
             "%s %s expected to be called with arguments:"
@@ -281,7 +265,7 @@ class MethodProphecy
      *
      * @return string The formatted arguments output string.
      */
-    protected function formatArgsForOutput(array $args, $failIndex, $expectedOrActual)
+    protected function formatArgsForOutput(array $args, $failIndex, $expectedOrActual): string
     {
         $output = [];
         $outputLineTemplate = '    [%d]  =>  %s';
@@ -328,7 +312,7 @@ class MethodProphecy
      *
      * @return void
      */
-    public function setExpectedCallCount($expectedCallCount)
+    public function setExpectedCallCount(int|callable $expectedCallCount): void
     {
         if (is_callable($expectedCallCount)) {
             $expectedCallCount = (int)$expectedCallCount();
@@ -371,7 +355,7 @@ class MethodProphecy
      *
      * @return string The formatted error message.
      */
-    protected function failedCallCountExpectationMessage($expectedCalls, $actualCalls)
+    protected function failedCallCountExpectationMessage($expectedCalls, $actualCalls): string
     {
         return sprintf(
             "Method \033[96m%s\033[0m expected to be called \033[96m%d\033[0m times," .
@@ -396,10 +380,8 @@ class MethodProphecy
 
     /**
      * Asserts the method prophecy post conditions.
-     *
-     * @return void
      */
-    public function assertPostConditions()
+    public function assertPostConditions(): void
     {
         if (count($this->postConditions)) {
             foreach ($this->postConditions as $postCondition) {
@@ -412,10 +394,8 @@ class MethodProphecy
      * Sets a post condition on the method prophecy to ensure the prophecy method has been called at least times.
      *
      * @param int $times The number of times the prophecy method should be called as a minimum.
-     *
-     * @return void
      */
-    public function shouldBeCalledAtLeastTimes($times)
+    public function shouldBeCalledAtLeastTimes($times): void
     {
         $this->addPostCondition($this->atLeastTimes($times));
     }
@@ -436,7 +416,7 @@ class MethodProphecy
         if (is_object($arg)) {
             return method_exists($arg, '__toString')
                 ? $arg->__toString()
-                : sprintf("Instance of '%s'", get_class($arg));
+                : sprintf("Instance of '%s'", $arg::class);
         }
 
         return print_r($arg, true);

@@ -88,10 +88,10 @@ class Map implements ArrayAccess
      * @param string|int $offset The offset to unset.
      * @param mixed $value The value to set.
      *
-     * @return static For chaining.
+     * @return self For chaining.
      */
     #[ReturnTypeWillChange]
-    public function offsetSet($offset, mixed $value): static
+    public function offsetSet($offset, mixed $value): self
     {
         $offset = $this->redirectAlias($offset);
         $this->map[$offset] = $value;
@@ -104,10 +104,10 @@ class Map implements ArrayAccess
      *
      * @param string|int $offset The offset to unset.
      *
-     * @return $this For chaining.
+     * @return self For chaining.
      */
     #[ReturnTypeWillChange]
-    public function offsetUnset($offset): static
+    public function offsetUnset($offset): self
     {
         $offset = $this->redirectAlias($offset);
         unset($this->map[$offset]);

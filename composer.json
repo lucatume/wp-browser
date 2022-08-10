@@ -24,6 +24,7 @@
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-json": "*",
+    "composer-runtime-api": "^2.2",
     "codeception/codeception": "^5.0",
     "codeception/module-asserts":">=2.0",
     "codeception/module-phpbrowser":">=2.0",
@@ -55,8 +56,6 @@
   },
   "autoload": {
     "psr-4": {
-      "Codeception\\": "src/Codeception",
-      "tad\\": "src/tad",
       "lucatume\\WPBrowser\\": "src/"
     },
     "files": [

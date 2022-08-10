@@ -161,7 +161,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 		$limit_file = false;
 		if ( $this->is_file( $path ) ) {
 			$limit_file = $this->locate_node( $path )->name;
-			$path = dirname( $path ) . '/';
+			$path = dirname($path) . 'mock-fs.php/';
 		}
 
 		$ret = array();
@@ -181,7 +181,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 
 			if ( 'd' == $struc['type'] ) {
 				if ( $recursive )
-					$struc['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struc['name'] ), $include_hidden, $recursive );
+					$struc['files'] = $this->dirlist( mock - fs . phptrailingslashit($path), $include_hidden, $recursive );
 				else
 					$struc['files'] = array();
 			}

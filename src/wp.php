@@ -13,9 +13,9 @@ namespace lucatume\WPBrowser;
  * @param \wpdb $wpdb The global WordPress database handler instance.
  * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be dropped.
  *
- * @return array<string> The list of dropped tables.
+ * @return mixed[] The list of dropped tables.
  */
-function dropWpTables(\wpdb $wpdb, array $tables = null)
+function dropWpTables(\wpdb $wpdb, array $tables = null): array
 {
     $allTables = $wpdb->tables('all');
     $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
@@ -40,9 +40,9 @@ function dropWpTables(\wpdb $wpdb, array $tables = null)
  * @param \wpdb $wpdb The global WordPress database handler instance.
  * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be emptied.
  *
- * @return array<string> The list of emptied tables.
+ * @return mixed[] The list of emptied tables.
  */
-function emptyWpTables(\wpdb $wpdb, array $tables = null)
+function emptyWpTables(\wpdb $wpdb, array $tables = null): array
 {
     $allTables = $wpdb->tables('all');
     $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;

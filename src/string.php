@@ -16,7 +16,7 @@ namespace lucatume\WPBrowser;
  *
  * @see https://stackoverflow.com/a/7836692/2056484
  */
-function normalizeNewLine($str)
+function normalizeNewLine($str): string
 {
     return (string)preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
 }
@@ -32,10 +32,10 @@ function normalizeNewLine($str)
  *
  * @return string The slug version of the string.
  */
-function slug($string, $sep = '-', $let = false)
+function slug($string, $sep = '-', $let = false): string
 {
     $unquotedSeps = $let ? ['-', '_', $sep] : [$sep];
-    $seps = implode('', array_map(static function ($s) {
+    $seps = implode('', array_map(static function ($s): string {
         return preg_quote($s, '~');
     }, array_unique($unquotedSeps)));
 
@@ -87,7 +87,7 @@ function slug($string, $sep = '-', $let = false)
 }
 
 /**
- * Renders a string using it as a template, with Handlebars-compativle syntax.
+ * Renders a string using it as a template, with Handlebars-compatible syntax.
  *
  * @param string              $template The string template to render.
  * @param array<string,mixed> $data     An map of data to replace in the template.
@@ -95,7 +95,7 @@ function slug($string, $sep = '-', $let = false)
  *                                      is a callable.
  * @return string The compiled template string.
  */
-function renderString($template, array $data = [], array $fnArgs = [])
+function renderString($template, array $data = [], array $fnArgs = []): string
 {
     $fnArgs = array_values($fnArgs);
 
@@ -106,7 +106,7 @@ function renderString($template, array $data = [], array $fnArgs = [])
         $data
     );
 
-    if (false !== strpos($template, '{{#')) {
+    if (str_contains($template, '{{#')) {
         $php = \LightnCandy\LightnCandy::compile($template);
 
         if ($php === false) {
@@ -140,7 +140,7 @@ function renderString($template, array $data = [], array $fnArgs = [])
  *
  * @throws \InvalidArgumentException If the URL cannot be parsed at all.
  */
-function parseUrl($url)
+function parseUrl($url): array
 {
     $parsed = \parse_url($url);
 
@@ -161,62 +161,13 @@ function parseUrl($url)
 }
 
 /**
- * Checks whether a string is a regular expression or not.
- *
- * @param string $string The candidate regular expression to check.
- *
- * @return bool Whether a string is a regular expression or not.
- */
-function isRegex($string)
-{
-    try {
-        // @phpstan-ignore-next-line
-        return @preg_match($string, null) !== false;
-    } catch (\Exception $e) {
-        return false;
-    }
-}
-
-/**
- * Builds the string list using `and` for the last element.
- *
- * @param array<string> $elements The list elements.
- *
- * @return string|false The list in string format or `false` if the list is empty.
- */
-function andList(array $elements)
-{
-    $list  = '';
-    $count = count($elements);
-
-    if ($count === 0) {
-        return $list;
-    }
-
-    if ($count === 1) {
-        return reset($elements);
-    }
-
-    for ($i = 0; $i < $count; $i ++) {
-        if ($i === 0) {
-            $list .= $elements[$i];
-            continue;
-        }
-        $glue = $i === $count - 1 ? ' and ' : ', ';
-        $list .= $glue . $elements[$i];
-    }
-
-    return $list;
-}
-
-/**
  * Returns the domain from the full URL.
  *
  * @param string $fullUrl The full URL to build the domain from.
  *
  * @return string The domain built from the full URL.
  */
-function urlDomain($fullUrl)
+function urlDomain($fullUrl): string
 {
     $frags = parseUrl($fullUrl);
 

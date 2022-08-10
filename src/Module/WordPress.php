@@ -11,13 +11,13 @@ use Codeception\Module\WPBrowserMethods;
 use Codeception\Module\WPDb;
 use Codeception\TestInterface;
 use lucatume\WPBrowser\Connector\WordPress as WordPressConnector;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use function Codeception\Module\untrailslashIt;
 use function lucatume\WPBrowser\parseUrl;
-use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
-requireCodeceptionModules('WordPress', [Framework::class]);
+Codeception::checkModuleRequirements('WordPress', [Framework::class]);
 //phpcs:enable
 
 /**
@@ -32,7 +32,7 @@ class WordPress extends Framework implements DependsOnModule
     use WPBrowserMethods;
 
     /**
-     * @var WordPressConnector|null
+     * @var \lucatume\WPBrowser\Connector\WordPress|WordPressConnector
      */
     public $client;
 
@@ -117,7 +117,7 @@ EOF;
      */
     public function __construct(
         ModuleContainer $moduleContainer,
-        $config = [],
+        ?array $config = [],
         WordPressConnector $client = null
     ) {
         parent::__construct($moduleContainer, $config);
@@ -132,11 +132,10 @@ EOF;
      *
      * @param TestInterface $test The current test.
      *
-     * @return void
      *
      * @throws \Codeception\Exception\ModuleException
      */
-    public function _before(TestInterface $test)
+    public function _before(TestInterface $test): void
     {
         /** @var WPDb $wpdb */
         $wpdb          = $this->getModule('WPDb');
@@ -149,10 +148,8 @@ EOF;
      * Sets up the client/connector for the request.
      *
      * @param string $siteDomain The current site domain, e.g. 'wordpress.test'.
-     *
-     * @return void
      */
-    private function setupClient($siteDomain)
+    private function setupClient(string $siteDomain): void
     {
         $this->client = $this->client ?: $this->buildConnector();
         $this->client->setUrl($this->siteUrl);
@@ -167,10 +164,8 @@ EOF;
      * Internal method to inject the client to use.
      *
      * @param WordPressConnector $client The client object that should be used.
-     *
-     * @return void
      */
-    public function _setClient($client)
+    public function _setClient($client): void
     {
         $this->client = $client;
     }
@@ -179,10 +174,8 @@ EOF;
      * Returns whether the current request is a mock one or not.
      *
      * @param bool $isMockRequest Whether the current request is a mock one or not.
-     *
-     * @return void
      */
-    public function _isMockRequest($isMockRequest = false)
+    public function _isMockRequest($isMockRequest = false): void
     {
         $this->isMockRequest = $isMockRequest;
     }
@@ -205,7 +198,7 @@ EOF;
      *
      * @return array<string,string> A list of module dependencies.
      */
-    public function _depends()
+    public function _depends(): array
     {
         return ['Codeception\Module\WPDb' => $this->dependencyMessage];
     }
@@ -214,10 +207,8 @@ EOF;
      * Injects the required modules.
      *
      * @param WPDb $wpdbModule An instance of the `WPDb` class.
-     *
-     * @return void
      */
-    public function _inject(WPDb $wpdbModule)
+    public function _inject(WPDb $wpdbModule): void
     {
         $this->wpdbModule = $wpdbModule;
     }
@@ -254,7 +245,7 @@ EOF;
      *
      * @return string The prepared page path.
      */
-    private function preparePage($page)
+    private function preparePage(string $page)
     {
         $page = untrailslashIt($page);
         $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
@@ -282,7 +273,7 @@ EOF;
      *
      * @return string The page path.
      */
-    public function amOnPage($page)
+    public function amOnPage($page): void
     {
         $this->setRequestType($page);
 
@@ -331,9 +322,9 @@ EOF;
      *
      * @return bool Whether the current request is for an admin page or not.
      */
-    private function isAdminPageRequest($page)
+    private function isAdminPageRequest($page): bool
     {
-        return 0 === strpos($page, $this->getAdminPath());
+        return str_starts_with($page, $this->getAdminPath());
     }
 
     /**
@@ -344,7 +335,7 @@ EOF;
      *
      * @return array<string> A list of the internal domains.
      */
-    public function getInternalDomains()
+    public function getInternalDomains(): array
     {
         $internalDomains   = [];
         $host = parse_url($this->siteUrl, PHP_URL_HOST) ?: 'localhost';
@@ -379,7 +370,7 @@ EOF;
                     );
                 }
                 $this->wpRootFolder = $resolvedWpRoot;
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "\nThe path `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress " .
@@ -417,7 +408,7 @@ EOF;
         return $this->_getResponseContent();
     }
 
-    protected function getAbsoluteUrlFor($uri)
+    protected function getAbsoluteUrlFor(string $uri): string
     {
         $uri = str_replace(
             $this->siteUrl,
@@ -490,10 +481,8 @@ EOF;
      * Builds and returns an instance of the WordPress connector.
      *
      * The method will trigger the load of required Codeception library polyfills.
-     *
-     * @return WordPressConnector
      */
-    protected function buildConnector()
+    protected function buildConnector(): \lucatume\WPBrowser\Connector\WordPress
     {
         return new WordPressConnector();
     }

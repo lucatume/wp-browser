@@ -8,7 +8,7 @@
 namespace lucatume\WPBrowser\Iterators\Filters;
 
 use Iterator;
-use function lucatume\WPBrowser\isRegex;
+use lucatume\WPBrowser\Utils\Strings;
 
 /**
  * Class MainStatementQueriesFilter
@@ -18,22 +18,14 @@ use function lucatume\WPBrowser\isRegex;
 class MainStatementQueriesFilter extends \FilterIterator
 {
     /**
-     * The SQL statement to look for.
-     *
-     * @var string
-     */
-    protected $statement;
-
-    /**
      * MainStatementQueriesFilter constructor.
      *
      * @param Iterator<string> $iterator
      * @param string $statement The statement to keep queries for.
      */
-    public function __construct(Iterator $iterator, $statement = 'SELECT')
+    public function __construct(Iterator $iterator, protected $statement = 'SELECT')
     {
         parent::__construct($iterator);
-        $this->statement = $statement;
     }
 
     /**
@@ -44,10 +36,10 @@ class MainStatementQueriesFilter extends \FilterIterator
      * @return bool true if the current element is acceptable, otherwise false.
      */
     #[\ReturnTypeWillChange]
-    public function accept()
+    public function accept(): bool
     {
         $query = $this->getInnerIterator()->current();
-        $pattern = isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
+        $pattern = Strings::isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
         /** @noinspection NotOptimalRegularExpressionsInspection */
         if (!preg_match($pattern, $query[0])) {
             return false;

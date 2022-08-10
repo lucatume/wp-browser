@@ -102,7 +102,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      */
     protected $matched_dirs;
 
-    public static function _setUpBeforeClass()
+    public static function _setUpBeforeClass(): void
     {
         static::setupForSeparateProcessBeforeClass();
 
@@ -145,7 +145,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *
      * @since 4.1.0
      */
-    public static function commit_transaction()
+    public static function commit_transaction(): void
     {
         global $wpdb;
         $wpdb->query('COMMIT;');
@@ -160,7 +160,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         return $factory;
     }
 
-    public static function _tearDownAfterClass()
+    public static function _tearDownAfterClass(): void
     {
         _delete_all_data();
         self::flush_cache();
@@ -176,7 +176,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         self::commit_transaction();
     }
 
-    public static function flush_cache()
+    public static function flush_cache(): void
     {
         global $wp_object_cache;
         $wp_object_cache->group_ops = array();
@@ -210,7 +210,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         wp_cache_add_non_persistent_groups(array('comment', 'counts', 'plugins'));
     }
 
-    public static function forceTicket($ticket)
+    public static function forceTicket($ticket): void
     {
         self::$forced_tickets[] = $ticket;
     }
@@ -229,7 +229,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return 'factory' === $name;
     }
@@ -241,7 +241,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function _setUp()
+    public function _setUp(): void
     {
         $this->requestTimeSetUp();
 
@@ -357,7 +357,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function clean_up_global_scope()
+    public function clean_up_global_scope(): void
     {
         $_GET = array();
         $_POST = array();
@@ -424,7 +424,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *
      * @param string      $structure Optional. Permalink structure to set. Default empty.
      */
-    public function set_permalink_structure($structure = '')
+    public function set_permalink_structure($structure = ''): void
     {
         global $wp_rewrite;
 
@@ -433,7 +433,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         $wp_rewrite->flush_rules();
     }
 
-    public function start_transaction()
+    public function start_transaction(): void
     {
         global $wpdb;
         $wpdb->query('SET autocommit = 0;');
@@ -442,10 +442,10 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         add_filter('query', array($this, '_drop_temporary_tables'));
     }
 
-    public function expectDeprecated()
+    public function expectDeprecated(): void
     {
         $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($this),
+            $this::class,
             $this->name
         );
 
@@ -476,7 +476,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * After a test method runs, reset any state in WordPress the test method might have changed.
      */
-    public function _tearDown()
+    public function _tearDown(): void
     {
         global $wpdb, $wp_query, $wp;
 
@@ -558,7 +558,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
 
     public function _create_temporary_tables($query)
     {
-        if ('CREATE TABLE' === substr(trim($query), 0, 12)) {
+        if (str_starts_with(trim($query), 'CREATE TABLE')) {
             return substr_replace(trim($query), 'CREATE TEMPORARY TABLE', 0, 12);
         }
         return $query;
@@ -566,7 +566,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
 
     public function _drop_temporary_tables($query)
     {
-        if ('DROP TABLE' === substr(trim($query), 0, 10)) {
+        if (str_starts_with(trim($query), 'DROP TABLE')) {
             return substr_replace(trim($query), 'DROP TEMPORARY TABLE', 0, 10);
         }
         return $query;
@@ -596,7 +596,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      * @param string $deprecated Name of the function, method, class, or argument that is deprecated. Must match
      *                           first parameter of the `_deprecated_function()` or `_deprecated_argument()` call.
      */
-    public function setExpectedDeprecated($deprecated)
+    public function setExpectedDeprecated($deprecated): void
     {
         array_push($this->expected_deprecated, $deprecated);
     }
@@ -606,31 +606,31 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *
      * @param string $doing_it_wrong `_doing_it_wrong()` call from the test.
      */
-    public function setExpectedIncorrectUsage($doing_it_wrong)
+    public function setExpectedIncorrectUsage($doing_it_wrong): void
     {
         array_push($this->expected_doing_it_wrong, $doing_it_wrong);
     }
 
-    public function deprecated_function_run($function)
+    public function deprecated_function_run($function): void
     {
         if (!in_array($function, $this->caught_deprecated)) {
             $this->caught_deprecated[] = $function;
         }
     }
 
-    public function doing_it_wrong_run($function)
+    public function doing_it_wrong_run($function): void
     {
         if (!in_array($function, $this->caught_doing_it_wrong)) {
             $this->caught_doing_it_wrong[] = $function;
         }
     }
 
-    public function assertWPError($actual, $message = '')
+    public function assertWPError($actual, $message = ''): void
     {
         $this->assertInstanceOf('WP_Error', $actual, $message);
     }
 
-    public function assertNotWPError($actual, $message = '')
+    public function assertNotWPError($actual, $message = ''): void
     {
         if (is_wp_error($actual) && '' === $message) {
             $message = $actual->get_error_message();
@@ -638,7 +638,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         $this->assertNotInstanceOf('WP_Error', $actual, $message);
     }
 
-    public function assertEqualFields($object, $fields)
+    public function assertEqualFields($object, $fields): void
     {
         foreach ($fields as $field_name => $field_value) {
             if ($object->$field_name != $field_value) {
@@ -647,19 +647,19 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function assertDiscardWhitespace($expected, $actual)
+    public function assertDiscardWhitespace($expected, $actual): void
     {
         $this->assertEquals(preg_replace('/\s*/', '', $expected), preg_replace('/\s*/', '', $actual));
     }
 
-    public function assertEqualSets($expected, $actual)
+    public function assertEqualSets($expected, $actual): void
     {
         sort($expected);
         sort($actual);
         $this->assertEquals($expected, $actual);
     }
 
-    public function assertEqualSetsWithIndex($expected, $actual)
+    public function assertEqualSetsWithIndex($expected, $actual): void
     {
         ksort($expected);
         ksort($actual);
@@ -671,7 +671,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *
      * @param array $array
      */
-    public function assertNonEmptyMultidimensionalArray($array)
+    public function assertNonEmptyMultidimensionalArray($array): void
     {
         $this->assertTrue(is_array($array));
         $this->assertNotEmpty($array);
@@ -687,7 +687,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *
      * @param string $url The URL for the request.
      */
-    public function go_to($url)
+    public function go_to($url): void
     {
         // note: the WP and WP_Query classes like to silently fetch parameters
         // from all over the place (globals, GET, etc), which makes it tricky
@@ -716,7 +716,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         $parts = parse_url($url) ?: [];
 
         if (isset($parts['scheme'])) {
-            $req = isset($parts['path']) ? $parts['path'] : '';
+            $req = $parts['path'] ?? '';
             if (isset($parts['query'])) {
                 $req .= '?' . $parts['query'];
                 // parse the url query vars into $_GET
@@ -752,7 +752,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * Returns the name of a temporary file
      */
-    public function temp_filename()
+    public function temp_filename(): string|bool
     {
         $tmp_dir = '';
         $dirs = array('TMP', 'TMPDIR', 'TEMP');
@@ -783,7 +783,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
      *                                  request.
      * @param array<int, mixed> $props An array of additional properties to check.
      */
-    public function assertQueryTrue($prop, ...$props)
+    public function assertQueryTrue($prop, ...$props): void
     {
         global $wp_query;
         $all = array(
@@ -850,14 +850,14 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         $this->assertTrue($passed, $message);
     }
 
-    public function remove_added_uploads()
+    public function remove_added_uploads(): void
     {
         // Remove all uploads.
         $uploads = wp_upload_dir();
         $this->rmdir($uploads['basedir']);
     }
 
-    public function rmdir($path)
+    public function rmdir($path): void
     {
         $files = $this->files_in_dir($path);
         foreach ($files as $file) {
@@ -867,7 +867,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function unlink($file)
+    public function unlink($file): void
     {
         $exists = is_file($file);
         if ($exists && !in_array($file, self::$ignore_files)) {
@@ -878,7 +878,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
     }
 
-    public function delete_folders($path)
+    public function delete_folders($path): void
     {
         $this->matched_dirs = array();
         if (!is_dir($path)) {
@@ -892,7 +892,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         rmdir($path);
     }
 
-    public function scandir($dir)
+    public function scandir($dir): void
     {
         $scandir = scandir($dir, SCANDIR_SORT_NONE);
 
@@ -902,7 +902,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         }
 
         foreach ($scandir as $path) {
-            if (0 !== strpos($path, '.') && is_dir($dir . '/' . $path)) {
+            if (!str_starts_with($path, '.') && is_dir($dir . '/' . $path)) {
                 $this->matched_dirs[] = $dir . '/' . $path;
                 $this->scandir($dir . '/' . $path);
             }
@@ -954,7 +954,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
         $this->expectedDeprecated();
     }
 
-    public function expectedDeprecated()
+    public function expectedDeprecated(): void
     {
         $errors = array();
 
@@ -986,7 +986,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * Skips the current test if there is an open WordPress ticket with id $ticket_id
      */
-    public function knownWPBug($ticket_id)
+    public function knownWPBug($ticket_id): void
     {
         if ((defined('WP_TESTS_FORCE_KNOWN_BUGS') && WP_TESTS_FORCE_KNOWN_BUGS)
         || in_array($ticket_id, self::$forced_tickets, true)) {
@@ -1000,7 +1000,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * Skips the current test if there is an open unit tests ticket with id $ticket_id
      */
-    public function knownUTBug($ticket_id)
+    public function knownUTBug($ticket_id): void
     {
         if ((defined('WP_TESTS_FORCE_KNOWN_BUGS')||WP_TESTS_FORCE_KNOWN_BUGS)
         || in_array('UT' . $ticket_id, self::$forced_tickets, true)) {
@@ -1014,7 +1014,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * Skips the current test if there is an open plugin ticket with id $ticket_id
      */
-    public function knownPluginBug($ticket_id)
+    public function knownPluginBug($ticket_id): void
     {
         if ((defined('WP_TESTS_FORCE_KNOWN_BUGS') && WP_TESTS_FORCE_KNOWN_BUGS)
             || in_array('Plugin' . $ticket_id, self::$forced_tickets, true)) {
@@ -1028,7 +1028,7 @@ class WPTestCase extends \lucatume\WPBrowser\Compat\Codeception\Unit
     /**
      * Helper to Convert a microtime string into a float
      */
-    protected function _microtime_to_float($microtime)
+    protected function _microtime_to_float($microtime): int|float
     {
         $time_array = explode(' ', $microtime);
         return array_sum($time_array);

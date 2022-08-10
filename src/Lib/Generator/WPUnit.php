@@ -28,15 +28,7 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
      */
     protected $settings;
 
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $baseClass;
+    protected string $name;
 
     /**
      * @var string
@@ -76,10 +68,8 @@ EOF;
 
     /**
      * The injectable compatibility layer.
-     *
-     * @var Compatibility
      */
-    protected $compatibilityLayer;
+    protected \lucatume\WPBrowser\Compat\Compatibility $compatibilityLayer;
 
     /**
      * WPUnit constructor.
@@ -88,12 +78,11 @@ EOF;
      * @param string $name The template name.
      * @param string $baseClass The base class.
      */
-    public function __construct($settings, $name, $baseClass)
+    public function __construct(array $settings, $name, protected $baseClass)
     {
         parent::__construct($settings);
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
-        $this->baseClass = $baseClass;
         $this->compatibilityLayer = new Compatibility();
     }
 
@@ -126,7 +115,7 @@ EOF;
      *
      * @return string The current tester name.
      */
-    protected function getTester()
+    protected function getTester(): string
     {
         if (is_array($this->settings) && isset($this->settings['actor'])) {
             $actor = $this->settings['actor'];
@@ -137,7 +126,7 @@ EOF;
             $propertyName = isset($config['actor_suffix']) ?
                 lcfirst($config['actor_suffix'])
                 : '';
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $propertyName = '';
         }
 
@@ -160,10 +149,8 @@ EOF;
      * Injects the compatibility layer object.
      *
      * @param Compatibility $compatibility An instance of the compatibility layer.
-     *
-     * @return void
      */
-    public function setCompatibilityLayer(Compatibility $compatibility)
+    public function setCompatibilityLayer(Compatibility $compatibility): void
     {
         $this->compatibilityLayer = $compatibility;
     }

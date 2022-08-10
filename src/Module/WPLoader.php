@@ -328,7 +328,6 @@ class WPLoader extends Module
     /**
      * Initializes the module making some initial checks and setting up the paths.
      *
-     * @return void
      *
      * @throws ModuleConfigException If the WordPress root directory specified in the configuration is not valid.
      * @throws ModuleConflictException If a *Db module is loaded alongside this one and the settings of each are not
@@ -418,7 +417,6 @@ class WPLoader extends Module
      * Checks the *Db modules loaded in the suite to ensure their configuration is compatible with this module current
      * one.
      *
-     * @return void
      *
      * @throws ModuleConflictException If the configuration of one *Db module is not compatible with this module
      *                                 configuration.
@@ -533,7 +531,6 @@ class WPLoader extends Module
      *
      * @param string|null $folder The directory to load configuration files from.
      *
-     * @return void
      *
      * @throws ModuleConfigException If the specified configuration file cannot be found.
      */
@@ -606,8 +603,6 @@ class WPLoader extends Module
 
     /**
      * Bootstraps the WordPress installation using the same steps taken by the Core PHPUnit test suite.
-     *
-     * @return void
      */
     protected function bootstrapWP(): void
     {
@@ -622,8 +617,6 @@ class WPLoader extends Module
 
     /**
      * Sets up the required `$_SERVER` variables to ensure the WordPress installation will work correctly.
-     *
-     * @return void
      */
     protected function ensureServerVars(): void
     {
@@ -642,8 +635,6 @@ class WPLoader extends Module
     /**
      * Sets up the `current_site` global handling multisite and single site
      * installation cases.
-     *
-     * @return void
      */
     protected function setupCurrentSite(): void
     {
@@ -676,8 +667,6 @@ class WPLoader extends Module
 
     /**
      * Installs and bootstraps the WordPress installation.
-     *
-     * @return void
      */
     protected function installAndBootstrapInstallation(): void
     {
@@ -707,8 +696,6 @@ class WPLoader extends Module
 
     /**
      * Sets the currently active plugins.
-     *
-     * @return void
      */
     protected function setActivePlugins(): void
     {
@@ -816,7 +803,6 @@ class WPLoader extends Module
     /**
      * Loads the plugins required by the test.
      *
-     * @return void
      *
      * @throws ModuleConfigException If there's an issue with the configuration.
      */
@@ -960,8 +946,6 @@ class WPLoader extends Module
 
     /**
      * Sets up the load watchers.
-     *
-     * @return void
      */
     protected function setupLoadWatchers(): void
     {
@@ -972,8 +956,6 @@ class WPLoader extends Module
 
     /**
      * Removes the set load watchers.
-     *
-     * @return void
      */
     protected function removeLoadWatchers(): void
     {
@@ -984,8 +966,6 @@ class WPLoader extends Module
 
     /**
      * Instantiates and sets up the factory store that will be available on the suite tester.
-     *
-     * @return void
      */
     protected function setupFactoryStore(): void
     {
@@ -1029,8 +1009,6 @@ class WPLoader extends Module
      * Defines the constants required to set up the WordPress installation.
      *
      * @param array<string,int|string> $constants The map of the constants to define.
-     *
-     * @return void
      */
     protected function defineConstants(array $constants = []): void
     {

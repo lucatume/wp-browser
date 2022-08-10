@@ -77,7 +77,7 @@ class Filters
      *
      * @param array<array<mixed>> $filters The list of filters to format.
      *
-     * @return array<array<mixed>> The formatted list of filters.
+     * @return array{remove: mixed[][], add: mixed[][]} The formatted list of filters.
      */
     public static function format(array $filters)
     {

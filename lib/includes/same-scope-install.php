@@ -8,7 +8,7 @@ error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
 $multisite = defined( 'WP_TESTS_MULTISITE' ) && WP_TESTS_MULTISITE;
 
 define( 'WP_INSTALLING', true );
-require_once dirname( __FILE__ ) . '/functions.php';
+require_once dirname(__FILE__) . '/functions.php';
 
 tests_reset__SERVER();
 
@@ -21,7 +21,7 @@ require_once ABSPATH . '/wp-includes/wp-db.php';
 
 // Override the PHPMailer
 global $phpmailer;
-require_once( dirname( __FILE__ ) . '/mock-mailer.php' );
+require_once(dirname(__FILE__) . '/mock-mailer.php');
 $phpmailer = new MockPHPMailer();
 
 /*

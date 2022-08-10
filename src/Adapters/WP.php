@@ -30,7 +30,7 @@ class WP
      *
      * @return string The template filename if one is located.
      */
-    public function locate_template($templateNames, $load = false, $require_once = true)
+    public function locate_template(string|array $templateNames, $load = false, $require_once = true)
     {
         return locate_template($templateNames, $load, $require_once);
     }
@@ -84,10 +84,8 @@ class WP
      *
      * @param bool $hard Whether to update .htaccess (hard flush) or just update
      *                   rewrite_rules option (soft flush). Default is true (hard).
-     *
-     * @return void
      */
-    public function flush_rewrite_rules($hard = true)
+    public function flush_rewrite_rules($hard = true): void
     {
         flush_rewrite_rules($hard);
     }
@@ -136,10 +134,8 @@ class WP
      * Proxy to the `switch_theme` function.
      *
      * @param string $stylesheet The theme to switch to.
-     *
-     * @return void
      */
-    public function switch_theme($stylesheet)
+    public function switch_theme($stylesheet): void
     {
         switch_theme($stylesheet);
     }
@@ -149,10 +145,8 @@ class WP
      *
      * @param string $tag The action to fire.
      * @param mixed  ...$context The action context.
-     *
-     * @return void
      */
-    public function do_action($tag, ...$context)
+    public function do_action($tag, ...$context): void
     {
         do_action($tag, ...$context);
     }

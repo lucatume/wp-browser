@@ -9,7 +9,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
 
     protected $server;
 
-    public function _setUp()
+    public function _setUp(): void
     {
         parent::_setUp();
         add_filter('rest_url', array($this, 'filter_rest_url_for_leading_slash'), 10, 2);
@@ -19,7 +19,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
         do_action('rest_api_init', $wp_rest_server);
     }
 
-    public function _tearDown()
+    public function _tearDown(): void
     {
         parent::_tearDown();
         /** @var callable $function_to_remove */
@@ -55,7 +55,7 @@ abstract class WPRestControllerTestCase extends WPRestApiTestCase
         }
 
         // Make sure path for rest_url has a leading slash for proper resolution.
-        $this->assertTrue(0 === strpos($path, '/'), 'REST API URL should have a leading slash.');
+        $this->assertTrue(str_starts_with($path, '/'), 'REST API URL should have a leading slash.');
 
         return $url;
     }

@@ -24,7 +24,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseTypeCannotBeSet($type, array $supportedTypes)
+    public static function becauseTypeCannotBeSet($type, array $supportedTypes): self
     {
         return new self(sprintf(
             'Cannot set this type of value [%s]; supported types are [%s])',
@@ -38,7 +38,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseConfiguratorClassCannotBeFound()
+    public static function becauseConfiguratorClassCannotBeFound(): self
     {
         return new self('Could not find the path to embedded WPCLI Configurator class');
     }
@@ -50,7 +50,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseACommandFailed(Process $commandProcess)
+    public static function becauseACommandFailed(Process $commandProcess): self
     {
         return new self(sprintf(
             "Command failed with status %s.\nOutput: %s\nError: %s",
@@ -65,7 +65,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseCommandRequiresSetUp()
+    public static function becauseCommandRequiresSetUp(): self
     {
         return new self(
             'This command requires wp-cli to be set up for a specific directory:'
@@ -78,7 +78,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseServerCommandClassWasNotFound()
+    public static function becauseServerCommandClassWasNotFound(): self
     {
         return new self(
             'The `\Server_Command` class could not be loaded or does not exist:'
@@ -94,7 +94,7 @@ class WpCliException extends \Exception
      *
      * @return WpCliException The built exception.
      */
-    public static function becauseRouterFileWasNotFound($routerFile)
+    public static function becauseRouterFileWasNotFound($routerFile): self
     {
         return new self(
             "wp-cli server router file was not found [$routerFile]: did you add the `wp-cli/server-command`" .

@@ -16,6 +16,7 @@ use JsonException;
 use lucatume\WPBrowser\Exceptions\DumpException;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Traits\WithEvents;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;
 use PDO;
@@ -32,11 +33,10 @@ use function lucatume\WPBrowser\db;
 use function lucatume\WPBrowser\dbDsnString;
 use function lucatume\WPBrowser\dbDsnToMap;
 use function lucatume\WPBrowser\renderString;
-use function lucatume\WPBrowser\requireCodeceptionModules;
 use function lucatume\WPBrowser\slug;
 
 //phpcs:disable
-requireCodeceptionModules('WPDb', [ 'Db' ]);
+Codeception::checkModuleRequirements('WPDb', [ 'Db' ]);
 //phpcs:enable
 
 /**
@@ -216,7 +216,6 @@ class WPDb extends Db
      *
      * @param Tables|null $table An instance of the tables management object.
      *
-     * @return void
      *
      * @throws ModuleException It the database cannot be correctly initialized.
      */
@@ -258,7 +257,6 @@ class WPDb extends Db
      *
      * @param string|null $dumpFile The dump file that should be imported in place of the default one.
      *
-     * @return void
      *
      * @throws ModuleConfigException|ModuleException If there's an issue during the cleanup phase.
      */
@@ -287,7 +285,6 @@ class WPDb extends Db
      * @param string|null $databaseKey The key of the database to clean up.
      * @param array<string,mixed>|null $databaseConfig The configuration of the database to clean up.
      *
-     * @return void
      *
      * @throws ModuleException|ModuleConfigException If there's a configuration or operation issue.
      */
@@ -314,7 +311,6 @@ class WPDb extends Db
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
      * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
-     * @return void
      *
      * @throws JsonException If there's an issue debugging the failure.
      */
@@ -467,7 +463,6 @@ class WPDb extends Db
      * @param string|null $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
      *                                         to build a `taxonomy_term_id` from the `term_id`.
      *
-     * @return void
      *
      * @throws ModuleException|JsonException If a `term_id` is specified, but it cannot be matched to the `taxonomy`.
      */
@@ -1254,8 +1249,6 @@ class WPDb extends Db
      * ```
      *
      * @param  array<string,mixed> $criteria An array of search criteria.
-     *
-     * @return void
      */
     public function dontHaveLinkInDatabase(array $criteria): void
     {
@@ -1274,8 +1267,6 @@ class WPDb extends Db
      * @param array<string,mixed> $criteria An associative array of the column names and values to use as deletion
      *                                      criteria.
      * @param string $table The table name.
-     *
-     * @return void
      */
     public function dontHaveInDatabase(string $table, array $criteria): void
     {
@@ -1545,8 +1536,6 @@ class WPDb extends Db
      * ```
      *
      * @param int $blogId The ID of the blog to use.
-     *
-     * @return void
      */
     public function useBlog(int $blogId = 0): void
     {
@@ -1730,7 +1719,6 @@ class WPDb extends Db
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
      * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
-     * @return void
      *
      * @throws JsonException If there's any issue debugging the failure.
      */
@@ -1756,7 +1744,6 @@ class WPDb extends Db
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
      * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
-     * @return void
      *
      * @throws JsonException If there's any issue debugging the failure.
      */
@@ -2992,7 +2979,6 @@ class WPDb extends Db
      * @param string $domainOrPath Either the path or the sub-domain of the blog to create.
      * @param bool $isSubdomain Whether to create a sub-folder or a sub-domain blog.
      *
-     * @return void
      *
      * @throws JsonException If there's any issue debugging the query.
      */
@@ -3143,7 +3129,6 @@ class WPDb extends Db
      *
      * @param string $fullTableName The full table name, including the table prefix.
      *
-     * @return void
      *
      * @throws Exception If there is an error while dropping the table.
      */
@@ -3607,7 +3592,6 @@ class WPDb extends Db
      *
      * @param array<int>|int $attachmentIds An attachment post ID or an array of attachment post IDs.
      *
-     * @return void
      *
      * @throws ModuleRequireException If the `WPFilesystem` module is not loaded in the suite.
      */
@@ -3804,8 +3788,6 @@ class WPDb extends Db
      *
      * @param int|string $userIdOrLogin The user ID or login name.
      * @param bool $purgeMeta Whether the user meta should be purged alongside the user or not.
-     *
-     * @return void
      */
     public function dontHaveUserInDatabase(int|string $userIdOrLogin, bool $purgeMeta = true): void
     {
@@ -4040,8 +4022,6 @@ class WPDb extends Db
      * Will look up the "terms" table, will throw if not found.
      *
      * @param int $term_id The term ID.
-     *
-     * @return void
      */
     protected function maybeCheckTermExistsInDatabase(int $term_id): void
     {
@@ -4059,7 +4039,6 @@ class WPDb extends Db
      *
      * @param string $databaseKey The key of the database to load the dump for.
      *
-     * @return void
      *
      * @throws ModuleException If there's a configuration or operation issue.
      */
@@ -4077,8 +4056,6 @@ class WPDb extends Db
      *
      * @param string|null $databaseKey The key of the database to load.
      * @param array<string,mixed>|null $databaseConfig The configuration for the database to load.
-     *
-     * @return void
      */
     public function _loadDump(string $databaseKey = null, array $databaseConfig = null): void
     {
@@ -4109,7 +4086,6 @@ class WPDb extends Db
      * @param string|null $taxonomy          The taxonomy the `term_id` is for; if passed this parameter will be used
      *                                         to build a `taxonomy_term_id` from the `term_id`.
      *
-     * @return void
      *
      * @throws ModuleException|JsonException If a `term_id` is specified but it cannot be matched to the `taxonomy`.
      */
@@ -4146,8 +4122,6 @@ class WPDb extends Db
      * Overrides the base module implementation to fire a ModuleEvent.
      *
      * @param array<string,mixed> $settings The suite settings.
-     *
-     * @return void
      */
     public function _beforeSuite($settings = []): void
     {
@@ -4166,7 +4140,6 @@ class WPDb extends Db
      *
      * @param array<string,mixed> $config The current module configuration.
      *
-     * @return void
      *
      * @throws ModuleException If there's any issue processing or reading the database DSN information.
      */
@@ -4214,8 +4187,6 @@ class WPDb extends Db
 
     /**
      * Prepares the WordPress database with some test-quality-of-life-improvements.
-     *
-     * @return void
      */
     protected function prepareDb(): void
     {
@@ -4332,7 +4303,6 @@ class WPDb extends Db
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
      * @param mixed|null $value The optional value to try and match, only used if the option name is provided.
      *
-     * @return void
      *
      * @throws JsonException If there's any issue debugging the query.
      */
@@ -4352,7 +4322,7 @@ class WPDb extends Db
      *
      * @param string|array<string,mixed> $criteriaOrName Either the ready to use array criteria or the site option name.
      * @param mixed|null $value The site option value, only used if the first parameter is not an array.
-     * @return array<string,mixed> An array of criteria to search for the site option.
+     * @return array{option_name: string, option_value?: mixed} An array of criteria to search for the site option.
      */
     protected function buildSiteOptionCriteria(string|array $criteriaOrName, mixed $value = null): array
     {

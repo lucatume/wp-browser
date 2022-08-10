@@ -45,7 +45,7 @@ class Symlinker extends Extension
      * @param array<string,mixed> $config The configuration contents.
      * @param array<string,mixed> $options An array of options..
      */
-    public function __construct($config, $options)
+    public function __construct(array $config, array $options)
     {
         parent::__construct($config, $options);
     }
@@ -56,8 +56,6 @@ class Symlinker extends Extension
      * @param SuiteEvent $event The event the method is running on.
      *
      * @throws ExtensionException If there are issues with the source or destination folders.
-     *
-     * @return void
      */
     public function symlink(SuiteEvent $event): void
     {
@@ -161,8 +159,6 @@ class Symlinker extends Extension
      * Initializes the extension, checking its settings.
      *
      * @throws ExtensionException If the settings are not valid.
-     *
-     * @return void
      */
     public function _initialize(): void
     {
@@ -173,7 +169,6 @@ class Symlinker extends Extension
     /**
      * Checks that the extension broader requirements are met.
      *
-     * @return void
      *
      * @throws ExtensionException If one or more requirements are not satisfied.
      */
@@ -207,7 +202,6 @@ class Symlinker extends Extension
      *
      * @param string $destination The path to the destination folder.
      *
-     * @return void
      *@throws ExtensionException If the destination folder does not exist or is not writable.
      *
      */
@@ -226,7 +220,6 @@ class Symlinker extends Extension
      *
      * @param string $rootFolder The path to the root folder.
      *
-     * @return void
      *@throws ExtensionException If the root folder does not exist or is not readable.
      *
      */

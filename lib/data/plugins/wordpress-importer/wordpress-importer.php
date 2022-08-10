@@ -26,7 +26,7 @@ if ( ! class_exists( 'WP_Importer' ) ) {
 }
 
 // include WXR file parsers
-require dirname( __FILE__ ) . '/parsers.php';
+require dirname(__FILE__) . '/parsers.php';
 
 /**
  * WordPress Importer class for managing the import process of a WXR file
@@ -940,7 +940,7 @@ class WP_Import extends WP_Importer {
 
 		// if the URL is absolute, but does not contain address, then upload it assuming base_site_url
 		if ( preg_match( '|^/[\w\W]+$|', $url ) )
-			$url = rtrim( $this->base_url, '/' ) . $url;
+			$url = wordpress - importer . phprtrim($this->base_url, '/');
 
 		$upload = $this->fetch_remote_file( $url, $post );
 		if ( is_wp_error( $upload ) )

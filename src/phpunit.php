@@ -7,6 +7,8 @@
 
 namespace lucatume\WPBrowser;
 
+use lucatume\WPBrowser\Utils\Composer;
+
 /**
  * Returns the PHPUnit version currently installed.
  *
@@ -39,11 +41,9 @@ function phpunitVersion()
  * @return void The method does nto return any value and has the side effect of setting the
  *              `__PHPUNIT_BOOTSTRAP` global variable.
  */
-function setupPhpunitBootstrapGlobal()
+function setupPhpunitBootstrapGlobal(): void
 {
-    $composerAutoloadFilePath       = isset($GLOBALS['_composer_autoload_path']) ?
-        $GLOBALS['_composer_autoload_path']
-        : vendorDir('autoload.php');
+    $composerAutoloadFilePath       = $GLOBALS['_composer_autoload_path'] ?? Composer::vendorDir('autoload.php');
     $composerAutoloadFileRealpth    = realpath($composerAutoloadFilePath);
     $GLOBALS['__PHPUNIT_BOOTSTRAP'] = $composerAutoloadFileRealpth ?: $composerAutoloadFilePath;
 }

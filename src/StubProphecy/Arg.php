@@ -7,9 +7,7 @@
 
 namespace lucatume\WPBrowser\StubProphecy;
 
-use function lucatume\WPBrowser\isRegex;
-use function lucatume\WPBrowser\StubProphecy\gettype;
-use function lucatume\WPBrowser\StubProphecy\str_contains;
+use lucatume\WPBrowser\Utils\Strings;
 
 /**
  * Class Arg
@@ -61,10 +59,10 @@ class Arg implements ArgInterface
      *
      * @return Arg The build argument expectation.
      */
-    public static function any()
+    public static function any(): self
     {
         return new self(
-            static function () {
+            static function (): bool {
                 return true;
             },
             static function ($input) {
@@ -88,7 +86,7 @@ class Arg implements ArgInterface
     public static function that(callable $callback)
     {
         $argExpectation = new self($callback);
-        $argExpectation->setOnFail(static function () use ($argExpectation) {
+        $argExpectation->setOnFail(static function () use ($argExpectation): string {
             return $argExpectation->checkException instanceof \Exception ?
                 $argExpectation->checkException->getMessage()
                 : 'Argument was not as expected';
@@ -104,11 +102,11 @@ class Arg implements ArgInterface
      *
      * @return Arg The built argument expectation.
      */
-    public static function containingString($string)
+    public static function containingString($string): self
     {
         return new self(
             function ($input) use ($string) {
-                if (isRegex($string)) {
+                if (Strings::isRegex($string)) {
                     return (bool) preg_match($string, $input);
                 }
 
@@ -147,7 +145,7 @@ class Arg implements ArgInterface
      *
      * @throws \RuntimeException If the onFail handler is not set.
      */
-    public function getFailureMessage()
+    public function getFailureMessage(): mixed
     {
         if (!is_callable($this->onFail)) {
             throw new \RuntimeException('onFail handler not set');
@@ -166,11 +164,11 @@ class Arg implements ArgInterface
      *
      * @throws \RuntimeException If the type results in a missing `is_<type>` function.
      */
-    public static function type($type)
+    public static function type($type): self
     {
         if (in_array($type, [ 'string', 'array', 'bool', 'int', 'float', 'resource' ])) {
             return new self(
-                static function ($input) use ($type) {
+                static function ($input) use ($type): mixed {
                     $function = "is_{$type}";
 
                     if (!is_callable($function)) {
@@ -186,7 +184,7 @@ class Arg implements ArgInterface
         }
 
         return new self(
-            static function ($input) use ($type) {
+            static function ($input) use ($type): bool {
                 if (trait_exists($type)) {
                     return in_array($type, class_uses($type));
                 }
@@ -197,7 +195,7 @@ class Arg implements ArgInterface
                 return is_a($input, $type);
             },
             static function ($input) use ($type) {
-                $inputType = is_string($input) ? $input : get_class($input);
+                $inputType = is_string($input) ? $input : $input::class;
                 return "Expected object of type '{$type}', got '{$inputType}' instead.";
             }
         );
@@ -210,7 +208,7 @@ class Arg implements ArgInterface
      *
      * @return CeteraArg An argument that will match the rest of the method paremeters.
      */
-    public static function cetera()
+    public static function cetera(): \lucatume\WPBrowser\StubProphecy\CeteraArg
     {
         return new CeteraArg();
     }
@@ -218,7 +216,7 @@ class Arg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function stopVerification()
+    public function stopVerification(): bool
     {
         return false;
     }
@@ -226,7 +224,7 @@ class Arg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function appliesToFollowing()
+    public function appliesToFollowing(): bool
     {
         return false;
     }
@@ -235,10 +233,8 @@ class Arg implements ArgInterface
      * Sets the argument expectation failure message callback.
      *
      * @param callable $onFail The failure message callback.
-     *
-     * @return void
      */
-    public function setOnFail(callable $onFail)
+    public function setOnFail(callable $onFail): void
     {
         $this->onFail = $onFail;
     }

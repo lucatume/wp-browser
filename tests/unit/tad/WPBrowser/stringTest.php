@@ -147,45 +147,6 @@ class stringTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function isRegexDataProvider()
-    {
-        return [
-            'empty' => [ '', false ],
-            'simple_string' => [ 'foo-bar', false ],
-            'simple_regex' => [ '/foo-bar/', true ],
-            'complex_regex' => [ '#^\\s{4}\\[\\d]#im', true ],
-        ];
-    }
-
-    /**
-     * Test isRegex
-     *
-     * @dataProvider isRegexDataProvider
-     */
-    public function test_is_regex($candidate, $expected)
-    {
-        $this->assertEquals($expected, isRegex($candidate));
-    }
-
-    public function andListDataProvider()
-    {
-        return [
-        'empty' => [[],''],
-        'one_el' => [['foo'],'foo'],
-        'two_els' => [['foo','bar'],'foo and bar'],
-        'three_els' => [['foo','bar','baz'],'foo, bar and baz'],
-        'four_els' => [['foo','bar','baz','woot'],'foo, bar, baz and woot'],
-        ];
-    }
-    /**
-     * Test andList
-     * @dataProvider andListDataProvider
-     */
-    public function test_and_list($input, $expected)
-    {
-        $this->assertEquals($expected, andList($input));
-    }
-
     public function urlDomainDataSet()
     {
         return [

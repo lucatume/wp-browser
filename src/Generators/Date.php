@@ -30,7 +30,7 @@ class Date
      * @return string|false The current time in WordPress specific format like "2014-06-16 08:27:21" or
      *                      `false` on failure.
      */
-    public static function now()
+    public static function now(): string|false
     {
         return date(self::DATE_FORMAT, self::_time());
     }
@@ -52,7 +52,7 @@ class Date
      *
      * @return string The "0000-00-00 00:00:00" string.
      */
-    public static function zero()
+    public static function zero(): string
     {
         return '0000-00-00 00:00:00';
     }
@@ -62,7 +62,7 @@ class Date
      *
      * @return false|string The formatted date or `false` on failure.
      */
-    public static function gmtNow()
+    public static function gmtNow(): false|string
     {
         return gmdate(self::DATE_FORMAT, self::_time());
     }
@@ -71,10 +71,8 @@ class Date
      * Injects the value of the "now" time for testing purposes.
      *
      * @param int $now The mock "now" timestamp.
-     *
-     * @return void
      */
-    public static function _injectNow($now)
+    public static function _injectNow($now): void
     {
         self::$time = $now;
     }
@@ -88,7 +86,7 @@ class Date
      *
      * @return string A date in WordPress database format, 'Y-m-d H:i:s'
      */
-    public static function fromString($strtotime)
+    public static function fromString($strtotime): string
     {
         $timestamp = strtotime($strtotime);
 

@@ -65,13 +65,11 @@ class Events extends Extension
     /**
      * Fires on each events dispatched by Codeception to capture the current Symfony event dispatcher instance.
      */
-    public function onEvent(): void
+    public function onEvent(...$callArgs): void
     {
         if (static::$dispatcherSet || static::$doNotCapture) {
             return;
         }
-
-        $callArgs = func_get_args();
         $event = $callArgs[0];
         $suites = isset($this->config['suites']) ? (array)$this->config['suites'] : false;
         $suite = $event->getSuite();

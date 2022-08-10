@@ -29,11 +29,11 @@ abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
      * @return bool true if the current element is acceptable, otherwise false.
      */
     #[\ReturnTypeWillChange]
-    public function accept()
+    public function accept(): bool
     {
         $query = $this->getInnerIterator()->current();
         foreach ($this->needles as $needle) {
-            if (strpos($query[2], $needle) !== false) {
+            if (str_contains($query[2], $needle)) {
                 return false;
             }
         }

@@ -14,7 +14,7 @@ trait WPBrowserMethods
      *
      * @var string|null
      */
-    protected ?string $pluginsPath;
+    protected ?string $pluginsPath = null;
 
     /**
      * The admin UI path, relative to the WordPress installation root URL.
@@ -162,7 +162,6 @@ trait WPBrowserMethods
      * $I->activatePlugin('hello-dolly');
      * ```
      *
-     * @return void
      *
      * @throws ModuleException If the class `pluginsPath` property is not set when the method is called.
      */
@@ -382,8 +381,6 @@ trait WPBrowserMethods
      * ```
      *
      * @param string $page The path, relative to the admin area URL, to the page.
-     *
-     * @return void
      */
     public function amOnAdminPage(string $page): void
     {
@@ -401,8 +398,6 @@ trait WPBrowserMethods
      * ```
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
-     *
-     * @return void
      */
     public function amOnAdminAjaxPage(string|array $queryVars = null): void
     {
@@ -424,8 +419,6 @@ trait WPBrowserMethods
      * ```
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
-     *
-     * @return void
      */
     public function amOnCronPage(string|array $queryVars = null) : void
     {

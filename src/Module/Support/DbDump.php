@@ -21,7 +21,7 @@ class DbDump
      *
      * @var string|false|null
      */
-    protected string|null|false $originalUrl;
+    protected string|null|false $originalUrl = null;
 
     /**
      * Replaces the WordPress domains in an array of SQL dump string.
@@ -237,9 +237,6 @@ class DbDump
     {
     }
 
-    /**
-     * @return string
-     */
     public function getTablePrefix(): string
     {
         return $this->tablePrefix;

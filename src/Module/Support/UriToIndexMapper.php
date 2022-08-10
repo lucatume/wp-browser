@@ -62,9 +62,6 @@ class UriToIndexMapper
         return $this->root . $indexFile;
     }
 
-    /**
-     * @return string
-     */
     public function getRoot(): string
     {
         return $this->root;

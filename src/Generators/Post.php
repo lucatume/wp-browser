@@ -25,7 +25,7 @@ class Post
      *
      * @return array<int|string,mixed> The post data.
      */
-    public static function buildPostData($id, $url = 'http://www.example.com', array $data = [])
+    public static function buildPostData($id, $url = 'http://www.example.com', array $data = []): array
     {
         return array_merge(self::getDefaults($id, $url), $data);
     }
@@ -36,9 +36,9 @@ class Post
      * @param int    $id  The post ID to use.
      * @param string $url The site URL.
      *
-     * @return array<string,mixed> A map of the post creation default values.
+     * @return mixed[] A map of the post creation default values.
      */
-    protected static function getDefaults($id, $url)
+    protected static function getDefaults($id, $url): array
     {
         $title    = self::generateTitle($id);
         $defaults = array(
@@ -74,7 +74,7 @@ class Post
      *
      * @return string The generated post title.
      */
-    protected static function generateTitle($id)
+    protected static function generateTitle($id): string
     {
         return sprintf('Post %d title', $id);
     }
@@ -86,7 +86,7 @@ class Post
      *
      * @return string The generated post content.
      */
-    protected static function generateContent($id)
+    protected static function generateContent($id): string
     {
         return sprintf('Post %d content', $id);
     }
@@ -98,7 +98,7 @@ class Post
      *
      * @return string The post excerpt.
      */
-    private static function generateExcerpt($id)
+    private static function generateExcerpt($id): string
     {
         return sprintf('Post %d excerpt', $id);
     }

@@ -37,12 +37,6 @@ use PHPUnit\Framework\TestCase;
 class StubProphecy
 {
     /**
-     * The fully qualified name of the class this stub prophecy was built for.
-     * @var string
-     */
-    protected $class;
-
-    /**
      * A list of all the method prophecies this instance will handle.
      * @var array<MethodProphecy>
      */
@@ -62,21 +56,13 @@ class StubProphecy
     protected $revealed;
 
     /**
-     * The test case instance used by the stub prophecy.
-     * @var TestCase|false
-     */
-    protected $testCase = false;
-
-    /**
      * StubProphecy constructor.
      *
      * @param string $class The fully qualified name of the class to build a stub prophecy for.
      * @param TestCase|false $testCase The test case to attach the stubs to.
      */
-    public function __construct($class, $testCase = false)
+    public function __construct(protected $class, protected $testCase = false)
     {
-        $this->class    = $class;
-        $this->testCase = $testCase;
     }
 
     /**
@@ -139,7 +125,7 @@ class StubProphecy
         }
 
         $params = array_combine(
-            array_map(function (MethodProphecy $methodProphecy) {
+            array_map(function (MethodProphecy $methodProphecy): string {
                 return $methodProphecy->getName();
             }, $this->methodProphecies),
             array_map([ $this, 'buildProphecy' ], $this->methodProphecies)
@@ -165,10 +151,8 @@ class StubProphecy
      * be used as input to a `willReturn` call.
      *
      * @param array<string,callable|mixed> $methodSet A map of methods to their return value or prophecy.
-     *
-     * @return void
      */
-    public function bulkProphesizeMethods(array $methodSet = [])
+    public function bulkProphesizeMethods(array $methodSet = []): void
     {
         foreach ($methodSet as $methodName => $methodProphecy) {
             if (is_callable($methodProphecy)) {
@@ -189,9 +173,7 @@ class StubProphecy
      */
     protected function buildProphecy(MethodProphecy $methodProphecy)
     {
-        return function () use ($methodProphecy) {
-            $actualArgs = func_get_args();
-
+        return function (...$actualArgs) use ($methodProphecy) {
             try {
                 $matchingProphecy = $this->findMatchingMethodProphecy($methodProphecy->getName(), $actualArgs);
             } catch (\Exception $e) {
@@ -262,10 +244,8 @@ class StubProphecy
 
     /**
      * Asserts the stub prophecy post conditions.
-     *
-     * @return void
      */
-    public function _assertPostConditions()
+    public function _assertPostConditions(): void
     {
         if ($this->assertedPostConditions === true) {
             return;
@@ -273,7 +253,7 @@ class StubProphecy
 
         $this->assertedPostConditions = true;
 
-        array_walk($this->methodProphecies, static function (MethodProphecy $methodProphecy) {
+        array_walk($this->methodProphecies, static function (MethodProphecy $methodProphecy): void {
             $methodProphecy->assertPostConditions();
         });
     }
@@ -283,7 +263,7 @@ class StubProphecy
      *
      * @return Promise An invokable that will return the revealed prophecy itself as result of the call.
      */
-    public function itself()
+    public function itself(): \lucatume\WPBrowser\StubProphecy\Promise
     {
         return new Promise([$this,'reveal']);
     }

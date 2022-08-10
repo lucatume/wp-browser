@@ -22,7 +22,7 @@ class Assert
      * @param string $needle   The search string.
      * @param string $haystack The search target.
      */
-    public static function assertStringNotContainsString($needle, $haystack)
+    public static function assertStringNotContainsString($needle, $haystack): void
     {
         if (method_exists(PHPUnitAssert::class, 'assertStringNotContainsString')) {
             PHPUnitAssert::assertStringNotContainsString($needle, $haystack);
@@ -36,7 +36,7 @@ class Assert
      *
      * @param string $file The file to check.
      */
-    public static function assertFileDoesNotExist($file)
+    public static function assertFileDoesNotExist($file): void
     {
         if (method_exists(PHPUnitAssert::class, 'assertFileDoesNotExist')) {
             PHPUnitAssert::assertFileDoesNotExist($file);
@@ -52,7 +52,7 @@ class Assert
      * @param string $string  The string to check.
      * @param string $message The failure message.
      */
-    public static function assertMatchesRegularExpression($pattern, $string, $message = '')
+    public static function assertMatchesRegularExpression($pattern, $string, $message = ''): void
     {
         if (method_exists(PHPUnitAssert::class, 'assertMatchesRegularExpression')) {
             PHPUnitAssert::assertMatchesRegularExpression($pattern, $string, $message);
@@ -68,7 +68,7 @@ class Assert
      * @param string $string  The string to check.
      * @param string $message The failure message.
      */
-    public static function assertDoesNotMatchRegularExpression($pattern, $string, $message = '')
+    public static function assertDoesNotMatchRegularExpression($pattern, $string, $message = ''): void
     {
         if (method_exists(PHPUnitAssert::class, 'assertDoesNotMatchRegularExpression')) {
             PHPUnitAssert::assertDoesNotMatchRegularExpression($pattern, $string, $message);

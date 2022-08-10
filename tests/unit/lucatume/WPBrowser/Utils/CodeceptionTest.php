@@ -1,24 +1,28 @@
-<?php namespace lucatume\WPBrowser;
+<?php
+
+namespace Unit\lucatume\WPBrowser\Utils;
 
 use Codeception\Exception\ConfigurationException;
 use Codeception\Lib\ModuleContainer;
+use Codeception\Test\Unit;
+use lucatume\WPBrowser\Utils\Codeception;
 
-class wpbrowserTest extends \Codeception\Test\Unit
+class CodeceptionTest extends Unit
 {
     /**
      * It should throw if a module requirement is not satisfied
      *
      * @test
      */
-    public function should_throw_if_a_module_requirement_is_not_satisfied()
+    public function should_throw_if_a_module_requirement_is_not_satisfied(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
         $this->expectException(ConfigurationException::class);
 
-        requireCodeceptionModules('TestModule', ['NotExisting']);
+        Codeception::checkModuleRequirements('TestModule', ['NotExisting']);
     }
 
 
@@ -27,15 +31,15 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_throw_if_one_of_required_modules_is_not_present()
+    public function should_throw_if_one_of_required_modules_is_not_present(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
         $this->expectException(ConfigurationException::class);
 
-        requireCodeceptionModules('TestModule', ['NotExisting', 'Filesystem']);
+        Codeception::checkModuleRequirements('TestModule', ['NotExisting', 'Filesystem']);
     }
 
     /**
@@ -43,9 +47,9 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_throw_message_with_information_about_all_missing_requirements()
+    public function should_throw_message_with_information_about_all_missing_requirements(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
@@ -55,7 +59,7 @@ class wpbrowserTest extends \Codeception\Test\Unit
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessageRegExp('/.*ModuleOne.*ModuleTwo.*lucatume\\/module-one.*lucatume\\/module-two/us');
 
-        requireCodeceptionModules('TestModule', [ 'ModuleOne', 'Filesystem', 'ModuleTwo' ]);
+        Codeception::checkModuleRequirements('TestModule', ['ModuleOne', 'Filesystem', 'ModuleTwo']);
     }
 
     /**
@@ -63,13 +67,13 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_not_throw_if_module_requirements_are_met()
+    public function should_not_throw_if_module_requirements_are_met(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
-        requireCodeceptionModules('TestModule', [ 'Db', 'Filesystem' ]);
+        Codeception::checkModuleRequirements('TestModule', ['Db', 'Filesystem']);
     }
 
     /**
@@ -77,13 +81,13 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_specifying_the_module_by_fully_qualified_class_name()
+    public function should_allow_specifying_the_module_by_fully_qualified_class_name(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
-        requireCodeceptionModules('TestModule', ['\\Codeception\\Lib\\Framework' ]);
+        Codeception::checkModuleRequirements('TestModule', ['\\Codeception\\Lib\\Framework']);
     }
 
     /**
@@ -91,16 +95,16 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_throw_if_required_module_specified_by_fully_qualified_class_name_does_not_exist()
+    public function should_throw_if_required_module_specified_by_fully_qualified_class_name_does_not_exist(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
 
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessageRegExp('/\\\\Codeception\\\\Lib\\\\NotExisting/us');
 
-        requireCodeceptionModules('TestModule', ['\\Codeception\\Lib\\NotExisting' ]);
+        Codeception::checkModuleRequirements('TestModule', ['\\Codeception\\Lib\\NotExisting']);
     }
 
     /**
@@ -108,9 +112,9 @@ class wpbrowserTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_throw_correct_message_when_mix_of_modules_and_components_are_missing()
+    public function should_throw_correct_message_when_mix_of_modules_and_components_are_missing(): void
     {
-        if (! property_exists(ModuleContainer::class, 'packages')) {
+        if (!property_exists(ModuleContainer::class, 'packages')) {
             $this->markTestSkipped('This test will require Codeception 4.0+');
         }
         ModuleContainer::$packages['ModuleOne'] = 'lucatume/module-one';
@@ -118,6 +122,6 @@ class wpbrowserTest extends \Codeception\Test\Unit
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessageRegExp('/\\\\Codeception\\\\Lib\\\\NotExisting.*ModuleOne.*lucatume\\/module-one/us');
 
-        requireCodeceptionModules('TestModule', ['\\Codeception\\Lib\\NotExisting', 'Db', 'ModuleOne' ]);
+        Codeception::checkModuleRequirements('TestModule', ['\\Codeception\\Lib\\NotExisting', 'Db', 'ModuleOne']);
     }
 }

@@ -89,7 +89,7 @@ class Wpbrowser extends Bootstrap
      *
      * @throws \Exception If there's an error processing the installation information or context.
      */
-    public function setup($interactive = true)
+    public function setup($interactive = true): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->checkInstalled($this->workDir);
@@ -224,7 +224,7 @@ class Wpbrowser extends Bootstrap
      *
      * @return void
      */
-    protected function say($message = '')
+    protected function say(string $message = ''): void
     {
         if ($this->quiet) {
             return;
@@ -238,7 +238,7 @@ class Wpbrowser extends Bootstrap
      * @return void
      *
      */
-    public function createGlobalConfig()
+    public function createGlobalConfig(): void
     {
         $basicConfig = [
             'paths'        => [
@@ -309,9 +309,9 @@ class Wpbrowser extends Bootstrap
     /**
      * Asks the user for the installation data.
      *
-     * @return array<string,mixed>|\lucatume\WPBrowser\Utils\Map The installation data as provided by the user.
+     * @return array{acceptanceSuite: string, acceptanceSuiteSlug: string, activeModules: array{WPDb: true, WPBrowser: true, WordPress: true, WPLoader: true}, functionalSuite: string, functionalSuiteSlug: string, mainPlugin?: mixed, parentTheme?: mixed, plugins: mixed[], testDbHost: mixed, testDbName: mixed, testDbPassword: mixed, testDbUser: mixed, testSiteAdminEmail: mixed, testSiteAdminPassword: mixed, testSiteAdminUsername: mixed, testSiteDbHost: mixed, testSiteDbName: mixed, testSiteDbPassword: mixed, testSiteDbUser: mixed, testSiteTablePrefix: mixed, testSiteWpAdminPath: string, testSiteWpDomain: string, testSiteWpUrl: string, testTablePrefix: mixed, theme?: mixed, title: mixed, wpRootFolder: string, wpunitSuite: string, wpunitSuiteSlug: string} The installation data as provided by the user.
      */
-    protected function askForInstallationData()
+    protected function askForInstallationData(): array|\lucatume\WPBrowser\Utils\Map
     {
         $installationData = [
             'activeModules' => [
@@ -515,7 +515,7 @@ class Wpbrowser extends Bootstrap
      *
      * @return string The normalized path.
      */
-    protected function normalizePath($path)
+    protected function normalizePath($path): string
     {
         $pathFrags = preg_split('#([/\\\])#u', $path) ?: [];
 
@@ -630,7 +630,7 @@ EOF;
      *
      * @return void
      */
-    protected function createUnitSuite($actor = 'Unit')
+    protected function createUnitSuite($actor = 'Unit'): void
     {
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
@@ -656,7 +656,7 @@ EOF;
      *
      * @return void
      */
-    protected function createSuite($suite, $actor, $config)
+    protected function createSuite($suite, $actor, $config): void
     {
         $this->createDirectoryFor("tests/$suite", "$suite.suite.yml");
         if ($this->createHelpers) {
@@ -678,7 +678,7 @@ EOF;
      *
      * @return void
      */
-    protected function createFunctionalSuite($actor = 'Functional', array $installationData = [])
+    protected function createFunctionalSuite($actor = 'Functional', array $installationData = []): void
     {
         $installationData = new \lucatume\WPBrowser\Template\Data($installationData);
         $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
@@ -739,7 +739,7 @@ EOF;
      *
      * @return void
      */
-    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = [])
+    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = []): void
     {
         $installationData = new Data($installationData);
         $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
@@ -824,10 +824,8 @@ EOF;
      * Sets the template working directory.
      *
      * @param string $workDir The path to the working directory the template should use.
-     *
-     * @return void
      */
-    public function setWorkDir($workDir)
+    public function setWorkDir($workDir): void
     {
         chdir($workDir);
         $this->workDir = $workDir;
@@ -837,10 +835,8 @@ EOF;
      * Sets the installation data the template should use.
      *
      * @param array<string,string> $installationData The installation data map.
-     *
-     * @return void
      */
-    public function setInstallationData(array $installationData)
+    public function setInstallationData(array $installationData): void
     {
         $this->installationData = new Map($installationData);
     }
@@ -848,9 +844,9 @@ EOF;
     /**
      * Returns the default installation data.
      *
-     * @return array<string,array<string,false>|string>|\lucatume\WPBrowser\Utils\Map The template default installation data.
+     * @return array{acceptanceSuite: string, functionalSuite: string, wpunitSuite: string, acceptanceSuiteSlug: string, functionalSuiteSlug: string, wpunitSuiteSlug: string, testSiteDbHost: string, testSiteDbName: string, testSiteDbUser: string, testSiteDbPassword: string, testSiteTablePrefix: string, testSiteWpUrl: string, testSiteWpDomain: string, testSiteAdminUsername: string, testSiteAdminPassword: string, testSiteAdminEmail: string, testSiteWpAdminPath: string, wpRootFolder: string, testDbName: string, testDbHost: string, testDbUser: string, testDbPassword: string, testTablePrefix: string, title: string, activeModules: array{WPDb: false, WordPress: false, WPLoader: false}} The template default installation data.
      */
-    public function getDefaultInstallationData()
+    public function getDefaultInstallationData(): array|\lucatume\WPBrowser\Utils\Map
     {
         $installationData  = [
             'acceptanceSuite'       => 'acceptance',
@@ -890,9 +886,9 @@ EOF;
      *
      * @param Map $installationData The installation data to generate the environment variables from.
      *
-     * @return array<string,mixed> The interpolated environment variables.
+     * @return array{TEST_SITE_DB_DSN: string, TEST_SITE_DB_HOST: string, TEST_SITE_DB_NAME: mixed, TEST_SITE_DB_USER: mixed, TEST_SITE_DB_PASSWORD: mixed, TEST_SITE_TABLE_PREFIX: mixed, TEST_SITE_ADMIN_USERNAME: mixed, TEST_SITE_ADMIN_PASSWORD: mixed, TEST_SITE_WP_ADMIN_PATH: mixed, WP_ROOT_FOLDER: mixed, TEST_DB_NAME: mixed, TEST_DB_HOST: string, TEST_DB_USER: mixed, TEST_DB_PASSWORD: mixed, TEST_TABLE_PREFIX: mixed, TEST_SITE_WP_URL: mixed, TEST_SITE_WP_DOMAIN: string, TEST_SITE_ADMIN_EMAIL: mixed} The interpolated environment variables.
      */
-    public function getEnvFileVars(Map $installationData)
+    public function getEnvFileVars(Map $installationData): array
     {
         $testSiteDsnMap           = dbDsnMap($installationData['testSiteDbHost']);
         $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
@@ -985,7 +981,7 @@ EOF;
                 'codeception/module-filesystem'       => '^1.0',
                 'codeception/module-cli'              => '^1.0',
                 'codeception/util-universalframework' => '^1.0'
-            ], static function ($lines) {
+            ], static function ($lines): void {
                 throw new \RuntimeException(
                     "wp-browser requires the following packages to work with Codeception v4.0:\n\n" .
                     implode(",\n", $lines) .
@@ -1001,10 +997,8 @@ EOF;
      * Sets the flag that controls the check of the Composer configuration file.
      *
      * @param bool $checkComposerConfig The flag that will control the check on the Composer configuration file.
-     *
-     * @return void
      */
-    public function setCheckComposerConfig($checkComposerConfig)
+    public function setCheckComposerConfig($checkComposerConfig): void
     {
         $this->checkComposerConfig = (bool)$checkComposerConfig;
     }

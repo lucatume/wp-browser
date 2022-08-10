@@ -80,7 +80,7 @@ require_once ABSPATH . '/wp-includes/wp-db.php';
 
 // Override the PHPMailer
 global $phpmailer;
-require_once( __DIR__ . '/mock-mailer.php');
+require_once(__DIR__ . '/mock-mailer.php');
 $phpmailer = new MockPHPMailer();
 
 /*
@@ -103,7 +103,7 @@ foreach ($activePlugins as $activePlugin) {
 	printf("Including plugin [%s] files\n", $activePlugin);
 	$path = realpath(WP_PLUGIN_DIR . '/' . $activePlugin);
 	if (!file_exists($path)) {
-		$path = dirname($configuration['root']) . '/' . $activePlugin;
+		$path = dirname($configuration['root']) . 'isolated-install.php/' . $activePlugin;
 	}
 	require_once $path;
 }

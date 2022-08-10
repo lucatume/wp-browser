@@ -7,7 +7,7 @@
  */
 
 use lucatume\WPBrowser\Module\WPLoader;
-use function lucatume\WPBrowser\vendorDir;
+use lucatume\WPBrowser\Utils\Composer;
 
 if (!function_exists('tad_functions')) {
 	require_once __DIR__ . '/tad-functions.php';
@@ -95,7 +95,7 @@ if(empty($skipWordPressInstall)){
 
 		$environment = [
 			'root' => codecept_root_dir(),
-			'autoload' => vendorDir('autoload.php'),
+			'autoload' => Composer::vendorDir('/autoload.php')
 			'installationFilters' => $wploaderInstallationFilters,
 			'constants' => [
 				'ABSPATH' => ABSPATH,

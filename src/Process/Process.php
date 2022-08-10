@@ -23,10 +23,8 @@ class Process extends Command
      * Sets the process output.
      *
      * @param int|null $timeout The process timeout in seconds.
-     *
-     * @return void
      */
-    public function setTimeout($timeout)
+    public function setTimeout($timeout): void
     {
         // @phpstan-ignore-next-line
         $this->timeout = $timeout === null ? $timeout : abs($timeout);
@@ -36,10 +34,8 @@ class Process extends Command
      * Sets whether the process should inherit the current `$_ENV` or not.
      *
      * @param bool $inheritEnvironmentVariables Whether the process should inherit the current `$_ENV` or not.
-     *
-     * @return void
      */
-    public function inheritEnvironmentVariables($inheritEnvironmentVariables)
+    public function inheritEnvironmentVariables($inheritEnvironmentVariables): void
     {
         $this->inheritEnvironmentVariables = (bool)$inheritEnvironmentVariables;
     }
@@ -67,7 +63,7 @@ class Process extends Command
      *
      * @return Process A cloned instance of this process to run the specified command.
      */
-    public function withCommand($command)
+    public function withCommand(string|array $command)
     {
         if (is_array($command)) {
             $command = implode(' ', $command);
@@ -121,7 +117,7 @@ class Process extends Command
      *
      * @return bool Whether the process was successful (exit 0) or not.
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return (int)$this->getExitCode() === 0;
     }

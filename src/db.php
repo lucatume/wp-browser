@@ -63,7 +63,7 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
  *
  * @return string The name, and path, to the MySQL binary.
  */
-function mysqlBin()
+function mysqlBin(): string
 {
     return 'mysql';
 }
@@ -162,16 +162,11 @@ function dbDsnMap($dbHost)
         // It's a sqlite in-memory database.
         + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
 
-    $extract = static function ($frag, $key) {
+    $extract = static function ($frag, $key): string|array {
         return str_replace($key . '=', '', $frag);
     };
 
     switch ($mask) {
-        default:
-            // Empty?
-            $map['type'] = $type ?: 'mysql';
-            $map['host'] = 'localhost';
-            break;
         case 1:
             // IP Address.
             $map['type'] = $type ?: 'mysql';
@@ -196,7 +191,7 @@ function dbDsnMap($dbHost)
             // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
             $map['type'] = $type ?: 'mysql';
             $unixSocket = $unixSocketMatches['socket'];
-            if (strpos($unixSocket, '~') === 0) {
+            if (str_starts_with($unixSocket, '~')) {
                 $unixSocket = str_replace('~', FS::homeDir(), $unixSocket);
             }
             $map['unix_socket'] = $unixSocket;
@@ -213,6 +208,11 @@ function dbDsnMap($dbHost)
             $map['type'] = $type ?: 'sqlite';
             $map['version'] = $sqliteMemoryMatches['version'];
             $map['memory'] = true;
+        default:
+            // Empty?
+            $map['type'] = $type ?: 'mysql';
+            $map['host'] = 'localhost';
+            break;
     }
 
     return $map;
@@ -228,7 +228,7 @@ function dbDsnMap($dbHost)
  *
  * @return Map The database credentials map: dsn string, user and password.
  */
-function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null)
+function dbCredentials($dsn, $dbuser, $dbpass, $dbname = null): \lucatume\WPBrowser\Utils\Map
 {
     $dbname = $dsn->get('dbname', $dbname);
     $dbuser = empty($dbuser) ? 'root' : $dbuser;
@@ -322,7 +322,7 @@ function isDsnString($string)
  *
  * @throws \InvalidArgumentException If the input string is not a valid DSN string.
  */
-function dbDsnToMap($dsnString)
+function dbDsnToMap($dsnString): \lucatume\WPBrowser\Utils\Map
 {
     if (!isDsnString($dsnString)) {
         throw new \InvalidArgumentException("The string '{$dsnString}' is not a valid DSN string.");
@@ -332,8 +332,8 @@ function dbDsnToMap($dsnString)
     $type = 'mysql';
 
     if (preg_match('/^(?<type>(mysql|sqlite(?<version>\\d)*)):/', $dsnString, $m)) {
-        $type = isset($m['type']) ? $m['type'] : 'mysql';
-        $version = isset($m['version']) ? $m['version'] : null;
+        $type = $m['type'] ?? 'mysql';
+        $version = $m['version'] ?? null;
         $dsnString = str_replace($type . ':', '', $dsnString);
     }
 

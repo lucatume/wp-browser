@@ -84,20 +84,12 @@ class EventDispatcherAdapter
     protected static $fallbackAvailable = false;
 
     /**
-     * The wrapped Symfony Event Dispatcher instance.
-     *
-     * @var SymfonyEventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    /**
      * EventDispatcherAdapter constructor.
      *
      * @param SymfonyEventDispatcherInterface $eventDispatcher The Symfony Event Dispatcher instance to wrap.
      */
-    public function __construct(SymfonyEventDispatcherInterface $eventDispatcher)
+    public function __construct(protected SymfonyEventDispatcherInterface $eventDispatcher)
     {
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -188,10 +180,8 @@ class EventDispatcherAdapter
 
     /**
      * Resets the shared instance.
-     *
-     * @return void
      */
-    public static function resetSharedInstance()
+    public static function resetSharedInstance(): void
     {
         static::$sharedInstance = null;
     }
@@ -200,10 +190,8 @@ class EventDispatcherAdapter
      * Sets the event dispatcher the shared instance should use.
      *
      * @param SymfonyEventDispatcherInterface $eventDispatcher The event dispatcher to set on the shared instance.
-     *
-     * @return void
      */
-    public static function setWrappedEventDispatcher(SymfonyEventDispatcherInterface $eventDispatcher)
+    public static function setWrappedEventDispatcher(SymfonyEventDispatcherInterface $eventDispatcher): void
     {
         if (static::$sharedInstance === null) {
             static::$sharedInstance = new self($eventDispatcher);
@@ -240,12 +228,11 @@ class EventDispatcherAdapter
      * @param int      $priority    A priority to attach the listener at. Differently from WordPress listeners added at
      *                              higher priorities are called first.
      *
-     * @return void
      *
      * @throws \InvalidArgumentException If the event is a Codeception one and listeners cannot be attached to
      *                                   Codeception default events due to the Codeception version.
      */
-    public function addListener($eventName, callable $listener, $priority = 0)
+    public function addListener($eventName, callable $listener, $priority = 0): void
     {
         static::checkEventName($eventName);
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
@@ -292,7 +279,7 @@ OUT;
      *
      * @return bool Whether an event is a Codeception event or not.
      */
-    public static function isCodeceptionEvent($eventName)
+    public static function isCodeceptionEvent($eventName): bool
     {
         return in_array($eventName, static::codeceptionEvents(), true);
     }
@@ -314,10 +301,8 @@ OUT;
      *
      * @param bool $fallbackAvailable Whether the fallback to attache listeners to Codeception 4.0+ events is available
      *                                or not.
-     *
-     * @return void
      */
-    public static function setFallbackAvailable($fallbackAvailable)
+    public static function setFallbackAvailable($fallbackAvailable): void
     {
         static::$fallbackAvailable = (bool) $fallbackAvailable;
     }
@@ -365,7 +350,7 @@ OUT;
 
         try {
             $methodReflection = new \ReflectionMethod(SymfonyEventDispatcher::class, 'dispatch');
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             self::$dispatchWithObject = false;
 
             return self::$dispatchWithObject;

@@ -42,7 +42,7 @@ trait WithCodeceptionTestCaseEnhancements
     {
         try {
             $this->getMetadata()->getService('di');
-        } catch (InjectionException $e) {
+        } catch (InjectionException) {
             $loader           = new CodeceptionUnitLoader();
             $reflectionMethod = new ReflectionMethod($loader, 'enhancePhpunitTest');
             $reflectionMethod->setAccessible(true);

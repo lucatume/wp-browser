@@ -9,8 +9,8 @@ namespace lucatume\WPBrowser\Traits;
 
 use Codeception\Command\Shared\Config;
 use Codeception\Module;
+use lucatume\WPBrowser\Utils\Composer;
 use function lucatume\WPBrowser\identifySuiteFromTrace;
-use function lucatume\WPBrowser\vendorDir;
 
 /**
  * Trait WithLateModuleConfig
@@ -28,10 +28,10 @@ trait WithCodeceptionModuleConfig
      */
     protected static function _getModuleConfig(Module $moduleInstance)
     {
-        $module = str_replace('Codeception\\Module\\', '', get_class($moduleInstance));
+        $module = str_replace('Codeception\\Module\\', '', $moduleInstance::class);
 
         // Some Codeception functions will not be auto-loaded when this method runs in isolation, load them now.
-        require_once vendorDir('codeception/codeception/autoload.php');
+        require_once Composer::vendorDir('codeception/codeception/autoload.php');
 
         if (!method_exists($moduleInstance, 'getSuiteConfig')) {
             throw new \RuntimeException(

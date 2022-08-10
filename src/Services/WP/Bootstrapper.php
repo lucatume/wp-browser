@@ -14,20 +14,9 @@ use lucatume\WPBrowser\Environment\System;
 class Bootstrapper
 {
 
-    /**
-     * @var string
-     */
-    protected $bootstrapScriptFilePath;
+    protected string $bootstrapScriptFilePath;
 
-    /**
-     * @var string|null
-     */
-    private $wpLoadPath;
-
-    /**
-     * @var \lucatume\WPBrowser\Environment\System
-     */
-    private $system;
+    private \lucatume\WPBrowser\Environment\System $system;
 
     /**
      * Bootstrapper constructor.
@@ -35,9 +24,8 @@ class Bootstrapper
      * @param string      $wpLoadPath The path to the WordPress root directory to load.
      * @param \lucatume\WPBrowser\Environment\System|null $system The system operations adapter.
      */
-    public function __construct($wpLoadPath = null, System $system = null)
+    public function __construct(private ?string $wpLoadPath = null, System $system = null)
     {
-        $this->wpLoadPath = $wpLoadPath;
         $this->bootstrapScriptFilePath = dirname(dirname(__DIR__)) . '/support/wpBootstrap.php';
         $this->system = $system ? $system : new System();
     }
@@ -50,7 +38,7 @@ class Bootstrapper
      *
      * @return string|false Either the generated nonce, or `false` on failure.
      */
-    public function createNonce($action, array $credentials)
+    public function createNonce($action, array $credentials): string|false
     {
         $request = [
             'action' => $action,
@@ -79,7 +67,7 @@ class Bootstrapper
      *
      * @throws \RuntimeException If the bootstrap happens before the load path is set.
      */
-    public function bootstrapWpAndExec(array $actions)
+    public function bootstrapWpAndExec(array $actions): string|false
     {
         if (empty($this->wpLoadPath)) {
             throw new \RuntimeException('Cannot bootstrap WordPress if load path is not set.');
@@ -109,10 +97,8 @@ class Bootstrapper
      * Sets the path to the WordPress directory to load.
      *
      * @param string $wpLoadPath The path to the WordPress directory to load.
-     *
-     * @return void
      */
-    public function setWpLoadPath($wpLoadPath)
+    public function setWpLoadPath($wpLoadPath): void
     {
         $this->wpLoadPath = $wpLoadPath;
     }
@@ -131,10 +117,8 @@ class Bootstrapper
      * Sets the path to the bootstrap file to use.
      *
      * @param string $bootsrapScriptFilePath The bootstrap file path.
-     *
-     * @return void
      */
-    public function setBootstrapScriptFilePath($bootsrapScriptFilePath)
+    public function setBootstrapScriptFilePath($bootsrapScriptFilePath): void
     {
         $this->bootstrapScriptFilePath = $bootsrapScriptFilePath;
     }

@@ -18,7 +18,7 @@ class Blog
     /**
      * Generates the data for a subdomain installation.
      *
-     * @return array<string,mixed> The blog data.
+     * @return array{site_id: int, domain: string, path: string, registered: string|false, last_updated: string|false, public: int, archived: int, mature: int, spam: int, deleted: int, lang_id: int} The blog data.
      */
     public static function makeDefaults()
     {

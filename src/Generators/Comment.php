@@ -24,7 +24,7 @@ class Comment
      *
      * @return array<int|string,mixed>                    A column as key array of comment content.
      */
-    public static function makeComment($comment_post_ID, array $overrides = array())
+    public static function makeComment($comment_post_ID, array $overrides = array()): array
     {
         $defaults = self::generateDefaultsFor($comment_post_ID);
 
@@ -36,9 +36,9 @@ class Comment
      *
      * @param int $comment_post_ID The if of the post the comment refers to.
      *
-     * @return array<string,mixed>                An associative array of column/default values.
+     * @return mixed[] An associative array of column/default values.
      */
-    protected static function generateDefaultsFor($comment_post_ID)
+    protected static function generateDefaultsFor($comment_post_ID): array
     {
         $content  = "Hi, this is a comment.\nTo delete a comment, just log in and view the post&#039;s comments. "
                     . 'There you will have the option to edit or delete them.';

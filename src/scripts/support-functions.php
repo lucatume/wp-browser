@@ -1,6 +1,6 @@
 <?php
 
-namespace tad\scripts;
+namespace lucatume\WPBrowser\scripts;
 
 global $cli_headers, $cli_statuses;
 /**
@@ -57,7 +57,7 @@ function wpbrowser_buildFilterUniqueId($tag, $function, $priority)
     }
 
     if (\is_object($function[0])) {
-        return support - functions . php\spl_object_hash($function[0]);
+        return \support - \functions . \tad\scripts\php\spl_object_hash($function[0]);
     } elseif (\is_string($function[0])) {
         // Static Calling
         return $function[0].$function[1];
@@ -70,7 +70,7 @@ function wpbrowser_addFilter($tag, $function_to_add, $priority = 10, $accepted_a
     if (\function_exists('add_filter')) {
         \add_filter($tag, $function_to_add, $priority, $accepted_args);
     } else {
-        $idx = wpbrowser_buildFilterUniqueId($tag, $function_to_add, $priority);
+        $idx = \tad\scripts\wpbrowser_buildFilterUniqueId($tag, $function_to_add, $priority);
         $wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
     }
     return true;

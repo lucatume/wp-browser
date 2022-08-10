@@ -7,28 +7,26 @@
 
 namespace lucatume\WPBrowser;
 
+use lucatume\WPBrowser\Utils\Composer;
+
 /**
  * Includes the Patchwork library main file.
- *
- * @return void
  */
-function includePatchwork()
+function includePatchwork(): void
 {
     if (function_exists('Patchwork\redefine')) {
         return;
     }
 
-    require_once vendorDir('antecedent/patchwork/Patchwork.php');
+    require_once Composer::vendorDir('antecedent/patchwork/Patchwork.php');
 }
 
 /**
  * Configures Patchwork using its API, without requiring a file.
  *
  * @param array<string,mixed> $config An array defining the Patchwork configuration to use.
- *
- * @return void
  */
-function configurePatchwork($config)
+function configurePatchwork($config): void
 {
     includePatchwork();
     \Patchwork\Config\set($config, __FILE__);
@@ -41,7 +39,7 @@ function configurePatchwork($config)
  *
  * @return array<string,mixed> The Patchwork configuration to use in the `isolated-installation.php` script.
  */
-function isolatedInstallPatchworkConfig(array $envConfig)
+function isolatedInstallPatchworkConfig(array $envConfig): array
 {
     $config = [
         'blacklist' => [

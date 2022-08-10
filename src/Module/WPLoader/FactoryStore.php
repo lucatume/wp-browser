@@ -46,7 +46,7 @@ class FactoryStore
     /**
      * @var WP_UnitTest_Factory_For_Bookmark|null
      */
-    protected ?WP_UnitTest_Factory_For_Bookmark $bookmark;
+    protected ?WP_UnitTest_Factory_For_Bookmark $bookmark = null;
 
     /**
      * @var WP_UnitTest_Factory_For_Attachment|null

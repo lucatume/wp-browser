@@ -41,10 +41,8 @@ trait WithInjectableHelpers
      *
      * @param QuestionHelper $questionHelper The question helper instance the template should use to interact with the
      *                                       user.
-     *
-     * @return void
      */
-    public function setQuestionHelper($questionHelper)
+    public function setQuestionHelper($questionHelper): void
     {
         $this->questionHelper = $questionHelper;
     }

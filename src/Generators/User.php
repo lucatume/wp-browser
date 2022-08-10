@@ -16,7 +16,7 @@ class User
      *
      * @return array<int|string,string>             An associative array of column/values for the "users" table.
      */
-    public static function generateUserTableDataFrom($user_login, array $userData = array())
+    public static function generateUserTableDataFrom($user_login, array $userData = array()): array
     {
         $login = \lucatume\WPBrowser\sanitize_user($user_login, true);
         $usersTableDefaults = [
@@ -44,7 +44,7 @@ class User
      *
      * @return int The corresponding user level, an integer.
      */
-    public static function getLevelForRole($role = 'subscriber')
+    public static function getLevelForRole(string|int $role = 'subscriber')
     {
         $map = [
             'subscriber' => 0,
@@ -76,7 +76,7 @@ class User
 
         if ($blogIdEntries) {
             // Format is `[<blogId> => <role>, <blogId> => <role>]`.
-            return array_merge(...array_map(static function ($role, $blogId) use ($tablePrefix) {
+            return array_merge(...array_map(static function ($role, $blogId) use ($tablePrefix): array {
                 $blogPrefix = (int)$blogId < 2 ? '' : (int)$blogId . '_';
                 return static::buildCapabilities($role, $tablePrefix . $blogPrefix);
             }, $roles, array_keys($roles)));
@@ -112,7 +112,7 @@ class User
      *
      * @return array<string,mixed> The user meta keys and values, with overrides applied.
      */
-    public static function generateUserMetaTableDataFrom($user_login, array $overrides = [])
+    public static function generateUserMetaTableDataFrom($user_login, array $overrides = []): array
     {
         $login = \lucatume\WPBrowser\sanitize_user($user_login, true);
 

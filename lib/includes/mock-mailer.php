@@ -8,7 +8,7 @@ if ( file_exists( ABSPATH . '/wp-includes/PHPMailer/PHPMailer.php' ) ) {
 	class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
 } else {
 	// WordPress < 5.5, use the pre-5.5 class name.
-	require_once( ABSPATH . '/wp-includes/class-phpmailer.php' );
+	require_once(ABSPATH . '/wp-includes/class-phpmailer.php');
 }
 // phpcs:enable
 

@@ -16,7 +16,7 @@ tests/_output
 
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json
-src/includes/patchwork.json
+lib/includes/patchwork.json
 composer.lock
 
 # Some local vim files

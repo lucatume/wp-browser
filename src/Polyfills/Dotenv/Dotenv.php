@@ -33,9 +33,8 @@ class Dotenv
 
     /**
      * The absolute path to the env file to load.
-     * @var string
      */
-    protected $envFilePath;
+    protected string $envFilePath;
 
     /**
      * Dotenv constructor.
@@ -70,10 +69,8 @@ class Dotenv
 
     /**
      * Loads the env file contents in `getenv()`, `$_ENV` and `$_SERVER`.
-     *
-     * @return void
      */
-    public function load()
+    public function load(): void
     {
         loadEnvMap(envFile($this->envFilePath), false);
     }

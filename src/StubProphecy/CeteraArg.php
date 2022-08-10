@@ -18,7 +18,7 @@ class CeteraArg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function verify($actual)
+    public function verify($actual): bool
     {
         return true;
     }
@@ -26,7 +26,7 @@ class CeteraArg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function getFailureMessage()
+    public function getFailureMessage(): string
     {
         return 'Expected some arguments, got none.';
     }
@@ -34,7 +34,7 @@ class CeteraArg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function stopVerification()
+    public function stopVerification(): bool
     {
         return true;
     }
@@ -42,7 +42,7 @@ class CeteraArg implements ArgInterface
     /**
      * {@inheritDoc}
      */
-    public function appliesToFollowing()
+    public function appliesToFollowing(): bool
     {
         return true;
     }

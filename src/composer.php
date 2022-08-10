@@ -16,7 +16,7 @@ use lucatume\WPBrowser\Utils\Map;
  *
  * @return Map The parsed file map.
  */
-function composerFile($file)
+function composerFile($file): \lucatume\WPBrowser\Utils\Map
 {
     if (empty($file) || ! is_file($file)) {
         throw new \InvalidArgumentException("File {$file} does not exist.");
@@ -44,10 +44,8 @@ function composerFile($file)
  *
  * @param array<string,string> $dependencies A map of dependencies and their required versions.
  * @param callable             $else         Teh callback that will be called if the dependency check fails.
- *
- * @return void
  */
-function checkComposerDependencies(Map $composerFile, array $dependencies, callable $else)
+function checkComposerDependencies(Map $composerFile, array $dependencies, callable $else): void
 {
     $require     = $composerFile('require', []);
     $requireDev  = $composerFile('require-dev', []);

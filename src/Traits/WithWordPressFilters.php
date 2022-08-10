@@ -122,7 +122,7 @@ trait WithWordPressFilters
      *
      * @return mixed The filter input value, unchanged.
      */
-    public function debugWpFilterInitial(...$args)
+    public function debugWpFilterInitial(...$args): mixed
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -180,7 +180,7 @@ trait WithWordPressFilters
      *
      * @return mixed The filter input value, unchanged.
      */
-    public function debugWpFilterFinal(...$args)
+    public function debugWpFilterFinal(...$args): mixed
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -209,10 +209,8 @@ trait WithWordPressFilters
      * ```
      *
      * @param mixed ...$args The action call arguments.
-     *
-     * @return void
      */
-    public function debugWpActionInitial(...$args)
+    public function debugWpActionInitial(...$args): void
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -239,10 +237,8 @@ trait WithWordPressFilters
      * ```
      *
      * @param mixed ...$args The action call arguments.
-     *
-     * @return void
      */
-    public function debugWpActionFinal(...$args)
+    public function debugWpActionFinal(...$args): void
     {
         $tag = array_shift($args);
         global $wp_actions;

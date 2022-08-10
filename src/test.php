@@ -30,10 +30,8 @@ function isDebug($activate = null)
  * Prints a debug message using Codeception `codecept_debug` function if available.
  *
  * @param string|mixed $message Either a string message or an other value that will be printed JSON encoded.
- *
- * @return void
  */
-function debug($message)
+function debug($message): void
 {
     if (function_exists('codecept_debug')) {
         codecept_debug($message);
@@ -76,7 +74,7 @@ function ensure($condition, $message)
  */
 function pregErrorMessage($error)
 {
-    return array_flip(array_filter(get_defined_constants(true)['pcre'], static function ($value) {
-        return substr($value, -6) === '_ERROR';
+    return array_flip(array_filter(get_defined_constants(true)['pcre'], static function ($value): bool {
+        return str_ends_with($value, '_ERROR');
     }, ARRAY_FILTER_USE_KEY))[preg_last_error()];
 }

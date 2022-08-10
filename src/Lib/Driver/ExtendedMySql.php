@@ -17,7 +17,7 @@ class ExtendedMySql extends MySql
      *
      * @return string            The query string ready to be prepared.
      */
-    public function insertOrUpdate($tableName, array $data)
+    public function insertOrUpdate($tableName, array $data): string
     {
         $this->executeQuery("SET SESSION sql_mode='ALLOW_INVALID_DATES'", []);
 

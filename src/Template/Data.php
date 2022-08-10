@@ -17,20 +17,17 @@ class Data implements \ArrayAccess
 {
 
     /**
-     * The data the object has been hydrated with.
-     *
-     * @var array<int|string,mixed>
-     */
-    protected $data = [];
-
-    /**
      * Data constructor.
      *
      * @param array<int|string,mixed> $data The data to hydrate the instance from.
      */
-    public function __construct(array $data)
+    public function __construct(
+        /**
+         * The data the object has been hydrated with.
+         */
+        protected array $data
+    )
     {
-        $this->data = $data;
     }
 
     /**
@@ -48,7 +45,7 @@ class Data implements \ArrayAccess
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 5.0.0
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
@@ -65,9 +62,9 @@ class Data implements \ArrayAccess
      * @return mixed Can return all value types.
      * @since 5.0.0
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
-        return (isset($this->data[$offset])) ? $this->data[$offset] : '';
+        return $this->data[$offset] ?? '';
     }
 
     /**
@@ -85,7 +82,7 @@ class Data implements \ArrayAccess
      * @return void
      * @since 5.0.0
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->data[$offset] = $value;
     }
@@ -102,7 +99,7 @@ class Data implements \ArrayAccess
      * @return void
      * @since 5.0.0
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->data[$offset]);
     }

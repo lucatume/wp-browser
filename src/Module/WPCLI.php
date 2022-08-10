@@ -17,11 +17,11 @@ use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Exceptions\WpCliException;
 use lucatume\WPBrowser\Process\Process;
 use lucatume\WPBrowser\Traits\WithWpCli;
+use lucatume\WPBrowser\Utils\Codeception;
 use function lucatume\WPBrowser\buildCommandline;
-use function lucatume\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
-requireCodeceptionModules('WPCLI', ['Cli']);
+Codeception::checkModuleRequirements('WPCLI', ['Cli']);
 //phpcs:enable
 
 /**
@@ -97,15 +97,15 @@ class WPCLI extends Module
      *
      * @var int|null
      */
-    protected ?int $timeout;
+    protected ?int $timeout = null;
     /**
      * @var string|null
      */
-    protected ?string $lastOutput;
+    protected ?string $lastOutput = null;
     /**
      * @var int|null
      */
-    protected ?int $lastResultCode;
+    protected ?int $lastResultCode = null;
 
     /**
      * WPCLI constructor.

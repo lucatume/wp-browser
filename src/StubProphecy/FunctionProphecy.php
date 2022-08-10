@@ -111,7 +111,7 @@ class FunctionProphecy
 
         $reflectionFunction = new \ReflectionFunction($name);
 
-        return implode(', ', array_map(static function (\ReflectionParameter $parameter) {
+        return implode(', ', array_map(static function (\ReflectionParameter $parameter): string {
             $default = '';
             if ($parameter->isDefaultValueAvailable()) {
                 $defaultValue = $parameter->getDefaultValue();
@@ -131,10 +131,8 @@ class FunctionProphecy
 
     /**
      * Resets all the function replacements.
-     *
-     * @return void
      */
-    public static function reset()
+    public static function reset(): void
     {
         if (function_exists('uopz_unset_return')) {
             foreach (static::$replacedFunction as $replacedFunction) {

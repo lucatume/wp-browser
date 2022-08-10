@@ -14,7 +14,7 @@ class WPXMLRPCTestCase extends WPTestCase
 {
     protected $myxmlrpcserver;
 
-    public function _setUp()
+    public function _setUp(): void
     {
         parent::_setUp();
 
@@ -23,7 +23,7 @@ class WPXMLRPCTestCase extends WPTestCase
         $this->myxmlrpcserver = new \wp_xmlrpc_server();
     }
 
-    public function _tearDown()
+    public function _tearDown(): void
     {
         remove_filter('pre_option_enable_xmlrpc', '__return_true');
 

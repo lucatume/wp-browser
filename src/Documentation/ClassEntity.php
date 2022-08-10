@@ -25,56 +25,46 @@ class ClassEntity extends CodeEntity
      *
      * @var array<\PHPDocsMD\FunctionEntity>
      */
-    private $functions = [];
+    private array $functions = [];
 
     /**
      * Whether the class is an interface or not.
-     *
-     * @var bool
      */
-    private $isInterface = false;
+    private bool $isInterface = false;
 
     /**
      * Whether the class is abstract or not.
-     *
-     * @var bool
      */
-    private $abstract = false;
+    private bool $abstract = false;
 
     /**
      * Whether the class has the ignore tag or not.
-     *
-     * @var bool
      */
-    private $hasIgnoreTag = false;
+    private bool $hasIgnoreTag = false;
 
     /**
      * Whether the class has the internal tag or not.
-     *
-     * @var bool
      */
-    private $hasInternalTag = false;
+    private bool $hasInternalTag = false;
 
     /**
      * The class extended bu the class, if any.
-     *
-     * @var string
      */
-    private $extends = '';
+    private string $extends = '';
 
     /**
      * A list of interfaces the class implements.
      *
      * @var array<string>
      */
-    private $interfaces = [];
+    private array $interfaces = [];
 
     /**
      * A list of see links for the class.
      *
      * @var array<string>
      */
-    private $see = [];
+    private array $see = [];
 
     /**
      * Whether the class is PHP native or not.
@@ -120,7 +110,7 @@ class ClassEntity extends CodeEntity
      *
      * @return string The class description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return '';
     }
@@ -178,10 +168,8 @@ class ClassEntity extends CodeEntity
      * Sets the class extended by the class.
      *
      * @param string $extends The class extended by the class.
-     *
-     * @return void
      */
-    public function setExtends($extends)
+    public function setExtends($extends): void
     {
         $this->extends = Utils::sanitizeClassName($extends);
     }
@@ -200,10 +188,8 @@ class ClassEntity extends CodeEntity
      * Sets the list of class functions.
      *
      * @param array<\PHPDocsMD\FunctionEntity> $functions The list of class functions.
-     *
-     * @return void
      */
-    public function setFunctions(array $functions)
+    public function setFunctions(array $functions): void
     {
         $this->functions = $functions;
     }
@@ -212,10 +198,8 @@ class ClassEntity extends CodeEntity
      * Sets the list of class see links.
      *
      * @param array<string> $see The list of class see links.
-     *
-     * @return void
      */
-    public function setSee(array $see)
+    public function setSee(array $see): void
     {
         $this->see = [];
         foreach ($see as $i) {
@@ -227,10 +211,8 @@ class ClassEntity extends CodeEntity
      * Sets the list of interfaces implemented by the class.
      *
      * @param array<string> $implements The list of interfaces implemented by the class.
-     *
-     * @return void
      */
-    public function setInterfaces(array $implements)
+    public function setInterfaces(array $implements): void
     {
         $this->interfaces = [];
         foreach ($implements as $interface) {
@@ -270,10 +252,8 @@ class ClassEntity extends CodeEntity
      * Sets the class name.
      *
      * @param string $name
-     *
-     * @return void
      */
-    public function setName($name)
+    public function setName($name): void
     {
         parent::setName(Utils::sanitizeClassName($name));
     }
@@ -281,29 +261,26 @@ class ClassEntity extends CodeEntity
     /**
      * Check whether this object is referring to given class name or object instance
      * @param string|object $class
-     * @return bool
      */
-    public function isSame($class)
+    public function isSame($class): bool
     {
-        $className = is_object($class) ? get_class($class) : $class;
+        $className = is_object($class) ? $class::class : $class;
         return Utils::sanitizeClassName($className) == $this->getName();
     }
 
     /**
      * Generate a title describing the class this object is referring to
      * @param string $format
-     * @return string
      */
-    public function generateTitle($format = '%label%: %name% %extra%')
+    public function generateTitle($format = '%label%: %name% %extra%'): string
     {
         return '';
     }
 
     /**
      * Generates an anchor link out of the generated title (see generateTitle)
-     * @return string
      */
-    public function generateAnchor()
+    public function generateAnchor(): string
     {
         $title = $this->generateTitle();
         return strtolower(str_replace([':', ' ', '\\', '(', ')'], ['', '-', '', '', ''], $title));
