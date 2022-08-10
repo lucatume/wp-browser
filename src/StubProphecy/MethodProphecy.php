@@ -10,7 +10,6 @@ namespace lucatume\WPBrowser\StubProphecy;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExpectationFailedException;
-use function lucatume\WPBrowser\StubProphecy\count;
 
 /**
  * Class MethodProphecy

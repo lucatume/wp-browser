@@ -1,27 +1,23 @@
 <?php
+
 namespace tad\Test;
 
 class Constants extends \lucatume\WPBrowser\Environment\Constants
 {
-    protected $buffer = [];
+    protected array $buffer = [];
 
     public function __construct(array $buffer = [])
     {
         $this->buffer = $buffer;
     }
 
-    public function setBuffer(array $buffer)
+    public function defined(string $key): bool
     {
-        $this->buffer = $buffer;
+        return isset($this->buffer[$key]);
     }
 
-    public function defined($key, $default = null)
+    public function constant(string $key, mixed $default = null):mixed
     {
-        return isset($this->buffer[$key]) ? true : $default;
-    }
-
-    public function constant($key, $default = null)
-    {
-        return isset($this->buffer[$key]) ? $this->buffer[$key] : $default;
+        return $this->buffer[$key] ?? $default;
     }
 }

@@ -14,7 +14,6 @@ use ReflectionClass;
 use ReflectionException;
 use Server_Command;
 use WP_CLI\Configurator;
-use function lucatume\WPBrowser\Traits\count;
 
 /**
  * Class WithWpCli

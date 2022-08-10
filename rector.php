@@ -44,7 +44,7 @@ return static function ( RectorConfig $rectorConfig ): void {
     $rectorConfig->rule(AddMethodCallBasedStrictParamTypeRector::class);
     $rectorConfig->rule(AddVoidReturnTypeWhereNoReturnRector::class);
     $rectorConfig->rule(ArrayKeyExistsTernaryThenValueToCoalescingRector::class);
-    $rectorConfig->rule(ConsecutiveNullCompareReturnsToNullCoalesceQueueRector::class);
+    rectorConfig->rule(ConsecutiveNullCompareReturnsToNullCoalesceQueueRector::class);
     $rectorConfig->rule(FuncGetArgsToVariadicParamRector::class);
     $rectorConfig->rule(MakeTypedPropertyNullableIfCheckedRector::class);
     $rectorConfig->rule(NameImportingPostRector::class);
