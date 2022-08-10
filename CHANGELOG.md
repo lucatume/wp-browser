@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 
 ### Changed
+- Update code to be compatible with Codeception v5, PHP 8.0+ and Composer API 2.2+.
+- Move classes in the `tad\WPBrowser` namespace to the `lucatume\WPBrowser` one.
+- Move classes in the `Codeception` namespace to the `lucatume\WPBrowser` one.
+
+## [3.1.6] 2022-04-28;
+
+### Changed
 
 - Add the `WPCLI::grabLastShellOutput` method (thanks @calvinalkan).
 
