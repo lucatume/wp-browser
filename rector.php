@@ -20,7 +20,6 @@ use Rector\PostRector\Rector\UseAddingPostRector;
 use Rector\Restoration\Rector\Property\MakeTypedPropertyNullableIfCheckedRector;
 use Rector\Set\ValueObject\SetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddMethodCallBasedStrictParamTypeRector;
-use Rector\TypeDeclaration\Rector\ClassMethod\AddParamTypeDeclarationRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddReturnTypeDeclarationBasedOnParentClassMethodRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromReturnNewRector;
@@ -43,7 +42,6 @@ return static function ( RectorConfig $rectorConfig ): void {
     $rectorConfig->import( SetList::TYPE_DECLARATION_STRICT );
     $rectorConfig->rule(AddClosureReturnTypeRector::class);
     $rectorConfig->rule(AddMethodCallBasedStrictParamTypeRector::class);
-    $rectorConfig->rule(AddParamTypeDeclarationRector::class);
     $rectorConfig->rule(AddVoidReturnTypeWhereNoReturnRector::class);
     $rectorConfig->rule(ArrayKeyExistsTernaryThenValueToCoalescingRector::class);
     $rectorConfig->rule(ConsecutiveNullCompareReturnsToNullCoalesceQueueRector::class);

@@ -2,26 +2,26 @@
 
 namespace lucatume\WPBrowser\Lib\Generator;
 
-class FunctionalSuiteConfig extends AbstractGenerator implements GeneratorInterface
+class FunctionalSuiteConfig extends AbstractGenerator
 {
     /**
      * @var array<string>
      */
-    public static $requiredSettings = ['className', 'namespace', 'actor'];
+    public static array $requiredSettings = ['className', 'namespace', 'actor'];
 
     /**
      * @var string
      */
-    protected $template = <<< YAML
+    protected string $template = <<< YAML
 actor: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}
-        - Filesystem
-        - WPDb
-        - WordPress
+        - \\lucatume\\WPBrowser\\Module\\WPFilesystem
+        - \\lucatume\\WPBrowser\\Module\\WPDb
+        - \\lucatume\\WPBrowser\\Module\\WordPress
     config:
-        WPDb:
+        \\lucatume\\WPBrowser\\Module\\WPDb:
             dsn: 'mysql:host={{dbHost}};dbname={{dbName}}'
             user: {{dbUser}}
             password: {{dbPassword}}
@@ -30,7 +30,7 @@ modules:
             cleanup: true
             url: '{{url}}'
             tablePrefix: {{tablePrefix}}
-        WordPress:
+        \\lucatume\\WPBrowser\\Module\\WordPress:
             depends: WPDb
             wpRootFolder: {{wpRootFolder}}
             adminUsername: {{adminUsername}}

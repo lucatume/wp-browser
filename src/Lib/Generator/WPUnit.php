@@ -11,6 +11,7 @@ use Codeception\Configuration;
 use Codeception\Lib\Generator\Shared\Classname;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
+use Exception;
 use lucatume\WPBrowser\Compat\Compatibility;
 
 /**
@@ -18,7 +19,7 @@ use lucatume\WPBrowser\Compat\Compatibility;
  *
  * @package Codeception\Lib\Generator
  */
-class WPUnit extends AbstractGenerator implements GeneratorInterface
+class WPUnit extends AbstractGenerator
 {
     use Classname;
     use Namespaces;
@@ -26,14 +27,14 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
     /**
      * @var array<string,mixed>
      */
-    protected $settings;
+    protected array $settings;
 
     protected string $name;
 
     /**
      * @var string
      */
-    protected $template = <<<EOF
+    protected string $template = <<<EOF
 <?php
 {{namespace}}
 class {{name}}Test extends {{baseClass}}
@@ -69,7 +70,7 @@ EOF;
     /**
      * The injectable compatibility layer.
      */
-    protected \lucatume\WPBrowser\Compat\Compatibility $compatibilityLayer;
+    protected Compatibility $compatibilityLayer;
 
     /**
      * WPUnit constructor.
@@ -78,7 +79,7 @@ EOF;
      * @param string $name The template name.
      * @param string $baseClass The base class.
      */
-    public function __construct(array $settings, $name, protected $baseClass)
+    public function __construct(array $settings, string $name, protected string $baseClass)
     {
         parent::__construct($settings);
         $this->settings = $settings;
@@ -91,7 +92,7 @@ EOF;
      *
      * @return string The rendered template.
      */
-    public function produce()
+    public function produce(): string
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
@@ -126,7 +127,7 @@ EOF;
             $propertyName = isset($config['actor_suffix']) ?
                 lcfirst($config['actor_suffix'])
                 : '';
-        } catch (\Exception) {
+        } catch (Exception) {
             $propertyName = '';
         }
 

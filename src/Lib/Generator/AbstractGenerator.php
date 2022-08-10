@@ -9,12 +9,12 @@ abstract class AbstractGenerator
     /**
      * @var array<string>J
      */
-    public static $requiredSettings = [];
+    public static array $requiredSettings = [];
 
     /**
      * @var string
      */
-    protected $template = '';
+    protected string $template = '';
 
     /**
      * AbstractGenerator constructor.
@@ -71,7 +71,7 @@ abstract class AbstractGenerator
      *
      * @return string The rendered template.
      */
-    public function produce()
+    public function produce(): string
     {
         $template = new Template($this->template);
         foreach ($this->settings as $key => $value) {

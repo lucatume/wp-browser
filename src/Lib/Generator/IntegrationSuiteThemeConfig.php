@@ -2,24 +2,24 @@
 
 namespace lucatume\WPBrowser\Lib\Generator;
 
-class IntegrationSuiteThemeConfig extends AbstractGenerator implements GeneratorInterface
+class IntegrationSuiteThemeConfig extends AbstractGenerator
 {
     /**
      * @var array<string>
      */
-    public static $requiredSettings = ['className', 'namespace', 'actor'];
+    public static array $requiredSettings = ['className', 'namespace', 'actor'];
 
     /**
      * @var string
      */
-    protected $template = <<< YAML
+    protected string $template = <<< YAML
 actor: {{className}}
 modules:
     enabled:
         - \\{{namespace}}Helper\\{{actor}}
-        - WPLoader
+        - \\lucatume\\WPBrowser\\Module\\WPLoader
     config:
-        WPLoader:
+        \\lucatume\\WPBrowser\\Module\\WPLoader:
             wpRootFolder: {{wpRootFolder}}
             dbName: {{dbName}}
             dbHost: {{dbHost}}

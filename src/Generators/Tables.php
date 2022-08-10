@@ -210,7 +210,7 @@ class Tables
         $data['home'] = $data['home'] ?? $data['siteurl'];
         $data['template'] = $data['template'] ?? $data['stylesheet'];
 
-        return renderString($template, $data);
+        return Strings::renderString($template, $data);
     }
 
     /**
@@ -229,6 +229,6 @@ class Tables
             'blog_id' => $blogId
         ];
 
-        return renderString($template, $data);
+        return Strings::renderString($template, $data);
     }
 }
