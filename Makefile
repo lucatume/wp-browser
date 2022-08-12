@@ -413,3 +413,10 @@ healthcheck:
 
 test_host_ip:
 	echo "Host IP: $(call host_ip)"
+
+update_core_phpunit_includes:
+	rm -rf includes/core-phpunit
+	mkdir -p includes/core-phpunit
+	cd includes/core-phpunit && \
+		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/data && \
+		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/includes

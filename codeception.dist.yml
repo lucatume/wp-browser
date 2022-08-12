@@ -19,7 +19,6 @@ wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
         - lucatume\WPBrowser\Extension\Copier
-        - lucatume\WPBrowser\Extension\Events
     config:
         lucatume\WPBrowser\Extension\Copier:
             files:
@@ -29,8 +28,6 @@ extensions:
                'tests/_data/plugins/test': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/test'
                'tests/_data/plugins/isolated-test-plugin': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin'
                'tests/_data/plugins/isolated-test-plugin-two': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin-two'
-        lucatume\WPBrowser\Extension\Events:
-            suites: ['events']
     commands:
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
         - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"

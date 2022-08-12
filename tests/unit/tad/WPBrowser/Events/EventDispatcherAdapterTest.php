@@ -7,8 +7,6 @@ use Codeception\Application;
 use Codeception\Codecept;
 use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
-use lucatume\WPBrowser\Events\EventDispatcherAdapter;
-use lucatume\WPBrowser\Events\WpbrowserEvent;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;

@@ -9,8 +9,8 @@ use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Module\WPFilesystem;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Property;
 use PHPUnit\Framework\AssertionFailedError;
-use function lucatume\WPBrowser\readPrivateProperty;
 use function lucatume\WPBrowser\setPrivateProperties;
 
 class WPFilesystemTest extends \Codeception\Test\Unit
@@ -779,7 +779,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      */
     public function cleanupDeprecatedPHPUnitMethodsWarnings()
     {
-        $currentWarnings = readPrivateProperty($this, 'warnings');
+        $currentWarnings = Property::readPrivate($this, 'warnings');
 
         $warnings = array_filter($currentWarnings, static function ($warning) {
             return strpos($warning, 'assertFileNotExists() is deprecated') === false;

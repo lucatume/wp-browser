@@ -13,9 +13,9 @@ use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
 use InvalidArgumentException;
 use JsonException;
+use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Exceptions\DumpException;
 use lucatume\WPBrowser\Module\Support\DbDump;
-use lucatume\WPBrowser\Traits\WithEvents;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;
@@ -44,8 +44,6 @@ Codeception::checkModuleRequirements('WPDb', [ 'Db' ]);
  */
 class WPDb extends Db
 {
-    use WithEvents;
-
     public const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
     public const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
     public const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
@@ -225,7 +223,7 @@ class WPDb extends Db
          *
          * @param WPDb $this The current module instance.
          */
-        $this->doAction(static::EVENT_BEFORE_INITIALIZE, $this);
+        Dispatcher::dispatch(static::EVENT_BEFORE_INITIALIZE, $this);
 
         $this->createDatabasesIfNotExist($this->config);
 
@@ -240,7 +238,7 @@ class WPDb extends Db
          *
          * @param WPDb $this The current module instance.
          */
-        $this->doAction(static::EVENT_AFTER_INITIALIZE, $this);
+        Dispatcher::dispatch(static::EVENT_AFTER_INITIALIZE, $this);
     }
 
     /**
@@ -4131,7 +4129,7 @@ class WPDb extends Db
          *
          * @param WPDb $this The current module instance.
          */
-        $this->doAction(static::EVENT_BEFORE_SUITE, $this);
+        Dispatcher::dispatch(static::EVENT_BEFORE_SUITE, $this);
     }
 
     /**
@@ -4205,7 +4203,7 @@ class WPDb extends Db
          * @param WPDb $origin This objects.
          * @param array<string,mixed> $config The current WPDb module configuration.
          */
-        $this->doAction(static::EVENT_AFTER_DB_PREPARE, $this, $this->config);
+        Dispatcher::dispatch(static::EVENT_AFTER_DB_PREPARE, $this, $this->config);
     }
 
     /**

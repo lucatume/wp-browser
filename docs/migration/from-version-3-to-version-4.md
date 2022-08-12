@@ -2,3 +2,4 @@
 
 TODO: update references to classes to use the lucatume\WPBrowser namespace.
 TODO: migrate utility functions ot use static methods (e.g. filesystem)
+TODO: new Events API

@@ -18,12 +18,13 @@ use Codeception\Util\Debug;
 use Exception;
 use JsonException;
 use lucatume\WPBrowser\Adapters\WP;
+use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
-use lucatume\WPBrowser\Traits\WithEvents;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\Configuration;
+use lucatume\WPBrowser\Utils\CorePHPunit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use ReflectionClass;
 use ReflectionException;
@@ -47,8 +48,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class WPLoader extends Module
 {
-
-    use WithEvents;
     use WithWordPressFilters;
     use ConfigTrait;
     use WithCodeceptionModuleConfig;
@@ -346,11 +345,11 @@ class WPLoader extends Module
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors.
-        $this->wpBootstrapFile = dirname(__DIR__) . '/includes/bootstrap.php';
+        $this->wpBootstrapFile = CorePHPunit::path('/bootstrap.php');
 
         if (! empty($this->config['loadOnly'])) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            $this->addAction(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
+            Dispatcher::addListener(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
 
             return;
         }
@@ -458,11 +457,7 @@ class WPLoader extends Module
             $this->debug('Running as single site');
         }
 
-        require_once dirname(__DIR__) . '/includes/functions.php';
-
-        if (! $this->config['skipPluggables']) {
-            require_once dirname(__DIR__) . '/includes/pluggable-functions.php';
-        }
+        require_once CorePHPunit::path('/includes/functions.php');
 
         if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();

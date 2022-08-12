@@ -78,39 +78,3 @@ function setPrivateProperties($object, array $props)
         $class  = get_parent_class($class);
     } while ($class);
 }
-
-/**
- * Reads the value of an object private property.
- *
- * This is a polyfill of the `Codeception\Utils\ReflectionPropertyAccessor::readPrivateProperty` method.
- * All credits to the Codeception team.
- *
- * @param object|mixed $object The object to read the property from.
- * @param string       $prop   The name of the property to get.
- *
- * @return mixed The value of the property.
- *
- * @throws \ReflectionException If there's an issue reflecting on the object or its property.
- */
-function readPrivateProperty($object, $prop)
-{
-    if (! is_object($object)) {
-        throw new \InvalidArgumentException(
-            sprintf('Cannot get property "%s" of "%s", expecting object', $prop, gettype($object))
-        );
-    }
-    $class = $object::class;
-    do {
-        $reflectedEntity = new \ReflectionClass($class);
-        if ($reflectedEntity->hasProperty($prop)) {
-            $property = $reflectedEntity->getProperty($prop);
-            $property->setAccessible(true);
-
-            return $property->getValue($object);
-        }
-        $class = get_parent_class($class);
-    } while ($class);
-    throw new \InvalidArgumentException(
-        sprintf('Property "%s" does not exists in class "%s" and its parents', $prop, $object::class)
-    );
-}
