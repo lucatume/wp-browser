@@ -12,3 +12,4 @@
 [] review .gitattributes file
 [] update facilities used in WPLoader from Core PHPUnit test suite
 [] update Event guide to the new class structure
+[] update docs to remove mentions of the Events extension
