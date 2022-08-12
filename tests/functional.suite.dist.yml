@@ -1,7 +1,7 @@
 # Codeception Test Suite Configuration
 
 # suite for functional (integration) tests.
-# emulate web requests and make application process them.
+# emul  e web requests and make application process them.
 # Include one of framework modules (Symfony2, Yii2, Laravel4) to use it.
 
 actor: FunctionalTester
@@ -9,11 +9,11 @@ bootstrap: _bootstrap.php
 modules:
     enabled:
       - FunctionalHelper
-      - WPDb
+      - \lucatume\WPBrowser\Module\WPDb
       - Asserts
-      - WPFilesystem
+      - \lucatume\WPBrowser\Module\WPFilesystem
     config:
-      WPDb:
+      \lucatume\WPBrowser\Module\WPDb:
         createIfNotExists: true
         dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
         user: %WORDPRESS_DB_USER%
@@ -47,5 +47,5 @@ modules:
             reconnect: false
             url: '%WORDPRESS_SUBDIR_URL%'
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
-      WPFilesystem:
+      \lucatume\WPBrowser\Module\WPFilesystem:
         wpRootFolder: %WORDPRESS_ROOT_DIR%
