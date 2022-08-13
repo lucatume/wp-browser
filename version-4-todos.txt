@@ -2,8 +2,7 @@
     [] deprecated the original functions
     [] report deprecations in changelog
 [] write version 3 to version 4 migration guide
-[] regen documentation
-[] update documentation
+[] update and regen documentation
 [] move all tests to new lucatume\WPBrowser workskpace
 [] update PHP stan version
 [] upgrade db dumps command following WordPress updates
@@ -14,3 +13,4 @@
 [] update Event guide to the new class structure
 [] update docs to remove mentions of the Events extension
 [] update docs about WPDb and Handlebars functions syntax
+[] rewrite the init template/procedure and tests

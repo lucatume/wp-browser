@@ -7,20 +7,25 @@
 
 namespace lucatume\WPBrowser\Template;
 
-use Codeception\Codecept;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Template\Bootstrap;
-use Codeception\Template\FS;
+use Exception;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Map;
 use lucatume\WPBrowser\Utils\Url;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
-use function lucatume\WPBrowser\checkComposerDependencies;
-use function lucatume\WPBrowser\composerFile;
 use function lucatume\WPBrowser\dbDsnMap;
 use function lucatume\WPBrowser\dbDsnString;
 use function lucatume\WPBrowser\envFile;
 use function lucatume\WPBrowser\loadEnvMap;
+use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Command\GenerateWPRestApi;
+use lucatume\WPBrowser\Command\GenerateWPRestController;
+use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
+use lucatume\WPBrowser\Command\GenerateWPAjax;
+use lucatume\WPBrowser\Command\GenerateWPCanonical;
+use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 
 /**
  * Class Wpbrowser
@@ -31,76 +36,32 @@ class Wpbrowser extends Bootstrap
 {
     use WithInjectableHelpers;
 
-    /**
-     * Whether to output during the bootstrap process or not.
-     *
-     * @var bool
-     */
-    protected $quiet = false;
-
-    /**
-     * Whether to bootstrap with user interaction or not.
-     *
-     * @var bool
-     */
-    protected $noInteraction = false;
-
-    /**
-     * The name of the environment file to use.
-     * @var string
-     */
-    protected $envFileName = '';
-
-    /**
-     * A map of the installation data either pre-set or compiled from the user answers.
-     * @var Map
-     */
-    protected $installationData;
-    /**
-     * Whether to create the suites helpers or not.
-     * @var bool
-     */
-    protected $createHelpers = true;
-    /**
-     * Whether to create the suite actors or not.
-     * @var bool
-     */
-    protected $createActors = true;
-
-    /**
-     * Whether to create the suites configuration files or not.
-     * @var bool
-     */
-    protected $createSuiteConfigFiles = true;
-
-    /**
-     * Whether to check the Composer configuration or not.
-     *
-     * @var bool
-     */
-    protected $checkComposerConfig = true;
+    private bool $quiet = false;
+    private string $envFileName = '';
+    private ?Map $installationData = null;
+    private bool $createHelpers = true;
+    private bool $createActors = true;
+    private bool $createSuiteConfigFiles = true;
 
     /**
      * Sets up wp-browser.
      *
      * @param bool $interactive Whether to set up wp-browser in interactive mode or not.
      *
-     * @return void
      *
-     * @throws \Exception If there's an error processing the installation information or context.
+     * @throws Exception If there's an error processing the installation information or context.
      */
-    public function setup($interactive = true): void
+    public function setup(bool $interactive = true): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->checkInstalled($this->workDir);
-        $this->checkComposerConfig();
 
         $input = $this->input;
 
         $this->quiet         = (bool) $this->input->getOption('quiet');
-        $this->noInteraction = (bool) $this->input->getOption('no-interaction');
+        $noInteraction = (bool) $this->input->getOption('no-interaction');
 
-        if ($this->noInteraction || $this->quiet) {
+        if ($noInteraction || $this->quiet) {
             $interactive = false;
             $this->input->setInteractive(false);
         } else {
@@ -141,11 +102,10 @@ class Wpbrowser extends Bootstrap
             $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
             $this->say(' --- ');
             $this->say();
-            $interactive = preg_match('/^(n|N)/', $interactive) ? false : true;
+            $interactive = !preg_match('/^([nN])/', $interactive);
         }
 
         $installationData      = $this->getInstallationData($interactive);
-        $arrayInstallationData = $installationData->toArray();
 
         try {
             $this->createGlobalConfig();
@@ -154,17 +114,17 @@ class Wpbrowser extends Bootstrap
             $this->createUnitSuite();
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $arrayInstallationData);
+            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $installationData);
             $this->say("tests/{$installationData['wpunitSuiteSlug']} created               "
                         . '<- WordPress unit and integration tests');
             $this->say("tests/{$installationData['wpunitSuiteSlug']}.suite.yml written     "
                         . '<- WordPress unit and integration tests suite configuration');
-            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $arrayInstallationData);
+            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $installationData);
             $this->say("tests/{$installationData['functionalSuiteSlug']} created           "
                         . "<- {$installationData['functionalSuiteSlug']} tests");
             $this->say("tests/{$installationData['functionalSuiteSlug']}.suite.yml written "
                         . "<- {$installationData['functionalSuiteSlug']} tests suite configuration");
-            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $arrayInstallationData);
+            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $installationData);
             $this->say("tests/{$installationData['acceptanceSuiteSlug']} created           "
                         . "<- {$installationData['acceptanceSuiteSlug']} tests");
             $this->say("tests/{$installationData['acceptanceSuiteSlug']}.suite.yml written "
@@ -221,8 +181,6 @@ class Wpbrowser extends Bootstrap
      * Says something to the user.
      *
      * @param string $message The message to tell to the user.
-     *
-     * @return void
      */
     protected function say(string $message = ''): void
     {
@@ -235,7 +193,6 @@ class Wpbrowser extends Bootstrap
     /**
      * Creates the global config.
      *
-     * @return void
      *
      */
     public function createGlobalConfig(): void
@@ -271,16 +228,16 @@ class Wpbrowser extends Bootstrap
      *
      * @return array<string> The additonal commands provided by wp-browser.
      */
-    protected function getAddtionalCommands()
+    protected function getAddtionalCommands(): array
     {
         return [
-            'lucatume\\WPBrowser\\Command\\GenerateWPUnit',
-            'lucatume\\WPBrowser\\Command\\GenerateWPRestApi',
-            'lucatume\\WPBrowser\\Command\\GenerateWPRestController',
-            'lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController',
-            'lucatume\\WPBrowser\\Command\\GenerateWPAjax',
-            'lucatume\\WPBrowser\\Command\\GenerateWPCanonical',
-            'lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC',
+            GenerateWPUnit::class,
+            GenerateWPRestApi::class,
+            GenerateWPRestController::class,
+            GenerateWPRestPostTypeController::class,
+            GenerateWPAjax::class,
+            GenerateWPCanonical::class,
+            GenerateWPXMLRPC::class,
         ];
     }
 
@@ -289,29 +246,22 @@ class Wpbrowser extends Bootstrap
      *
      * @param bool $interactive Whether to build the installation data with user interactive input or not.
      *
-     * @return \lucatume\WPBrowser\Utils\Map The installation data.
+     * @return Map The installation data.
      */
-    protected function getInstallationData($interactive)
+    protected function getInstallationData(bool $interactive): Map
     {
         if ($this->installationData !== null) {
             return $this->installationData;
         }
 
-        if (! $interactive) {
-            $installationData = $this->getDefaultInstallationData();
-        } else {
-            $installationData = $this->askForInstallationData();
+        if (!$interactive) {
+            return $this->getDefaultInstallationData();
         }
 
-        return $installationData instanceof Map ? $installationData : new Map($installationData);
+        return $this->askForInstallationData();
     }
 
-    /**
-     * Asks the user for the installation data.
-     *
-     * @return array{acceptanceSuite: string, acceptanceSuiteSlug: string, activeModules: array{WPDb: true, WPBrowser: true, WordPress: true, WPLoader: true}, functionalSuite: string, functionalSuiteSlug: string, mainPlugin?: mixed, parentTheme?: mixed, plugins: mixed[], testDbHost: mixed, testDbName: mixed, testDbPassword: mixed, testDbUser: mixed, testSiteAdminEmail: mixed, testSiteAdminPassword: mixed, testSiteAdminUsername: mixed, testSiteDbHost: mixed, testSiteDbName: mixed, testSiteDbPassword: mixed, testSiteDbUser: mixed, testSiteTablePrefix: mixed, testSiteWpAdminPath: string, testSiteWpDomain: string, testSiteWpUrl: string, testTablePrefix: mixed, theme?: mixed, title: mixed, wpRootFolder: string, wpunitSuite: string, wpunitSuiteSlug: string} The installation data as provided by the user.
-     */
-    protected function askForInstallationData(): array|\lucatume\WPBrowser\Utils\Map
+    protected function askForInstallationData(): Map
     {
         $installationData = [
             'activeModules' => [
@@ -447,7 +397,7 @@ class Wpbrowser extends Bootstrap
             );
         } elseif ($sut === 'theme') {
             $isChildTheme = $this->ask('Are you developing a child theme?', 'no');
-            if (preg_match('/^(y|Y)/', $isChildTheme)) {
+            if (preg_match('/^([yY])/', $isChildTheme)) {
                 $installationData['parentTheme'] = $this->ask(
                     'What is the slug of the parent theme?',
                     'twentyseventeen'
@@ -456,7 +406,7 @@ class Wpbrowser extends Bootstrap
             $installationData['theme'] = $this->ask('What is the slug of the theme?', 'my-theme');
         } else {
             $isChildTheme = $this->ask('Are you using a child theme?', 'no');
-            if (preg_match('/^(y|Y)/', $isChildTheme)) {
+            if (preg_match('/^([yY])/', $isChildTheme)) {
                 $installationData['parentTheme'] = $this->ask(
                     'What is the slug of the parent theme?',
                     'twentyseventeen'
@@ -470,7 +420,7 @@ class Wpbrowser extends Bootstrap
             'no'
         );
 
-        if (preg_match('/^(y|Y)/', $activateFurtherPlugins)) {
+        if (preg_match('/^([yY])/', $activateFurtherPlugins)) {
             do {
                 $plugin                        = $this->ask(
                     'Please enter the plugin <comment>folder/plugin.php</comment> (leave blank when done)',
@@ -485,7 +435,7 @@ class Wpbrowser extends Bootstrap
             $installationData['plugins'][] = $installationData['mainPlugin'];
         }
 
-        return $installationData;
+        return new Map($installationData);
     }
 
     /**
@@ -495,14 +445,14 @@ class Wpbrowser extends Bootstrap
      *
      * @throws \RuntimeException If an environment file already exists.
      */
-    protected function checkEnvFileExistence()
+    protected function checkEnvFileExistence(): void
     {
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
 
         if (file_exists($filename)) {
             $basename = basename($filename);
-            $message  = "Found a previous {$basename} file."
-                        . PHP_EOL . "Remove the existing {$basename} file or specify a " .
+            $message  = "Found a previous $basename file."
+                        . PHP_EOL . "Remove the existing $basename file or specify a " .
                         "different name for the env file.";
             throw new RuntimeException($message);
         }
@@ -515,7 +465,7 @@ class Wpbrowser extends Bootstrap
      *
      * @return string The normalized path.
      */
-    protected function normalizePath($path): string
+    protected function normalizePath(string $path): string
     {
         $pathFrags = preg_split('#([/\\\])#u', $path) ?: [];
 
@@ -525,24 +475,22 @@ class Wpbrowser extends Bootstrap
     /**
      * Writes the testing environment configuration file.
      *
-     * @param \lucatume\WPBrowser\Utils\Map $installationData The installation data to use to build the env file contents.
+     * @param Map $installationData The installation data to use to build the env file contents.
      *
      * @return void
      */
-    public function writeEnvFile(Map $installationData)
+    public function writeEnvFile(Map $installationData): void
     {
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
         $envVars  = $this->getEnvFileVars($installationData);
 
         $envFileLines = implode("\n", array_map(static function ($key, $value) {
-            return "{$key}={$value}";
+            return "$key=$value";
         }, array_keys($envVars), $envVars));
 
-        $put = file_put_contents($filename, $envFileLines . "\n");
-
-        if (! $put) {
+        if (!file_put_contents($filename, $envFileLines . "\n")) {
             $this->removeCreatedFiles();
-            throw new RuntimeException("Could not write {$this->envFileName} file!");
+            throw new RuntimeException("Could not write $this->envFileName file!");
         }
     }
 
@@ -551,12 +499,12 @@ class Wpbrowser extends Bootstrap
      *
      * @return void
      */
-    protected function removeCreatedFiles()
+    protected function removeCreatedFiles(): void
     {
         $files = [ 'codeception.yml', $this->envFileName ];
         $dirs  = [ 'tests' ];
         foreach ($files as $file) {
-            if (file_exists(getcwd() . '/' . $file)) {
+            if (is_file(getcwd() . '/' . $file)) {
                 unlink(getcwd() . '/' . $file);
             }
         }
@@ -567,30 +515,23 @@ class Wpbrowser extends Bootstrap
         }
     }
 
-    /**
-     * Creates the WordPress unit test suite.
-     *
-     * @param string $actor The actor for the suite.
-     * @param array<int|string,mixed>  $installationData The installation data.
-     *
-     * @return void
-     */
-    protected function createWpUnitSuite($actor = 'Wpunit', array $installationData = [])
+    protected function createWpUnitSuite(string $actor = 'Wpunit', ?Map $installationData = null): void
     {
-        $installationData = new Data($installationData);
-        $WPLoader         = ! empty($installationData['activeModules']['WPLoader']) ? '- WPLoader' : '# - WPLoader';
+        $installationData = $installationData ?? new Map;
+        $ns = 'lucatume\WPBrowser\Module';
+        $WPLoader         = ! empty($installationData['activeModules']['WPLoader']) ? "- $ns\WPLoader" : "# - $ns\WPLoader";
         $suiteConfig      = <<<EOF
 # Codeception Test Suite Configuration
 #
 # Suite for unit or integration tests that require WordPress functions and classes.
 
-actor: $actor{$this->actorSuffix}
+actor: $actor$this->actorSuffix
 modules:
     enabled:
-        {$WPLoader}
+        $WPLoader
         - \\{$this->namespace}Helper\\$actor
     config:
-        WPLoader:
+        $ns\WPLoader:
             wpRootFolder: "%WP_ROOT_FOLDER%"
             dbName: "%TEST_DB_NAME%"
             dbHost: "%TEST_DB_HOST%"
@@ -608,7 +549,7 @@ EOF;
                 : "[{$installationData['parentTheme']}, {$installationData['theme']}]";
             $suiteConfig .= <<<EOF
 
-            theme: {$theme}
+            theme: $theme
 EOF;
         }
 
@@ -616,28 +557,21 @@ EOF;
         $plugins     = "'" . implode("', '", (array) $plugins) . "'";
         $suiteConfig .= <<< EOF
 
-            plugins: [{$plugins}]
-            activatePlugins: [{$plugins}]
+            plugins: [$plugins]
+            activatePlugins: [$plugins]
 EOF;
 
         $this->createSuite($installationData['wpunitSuiteSlug'], $actor, $suiteConfig);
     }
 
-    /**
-     * Creates the `unit` suite configuration file.
-     *
-     * @param string $actor The name of the actor that should be used for the `unit` suite.
-     *
-     * @return void
-     */
-    protected function createUnitSuite($actor = 'Unit'): void
+    protected function createUnitSuite(string $actor = 'Unit'): void
     {
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
 #
 # Suite for unit tests not relying WordPress code.
 
-actor: $actor{$this->actorSuffix}
+actor: $actor$this->actorSuffix
 modules:
     enabled:
         - Asserts
@@ -647,16 +581,7 @@ EOF;
         $this->createSuite('unit', $actor, $suiteConfig);
     }
 
-    /**
-     * Overrides the base implementation to control what should be created.
-     *
-     * @param string $suite  The name of the suite to create.
-     * @param string $actor  The name of the suite actor to create.
-     * @param string $config The suite configuration.
-     *
-     * @return void
-     */
-    protected function createSuite($suite, $actor, $config): void
+    protected function createSuite(string $suite, string $actor, string $config): void
     {
         $this->createDirectoryFor("tests/$suite", "$suite.suite.yml");
         if ($this->createHelpers) {
@@ -670,38 +595,31 @@ EOF;
         }
     }
 
-    /**
-     * Creates the functional suite.
-     *
-     * @param string $actor The actor to use for the suite.
-     * @param array<int|string,mixed>  $installationData The installation data.
-     *
-     * @return void
-     */
-    protected function createFunctionalSuite($actor = 'Functional', array $installationData = []): void
+    protected function createFunctionalSuite(string $actor = 'Functional', ?Map $installationData = null): void
     {
-        $installationData = new \lucatume\WPBrowser\Template\Data($installationData);
-        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
-        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? '- WPBrowser' : '# - WPBrowser';
+        $installationData = $installationData ?? new Map;
+        $ns = 'lucatume\WPBrowser\Module';
+        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? "- $ns\WPDb" : "# - $ns\WPDb";
+        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? "- $ns\WPBrowser" : "# - $ns\WPBrowser";
         $WPFilesystem     = ! empty($installationData['activeModules']['WPFilesystem']) ?
-            '- WPFilesystem'
-            : '# - WPFilesystem';
+            "- $ns\WPFilesystem"
+            : "# - $ns\WPFilesystem";
         $suiteConfig      = <<<EOF
 # Codeception Test Suite Configuration
 #
 # Suite for {$installationData['functionalSuiteSlug']} tests
 # Emulate web requests and make WordPress process them
 
-actor: $actor{$this->actorSuffix}
+actor: $actor$this->actorSuffix
 modules:
     enabled:
-        {$WPDb}
-        {$WPBrowser}
-        {$WPFilesystem}
+        $WPDb
+        $WPBrowser
+        $WPFilesystem
         - Asserts
-        - \\{$this->namespace}Helper\\{$actor}
+        - \\{$this->namespace}Helper\\$actor
     config:
-        WPDb:
+        $ns\WPDb:
             dsn: '%TEST_SITE_DB_DSN%'
             user: '%TEST_SITE_DB_USER%'
             password: '%TEST_SITE_DB_PASSWORD%'
@@ -712,7 +630,7 @@ modules:
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        WPBrowser:
+        $ns\WPBrowser:
             url: '%TEST_SITE_WP_URL%'
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
@@ -721,7 +639,7 @@ modules:
                 X_TEST_REQUEST: 1
                 X_WPBROWSER_REQUEST: 1
 
-        WPFilesystem:
+        $ns\WPFilesystem:
             wpRootFolder: '%WP_ROOT_FOLDER%'
             plugins: '/wp-content/plugins'
             mu-plugins: '/wp-content/mu-plugins'
@@ -731,19 +649,12 @@ EOF;
         $this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
     }
 
-    /**
-     * Creates the acceptance suite files.
-     *
-     * @param string $actor The actor to use for the acceptance suite.
-     * @param array<int|string,mixed>  $installationData The current installation data.
-     *
-     * @return void
-     */
-    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = []): void
+    protected function createAcceptanceSuite(string $actor = 'Acceptance', ?Map $installationData = null) :void
     {
-        $installationData = new Data($installationData);
-        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
-        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? '- WPBrowser' : '# - WPBrowser';
+        $installationData = $installationData ?? new Map;
+        $ns = 'lucatume\WPBrowser\Module';
+        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? "- $ns\WPDb" : "# - $ns\WPDb";
+        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? "- $ns\WPBrowser" : "# - $ns\WPBrowser";
         $suiteConfig      = <<<EOF
 # Codeception Test Suite Configuration
 #
@@ -752,14 +663,14 @@ EOF;
 # Use WPDb to set up your initial database fixture.
 # If you need both WPWebDriver and WPBrowser tests - create a separate suite.
 
-actor: $actor{$this->actorSuffix}
+actor: $actor$this->actorSuffix
 modules:
     enabled:
-        {$WPDb}
-        {$WPBrowser}
-        - \\{$this->namespace}Helper\\{$actor}
+        $WPDb
+        $WPBrowser
+        - \\{$this->namespace}Helper\\$actor
     config:
-        WPDb:
+        $ns\WPDb:
             dsn: '%TEST_SITE_DB_DSN%'
             user: '%TEST_SITE_DB_USER%'
             password: '%TEST_SITE_DB_PASSWORD%'
@@ -772,7 +683,7 @@ modules:
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        WPBrowser:
+        $ns\WPBrowser:
             url: '%TEST_SITE_WP_URL%'
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
@@ -789,7 +700,7 @@ EOF;
      *
      * @return void
      */
-    protected function askForAcknowledgment()
+    protected function askForAcknowledgment(): void
     {
         $this->say('<info>'
                     . 'Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!'
@@ -825,7 +736,7 @@ EOF;
      *
      * @param string $workDir The path to the working directory the template should use.
      */
-    public function setWorkDir($workDir): void
+    public function setWorkDir(string $workDir): void
     {
         chdir($workDir);
         $this->workDir = $workDir;
@@ -844,9 +755,9 @@ EOF;
     /**
      * Returns the default installation data.
      *
-     * @return array{acceptanceSuite: string, functionalSuite: string, wpunitSuite: string, acceptanceSuiteSlug: string, functionalSuiteSlug: string, wpunitSuiteSlug: string, testSiteDbHost: string, testSiteDbName: string, testSiteDbUser: string, testSiteDbPassword: string, testSiteTablePrefix: string, testSiteWpUrl: string, testSiteWpDomain: string, testSiteAdminUsername: string, testSiteAdminPassword: string, testSiteAdminEmail: string, testSiteWpAdminPath: string, wpRootFolder: string, testDbName: string, testDbHost: string, testDbUser: string, testDbPassword: string, testTablePrefix: string, title: string, activeModules: array{WPDb: false, WordPress: false, WPLoader: false}} The template default installation data.
+     * @return Map The template default installation data.
      */
-    public function getDefaultInstallationData(): array|\lucatume\WPBrowser\Utils\Map
+    public function getDefaultInstallationData(): Map
     {
         $installationData  = [
             'acceptanceSuite'       => 'acceptance',
@@ -878,7 +789,7 @@ EOF;
         ];
         $this->envFileName = '.env.testing';
 
-        return $installationData;
+        return new Map($installationData);
     }
 
     /**
@@ -893,7 +804,7 @@ EOF;
         $testSiteDsnMap           = dbDsnMap($installationData['testSiteDbHost']);
         $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
         $testDbDsnMap             = dbDsnMap($installationData['testDbHost']);
-        $envVars                  = [
+        return [
             'TEST_SITE_DB_DSN'         => dbDsnString($testSiteDsnMap),
             'TEST_SITE_DB_HOST'        => dbDsnString($testDbDsnMap, true),
             'TEST_SITE_DB_NAME'        => $testSiteDsnMap('dbname', 'wordpress'),
@@ -913,8 +824,6 @@ EOF;
             'TEST_SITE_WP_DOMAIN'      => Url::getDomain($installationData['testSiteWpUrl']),
             'TEST_SITE_ADMIN_EMAIL'    => $installationData['testSiteAdminEmail'],
         ];
-
-        return $envVars;
     }
 
     /**
@@ -924,7 +833,7 @@ EOF;
      *
      * @return Wpbrowser For chaining.
      */
-    public function setCreateHelpers($createHelpers)
+    public function setCreateHelpers(bool $createHelpers): static
     {
         $this->createHelpers = $createHelpers;
 
@@ -938,7 +847,7 @@ EOF;
      *
      * @return Wpbrowser For chaining.
      */
-    public function setCreateActors($createActors)
+    public function setCreateActors(bool $createActors): static
     {
         $this->createActors = $createActors;
 
@@ -952,54 +861,10 @@ EOF;
      *
      * @return Wpbrowser For chaining.
      */
-    public function setCreateSuiteConfigFiles($createSuiteConfigFiles)
+    public function setCreateSuiteConfigFiles(bool $createSuiteConfigFiles): static
     {
         $this->createSuiteConfigFiles = $createSuiteConfigFiles;
 
         return $this;
-    }
-
-    /**
-     * Checks the composer.json file for requirements.
-     *
-     * @return void
-     */
-    protected function checkComposerConfig()
-    {
-        if (!$this->checkComposerConfig) {
-            return;
-        }
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        // @phpstan-ignore-next-line
-        if (version_compare(Codecept::VERSION, '4.0.0', '>=')) {
-            checkComposerDependencies(composerFile(FS::resolvePath('composer.json', $this->workDir)), [
-                'codeception/module-asserts'          => '^1.0',
-                'codeception/module-phpbrowser'       => '^1.0',
-                'codeception/module-webdriver'        => '^1.0',
-                'codeception/module-db'               => '^1.0',
-                'codeception/module-filesystem'       => '^1.0',
-                'codeception/module-cli'              => '^1.0',
-                'codeception/util-universalframework' => '^1.0'
-            ], static function ($lines): void {
-                throw new \RuntimeException(
-                    "wp-browser requires the following packages to work with Codeception v4.0:\n\n" .
-                    implode(",\n", $lines) .
-                    "\n\n1. Add these lines to the 'composer.json' file 'require-dev' section." .
-                    "\n2. Run 'composer update'." .
-                    "\n3. Run the 'codecept init wpbrowser' command again."
-                );
-            });
-        }
-    }
-
-    /**
-     * Sets the flag that controls the check of the Composer configuration file.
-     *
-     * @param bool $checkComposerConfig The flag that will control the check on the Composer configuration file.
-     */
-    public function setCheckComposerConfig($checkComposerConfig): void
-    {
-        $this->checkComposerConfig = (bool)$checkComposerConfig;
     }
 }

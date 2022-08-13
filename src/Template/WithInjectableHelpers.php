@@ -19,46 +19,17 @@ use Symfony\Component\Console\Question\Question;
  */
 trait WithInjectableHelpers
 {
-    /**
-     * The current question helper instance the template will use to ask questions to the user.
-     *
-     * @var QuestionHelper|null
-     */
-    protected ?QuestionHelper $questionHelper;
+    protected ?QuestionHelper $questionHelper = null;
 
-    /**
-     * Returns the current template question helper.
-     *
-     * @return QuestionHelper|null
-     */
-    public function getQuestionHelper(): ?QuestionHelper
-    {
-        return $this->questionHelper;
-    }
-
-    /**
-     * Sets the question helper instance the template should use to interact with the user.
-     *
-     * @param QuestionHelper $questionHelper The question helper instance the template should use to interact with the
-     *                                       user.
-     */
     public function setQuestionHelper(QuestionHelper $questionHelper): void
     {
         $this->questionHelper = $questionHelper;
     }
 
-    /**
-     * Asks a question using a pre-set question helper or a new question helper instance if none was set.
-     *
-     * @param string $question The question to ask.
-     * @param null|mixed $answer   The answer to the question.
-     *
-     * @return mixed The answer as provided by the user.
-     */
     protected function ask(string $question, $answer = null): mixed
     {
         $question = "? $question";
-        $dialog   = $this->questionHelper ?: new QuestionHelper();
+        $dialog = $this->questionHelper ?: new QuestionHelper();
         if (is_array($answer)) {
             $question .= " <info>(" . $answer[0] . ")</info> ";
 

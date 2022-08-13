@@ -219,7 +219,6 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $template->setQuestionHelper($questionHelper);
         $template->setCreateHelpers(false);
         $template->setCreateActors(false);
-        $template->setCheckComposerConfig(false);
         $template->setCreateSuiteConfigFiles(true);
         $template->setWorkDir($workDir);
         $template->setup(true);

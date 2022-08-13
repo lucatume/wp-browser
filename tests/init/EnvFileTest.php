@@ -21,7 +21,7 @@ class EnvFileTest extends BaseTest
     public function should_correctly_scaffold_for_mysql_on_localhost()
     {
         $init = new Wpbrowser(new ArrayInput([]), new NullOutput());
-        $installationData =( array_merge($init->getDefaultInstallationData(), [
+        $installationData =( array_merge($init->getDefaultInstallationData()->toArray(), [
             'testSiteDbHost'     => 'localhost',
             'testSiteDbName'     => 'wp',
             'testSiteDbUser'     => 'root',
@@ -48,7 +48,7 @@ class EnvFileTest extends BaseTest
     public function should_correctly_scaffold_for_mysql_on_unix_socket()
     {
         $init = new Wpbrowser(new ArrayInput([]), new NullOutput());
-        $installationData =( array_merge($init->getDefaultInstallationData(), [
+        $installationData =( array_merge($init->getDefaultInstallationData()->toArray(), [
             'testSiteDbHost'     => '/var/mysql.sock',
             'testSiteDbName'     => 'wp',
             'testSiteDbUser'     => 'root',
@@ -75,7 +75,7 @@ class EnvFileTest extends BaseTest
     public function should_correclty_scaffold_for_mysql_on_ip_address()
     {
         $init = new Wpbrowser(new ArrayInput([]), new NullOutput());
-        $installationData =( array_merge($init->getDefaultInstallationData(), [
+        $installationData =( array_merge($init->getDefaultInstallationData()->toArray(), [
             'testSiteDbHost'     => '1.2.3.4',
             'testSiteDbName'     => 'test',
             'testSiteDbUser'     => 'root',
@@ -102,7 +102,7 @@ class EnvFileTest extends BaseTest
     public function should_correctly_scaffold_for_mysql_on_ip_address_and_port()
     {
         $init = new Wpbrowser(new ArrayInput([]), new NullOutput());
-        $installationData =( array_merge($init->getDefaultInstallationData(), [
+        $installationData =( array_merge($init->getDefaultInstallationData()->toArray(), [
             'testSiteDbHost'     => '1.2.3.4:2389',
             'testSiteDbName'     => 'test',
             'testSiteDbUser'     => 'root',

@@ -18,4 +18,3 @@ require_once __DIR__ . '/filesystem.php';
 require_once __DIR__ . '/wp.php';
 require_once __DIR__ . '/class-aliases.php';
 require_once __DIR__ . '/phpunit.php';
-require_once __DIR__ . '/composer.php';
