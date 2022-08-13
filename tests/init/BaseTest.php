@@ -1,8 +1,8 @@
 <?php
 
-use lucatume\WPBrowser\Utils\Filesystem as FS;
-
 namespace lucatume\WPBrowser\Tests;
+
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 abstract class BaseTest extends \Codeception\Test\Unit
 {
@@ -12,7 +12,7 @@ abstract class BaseTest extends \Codeception\Test\Unit
             FS::rrmdir($workDir);
         }
 
-        if (! mkdir($workDir, 0777, true)) {
+        if (!mkdir($workDir, 0777, true)) {
             throw new \RuntimeException('Failed to create the work directory.');
         }
     }
