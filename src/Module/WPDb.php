@@ -3021,10 +3021,10 @@ class WPDb extends Db
     {
         try {
             /** @var WPFilesystem $fs */
-            $fs = $this->getModule('WPFilesystem');
+            $fs = $this->getModule('\\' . WPFilesystem::class);
 
             return $fs;
-        } catch (ModuleException) {
+        } catch (ModuleException $e) {
             $message = 'This method requires the WPFilesystem module.';
             throw new ModuleException(__CLASS__, $message);
         }
