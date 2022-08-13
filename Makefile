@@ -443,6 +443,6 @@ update_core_phpunit_includes:
 		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/data && \
 		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/includes
 
-.PHONY: mysql_cli
-mysql_cli:
+.PHONY: ssh_mysql
+ssh_mysql:
 	docker exec -it wp-browser_db bash -c "mysql -utest -ptest"
