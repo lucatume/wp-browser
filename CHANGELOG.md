@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Move classes in the `Codeception` namespace to the `lucatume\WPBrowser` one.
 - Moved functions from the `lucatume\WPBrowser` namespace to dedicated classes in the `lucatume\WPBrowser\Utils`
   namespace.
+- Removed support for Handlebars-like syntax from the `WPDb` module scaffolding functions.
 
 ## [3.1.6] 2022-04-28;
 
