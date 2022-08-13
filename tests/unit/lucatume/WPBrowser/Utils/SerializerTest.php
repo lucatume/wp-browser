@@ -137,17 +137,17 @@ class SerializerTest extends Unit
     {
         $serializableObject = new TestSerializableObject();
 
-        yield 'null' => [null, serialize(null)];
+        yield 'null' => [null, null];
         yield 'serialized null' => [serialize(null), serialize(null)];
         yield 'empty string' => ['', ''];
         yield 'serialized empty string' => [serialize(''), serialize('')];
-        yield 'boolean true' => [true, serialize(true)];
+        yield 'boolean true' => [true, true];
         yield 'serialized boolean true' => [serialize(true), serialize(true)];
-        yield 'boolean false' => [false, serialize(false)];
+        yield 'boolean false' => [false, false];
         yield 'serialized boolean false' => [serialize(false), serialize(false)];
-        yield 'integer' => [23, serialize(23)];
+        yield 'integer' => [23, 23];
         yield 'serialized integer' => [serialize(23), serialize(23)];
-        yield 'float' => [23.89, serialize(23.89)];
+        yield 'float' => [23.89, 23.89];
         yield 'serialized float' => [serialize(23.89), serialize(23.89)];
         yield 'string' => ['foo-bar', 'foo-bar'];
         yield 'serialized string' => [serialize('foo-bar'), serialize('foo-bar')];

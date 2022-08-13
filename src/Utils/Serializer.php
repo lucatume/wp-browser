@@ -42,6 +42,6 @@ class Serializer
 
     public static function maybeSerialize(mixed $value): mixed
     {
-        return is_string($value) || self::isSerialized($value) ? $value : serialize($value);
+        return is_array($value) || is_object($value) ? serialize($value) : $value;
     }
 }
