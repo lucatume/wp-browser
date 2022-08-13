@@ -24,14 +24,14 @@ trait WithInjectableHelpers
      *
      * @var QuestionHelper|null
      */
-    protected $questionHelper;
+    protected ?QuestionHelper $questionHelper;
 
     /**
      * Returns the current template question helper.
      *
      * @return QuestionHelper|null
      */
-    public function getQuestionHelper()
+    public function getQuestionHelper(): ?QuestionHelper
     {
         return $this->questionHelper;
     }
@@ -42,7 +42,7 @@ trait WithInjectableHelpers
      * @param QuestionHelper $questionHelper The question helper instance the template should use to interact with the
      *                                       user.
      */
-    public function setQuestionHelper($questionHelper): void
+    public function setQuestionHelper(QuestionHelper $questionHelper): void
     {
         $this->questionHelper = $questionHelper;
     }
@@ -50,12 +50,12 @@ trait WithInjectableHelpers
     /**
      * Asks a question using a pre-set question helper or a new question helper instance if none was set.
      *
-     * @param string     $question The question to ask.
+     * @param string $question The question to ask.
      * @param null|mixed $answer   The answer to the question.
      *
      * @return mixed The answer as provided by the user.
      */
-    protected function ask($question, $answer = null)
+    protected function ask(string $question, $answer = null): mixed
     {
         $question = "? $question";
         $dialog   = $this->questionHelper ?: new QuestionHelper();
