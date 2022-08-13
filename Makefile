@@ -34,6 +34,7 @@ endef
 endif
 
 
+.PHONY: build
 build: _build/_container/php/iidfile _build/_container/wordpress/iidfile up build_db healthcheck .env.testing
 
 define ENV_TESTING_FILE_CONTENTS
@@ -70,6 +71,7 @@ _build/_container/php/iidfile:
 		--tag lucatume/wp-browser_php_$(PHP_VERSION):$(CONTAINERS_VERSION) \
 		$(PWD)/_build/_container/php
 
+.PHONY: php_container_build
 php_container_build: _build/_container/php/iidfile
 
 _build/_container/wordpress/iidfile:
@@ -82,8 +84,10 @@ _build/_container/wordpress/iidfile:
 		--tag lucatume/wp-browser_wordpress:$(CONTAINERS_VERSION) \
 		$(PWD)/_build/_container/wordpress
 
+.PHONY: wordpress_container_build
 wordpress_container_build: _build/_container/wordpress/iidfile
 
+.PHONY: network_up
 network_up:
 	$(if \
 		$(shell docker network ls -q --filter name=wp-browser), \
@@ -94,6 +98,7 @@ network_up:
 				wp-browser \
 	)
 
+.PHONY: database_up
 database_up: network_up
 	$(if \
 		$(shell docker ps -q --filter "name=wp-browser_db"), \
@@ -125,6 +130,7 @@ database_up: network_up
 	docker exec wp-browser_db mysql -uroot -ppassword -e "create database if not exists subdir_test"
 	docker exec wp-browser_db mysql -uroot -ppassword -e "create database if not exists subdomain_test"
 
+.PHONY: php_container_up
 php_container_up: _build/_container/php/iidfile network_up
 	mkdir -p $(PWD)/.cache/composer
 	$(if \
@@ -147,20 +153,24 @@ php_container_up: _build/_container/php/iidfile network_up
 		) \
 	)
 
+.PHONY: up
 up: network_up database_up php_container_up wordpress_up chromedriver_up
 
+.PHONY: down
 down:
 	$(if $(shell docker ps -aq --filter "label=project=wp-browser"), \
 		docker rm --force $$(docker ps -aq --filter "label=project=wp-browser"))
 	$(if $(shell docker network ls -q --filter label=project=wp-browser), \
 		docker network rm $$(docker network ls -q --filter label=project=wp-browser))
 
+.PHONY: clean
 clean: down
 	rm -f _build/_container/php/iidfile
 	rm -f _build/_container/wordpress/iidfile
 	rm -rf vendor/wordpress/wordpress
 	rm -f .env.testing
 
+.PHONY: config
 config:
 	echo "CONTAINERS_VERSION => $(CONTAINERS_VERSION)"
 	echo "PROJECT_NAME => $(PROJECT_NAME)"
@@ -178,18 +188,23 @@ config:
 	echo "ROOT => $(ROOT)"
 	echo "USER_OPTION => $(USER_OPTION)"
 
+.PHONY: ssh
 ssh: php_container_up
 	docker exec -it $(USER_OPTION) wp-browser_php_$(PHP_VERSION) bash
 
+.PHONY: composer_version
 composer_version: network_up php_container_up
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) composer --version
 
+.PHONY: composer_install
 composer_install: network_up php_container_up
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) composer install
 
+.PHONY: composer_update
 composer_update: network_up php_container_up
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) composer update
 
+.PHONY: wp_cli_version
 wp_cli_version:
 	docker exec $(TTY_FLAG) -u "$(shell id -u):$(shell id -g)" wp-browser_php_$(PHP_VERSION) wp --version
 
@@ -220,6 +235,7 @@ RewriteRule . index.php [L]
 endef
 export HTACCESS_CONTENTS
 
+.PHONY: wordpress_up
 wordpress_up: network_up php_container_up database_up
 	if [ ! -f vendor/wordpress/wordpress/wp-load.php ]; then \
 		mkdir -p vendor/wordpress/wordpress; \
@@ -283,6 +299,7 @@ wordpress_up: network_up php_container_up database_up
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} blog1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_wordpress bash -c "echo '$${_IP} blog2.wordpress.test' >> /etc/hosts"
 
+.PHONY: chromedriver_up
 chromedriver_up: wordpress_up
 	$(if \
 		$(shell docker ps -q --filter "name=wp-browser_chrome"), \
@@ -312,9 +329,11 @@ chromedriver_up: wordpress_up
 		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} blog1.wordpress.test' >> /etc/hosts" && \
 		docker exec -u 0 wp-browser_chrome bash -c "echo '$${_IP} blog2.wordpress.test' >> /etc/hosts"
 
+.PHONY: ps
 ps:
 	docker ps -a --filter label=project=wp-browser --filter status=running
 
+.PHONY: build_db
 build_db:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS test\""
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS subdomain_test\""
@@ -322,6 +341,7 @@ build_db:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"CREATE DATABASE IF NOT EXISTS empty\""
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "mysql -uroot -ppassword -hdb -e \"GRANT ALL ON *.* TO 'test'@'%'\""
 
+.PHONY: healthcheck
 healthcheck:
 	echo -n "PHP container can reach WordPress container at wordpress.test ... "
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c 'curl -Ifs http://wordpress.test > /dev/null'
@@ -411,9 +431,11 @@ healthcheck:
 	docker exec wp-browser_wordpress bash -c 'php -r "new mysqli(\"db\", \"test\", \"test\", \"empty\");" > /dev/null'
 	echo "yes"
 
+.PHONY: test_host_ip
 test_host_ip:
 	echo "Host IP: $(call host_ip)"
 
+.PHONY: update_core_phpunit_includes
 update_core_phpunit_includes:
 	rm -rf includes/core-phpunit
 	mkdir -p includes/core-phpunit
@@ -421,5 +443,6 @@ update_core_phpunit_includes:
 		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/data && \
 		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/includes
 
+.PHONY: mysql_cli
 mysql_cli:
 	docker exec -it wp-browser_db bash -c "mysql -utest -ptest"
