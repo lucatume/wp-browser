@@ -437,11 +437,10 @@ test_host_ip:
 
 .PHONY: update_core_phpunit_includes
 update_core_phpunit_includes:
-	rm -rf includes/core-phpunit
+	rm -rf includes/core-phpunit/includes
 	mkdir -p includes/core-phpunit
 	cd includes/core-phpunit && \
-		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/data && \
-		svn export https://github.com/WordPress/wordpress-develop.git/trunk/tests/phpunit/includes
+		svn export https://github.com/WordPress/wordpress-develop/branches/master/tests/phpunit/includes
 
 .PHONY: ssh_mysql
 ssh_mysql:
