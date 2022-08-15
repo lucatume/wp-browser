@@ -2,10 +2,10 @@ actor: WploaderTester
 modules:
     enabled:
         - \Helper\Wploadersuite
-        - WPLoader
-        - WPQueries
+        - lucatume\WPBrowser\Module\WPLoader
+        - lucatume\WPBrowser\Module\WPQueries
     config:
-        WPLoader:
+         lucatume\WPBrowser\Module\WPLoader:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
             dbName: '%WORDPRESS_DB_NAME%'
             dbHost: '%WORDPRESS_DB_HOST%'
