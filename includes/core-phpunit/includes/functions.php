@@ -152,12 +152,9 @@ function _delete_all_posts() {
 /**
  * Handles the WP die handler by outputting the given values as text.
  *
- * @since UT (3.7.0)
- * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
- *
- * @param string|WP_Error $message Error message or WP_Error object.
- * @param string          $title   Error title.
- * @param array           $args    Arguments passed to wp_die().
+ * @param string $message The message.
+ * @param string $title   The title.
+ * @param array  $args    Array with arguments.
  */
 function _wp_die_handler( $message, $title = '', $args = array() ) {
 	if ( ! $GLOBALS['_wp_die_disabled'] ) {
@@ -169,8 +166,6 @@ function _wp_die_handler( $message, $title = '', $args = array() ) {
 
 /**
  * Disables the WP die handler.
- *
- * @since UT (3.7.0)
  */
 function _disable_wp_die() {
 	$GLOBALS['_wp_die_disabled'] = true;
@@ -178,8 +173,6 @@ function _disable_wp_die() {
 
 /**
  * Enables the WP die handler.
- *
- * @since UT (3.7.0)
  */
 function _enable_wp_die() {
 	$GLOBALS['_wp_die_disabled'] = false;
@@ -187,8 +180,6 @@ function _enable_wp_die() {
 
 /**
  * Returns the die handler.
- *
- * @since UT (3.7.0)
  *
  * @return string The die handler.
  */
@@ -199,8 +190,6 @@ function _wp_die_handler_filter() {
 /**
  * Returns the die handler.
  *
- * @since 4.9.0
- *
  * @return string The die handler.
  */
 function _wp_die_handler_filter_exit() {
@@ -210,17 +199,12 @@ function _wp_die_handler_filter_exit() {
 /**
  * Dies without an exit.
  *
- * @since 4.0.0
- * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
- *
- * @param string|WP_Error $message Error message or WP_Error object.
- * @param string          $title   Error title.
- * @param array           $args    Arguments passed to wp_die().
+ * @param string $message The message.
+ * @param string $title   The title.
+ * @param array  $args    Array with arguments.
  */
 function _wp_die_handler_txt( $message, $title, $args ) {
-	list( $message, $title, $args ) = _wp_die_process_input( $message, $title, $args );
-
-	echo "\nwp_die() called\n";
+	echo "\nwp_die called\n";
 	echo "Message: $message\n";
 
 	if ( ! empty( $title ) ) {
@@ -228,13 +212,9 @@ function _wp_die_handler_txt( $message, $title, $args ) {
 	}
 
 	if ( ! empty( $args ) ) {
-		echo "Args:\n";
-		foreach ( $args as $key => $value ) {
-			if ( ! is_scalar( $value ) ) {
-				$value = var_export( $value, true );
-			}
-
-			echo "\t$key: $value\n";
+		echo "Args: \n";
+		foreach ( $args as $k => $v ) {
+			echo "\t $k : $v\n";
 		}
 	}
 }
@@ -242,17 +222,12 @@ function _wp_die_handler_txt( $message, $title, $args ) {
 /**
  * Dies with an exit.
  *
- * @since 4.9.0
- * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
- *
- * @param string|WP_Error $message Error message or WP_Error object.
- * @param string          $title   Error title.
- * @param array           $args    Arguments passed to wp_die().
+ * @param string $message The message.
+ * @param string $title   The title.
+ * @param array  $args    Array with arguments.
  */
 function _wp_die_handler_exit( $message, $title, $args ) {
-	list( $message, $title, $args ) = _wp_die_process_input( $message, $title, $args );
-
-	echo "\nwp_die() called\n";
+	echo "\nwp_die called\n";
 	echo "Message: $message\n";
 
 	if ( ! empty( $title ) ) {
@@ -260,16 +235,11 @@ function _wp_die_handler_exit( $message, $title, $args ) {
 	}
 
 	if ( ! empty( $args ) ) {
-		echo "Args:\n";
-		foreach ( $args as $key => $value ) {
-			if ( ! is_scalar( $value ) ) {
-				$value = var_export( $value, true );
-			}
-
-			echo "\t$key: $value\n";
+		echo "Args: \n";
+		foreach ( $args as $k => $v ) {
+			echo "\t $k : $v\n";
 		}
 	}
-
 	exit( 1 );
 }
 
@@ -332,10 +302,40 @@ tests_add_filter( 'send_auth_cookies', '__return_false' );
  * @since 5.0.0
  */
 function _unhook_block_registration() {
-	require __DIR__ . '/unregister-blocks-hooks.php';
+	remove_action( 'init', 'register_block_core_archives' );
+	remove_action( 'init', 'register_block_core_block' );
+	remove_action( 'init', 'register_block_core_calendar' );
+	remove_action( 'init', 'register_block_core_categories' );
+	remove_action( 'init', 'register_block_core_file' );
+	remove_action( 'init', 'register_block_core_loginout' );
+	remove_action( 'init', 'register_block_core_latest_comments' );
+	remove_action( 'init', 'register_block_core_latest_posts' );
+	remove_action( 'init', 'register_block_core_page_list' );
+	remove_action( 'init', 'register_block_core_post_author' );
+	remove_action( 'init', 'register_block_core_post_content' );
+	remove_action( 'init', 'register_block_core_post_date' );
+	remove_action( 'init', 'register_block_core_post_excerpt' );
+	remove_action( 'init', 'register_block_core_post_featured_image' );
+	remove_action( 'init', 'register_block_core_post_terms' );
+	remove_action( 'init', 'register_block_core_post_title' );
+	remove_action( 'init', 'register_block_core_query' );
+	remove_action( 'init', 'register_block_core_post_template' );
+	remove_action( 'init', 'gutenberg_register_legacy_query_loop_block' );
+	remove_action( 'init', 'register_block_core_query_pagination' );
+	remove_action( 'init', 'register_block_core_query_pagination_next' );
+	remove_action( 'init', 'register_block_core_query_pagination_numbers' );
+	remove_action( 'init', 'register_block_core_query_pagination_previous' );
+	remove_action( 'init', 'register_block_core_query_title' );
+	remove_action( 'init', 'register_block_core_rss' );
+	remove_action( 'init', 'register_block_core_search' );
+	remove_action( 'init', 'register_block_core_shortcode' );
+	remove_action( 'init', 'register_block_core_site_tagline' );
+	remove_action( 'init', 'register_block_core_site_logo' );
+	remove_action( 'init', 'register_block_core_site_title' );
+	remove_action( 'init', 'register_block_core_social_link' );
+	remove_action( 'init', 'register_block_core_social_link' );
+	remove_action( 'init', 'register_block_core_tag_cloud' );
 	remove_action( 'init', 'register_core_block_types_from_metadata' );
 	remove_action( 'init', 'register_block_core_legacy_widget' );
-	remove_action( 'init', 'register_block_core_widget_group' );
-	remove_action( 'init', 'register_core_block_types_from_metadata' );
 }
 tests_add_filter( 'init', '_unhook_block_registration', 1000 );
