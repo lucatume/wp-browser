@@ -2,9 +2,9 @@ actor: IsolatedTester
 modules:
     enabled:
         - \Helper\Isolated
-        - WPLoader
+        - lucatume\WPBrowser\Module\WPLoader
     config:
-        WPLoader:
+         lucatume\WPBrowser\Module\WPLoader:
             domain: '%WORDPRESS_DOMAIN%'
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
             dbName: '%WORDPRESS_DB_NAME%'
