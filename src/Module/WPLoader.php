@@ -345,7 +345,7 @@ class WPLoader extends Module
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors.
-        $this->wpBootstrapFile = CorePHPunit::path('/bootstrap.php');
+        $this->wpBootstrapFile = CorePHPunit::path('/includes/bootstrap.php');
 
         if (! empty($this->config['loadOnly'])) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
