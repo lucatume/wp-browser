@@ -78,7 +78,7 @@ function findHereOrInParent(string $path, string $root): bool|string
  */
 function realpathish(string $path): bool|string
 {
-    return Filesystem::realpathish($path);
+    return Filesystem::realpath($path);
 }
 
 /*

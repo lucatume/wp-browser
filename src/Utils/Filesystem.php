@@ -119,16 +119,16 @@ class Filesystem
         $root = (string)preg_replace('/^~/', $homeDir, $root);
 
         if (empty($path)) {
-            return self::realpathish($root);
+            return self::realpath($root);
         }
 
         $path = (string)preg_replace('/^~/', $homeDir, $path);
 
         if (file_exists($path)) {
-            return self::realpathish($path);
+            return self::realpath($path);
         }
 
-        $resolved = self::realpathish($root . '/' . $path);
+        $resolved = self::realpath($root . '/' . $path);
 
         if ($resolved === false) {
             throw new InvalidArgumentException("Cannot resolve the path '{$path}' from root '{$root}'");
@@ -214,7 +214,7 @@ class Filesystem
     public static function findHereOrInParent(string $path, string $root): bool|string
     {
         if (file_exists($path)) {
-            return self::realpathish($path);
+            return self::realpath($path);
         }
 
         $resolvedRoot = self::resolvePath($root);
@@ -244,7 +244,7 @@ class Filesystem
      *
      * @return false|string The realpath, or `false` if it could not be resolved.
      */
-    public static function realpathish(string $path): bool|string
+    public static function realpath(string $path): bool|string
     {
         $realpath = realpath($path);
 
