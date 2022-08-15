@@ -23,9 +23,10 @@ use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
-use lucatume\WPBrowser\Utils\Configuration;
 use lucatume\WPBrowser\Utils\CorePHPunit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Utils\Password;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -146,32 +147,39 @@ class WPLoader extends Module
      * definition of pluggable functions.
      *
      *
-     * @var array<string,mixed>|Configuration
+     * @var array<string,mixed>
      */
-    protected array $config
-        = [
-            'loadOnly'                  => false,
-            'isolatedInstall'           => true,
-            'installationTableHandling' => 'empty',
-            'wpDebug'                   => true,
-            'multisite'                 => false,
-            'skipPluggables'            => false,
-            'dbCharset'                 => 'utf8',
-            'dbCollate'                 => '',
-            'tablePrefix'               => 'wptests_',
-            'domain'                    => 'example.org',
-            'adminEmail'                => 'admin@example.org',
-            'title'                     => 'Test Blog',
-            'phpBinary'                 => 'php',
-            'language'                  => '',
-            'configFile'                => '',
-            'contentFolder'             => '',
-            'pluginsFolder'             => '',
-            'plugins'                   => '',
-            'activatePlugins'           => '',
-            'bootstrapActions'          => '',
-            'theme'                     => '',
-        ];
+    protected array $config = [
+        'loadOnly' => false,
+        'isolatedInstall' => true,
+        'installationTableHandling' => 'empty',
+        'wpDebug' => true,
+        'multisite' => false,
+        'skipPluggables' => false,
+        'dbCharset' => 'utf8',
+        'dbCollate' => '',
+        'tablePrefix' => 'wptests_',
+        'domain' => 'example.org',
+        'adminEmail' => 'admin@example.org',
+        'title' => 'Test Blog',
+        'phpBinary' => 'php',
+        'language' => '',
+        'configFile' => '',
+        'contentFolder' => '',
+        'pluginsFolder' => '',
+        'plugins' => '',
+        'activatePlugins' => '',
+        'bootstrapActions' => '',
+        'theme' => '',
+        'authKey' => '',
+        'secureAuthKey' => '',
+        'loggedInKey' => '',
+        'nonceKey' => '',
+        'authSalt' => '',
+        'secureAuthSalt' => '',
+        'loggedInSalt' => '',
+        'nonceSalt' => '',
+    ];
 
     /**
      * The path to the modified tests bootstrap file.
@@ -275,7 +283,6 @@ class WPLoader extends Module
 
         $instance    = static::_newInstanceWithoutConstructor();
 
-        $instance->defineConstants($instance->_getConstants());
         $instance->setActivePlugins();
         $instance->_setActiveTheme();
 
@@ -335,16 +342,37 @@ class WPLoader extends Module
     protected function initialize(): void
     {
         self::$didInit = true;
-        $configArray = $this->config instanceof Configuration ? $this->config->toArray() : $this->config;
-        $this->config = (new Configuration($configArray, [
+        $this->config = (new Map($this->config, [
             'wpRootDir' => 'wpRootFolder',
             'pluginsDir' => 'pluginsFolder',
-            'contentDir' => 'contentFolder'
+            'contentDir' => 'contentFolder',
+            'auth_key' => 'authKey',
+            'secure_auth_key' => 'secureAuthKey',
+            'logged_in_key' => 'loggedInKey',
+            'nonce_key' => 'nonceKey',
+            'auth_salt' => 'authSalt',
+            'secure_auth_salt' => 'secureAuthSalt',
+            'logged_in_salt' => 'loggedInSalt',
+            'nonce_salt' => 'nonceSalt',
         ]))->toArray();
+        foreach ([
+                     'authKey',
+                     'secureAuthKey',
+                     'loggedInKey',
+                     'nonceKey',
+                     'authSalt',
+                     'secureAuthSalt',
+                     'loggedInSalt',
+                     'nonceSalt',
+                 ] as $salt) {
+            if (empty($this->config[$salt])) {
+                $this->config[$salt] = Password::salt();
+            }
+        }
 
         $this->ensureWPRoot($this->getWpRootFolder());
-
-        // WordPress  will deal with database connection errors.
+        // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
+        define('WP_TESTS_CONFIG_FILE_PATH', CorePHPunit::path('/wp-tests-config.php'));
         $this->wpBootstrapFile = CorePHPunit::path('/includes/bootstrap.php');
 
         if (! empty($this->config['loadOnly'])) {
@@ -462,7 +490,6 @@ class WPLoader extends Module
         if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();
         } else {
-            $this->defineConstants($this->_getConstants());
             $this->installAndBootstrapInstallation();
         }
 
@@ -681,6 +708,7 @@ class WPLoader extends Module
 
         $installationConfiguration = $this->getInstallationConfiguration();
 
+        $wpLoaderConfig = $this->config;
         require_once $this->wpBootstrapFile;
 
         if ($this->requiresIsolatedInstallation()) {
@@ -1001,20 +1029,6 @@ class WPLoader extends Module
     }
 
     /**
-     * Defines the constants required to set up the WordPress installation.
-     *
-     * @param array<string,int|string> $constants The map of the constants to define.
-     */
-    protected function defineConstants(array $constants = []): void
-    {
-        foreach ($constants as $key => $value) {
-            if (! defined($key)) {
-                define($key, $value);
-            }
-        }
-    }
-
-    /**
      * Returns the absolute path to the WordPress content directory.
      *
      * @example
@@ -1064,11 +1078,11 @@ class WPLoader extends Module
     /**
      * Returns the WordPress installation configuration as created from the current module configuration.
      *
-     * @return Configuration The WordPress installation configuration, as created from the module configuration.
+     * @return Map The WordPress installation configuration, as created from the module configuration.
      */
-    protected function getInstallationConfiguration(): Configuration
+    protected function getInstallationConfiguration(): Map
     {
-        return new Configuration([
+        return new Map([
             'tablesHandling' => $this->config['installationTableHandling'] ?? 'empty'
         ]);
     }

@@ -71,7 +71,7 @@ class WPQueries extends Module
      */
     public function _initialize(): void
     {
-        if (!$this->moduleContainer->hasModule('WPLoader')) {
+        if (!$this->moduleContainer->hasModule(WPLoader::class)) {
             throw new ModuleException(
                 __CLASS__,
                 'The WPLoader module is required for WPQueries to work.'
