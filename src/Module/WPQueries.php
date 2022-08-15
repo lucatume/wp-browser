@@ -7,8 +7,10 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use ArrayIterator;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
+use Codeception\Module;
 use lucatume\WPBrowser\Environment\Constants;
 use lucatume\WPBrowser\Iterators\Filters\ActionsQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter;
@@ -18,14 +20,13 @@ use lucatume\WPBrowser\Iterators\Filters\FunctionQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\MainStatementQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter;
 use PHPUnit\Framework\Assert;
-use function Codeception\Module\count;
 
 /**
  * Class WPQueries
  *
  * @package Codeception\Module
  */
-class WPQueries extends \Codeception\Module
+class WPQueries extends Module
 {
 
     /**
@@ -33,35 +34,31 @@ class WPQueries extends \Codeception\Module
      *
      * @var array<string>
      */
-    protected $filteredQueries = [];
-
+    protected array $filteredQueries = [];
     /**
      * @var callable[]
      */
-    protected $assertions = [];
-
-    protected \wpdb|\lucatume\WPBrowser\Module\wpdb $wpdb;
-
-    private \lucatume\WPBrowser\Environment\Constants $constants;
+    protected array $assertions = [];
+    private ?\wpdb $wpdb = null;
+    private Constants $constants;
 
     /**
      * WPQueries constructor.
      *
      * @param ModuleContainer $moduleContainer The current module container.
      * @param array<string,mixed>|null $config The current module configuration.
-     * @param \lucatume\WPBrowser\Environment\Constants|null $constants The constants adapter.
+     * @param Constants|null $constants The constants adapter.
      * @param \wpdb|null $wpdbInstance The current wpdb instance.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
         ?array $config,
-        Constants
-        $constants = null,
-        $wpdbInstance = null
+        Constants $constants = null,
+        \wpdb $wpdbInstance = null
     ) {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $this->constants = $constants ? $constants : new Constants();
+        $this->constants = $constants ?: new Constants();
         $this->wpdb = $wpdbInstance ?: $wpdb;
         parent::__construct($moduleContainer, $config);
     }
@@ -71,9 +68,8 @@ class WPQueries extends \Codeception\Module
      *
      * @throws ModuleException If the initialization fails.
      *
-     * @return void
      */
-    public function _initialize()
+    public function _initialize(): void
     {
         if (!$this->moduleContainer->hasModule('WPLoader')) {
             throw new ModuleException(
@@ -84,9 +80,9 @@ class WPQueries extends \Codeception\Module
 
         $this->constants->defineIfUndefined('SAVEQUERIES', true);
 
-        if (!(bool)$this->constants->constant('SAVEQUERIES')) {
+        if (!$this->constants->constant('SAVEQUERIES')) {
             $message = 'The "SAVEQUERIES" should either not be set or set to "true";'
-                       . ' this module cannot work if "SAVEQUERIES" is not set to "true".';
+                . ' this module cannot work if "SAVEQUERIES" is not set to "true".';
             throw new ModuleException(__CLASS__, $message);
         }
     }
@@ -104,7 +100,7 @@ class WPQueries extends \Codeception\Module
      *
      * @return \wpdb The current wpdb instance.
      */
-    private function getWpdbInstance()
+    private function getWpdbInstance(): \wpdb
     {
         if (null === $this->wpdb) {
             /** @var \wpdb $wpdb */
@@ -129,10 +125,10 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueries($message = ''): void
+    public function assertQueries(string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were made.';
+        $message = $message ?: 'Failed asserting that queries were made.';
         Assert::assertNotEmpty($this->filteredQueries, $message);
     }
 
@@ -147,26 +143,24 @@ class WPQueries extends \Codeception\Module
             $this->filteredQueries = [];
         } else {
             $filteredQueriesIterator = $this->_getFilteredQueriesIterator();
-            $this->filteredQueries = iterator_to_array($filteredQueriesIterator);
+            $this->filteredQueries = iterator_to_array($filteredQueriesIterator, false);
         }
     }
 
     /**
      * Returns the saved queries after filtering.
      *
-     * @param \wpdb $wpdb
-     * @return \FilterIterator
+     * @param \wpdb|null $wpdb
      */
-    public function _getFilteredQueriesIterator($wpdb = null): \lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter
+    public function _getFilteredQueriesIterator(\wpdb $wpdb = null): SetupTearDownQueriesFilter
     {
         if (null === $wpdb) {
             $wpdb = $this->getWpdbInstance();
         }
 
-        $queriesArrayIterator = new \ArrayIterator($wpdb->queries);
-        $filteredQueriesIterator = new SetupTearDownQueriesFilter(new FactoryQueriesFilter($queriesArrayIterator));
+        $queriesArrayIterator = new ArrayIterator($wpdb->queries);
 
-        return $filteredQueriesIterator;
+        return new SetupTearDownQueriesFilter(new FactoryQueriesFilter($queriesArrayIterator));
     }
 
     /**
@@ -184,10 +178,10 @@ class WPQueries extends \Codeception\Module
      *
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueries($message = ''): void
+    public function assertNotQueries(string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that no queries were made.';
+        $message = $message ?: 'Failed asserting that no queries were made.';
         Assert::assertEmpty($this->filteredQueries, $message);
     }
 
@@ -212,10 +206,10 @@ class WPQueries extends \Codeception\Module
      * @param int $n The expected number of queries.
      * @param string $message An optional message to override the default one.
      */
-    public function assertCountQueries($n, $message = ''): void
+    public function assertCountQueries(int $n, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that ' . $n . ' queries were made.';
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were made.');
         Assert::assertCount($n, $this->filteredQueries, $message);
     }
 
@@ -235,12 +229,12 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByStatement($statement, $message = ''): void
+    public function assertQueriesByStatement(string $statement, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that queries beginning with statement [' . $statement . '] were made.';
-        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
-        Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that queries beginning with statement [' . $statement . '] were made.');
+        $statementIterator = new MainStatementQueriesFilter(new ArrayIterator($this->filteredQueries), $statement);
+        Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -259,13 +253,13 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByMethod($class, $method, $message = ''): void
+    public function assertQueriesByMethod(string $class, string $method, string $message = ''): void
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
-        $message = $message ?: 'Failed asserting that queries were made by method [' . $class . '::' . $method . ']';
-        $statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
-        Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that queries were made by method [' . $class . '::' . $method . ']');
+        $statementIterator = new ClassMethodQueriesFilter(new ArrayIterator($this->filteredQueries), $class, $method);
+        Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -284,10 +278,10 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByStatement($statement, $message = ''): void
+    public function assertNotQueriesByStatement(string $statement, string $message = ''): void
     {
-        $message = $message ?: 'Failed asserting that no queries beginning with statement ['
-                               . $statement . '] were made.';
+        $message = $message ?: ('Failed asserting that no queries beginning with statement ['
+            . $statement . '] were made.');
         $this->assertQueriesCountByStatement(0, $statement, $message);
     }
 
@@ -310,13 +304,13 @@ class WPQueries extends \Codeception\Module
      *                           Regular expressions must contain delimiters.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByStatement($n, $statement, $message = ''): void
+    public function assertQueriesCountByStatement(int $n, string $statement, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries beginning with statement ['
-                               . $statement . '] were made.';
-        $statementIterator = new MainStatementQueriesFilter(new \ArrayIterator($this->filteredQueries), $statement);
-        Assert::assertCount($n, iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries beginning with statement ['
+            . $statement . '] were made.');
+        $statementIterator = new MainStatementQueriesFilter(new ArrayIterator($this->filteredQueries), $statement);
+        Assert::assertCount($n, iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -335,9 +329,10 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByMethod($class, $method, $message = ''): void
+    public function assertNotQueriesByMethod(string $class, string $method, string $message = ''): void
     {
-        $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::' . $method . ']';
+        $message = $message ?: ('Failed asserting that no queries were made by method [' . $class . '::'
+            . $method . ']');
         $this->assertQueriesCountByMethod(0, $class, $method, $message);
     }
 
@@ -359,14 +354,14 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByMethod($n, $class, $method, $message = ''): void
+    public function assertQueriesCountByMethod(int $n, string $class, string $method, string $message = ''): void
     {
         $this->readQueries();
         $class = ltrim($class, '\\');
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
-                               . $class . '::' . $method . ']';
-        $statementIterator = new ClassMethodQueriesFilter(new \ArrayIterator($this->filteredQueries), $class, $method);
-        Assert::assertCount($n, iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were made by method ['
+            . $class . '::' . $method . ']');
+        $statementIterator = new ClassMethodQueriesFilter(new ArrayIterator($this->filteredQueries), $class, $method);
+        Assert::assertCount($n, iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -383,12 +378,12 @@ class WPQueries extends \Codeception\Module
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByFunction($function, $message = ''): void
+    public function assertQueriesByFunction(string $function, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were made by function [' . $function . ']';
-        $statementIterator = new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries), $function);
-        Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that queries were made by function [' . $function . ']');
+        $statementIterator = new FunctionQueriesFilter(new ArrayIterator($this->filteredQueries), $function);
+        Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -406,9 +401,9 @@ class WPQueries extends \Codeception\Module
      * @param string $function The fully qualified name of the function to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByFunction($function, $message = ''): void
+    public function assertNotQueriesByFunction(string $function, string $message = ''): void
     {
-        $message = $message ? $message : 'Failed asserting that no queries were made by function [' . $function . ']';
+        $message = $message ?: ('Failed asserting that no queries were made by function [' . $function . ']');
         $this->assertQueriesCountByFunction(0, $function, $message);
     }
 
@@ -428,12 +423,12 @@ class WPQueries extends \Codeception\Module
      * @param string $function The function to check the queries for.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByFunction($n, $function, $message = ''): void
+    public function assertQueriesCountByFunction(int $n, string $function, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by function [' . $function . ']';
-        $statementIterator = new FunctionQueriesFilter(new \ArrayIterator($this->filteredQueries), $function);
-        Assert::assertCount($n, iterator_to_array($statementIterator), $message);
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were made by function [' . $function . ']');
+        $statementIterator = new FunctionQueriesFilter(new ArrayIterator($this->filteredQueries), $function);
+        Assert::assertCount($n, iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -453,17 +448,21 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByStatementAndMethod($statement, $class, $method, $message = ''): void
-    {
+    public function assertQueriesByStatementAndMethod(
+        string $statement,
+        string $class,
+        string $method,
+        string $message = ''
+    ): void {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that queries were made by method ['
-                               . $class . '::' . $method . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that queries were made by method ['
+            . $class . '::' . $method . '] containing statement [' . $statement . ']');
         $statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $class,
             $method
         ), $statement);
-        Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
+        Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -483,10 +482,14 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByStatementAndMethod($statement, $class, $method, $message = ''): void
-    {
-        $message = $message ?: 'Failed asserting that no queries were made by method [' . $class . '::'
-                               . $method . '] containing statement [' . $statement . ']';
+    public function assertNotQueriesByStatementAndMethod(
+        string $statement,
+        string $class,
+        string $method,
+        string $message = ''
+    ): void {
+        $message = $message ?: ('Failed asserting that no queries were made by method [' . $class . '::'
+            . $method . '] containing statement [' . $statement . ']');
         $this->assertQueriesCountByStatementAndMethod(0, $statement, $class, $method, $message);
     }
 
@@ -510,17 +513,22 @@ class WPQueries extends \Codeception\Module
      * @param string $method The name of the method to check.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByStatementAndMethod($n, $statement, $class, $method, $message = ''): void
-    {
+    public function assertQueriesCountByStatementAndMethod(
+        int $n,
+        string $statement,
+        string $class,
+        string $method,
+        string $message = ''
+    ): void {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
-                               . $class . '::' . $method . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were made by method ['
+            . $class . '::' . $method . '] containing statement [' . $statement . ']');
         $statementIterator = new MainStatementQueriesFilter(new ClassMethodQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $class,
             $method
         ), $statement);
-        Assert::assertCount($n, iterator_to_array($statementIterator), $message);
+        Assert::assertCount($n, iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -539,16 +547,16 @@ class WPQueries extends \Codeception\Module
      * @param string $function The fully qualified function name.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByStatementAndFunction($statement, $function, $message = ''): void
+    public function assertQueriesByStatementAndFunction(string $statement, string $function, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that queries were made by function ['
-                               . $function . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that queries were made by function ['
+            . $function . '] containing statement [' . $statement . ']');
         $statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $function
         ), $statement);
-        Assert::assertNotEmpty(iterator_to_array($statementIterator), $message);
+        Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }
 
     /**
@@ -568,10 +576,13 @@ class WPQueries extends \Codeception\Module
      * @param string $function The name of the function to check the assertions for.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByStatementAndFunction($statement, $function, $message = ''): void
-    {
-        $message = $message ?: 'Failed asserting that no queries were made by function ['
-                               . $function . '] containing statement [' . $statement . ']';
+    public function assertNotQueriesByStatementAndFunction(
+        string $statement,
+        string $function,
+        string $message = ''
+    ): void {
+        $message = $message ?: ('Failed asserting that no queries were made by function ['
+            . $function . '] containing statement [' . $statement . ']');
         $this->assertQueriesCountByStatementAndFunction(0, $statement, $function, $message);
     }
 
@@ -594,16 +605,20 @@ class WPQueries extends \Codeception\Module
      * @param string $function The fully-qualified function name.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByStatementAndFunction($n, $statement, $function, $message = ''): void
-    {
+    public function assertQueriesCountByStatementAndFunction(
+        int $n,
+        string $statement,
+        string $function,
+        string $message = ''
+    ): void {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were made by method ['
-                               . $function . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were made by method ['
+            . $function . '] containing statement [' . $statement . ']');
         $statementIterator = new MainStatementQueriesFilter(new FunctionQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $function
         ), $statement);
-        Assert::assertCount($n, iterator_to_array($statementIterator), $message);
+        Assert::assertCount(expectedCount: $n, haystack: iterator_to_array($statementIterator, false), message: $message);
     }
 
     /**
@@ -624,11 +639,11 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByAction($action, $message = ''): void
+    public function assertQueriesByAction(string $action, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were triggered by action [' . $action . ']';
-        $iterator = new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries), $action);
+        $message = $message ?: ('Failed asserting that queries were triggered by action [' . $action . ']');
+        $iterator = new ActionsQueriesFilter(new ArrayIterator($this->filteredQueries), $action);
         Assert::assertNotEmpty(iterator_to_array($iterator, false), $message);
     }
 
@@ -650,9 +665,9 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByAction($action, $message = ''): void
+    public function assertNotQueriesByAction(string $action, string $message = ''): void
     {
-        $message = $message ? $message : 'Failed asserting that no queries were triggered by action [' . $action . ']';
+        $message = $message ?: ('Failed asserting that no queries were triggered by action [' . $action . ']');
         $this->assertQueriesCountByAction(0, $action, $message);
     }
 
@@ -677,12 +692,12 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByAction($n, $action, $message = ''): void
+    public function assertQueriesCountByAction(int $n, string $action, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']';
-        $iterator = new ActionsQueriesFilter(new \ArrayIterator($this->filteredQueries), $action);
-        Assert::assertCount($n, iterator_to_array($iterator), $message);
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were triggered by action [' . $action . ']');
+        $iterator = new ActionsQueriesFilter(new ArrayIterator($this->filteredQueries), $action);
+        Assert::assertCount($n, iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -705,16 +720,16 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesByStatementAndAction($statement, $action, $message = ''): void
+    public function assertQueriesByStatementAndAction(string $statement, string $action, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that queries were triggered by action  ['
-                               . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that queries were triggered by action  ['
+            . $action . '] containing statement [' . $statement . ']');
         $iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $action
         ), $statement);
-        Assert::assertNotEmpty(iterator_to_array($iterator), $message);
+        Assert::assertNotEmpty(iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -737,10 +752,10 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertNotQueriesByStatementAndAction($statement, $action, $message = ''): void
+    public function assertNotQueriesByStatementAndAction(string $statement, string $action, string $message = ''): void
     {
-        $message = $message ?: 'Failed asserting that no queries were triggered by action  ['
-                               . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that no queries were triggered by action  ['
+            . $action . '] containing statement [' . $statement . ']');
         $this->assertQueriesCountByStatementAndAction(0, $statement, $action, $message);
     }
 
@@ -768,16 +783,20 @@ class WPQueries extends \Codeception\Module
      * @param string $action The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
-    public function assertQueriesCountByStatementAndAction($n, $statement, $action, $message = ''): void
-    {
+    public function assertQueriesCountByStatementAndAction(
+        int $n,
+        string $statement,
+        string $action,
+        string $message = ''
+    ): void {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by action  ['
-                               . $action . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were triggered by action  ['
+            . $action . '] containing statement [' . $statement . ']');
         $iterator = new MainStatementQueriesFilter(new ActionsQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $action
         ), $statement);
-        Assert::assertCount($n, iterator_to_array($iterator), $message);
+        Assert::assertCount($n, iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -802,12 +821,12 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertQueriesByFilter($filter, $message = ''): void
+    public function assertQueriesByFilter(string $filter, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ? $message : 'Failed asserting that queries were triggered by filter [' . $filter . ']';
-        $iterator = new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter);
-        Assert::assertNotEmpty(iterator_to_array($iterator), $message);
+        $message = $message ?: ('Failed asserting that queries were triggered by filter [' . $filter . ']');
+        $iterator = new FiltersQueriesFilter(new ArrayIterator($this->filteredQueries), $filter);
+        Assert::assertNotEmpty(iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -832,9 +851,9 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertNotQueriesByFilter($filter, $message = ''): void
+    public function assertNotQueriesByFilter(string $filter, string $message = ''): void
     {
-        $message = $message ? $message : 'Failed asserting that no queries were triggered by filter [' . $filter . ']';
+        $message = $message ?: ('Failed asserting that no queries were triggered by filter [' . $filter . ']');
         $this->assertQueriesCountByFilter(0, $filter, $message);
     }
 
@@ -864,12 +883,12 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertQueriesCountByFilter($n, $filter, $message = ''): void
+    public function assertQueriesCountByFilter(int $n, string $filter, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']';
-        $iterator = new FiltersQueriesFilter(new \ArrayIterator($this->filteredQueries), $filter);
-        Assert::assertCount($n, iterator_to_array($iterator), $message);
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were triggered by filter [' . $filter . ']');
+        $iterator = new FiltersQueriesFilter(new ArrayIterator($this->filteredQueries), $filter);
+        Assert::assertCount($n, iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -897,16 +916,16 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertQueriesByStatementAndFilter($statement, $filter, $message = ''): void
+    public function assertQueriesByStatementAndFilter(string $statement, string $filter, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that queries were triggered by filter  ['
-                               . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that queries were triggered by filter  ['
+            . $filter . '] containing statement [' . $statement . ']');
         $iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $filter
         ), $statement);
-        Assert::assertNotEmpty(iterator_to_array($iterator), $message);
+        Assert::assertNotEmpty(iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -934,10 +953,10 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertNotQueriesByStatementAndFilter($statement, $filter, $message = ''): void
+    public function assertNotQueriesByStatementAndFilter(string $statement, string $filter, string $message = ''): void
     {
-        $message = $message ?: 'Failed asserting that no queries were triggered by filter  ['
-                               . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that no queries were triggered by filter  ['
+            . $filter . '] containing statement [' . $statement . ']');
         $this->assertQueriesCountByStatementAndFilter(0, $statement, $filter, $message);
     }
 
@@ -971,16 +990,20 @@ class WPQueries extends \Codeception\Module
      * @param string $message An optional message to override the default one.
      *
      */
-    public function assertQueriesCountByStatementAndFilter($n, $statement, $filter, $message = ''): void
-    {
+    public function assertQueriesCountByStatementAndFilter(
+        int $n,
+        string $statement,
+        string $filter,
+        string $message = ''
+    ): void {
         $this->readQueries();
-        $message = $message ?: 'Failed asserting that ' . $n . ' queries were triggered by filter  ['
-                               . $filter . '] containing statement [' . $statement . ']';
+        $message = $message ?: ('Failed asserting that ' . $n . ' queries were triggered by filter  ['
+            . $filter . '] containing statement [' . $statement . ']');
         $iterator = new MainStatementQueriesFilter(new FiltersQueriesFilter(
-            new \ArrayIterator($this->filteredQueries),
+            new ArrayIterator($this->filteredQueries),
             $filter
         ), $statement);
-        Assert::assertCount($n, iterator_to_array($iterator), $message);
+        Assert::assertCount($n, iterator_to_array($iterator, false), $message);
     }
 
     /**
@@ -999,7 +1022,7 @@ class WPQueries extends \Codeception\Module
      *
      * @return int The current count of performed queries.
      */
-    public function countQueries($wpdb = null)
+    public function countQueries(\wpdb $wpdb = null): int
     {
         return count($this->getQueries($wpdb));
     }
@@ -1016,11 +1039,11 @@ class WPQueries extends \Codeception\Module
      * $queries = $this->queries()->getQueries($customWdbb);
      * ```
      *
-     * @param null|\wpdb $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
+     * @param \wpdb|null $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
      * @return array<string> An array of queries.
      */
-    public function getQueries($wpdb = null): array
+    public function getQueries(\wpdb $wpdb = null): array
     {
         return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
     }
