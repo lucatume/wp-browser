@@ -10,10 +10,13 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Module\WPBrowserMethods;
 use Codeception\Module\WPDb;
 use Codeception\TestInterface;
+use Exception;
+use InvalidArgumentException;
 use lucatume\WPBrowser\Connector\WordPress as WordPressConnector;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Url;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use function Codeception\Module\untrailslashIt;
 
 //phpcs:disable
@@ -32,43 +35,43 @@ class WordPress extends Framework implements DependsOnModule
     use WPBrowserMethods;
 
     /**
-     * @var \lucatume\WPBrowser\Connector\WordPress|WordPressConnector
+     * @var WordPressConnector|WordPressConnector
      */
-    public $client;
+    public ?AbstractBrowser $client;
 
     /**
      * @var string
      */
-    public $wpRootFolder;
+    public string $wpRootFolder;
 
     /**
      * The fields required by the module.
      *
      * @var array<string>
      */
-    protected $requiredFields = ['wpRootFolder', 'adminUsername', 'adminPassword'];
+    protected array $requiredFields = ['wpRootFolder', 'adminUsername', 'adminPassword'];
 
     /**
      * The default module configuration.
      *
      * @var array<string,mixed>
      */
-    protected $config = ['adminPath' => '/wp-admin'];
+    protected array $config = ['adminPath' => '/wp-admin'];
 
     /**
      * @var bool
      */
-    protected $isMockRequest = false;
+    protected bool $isMockRequest = false;
 
     /**
      * @var bool
      */
-    protected $lastRequestWasAdmin = false;
+    protected bool $lastRequestWasAdmin = false;
 
     /**
      * @var string
      */
-    protected $dependencyMessage
+    protected string $dependencyMessage
         = <<< EOF
 Example configuring WPDb
 --
@@ -94,26 +97,26 @@ EOF;
     /**
      * @var WPDb
      */
-    protected $wpdbModule;
+    protected WPDb $wpdbModule;
 
     /**
      * @var string The site URL.
      */
-    protected $siteUrl;
+    protected string $siteUrl;
 
     /**
      * @var string The string that will hold the response content after each request handling.
      */
-    public $response = '';
+    public string $response = '';
 
     /**
      * WordPress constructor.
      *
-     * @param \Codeception\Lib\ModuleContainer $moduleContainer The module container this module is loaded from.
+     * @param ModuleContainer $moduleContainer The module container this module is loaded from.
      * @param array<string,string|int|bool>    $config          The module configuration
      * @param WordPressConnector               $client          The client connector that will process the requests.
      *
-     * @throws \Codeception\Exception\ModuleConfigException If the configuration is not correct.
+     * @throws ModuleConfigException If the configuration is not correct.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
@@ -133,7 +136,7 @@ EOF;
      * @param TestInterface $test The current test.
      *
      *
-     * @throws \Codeception\Exception\ModuleException
+     * @throws ModuleException
      */
     public function _before(TestInterface $test): void
     {
@@ -165,7 +168,7 @@ EOF;
      *
      * @param WordPressConnector $client The client object that should be used.
      */
-    public function _setClient($client): void
+    public function _setClient(WordPressConnector $client): void
     {
         $this->client = $client;
     }
@@ -185,7 +188,7 @@ EOF;
      *
      * @return bool Whether the last request was for the admin area or not.
      */
-    public function _lastRequestWasAdmin()
+    public function _lastRequestWasAdmin(): bool
     {
         return $this->lastRequestWasAdmin;
     }
@@ -227,7 +230,7 @@ EOF;
      *
      * @return string The resulting page path.
      */
-    public function amOnAdminPage($page)
+    public function amOnAdminPage($page): ?string
     {
         $preparedPage = $this->preparePage(ltrim($page, '/'));
         if ($preparedPage === '/') {
@@ -245,7 +248,7 @@ EOF;
      *
      * @return string The prepared page path.
      */
-    private function preparePage(string $page)
+    private function preparePage(string $page): string
     {
         $page = untrailslashIt($page);
         $page = empty($page) || preg_match('~\\/?index\\.php\\/?~', $page) ? '/' : $page;
@@ -271,9 +274,11 @@ EOF;
      *
      * @param string $page The path to the page, relative to the the root URL.
      *
-     * @return string The page path.
+     * @return void
+     *
+     * @throws ModuleException
      */
-    public function amOnPage($page): void
+    public function amOnPage(string $page): void
     {
         $this->setRequestType($page);
 
@@ -290,13 +295,11 @@ EOF;
         $this->client->setHeaders($this->headers);
 
         if ($this->isMockRequest) {
-            return $page;
+            return;
         }
 
         $this->setCookie('wordpress_test_cookie', 'WP Cookie check');
         $this->_loadPage('GET', $page, $parameters);
-
-        return $page;
     }
 
     /**
@@ -306,7 +309,7 @@ EOF;
      *
      * @return void
      */
-    protected function setRequestType($page)
+    protected function setRequestType($page): void
     {
         if ($this->isAdminPageRequest($page)) {
             $this->lastRequestWasAdmin = true;
@@ -355,9 +358,9 @@ EOF;
      *
      * @return string The absolute path to the WordPress root folder, without a trailing slash.
      *
-     * @throws \InvalidArgumentException If the WordPress root folder is not valid.
+     * @throws InvalidArgumentException If the WordPress root folder is not valid.
      */
-    public function getWpRootFolder()
+    public function getWpRootFolder(): string
     {
         if (empty($this->wpRootFolder)) {
             try {
@@ -370,7 +373,7 @@ EOF;
                     );
                 }
                 $this->wpRootFolder = $resolvedWpRoot;
-            } catch (\Exception) {
+            } catch (Exception) {
                 throw new ModuleConfigException(
                     __CLASS__,
                     "\nThe path `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress " .
@@ -401,9 +404,9 @@ EOF;
      *
      * @return string The response content, in plain text.
      *
-     * @throws \Codeception\Exception\ModuleException If the underlying modules is not available.
+     * @throws ModuleException If the underlying modules is not available.
      */
-    public function getResponseContent()
+    public function getResponseContent(): string
     {
         return $this->_getResponseContent();
     }
@@ -441,7 +444,7 @@ EOF;
      * ```
      *
      */
-    public function extractCookie($cookie, array $params = [])
+    public function extractCookie($cookie, array $params = []): ?string
     {
         $cookieValue = $this->grabCookie($cookie, $params);
         $_COOKIE[$cookie] = $cookieValue;
@@ -466,7 +469,7 @@ EOF;
      *
      * @return void
      */
-    public function loginAs($username, $password)
+    public function loginAs($username, $password): void
     {
         $this->amOnPage($this->getLoginUrl());
         $this->submitForm('#loginform', [
@@ -482,7 +485,7 @@ EOF;
      *
      * The method will trigger the load of required Codeception library polyfills.
      */
-    protected function buildConnector(): \lucatume\WPBrowser\Connector\WordPress
+    protected function buildConnector(): WordPressConnector
     {
         return new WordPressConnector();
     }

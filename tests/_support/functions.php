@@ -2,16 +2,15 @@
 
 namespace lucatume\WPBrowser\Tests\Support;
 
-use function lucatume\WPBrowser\db;
-use function lucatume\WPBrowser\envFile;
-use function lucatume\WPBrowser\importDumpWithMysqlBin;
+use lucatume\WPBrowser\Utils\Db;
+use lucatume\WPBrowser\Utils\Env;
 
 /**
  * Returns the name of the environment file to load in tests.
  *
  * @return string The name of the environment file to load in tests.
  */
-function testEnvFile()
+function testEnvFile(): string
 {
     return '.env.testing';
 }
@@ -19,13 +18,13 @@ function testEnvFile()
 /**
  * Creates the databases required by the tests, if they do not exist.
  */
-function createTestDatabasesIfNotExist()
+function createTestDatabasesIfNotExist(): void
 {
-    $env = envFile(testEnvFile());
+    $env = Env::envFile(testEnvFile());
     $host = $env('WORDPRESS_DB_HOST');
     $user = $env('WORDPRESS_DB_USER');
     $pass = $env('WORDPRESS_DB_PASSWORD');
-    $db = db('mysql:host=' . $host, $user, $pass);
+    $db = Db::db('mysql:host=' . $host, $user, $pass);
     $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDIR_DB_NAME'));
     $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_SUBDOMAIN_DB_NAME'));
     $db('CREATE DATABASE IF NOT EXISTS ' . $env('WORDPRESS_EMPTY_DB_NAME'));
@@ -34,13 +33,13 @@ function createTestDatabasesIfNotExist()
 /**
  * Imports the dumps into the test databases.
  */
-function importTestDatabasesDumps()
+function importTestDatabasesDumps(): void
 {
     createTestDatabasesIfNotExist();
     $import = static function (array $filesMap) {
-        $env = envFile(testEnvFile());
+        $env = Env::envFile(testEnvFile());
         foreach ($filesMap as $file => $dbNameEnvVar) {
-            importDumpWithMysqlBin(
+            Db::importDumpWithMysqlBin(
                 codecept_data_dir($file),
                 $env($dbNameEnvVar),
                 $env('WORDPRESS_DB_USER'),

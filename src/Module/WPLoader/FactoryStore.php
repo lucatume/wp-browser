@@ -10,7 +10,7 @@ namespace lucatume\WPBrowser\Module\WPLoader;
 use Codeception\Exception\ModuleException;
 use lucatume\WPBrowser\Module\WPLoader;
 use InvalidArgumentException;
-use lucatume\WPBrowser\Utils\CorePHPunit;
+use lucatume\WPBrowser\Utils\CorePHPUnit;
 use org\bovigo\vfs\vfsStreamException;
 use WP_UnitTest_Factory_For_Attachment;
 use WP_UnitTest_Factory_For_Blog;
@@ -108,7 +108,7 @@ class FactoryStore
             return $this->{$name};
         }
 
-        require_once CorePHPunit::path('/includes/factory.php');
+        require_once CorePHPUnit::path('/includes/factory.php');
 
         $factoryForThing = null;
 

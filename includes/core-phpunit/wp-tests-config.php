@@ -83,7 +83,7 @@ foreach ([
         define($const, $value);
     }
 }
-unset($const, $value);
+unset($const);
 
 $table_prefix = $wpLoaderConfig['tablePrefix'];
 
@@ -93,7 +93,7 @@ foreach ([
          ] as $envVar => $value) {
     putenv($envVar . '=' . $value);
 }
-unset($envVar, $value);
+unset($envVar);
 
 /*
  * This file will be included a first time by the Core PHPUnit suite bootstrap file, and then

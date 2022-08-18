@@ -12,6 +12,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module\WebDriver;
 use Codeception\Module\WPBrowserMethods;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
+use JsonException;
 use lucatume\WPBrowser\Utils\Codeception;
 use Symfony\Component\BrowserKit\Cookie;
 
@@ -33,14 +34,14 @@ class WPWebDriver extends WebDriver
      *
      * @var array<string>
      */
-    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
+    protected array $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * The login attempts counter.
      *
      * @var int
      */
-    protected $loginAttempt = 0;
+    protected int $loginAttempt = 0;
     /**
      * Login as the administrator user using the credentials specified in the module configuration.
      *
@@ -53,14 +54,14 @@ class WPWebDriver extends WebDriver
      * $I->see('Dashboard');
      * ```
      *
-     * @param int    $timeout The max time, in seconds, to try to login.
-     * @param int    $maxAttempts The max number of attempts to try to login.
+     * @param int $timeout The max time, in seconds, to try to login.
+     * @param int $maxAttempts The max number of attempts to try to login.
      *
      * @return void
      *
      * @throws ModuleException If all the attempts of obtaining the cookie fail.
      */
-    public function loginAsAdmin($timeout = 10, $maxAttempts = 5)
+    public function loginAsAdmin(int $timeout = 10, int $maxAttempts = 5): void
     {
         $this->loginAs($this->config['adminUsername'], $this->config['adminPassword'], $timeout, $maxAttempts);
     }
@@ -82,14 +83,14 @@ class WPWebDriver extends WebDriver
      *
      * @param string $username The user login name.
      * @param string $password The user password in plain text.
-     * @param int    $timeout The max time, in seconds, to try to login.
-     * @param int    $maxAttempts The max number of attempts to try to login.
-     *
-     * @throws ModuleException If all the attempts of obtaining the cookie fail.
+     * @param int $timeout The max time, in seconds, to try to login.
+     * @param int $maxAttempts The max number of attempts to try to login.
      *
      * @return void
+     *@throws ModuleException If all the attempts of obtaining the cookie fail.
+     *
      */
-    public function loginAs($username, $password, $timeout = 10, $maxAttempts = 5)
+    public function loginAs(string $username, string $password, int $timeout = 10, int $maxAttempts = 5): void
     {
         if ($this->loginAttempt === $maxAttempts) {
             throw new ModuleException(
@@ -137,7 +138,7 @@ class WPWebDriver extends WebDriver
      *
      * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
      */
-    public function grabCookiesWithPattern($cookiePattern)
+    public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
         /** @var array<FacebookWebdriverCookie|Cookie> $cookies */
         $cookies = $this->webDriver->manage()->getCookies();
@@ -169,7 +170,7 @@ class WPWebDriver extends WebDriver
      *
      * @param int $time The max time to wait for AJAX requests to complete.
      */
-    public function waitForJqueryAjax($time = 10): void
+    public function waitForJqueryAjax(int $time = 10): void
     {
         $this->waitForJS('return jQuery.active == 0', $time);
     }
@@ -186,7 +187,7 @@ class WPWebDriver extends WebDriver
      *
      * @return string The full page URL.
      */
-    public function grabFullUrl()
+    public function grabFullUrl(): string
     {
         return $this->executeJS('return location.href');
     }
@@ -223,9 +224,11 @@ class WPWebDriver extends WebDriver
      * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
      * ```
      *
-     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
+     * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      *
      * @return void
+     *
+     * @throws JsonException If there's an issue encoding the debug message.
      */
     public function deactivatePlugin(string|array $pluginSlug): void
     {
@@ -256,9 +259,11 @@ class WPWebDriver extends WebDriver
      * $I->activatePlugin(['hello-dolly','another-plugin']);
      * ```
      *
-     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
      *
      * @return void
+     *
+     * @throws JsonException If there's an issue encoding the debug message.
      */
     public function activatePlugin(string|array $pluginSlug): void
     {

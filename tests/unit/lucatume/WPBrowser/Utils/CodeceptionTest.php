@@ -124,4 +124,14 @@ class CodeceptionTest extends Unit
 
         Codeception::checkModuleRequirements('TestModule', ['\\Codeception\\Lib\\NotExisting', 'Db', 'ModuleOne']);
     }
+
+    /**
+     * It should correctly identify suite
+     *
+     * @test
+     */
+    public function should_correctly_identify_suite(): void
+    {
+        $this->assertEquals('unit', Codeception::identifySuite());
+    }
 }

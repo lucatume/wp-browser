@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use VRia\Utils\NoDiacritic;
+
 class Strings
 {
     public static function andList(array $elements): string
@@ -88,5 +90,35 @@ class Strings
         $search = array_map(static fn($k) => '{{' . $k . '}}', array_keys($data));
 
         return str_replace($search, $replace, $template);
+    }
+
+    public static function normalizeNewLine(string $str): string
+    {
+        return (string)preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
+    }
+
+    public static function stripTags(string $string, bool $removeBreaks = false): string
+    {
+        $woTags = (string)preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $string);
+
+        $string = strip_tags($woTags);
+
+        if ($removeBreaks) {
+            $string = (string)preg_replace('/[\r\n\t ]+/', ' ', $string);
+        }
+
+        return trim($string);
+    }
+
+    public static function sanitizeUsername(string $username, bool $strict): string
+    {
+        $username = NoDiacritic::filter(self::stripTags($username));
+        $username = (string)preg_replace(['|%([a-fA-F0-9][a-fA-F0-9])|', '/&.+?;/'], ['', ''], $username);
+
+        if ($strict) {
+            $username = (string)preg_replace('|[^a-z0-9 _.\-@]|i', '', $username);
+        }
+
+        return (string)preg_replace('|\s+|', ' ', trim($username));
     }
 }

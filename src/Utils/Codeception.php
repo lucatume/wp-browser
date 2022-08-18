@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Codeception\Codecept;
 use Codeception\Exception\ConfigurationException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Lib\Framework;
 
 class Codeception
 {
+    private static ?string $runningSuite = null;
+
     /**
      * @throws ConfigurationException If the required modules are missing.
      */
@@ -41,5 +44,27 @@ class Codeception
         );
 
         throw new ConfigurationException($message);
+    }
+
+    public static function identifySuite(): string
+    {
+        if (self::$runningSuite === null) {
+            $reverseBacktraceHead = array_reverse(
+                array_slice(
+                    array_reverse(
+                        debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
+                    ), 0, 20)
+            );
+
+            foreach ($reverseBacktraceHead as $backtraceEntry) {
+                $object = $backtraceEntry['object'] ?? null;
+                if ($object instanceof \Codeception\Suite) {
+                    self::$runningSuite = Property::readPrivate($object, 'name');
+                    break;
+                }
+            }
+        }
+
+        return self::$runningSuite;
     }
 }

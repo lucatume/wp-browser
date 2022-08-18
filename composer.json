@@ -59,9 +59,8 @@
       "lucatume\\WPBrowser\\": "src/"
     },
     "files": [
-      "src/utils.php",
-      "src/wp-polyfills.php",
-      "src/version-4-aliases.php"
+      "src/version-4-aliases.php",
+      "src/deprecated-functions.php"
     ]
   },
   "autoload-dev": {

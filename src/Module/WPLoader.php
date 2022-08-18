@@ -23,7 +23,7 @@ use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
-use lucatume\WPBrowser\Utils\CorePHPunit;
+use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Map;
 use lucatume\WPBrowser\Utils\Password;
@@ -372,8 +372,8 @@ class WPLoader extends Module
 
         $this->ensureWPRoot($this->getWpRootFolder());
         // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
-        define('WP_TESTS_CONFIG_FILE_PATH', CorePHPunit::path('/wp-tests-config.php'));
-        $this->wpBootstrapFile = CorePHPunit::path('/includes/bootstrap.php');
+        define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
+        $this->wpBootstrapFile = CorePHPUnit::path('/includes/bootstrap.php');
 
         if (! empty($this->config['loadOnly'])) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
@@ -485,7 +485,7 @@ class WPLoader extends Module
             $this->debug('Running as single site');
         }
 
-        require_once CorePHPunit::path('/includes/functions.php');
+        require_once CorePHPUnit::path('/includes/functions.php');
 
         if (! empty($this->config['loadOnly'])) {
             $this->bootstrapWP();

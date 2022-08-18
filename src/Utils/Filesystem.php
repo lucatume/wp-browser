@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Provides methods to manipulate and interact with the filesystem.
  *

@@ -12,6 +12,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Moved functions from the `lucatume\WPBrowser` namespace to dedicated classes in the `lucatume\WPBrowser\Utils`
   namespace.
 - Removed support for Handlebars-like syntax from the `WPDb` module scaffolding functions.
+- Removed the `Dotenv/Dotenv` polyfill class.
+- Remove unused `tad\WPBrowser` functions related to Patchwork and PHPUnit.
+- Removed the `lucatume\WPBrowser` Composer-related functions.
+- Removed the `tad\WPBrowser\pregErrorMessage` function.
 
 ## [3.1.6] 2022-04-28;
 
