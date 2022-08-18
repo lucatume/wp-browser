@@ -11,8 +11,4 @@ class CorePHPUnit
 
         return $string ? $path . '/' . ltrim($string, '\\/') : $path;
     }
-
-    public static function includes(string $path)
-    {
-    }
 }
