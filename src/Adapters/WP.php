@@ -8,11 +8,6 @@
 namespace lucatume\WPBrowser\Adapters;
 
 use lucatume\WPBrowser\Traits\WPHealthcheck;
-use function lucatume\WPBrowser\Adapters\add_action;
-use function lucatume\WPBrowser\Adapters\add_filter;
-use function lucatume\WPBrowser\Adapters\admin_url;
-use function lucatume\WPBrowser\Adapters\apply_filters;
-use function lucatume\WPBrowser\Adapters\home_url;
 
 /**
  * Class WP

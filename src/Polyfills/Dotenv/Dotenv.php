@@ -7,8 +7,7 @@
 
 namespace lucatume\WPBrowser\Polyfills\Dotenv;
 
-use function lucatume\WPBrowser\envFile;
-use function lucatume\WPBrowser\loadEnvMap;
+use lucatume\WPBrowser\Utils\Env;
 
 /**
  * Class Dotenv
@@ -72,6 +71,6 @@ class Dotenv
      */
     public function load(): void
     {
-        loadEnvMap(envFile($this->envFilePath), false);
+        Env::loadEnvMap(Env::envFile($this->envFilePath), false);
     }
 }

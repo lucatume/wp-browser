@@ -10,7 +10,6 @@ namespace lucatume\WPBrowser\Traits;
 use Codeception\Command\Shared\Config;
 use Codeception\Module;
 use lucatume\WPBrowser\Utils\Composer;
-use function lucatume\WPBrowser\identifySuiteFromTrace;
 
 /**
  * Trait WithLateModuleConfig

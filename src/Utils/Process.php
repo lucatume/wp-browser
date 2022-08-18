@@ -13,10 +13,15 @@ namespace lucatume\WPBrowser\Utils;
 use Closure;
 use InvalidArgumentException;
 use RuntimeException;
-use function lucatume\WPBrowser\debug;
 
 class Process
 {
+    public const PROC_WRITE = 'proc_write';
+    public const PROC_READ = 'proc_read';
+    public const PROC_ERROR = 'proc_error';
+    public const PROC_REALTIME = 'proc_realtime';
+    public const PROC_CLOSE = 'proc_close';
+    public const PROC_STATUS = 'proc_status';
 
     /**
      * Returns a map to check on a process status.
@@ -94,9 +99,9 @@ class Process
         ];
 
         if (is_string($escapedCommand)) {
-            debug('Running command: ' . $escapedCommand);
+            codecept_debug('Running command: ' . $escapedCommand);
         } else {
-            debug('Running command: ' . implode(' ', $escapedCommand));
+            codecept_debug('Running command: ' . implode(' ', $escapedCommand));
         }
 
         // @phpstan-ignore-next-line
@@ -109,31 +114,31 @@ class Process
 
         return static function ($what = self::PROC_STATUS, ...$args) use ($proc, $pipes) {
             switch ($what) {
-                case 'proc_write':
+                case self::PROC_WRITE:
                     return fwrite($pipes[0], reset($args));
-                case 'proc_read':
+                case self::PROC_READ:
                     $length = isset($args[0]) ? (int)$args[0] : null;
 
-                    return processReadPipe($pipes[1], $length);
-                case 'proc_error':
+                    return self::processReadPipe($pipes[1], $length);
+                case self::PROC_ERROR:
                     $length = isset($args[0]) ? (int)$args[0] : null;
 
-                    return processReadPipe($pipes[2], $length);
+                    return self::processReadPipe($pipes[2], $length);
                 /** @noinspection PhpMissingBreakStatementInspection */
-                case 'proc_realtime':
+                case self::PROC_REALTIME:
                     $callback = $args[0];
                     if (!is_callable($callback)) {
                         throw new InvalidArgumentException('Realtime callback should be callable.');
                     }
                     do {
-                        $currentStatus = processStatus($proc);
-                        foreach ([2 => PROC_ERROR, 1 => PROC_READ] as $pipe => $type) {
-                            $callback($type, processReadPipe($pipes[$pipe]));
+                        $currentStatus = self::processStatus($proc);
+                        foreach ([2 => self::PROC_ERROR, 1 => self::PROC_READ] as $pipe => $type) {
+                            $callback($type, self::processReadPipe($pipes[$pipe]));
                         }
                     } while ($currentStatus('running', false));
                 // Let the process close after realtime.
-                case 'proc_close':
-                case 'proc_status':
+                case self::PROC_CLOSE:
+                case self::PROC_STATUS:
                 default:
                     if (!(fclose($pipes[0]))) {
                         throw new RuntimeException('Could not close the process STDIN pipe.');

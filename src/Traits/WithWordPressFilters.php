@@ -7,9 +7,6 @@
 
 namespace lucatume\WPBrowser\Traits;
 
-use function lucatume\WPBrowser\Traits\add_action;
-use function lucatume\WPBrowser\Traits\add_filter;
-
 /**
  * Trait WithWordPressFilters
  *

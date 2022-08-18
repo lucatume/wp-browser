@@ -10,8 +10,6 @@ namespace lucatume\WPBrowser\StubProphecy;
 use Patchwork\CallRerouting\Handle;
 use function Patchwork\redefine;
 use function Patchwork\restore;
-use function lucatume\WPBrowser\StubProphecy\uopz_set_return;
-use function lucatume\WPBrowser\StubProphecy\uopz_unset_return;
 
 /**
  * Class FunctionProphecy

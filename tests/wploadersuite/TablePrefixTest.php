@@ -1,30 +1,30 @@
 <?php
 
+use lucatume\WPBrowser\Utils\Db;
 use PHPUnit\Framework\AssertionFailedError;
-use function lucatume\WPBrowser\importDumpWithMysqlBin;
 
 class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
 
     public static $otherInstallationPrefix = 'foo_';
 
-    public static function wpSetUpBeforeClass()
+    public static function wpSetUpBeforeClass(): void
     {
         self::importOtherPrefixInstallation();
     }
 
-    protected static function importOtherPrefixInstallation()
+    protected static function importOtherPrefixInstallation(): void
     {
         $dumpFile = self::getDumpFilePath();
-        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        [$dbName, $dbUser, $dbPass, $dbHost] = self::getDbAccessCredentials();
 
-        importDumpWithMysqlBin($dumpFile, $dbName, $dbUser, $dbPass, $dbHost);
+        Db::importDumpWithMysqlBin($dumpFile, $dbName, $dbUser, $dbPass, $dbHost);
     }
 
     /**
      * @return string
      */
-    protected static function getDumpFilePath()
+    protected static function getDumpFilePath(): string
     {
         $dumpFile = codecept_data_dir('foo-installation.sql');
         return $dumpFile;
@@ -33,7 +33,7 @@ class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
     /**
      * @return array
      */
-    protected static function getDbAccessCredentials()
+    protected static function getDbAccessCredentials(): array
     {
 
         $creds = [
@@ -54,9 +54,9 @@ class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
      * @test
      * it should not destroy another installation on the same database
      */
-    public function it_should_not_destroy_another_installation_on_the_same_database()
+    public function it_should_not_destroy_another_installation_on_the_same_database(): void
     {
-        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        [$dbName, $dbUser, $dbPass, $dbHost] = self::getDbAccessCredentials();
 
         try {
             $db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);

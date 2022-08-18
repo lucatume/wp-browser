@@ -3,7 +3,6 @@
 namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
-use function lucatume\WPBrowser\Module\WPLoader\count;
 
 /**
  * Class Filters

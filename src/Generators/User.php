@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\Generators;
 
+use lucatume\WPBrowser\Utils\Strings;
+
 /**
  * Generates user entries to be inserted in a WordPress database.
  */
@@ -10,15 +12,15 @@ class User
     /**
      * Generates the entry for the users table.
      *
-     * @param string              $user_login The user login slug.
+     * @param string $user_login The user login slug.
      * @param array<int|string,mixed> $userData   An array of user data to override the default values. It should NOT
      *                                        include `meta` and `meta_input` keys.
      *
      * @return array<int|string,string>             An associative array of column/values for the "users" table.
      */
-    public static function generateUserTableDataFrom($user_login, array $userData = array()): array
+    public static function generateUserTableDataFrom(string $user_login, array $userData = array()): array
     {
-        $login = \lucatume\WPBrowser\sanitize_user($user_login, true);
+        $login = Strings::sanitizeUsername($user_login, true);
         $usersTableDefaults = [
             'user_login' => $login,
             'user_pass' => WpPassword::instance()->make($user_login),
@@ -44,7 +46,7 @@ class User
      *
      * @return int The corresponding user level, an integer.
      */
-    public static function getLevelForRole(string|int $role = 'subscriber')
+    public static function getLevelForRole(string|int $role = 'subscriber'): int
     {
         $map = [
             'subscriber' => 0,
@@ -67,7 +69,7 @@ class User
      *
      * @return array<string,array> An array of meta keys to insert to correctly represent the desired user capabilities.
      */
-    public static function buildCapabilities($role, $tablePrefix = 'wp_')
+    public static function buildCapabilities(mixed $role, string $tablePrefix = 'wp_'): array
     {
         $roles = (array)$role;
         $boolValues = count(array_filter($roles, 'is_bool')) === count($roles);
@@ -107,14 +109,14 @@ class User
      * The values DO NOT include the meta keys related to the user capabilities (`wp_capabilities` and `wp_user_level`).
      * To set those see the `buildCapabilities` method.
      *
-     * @param       string $user_login The user login name, slug form.
+     * @param string $user_login The user login name, slug form.
      * @param array<string,mixed> $overrides A map of the user meta values to override and add to the default values.
      *
      * @return array<string,mixed> The user meta keys and values, with overrides applied.
      */
-    public static function generateUserMetaTableDataFrom($user_login, array $overrides = []): array
+    public static function generateUserMetaTableDataFrom(string $user_login, array $overrides = []): array
     {
-        $login = \lucatume\WPBrowser\sanitize_user($user_login, true);
+        $login = Strings::sanitizeUsername($user_login, true);
 
         $usersMetaTableDefaults = [
             'nickname'              => $login,

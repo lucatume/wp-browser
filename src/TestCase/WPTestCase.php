@@ -23,14 +23,7 @@ use WP_UnitTest_Factory;
 use wpdb;
 use WPDieException;
 use function class_alias;
-use function Codeception\TestCase\add_action;
-use function Codeception\TestCase\add_filter;
-use function Codeception\TestCase\count;
-use function Codeception\TestCase\ini_set;
-use function Codeception\TestCase\sort;
-use function lucatume\WPBrowser\setupPhpunitBootstrapGlobal;
 use function version_compare;
-use const Codeception\TestCase\WP_RUN_CORE_TESTS;
 
 if (!class_exists('WP_UnitTest_Factory')) {
     require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';

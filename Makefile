@@ -445,3 +445,41 @@ update_core_phpunit_includes:
 .PHONY: ssh_mysql
 ssh_mysql:
 	docker exec -it wp-browser_db bash -c "mysql -utest -ptest"
+
+.PHONY: test
+test:
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run acceptance"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run cli"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run climodule"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run dbunit"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run functional"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run init"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run muloader"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run unit"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run webdriver"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpcli_module"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpfunctional"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploader_multisite"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wplaoder_wpdb_interaction"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploadersuite"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpmodule"
+
+.PHONY: test_fast
+test_fast:
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run acceptance"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run cli"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run climodule"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run dbunit"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run functional"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run init"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run muloader"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run unit"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run webdriver"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpcli_module"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpfunctional"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploader_multisite"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wplaoder_wpdb_interaction"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploadersuite"
+	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpmodule"

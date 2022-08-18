@@ -18,7 +18,6 @@ use lucatume\WPBrowser\Exceptions\WpCliException;
 use lucatume\WPBrowser\Process\Process;
 use lucatume\WPBrowser\Traits\WithWpCli;
 use lucatume\WPBrowser\Utils\Codeception;
-use function lucatume\WPBrowser\buildCommandline;
 
 //phpcs:disable
 Codeception::checkModuleRequirements('WPCLI', ['Cli']);
@@ -169,8 +168,6 @@ class WPCLI extends Module
     {
         $this->validatePath();
 
-        $userCommand = buildCommandline($userCommand);
-
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that the process will pick it up while populating the env.
@@ -178,7 +175,8 @@ class WPCLI extends Module
         putenv('WPBROWSER_HOST_REQUEST="1"');
         $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
 
-        $this->debugSection('command', $userCommand);
+        $userCommandString = is_string($userCommand) ? $userCommand : implode(' ', $userCommand);
+        $this->debugSection('command', $userCommandString);
 
         $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
         $env = $this->buildProcessEnv();

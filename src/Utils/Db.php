@@ -56,17 +56,17 @@ class Db
         // $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
         $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
 
-        $import = process(implode(' ', $command));
+        $import = Process::process(implode(' ', $command));
 
-        $importOutput = $import(PROC_READ);
-        $importError = $import(PROC_ERROR);
+        $importOutput = $import(Process::PROC_READ);
+        $importError = $import(Process::PROC_ERROR);
 
-        debug('Import output: ' . $importOutput);
-        debug('Import error: ' . $importError);
+        codecept_debug('Import output: ' . $importOutput);
+        codecept_debug('Import error: ' . $importError);
 
-        $status = $import(PROC_STATUS);
+        $status = $import(Process::PROC_STATUS);
 
-        debug('Import status: ' . $status);
+        codecept_debug('Import status: ' . $status);
 
         if ($status !== 0) {
             throw new RuntimeException('Import failed: ' . $importError);
@@ -135,8 +135,8 @@ class Db
      */
     public static function dbDsnMap(string $dbHost): Map
     {
-        if (isDsnString($dbHost)) {
-            return dbDsnToMap($dbHost);
+        if (Db::isDsnString($dbHost)) {
+            return Db::dbDsnToMap($dbHost);
         }
 
         $map = new Map();
@@ -373,4 +373,3 @@ class Db
         return new Map(array_replace(['type' => 'mysql', 'host' => 'localhost'], $map));
     }
 }
-

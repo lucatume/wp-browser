@@ -4,18 +4,15 @@ namespace lucatume\WPBrowser\Module\Support;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Environment\Constants;
-use lucatume\WPBrowser\Module\Support\WordPressDatabase;
-use lucatume\WPBrowser\Module\Support\WordPressDirectories;
-use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
+use lucatume\WPBrowser\Utils\Env;
 use PDOStatement;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use tad\Test\Constants as TestConstants;
 use lucatume\WPBrowser\Generators\Tables;
 use UnitTester;
 use wpdb;
-use function lucatume\WPBrowser\envFile;
 use function lucatume\WPBrowser\Tests\Support\testEnvFile;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
@@ -37,7 +34,7 @@ class WPHealthcheckTest extends Unit
     public function _before()
     {
         parent::_before();
-        $this->env = envFile(testEnvFile());
+        $this->env = Env::envFile(testEnvFile());
     }
 
     /**

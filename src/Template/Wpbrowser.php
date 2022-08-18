@@ -10,15 +10,13 @@ namespace lucatume\WPBrowser\Template;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Template\Bootstrap;
 use Exception;
+use lucatume\WPBrowser\Utils\Db;
+use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Map;
 use lucatume\WPBrowser\Utils\Url;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Yaml\Yaml;
-use function lucatume\WPBrowser\dbDsnMap;
-use function lucatume\WPBrowser\dbDsnString;
-use function lucatume\WPBrowser\envFile;
-use function lucatume\WPBrowser\loadEnvMap;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPRestApi;
 use lucatume\WPBrowser\Command\GenerateWPRestController;
@@ -110,7 +108,7 @@ class Wpbrowser extends Bootstrap
         try {
             $this->createGlobalConfig();
             $this->writeEnvFile($installationData);
-            loadEnvMap(envFile($this->envFileName));
+            Env::loadEnvMap(Env::envFile($this->envFileName));
             $this->createUnitSuite();
             $this->say("tests/unit created                 <- unit tests");
             $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
@@ -801,12 +799,12 @@ EOF;
      */
     public function getEnvFileVars(Map $installationData): array
     {
-        $testSiteDsnMap           = dbDsnMap($installationData['testSiteDbHost']);
+        $testSiteDsnMap           = Db::dbDsnMap($installationData['testSiteDbHost']);
         $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
-        $testDbDsnMap             = dbDsnMap($installationData['testDbHost']);
+        $testDbDsnMap             = Db::dbDsnMap($installationData['testDbHost']);
         return [
-            'TEST_SITE_DB_DSN'         => dbDsnString($testSiteDsnMap),
-            'TEST_SITE_DB_HOST'        => dbDsnString($testDbDsnMap, true),
+            'TEST_SITE_DB_DSN'         => Db::dbDsnString($testSiteDsnMap),
+            'TEST_SITE_DB_HOST'        => Db::dbDsnString($testDbDsnMap, true),
             'TEST_SITE_DB_NAME'        => $testSiteDsnMap('dbname', 'wordpress'),
             'TEST_SITE_DB_USER'        => $installationData['testSiteDbUser'],
             'TEST_SITE_DB_PASSWORD'    => $installationData['testSiteDbPassword'],
@@ -816,7 +814,7 @@ EOF;
             'TEST_SITE_WP_ADMIN_PATH'  => $installationData['testSiteWpAdminPath'],
             'WP_ROOT_FOLDER'           => $installationData['wpRootFolder'],
             'TEST_DB_NAME'             => $installationData['testDbName'],
-            'TEST_DB_HOST'             => dbDsnString($testDbDsnMap, true),
+            'TEST_DB_HOST'             => Db::dbDsnString($testDbDsnMap, true),
             'TEST_DB_USER'             => $installationData['testDbUser'],
             'TEST_DB_PASSWORD'         => $installationData['testDbPassword'],
             'TEST_TABLE_PREFIX'        => $installationData['testTablePrefix'],

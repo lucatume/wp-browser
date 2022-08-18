@@ -9,8 +9,8 @@ use Codeception\Command\Run;
 use Codeception\Exception\TestRuntimeException;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
+use lucatume\WPBrowser\Utils\Property;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use function lucatume\WPBrowser\setPrivateProperties;
 
 class EventDispatcherAdapterTest extends \Codeception\Test\Unit
 {
@@ -105,7 +105,7 @@ class EventDispatcherAdapterTest extends \Codeception\Test\Unit
         $codecept                   = $this->makeEmpty(Codecept::class, [
             'getDispatcher' => $mockSymfonyEventDispatcher
         ]);
-        setPrivateProperties($runningCommand, [ 'codecept' => $codecept ]);
+        Property::setPrivateProperties($runningCommand, [ 'codecept' => $codecept ]);
 
         $this->expectException(TestRuntimeException::class);
 

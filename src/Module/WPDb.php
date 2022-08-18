@@ -30,9 +30,7 @@ use lucatume\WPBrowser\Generators\Post;
 use lucatume\WPBrowser\Generators\Tables;
 use lucatume\WPBrowser\Generators\User;
 use lucatume\WPBrowser\Generators\WpPassword;
-use function lucatume\WPBrowser\db;
-use function lucatume\WPBrowser\dbDsnString;
-use function lucatume\WPBrowser\dbDsnToMap;
+use lucatume\WPBrowser\Utils\Db as DbUtils;
 
 //phpcs:disable
 Codeception::checkModuleRequirements('WPDb', [ 'Db' ]);
@@ -4157,7 +4155,7 @@ class WPDb extends Db
 
         if (!empty($createIfNotExist)) {
             foreach ($createIfNotExist as $dsn => list($user, $pass)) {
-                $dsnMap = dbDsnToMap((string)$dsn);
+                $dsnMap = DbUtils::dbDsnToMap((string)$dsn);
                 $dbname = $dsnMap('dbname', '');
 
                 if (empty($dbname)) {
@@ -4170,7 +4168,7 @@ class WPDb extends Db
                 try {
                     // Since the database might not exist at this point, remove the `dbname` from the DSN string.
                     unset($dsnMap['dbname']);
-                    $db = db(dbDsnString($dsnMap), $user, $pass);
+                    $db = DbUtils::db(DbUtils::dbDsnString($dsnMap), $user, $pass);
                     $db("CREATE DATABASE IF NOT EXISTS `{$dbname}`");
                 } catch (Exception $e) {
                     throw new ModuleException(

@@ -6,7 +6,6 @@ namespace lucatume\WPBrowser\Utils;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
-use function lucatume\WPBrowser\setPropertiesForClass;
 
 class Property
 {
@@ -38,9 +37,6 @@ class Property
 
     /**
      * Sets private and protected properties for an object of a class.
-     *
-     * This is a polyfill of the `Codeception\Utils\ReflectionPropertyAccessor::setPropertiesForClass` method.
-     * All credits to the Codeception team.
      *
      * @param object $object The object to set the properties of.
      * @param string $class The object class to set the properties for.

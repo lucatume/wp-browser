@@ -37,32 +37,33 @@ use function class_alias;
  * Using an autolaoder will load them lazily.
  */
 $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloader): void {
-    static $deprecated = [
-        '\\Codeception\\Module\\WPBrowser' => WPBrowser::class,
-        '\\Codeception\\Module\\WPBrowserMethods' => WPBrowserMethods::class,
-        '\\Codeception\\Module\\WPCLI' => WPCLI::class,
-        '\\Codeception\\Module\\WPDb' => WPDb::class,
-        '\\Codeception\\Module\\WPFilesystem' => WPFilesystem::class,
-        '\\Codeception\\Module\\WPLoader' => WPLoader::class,
-        '\\Codeception\\Module\\WPQueries' => WPQueries::class,
-        '\\Codeception\\Module\\WPWebDriver' => WPWebDriver::class,
-        '\\Codeception\\Module\\WordPress' => WordPress::class,
-        '\\Codeception\\Command\\GenerateWPAjax' => GenerateWPAjax::class,
-        '\\Codeception\\Command\\GenerateWPCanonical' => GenerateWPCanonical::class,
-        '\\Codeception\\Command\\GenerateWPRestApi' => GenerateWPRestApi::class,
-        '\\Codeception\\Command\\GenerateWPRestController' => GenerateWPRestController::class,
-        '\\Codeception\\Command\\GenerateWPRestPostTypeController' => GenerateWPRestPostTypeController::class,
-        '\\Codeception\\Command\\GenerateWPUnit' => GenerateWPUnit::class,
-        '\\Codeception\\Command\\GenerateWPXMLRPC' => GenerateWPXMLRPC::class,
-        '\\Codeception\\Template\\Wpbrowser' => WpbrowserInitTemplate::class,
-        '\\Codeception\\TestCase\\WPTestCase' => WPTestCase::class,
-        '\\Codeception\\TestCase\\WPAjaxTestCase' => WPAjaxTestCase::class,
-        '\\Codeception\\TestCase\\WPCanonicalTestCase' => WPCanonicalTestCase::class,
-        '\\Codeception\\TestCase\\WPRestApiTestCase' => WPRestApiTestCase::class,
-        '\\Codeception\\TestCase\\WPRestControllerTestCase' => WPRestControllerTestCase::class,
-        '\\Codeception\\TestCase\\WPRestPostTypeControllerTestCase' => WPRestPostTypeControllerTestCase::class,
-        '\\Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
+    $deprecated = [
+        'Codeception\\Module\\WPBrowser' => WPBrowser::class,
+        'Codeception\\Module\\WPBrowserMethods' => WPBrowserMethods::class,
+        'Codeception\\Module\\WPCLI' => WPCLI::class,
+        'Codeception\\Module\\WPDb' => WPDb::class,
+        'Codeception\\Module\\WPFilesystem' => WPFilesystem::class,
+        'Codeception\\Module\\WPLoader' => WPLoader::class,
+        'Codeception\\Module\\WPQueries' => WPQueries::class,
+        'Codeception\\Module\\WPWebDriver' => WPWebDriver::class,
+        'Codeception\\Module\\WordPress' => WordPress::class,
+        'Codeception\\Command\\GenerateWPAjax' => GenerateWPAjax::class,
+        'Codeception\\Command\\GenerateWPCanonical' => GenerateWPCanonical::class,
+        'Codeception\\Command\\GenerateWPRestApi' => GenerateWPRestApi::class,
+        'Codeception\\Command\\GenerateWPRestController' => GenerateWPRestController::class,
+        'Codeception\\Command\\GenerateWPRestPostTypeController' => GenerateWPRestPostTypeController::class,
+        'Codeception\\Command\\GenerateWPUnit' => GenerateWPUnit::class,
+        'Codeception\\Command\\GenerateWPXMLRPC' => GenerateWPXMLRPC::class,
+        'Codeception\\Template\\Wpbrowser' => WpbrowserInitTemplate::class,
+        'Codeception\\TestCase\\WPTestCase' => WPTestCase::class,
+        'Codeception\\TestCase\\WPAjaxTestCase' => WPAjaxTestCase::class,
+        'Codeception\\TestCase\\WPCanonicalTestCase' => WPCanonicalTestCase::class,
+        'Codeception\\TestCase\\WPRestApiTestCase' => WPRestApiTestCase::class,
+        'Codeception\\TestCase\\WPRestControllerTestCase' => WPRestControllerTestCase::class,
+        'Codeception\\TestCase\\WPRestPostTypeControllerTestCase' => WPRestPostTypeControllerTestCase::class,
+        'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
     ];
+    $countDeprecated = count($deprecated);
     static $hits = 0;
 
     if (isset($deprecated[$class])) {
@@ -70,7 +71,7 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         $hits++;
     }
 
-    if ($hits === count($deprecated)) {
+    if ($hits === $countDeprecated) {
         // Job done, do not keep loading.
         spl_autoload_unregister($deprecatedAutoloader);
     }

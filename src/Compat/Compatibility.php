@@ -7,7 +7,7 @@
 
 namespace lucatume\WPBrowser\Compat;
 
-use function lucatume\WPBrowser\phpunitVersion;
+use PHPUnit\Runner\Version;
 
 /**
  * Class Compatibility
@@ -41,6 +41,6 @@ class Compatibility
      */
     public function phpunitVersion()
     {
-        return phpunitVersion();
+        return Version::id();
     }
 }

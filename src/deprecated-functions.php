@@ -21,6 +21,7 @@ namespace tad\WPBrowser {
     use lucatume\WPBrowser\Utils\Url;
     use lucatume\WPBrowser\Utils\WP;
     use PHPUnit\Framework\Assert;
+    use PHPUnit\Runner\Version;
     use VRia\Utils\NoDiacritic;
     use wpdb;
 
@@ -428,6 +429,19 @@ namespace tad\WPBrowser {
     function emptyWpTables(wpdb $wpdb, array $tables = null): array
     {
         return WP::emptyWpTables($wpdb, $tables);
+    }
+
+    /**
+     * @deprecated Use `\PHPUnit\Runner\Version::id` instead.
+     */
+    function phpunitVersion(): string
+    {
+        return Version::id();
+    }
+
+    function pregpregErrorMessage(int $pregLastError)
+    {
+
     }
 }
 
