@@ -1,10 +1,10 @@
 <?php
 namespace Acme;
 
-class SomeClassTest extends Codeception\TestCase\WPTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     
-    public function setUp()
+    public function setUp() :void
     {
         // Before...
         parent::setUp();
@@ -12,7 +12,7 @@ class SomeClassTest extends Codeception\TestCase\WPTestCase
         // Your set up methods here.
     }
 
-    public function tearDown()
+    public function tearDown() :void
     {
         // Your tear down methods here.
 

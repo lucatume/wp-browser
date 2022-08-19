@@ -40,7 +40,7 @@ class WPUnit extends AbstractGenerator
 class {{name}}Test extends {{baseClass}}
 {
     {{tester}}
-    public function setUp(){{voidReturnType}}
+    public function setUp() :void
     {
         // Before...
         parent::setUp();
@@ -48,7 +48,7 @@ class {{name}}Test extends {{baseClass}}
         // Your set up methods here.
     }
 
-    public function tearDown(){{voidReturnType}}
+    public function tearDown() :void
     {
         // Your tear down methods here.
 
@@ -68,11 +68,6 @@ class {{name}}Test extends {{baseClass}}
 EOF;
 
     /**
-     * The injectable compatibility layer.
-     */
-    protected Compatibility $compatibilityLayer;
-
-    /**
      * WPUnit constructor.
      *
      * @param array<string,mixed> $settings The template settings.
@@ -84,7 +79,6 @@ EOF;
         parent::__construct($settings);
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
-        $this->compatibilityLayer = new Compatibility();
     }
 
     /**
@@ -96,17 +90,9 @@ EOF;
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-        $phpunitSeries = $this->compatibilityLayer->phpunitVersion();
-
-        /** @var string $phpunitSeries */
-        $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?
-            ''
-            : ': void';
-
         return (new Template($this->template))->place('namespace', $ns)
-            ->place('baseClass', $this->baseClass)
+            ->place('baseClass', '\\' . ltrim($this->baseClass, '\\'))
             ->place('name', $this->getShortClassName($this->name))
-            ->place('voidReturnType', $voidReturnType)
             ->place('tester', $this->getTester())
             ->produce();
     }
@@ -118,7 +104,7 @@ EOF;
      */
     protected function getTester(): string
     {
-        if (is_array($this->settings) && isset($this->settings['actor'])) {
+        if (isset($this->settings['actor'])) {
             $actor = $this->settings['actor'];
         }
 
@@ -144,15 +130,5 @@ EOF;
 EOF;
 
         return ltrim($testerFrag);
-    }
-
-    /**
-     * Injects the compatibility layer object.
-     *
-     * @param Compatibility $compatibility An instance of the compatibility layer.
-     */
-    public function setCompatibilityLayer(Compatibility $compatibility): void
-    {
-        $this->compatibilityLayer = $compatibility;
     }
 }
