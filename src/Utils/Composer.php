@@ -6,16 +6,15 @@ namespace lucatume\WPBrowser\Utils;
 
 class Composer
 {
-    private static ?string $vendorDir = null;
-
     public static function vendorDir(string $path = null): string
     {
-        if (self::$vendorDir === null) {
-            global $_composer_autoload_path;
-            $composerAutoloadPathRealpath = realpath($_composer_autoload_path);
-            self::$vendorDir = dirname($composerAutoloadPathRealpath);
-        }
+        $vendorDir = dirname(self::autoloadPath());
+        return $path ? $vendorDir . DIRECTORY_SEPARATOR . ltrim($path) : $vendorDir;
+    }
 
-        return $path ? self::$vendorDir . DIRECTORY_SEPARATOR . ltrim($path) : self::$vendorDir;
+    public static function autoloadPath(): string
+    {
+        global $_composer_autoload_path;
+        return realpath($_composer_autoload_path);
     }
 }

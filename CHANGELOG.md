@@ -16,6 +16,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Remove unused `tad\WPBrowser` functions related to Patchwork and PHPUnit.
 - Removed the `lucatume\WPBrowser` Composer-related functions.
 - Removed the `tad\WPBrowser\pregErrorMessage` function.
+- Removed support for the `WPLoader.isolatedInstall` configuration parameter; installation always happens in isolation.
+- Added support for the `WPLoader.stylesheet` configuration parameter to allow specifying a distinct `template` and `stylesheet`.
+- Changed name of the `WPLoader.theme` to `WPLoader.template`.
+- Deprecated the `WPLoaer.activatePlugins` parameter: the `WPLoader.plugins` parameter should be used instead.
 
 ## [3.1.6] 2022-04-28;
 

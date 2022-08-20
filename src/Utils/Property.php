@@ -38,9 +38,9 @@ class Property
     /**
      * Sets private and protected properties for an object of a class.
      *
-     * @param object $object The object to set the properties of.
-     * @param string $class The object class to set the properties for.
-     * @param array<string,mixed> $props A map of the names and values of the properties to set.
+     * @param object              $object The object to set the properties of.
+     * @param string              $class  The object class to set the properties for.
+     * @param array<string,mixed> $props  A map of the names and values of the properties to set.
      *
      * @return object The updated object.
      *
@@ -87,10 +87,11 @@ class Property
      * This is a polyfill of the `Codeception\Utils\ReflectionPropertyAccessor::setPrivateProperties` method.
      * All credits to the Codeception team.
      *
-     * @param object|string $object $object The object to set the properties of.
-     * @param array<string,mixed> $props A map of the names and values of the properties to set.
+     * @param object|string       $object $object The object to set the properties of.
+     * @param array<string,mixed> $props  A map of the names and values of the properties to set.
      *
      * @return void
+     * @throws ReflectionException
      */
     public static function setPrivateProperties(object|string $object, array $props): void
     {
@@ -99,7 +100,7 @@ class Property
         }
         $class = $object::class;
         do {
-            $object = setPropertiesForClass($object, $class, $props);
+            $object = self::setPropertiesForClass($object, $class, $props);
             $class = get_parent_class($class);
         } while ($class);
     }

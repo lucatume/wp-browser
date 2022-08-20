@@ -65,7 +65,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->config['theme'] = 'foo';
 
         $sut = $this->make_instance();
-        $sut->_setActiveTheme();
+        $sut->setActiveTheme();
 
         global $wp_tests_options;
         $this->assertNotEmpty($wp_tests_options['template']);
@@ -83,7 +83,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->config['theme'] = ['foo', 'bar'];
 
         $sut = $this->make_instance();
-        $sut->_setActiveTheme();
+        $sut->setActiveTheme();
 
         global $wp_tests_options;
         $this->assertNotEmpty($wp_tests_options['template']);
@@ -104,7 +104,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->do_action('after_switch_theme', 'bar')->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->_switchTheme();
+        $sut->switchTheme();
     }
 
     /**
@@ -119,7 +119,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->do_action('after_switch_theme', 'foo')->shouldBeCalled();
 
         $sut = $this->make_instance();
-        $sut->_switchTheme();
+        $sut->switchTheme();
     }
 
     /**
@@ -132,7 +132,7 @@ class WPLoaderTest extends \Codeception\Test\Unit
         $this->wp->switch_theme(Arg::type('string'))->shouldNotBeCalled();
 
         $sut = $this->make_instance();
-        $sut->_switchTheme();
+        $sut->switchTheme();
     }
 
     public function exitMessagesCombos()

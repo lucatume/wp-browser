@@ -5,10 +5,14 @@
  * @var array<string,mixed> $wpLoaderConfig A map of configuration values hydrated by the WPLoader module.
  */
 
+use lucatume\WPBrowser\Utils\CorePHPUnit;
+
 $didReadConfigFromEnvVar = false;
 
+$wpInstalling = defined('WP_INSTALLING') && WP_INSTALLING;
+
 if (!isset($wpLoaderConfig)) {
-    if (!(defined('WP_INSTALLING') && WP_INSTALLING)) {
+    if (!($wpInstalling)) {
         throw new RuntimeException('This file should be included from either the WPLoader Module or the ' .
             'WordPress Core PHUnit suite bootstrap file.');
     }
@@ -35,14 +39,14 @@ if (!isset($wpLoaderConfig)) {
 }
 
 // This file will be loaded by both the bootstrap and the installation file: do not include on the latter.
-if (!(defined('WP_INSTALLING') && WP_INSTALLING)) {
+if (!$wpInstalling && empty($wpLoaderIncludeWpSettings)) {
     /**
      * Codeception 5 requires a minimum PHPUnit version of 9, Yoast PHPUnit polyfills are not required
      * but the bootstrap file will look for them. Here we set up the context to make sure that check
      * will pass.
      */
-    require_once __DIR__ . '/stubs/yoast-phpunit-polyfills-autoload.php';
-    require_once __DIR__ . '/stubs/yoast-phpunit-polyfills-testcase.php';
+    require_once CorePHPUnit::path('/stubs/yoast-phpunit-polyfills-autoload.php');
+    require_once CorePHPUnit::path('/stubs/yoast-phpunit-polyfills-testcase.php');
 }
 
 // Resolve the ABSPATH to a real file path, if possible, and format it correctly.
@@ -106,3 +110,10 @@ if (!$didReadConfigFromEnvVar) {
 
 // Clean up.
 unset($abspath, $didReadConfigFromEnvVar, $wpLoaderConfig);
+
+if (!empty($wpLoaderIncludeWpSettings)) {
+    global $_wp_menu_nopriv, $_wp_submenu_nopriv;
+    $_wp_menu_nopriv = $_wp_submenu_nopriv = [];
+    require_once ABSPATH . 'wp-settings.php';
+    unset($wpLoaderIncludeWpSettings);
+}
