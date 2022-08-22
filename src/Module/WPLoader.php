@@ -253,7 +253,8 @@ class WPLoader extends Module
         ModuleContainer $moduleContainer,
         ?array $config,
         WP $wp = null,
-        WPHealthcheck $healthcheck = null
+        WPHealthcheck $healthcheck = null,
+        WPLoader\ClosureFactory $closure = null
     ) {
         parent::__construct($moduleContainer, $config);
         $this->wp = $wp ?: new WP();
@@ -693,8 +694,7 @@ class WPLoader extends Module
 
     private function filterTemplateStylesheet(): void
     {
-        $template = $this->config['template'] ?: $this->config['theme'] ?: null;
-        $stylesheet = $this->config['stylesheet'] ?: $template;
+        [$stylesheet, $template] = $this->getStylesheetTemplateFromConfig();
 
         if ($template) {
             $GLOBALS['wp_tests_options']['template'] = $template;
@@ -722,12 +722,11 @@ class WPLoader extends Module
         require_once $this->wpBootstrapFile;
         ob_end_clean();
 
-        $this->activatePluginsInSeparateProcesses();
-        $this->switchTheme();
+        $this->activatePluginsSwitchThemeInSeparateProcess();
         $this->runBootstrapActions();
     }
 
-    private function activatePluginsInSeparateProcesses(): void
+    private function activatePluginsSwitchThemeInSeparateProcess(): void
     {
         $plugins = $this->config['activatePlugins'] ?: $this->config['plugins'] ?: [];
 
@@ -735,35 +734,26 @@ class WPLoader extends Module
             return;
         }
 
-        $closure = new WPLoader\ClosureFactory(
-            $this->getWpRootFolder(),
-            1,
-            fn(string $message) => $this->debugSection('WPLoder', $message),
-            $this->config
-        );
+        $closure = new WPLoader\ClosureFactory($this->getWpRootFolder());
+        $closure->setDebugFn(fn(string $message) => $this->debugSection('WPLoader', $message));
 
         $jobs = array_combine(
-            $plugins,
-            array_map([$closure, 'toActivatePlugin'], $plugins)
+            array_map(static fn(string $plugin) => 'plugin::' . $plugin, $plugins),
+            array_map(fn(string $plugin) => $closure->toActivatePlugin($plugin, $this->config, 1), $plugins)
         );
+
+        [$stylesheet] = $this->getStylesheetTemplateFromConfig();
+        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet, $this->config, 1);
 
         $loop = new Loop($jobs, 1, true);
 
-        $loop->subscribeToWorkerExit($closure->toDebugPluginActivationResult());
+        $loop->subscribeToWorkerExit($closure->toDebugActivationResult());
         $loop->run()->getResults();
 
         if ($loop->failed()) {
             $this->fail('Plugin activation failed, see output above.');
         }
     }
-
-    /**
-     * Switches the current theme.
-     */
-    private function switchTheme(): void
-    {
-    }
-
 
     /**
      * Calls a list of user-defined actions needed in tests.
@@ -1035,4 +1025,10 @@ class WPLoader extends Module
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
     }
 
+    protected function getStylesheetTemplateFromConfig(): array
+    {
+        $template = $this->config['template'] ?: $this->config['theme'] ?: null;
+        $stylesheet = $this->config['stylesheet'] ?: $template;
+        return array($stylesheet, $template);
+    }
 }

@@ -245,7 +245,7 @@ class Loop
                     $this->dispatchOnWorkerExit(Exited::fromRunningWorker($w));
                     $this->debugLine('Fast failure flag raised, terminating all workers.');
                     $this->terminateAllRunningWorkers();
-                    break;
+                    break 2;
                 }
 
                 if ($status !== null) {

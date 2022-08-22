@@ -24,7 +24,20 @@ try {
     $returnValue = $serializableClosure();
 } catch (\Throwable $throwable) {
     $exitValue = 1;
-    Property::setPrivateProperties($throwable, ['trace' => [], 'previous' => null]);
+    $serializableTrace = Property::readPrivate($throwable, 'trace');
+    foreach ($serializableTrace as &$frame) {
+        foreach ($frame['args'] as &$arg) {
+            if (is_object($arg) && !method_exists($arg, '__serialize')) {
+                $arg = get_class($arg);
+            } else {
+                if (is_resource($arg)) {
+                    $arg = 'resource';
+                }
+            }
+        }
+    }
+    unset($frame, $arg);
+    Property::setPrivateProperties($throwable, ['trace' => $serializableTrace, 'previous' => null]);
     $returnValue = $throwable;
 }
 

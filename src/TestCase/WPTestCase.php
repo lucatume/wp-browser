@@ -5,13 +5,54 @@ namespace lucatume\WPBrowser\TestCase;
 
 use Codeception\Test\Unit;
 use WP_UnitTest_Factory;
+use WP_UnitTestCase;
 
 /**
  * The base test case for "wp-unit" (integration) tests, brings the Core suite test case into Codeception system.
  */
 class WPTestCase extends Unit
 {
+    /**
+     * WordPress uses globals extensively: we cannot be strict about them changing.
+     *
+     * @var bool
+     */
+    protected bool $beStrictAboutChangesToGlobalState = false;
+
+    /**
+     * The `WP_UnitTestCase_Base` will handle this, do not let PHPUnit do it.
+     *
+     * @var bool
+     */
+    protected $backupGlobals = false;
+
+    /**
+     * Should a test case want to backup globals, then it should not touch these between tests.
+     *
+     * @var array<string>
+     */
+    protected $backupGlobalsExcludeList = ['wpdb', 'wp_query', 'wp'];
+
+    /**
+     * Static attributes might be used to cache values, reset them between tests.
+     *
+     * @var bool
+     */
+    protected $backupStaticAttributes = true;
+
     use CoreTestCaseMethodRedirection;
+
+    private ?WP_UnitTestCase $coreTestCaseInstance = null;
+
+    private function getCoreTestCaseInstance(): WP_UnitTestCase
+    {
+        if ($this->coreTestCaseInstance === null) {
+            $this->coreTestCaseInstance = new class extends WP_UnitTestCase {
+            };
+        }
+
+        return $this->coreTestCaseInstance;
+    }
 
     public function __get(string $name)
     {

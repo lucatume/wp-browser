@@ -45,8 +45,8 @@ if (!$wpInstalling && empty($wpLoaderIncludeWpSettings)) {
      * but the bootstrap file will look for them. Here we set up the context to make sure that check
      * will pass.
      */
-    require_once CorePHPUnit::path('/stubs/yoast-phpunit-polyfills-autoload.php');
-    require_once CorePHPUnit::path('/stubs/yoast-phpunit-polyfills-testcase.php');
+    require_once CorePHPUnit::path('/yoast-phpunit-polyfills-autoload-stub.php');
+    require_once CorePHPUnit::path('/yoast-phpunit-polyfills-testcase-stub.php');
 }
 
 // Resolve the ABSPATH to a real file path, if possible, and format it correctly.

@@ -7,7 +7,6 @@ use WP_UnitTestCase;
 
 trait CoreTestCaseMethodRedirection
 {
-
     /**
      * @var array<string,ReflectionMethod>
      */
@@ -18,11 +17,9 @@ trait CoreTestCaseMethodRedirection
      */
     private array $coreTestCaseProtectedApiMethods = [];
 
-    private ?WP_UnitTestCase $wpUnitTestCase = null;
-
     private static function getTestCaseStaticReflectionMethod(string $name): ReflectionMethod
     {
-        if (!self::$coreTestCaseProtectedStaticApiMethods[$name] instanceof ReflectionMethod) {
+        if (!(isset(self::$coreTestCaseProtectedStaticApiMethods[$name]) && self::$coreTestCaseProtectedStaticApiMethods[$name] instanceof ReflectionMethod)) {
             $reflectionMethod = new ReflectionMethod(WP_UnitTestCase::class, $name);
             $reflectionMethod->setAccessible(true);
             self::$coreTestCaseProtectedStaticApiMethods[$name] = $reflectionMethod;
@@ -33,7 +30,7 @@ trait CoreTestCaseMethodRedirection
 
     private function getTestCaseReflectionMethod(string $name): ReflectionMethod
     {
-        if (!$this->coreTestCaseProtectedApiMethods[$name] instanceof ReflectionMethod) {
+        if (!(isset($this->coreTestCaseProtectedApiMethods[$name]) && $this->coreTestCaseProtectedApiMethods[$name] instanceof ReflectionMethod)) {
             $reflectionMethod = new ReflectionMethod($this->getCoreTestCaseInstance(), $name);
             $reflectionMethod->setAccessible(true);
             $this->coreTestCaseProtectedApiMethods[$name] = $reflectionMethod;
@@ -44,31 +41,61 @@ trait CoreTestCaseMethodRedirection
 
     public function __call(string $name, array $arguments): mixed
     {
+        codecept_debug("Calling {$name}");
         return $this->invokeProtectedApiMethod($name, $arguments);
     }
 
     public static function __callStatic(string $name, array $arguments): mixed
     {
+        codecept_debug("Calling static {$name}");
         return self::invokeProtectedStaticApiMethod($name, $arguments);
     }
 
     private static function invokeProtectedStaticApiMethod(string $name, array $arguments = []): mixed
     {
-        return self::getTestCaseStaticReflectionMethod($name)->invoke(...$arguments);
+        return self::getTestCaseStaticReflectionMethod($name)->invoke(null, ...$arguments);
     }
 
     private function invokeProtectedApiMethod(string $name, array $arguments = []): mixed
     {
-        return $this->getTestCaseReflectionMethod($name)->invoke(...$arguments);
+        return $this->getTestCaseReflectionMethod($name)->invoke($this->getCoreTestCaseInstance(), ...$arguments);
     }
 
-    private function getCoreTestCaseInstance(): WP_UnitTestCase
+    public static function setUpBeforeClass(): void
     {
-        if ($this->wpUnitTestCase === null) {
-            $this->wpUnitTestCase = new class extends WP_UnitTestCase {
-            };
-        }
+        parent::setUpBeforeClass();
+        self::invokeProtectedStaticApiMethod('setUpBeforeClass');
+    }
 
-        return $this->wpUnitTestCase;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->invokeProtectedApiMethod('set_up');
+    }
+
+    protected function assertPreConditions(): void
+    {
+        parent::assertPreConditions();
+        $this->invokeProtectedApiMethod('assert_pre_conditions');
+    }
+
+    protected function assertPostConditions(): void
+    {
+        parent::assertPostConditions();
+        $this->invokeProtectedApiMethod('assert_post_conditions');
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        $this->invokeProtectedApiMethod('tear_down');
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        global $wpdb;
+        $tables = $wpdb->get_results('SHOW TABLES');
+        parent::tearDownAfterClass();
+        self::invokeProtectedStaticApiMethod('tear_down_after_class');
     }
 }
