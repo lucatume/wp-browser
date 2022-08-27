@@ -3,44 +3,40 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Closure;
+use lucatume\WPBrowser\Exceptions\WPDieException;
 use WP_Error;
 
-class WordPressPreLoad
+class Preload
 {
 
-    public static function filterWpDieHandlerToExit(): Closure
+    public static function filterWpDieHandlerToExit(): void
     {
-        $closure = static function (
+        $throwWPDieException = static function (
             string|WP_Error $message,
             string|int $title = '',
             array $args = []
         ) {
-            $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-            $message = $message instanceof WP_Error ? $message->get_error_message() : $message;
-            $title = is_numeric($title) ? '' : $title;
-            if ($title) {
-                echo '[wp_die] ', $title, ': ', $message;
-            } else {
-                echo '[wp_die] ', $message;
-            }
-            exit((is_numeric($title)) ? $title : 1);
+            throw new WPDieException($title, $message, $args);
         };
+        self::addFilter('wp_die_handler', static fn() => $throwWPDieException, PHP_INT_MAX);
+    }
 
+    private static function addFilter(
+        string $hookName,
+        callable $callback,
+        int $priority = 10,
+        int $acceptedArgs = 1
+    ): void {
         global $wp_filter;
-        $wp_filter = [
-            'wp_die_handler' => [
-                PHP_INT_MAX => [
-                    [
-                        'accepted_args' => 1,
-                        'function' => static function () use ($closure) {
-                            return
-                                $closure;
-                        }
-                    ]
-                ]
-            ],
+        if (!isset($wp_filter[$hookName])) {
+            $wp_filter[$hookName] = [];
+        }
+        if (!isset($wp_filter['string'][$priority])) {
+            $wp_filter[$hookName][$priority] = [];
+        }
+        $wp_filter[$hookName][$priority][] = [
+            'accepted_args' => $acceptedArgs,
+            'function' => $callback
         ];
-
-        return $closure;
     }
 }

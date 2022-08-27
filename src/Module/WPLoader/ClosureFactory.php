@@ -3,11 +3,13 @@
 namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Closure;
+use lucatume\WPBrowser\Exceptions\SerializableThrowable;
 use lucatume\WPBrowser\Process\Worker\Exited;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
-use lucatume\WPBrowser\WordPress\Auth as WordPressAuth;
+use lucatume\WPBrowser\WordPress\Preload as WordPressPreload;
+use lucatume\WPBrowser\WordPress\WPLoaded;
 use Throwable;
 
 class ClosureFactory
@@ -18,17 +20,17 @@ class ClosureFactory
      * @var callable|null
      */
     private $debugFn = null;
-    private WordPressAuth $auth;
+    private WPLoaded $wpLoaded;
 
-    public function __construct(string $wpRootDir, ?WordPressAuth $auth = null)
+    public function __construct(string $wpRootDir, ?WPLoaded $wpLoaded = null)
     {
         $this->wpRootDir = $wpRootDir;
-        $this->auth = $auth ?? new WordPressAuth();
+        $this->wpLoaded = $wpLoaded ?? new WPLoaded();
     }
 
     public function toActivatePlugin(string $plugin, array $config, int $adminUserId = 1): Closure
     {
-        [$authCookieName, $authCookieValue] = $this->auth->getAuthCookieForUserId($adminUserId);
+        [$authCookieName, $authCookieValue] = $this->wpLoaded->getAuthCookieForUserId($adminUserId);
 
         $pluginsFile = $this->wpRootDir . '/wp-admin/plugins.php';
         $wpConfigFile = ABSPATH . 'wp-config.php';
@@ -36,11 +38,10 @@ class ClosureFactory
         $moduleConfig = $config;
         $nonce = wp_create_nonce('activate-plugin_' . $plugin);
         $requestUri = add_query_arg([
-            'action' => 'activate',
-            'plugin' => 'plugin',
             '_wpnonce' => $nonce,
-            'status' => 'activated',
-            'page' => 1,
+            'action' => 'activate',
+            'paged' => 1,
+            'plugin' => $plugin,
             's' => ''
         ], '/wp-admin/plugins.php');
 
@@ -55,21 +56,23 @@ class ClosureFactory
             $testsWpConfigFile,
             $wpConfigFile
         ): void {
+            /** @noinspection PhpUnusedLocalVariableInspection */
+            global $status, $page;
             $wpLoaderConfig = $moduleConfig;
             $wpLoaderIncludeWpSettings = true;
             MonkeyPatch::redirectFileToFile($wpConfigFile, $testsWpConfigFile);
-            ErrorHandling::throwWarnings();
+            ErrorHandling::throwErrors(ErrorHandling::E_All_WARNINGS);
+            WordPressPreload::filterWpDieHandlerToExit();
             // Reveal the errors.
             define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
             $_COOKIE[$authCookieName] = $authCookieValue;
             // Simulate an activation from the Plugins screen.
             $_SERVER['REQUEST_METHOD'] = 'GET';
             $_SERVER['REQUEST_URI'] = $requestUri;
-            $_GET['plugin'] = $plugin;
-            $_GET['action'] = 'activate';
             $_GET['_wpnonce'] = $nonce;
-            $_GET['status'] = 'activated';
-            $_GET['page'] = 1;
+            $_GET['action'] = 'activate';
+            $_GET['paged'] = 1;
+            $_GET['plugin'] = $plugin;
             $_GET['s'] = '';
             include $pluginsFile;
         };
@@ -87,10 +90,10 @@ class ClosureFactory
             $exitCode = $exited->getExitCode();
 
             if (str_starts_with($id, 'plugin::')) {
-                $format = 'Plugin %s activation: %s';
+                $format = 'Activating Plugin %s: %s';
                 $name = substr($id, 8);
             } else {
-                $format = 'Theme %s activation: %s';
+                $format = 'Switching to theme %s: %s';
                 $name = substr($id, 12);
             }
 
@@ -103,7 +106,10 @@ class ClosureFactory
                 $returnValue = $exited->getReturnValue();
                 if ($returnValue instanceof Throwable) {
                     $traceAsString = str_replace("\n", "\n\t\t", $returnValue->getTraceAsString());
-                    $result .= "\n\tError: {$returnValue->getMessage()}\n\t\t" . $traceAsString;
+                    $errorClass = $returnValue instanceof SerializableThrowable ?
+                        $returnValue->getWrappedThrowableClass()
+                        : get_class($returnValue);
+                    $result .= "\n\tThrown $errorClass:\n\t\t{$returnValue->getMessage()}\n\t\t" . $traceAsString;
                 }
             }
             $message = sprintf($format, $name, $result);
@@ -113,7 +119,7 @@ class ClosureFactory
 
     public function toSwitchTheme(string $stylesheet, array $config, int $adminUserId = 1): Closure
     {
-        [$authCookieName, $authCookieValue] = $this->auth->getAuthCookieForUserId($adminUserId);
+        [$authCookieName, $authCookieValue] = $this->wpLoaded->getAuthCookieForUserId($adminUserId);
         $themesFile = $this->wpRootDir . '/wp-admin/themes.php';
         $wpConfigFile = ABSPATH . 'wp-config.php';
         $testsWpConfigFile = CorePHPUnit::path('/wp-tests-config.php');
@@ -139,7 +145,8 @@ class ClosureFactory
             $wpLoaderConfig = $moduleConfig;
             $wpLoaderIncludeWpSettings = true;
             MonkeyPatch::redirectFileToFile($wpConfigFile, $testsWpConfigFile);
-            ErrorHandling::throwWarnings();
+            ErrorHandling::throwErrors(ErrorHandling::E_All_WARNINGS);
+            WordPressPreload::filterWpDieHandlerToExit();
             // Reveal the errors.
             define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
             $_COOKIE[$authCookieName] = $authCookieValue;

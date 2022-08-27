@@ -712,13 +712,14 @@ class WPLoader extends Module
      */
     private function installAndBootstrapInstallation(): void
     {
-
         $this->filterActivePlugins();
         $this->filterTemplateStylesheet();
 
         $wpLoaderConfig = $this->config;
 
-        ob_start($this->relayOutputToDebug('WPLoader > install script'));
+        // Patch the `WP_UnitTestCase_Base` class in memory to replace calls to `get_called_class()`;
+        
+        ob_start($this->relayOutputToDebug('WPLoader/install'));
         require_once $this->wpBootstrapFile;
         ob_end_clean();
 
@@ -751,7 +752,10 @@ class WPLoader extends Module
         $loop->run()->getResults();
 
         if ($loop->failed()) {
-            $this->fail('Plugin activation failed, see output above.');
+            $failMessage = Debug::isEnabled() ?
+                'Plugin activation failed; see output above.'
+                : 'Plugin activation failed; run again with --debug to know more.';
+            $this->fail($failMessage);
         }
     }
 

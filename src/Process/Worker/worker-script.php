@@ -1,5 +1,7 @@
 <?php
 
+use lucatume\WPBrowser\Exceptions\SerializableThrowable;
+use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
 use Opis\Closure\SerializableClosure;
 
@@ -24,21 +26,7 @@ try {
     $returnValue = $serializableClosure();
 } catch (\Throwable $throwable) {
     $exitValue = 1;
-    $serializableTrace = Property::readPrivate($throwable, 'trace');
-    foreach ($serializableTrace as &$frame) {
-        foreach ($frame['args'] as &$arg) {
-            if (is_object($arg) && !method_exists($arg, '__serialize')) {
-                $arg = get_class($arg);
-            } else {
-                if (is_resource($arg)) {
-                    $arg = 'resource';
-                }
-            }
-        }
-    }
-    unset($frame, $arg);
-    Property::setPrivateProperties($throwable, ['trace' => $serializableTrace, 'previous' => null]);
-    $returnValue = $throwable;
+    $returnValue = new SerializableThrowable($throwable);
 }
 
 $returnValueSeparator = $control['returnValueSeparator'];

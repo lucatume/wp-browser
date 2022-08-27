@@ -2,7 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-class Auth
+class WPLoaded
 {
     /**
      * @return array{authCookieName: string, authCookieValue: string}
