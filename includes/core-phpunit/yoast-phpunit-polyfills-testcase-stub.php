@@ -10,7 +10,7 @@
 
 namespace Yoast\PHPUnitPolyfills\TestCases;
 
-class TestCase extends \Codeception\PHPUnit\TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     public static function set_up_before_class()
     {
