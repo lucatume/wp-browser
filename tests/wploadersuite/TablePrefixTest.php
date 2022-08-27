@@ -37,10 +37,10 @@ class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
     {
 
         $creds = [
-            getenv('WORDPRESS_DB_NAME'),
-            getenv('WORDPRESS_DB_USER'),
-            getenv('WORDPRESS_DB_PASSWORD') ?: '',
-            getenv('WORDPRESS_DB_HOST')
+            $_ENV['WORDPRESS_DB_NAME'],
+            $_ENV['WORDPRESS_DB_USER'],
+            $_ENV['WORDPRESS_DB_PASSWORD'] ?: '',
+            $_ENV['WORDPRESS_DB_HOST'],
         ];
 
         if (count(array_filter($creds)) < 3) {
