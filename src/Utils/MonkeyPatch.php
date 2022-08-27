@@ -10,6 +10,6 @@ class MonkeyPatch
 
     public static function redirectFileToFile(string $fromFile, string $toFile): void
     {
-        FileStreamWrapper::addPatchersForFile($fromFile, new FileReplacementPatcher($toFile));
+        FileStreamWrapper::setPatcherForFile($fromFile, new FileReplacementPatcher($toFile));
     }
 }

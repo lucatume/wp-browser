@@ -12,7 +12,7 @@ class FileStreamWrapper
     protected static bool $isRegistered = false;
 
     /**
-     * @var array<string, array<PatcherInterface>>
+     * @var array<string,PatcherInterface>
      */
     private static array $fileToPatcherMap = [];
 
@@ -30,9 +30,9 @@ class FileStreamWrapper
     {
     }
 
-    public static function addPatchersForFile(string $file, PatcherInterface ...$patchers): void
+    public static function setPatcherForFile(string $file, PatcherInterface $patcher): void
     {
-        self::$fileToPatcherMap[FS::realpath($file)] = $patchers;
+        self::$fileToPatcherMap[FS::realpath($file)] = $patcher;
         self::register();
     }
 
@@ -86,7 +86,7 @@ class FileStreamWrapper
         $useIncludePath = (bool)(STREAM_USE_PATH & $options);
         $openedPath = $absPath;
 
-        if (isset(self::$fileToPatcherMap[$absPath]) && count(self::$fileToPatcherMap[$absPath])) {
+        if (isset(self::$fileToPatcherMap[$absPath])) {
             $openedPath = $this->patchFile($absPath);
             unset(self::$fileToPatcherMap[$absPath]);
 
@@ -338,7 +338,7 @@ class FileStreamWrapper
 
     private function patchFile(bool|string $absPath): string
     {
-        $patchers = self::$fileToPatcherMap[$absPath];
+        $patcher = self::$fileToPatcherMap[$absPath];
         self::unregister();
         $fileContents = file_get_contents($absPath);
         self::register();
@@ -347,10 +347,7 @@ class FileStreamWrapper
             throw new MonkeyPatchingException("Could not read file $absPath contents.");
         }
 
-        $openedPath = $absPath;
-        foreach ($patchers as $patcher) {
-            [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
-        }
+        [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
 
         $this->fileResource = fopen('php://temp', 'rb+', false, $this->context);
 
