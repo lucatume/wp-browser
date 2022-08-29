@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\TestCase;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionMethod;
 use WP_UnitTestCase;
 
@@ -11,7 +12,7 @@ class WPTestCase extends Unit
     // Backup, and reset, globals between tests.
     protected $backupGlobals = true;
 
-    // A list of globals that should not be backed up, they are handled by the Core test case.
+    // A list of globals that should not be backed up: they are handled by the Core test case.
     protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
@@ -112,5 +113,10 @@ class WPTestCase extends Unit
         return $reflectionMethod->invokeArgs($coreTestCase, $arguments);
     }
 
-
+    protected function queries(): WPQueries
+    {
+        /** @var WPQueries $wpQueries */
+        $wpQueries = $this->getModule(WPQueries::class);
+        return $wpQueries;
+    }
 }

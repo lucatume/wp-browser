@@ -1035,7 +1035,7 @@ class WPLoader extends Module
         return array($stylesheet, $template);
     }
 
-    private function toDebugActivationResult():Closure
+    private function toDebugActivationResult(): Closure
     {
         return function (Exited $exited): void {
             $id = $exited->getId();

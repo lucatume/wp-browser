@@ -4,16 +4,6 @@ class ThemeActivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     /**
      * @test
-     * it should switch to the theme during installation
-     */
-    public function it_should_switch_to_the_theme_during_installation()
-    {
-        $called = get_option('dummy_after_switch_theme_called');
-        $this->assertEquals('dummy', $called);
-    }
-
-    /**
-     * @test
      * it should call switch_theme during setup
      */
     public function it_should_call_switch_theme_during_setup()

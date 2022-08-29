@@ -4,6 +4,8 @@ namespace Helper;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
+use lucatume\WPBrowser\Module\WPLoader;
+
 class Wploadersuite extends \Codeception\Module
 {
     public function create_a_post()
@@ -13,6 +15,6 @@ class Wploadersuite extends \Codeception\Module
             'post_status' => 'publish',
         ]);
 
-        yield $this->getModule('WPLoader')->factory()->post->create();
+        yield $this->getModule(WPLoader::class)->factory()->post->create();
     }
 }
