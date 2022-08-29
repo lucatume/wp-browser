@@ -7,8 +7,7 @@ use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
 use Throwable;
 
-class SerializableThrowable extends Exception implements \Serializable
-{
+class SerializableThrowable extends Exception implements \Serializable{
     private array $serializableData;
     private string $wrappedThrowableClass;
 

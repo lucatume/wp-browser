@@ -6,9 +6,8 @@ use Closure;
 use lucatume\WPBrowser\Exceptions\WPDieException;
 use WP_Error;
 
-class Preload
+class PreloadFilters
 {
-
     public static function filterWpDieHandlerToExit(): void
     {
         $throwWPDieException = static function (

@@ -21,7 +21,6 @@ use lucatume\WPBrowser\Adapters\WP;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
-use lucatume\WPBrowser\Module\WPLoader\ClosureFactory;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\Worker\Exited;
@@ -31,13 +30,14 @@ use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Map;
 use lucatume\WPBrowser\Utils\Password;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
+use lucatume\WPBrowser\WordPress\RequestClosureFactory;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
 use stdClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 /**
  * Class WPLoader
@@ -718,7 +718,7 @@ class WPLoader extends Module
         $wpLoaderConfig = $this->config;
 
         // Patch the `WP_UnitTestCase_Base` class in memory to replace calls to `get_called_class()`;
-        
+
         ob_start($this->relayOutputToDebug('WPLoader/install'));
         require_once $this->wpBootstrapFile;
         ob_end_clean();
@@ -735,8 +735,7 @@ class WPLoader extends Module
             return;
         }
 
-        $closure = new WPLoader\ClosureFactory($this->getWpRootFolder());
-        $closure->setDebugFn(fn(string $message) => $this->debugSection('WPLoader', $message));
+        $closure = $this->getRequestClosureFactory();
 
         $jobs = array_combine(
             array_map(static fn(string $plugin) => 'plugin::' . $plugin, $plugins),
@@ -748,7 +747,7 @@ class WPLoader extends Module
 
         $loop = new Loop($jobs, 1, true);
 
-        $loop->subscribeToWorkerExit($closure->toDebugActivationResult());
+        $loop->subscribeToWorkerExit($this->toDebugActivationResult());
         $loop->run()->getResults();
 
         if ($loop->failed()) {
@@ -1034,5 +1033,52 @@ class WPLoader extends Module
         $template = $this->config['template'] ?: $this->config['theme'] ?: null;
         $stylesheet = $this->config['stylesheet'] ?: $template;
         return array($stylesheet, $template);
+    }
+
+    private function toDebugActivationResult():Closure
+    {
+        return function (Exited $exited): void {
+            $id = $exited->getId();
+            $exitCode = $exited->getExitCode();
+
+            if (str_starts_with($id, 'plugin::')) {
+                $format = 'Activating Plugin %s: %s';
+                $name = substr($id, 8);
+            } else {
+                $format = 'Switching to theme %s: %s';
+                $name = substr($id, 12);
+            }
+
+            if ($exitCode === 0) {
+                $result = 'OK';
+            } else {
+                $stdout = $exited->getStdout();
+                $stderr = $exited->getStderr();
+                $result = "FAILED\n\tExit code: $exitCode\n\tSTDOUT: $stdout\n\tSTDERR: $stderr";
+                $returnValue = $exited->getReturnValue();
+                if ($returnValue instanceof Throwable) {
+                    $traceAsString = str_replace("\n", "\n\t\t", $returnValue->getTraceAsString());
+                    $errorClass = $returnValue instanceof SerializableThrowable ?
+                        $returnValue->getWrappedThrowableClass()
+                        : get_class($returnValue);
+                    $result .= "\n\tThrown $errorClass:\n\t\t{$returnValue->getMessage()}\n\t\t" . $traceAsString;
+                }
+            }
+            $message = sprintf($format, $name, $result);
+            $this->debugSection('WPLoader', $message);
+        };
+    }
+
+    private function getRequestClosureFactory(): RequestClosureFactory
+    {
+        $requestFactory = new FileRequestFactory(
+            $this->getWpRootFolder(),
+            [ABSPATH . 'wp-config.php' => CorePHPUnit::path('/wp-tests-config.php')],
+            [
+                'wpLoaderIncludeWpSettings' => true,
+                'wpLoaderConfig' => $this->config
+            ]
+        );
+        return new RequestClosureFactory($requestFactory);
     }
 }
