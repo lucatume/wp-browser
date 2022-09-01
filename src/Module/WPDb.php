@@ -14,7 +14,6 @@ use Gumlet\ImageResizeException;
 use InvalidArgumentException;
 use JsonException;
 use lucatume\WPBrowser\Events\Dispatcher;
-use lucatume\WPBrowser\Exceptions\DumpException;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -3996,16 +3995,12 @@ class WPDb extends Db
             $this->dbDump->setOriginalUrl($this->config['originalUrl']);
         }
 
-        try {
-            if (is_array($sql)) {
-                $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
-                $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
-            } else {
-                $sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
-                $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
-            }
-        } catch (DumpException $e) {
-            throw new ModuleException($this, $e->getMessage());
+        if (is_array($sql)) {
+            $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
+            $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
+        } else {
+            $sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
+            $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
         }
 
         return $sql;

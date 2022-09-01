@@ -7,7 +7,7 @@
 
 namespace lucatume\WPBrowser\Exceptions;
 
-use lucatume\WPBrowser\Process\Process;
+use Symfony\Component\Process\Process;
 
 /**
  * Class WpCliException
@@ -46,7 +46,7 @@ class WpCliException extends \Exception
     /**
      * Builds and returns an exception to indicate a command failed.
      *
-     * @param \lucatume\WPBrowser\Process\Process $commandProcess The process that ran the command that failed.
+     * @param Process $commandProcess The process that ran the command that failed.
      *
      * @return WpCliException The built exception.
      */
@@ -56,7 +56,7 @@ class WpCliException extends \Exception
             "Command failed with status %s.\nOutput: %s\nError: %s",
             $commandProcess->getExitCode(),
             $commandProcess->getOutput(),
-            $commandProcess->getError()
+            $commandProcess->getErrorOutput()
         ));
     }
 

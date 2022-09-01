@@ -15,9 +15,9 @@ use Codeception\PHPUnit\TestCase;
 use JsonException;
 use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Exceptions\WpCliException;
-use lucatume\WPBrowser\Process\Process;
 use lucatume\WPBrowser\Traits\WithWpCli;
 use lucatume\WPBrowser\Utils\Codeception;
+use Symfony\Component\Process\Process;
 
 //phpcs:disable
 Codeception::checkModuleRequirements('WPCLI', ['Cli']);
@@ -111,9 +111,9 @@ class WPCLI extends Module
      *
      * @param ModuleContainer $moduleContainer The module container containing this module.
      * @param array<string,mixed>|null $config The module configuration.
-     * @param \lucatume\WPBrowser\Process\Process|null $process The process adapter.
+     * @param Process|null $process The process adapter.
      *
-     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If there's an issue setting up the module using the current configuration.
+     * @throws WpCliException If there's an issue setting up the module using the current configuration.
      */
     public function __construct(ModuleContainer $moduleContainer, ?array $config = null, Process $process = null)
     {
@@ -143,7 +143,7 @@ class WPCLI extends Module
      * @throws ModuleConfigException If a required wp-cli file cannot be found or the WordPress path does not exist
      *                               at runtime.
      *
-     * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
+     * @throws ModuleException|JsonException If the status evaluates to non-zero and the `throw` configuration
      *                                                parameter is set to `true`.
      */
     public function cli(array|string $userCommand = 'core version'): int|string

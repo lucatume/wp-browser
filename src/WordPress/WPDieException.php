@@ -1,13 +1,13 @@
 <?php
 
-namespace lucatume\WPBrowser\Exceptions;
+namespace lucatume\WPBrowser\WordPress;
 
 use Exception;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
-use Serializable;
 use WP_Error;
+use function lucatume\WPBrowser\Exceptions\str_starts_with;
 
 class WPDieException extends Exception
 {
@@ -23,7 +23,7 @@ class WPDieException extends Exception
             $exitCode = $args['code'] ?? 1;
         }
 
-        $message = $title ? "$title - $message" : $message;
+        $message = strip_tags($title ? "$title - $message" : $message);
 
         parent::__construct($message, $exitCode, null);
 

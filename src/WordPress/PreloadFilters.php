@@ -2,8 +2,6 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use Closure;
-use lucatume\WPBrowser\Exceptions\WPDieException;
 use WP_Error;
 
 class PreloadFilters
@@ -15,7 +13,7 @@ class PreloadFilters
             string|int $title = '',
             array $args = []
         ) {
-            throw new WPDieException($title, $message, $args);
+            throw new WPDieException($message, $title, $args);
         };
         self::addFilter('wp_die_handler', static fn() => $throwWPDieException, PHP_INT_MAX);
     }

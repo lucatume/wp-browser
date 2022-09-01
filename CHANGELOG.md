@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added support for the `WPLoader.stylesheet` configuration parameter to allow specifying a distinct `template` and `stylesheet`.
 - Changed name of the `WPLoader.theme` to `WPLoader.template`.
 - Deprecated the `WPLoaer.activatePlugins` parameter: the `WPLoader.plugins` parameter should be used instead.
+- Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
 
 ## [3.1.6] 2022-04-28;
 

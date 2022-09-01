@@ -7,6 +7,8 @@
 
 namespace lucatume\WPBrowser\Process;
 
+use Symfony\Component\Process\Process;
+
 /**
  * Class ProcessFailedException
  *
@@ -23,9 +25,9 @@ class ProcessFailedException extends \RuntimeException
     {
         $message = sprintf(
             'Command "%s" failed (%d) with error: %s',
-            $process->getCommand(),
+            $process->getCommandLine(),
             $process->getExitCode(),
-            $process->getError()
+            $process->getErrorOutput()
         );
         parent::__construct($message, (int)$process->getExitCode());
     }

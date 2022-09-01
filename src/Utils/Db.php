@@ -17,6 +17,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
+use Symfony\Component\Process\Process as Process;
 
 class Db
 {
@@ -53,18 +54,18 @@ class Db
             $command[] = '--port=' . escapeshellarg($dbPort);
         }
 
-        // $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
-        $command = array_merge($command, [escapeshellarg($dbName), '<', escapeshellarg($dumpFile)]);
+        array_push($command, $dbName, '<', $dumpFile);
 
-        $import = Process::process(implode(' ', $command));
+        $import = new Process($command);
+        $import->run();
 
-        $importOutput = $import(Process::PROC_READ);
-        $importError = $import(Process::PROC_ERROR);
+        $importOutput = $import->getOutput();
+        $importError = $import->getErrorOutput();
 
         codecept_debug('Import output: ' . $importOutput);
         codecept_debug('Import error: ' . $importError);
 
-        $status = $import(Process::PROC_STATUS);
+        $status = $import->getExitCode();
 
         codecept_debug('Import status: ' . $status);
 

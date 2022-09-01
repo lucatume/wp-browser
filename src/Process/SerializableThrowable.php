@@ -1,6 +1,6 @@
 <?php
 
-namespace lucatume\WPBrowser\Exceptions;
+namespace lucatume\WPBrowser\Process;
 
 use Exception;
 use lucatume\WPBrowser\Utils\ErrorHandling;

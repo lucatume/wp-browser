@@ -67,4 +67,9 @@ class Codeception
 
         return self::$runningSuite;
     }
+
+    public static function bin(): string
+    {
+        return Composer::binDir('/codecept');
+    }
 }

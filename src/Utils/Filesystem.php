@@ -268,11 +268,11 @@ class Filesystem
      * @param int $mode     The filemode that will be used to create each directory in the
      *                                                    directory tree.
      *
-     * @return void This function does not return any value.
+     * @return string The path to the created directory.
      *
      * @throws RuntimeException If the creation of a directory or file fails.
      */
-    public static function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): void
+    public static function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): string
     {
         if (is_array($contents)) {
             if (! is_dir($pathname) && ! mkdir($pathname, $mode, true) && ! is_dir($pathname)) {
@@ -286,11 +286,25 @@ class Filesystem
                 );
             }
 
-            return;
+            return $pathname;
         }
 
         if (! file_put_contents($pathname, $contents)) {
             throw new RuntimeException("Could not put file contents in file {$pathname}");
         }
+
+        return $pathname;
+    }
+
+    /**
+     * Creates and return the path to a temporary directory in the Codeception _output directory.
+     *
+     * @param ?string $prefix A prefix to use for the temporary directory name.
+     *
+     * @return string The path to the temporary directory.
+     */
+    public static function tmpDir(?string $prefix = ''): string
+    {
+        return self::mkdirp(codecept_output_dir('/tmp/' . $prefix . md5(microtime())));
     }
 }

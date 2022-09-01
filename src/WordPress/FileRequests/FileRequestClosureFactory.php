@@ -1,11 +1,10 @@
 <?php
 
-namespace lucatume\WPBrowser\WordPress;
+namespace lucatume\WPBrowser\WordPress\FileRequests;
 
 use Closure;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 
-class RequestClosureFactory
+class FileRequestClosureFactory
 {
     private FileRequestFactory $requestFactory;
 
@@ -24,7 +23,7 @@ class RequestClosureFactory
             's' => ''
         ], 1);
 
-        return static function () use ($request) {
+        return static function () use ($request): void {
             $request->execute();
         };
     }
@@ -37,7 +36,24 @@ class RequestClosureFactory
             'stylesheet' => $stylesheet
         ], 1);
 
-        return static function () use ($request) {
+        return static function () use ($request): void {
+            $request->execute();
+        };
+    }
+
+    public function toInstall(string $title, string $username, string $password, string $email): Closure
+    {
+        $request = $this->requestFactory->buildPostRequest('/wp-admin/install.php', [
+            'step' => 2,
+            'weblog_title' => $title,
+            'user_name' => $username,
+            'admin_password' => $password,
+            'admin_password2' => $password,
+            'admin_email' => $email,
+            'blog_public' => 1,
+        ], 0);
+
+        return static function () use ($request): void {
             $request->execute();
         };
     }

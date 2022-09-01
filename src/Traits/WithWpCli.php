@@ -8,11 +8,11 @@
 namespace lucatume\WPBrowser\Traits;
 
 use lucatume\WPBrowser\Exceptions\WpCliException;
-use lucatume\WPBrowser\Process\Process;
 use lucatume\WPBrowser\Process\ProcessFailedException;
 use ReflectionClass;
 use ReflectionException;
 use Server_Command;
+use Symfony\Component\Process\Process;
 use WP_CLI\Configurator;
 
 /**
@@ -37,27 +37,18 @@ trait WithWpCli
     protected ?string $wpCliWpRootDir = null;
 
     /**
-     * The process adapter the implementation will use.
-     *
-     * @var Process|null
-     */
-    protected ?Process $wpCliProcess = null;
-
-    /**
      * Sets up the wp-cli handler in a specific directory.
      *
      * @param string $wpRootFolderDir The absolute path to the WordPress installation root directory.
-     * @param Process|null $process         The process wrapper instance to use.
      *
      * @return self This object instance.
      *
-     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If wp-cli package files cannot be located while requiring them.
+     * @throws WpCliException If wp-cli package files cannot be located while requiring them.
      */
-    protected function setUpWpCli(string $wpRootFolderDir, Process $process = null): static
+    protected function setUpWpCli(string $wpRootFolderDir): static
     {
         $this->requireWpCliFiles();
         $this->wpCliWpRootDir = $wpRootFolderDir;
-        $this->wpCliProcess = $process ?: new Process();
 
         return $this;
     }
@@ -85,7 +76,7 @@ trait WithWpCli
      *
      * @return string The absolute path to the wp-cli package root directory.
      *
-     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
+     * @throws WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
      */
     protected function getWpCliRootDir(string $path = null): string
     {
@@ -96,7 +87,7 @@ trait WithWpCli
                 throw WpCliException::becauseConfiguratorClassCannotBeFound();
             }
 
-            $filename     = $ref->getFileName();
+            $filename = $ref->getFileName();
 
             if ($filename === false) {
                 throw new WpCliException('Filename could not be read from reflection.');
@@ -175,10 +166,14 @@ trait WithWpCli
      * @param string $format   The option serialization format, one of `plaintext` or `json`.
      *
      *
-     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If the option update command fails.
+     * @throws WpCliException If the option update command fails.
      */
-    protected function updateOptionWithWpcli(string $name, string $value, string $autoload = 'yes', string $format = 'plaintext'): void
-    {
+    protected function updateOptionWithWpcli(
+        string $name,
+        string $value,
+        string $autoload = 'yes',
+        string $format = 'plaintext'
+    ): void {
         if (!$this->wpCliWpRootDir) {
             throw WpCliException::becauseCommandRequiresSetUp();
         }
@@ -202,9 +197,10 @@ trait WithWpCli
     /**
      * Executes a wp-cli command.
      *
-     * @param array<string> $command The command fragments; a mix of arguments and options.
-     * @param int|null $timeout The timeout, in seconds, to use for the command. Use `null` to remove the timeout.
-     * @param array<string,string|int|float> $env An optional,associative array of environment variables to set for
+     * @param array<string>                  $command The command fragments; a mix of arguments and options.
+     * @param int|null                       $timeout The timeout, in seconds, to use for the command. Use `null` to
+     *                                                remove the timeout.
+     * @param array<string,string|int|float> $env     An optional,associative array of environment variables to set for
      *                                                the process.
      *
      * @return Process The process object that executed the command.
@@ -213,14 +209,8 @@ trait WithWpCli
      */
     protected function executeWpCliCommand(array $command = ['version'], ?int $timeout = 60, array $env = []): Process
     {
-        $fullCommand   = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
-        $process       = $this->wpCliProcess->withCommand($fullCommand)->withCwd($this->wpCliWpRootDir);
-        $process->setTimeout($timeout);
-        $process->inheritEnvironmentVariables(true);
-        if (count($env)) {
-            $currentEnv = (array)$process->getEnv();
-            $process = $process->withEnv(array_merge($currentEnv, $env));
-        }
+        $fullCommand = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
+        $process = new Process($fullCommand, $this->wpCliWpRootDir, $env, null, $timeout);
 
         try {
             $process->mustRun();
@@ -236,7 +226,7 @@ trait WithWpCli
      * Builds the full command to run including the PHP binary and the wp-cli boot file path.
      *
      * @example
-          * ```php
+     * ```php
      * // This method is defined in the WithWpCli trait.
      * // Set the wp-cli path, `$this` is a test case.
      * $this->setUpWpCli( '/var/www/html' );
@@ -246,7 +236,7 @@ trait WithWpCli
      * $wpCliProcess = new Process($fullCommand);
      * $wpCliProcess->run();
      * ```
-     *@param string|array<string> $command The command to run.
+     * @param string|array<string> $command The command to run.
      *
      * @return array<string> The full command including the current PHP binary and the absolute path to the wp-cli boot
      *                       file.
@@ -273,7 +263,7 @@ trait WithWpCli
      *
      * @return string The absolute path the the wp-cli boot file.
      *
-     * @throws \lucatume\WPBrowser\Exceptions\WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
+     * @throws WpCliException If the path to the WP_CLI\Configurator class cannot be resolved.
      */
     protected function getWpCliBootFilePath(): string
     {

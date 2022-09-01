@@ -64,6 +64,14 @@ class Loop
         $this->timeout = $timeout;
     }
 
+    public static function executeClosure(Closure $closure): Result
+    {
+        $results = (new Loop([$closure], 1, true))
+            ->run()
+            ->getResults();
+        return reset($results);
+    }
+
     /**
      * @return array<Worker>
      */

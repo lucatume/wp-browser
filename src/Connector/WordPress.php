@@ -10,11 +10,11 @@ namespace lucatume\WPBrowser\Connector;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Connector\Universal;
 use lucatume\WPBrowser\Module\Support\UriToIndexMapper;
-use lucatume\WPBrowser\Process\Process;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\Process\Process;
 
 // phpcs:disable
 /**
@@ -151,13 +151,10 @@ class WordPress extends Universal
 
         $requestScript = dirname(dirname(__DIR__)) . '/scripts/request.php';
 
-        $command = PHP_BINARY .
-            ' ' . escapeshellarg($requestScript) .
-            ' ' . escapeshellarg($this->index) .
-            ' ' . escapeshellarg(base64_encode(serialize($env)));
+        $command = [PHP_BINARY, $requestScript, $this->index, base64_encode(serialize($env)];
 
         $process = new Process($command);
-        $process->execute();
+        $process->run();
         $rawProcessOutput = $process->getOutput();
 
         $unserializedResponse = @unserialize(base64_decode($rawProcessOutput));

@@ -25,6 +25,34 @@ class FileRequestFactory
 
     public function buildGetRequest(string $requestUri, array $queryArgs, int $userId): FileGetRequest
     {
+        return $this->buildRequest('GET', $requestUri, $queryArgs, $userId);
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    protected function resolveQueryArgs(array $queryArgs): array
+    {
+        $resolved = [];
+
+        foreach ($queryArgs as $key => $value) {
+            $resolved[$key] = $value instanceof Closure ? $value() : $value;
+        }
+
+        return $resolved;
+    }
+
+    public function buildPostRequest(string $requestUri, array $queryArgs, int $userId): FilePostRequest
+    {
+        return $this->buildRequest('POST', $requestUri, $queryArgs, $userId);
+    }
+
+    protected function buildRequest(
+        string $method,
+        string $requestUri,
+        array $queryArgs,
+        int $userId
+    ): FileGetRequest|FilePostRequest {
         $targetFile = rtrim($this->wpRootDir, '\\/') . '/' . ltrim($requestUri, '\\/');
         $cookies = [];
 
@@ -42,28 +70,30 @@ class FileRequestFactory
             $queryArgs = $this->resolveQueryArgs($queryArgs);
         }
 
-
-        return new FileGetRequest(
-            $requestUri,
-            $targetFile,
-            $queryArgs,
-            $cookies,
-            $this->redirectFiles,
-            $this->presetLocalVars
-        );
-    }
-
-    /**
-     * @return array<string,mixed>
-     */
-    protected function resolveQueryArgs(array $queryArgs): array
-    {
-        $resolved = [];
-
-        foreach ($queryArgs as $key => $value) {
-            $resolved[$key] = $value instanceof Closure ? $value() : $value;
+        switch ($method) {
+            default:
+            case 'GET':
+                $request = new FileGetRequest(
+                    $requestUri,
+                    $targetFile,
+                    $queryArgs,
+                    $cookies,
+                    $this->redirectFiles,
+                    $this->presetLocalVars
+                );
+                break;
+            case 'POST':
+                $request = new FilePostRequest(
+                    $requestUri,
+                    $targetFile,
+                    $queryArgs,
+                    $cookies,
+                    $this->redirectFiles,
+                    $this->presetLocalVars
+                );
+                break;
         }
 
-        return $resolved;
+        return $request;
     }
 }

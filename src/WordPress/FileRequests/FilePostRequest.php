@@ -2,11 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress\FileRequests;
 
-
-class FileGetRequest extends FileRequest
+class FilePostRequest extends FileRequest
 {
+
     protected function getMethod(): string
     {
-        return 'GET';
+        return 'POST';
     }
 }

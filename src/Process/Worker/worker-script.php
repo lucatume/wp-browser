@@ -1,8 +1,6 @@
 <?php
 
-use lucatume\WPBrowser\Exceptions\SerializableThrowable;
-use lucatume\WPBrowser\Utils\ErrorHandling;
-use lucatume\WPBrowser\Utils\Property;
+use lucatume\WPBrowser\Process\SerializableThrowable;
 use Opis\Closure\SerializableClosure;
 
 [$base64EncodedControl, $base64EncodedSerializedClosure] = array_slice($argv, 1);

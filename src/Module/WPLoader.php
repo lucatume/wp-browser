@@ -31,7 +31,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Map;
 use lucatume\WPBrowser\Utils\Password;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
-use lucatume\WPBrowser\WordPress\RequestClosureFactory;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -1069,7 +1069,7 @@ class WPLoader extends Module
         };
     }
 
-    private function getRequestClosureFactory(): RequestClosureFactory
+    private function getRequestClosureFactory(): FileRequestClosureFactory
     {
         $requestFactory = new FileRequestFactory(
             $this->getWpRootFolder(),
@@ -1079,6 +1079,6 @@ class WPLoader extends Module
                 'wpLoaderConfig' => $this->config
             ]
         );
-        return new RequestClosureFactory($requestFactory);
+        return new FileRequestClosureFactory($requestFactory);
     }
 }

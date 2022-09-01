@@ -95,38 +95,6 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Process::processStatus instead.
-     */
-    function processStatus($proc_handle): Closure
-    {
-        return Process::processStatus($proc_handle);
-    }
-
-    /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Process::processReadPipe instead.
-     */
-    function processReadPipe($pipe, int $length = null): string
-    {
-        return Process::processReadPipe($pipe, $length);
-    }
-
-    /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Process::process instead.
-     */
-    function process(array|string $cmd = [], string $cwd = null, array $env = null): Closure
-    {
-        return Process::process($cmd, $cwd, $env);
-    }
-
-    /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Process::buildCommandLin instead.
-     */
-    function buildCommandline(string|array $command): array
-    {
-        return Process::buildCommandline($command);
-    }
-
-    /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Env::envFile instead.
      */
     function envFile($file): Map
