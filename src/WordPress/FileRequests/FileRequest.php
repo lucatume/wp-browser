@@ -2,11 +2,13 @@
 
 namespace lucatume\WPBrowser\WordPress\FileRequests;
 
+use Closure;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
+use Serializable;
 use function _PHPStan_9a6ded56a\RingCentral\Psr7\parse_query;
 
-abstract class FileRequest implements \Serializable
+abstract class FileRequest implements Serializable
 {
     /**
      * @var array<string,int|string|float|bool>
@@ -31,6 +33,10 @@ abstract class FileRequest implements \Serializable
      * @var array<string,mixed>
      */
     private array $serverVars = [];
+    /**
+     * @var array<Closure>
+     */
+    private array $preLoadClosures = [];
 
     public function __construct(
         string $requestUri,
@@ -104,9 +110,13 @@ abstract class FileRequest implements \Serializable
         // Reveal the errors.
         define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
 
-        // Authenticate the user.
+        // Set up the cookie jar.
         foreach ($this->cookieJar as $key => $value) {
             $_COOKIE[$key] = $value;
+        }
+
+        foreach ($this->preLoadClosures as $preLoadClosure) {
+            $preLoadClosure($this->targetFile);
         }
 
         // Preset these to avoid issues with WP expecting them being defined already.
@@ -151,4 +161,10 @@ abstract class FileRequest implements \Serializable
         $this->serverVars[$key] = $value;
         return $this;
     }
+
+    public function addPreloadClosure(Closure $preLoadClosure): void
+    {
+        $this->preLoadClosures[] = $preLoadClosure;
+    }
+
 }

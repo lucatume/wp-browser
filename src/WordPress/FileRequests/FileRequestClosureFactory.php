@@ -62,6 +62,16 @@ class FileRequestClosureFactory
             $request->setServerVar('HTTP_HOST', $url);
         }
 
+        // Avoid any mail being sent during the installation.
+        $request->addPreloadClosure(static function () {
+            if (!function_exists('wp_mail')) {
+                function wp_mail()
+                {
+                    return true;
+                }
+            }
+        });
+
         return static function () use ($request): void {
             $request->execute();
         };
