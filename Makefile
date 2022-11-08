@@ -444,7 +444,7 @@ update_core_phpunit_includes:
 	rm -rf includes/core-phpunit/includes
 	mkdir -p includes/core-phpunit
 	cd includes/core-phpunit && \
-		svn export https://github.com/WordPress/wordpress-develop/branches/master/tests/phpunit/includes
+		svn export https://github.com/WordPress/wordpress-develop/branches/trunk/tests/phpunit/includes
 	git apply includes/core-phpunit/_patches/abstract-testcase.php.patch
 
 .PHONY: ssh_mysql
