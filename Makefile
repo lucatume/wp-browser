@@ -163,8 +163,12 @@ down:
 	$(if $(shell docker network ls -q --filter label=project=wp-browser), \
 		docker network rm $$(docker network ls -q --filter label=project=wp-browser))
 
+.PHONY: clean_output
+clean_output:
+	rm -rf tests/_output && mkdir tests/_output
+
 .PHONY: clean
-clean: down
+clean: down clean_output
 	rm -f _build/_container/php/iidfile
 	rm -f _build/_container/wordpress/iidfile
 	rm -rf vendor/wordpress/wordpress

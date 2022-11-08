@@ -12,7 +12,7 @@ class Zip
             throw new \RuntimeException("Could not open {$zipFile}.");
         }
 
-        codecept_debug('Extractiing ');
+        codecept_debug(sprintf("Extracting %s to %s ... ", $zipFile, $destination));
 
         if ($zip->extractTo($destination) === false) {
             throw new \RuntimeException("Could not extract {$zipFile} to {$destination}.");

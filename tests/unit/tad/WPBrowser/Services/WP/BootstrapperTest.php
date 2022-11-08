@@ -1,9 +1,8 @@
 <?php
 namespace lucatume\WPBrowser\Services\WP;
 
-use lucatume\WPBrowser\Environment\System;
-use lucatume\WPBrowser\Services\WP\Bootstrapper;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
+use lucatume\WPBrowser\Utils\System;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\BrowserKit\Cookie;
 
@@ -22,7 +21,7 @@ class BootstrapperTest extends \Codeception\Test\Unit
     protected $wpLoadPath;
 
     /**
-     * @var \lucatume\WPBrowser\Environment\System
+     * @var \lucatume\WPBrowser\Utils\System
      */
     protected $system;
 

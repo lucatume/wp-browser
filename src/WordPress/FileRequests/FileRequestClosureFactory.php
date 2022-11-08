@@ -13,7 +13,7 @@ class FileRequestClosureFactory
         $this->requestFactory = $requestFactory;
     }
 
-    public function toActivatePlugin(string $plugin, array $config, int $adminUserId = 1): Closure
+    public function toActivatePlugin(string $plugin): Closure
     {
         $request = $this->requestFactory->buildGetRequest('/wp-admin/plugins.php', [
             '_wpnonce' => static fn() => wp_create_nonce('activate-plugin_' . $plugin),
@@ -28,7 +28,7 @@ class FileRequestClosureFactory
         };
     }
 
-    public function toSwitchTheme(string $stylesheet, array $config, int $adminUserId = 1): Closure
+    public function toSwitchTheme(string $stylesheet): Closure
     {
         $request = $this->requestFactory->buildGetRequest('/wp-admin/themes.php', [
             '_wpnonce' => static fn() => wp_create_nonce('switch-theme_' . $stylesheet),
@@ -41,10 +41,15 @@ class FileRequestClosureFactory
         };
     }
 
-    public function toInstall(string $title, string $username, string $password, string $email): Closure
+    public function toInstall(
+        string $title,
+        string $username,
+        string $password,
+        string $email,
+        ?string $url = null
+    ): Closure
     {
-        $request = $this->requestFactory->buildPostRequest('/wp-admin/install.php', [
-            'step' => 2,
+        $request = $this->requestFactory->buildPostRequest('/wp-admin/install.php?step=2', [
             'weblog_title' => $title,
             'user_name' => $username,
             'admin_password' => $password,
@@ -52,6 +57,10 @@ class FileRequestClosureFactory
             'admin_email' => $email,
             'blog_public' => 1,
         ], 0);
+
+        if($url !== null){
+            $request->setServerVar('HTTP_HOST', $url);
+        }
 
         return static function () use ($request): void {
             $request->execute();

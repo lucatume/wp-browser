@@ -1,868 +1,352 @@
 <?php
-/**
- * The template used for the `codecept init wpbrowser` command.
- *
- * @package Codeception\Template
- */
 
 namespace lucatume\WPBrowser\Template;
 
-use Codeception\Exception\ModuleConfigException;
+
+use Codeception\Extension\RunFailed;
 use Codeception\Template\Bootstrap;
-use Exception;
-use lucatume\WPBrowser\Utils\Db;
-use lucatume\WPBrowser\Utils\Env;
-use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Map;
-use lucatume\WPBrowser\Utils\Url;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Yaml\Yaml;
-use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Command\GenerateWPAjax;
+use lucatume\WPBrowser\Command\GenerateWPCanonical;
 use lucatume\WPBrowser\Command\GenerateWPRestApi;
 use lucatume\WPBrowser\Command\GenerateWPRestController;
 use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
-use lucatume\WPBrowser\Command\GenerateWPAjax;
-use lucatume\WPBrowser\Command\GenerateWPCanonical;
+use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
+use lucatume\WPBrowser\Module\WPDb;
+use lucatume\WPBrowser\Module\WPFilesystem;
+use lucatume\WPBrowser\Module\WPLoader;
+use lucatume\WPBrowser\Module\WPWebDriver;
+use lucatume\WPBrowser\OCI\ComposeStack;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\System;
+use lucatume\WPBrowser\Utils\WP;
+use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\InstallationException;
+use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class Wpbrowser
- *
- * @package Codeception\Template
- */
 class Wpbrowser extends Bootstrap
 {
-    use WithInjectableHelpers;
-
-    private bool $quiet = false;
-    private string $envFileName = '';
-    private ?Map $installationData = null;
-    private bool $createHelpers = true;
-    private bool $createActors = true;
-    private bool $createSuiteConfigFiles = true;
+    private ?Installation $installation = null;
+    private array $questions = [
+        'url' => ['What is the URL of the WordPress site to test?', 'http://localhost'],
+        'adminUsername' => ['What is the administrator username?', 'admin'],
+        'adminPassword' => ['What is the administrator password?', 'password'],
+    ];
+    private array $cachedAnswers = [];
+    private ?string $projectType;
 
     /**
-     * Sets up wp-browser.
-     *
-     * @param bool $interactive Whether to set up wp-browser in interactive mode or not.
-     *
-     *
-     * @throws Exception If there's an error processing the installation information or context.
+     * @throws InstallationException
      */
-    public function setup(bool $interactive = true): void
+    public function setup(): void
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->checkInstalled($this->workDir);
+        $this->say('This script will initialize wp-browser and Codeception for your current project.');
+        $workDir = rtrim(codecept_root_dir(), '\\/');
 
-        $input = $this->input;
+        $projectType = $this->getProjectType($workDir);
 
-        $this->quiet         = (bool) $this->input->getOption('quiet');
-        $noInteraction = (bool) $this->input->getOption('no-interaction');
-
-        if ($noInteraction || $this->quiet) {
-            $interactive = false;
-            $this->input->setInteractive(false);
-        } else {
-            $interactive = true;
-            $this->input->setInteractive(true);
+        if (!$this->ask("Setting up for a WordPress $projectType, correct?", true)) {
+            $projectType = $this->ask('What type of project is this?', ['site', 'plugin', 'theme']);
         }
 
-        if ($input->getOption('namespace')) {
-            $namespace = $input->getOption('namespace');
-            if (is_string($namespace)) {
-                $this->namespace = trim($namespace, '\\') . '\\';
-            }
+        $rootDir = match ($projectType) {
+            'site' => $workDir,
+            'plugin', 'theme' => WP::findRootDirFromDir($workDir),
+            default => throw new \InvalidArgumentException(message: "Unknown project type $projectType"),
+        };
+
+        if ($rootDir === false) {
+            // Might happen for themes and plugins.
         }
 
-        if ($input->hasOption('actor') && $input->getOption('actor')) {
-            $actor = $input->getOption('actor');
-            if (is_string($actor)) {
-                $this->actorSuffix = $actor;
-            }
+        $this->installation = Installation::fromRootDir($rootDir);
+        $this->projectType = $projectType;
+
+        $this->createConfiguration($this->workDir);
+    }
+
+    private function getProjectType(string $rootDir): string
+    {
+        if (file_exists($rootDir . '/wp-config.php')) {
+            // Root of a default structure WordPres installation.
+            return 'site';
         }
 
-        if ($interactive) {
-            $this->askForAcknowledgment();
+        if (file_exists(dirname($rootDir) . '/wp-config.php') && !file_exists(dirname($rootDir) . '/wp-settings.php')) {
+            // Root of a WordPress installation, but the wp-config.php file is in the parent directory.
+            return 'site';
         }
+    }
 
-        $this->say("<fg=white;bg=magenta> Bootstrapping Codeception for WordPress </fg=white;bg=magenta>\n");
-
-        $this->say("File codeception.yml created       <- global configuration");
-
-        $this->createDirs();
-
-        if ($input->hasOption('empty') && $input->getOption('empty')) {
-            return;
-        }
-
-        if ($interactive === true) {
-            $this->say();
-            $interactive = $this->ask('Would you like to set up the suites interactively now?', 'yes');
-            $this->say(' --- ');
-            $this->say();
-            $interactive = !preg_match('/^([nN])/', $interactive);
-        }
-
-        $installationData      = $this->getInstallationData($interactive);
+    private function createConfiguration(string $workDir): void
+    {
 
         try {
+            $this->checkInstalled($workDir);
+            $this->say("Initializing Codeception and wp-browser in {$workDir} ...");
+            $this->createDirectoryFor($workDir);
+            $this->workDir = $workDir;
+            chdir($workDir);
+            $input = $this->input;
+
+            if ($input->getOption('namespace')) {
+                $this->namespace = trim($input->getOption('namespace'), '\\');
+            }
+
+            if ($input->hasOption('actor') && $input->getOption('actor')) {
+                $this->actorSuffix = $input->getOption('actor');
+            }
+
+            $this->createDirs();
+
+            if ($this->ask('Would you like to use ready-to-run container-based setup?', true)) {
+                $this->setupContainerStack($this->installation, $this->projectType, 'tests/compose.yml');
+            } else {
+                throw new \RuntimeException('Non-container based setup not yet supported');
+            }
+
             $this->createGlobalConfig();
-            $this->writeEnvFile($installationData);
-            Env::loadEnvMap(Env::envFile($this->envFileName));
-            $this->createUnitSuite();
-            $this->say("tests/unit created                 <- unit tests");
-            $this->say("tests/unit.suite.yml written       <- unit tests suite configuration");
-            $this->createWpUnitSuite(ucwords($installationData['wpunitSuite']), $installationData);
-            $this->say("tests/{$installationData['wpunitSuiteSlug']} created               "
-                        . '<- WordPress unit and integration tests');
-            $this->say("tests/{$installationData['wpunitSuiteSlug']}.suite.yml written     "
-                        . '<- WordPress unit and integration tests suite configuration');
-            $this->createFunctionalSuite(ucwords($installationData['functionalSuite']), $installationData);
-            $this->say("tests/{$installationData['functionalSuiteSlug']} created           "
-                        . "<- {$installationData['functionalSuiteSlug']} tests");
-            $this->say("tests/{$installationData['functionalSuiteSlug']}.suite.yml written "
-                        . "<- {$installationData['functionalSuiteSlug']} tests suite configuration");
-            $this->createAcceptanceSuite(ucwords($installationData['acceptanceSuite']), $installationData);
-            $this->say("tests/{$installationData['acceptanceSuiteSlug']} created           "
-                        . "<- {$installationData['acceptanceSuiteSlug']} tests");
-            $this->say("tests/{$installationData['acceptanceSuiteSlug']}.suite.yml written "
-                        . "<- {$installationData['acceptanceSuiteSlug']} tests suite configuration");
-        } catch (ModuleConfigException $e) {
-            $this->removeCreatedFiles();
-            $this->say('<error>Something is not ok in the modules configurations: '
-                        . 'check your answers and try again.</error>');
-            $this->say('<error>' . $e->getMessage() . '</error>');
-            $this->sayInfo('All files and folders created by the initialization attempt have been removed.');
+            $this->createEnvFile();
 
-            return;
+            if ($input->hasOption('empty') && $input->getOption('empty')) {
+                return;
+            }
+
+//            $this->createEnd2EndSuite();
+        } catch (\Exception $e) {
+            $this->cleanup($workDir);
         }
-
-        $this->say(" --- ");
-        $this->say();
-        if ($interactive) {
-            $this->saySuccess("Codeception is installed for {$installationData['acceptanceSuiteSlug']}, "
-                               . "{$installationData['functionalSuiteSlug']}, and WordPress unit testing");
-        } else {
-            $this->saySuccess("Codeception has created the files for the {$installationData['acceptanceSuiteSlug']}, "
-                               . "{$installationData['functionalSuiteSlug']}, WordPress unit and unit suites "
-                               . 'but the modules are not activated');
-        }
-        $this->say('Some commands have been added in the Codeception configuration file: '
-                    . 'check them out using <comment>codecept --help</comment>');
-        $this->say(" --- ");
-        $this->say();
-
-        $this->say("<bold>Next steps:</bold>");
-        $this->say('0. <bold>Create the databases used by the modules</bold>; wp-browser will not do it for you!');
-        $this->say('1. <bold>Install and configure WordPress</bold> activating the theme and plugins you need to create'
-                    . ' a database dump in <comment>tests/_data/dump.sql</comment>');
-        $this->say("2. Edit <bold>tests/{$installationData['acceptanceSuiteSlug']}.suite.yml</bold> to make sure WPDb "
-                    . 'and WPBrowser configurations match your local setup; change WPBrowser to WPWebDriver to '
-                    . 'enable browser testing');
-        $this->say("3. Edit <bold>tests/{$installationData['functionalSuiteSlug']}.suite.yml</bold> to make sure "
-                    . 'WordPress and WPDb configurations match your local setup');
-        $this->say("4. Edit <bold>tests/{$installationData['wpunitSuiteSlug']}.suite.yml</bold> to make sure WPLoader "
-                    . 'configuration matches your local setup');
-        $this->say("5. Create your first {$installationData['acceptanceSuiteSlug']} tests using <comment>codecept "
-                    . "g:cest {$installationData['acceptanceSuiteSlug']} WPFirst</comment>");
-        $this->say("6. Write a test in <bold>tests/{$installationData['acceptanceSuiteSlug']}/WPFirstCest.php</bold>");
-        $this->say("7. Run tests using: <comment>codecept run {$installationData['acceptanceSuiteSlug']}</comment>");
-        $this->say(" --- ");
-        $this->say();
-        $this->sayWarning('Please note: due to WordPress extended use of globals and constants you should avoid running'
-                           . ' all the suites at the same time.');
-        $this->say('Run each suite separately, like this: <comment>codecept run unit && codecept run '
-                    . "{$installationData['wpunitSuiteSlug']}</comment>, to avoid problems.");
+//        $this->createWpUnitSuite();
+//
+//        $this->say(" --- ");
+//        $this->say();
+//        $this->saySuccess('Codeception is installed for acceptance, functional, and unit testing');
+//        $this->say();
+//
+//        $this->say("<bold>Next steps:</bold>");
+//        $this->say('1. Edit <bold>tests/acceptance.suite.yml</bold> to set url of your application. Change PhpBrowser to WebDriver to enable browser testing');
+//        $this->say("2. Edit <bold>tests/functional.suite.yml</bold> to enable a framework module. Remove this file if you don't use a framework");
+//        $this->say("3. Create your first acceptance tests using <comment>codecept g:cest acceptance First</comment>");
+//        $this->say("4. Write first test in <bold>tests/acceptance/FirstCest.php</bold>");
+//        $this->say("5. Run tests using: <comment>codecept run</comment>");
     }
 
-    /**
-     * Says something to the user.
-     *
-     * @param string $message The message to tell to the user.
-     */
-    protected function say(string $message = ''): void
-    {
-        if ($this->quiet) {
-            return;
-        }
-        parent::say($message);
-    }
-
-    /**
-     * Creates the global config.
-     *
-     *
-     */
     public function createGlobalConfig(): void
     {
         $basicConfig = [
-            'paths'        => [
-                'tests'   => 'tests',
-                'output'  => $this->outputDir,
-                'data'    => $this->dataDir,
+            'support_namespace' => $this->supportNamespace,
+            'paths' => [
+                'tests' => 'tests',
+                'output' => $this->outputDir,
+                'data' => $this->dataDir,
                 'support' => $this->supportDir,
-                'envs'    => $this->envsDir,
+                'envs' => $this->envsDir,
             ],
+            'params' => 'tests/.env',
             'actor_suffix' => 'Tester',
-            'extensions'   => [
-                'enabled'  => [ 'Codeception\Extension\RunFailed' ],
-                'commands' => $this->getAddtionalCommands(),
+            'extensions' => [
+                'enabled' => [RunFailed::class],
+                'commands' => [
+                    GenerateWPUnit::class,
+                    GenerateWPRestApi::class,
+                    GenerateWPRestController::class,
+                    GenerateWPRestPostTypeController::class,
+                    GenerateWPAjax::class,
+                    GenerateWPCanonical::class,
+                    GenerateWPXMLRPC::class,
+                ]
             ],
-            'params'       => [
-                trim($this->envFileName),
-            ],
+            'modules' => [
+                'config' => [
+                    WPBrowser::class => [],
+                    WPWebDriver::class => $this->getWpWebDriverConfig(),
+                    WPDb::class => [],
+                    WPFilesystem::class => [],
+                    WPLoader::class => [],
+                ]
+            ]
         ];
 
         $str = Yaml::dump($basicConfig, 4);
-        if ($this->namespace) {
+        if ($this->namespace !== '') {
             $namespace = rtrim($this->namespace, '\\');
-            $str       = "namespace: $namespace\n" . $str;
+            $str = "namespace: {$namespace}\n" . $str;
         }
-        $this->createFile('codeception.dist.yml', $str);
+        $this->createFile('codeception.yml', $str);
     }
 
-    /**
-     * Returns a list of additional commands.
-     *
-     * @return array<string> The additonal commands provided by wp-browser.
-     */
-    protected function getAddtionalCommands(): array
+    private function createEnd2EndSuite(string $actor = 'End2End'): void
     {
-        return [
-            GenerateWPUnit::class,
-            GenerateWPRestApi::class,
-            GenerateWPRestController::class,
-            GenerateWPRestPostTypeController::class,
-            GenerateWPAjax::class,
-            GenerateWPCanonical::class,
-            GenerateWPXMLRPC::class,
-        ];
-    }
+        $suiteConfigPrefix = <<< EOF
+# End-to-end test suite configuration.
+#
+# Drive a real browser using the WPWebDriver module to simulate a user interaction with your WordPress project.
+# Hydrate and manipulate the database state using the WPDb module.
+# Interact with WordPress installation files using the WPFilesystem module.
 
-    /**
-     * Builds, and returns, the installation data.
-     *
-     * @param bool $interactive Whether to build the installation data with user interactive input or not.
-     *
-     * @return Map The installation data.
-     */
-    protected function getInstallationData(bool $interactive): Map
-    {
-        if ($this->installationData !== null) {
-            return $this->installationData;
-        }
+EOF;
 
-        if (!$interactive) {
-            return $this->getDefaultInstallationData();
-        }
-
-        return $this->askForInstallationData();
-    }
-
-    protected function askForInstallationData(): Map
-    {
-        $installationData = [
-            'activeModules' => [
-                'WPDb'      => true,
-                'WPBrowser' => true,
-                'WordPress' => true,
-                'WPLoader'  => true,
+        $end2EndSuiteConfig = [
+            'actor' => $actor . $this->actorSuffix,
+            'modules' => [
+                'enabled' => [
+                    WPWebDriver::class,
+                    WPDb::class,
+                    WPFilesystem::class,
+                    'Asserts'
+                ],
             ],
+            'step_decorators' => '~'
+        ];
+        $this->createSuite(
+            'End2End',
+            $actor,
+            $suiteConfigPrefix . PHP_EOL . PHP_EOL . Yaml::dump($end2EndSuiteConfig, 4)
+        );
+    }
+
+    private function createIntegrationSuite(string $actor = 'Integration'): void
+    {
+        $suiteConfigPrefix = <<< EOF
+# Integration ("WordPress unit") test suite configuration.
+#
+# Run integration tests on a clean WordPress installation.
+
+EOF;
+
+        $integrationSuiteConfig = [
+            'actor' => $actor . $this->actorSuffix,
+            'modules' => [
+                'enabled' => [
+                    WPloader::class,
+                ],
+            ],
+            'step_decorators' => '~'
+        ];
+        $this->createSuite(
+            'Integration',
+            $actor,
+            $suiteConfigPrefix . PHP_EOL . PHP_EOL . Yaml::dump($integrationSuiteConfig, 4)
+        );
+    }
+
+    private function cleanup(string $workDir): void
+    {
+        foreach ([
+                     $workDir . '/codeception.yml',
+                     $workDir . '/tests',
+
+                 ] as $file) {
+            FS::rrmdir($file);
+        }
+    }
+
+    private function getWpWebDriverConfig(): array
+    {
+        $config = [
+            'url' => '%WORDPRESS_TEST_URL%',
+            'adminUsername' => '%WORDPRESS_TEST_ADMIN_USERNAME%',
+            'adminPassword' => '%WORDPRESS_TEST_ADMIN_PASSWORD%',
+            'adminPath' => '%WORDPRESS_TEST_ADMIN_PATH%',
+            'browser' => 'chrome',
+            'host' => '%WORDPRESS_TEST_BROWSER_HOST%',
+            'port' => '%WORDPRESS_TEST_BROWSER_PORT%',
+            'window_size' => '%WORDPRESS_TEST_BROWSER_WINDOW_SIZE%',
+            'capabilities' => [
+                'chromeOptions' => [
+                    'args' => [
+                        '--headless',
+                        '--disable-gpu'
+                    ]
+                ]
+            ]
         ];
 
-        $installationData['acceptanceSuite']     = 'acceptance';
-        $installationData['functionalSuite']     = 'functional';
-        $installationData['wpunitSuite']         = 'wpunit';
-        $installationData['acceptanceSuiteSlug'] = strtolower($installationData['acceptanceSuite']);
-        $installationData['functionalSuiteSlug'] = strtolower($installationData['functionalSuite']);
-        $installationData['wpunitSuiteSlug']     = strtolower($installationData['wpunitSuite']);
-
-        $this->say('---');
-        $this->say();
-
-        $this->envFileName = '.env.testing';
-
-        $this->checkEnvFileExistence();
-
-        echo PHP_EOL;
-        $this->sayInfo('WPLoader and WordPress modules need to access the WordPress files to work.');
-        echo PHP_EOL;
-
-        $installationData['wpRootFolder']        = $this->normalizePath($this->ask(
-            'Where is WordPress installed?',
-            '/var/www/html'
-        ));
-        $installationData['testSiteWpAdminPath'] = $this->ask(
-            'What is the path, relative to WordPress root URL, of the admin area of the test site?',
-            '/wp-admin'
-        );
-        $normalizedAdminPath                     = trim(
-            $this->normalizePath($installationData['testSiteWpAdminPath']),
-            '/'
-        );
-        $installationData['testSiteWpAdminPath'] = '/' . $normalizedAdminPath;
-        echo PHP_EOL;
-        $this->sayInfo('The WPDb module needs the database details to access the test database used by the test site.');
-        echo PHP_EOL;
-        $installationData['testSiteDbName'] = $this->ask(
-            'What is the name of the test database used by the test site?',
-            'test'
-        );
-        $installationData['testSiteDbHost'] = $this->ask(
-            'What is the host of the test database used by the test site?',
-            'localhost'
-        );
-
-        $installationData['testSiteDbUser']      = $this->ask(
-            'What is the user of the test database used by the test site?',
-            'root'
-        );
-        $installationData['testSiteDbPassword']  = $this->ask(
-            'What is the password of the test database used by the test site?',
-            ''
-        );
-        $installationData['testSiteTablePrefix'] = $this->ask(
-            'What is the table prefix of the test database used by the test site?',
-            'wp_'
-        );
-
-        echo PHP_EOL;
-        $this->sayInfo(
-            'WPLoader will reinstall a fresh WordPress installation before the tests.' .
-            PHP_EOL . 'It needs the details you would typically provide when installing WordPress from scratch.'
-        );
-
-        echo PHP_EOL;
-        $this->sayWarning(implode(PHP_EOL, [
-            'WPLoader should be configured to run on a dedicated database!',
-            'The data stored on the database used by the WPLoader module will be lost!',
-        ]));
-        echo PHP_EOL;
-
-        $installationData['testDbName'] = $this->ask(
-            'What is the name of the test database WPLoader should use?',
-            'test'
-        );
-        $installationData['testDbHost'] = $this->ask(
-            'What is the host of the test database WPLoader should use?',
-            'localhost'
-        );
-
-        $installationData['testDbUser']            = $this->ask(
-            'What is the user of the test database WPLoader should use?',
-            'root'
-        );
-        $installationData['testDbPassword']        = $this->ask(
-            'What is the password of the test database WPLoader should use?',
-            ''
-        );
-        $installationData['testTablePrefix']       = $this->ask(
-            'What is the table prefix of the test database WPLoader should use?',
-            'wp_'
-        );
-        $installationData['testSiteWpUrl']         = $this->ask(
-            'What is the URL the test site?',
-            'http://wordpress.test'
-        );
-        $installationData['testSiteWpUrl']         = rtrim($installationData['testSiteWpUrl'], '/');
-        $installationData['testSiteWpDomain']      = Url::getDomain($installationData['testSiteWpUrl']);
-        $adminEmailCandidate                       = "admin@{$installationData['testSiteWpDomain']}";
-        $installationData['testSiteAdminEmail']    = $this->ask(
-            'What is the email of the test site WordPress administrator?',
-            $adminEmailCandidate
-        );
-        $installationData['title']                 = $this->ask('What is the title of the test site?', 'Test');
-        $installationData['testSiteAdminUsername'] = $this->ask(
-            'What is the login of the administrator user of the test site?',
-            'admin'
-        );
-        $installationData['testSiteAdminPassword'] = $this->ask(
-            'What is the password of the administrator user of the test site?',
-            'password'
-        );
-
-        $sut = '';
-
-        while (! in_array($sut, [ 'plugin', 'theme', 'both' ])) {
-            $sut = $this->ask('Are you testing a plugin, a theme or a combination of both (both)?', 'plugin');
-        }
-
-        $installationData['plugins'] = [];
-        if ($sut === 'plugin') {
-            $installationData['mainPlugin'] = $this->ask(
-                'What is the <comment>folder/plugin.php</comment> name of the plugin?',
-                'my-plugin/my-plugin.php'
-            );
-        } elseif ($sut === 'theme') {
-            $isChildTheme = $this->ask('Are you developing a child theme?', 'no');
-            if (preg_match('/^([yY])/', $isChildTheme)) {
-                $installationData['parentTheme'] = $this->ask(
-                    'What is the slug of the parent theme?',
-                    'twentyseventeen'
-                );
-            }
-            $installationData['theme'] = $this->ask('What is the slug of the theme?', 'my-theme');
-        } else {
-            $isChildTheme = $this->ask('Are you using a child theme?', 'no');
-            if (preg_match('/^([yY])/', $isChildTheme)) {
-                $installationData['parentTheme'] = $this->ask(
-                    'What is the slug of the parent theme?',
-                    'twentyseventeen'
-                );
-            }
-            $installationData['theme'] = $this->ask('What is the slug of the theme you are using?', 'my-theme');
-        }
-
-        $activateFurtherPlugins = $this->ask(
-            'Does your project needs additional plugins to be activated to work?',
-            'no'
-        );
-
-        if (preg_match('/^([yY])/', $activateFurtherPlugins)) {
-            do {
-                $plugin                        = $this->ask(
-                    'Please enter the plugin <comment>folder/plugin.php</comment> (leave blank when done)',
-                    ''
-                );
-                $installationData['plugins'][] = $plugin;
-            } while (! empty($plugin));
-        }
-
-        $installationData['plugins'] = array_map('trim', array_filter($installationData['plugins']));
-        if (! empty($installationData['mainPlugin'])) {
-            $installationData['plugins'][] = $installationData['mainPlugin'];
-        }
-
-        return new Map($installationData);
+        return $config;
     }
 
-    /**
-     * Checks for the existence of an environment file.
-     *
-     * @return void
-     *
-     * @throws \RuntimeException If an environment file already exists.
-     */
-    protected function checkEnvFileExistence(): void
+    private function getOrAsk(string $key): mixed
     {
-        $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
 
-        if (file_exists($filename)) {
-            $basename = basename($filename);
-            $message  = "Found a previous $basename file."
-                        . PHP_EOL . "Remove the existing $basename file or specify a " .
-                        "different name for the env file.";
-            throw new RuntimeException($message);
-        }
-    }
-
-    /**
-     * Normalizes a path.
-     *
-     * @param string $path The path to normalize.
-     *
-     * @return string The normalized path.
-     */
-    protected function normalizePath(string $path): string
-    {
-        $pathFrags = preg_split('#([/\\\])#u', $path) ?: [];
-
-        return implode('/', $pathFrags);
-    }
-
-    /**
-     * Writes the testing environment configuration file.
-     *
-     * @param Map $installationData The installation data to use to build the env file contents.
-     *
-     * @return void
-     */
-    public function writeEnvFile(Map $installationData): void
-    {
-        $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
-        $envVars  = $this->getEnvFileVars($installationData);
-
-        $envFileLines = implode("\n", array_map(static function ($key, $value) {
-            return "$key=$value";
-        }, array_keys($envVars), $envVars));
-
-        if (!file_put_contents($filename, $envFileLines . "\n")) {
-            $this->removeCreatedFiles();
-            throw new RuntimeException("Could not write $this->envFileName file!");
-        }
-    }
-
-    /**
-     * Removes the command scaffolded files.
-     *
-     * @return void
-     */
-    protected function removeCreatedFiles(): void
-    {
-        $files = [ 'codeception.yml', $this->envFileName ];
-        $dirs  = [ 'tests' ];
-        foreach ($files as $file) {
-            if (is_file(getcwd() . '/' . $file)) {
-                unlink(getcwd() . '/' . $file);
-            }
-        }
-        foreach ($dirs as $dir) {
-            if (file_exists(getcwd() . '/' . $dir)) {
-                FS::rrmdir(getcwd() . '/' . $dir);
-            }
-        }
-    }
-
-    protected function createWpUnitSuite(string $actor = 'Wpunit', ?Map $installationData = null): void
-    {
-        $installationData = $installationData ?? new Map;
-        $ns = 'lucatume\WPBrowser\Module';
-        $WPLoader         = ! empty($installationData['activeModules']['WPLoader']) ? "- $ns\WPLoader" : "# - $ns\WPLoader";
-        $suiteConfig      = <<<EOF
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests that require WordPress functions and classes.
-
-actor: $actor$this->actorSuffix
-modules:
-    enabled:
-        $WPLoader
-        - \\{$this->namespace}Helper\\$actor
-    config:
-        $ns\WPLoader:
-            wpRootFolder: "%WP_ROOT_FOLDER%"
-            dbName: "%TEST_DB_NAME%"
-            dbHost: "%TEST_DB_HOST%"
-            dbUser: "%TEST_DB_USER%"
-            dbPassword: "%TEST_DB_PASSWORD%"
-            tablePrefix: "%TEST_TABLE_PREFIX%"
-            domain: "%TEST_SITE_WP_DOMAIN%"
-            adminEmail: "%TEST_SITE_ADMIN_EMAIL%"
-            title: "{$installationData['title']}"
-EOF;
-
-        if (! empty($installationData['theme'])) {
-            $theme       = empty($installationData['parentTheme']) ?
-                $installationData['theme']
-                : "[{$installationData['parentTheme']}, {$installationData['theme']}]";
-            $suiteConfig .= <<<EOF
-
-            theme: $theme
-EOF;
+        if (!isset($this->cachedAnswers[$key])) {
+            [$questionText, $defaultValue] = $this->questions[$key] ?? [$key, null];
+            $askQuestion = function () use ($questionText, $defaultValue) {
+                return $this->ask($questionText, $defaultValue);
+            };
+            $this->cachedAnswers[$key] = $askQuestion();
         }
 
-        $plugins     = $installationData['plugins'];
-        $plugins     = "'" . implode("', '", (array) $plugins) . "'";
-        $suiteConfig .= <<< EOF
-
-            plugins: [$plugins]
-            activatePlugins: [$plugins]
-EOF;
-
-        $this->createSuite($installationData['wpunitSuiteSlug'], $actor, $suiteConfig);
+        return $this->cachedAnswers[$key];
     }
 
-    protected function createUnitSuite(string $actor = 'Unit'): void
-    {
-        $suiteConfig = <<<EOF
-# Codeception Test Suite Configuration
-#
-# Suite for unit tests not relying WordPress code.
+    private function setupContainerStack(
+        Installation $installation,
+        string $projectType,
+        string $stackFileRelativePath
+    ): void {
+//        $OCIRuntime = Containers::OCIRuntime();
+//        $composeRuntime = Containers::composeRuntime();
+        $rootDir = $installation->getRootDir();
+        $stackFile = $rootDir . '/' . $stackFileRelativePath;
+        $stack = new ComposeStack([
+            'services' => [
+                'db' => [
+                    'image' => 'mysql:latest',
+                    'environment' => [
+                        'MYSQL_DATABASE' => 'test',
+                        'MYSQL_ALLOW_EMPTY_PASSWORD' => true,
+                        'MYSQL_ROOT_PASSWORD' => '',
+                        'MYSQL_USER' => 'test',
+                        'MYSQL_PASSWORD' => 'test',
+                    ],
+                    'ports' => [3306],
+                ],
+                'wordpress' => [
+                    'image' => 'wordpress:latest',
+                    'ports' => [80],
+                    'depends_on' => [
+                       'db' => [
+                           'condition' => 'service_healthy'
+                       ]
+                    ],
+                ],
+                'chrome' => [
+                    'image' => (System::isArm() ? 'seleniarm/standalone-chromium:latest' : 'selenium/standalone-chrome:latest'),
+                    'ports' => [4444],
+                    'depends_on' => [
+                        'wordpress' => [
+                            'condition' => 'service_healthy'
+                        ]
+                    ],
+                ],
+            ],
+        ], $this->workDir);
 
-actor: $actor$this->actorSuffix
-modules:
-    enabled:
-        - Asserts
-        - \\{$this->namespace}Helper\Unit
-    step_decorators: ~        
-EOF;
-        $this->createSuite('unit', $actor, $suiteConfig);
-    }
-
-    protected function createSuite(string $suite, string $actor, string $config): void
-    {
-        $this->createDirectoryFor("tests/$suite", "$suite.suite.yml");
-        if ($this->createHelpers) {
-            $this->createHelper($actor, $this->supportDir);
+        if (!file_put_contents($stackFile, $stack->dump())) {
+            throw new \RuntimeException("Could not write stack file $stackFile");
         }
-        if ($this->createActors) {
-            $this->createActor($actor . $this->actorSuffix, $this->supportDir, Yaml::parse($config));
-        }
-        if ($this->createSuiteConfigFiles) {
-            $this->createFile('tests' . DIRECTORY_SEPARATOR . "$suite.suite.yml", $config);
-        }
+
+        $stack->up()->waitForHealthy();
+        $wordpressLocalhostPort = $stack->getLocalhostPort('wordpress', 80);
+        $chromeLocalhostPort = $stack->getLocalhostPort('chrome', 4444);
+        $dbLocalhostPort = $stack->getLocalhostPort('db', 3306);
     }
 
-    protected function createFunctionalSuite(string $actor = 'Functional', ?Map $installationData = null): void
+    private function createEnvFile(): void
     {
-        $installationData = $installationData ?? new Map;
-        $ns = 'lucatume\WPBrowser\Module';
-        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? "- $ns\WPDb" : "# - $ns\WPDb";
-        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? "- $ns\WPBrowser" : "# - $ns\WPBrowser";
-        $WPFilesystem     = ! empty($installationData['activeModules']['WPFilesystem']) ?
-            "- $ns\WPFilesystem"
-            : "# - $ns\WPFilesystem";
-        $suiteConfig      = <<<EOF
-# Codeception Test Suite Configuration
-#
-# Suite for {$installationData['functionalSuiteSlug']} tests
-# Emulate web requests and make WordPress process them
-
-actor: $actor$this->actorSuffix
-modules:
-    enabled:
-        $WPDb
-        $WPBrowser
-        $WPFilesystem
-        - Asserts
-        - \\{$this->namespace}Helper\\$actor
-    config:
-        $ns\WPDb:
-            dsn: '%TEST_SITE_DB_DSN%'
-            user: '%TEST_SITE_DB_USER%'
-            password: '%TEST_SITE_DB_PASSWORD%'
-            dump: 'tests/_data/dump.sql'
-            populate: true
-            cleanup: true
-            waitlock: 10
-            url: '%TEST_SITE_WP_URL%'
-            urlReplacement: true
-            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        $ns\WPBrowser:
-            url: '%TEST_SITE_WP_URL%'
-            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
-            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
-            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
-            headers:
-                X_TEST_REQUEST: 1
-                X_WPBROWSER_REQUEST: 1
-
-        $ns\WPFilesystem:
-            wpRootFolder: '%WP_ROOT_FOLDER%'
-            plugins: '/wp-content/plugins'
-            mu-plugins: '/wp-content/mu-plugins'
-            themes: '/wp-content/themes'
-            uploads: '/wp-content/uploads'
-EOF;
-        $this->createSuite($installationData['functionalSuiteSlug'], $actor, $suiteConfig);
-    }
-
-    protected function createAcceptanceSuite(string $actor = 'Acceptance', ?Map $installationData = null) :void
-    {
-        $installationData = $installationData ?? new Map;
-        $ns = 'lucatume\WPBrowser\Module';
-        $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? "- $ns\WPDb" : "# - $ns\WPDb";
-        $WPBrowser        = ! empty($installationData['activeModules']['WPBrowser']) ? "- $ns\WPBrowser" : "# - $ns\WPBrowser";
-        $suiteConfig      = <<<EOF
-# Codeception Test Suite Configuration
-#
-# Suite for {$installationData['acceptanceSuiteSlug']} tests.
-# Perform tests in browser using the WPWebDriver or WPBrowser.
-# Use WPDb to set up your initial database fixture.
-# If you need both WPWebDriver and WPBrowser tests - create a separate suite.
-
-actor: $actor$this->actorSuffix
-modules:
-    enabled:
-        $WPDb
-        $WPBrowser
-        - \\{$this->namespace}Helper\\$actor
-    config:
-        $ns\WPDb:
-            dsn: '%TEST_SITE_DB_DSN%'
-            user: '%TEST_SITE_DB_USER%'
-            password: '%TEST_SITE_DB_PASSWORD%'
-            dump: 'tests/_data/dump.sql'
-            #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true
-            # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true
-            waitlock: 10
-            url: '%TEST_SITE_WP_URL%'
-            urlReplacement: true #replace the hardcoded dump URL with the one above
-            tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
-        $ns\WPBrowser:
-            url: '%TEST_SITE_WP_URL%'
-            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
-            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
-            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
-            headers:
-                X_TEST_REQUEST: 1
-                X_WPBROWSER_REQUEST: 1
-EOF;
-        $this->createSuite($installationData['acceptanceSuiteSlug'], $actor, $suiteConfig);
-    }
-
-    /**
-     * Asks the user for acknowledgment.
-     *
-     * @return void
-     */
-    protected function askForAcknowledgment(): void
-    {
-        $this->say('<info>'
-                    . 'Welcome to wp-browser, a complete testing suite for WordPress based on Codeception and PHPUnit!'
-                    . '</info>');
-        $this->say('<info>This command will guide you through the initial setup for your project.</info>');
-        echo PHP_EOL;
-        $this->say('<info>If you are new to wp-browser please take the time to read this guide:</info>');
-        $this->say('<info>https://github.com/lucatume/wp-browser#initial-setup</info>');
-        echo PHP_EOL;
-        $acknowledge = $this->ask(
-            '<warning>'
-            . 'I acknowledge wp-browser should run on development servers only, '
-            . 'that I have made a backup of my files and database contents before proceeding.'
-            . '</warning>',
-            true
-        );
-        echo PHP_EOL;
-        if (! $acknowledge) {
-            $this->say('<info>The command did not do anything, nothing changed.</info>');
-            $this->say('<info>'
-                        . 'Setup a WordPress installation and database dedicated to development and '
-                        . 'restart this command when ready using `vendor/bin/codecept init wpbrowser`.'
-                        . '</info>');
-            echo PHP_EOL;
-            $this->say('<info>See you soon!</info>');
-            exit(0);
-        }
-        echo PHP_EOL;
-    }
-
-    /**
-     * Sets the template working directory.
-     *
-     * @param string $workDir The path to the working directory the template should use.
-     */
-    public function setWorkDir(string $workDir): void
-    {
-        chdir($workDir);
-        $this->workDir = $workDir;
-    }
-
-    /**
-     * Sets the installation data the template should use.
-     *
-     * @param array<string,string> $installationData The installation data map.
-     */
-    public function setInstallationData(array $installationData): void
-    {
-        $this->installationData = new Map($installationData);
-    }
-
-    /**
-     * Returns the default installation data.
-     *
-     * @return Map The template default installation data.
-     */
-    public function getDefaultInstallationData(): Map
-    {
-        $installationData  = [
-            'acceptanceSuite'       => 'acceptance',
-            'functionalSuite'       => 'functional',
-            'wpunitSuite'           => 'wpunit',
-            'acceptanceSuiteSlug'   => 'acceptance',
-            'functionalSuiteSlug'   => 'functional',
-            'wpunitSuiteSlug'       => 'wpunit',
-            'testSiteDbHost'        => 'localhost',
-            'testSiteDbName'        => 'test',
-            'testSiteDbUser'        => 'root',
-            'testSiteDbPassword'    => 'password',
-            'testSiteTablePrefix'   => 'wp_',
-            'testSiteWpUrl'         => 'http://wordpress.test',
-            'testSiteWpDomain'      => 'wordpress.test',
-            'testSiteAdminUsername' => 'admin',
-            'testSiteAdminPassword' => 'password',
-            'testSiteAdminEmail'    => 'admin@wordpress.test',
-            'testSiteWpAdminPath'   => '/wp-admin',
-            'wpRootFolder'          => '/var/www/html',
-            'testDbName'            => 'test',
-            'testDbHost'            => 'localhost',
-            'testDbUser'            => 'root',
-            'testDbPassword'        => 'password',
-            'testTablePrefix'       => 'wp_',
-            'title'                 => 'WP Test',
-            // deactivate all modules that could trigger exceptions when initialized with sudo values
-            'activeModules'         => [ 'WPDb' => false, 'WordPress' => false, 'WPLoader' => false ],
+        $lines = [
+            'WORDPRESS_TEST_URL=http://127.0.0.1:2389',
+            'WORDPRESS_TEST_ADMIN_USERNAME=admin',
+            'WORDPRESS_TEST_ADMIN_PASSWORD=password',
+            'WORDPRESS_TEST_ADMIN_PATH=/wp-admin',
+            'WORDPRESS_TEST_BROWSER_HOST=127.0.0.1',
+            'WORDPRESS_TEST_BROWSER_PORT=2390',
+            'WORDPRESS_TEST_BROWSER_WINDOW_SIZE=2000x2000',
         ];
-        $this->envFileName = '.env.testing';
+        $envFileContents = implode(PHP_EOL, $lines) . PHP_EOL;
 
-        return new Map($installationData);
-    }
-
-    /**
-     * Returns the env file lines that should be written in the env file given the current installation data.
-     *
-     * @param Map $installationData The installation data to generate the environment variables from.
-     *
-     * @return array{TEST_SITE_DB_DSN: string, TEST_SITE_DB_HOST: string, TEST_SITE_DB_NAME: mixed, TEST_SITE_DB_USER: mixed, TEST_SITE_DB_PASSWORD: mixed, TEST_SITE_TABLE_PREFIX: mixed, TEST_SITE_ADMIN_USERNAME: mixed, TEST_SITE_ADMIN_PASSWORD: mixed, TEST_SITE_WP_ADMIN_PATH: mixed, WP_ROOT_FOLDER: mixed, TEST_DB_NAME: mixed, TEST_DB_HOST: string, TEST_DB_USER: mixed, TEST_DB_PASSWORD: mixed, TEST_TABLE_PREFIX: mixed, TEST_SITE_WP_URL: mixed, TEST_SITE_WP_DOMAIN: string, TEST_SITE_ADMIN_EMAIL: mixed} The interpolated environment variables.
-     */
-    public function getEnvFileVars(Map $installationData): array
-    {
-        $testSiteDsnMap           = Db::dbDsnMap($installationData['testSiteDbHost']);
-        $testSiteDsnMap['dbname'] = $installationData['testSiteDbName'];
-        $testDbDsnMap             = Db::dbDsnMap($installationData['testDbHost']);
-        return [
-            'TEST_SITE_DB_DSN'         => Db::dbDsnString($testSiteDsnMap),
-            'TEST_SITE_DB_HOST'        => Db::dbDsnString($testDbDsnMap, true),
-            'TEST_SITE_DB_NAME'        => $testSiteDsnMap('dbname', 'wordpress'),
-            'TEST_SITE_DB_USER'        => $installationData['testSiteDbUser'],
-            'TEST_SITE_DB_PASSWORD'    => $installationData['testSiteDbPassword'],
-            'TEST_SITE_TABLE_PREFIX'   => $installationData['testSiteTablePrefix'],
-            'TEST_SITE_ADMIN_USERNAME' => $installationData['testSiteAdminUsername'],
-            'TEST_SITE_ADMIN_PASSWORD' => $installationData['testSiteAdminPassword'],
-            'TEST_SITE_WP_ADMIN_PATH'  => $installationData['testSiteWpAdminPath'],
-            'WP_ROOT_FOLDER'           => $installationData['wpRootFolder'],
-            'TEST_DB_NAME'             => $installationData['testDbName'],
-            'TEST_DB_HOST'             => Db::dbDsnString($testDbDsnMap, true),
-            'TEST_DB_USER'             => $installationData['testDbUser'],
-            'TEST_DB_PASSWORD'         => $installationData['testDbPassword'],
-            'TEST_TABLE_PREFIX'        => $installationData['testTablePrefix'],
-            'TEST_SITE_WP_URL'         => $installationData['testSiteWpUrl'],
-            'TEST_SITE_WP_DOMAIN'      => Url::getDomain($installationData['testSiteWpUrl']),
-            'TEST_SITE_ADMIN_EMAIL'    => $installationData['testSiteAdminEmail'],
-        ];
-    }
-
-    /**
-     * Sets whether suite helpers should be created or not.
-     *
-     * @param bool $createHelpers Whether suite helpers should be created or not.
-     *
-     * @return Wpbrowser For chaining.
-     */
-    public function setCreateHelpers(bool $createHelpers): static
-    {
-        $this->createHelpers = $createHelpers;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether suite actors should be created or not.
-     *
-     * @param bool $createActors Whether suite actors should be created or not.
-     *
-     * @return Wpbrowser For chaining.
-     */
-    public function setCreateActors(bool $createActors): static
-    {
-        $this->createActors = $createActors;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether suite configuration files should be created or not.
-     *
-     * @param bool $createSuiteConfigFiles Whether suite configuration files should be created or not.
-     *
-     * @return Wpbrowser For chaining.
-     */
-    public function setCreateSuiteConfigFiles(bool $createSuiteConfigFiles): static
-    {
-        $this->createSuiteConfigFiles = $createSuiteConfigFiles;
-
-        return $this;
+        if (!file_put_contents($this->workDir . '/tests/.env', $envFileContents)) {
+            throw new \RuntimeException('Could not write tests/.env file');
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\Traits;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use function Patchwork\configure;
 
 trait WordPressInstallations
 {
@@ -21,7 +22,7 @@ trait WordPressInstallations
         if ($this->hasFailed()) {
             foreach ($this->installations as $installation) {
                 $dir = $installation->getRootDir();
-                codecept_debug("WordPress installation at $dir not removed to debug failure.");
+                codecept_debug("WordPress installation at $dir not removed to allow debugging failure.");
             }
             return;
         }
@@ -46,7 +47,7 @@ trait WordPressInstallations
         return match ($phase) {
             'scaffold' => $installation->scaffold(),
             'configure' => $installation->scaffold()->configure(),
-            'up' => $installation->up(),
+            'up' => $installation->scaffold()->configure()->install(),
             default => throw new \InvalidArgumentException("Invalid phase $phase"),
         };
     }

@@ -18,8 +18,9 @@ class WP
     /**
      * Drops the WordPress installation tables registered on the global `$wpdb` instance.
      *
-     * @param wpdb $wpdb The global WordPress database handler instance.
-     * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be dropped.
+     * @param wpdb               $wpdb   The global WordPress database handler instance.
+     * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be
+     *                                   dropped.
      *
      * @return array<string> The list of dropped tables.
      */
@@ -45,8 +46,9 @@ class WP
     /**
      * Empties the WordPress installation tables registered on the global `$wpdb` instance.
      *
-     * @param wpdb $wpdb The global WordPress database handler instance.
-     * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be emptied.
+     * @param wpdb               $wpdb   The global WordPress database handler instance.
+     * @param array<string>|null $tables An optional white-list of tables to empty, if `null` all tables will be
+     *                                   emptied.
      *
      * @return array<string> The list of emptied tables.
      */
@@ -74,5 +76,63 @@ class WP
 
         return $emptiedTables;
     }
+
+    public static function findWpConfigFile(string $rootDir): string
+    {
+        $wpConfigFile = rtrim($rootDir, '\\/') . '/wp-config.php';
+
+        if (!is_file($wpConfigFile)) {
+            $wpConfigFile = dirname($rootDir) . '/wp-config.php';
+        }
+
+        return $wpConfigFile;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    public static function findWpConfigFileOrThrow(string $rootDir): string
+    {
+        $wpConfigFile = self::findWpConfigFile($rootDir);
+        if (!is_file($wpConfigFile)) {
+            throw new RuntimeException("wp-config.php file not found in $rootDir or in its parent directory.");
+        }
+        return $wpConfigFile;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    public static function findWpSettingsFileOrThrow(string $rootDir): string
+    {
+        $wpSettingsFile = rtrim($rootDir, '\\/') . '/wp-settings.php';
+        if (!is_file($wpSettingsFile)) {
+            throw new RuntimeException("wp-settings.php file not found in $rootDir.");
+        }
+        return $wpSettingsFile;
+    }
+
+    public static function findRootDirFromDirOrThrow(string $workDir): string
+    {
+        $dir = self::findRootDirFromDir($workDir);
+
+        if ($dir === false) {
+            throw new RuntimeException("Could not find WordPress root directory from $workDir.");
+        }
+
+        return $dir;
+    }
+
+    public static function findRootDirFromDir(string $workDir): string|false
+    {
+        $dir = $workDir;
+
+        while (!(file_exists($dir . '/wp-load.php') || $dir === '/')) {
+            $dir = dirname($dir);
+        }
+
+        return file_exists( $dir . '/wp-load.php') ? $dir : false;
+    }
+
 }
 

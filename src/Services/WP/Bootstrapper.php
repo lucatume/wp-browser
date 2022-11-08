@@ -2,7 +2,7 @@
 
 namespace lucatume\WPBrowser\Services\WP;
 
-use lucatume\WPBrowser\Environment\System;
+use lucatume\WPBrowser\Utils\System;
 
 /**
  * Class Bootstrapper
@@ -16,13 +16,13 @@ class Bootstrapper
 
     protected string $bootstrapScriptFilePath;
 
-    private \lucatume\WPBrowser\Environment\System $system;
+    private \lucatume\WPBrowser\Utils\System $system;
 
     /**
      * Bootstrapper constructor.
      *
-     * @param string      $wpLoadPath The path to the WordPress root directory to load.
-     * @param \lucatume\WPBrowser\Environment\System|null $system The system operations adapter.
+     * @param string                                $wpLoadPath The path to the WordPress root directory to load.
+     * @param \lucatume\WPBrowser\Utils\System|null $system     The system operations adapter.
      */
     public function __construct(private ?string $wpLoadPath = null, System $system = null)
     {

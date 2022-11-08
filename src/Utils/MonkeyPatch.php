@@ -12,4 +12,9 @@ class MonkeyPatch
     {
         FileStreamWrapper::setPatcherForFile($fromFile, new FileReplacementPatcher($toFile));
     }
+
+    public static function dudFile(): string
+    {
+        return dirname(__DIR__) . '/MonkeyPatch/dud-file.php';
+    }
 }

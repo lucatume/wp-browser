@@ -1,6 +1,6 @@
 <?php
 
-namespace lucatume\WPBrowser\Environment;
+namespace lucatume\WPBrowser\Utils;
 
 /**
  * Class System
@@ -11,6 +11,16 @@ namespace lucatume\WPBrowser\Environment;
  */
 class System
 {
+    static private ?bool $isArm;
+
+    public static function isArm(): bool
+    {
+        if (!isset(self::$isArm)) {
+            self::$isArm = str_contains(php_uname('m'), 'arm') || str_contains(php_uname('m'), 'aarch64');
+        }
+
+        return self::$isArm;
+    }
 
     /**
      * Returns the output of a command executed using the `system` function.

@@ -6,8 +6,9 @@ use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Password;
-use lucatume\WPBrowser\Utils\Process;
+use lucatume\WPBrowser\Utils\WP;
 use lucatume\WPBrowser\Utils\Zip;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
 
@@ -30,14 +31,28 @@ class Installation
     private string $title;
     private string $version;
     private string $wpRootFolder;
+    private string $wpConfigFile;
+    private bool $isMultisite = false;
+    private CodeExecutionFactory $codeExecutionFactory;
+    private string $url;
 
-    public function __construct(string $wpRootFolder, string $version, ?Db $db = null)
+    /**
+     * @throws InstallationException
+     */
+    public function __construct(
+        string $wpRootFolder,
+        ?string $version = 'latest',
+        ?Db $db = null,
+        bool $multisite = false,
+        ?string $url = null
+    )
     {
         if (!is_dir($wpRootFolder) && is_readable($wpRootFolder) && is_writable($wpRootFolder)) {
             throw new InstallationException("{$wpRootFolder} is not an existing, readable and writable folder.");
         }
 
-        $this->wpRootFolder = $wpRootFolder;
+        $this->wpRootFolder = rtrim($wpRootFolder, '\\/');
+        $this->wpConfigFile = WP::findWpConfigFile($wpRootFolder);
         $this->db = $db;
         $this->version = $version;
         $this->authKey = Password::salt(64);
@@ -50,10 +65,35 @@ class Installation
         $this->nonceSalt = Password::salt(64);
         $this->fileRequestFactory = new FileRequestFactory($this->wpRootFolder);
         $this->requestClosuresFactory = new FileRequestClosureFactory($this->fileRequestFactory);
+        $this->codeExecutionFactory = new CodeExecutionFactory($this->wpRootFolder);
         $this->title = 'WP Browser';
         $this->adminUser = 'admin';
         $this->adminPassword = Password::salt(12);
         $this->adminEmail = 'admin@installation.test';
+        $this->isMultisite = $multisite;
+        $this->url = $url ?? 'http://localhost:2389';
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public static function fromRootDir(string $rootDir): self
+    {
+        try {
+            $version = (new Version($rootDir))->getWpVersion();
+            $db = Db::fromRootDir($rootDir);
+            $multisite = (new WpConfigInclude($rootDir))->isDefinedAnyConst(
+                'MULTISITE',
+                'SUBDOMAIN_INSTALL',
+                'VHOST',
+                'SUNRISE');
+            $url = $db->getOption('home');
+        } catch (\Exception $e) {
+            throw new InstallationException($e->getMessage(), $e->getCode(), $e);
+        }
+        $installation = new self($rootDir, $version, $db, $multisite ,$url);
+
+        return $installation;
     }
 
     public function up(): self
@@ -66,6 +106,7 @@ class Installation
     public function scaffold(string $version = 'latest'): self
     {
         $source = $this->getWordPressSource($version);
+        codecept_debug(sprintf("Copying %s to %s ... ", $source, $this->wpRootFolder));
         FS::recurseCopy($source, $this->wpRootFolder);
         return $this;
     }
@@ -75,8 +116,11 @@ class Installation
         $wpConfigFile = $this->wpRootFolder . '/wp-config.php';
 
         if (is_file($wpConfigFile)) {
+            codecept_debug('wp-config.php file found in the WordPress installation, skipping configuration.');
             return $this;
         }
+
+        codecept_debug("Creating the $wpConfigFile file ...");
 
         $wpConfigSampleFile = $this->wpRootFolder . '/wp-config-sample.php';
 
@@ -125,15 +169,35 @@ class Installation
         return $this;
     }
 
-    private function install(): self
+
+    private function isInstalled(): bool
     {
+        if (!$this->db->exists()) {
+            return false;
+        }
+
+        $result = Loop::executeClosure($this->codeExecutionFactory->toCheckIfWpIsInstalled($this->isMultisite));
+
+        return $result->getReturnValue() === true;
+    }
+
+    public function install(): self
+    {
+        if ($this->isInstalled()) {
+            codecept_debug('WordPress already installed, skipping installation.');
+            return $this;
+        }
+
+        codecept_debug("Installing WordPress at $this->wpRootFolder ...");
+
         $this->db->create();
 
         $request = $this->requestClosuresFactory->toInstall(
             $this->title,
             $this->adminUser,
             $this->adminPassword,
-            $this->adminEmail
+            $this->adminEmail,
+            $this->url,
         );
 
         $result = Loop::executeClosure($request);
@@ -147,6 +211,10 @@ class Installation
 
             $reason = $result->getStdoutBuffer();
             throw new InstallationException('Could not install WordPress: ' . $reason);
+        }
+
+        if (!$this->isInstalled()) {
+            throw new InstallationException('WordPress installation failed.');
         }
 
         return $this;
@@ -234,5 +302,10 @@ class Installation
     {
         $this->db->drop();
         FS::rrmdir($this->wpRootFolder);
+    }
+
+    public function getHomeUrl(): string
+    {
+        return $this->db->getOption('home');
     }
 }

@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress\FileRequests;
 
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
+use function _PHPStan_9a6ded56a\RingCentral\Psr7\parse_query;
 
 abstract class FileRequest implements \Serializable
 {
@@ -26,6 +27,10 @@ abstract class FileRequest implements \Serializable
      * @var array<string,mixed>
      */
     private array $presetLocalVars;
+    /**
+     * @var array<string,mixed>
+     */
+    private array $serverVars = [];
 
     public function __construct(
         string $requestUri,
@@ -57,15 +62,26 @@ abstract class FileRequest implements \Serializable
 
         if ($method === 'GET' && count($this->requestVars)) {
             $this->requestUri .= '?' . http_build_query($this->requestVars);
+        } else {
+            $query = parse_url($this->requestUri, PHP_URL_QUERY);
+            parse_str($query, $queryArgs);
+            foreach ($queryArgs as $key => $value) {
+                $_GET[$key] = $value;
+            }
+            $this->targetFile = str_replace('?' . $query, '', $this->targetFile);
         }
 
         $_SERVER['REQUEST_METHOD'] = $method;
         $_SERVER['REQUEST_URI'] = $this->requestUri;
-        $superglobal = $method === 'GET' ? '_GET' : '_POST';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        foreach ($this->serverVars as $key => $value) {
+            $_SERVER[$key] = $value;
+        }
 
         switch ($method) {
             case 'GET':
-                $_GET = $this->requestVars;
+                $_GET = array_merge($_GET, $this->requestVars);
                 break;
             case 'POST':
                 $_POST = $this->requestVars;
@@ -128,5 +144,11 @@ abstract class FileRequest implements \Serializable
         if (!$this->targetFile) {
             throw new FileRequestException('No target file specified.');
         }
+    }
+
+    public function setServerVar(string $key, string $value): FileRequest
+    {
+        $this->serverVars[$key] = $value;
+        return $this;
     }
 }

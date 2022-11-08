@@ -73,6 +73,24 @@ class Loop
     }
 
     /**
+     * @throws ProcessException
+     */
+    public static function executeClosureOrThrow(Closure $closure): Result
+    {
+        $result = self::executeClosure($closure);
+
+        if ($result->getExitCode() !== 0) {
+            throw new ProcessException(sprintf(
+                    "Closure execution failed with exit code %s and message '%s'",
+                    $result->getExitCode(), $result->getStderrBuffer()
+                )
+            );
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array<Worker>
      */
     public function getWorkers(): array
@@ -405,7 +423,7 @@ class Loop
         $this->debugMode = $debugMode;
     }
 
-    public function failed():bool
+    public function failed(): bool
     {
         return $this->fastFailure && $this->fastFailureFlagRaised;
     }
@@ -437,7 +455,7 @@ class Loop
         $this->onWorkerExit[] = $debug;
         $index = count($this->onWorkerExit) - 1;
 
-        return function(){
+        return function () {
             unset($this->onWorkerExit[$index]);
             $this->onWorkerExit = array_values($this->onWorkerExit);
         };
