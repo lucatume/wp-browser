@@ -22,7 +22,7 @@
         "Site is multisite": "no",
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
-        "Database structure as expected": "No, structure errors: some tables are missing (wp_foo, wp_bar)",
+        "Database structure as expected": "Yes, as expected.",
         "Blog installed": "Yes, blog is installed.",
         "Theme :": {
             "template": "twentytwentyone",

@@ -22,12 +22,12 @@
         "Site is multisite": "yes",
         "ABSPATH points to valid WordPress directory": "Yes, wp-load.php file found in WordPress root directory.",
         "Database connection works": "Yes, connection successful.",
-        "Database structure as expected": "No, structure errors: some tables are missing (wp_foo, wp_bar)",
+        "Database structure as expected": "No, structure errors: some tables are missing (wp_blogs, wp_sitemeta, wp_site, wp_signups, wp_registration_log)",
         "Blog installed": "No, blog is not installed: cannot query table [wp_blogs] for blog with domain [wp.localhost].",
         "Theme :": {
             "template": "twentytwenty",
             "stylesheet": "twentytwenty",
-            "twentytwenty directory": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
+            "twentytwenty directory not found": "vendor/wordpress/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
