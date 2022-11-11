@@ -56,7 +56,7 @@ class Db
 
         array_push($command, $dbName, '<', $dumpFile);
 
-        $import = new Process($command);
+        $import = Process::fromShellCommandline(implode(' ', $command));
         $import->run();
 
         $importOutput = $import->getOutput();
