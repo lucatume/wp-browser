@@ -175,8 +175,7 @@ class WPCLI extends Module
         putenv('WPBROWSER_HOST_REQUEST="1"');
         $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
 
-        $userCommandString = is_string($userCommand) ? $userCommand : implode(' ', $userCommand);
-        $this->debugSection('command', $userCommandString);
+        $this->debugSection('command', is_string($userCommand) ? $userCommand : implode(' ', $userCommand));
 
         $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
         $env = $this->buildProcessEnv();
@@ -199,7 +198,7 @@ class WPCLI extends Module
             return ['', 1];
         }
 
-        $output = $process->getOutput() ?: $process->getError();
+        $output = $process->getOutput() ?: $process->getErrorOutput();
         $status = $process->getExitCode();
 
         // If the process returns `null`, then it's not terminated.

@@ -8,10 +8,10 @@
 namespace lucatume\WPBrowser\Traits;
 
 use lucatume\WPBrowser\Exceptions\WpCliException;
-use lucatume\WPBrowser\Process\ProcessFailedException;
 use ReflectionClass;
 use ReflectionException;
 use Server_Command;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use WP_CLI\Configurator;
 
@@ -210,7 +210,11 @@ trait WithWpCli
     protected function executeWpCliCommand(array $command = ['version'], ?int $timeout = 60, array $env = []): Process
     {
         $fullCommand = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
-        $process = new Process($fullCommand, $this->wpCliWpRootDir, $env, null, $timeout);
+        $process = Process::fromShellCommandline(implode(' ', $fullCommand),
+            $this->wpCliWpRootDir,
+            $env,
+            null,
+            $timeout);
 
         try {
             $process->mustRun();
@@ -250,10 +254,6 @@ trait WithWpCli
             PHP_BINARY,
             $this->getWpCliBootFilePath(),
         ], (array)$command);
-
-        if (!empty($fullCommand) && count($fullCommand) > 0) {
-            $fullCommand[0] = escapeshellarg($fullCommand[0]);
-        }
 
         return $fullCommand;
     }
