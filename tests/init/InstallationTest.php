@@ -54,7 +54,7 @@ class InstallationTest extends BaseTest
         ]);
         $init             = new Wpbrowser($input, new NullOutput());
         $workDir          = codecept_output_dir('init/installationTest/default');
-        $init->setInstallationData($init->getDefaultInstallationData()->toArray());
+        $init->setInstallationData($init->getDefaultInstallationData());
         $this->createWorkDir($workDir);
         $init->setWorkDir($workDir);
         $this->createComposerJsonFile($workDir);
@@ -79,7 +79,7 @@ class InstallationTest extends BaseTest
         ]);
         $init             = new Wpbrowser($input, new NullOutput());
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_localhost');
-        $init->setInstallationData(array_merge($init->getDefaultInstallationData()->toArray(), [
+        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
             'testSiteDbUser'     => 'root',
             'testSiteDbPassword' => 'secret',
             'testSiteDbName' => 'wordpress',
@@ -113,7 +113,7 @@ class InstallationTest extends BaseTest
         ]);
         $init             = new Wpbrowser($input, new NullOutput());
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_ip_address');
-        $init->setInstallationData(array_merge($init->getDefaultInstallationData()->toArray(), [
+        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
             'testSiteDbUser'     => 'root',
             'testSiteDbPassword' => 'secret',
             'testSiteDbName' => 'wordpress',
@@ -147,7 +147,7 @@ class InstallationTest extends BaseTest
         ]);
         $init             = new Wpbrowser($input, new NullOutput());
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket');
-        $init->setInstallationData(array_merge($init->getDefaultInstallationData()->toArray(), [
+        $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
             'testSiteDbUser'     => 'root',
             'testSiteDbPassword' => 'secret',
             'testSiteDbName' => 'wordpress',
@@ -189,7 +189,7 @@ class InstallationTest extends BaseTest
                 'has_option' => false,
             ]);
             $init = new Wpbrowser($input, new NullOutput());
-            $init->setInstallationData(array_merge($init->getDefaultInstallationData()->toArray(), [
+            $init->setInstallationData(array_merge($init->getDefaultInstallationData(), [
                 'testSiteDbUser' => 'root',
                 'testSiteDbPassword' => 'secret',
                 'testSiteDbName' => 'wordpress',

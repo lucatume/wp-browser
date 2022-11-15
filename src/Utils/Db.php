@@ -136,8 +136,8 @@ class Db
      */
     public static function dbDsnMap(string $dbHost): Map
     {
-        if (Db::isDsnString($dbHost)) {
-            return Db::dbDsnToMap($dbHost);
+        if (self::isDsnString($dbHost)) {
+            return self::dbDsnToMap($dbHost);
         }
 
         $map = new Map();

@@ -6,7 +6,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 abstract class BaseTest extends \Codeception\Test\Unit
 {
-    protected function createWorkDir($workDir)
+    protected function createWorkDir($workDir): void
     {
         if (is_dir($workDir)) {
             FS::rrmdir($workDir);
