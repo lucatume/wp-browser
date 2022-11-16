@@ -717,8 +717,6 @@ class WPLoader extends Module
 
         $wpLoaderConfig = $this->config;
 
-        // Patch the `WP_UnitTestCase_Base` class in memory to replace calls to `get_called_class()`;
-
         ob_start($this->relayOutputToDebug('WPLoader/install'));
         require_once $this->wpBootstrapFile;
         ob_end_clean();
