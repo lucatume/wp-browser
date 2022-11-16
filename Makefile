@@ -459,7 +459,6 @@ test:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run dbunit"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run functional"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run init"
-	# docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run muloader"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run unit"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run webdriver"
@@ -469,6 +468,7 @@ test:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wplaoder_wpdb_interaction"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploadersuite"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpmodule"
+	# docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated"
 
 .PHONY: test_fast
 test_fast:
@@ -478,7 +478,6 @@ test_fast:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run dbunit -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run functional -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run init -f"
-	# docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run muloader -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run unit -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run webdriver -f"
@@ -488,3 +487,4 @@ test_fast:
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wplaoder_wpdb_interaction -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wploadersuite -f"
 	docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run wpmodule -f"
+	# docker exec wp-browser_php_$(PHP_VERSION) bash -c "vendor/bin/codecept run isolated -f"
