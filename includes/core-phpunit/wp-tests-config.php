@@ -58,8 +58,6 @@ foreach ([
              'ABSPATH' => $abspath,
              'WP_DEFAULT_THEME' => $wpLoaderConfig['theme'],
              'WP_TESTS_MULTISITE' => $wpLoaderConfig['multisite'],
-             'WP_MULTISITE' => $wpLoaderConfig['multisite'],
-             'MULTISITE' => $wpLoaderConfig['multisite'],
              'WP_DEBUG' => $wpLoaderConfig['wpDebug'],
              'DB_NAME' => $wpLoaderConfig['dbName'],
              'DB_USER' => $wpLoaderConfig['dbUser'],
@@ -91,6 +89,10 @@ unset($const);
 
 $table_prefix = $wpLoaderConfig['tablePrefix'];
 
+/*
+ * The `WP_MULTISITE` constant should not be defined at this stage: it will be picked up by the scripts from
+ * environment variables and defined in the tests bootstrap scripts.
+ */
 foreach ([
              'WP_MULTISITE' => (int)$wpLoaderConfig['multisite'],
              'WP_TESTS_SKIP_INSTALL' => 0
