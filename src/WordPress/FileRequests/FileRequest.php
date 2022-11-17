@@ -15,6 +15,7 @@ abstract class FileRequest implements Serializable
      */
     private array $requestVars;
     private string $targetFile;
+    private string $domain;
     private string $requestUri;
     private array $cookieJar;
     /**
@@ -37,21 +38,29 @@ abstract class FileRequest implements Serializable
      * @var array<Closure>
      */
     private array $preLoadClosures = [];
+    /**
+     * @var array<string,bool|int|string|float>
+     */
+    private array $constants;
 
     public function __construct(
+        string $domain,
         string $requestUri,
         string $targetFile,
         array $requestVars = [],
         array $cookieJar = [],
         array $redirectFiles = [],
         array $presetLocalVars = [],
+        array $constants = []
     ) {
+        $this->domain = $domain;
         $this->requestUri = $requestUri;
         $this->targetFile = $targetFile;
         $this->requestVars = $requestVars;
         $this->cookieJar = $cookieJar;
         $this->redirectFiles = $redirectFiles;
         $this->presetLocalVars = $presetLocalVars;
+        $this->constants = $constants;
     }
 
     abstract protected function getMethod(): string;
@@ -79,7 +88,7 @@ abstract class FileRequest implements Serializable
 
         $_SERVER['REQUEST_METHOD'] = $method;
         $_SERVER['REQUEST_URI'] = $this->requestUri;
-        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['HTTP_HOST'] = $this->domain;
 
         foreach ($this->serverVars as $key => $value) {
             $_SERVER[$key] = $value;
@@ -119,6 +128,10 @@ abstract class FileRequest implements Serializable
             $preLoadClosure($this->targetFile);
         }
 
+        foreach ($this->constants as $constant => $value) {
+            defined($constant) || define($constant, $value);
+        }
+
         // Preset these to avoid issues with WP expecting them being defined already.
         global /** @noinspection PhpUnusedLocalVariableInspection */
         $status, $page;
@@ -133,9 +146,11 @@ abstract class FileRequest implements Serializable
             'presetGlobalVars' => $this->presetGlobalVars ?? [],
             'presetLocalVars' => $this->presetLocalVars ?? [],
             'redirectFiles' => $this->redirectFiles ?? [],
+            'domain' => $this->domain ?: 'localhost',
             'requestUri' => $this->requestUri,
             'targetFile' => $this->targetFile,
-            'cookieJar' => $this->cookieJar
+            'cookieJar' => $this->cookieJar,
+            'constants' => $this->constants
         ]);
     }
 
@@ -146,10 +161,12 @@ abstract class FileRequest implements Serializable
         $this->presetGlobalVars = $unserializedData['presetGlobalVars'] ?? false;
         $this->presetLocalVars = $unserializedData['presetLocalVars'] ?? [];
         $this->redirectFiles = $unserializedData['redirectFiles'] ?? [];
+        $this->domain = $unserializedData['domain'] ?? 'localhost';
         $this->requestUri = $unserializedData['requestUri'];
         $this->requestVars = $unserializedData['requestVars'] ?? [];
         $this->targetFile = $unserializedData['targetFile'] ?? false;
         $this->cookieJar = $unserializedData['cookieJar'] ?? false;
+        $this->constants = $unserializedData['constants'] ?? [];
 
         if (!$this->targetFile) {
             throw new FileRequestException('No target file specified.');
@@ -167,4 +184,10 @@ abstract class FileRequest implements Serializable
         $this->preLoadClosures[] = $preLoadClosure;
     }
 
+    public function defineConstant(string $constant, int|string|float|bool $value): FileRequest
+    {
+        $this->constants[$constant] = $value;
+
+        return $this;
+    }
 }

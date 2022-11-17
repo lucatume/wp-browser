@@ -13,7 +13,7 @@ class FileRequestClosureFactory
         $this->requestFactory = $requestFactory;
     }
 
-    public function toActivatePlugin(string $plugin): Closure
+    public function toActivatePlugin(string $plugin, bool $multisite = false): Closure
     {
         $request = $this->requestFactory->buildGetRequest('/wp-admin/plugins.php', [
             '_wpnonce' => static fn() => wp_create_nonce('activate-plugin_' . $plugin),
@@ -22,6 +22,10 @@ class FileRequestClosureFactory
             'plugin' => $plugin,
             's' => ''
         ], 1);
+
+        if ($multisite) {
+            $request = $request->defineConstant('MULTISITE', true);
+        }
 
         return static function () use ($request): void {
             $request->execute();

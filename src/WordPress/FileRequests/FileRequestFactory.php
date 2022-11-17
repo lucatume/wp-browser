@@ -6,6 +6,7 @@ use Closure;
 
 class FileRequestFactory
 {
+    private string $domain;
     private string $wpRootDir;
     /**
      * @var array<string,string>
@@ -16,9 +17,14 @@ class FileRequestFactory
      */
     private array $presetLocalVars;
 
-    public function __construct(string $wpRootDir, array $redirectFiles = [], array $presetLocalVars = [])
-    {
+    public function __construct(
+        string $wpRootDir,
+        string $domain,
+        array $redirectFiles = [],
+        array $presetLocalVars = []
+    ) {
         $this->wpRootDir = $wpRootDir;
+        $this->domain = $domain;
         $this->redirectFiles = $redirectFiles;
         $this->presetLocalVars = $presetLocalVars;
     }
@@ -74,6 +80,7 @@ class FileRequestFactory
             default:
             case 'GET':
                 $request = new FileGetRequest(
+                    $this->domain,
                     $requestUri,
                     $targetFile,
                     $queryArgs,
@@ -84,6 +91,7 @@ class FileRequestFactory
                 break;
             case 'POST':
                 $request = new FilePostRequest(
+                    $this->domain,
                     $requestUri,
                     $targetFile,
                     $queryArgs,

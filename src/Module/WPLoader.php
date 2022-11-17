@@ -486,9 +486,7 @@ class WPLoader extends Module
     {
         $this->loadConfigFile();
 
-        // require_once CorePHPUnit::path('/includes/functions.php');
-
-        // @todo review this: still required?
+        // @todo review this: still required? Use skip installation?
         if (!empty($this->config['loadOnly'])) {
             $this->bootstrapWP();
         } else {
@@ -733,15 +731,17 @@ class WPLoader extends Module
             return;
         }
 
+        $multisite = $this->config['multisite'] ?? false;
+
         $closure = $this->getRequestClosureFactory();
 
         $jobs = array_combine(
             array_map(static fn(string $plugin) => 'plugin::' . $plugin, $plugins),
-            array_map(fn(string $plugin) => $closure->toActivatePlugin($plugin, $this->config, 1), $plugins)
+            array_map(static fn(string $plugin) => $closure->toActivatePlugin($plugin, $multisite), $plugins)
         );
 
         [$stylesheet] = $this->getStylesheetTemplateFromConfig();
-        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet, $this->config, 1);
+        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet,$multisite);
 
         $loop = new Loop($jobs, 1, true);
 
@@ -1071,6 +1071,7 @@ class WPLoader extends Module
     {
         $requestFactory = new FileRequestFactory(
             $this->getWpRootFolder(),
+            $this->config['domain'] ?: 'localhost',
             [ABSPATH . 'wp-config.php' => CorePHPUnit::path('/wp-tests-config.php')],
             [
                 'wpLoaderIncludeWpSettings' => true,

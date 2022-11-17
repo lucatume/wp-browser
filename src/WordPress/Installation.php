@@ -45,8 +45,7 @@ class Installation
         ?Db $db = null,
         bool $multisite = false,
         ?string $url = null
-    )
-    {
+    ) {
         if (!is_dir($wpRootFolder) && is_readable($wpRootFolder) && is_writable($wpRootFolder)) {
             throw new InstallationException("{$wpRootFolder} is not an existing, readable and writable folder.");
         }
@@ -63,7 +62,8 @@ class Installation
         $this->secureAuthSalt = Password::salt(64);
         $this->loggedInSalt = Password::salt(64);
         $this->nonceSalt = Password::salt(64);
-        $this->fileRequestFactory = new FileRequestFactory($this->wpRootFolder);
+        $domain = parse_url($url, PHP_URL_HOST) ?: 'localhost';
+        $this->fileRequestFactory = new FileRequestFactory($this->wpRootFolder, $domain);
         $this->requestClosuresFactory = new FileRequestClosureFactory($this->fileRequestFactory);
         $this->codeExecutionFactory = new CodeExecutionFactory($this->wpRootFolder);
         $this->title = 'WP Browser';
@@ -91,7 +91,7 @@ class Installation
         } catch (\Exception $e) {
             throw new InstallationException($e->getMessage(), $e->getCode(), $e);
         }
-        $installation = new self($rootDir, $version, $db, $multisite ,$url);
+        $installation = new self($rootDir, $version, $db, $multisite, $url);
 
         return $installation;
     }
