@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser;
 
+use lucatume\WPBrowser\Utils\Env;
+
 class envTest extends \Codeception\Test\Unit
 {
     /**
@@ -13,7 +15,7 @@ class envTest extends \Codeception\Test\Unit
     {
         $envFile = codecept_data_dir('envFiles/testEnvFile1.env');
 
-        loadEnvMap(envFile($envFile));
+        Env::loadEnvMap(Env::envFile($envFile));
 
         $this->assertEquals(23, getenv('TEST_ENV_VAR_INT'));
         $this->assertEquals(23.89, getenv('TEST_ENV_VAR_FLOAT'));
@@ -31,7 +33,7 @@ class envTest extends \Codeception\Test\Unit
     {
         $envFile = codecept_data_dir('envFiles/testEnvFile3.env');
 
-        loadEnvMap(envFile($envFile));
+        Env::loadEnvMap(Env::envFile($envFile));
 
         $this->assertEquals(
             'mysql:host=192.168.10.10;dbname=wordpress_test',
@@ -52,7 +54,7 @@ class envTest extends \Codeception\Test\Unit
     {
         $envFile = codecept_data_dir('envFiles/testEnvFile4.env');
 
-        loadEnvMap(envFile($envFile));
+        Env::loadEnvMap(Env::envFile($envFile));
 
         $map = [
             'TEST_COMMENT_ENV_VAR_1'  => '23',
@@ -81,7 +83,7 @@ class envTest extends \Codeception\Test\Unit
     {
         $envFile = codecept_data_dir('envFiles/testEnvFile4.env');
 
-        loadEnvMap(envFile($envFile));
+        Env::loadEnvMap(Env::envFile($envFile));
 
         $map = [
             'TEST_COMMENT_ENV_VAR_1'  => '23',
@@ -112,9 +114,9 @@ class envTest extends \Codeception\Test\Unit
         $envFile2 = codecept_data_dir('envFiles/testEnvFile6.env');
         $envFile3 = codecept_data_dir('envFiles/testEnvFile7.env');
 
-        loadEnvMap(envFile($envFile1), true);
-        loadEnvMap(envFile($envFile2), true);
-        loadEnvMap(envFile($envFile3), false);
+        Env::loadEnvMap(Env::envFile($envFile1), true);
+        Env::loadEnvMap(Env::envFile($envFile2), true);
+        Env::loadEnvMap(Env::envFile($envFile3), false);
 
         $this->assertEquals('89', getenv('TEST_ENV_VAR'));
         $this->assertEquals('lorem', getenv('TEST_ENV_VAR_2'));
@@ -129,7 +131,7 @@ class envTest extends \Codeception\Test\Unit
     {
         $envFile = codecept_data_dir('envFiles/testEnvFile8.env');
 
-        loadEnvMap(envFile($envFile), true);
+        Env::loadEnvMap(Env::envFile($envFile), true);
 
         $this->assertEquals('', getenv('TEST_EMPTY_FIELD_W_DOUBLE_QUOTES'));
         $this->assertEquals('', getenv('TEST_EMPTY_FIELD_W_SINGLE_QUOTES'));

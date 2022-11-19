@@ -1,12 +1,11 @@
 <?php
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 require_once codecept_data_dir('classes/test-cases/PublicTestCase.php');
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use lucatume\WPBrowser\Connector\WordPress as Connector;
-use lucatume\WPBrowser\Module\WordPress;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 

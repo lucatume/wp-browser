@@ -28,7 +28,7 @@ use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Map;
+use lucatume\WPBrowser\Deprecated\Map;
 use lucatume\WPBrowser\Utils\Password;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;

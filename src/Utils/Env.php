@@ -10,19 +10,20 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-class Env{
+class Env
+{
     /**
      * Returns a closure to get the value of an environment variable, loading a specific env file first.
      *
      * @param string $file The name of the environment file to load.
      *
-     * @return \lucatume\WPBrowser\Utils\Map The map of the read environment variables.
+     * @return array The map of the read environment variables.
      *
      * @throws \RuntimeException If the env file does not exist or is not readable.
      */
-    public static function envFile($file): \lucatume\WPBrowser\Utils\Map
+    public static function envFile(string $file): array
     {
-        if (!(file_exists($file))) {
+        if (!(is_file($file))) {
             throw new \InvalidArgumentException('File ' . $file . ' does not exist.');
         }
         if (!is_readable($file)) {
@@ -46,11 +47,11 @@ class Env{
                     return $lines;
                 }
 
-                if (! preg_match($pattern, $line, $m)) {
+                if (!preg_match($pattern, $line, $m)) {
                     return $lines;
                 }
 
-                if (! empty($m['q_value'])) {
+                if (!empty($m['q_value'])) {
                     $value = $m['q_value'];
                 } else {
                     $value = isset($m['value']) ? trim($m['value'], ' \'"') : '';
@@ -58,20 +59,21 @@ class Env{
                 // Replace escaped double quotes.
                 $value = str_replace('\\"', '"', $value);
 
-                $lines[ $m['key'] ] = $value;
+                $lines[$m['key']] = $value;
 
                 return $lines;
             },
             []
         );
 
-        return new Map($vars);
+        return $vars;
     }
 
     /**
      * Returns the pretty, human-readable name of the current Operating System.
      *
-     * @return string The human-readable name of the OS PHP is running on. One of `Windows`, `Linux`, 'macOS`, 'Solaris`,
+     * @return string The human-readable name of the OS PHP is running on. One of `Windows`, `Linux`, 'macOS`,
+     *                'Solaris`,
      *                `BSD` or`Unknown`.
      */
     public static function os()
@@ -93,13 +95,13 @@ class Env{
     /**
      * Loads a Map of environment variables into `getenv()`, `$_ENV` and `$_SERVER`.
      *
-     * @param \lucatume\WPBrowser\Utils\Map  $map       The map of environment variables to load.
-     * @param bool $overwrite Whether to overwrite the existing env vars or not.
+     * @param array $map The map of environment variables to load.
+     * @param bool  $overwrite Whether to overwrite the existing env vars or not.
      *
-     *@see envFile() For the function to load to generate a Map from an environment file.
+     * @see envFile() For the function to load to generate a Map from an environment file.
      *
      */
-    public static function loadEnvMap(Map $map, $overwrite = true): void
+    public static function loadEnvMap(array $map, bool $overwrite = true): void
     {
         if (empty($_SERVER)) {
             $_SERVER = [];
@@ -109,11 +111,11 @@ class Env{
             $_ENV = [];
         }
 
-        $load = $map->toArray();
+        $load = $map;
 
-        if (! $overwrite) {
-            $load = array_filter($load, static function ($key) {
-                return ! isset($_ENV[ $key ]);
+        if (!$overwrite) {
+            $load = array_filter($map, static function ($key) {
+                return !isset($_ENV[$key]);
             }, ARRAY_FILTER_USE_KEY);
         }
 

@@ -1,11 +1,10 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use lucatume\WPBrowser\Adapters\WP;
-use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use Symfony\Component\Console\Output\BufferedOutput;

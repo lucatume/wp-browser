@@ -17,7 +17,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
-use Symfony\Component\Process\Process as Process;
+use Symfony\Component\Process\Process;
 
 class Db
 {
@@ -25,10 +25,10 @@ class Db
      * Imports a dump file using the `mysql` binary.
      *
      * @param string $dumpFile The path to the SQL dump file to import.
-     * @param string $dbName The name of the database to import the SQL dump file to.
-     * @param string $dbUser The database user to use to import the dump.
-     * @param string $dbPass The database password to use to import the dump.
-     * @param string $dbHost The database host to use to import the dump.
+     * @param string $dbName   The name of the database to import the SQL dump file to.
+     * @param string $dbUser   The database user to use to import the dump.
+     * @param string $dbPass   The database password to use to import the dump.
+     * @param string $dbHost   The database host to use to import the dump.
      *
      * @return void
      * @throws RuntimeException If there's an error while importing the database.
@@ -87,9 +87,9 @@ class Db
     /**
      * Open a database connection and returns a callable to run queries on it.
      *
-     * @param string $dsn The database DSN string.
-     * @param string $user The database user.
-     * @param string $pass The database password.
+     * @param string      $dsn    The database DSN string.
+     * @param string      $user   The database user.
+     * @param string      $pass   The database password.
      * @param string|null $dbName The optional name of the database to use.
      *
      * @return Closure A callable to run queries on the database; the function will return the query result
@@ -125,22 +125,23 @@ class Db
     }
 
     /**
-     * Identifies the database host type used from host string for the purpose of using it to build a database connection
-     * dsn string.
+     * Identifies the database host type used from host string for the purpose of using it to build a database
+     * connection dsn string.
      *
      * @param string $dbHost The database host string to build the DSN map from, e.g. `localhost` or
-     *                       `unix_socket=/var/mysock.sql`. This input can be a DSN string too, but, knowing that before
+     *                       `unix_socket=/var/mysock.sql`. This input can be a DSN string too, but, knowing that
+     *                       before
      *                       hand, it would be better to use `dbDsnToMap` function.
      *
-     * @return Map The database DSN connection `host`, `port` and `socket` map.
+     * @return array The database DSN connection `host`, `port` and `socket` map.
      */
-    public static function dbDsnMap(string $dbHost): Map
+    public static function dbDsnMap(string $dbHost): array
     {
         if (self::isDsnString($dbHost)) {
             return self::dbDsnToMap($dbHost);
         }
 
-        $map = new Map();
+        $map = [];
 
         if (preg_match('/dbname=(?<dbname>[^;]+;*)/', $dbHost, $m)) {
             // If the `dbname` is specified in the DSN, then use it.
@@ -154,8 +155,9 @@ class Db
             // Handle dbHost strings that are, actually, DSN strings.
             $type = $typeMatches['type'];
             // Remove only for MySQL types.
-            $dbHost = $type === 'mysql' ? preg_replace('/^' . $type . ':/', '', $dbHost) : $dbHost;
-            $typeInInput = true;
+            $dbHost = $type === 'mysql' ?
+                preg_replace('/^' . $type . ':/', '', $dbHost)
+                : $dbHost;
         }
 
         $dbHost = rtrim((string)$dbHost, ';');
@@ -171,16 +173,12 @@ class Db
             + 4 * (preg_match('/(?:[^:]*:)*([^=]*=)*(?<socket>.*\\.sock(\\w)*)$/', $dbHost, $unixSocketMatches))
             // It's a sqlite database file.
             + 8 * (preg_match(
-                '/^((?<version>sqlite(\\d)*):)*((?<file>(\\/.*(\\.sq(\\w)*))))$/um',
+                '/^((?<version>sqlite(\\d)*):)*(?<file>(\\/.*(\\.sq(\\w)*)))$/um',
                 $dbHost,
                 $sqliteFileMatches
             ))
             // It's a sqlite in-memory database.
             + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
-
-        $extract = static function ($frag, $key): string|array {
-            return str_replace($key . '=', '', $frag);
-        };
 
         switch ($mask) {
             case 1:
@@ -238,16 +236,16 @@ class Db
     /**
      * Builds a map of the dsn, user and password credentials to connect to a database.
      *
-     * @param Map $dsn The dsn map.
-     * @param string $dbuser The database user.
-     * @param string $dbpass The database password for the user.
+     * @param array       $dsn    The dsn map.
+     * @param string      $dbuser The database user.
+     * @param string      $dbpass The database password for the user.
      * @param string|null $dbname The optional database name.
      *
-     * @return Map The database credentials map: dsn string, user and password.
+     * @return array The database credentials map: dsn string, user and password.
      */
-    public static function dbCredentials(Map $dsn, string $dbuser, string $dbpass, string $dbname = null): Map
+    public static function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
     {
-        $dbname = $dsn->get('dbname', $dbname);
+        $dbname = $dsn['dbname'] ?? $dbname;
         $dbuser = empty($dbuser) ? 'root' : $dbuser;
         $dbpass = empty($dbpass) ? 'password' : $dbpass;
 
@@ -262,24 +260,24 @@ class Db
 
         $dsnString = $type . ':' . implode(';', array_filter($dsnFrags));
 
-        return new Map([
+        return [
             'dsn' => $dsnString,
             'user' => $dbuser,
             'password' => $dbpass
-        ]);
+        ];
     }
 
     /**
      * Builds the database DSN string from a database DSN map.
      *
-     * @param Map $dbDsnMap The database DSN map.
-     * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
+     * @param array $dbDsnMap  The database DSN map.
+     * @param bool  $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
      *
      * @return string The database DSN string in the format required.
      *
      * @throws InvalidArgumentException If the database type is not supported or is not set.
      */
-    public static function dbDsnString(Map $dbDsnMap, bool $forDbHost = false): string
+    public static function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {
         $type = $dbDsnMap('type', 'mysql');
         $dsn = '';
@@ -335,11 +333,11 @@ class Db
      *
      * @param string $dsnString The DSN string to process and break down.
      *
-     * @return Map The Map built from the DSN string.
+     * @return array The Map built from the DSN string.
      *
      * @throws InvalidArgumentException If the input string is not a valid DSN string.
      */
-    public static function dbDsnToMap(string $dsnString): Map
+    public static function dbDsnToMap(string $dsnString): array
     {
         if (!self::isDsnString($dsnString)) {
             throw new InvalidArgumentException("The string '{$dsnString}' is not a valid DSN string.");
@@ -356,8 +354,7 @@ class Db
 
         $map = [];
         if ($type === 'mysql') {
-            $frags = explode(';', $dsnString);
-            foreach ($frags as $frag) {
+            foreach (explode(';', $dsnString) as $frag) {
                 [$key, $value] = explode('=', $frag);
                 $map [$key] = $value;
             }
@@ -371,6 +368,6 @@ class Db
             ]);
         }
 
-        return new Map(array_replace(['type' => 'mysql', 'host' => 'localhost'], $map));
+        return array_replace(['type' => 'mysql', 'host' => 'localhost'], $map);
     }
 }

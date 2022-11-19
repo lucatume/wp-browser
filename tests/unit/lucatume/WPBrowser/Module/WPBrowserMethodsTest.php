@@ -1,6 +1,6 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 class WPBrowserMethodsTest extends \Codeception\Test\Unit
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Lib\ModuleContainer;
 use lucatume\WPBrowser\Lib\Driver\ExtendedMySql;

@@ -2,7 +2,6 @@
 
 namespace tad\WPBrowser {
 
-    use Closure;
     use Codeception\Util\Debug;
     use DateTimeImmutable;
     use DateTimeInterface;
@@ -14,7 +13,7 @@ namespace tad\WPBrowser {
     use lucatume\WPBrowser\Utils\Db;
     use lucatume\WPBrowser\Utils\Env;
     use lucatume\WPBrowser\Utils\Filesystem;
-    use lucatume\WPBrowser\Utils\Map;
+    use lucatume\WPBrowser\Deprecated\Map;
     use lucatume\WPBrowser\Utils\Process;
     use lucatume\WPBrowser\Utils\Property;
     use lucatume\WPBrowser\Utils\Strings;

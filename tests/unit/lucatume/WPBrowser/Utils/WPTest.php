@@ -1,6 +1,7 @@
 <?php namespace lucatume\WPBrowser;
 
 use lucatume\WPBrowser\Traits\WithStubProphecy;
+use lucatume\WPBrowser\Utils\WP;
 
 require_once codecept_root_dir('tests/_support/lib/wpdb.php');
 
@@ -23,7 +24,7 @@ class wpTest extends \Codeception\Test\Unit
             },
         ]);
 
-        $dropped = dropWpTables($wpdb);
+        $dropped = WP::dropWpTables($wpdb);
 
         $this->assertEquals([
             'DROP TABLE IF EXISTS wp_options',
@@ -48,7 +49,7 @@ class wpTest extends \Codeception\Test\Unit
             },
         ]);
 
-        $dropped = dropWpTables($wpdb, ['wp_posts', 'wp_users', 'foo_bar']);
+        $dropped = WP::dropWpTables($wpdb, ['wp_posts', 'wp_users', 'foo_bar']);
 
         $this->assertEquals([
             'DROP TABLE IF EXISTS wp_posts',
@@ -72,7 +73,7 @@ class wpTest extends \Codeception\Test\Unit
 
         $this->expectException(\RuntimeException::class);
 
-        $emptied = dropWpTables($wpdb);
+        $emptied = WP::dropWpTables($wpdb);
     }
 
     /**

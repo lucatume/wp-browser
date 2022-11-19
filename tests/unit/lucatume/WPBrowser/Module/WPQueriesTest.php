@@ -1,9 +1,8 @@
 <?php
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Lib\ModuleContainer;
 use lucatume\WPBrowser\Environment\Constants;
-use lucatume\WPBrowser\Module\WPQueries;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\AssertionFailedError;
 

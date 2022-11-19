@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Events;
 
 use Codeception\Codecept;
-use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Property;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
@@ -17,19 +16,23 @@ class Dispatcher
     private static function getCodecept(): ?Codecept
     {
         if (self::$codeceptInstance === null) {
-            $reverseBacktraceHead = array_reverse(
-                array_slice(
-                    array_reverse(
-                        debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
-                    ), 0, 20)
-            );
+            return self::$codeceptInstance;
+        }
 
-            foreach ($reverseBacktraceHead as $backtraceEntry) {
-                $object = $backtraceEntry['object'] ?? null;
-                if ($object instanceof Codecept) {
-                    self::$codeceptInstance = $object;
-                    break;
-                }
+        $reverseBacktraceHead = array_reverse(
+            array_slice(
+                array_reverse(
+                    debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
+                ),
+                0,
+                20)
+        );
+
+        foreach ($reverseBacktraceHead as $backtraceEntry) {
+            $object = $backtraceEntry['object'] ?? null;
+            if ($object instanceof Codecept) {
+                self::$codeceptInstance = $object;
+                return $object;
             }
         }
 
@@ -59,9 +62,9 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `add_action` function as it works pretty muche the same.
      *
-     * @param string $eventName The event to run the callback on.
-     * @param callable $listener The callback to run on the event.
-     * @param int $priority The priority that will be assigned to the callback in the context of the event.
+     * @param string   $eventName The event to run the callback on.
+     * @param callable $listener  The callback to run on the event.
+     * @param int      $priority  The priority that will be assigned to the callback in the context of the event.
      *
      * @return void
      * @throws RuntimeException If the event dispatcher cannot be found or built.
@@ -77,9 +80,9 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `do_action` function as it works pretty muche the same.
      *
-     * @param string $name The name of the event to dispatch.
-     * @param mixed|null $origin The event origin: an object, a string or null.
-     * @param array<string,mixed> $context A map of the event context that will set as context of the dispatched
+     * @param string              $name      The name of the event to dispatch.
+     * @param mixed|null          $origin    The event origin: an object, a string or null.
+     * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
      *                                       event.
      *
      * @return object The dispatched event.

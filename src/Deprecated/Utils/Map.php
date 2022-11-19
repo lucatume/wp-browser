@@ -29,10 +29,10 @@ use ReturnTypeWillChange;
  *
  * @package lucatume\WPBrowser\Utils
  * @implements ArrayAccess<string,mixed>
+ * @deprecated 4.0.0 Use a plain array instead.
  */
 class Map implements ArrayAccess
 {
-
     /**
      * Map constructor.
      *

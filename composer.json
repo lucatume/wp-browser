@@ -58,11 +58,11 @@
   },
   "autoload": {
     "psr-4": {
-      "lucatume\\WPBrowser\\": "src/"
+      "lucatume\\WPBrowser\\": ["src/", "src/Deprecated"]
     },
     "files": [
       "src/version-4-aliases.php",
-      "src/deprecated-functions.php"
+      "src/Deprecated/deprecated-functions.php"
     ]
   },
   "autoload-dev": {

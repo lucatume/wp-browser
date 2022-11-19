@@ -1,7 +1,7 @@
-<?php namespace Codeception\Lib\Generator;
+<?php
 
-use lucatume\WPBrowser\Compat\Compatibility;
-use lucatume\WPBrowser\Lib\Generator\WPUnit;
+namespace lucatume\WPBrowser\Lib\Generator;
+
 use lucatume\WPBrowser\TestCase\WPTestCase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 

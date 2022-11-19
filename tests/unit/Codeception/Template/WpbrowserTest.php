@@ -2,7 +2,6 @@
 
 use lucatume\WPBrowser\Template\Wpbrowser;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Map;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -136,7 +135,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $template         = new Wpbrowser(new ArrayInput([]), new NullOutput());
         $installationData = ( array_merge($template->getDefaultInstallationData(), $installationDataOverrides) );
 
-        $envVars = $template->getEnvFileVars(new Map($installationData));
+        $envVars = $template->getEnvFileVars($installationData);
 
         foreach ($expected as $key => $value) {
             $this->assertEquals(

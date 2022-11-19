@@ -1,11 +1,10 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
-use lucatume\WPBrowser\Module\WPCLI;
 use lucatume\WPBrowser\Process\Process;
 use lucatume\WPBrowser\Process\ProcessFailedException;
 use lucatume\WPBrowser\StubProphecy\Arg;

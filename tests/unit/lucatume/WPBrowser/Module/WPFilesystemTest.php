@@ -1,12 +1,11 @@
 <?php
 
-namespace Codeception\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\TestInterface;
 use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use lucatume\WPBrowser\Module\WPFilesystem;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Property;
@@ -119,7 +118,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
         $sut->_initialize();
 
         $moduleConfig = $sut->_getConfig();
-        $this->assertEquals(FS::untrailslashit($wpRoot) . '/', $moduleConfig['wpRootFolder']);
+        $this->assertEquals(FS::untrailslashit($wpRoot) . 'WPFilesystemTest.php/', $moduleConfig['wpRootFolder']);
         $this->assertEquals($wpRoot . '/wp-content/themes/', $moduleConfig['themes']);
         $this->assertEquals($wpRoot . '/wp-content/plugins/', $moduleConfig['plugins']);
         $this->assertEquals($wpRoot . '/wp-content/mu-plugins/', $moduleConfig['mu-plugins']);
