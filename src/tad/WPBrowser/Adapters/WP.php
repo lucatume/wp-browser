@@ -25,7 +25,7 @@ class WP
      *
      * @return string The template filename if one is located.
      */
-    public function locate_template($templateNames, $load = false, $require_once = true)
+    public function locate_template(string|array $templateNames, $load = false, $require_once = true)
     {
         return locate_template($templateNames, $load, $require_once);
     }
@@ -69,7 +69,7 @@ class WP
      *
      * @return bool True if the value was updated, false otherwise.
      */
-    public function update_option($option, $value, $autoload = null)
+    public function update_option($option, mixed $value, $autoload = null)
     {
         return update_option($option, $value, $autoload);
     }
@@ -122,7 +122,7 @@ class WP
      *
      * @return bool `true` if the value was set, `false` otherwise.
      */
-    public function set_site_transient($transient, $value, $expiration = 0)
+    public function set_site_transient($transient, mixed $value, $expiration = 0)
     {
         return set_site_transient($transient, $value, $expiration = 0);
     }
@@ -147,7 +147,7 @@ class WP
      *
      * @return void
      */
-    public function do_action($tag, ...$context)
+    public function do_action($tag, mixed ...$context)
     {
         do_action($tag, ...$context);
     }
@@ -161,7 +161,7 @@ class WP
      *
      * @return mixed The filter result.
      */
-    public function apply_filters($tag, $value, ...$context)
+    public function apply_filters($tag, mixed $value, ...$context)
     {
         return apply_filters($tag, $value, ...$context);
     }

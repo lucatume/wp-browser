@@ -5,9 +5,6 @@
  */
 abstract class WP_UnitTest_Factory_For_Thing {
 
-	var $default_generation_definitions;
-	var $factory;
-
 	/**
 	 * Creates a new factory, which will create objects of a specific Thing
 	 *
@@ -16,15 +13,14 @@ abstract class WP_UnitTest_Factory_For_Thing {
 	 * can be generators -- an object with next() method. There are some default generators: {@link WP_UnitTest_Generator_Sequence},
 	 * {@link WP_UnitTest_Generator_Locale_Name}, {@link WP_UnitTest_Factory_Callback_After_Create}.
 	 */
-	function __construct( $factory, $default_generation_definitions = array() ) {
-		$this->factory = $factory;
-		$this->default_generation_definitions = $default_generation_definitions;
-	}
+	function __construct($factory, $default_generation_definitions = [])
+ {
+ }
 
 	abstract function create_object( $args );
 	abstract function update_object( $object, $fields );
 
-	function create( $args = array(), $generation_definitions = null ) {
+	function create( $args = [], $generation_definitions = null ) {
 		if ( is_null( $generation_definitions ) )
 			$generation_definitions = $this->default_generation_definitions;
 
@@ -42,23 +38,23 @@ abstract class WP_UnitTest_Factory_For_Thing {
 		return $created;
 	}
 
-	function create_and_get( $args = array(), $generation_definitions = null ) {
+	function create_and_get( $args = [], $generation_definitions = null ) {
 		$object_id = $this->create( $args, $generation_definitions );
 		return $this->get_object_by_id( $object_id );
 	}
 
 	abstract function get_object_by_id( $object_id );
 
-	function create_many( $count, $args = array(), $generation_definitions = null ) {
-		$results = array();
+	function create_many( $count, $args = [], $generation_definitions = null ) {
+		$results = [];
 		for ( $i = 0; $i < $count; $i++ ) {
 			$results[] = $this->create( $args, $generation_definitions );
 		}
 		return $results;
 	}
 
-	function generate_args( $args = array(), $generation_definitions = null, &$callbacks = null ) {
-		$callbacks = array();
+	function generate_args( $args = [], $generation_definitions = null, &$callbacks = null ) {
+		$callbacks = [];
 		if ( is_null( $generation_definitions ) )
 			$generation_definitions = $this->default_generation_definitions;
 
@@ -85,7 +81,7 @@ abstract class WP_UnitTest_Factory_For_Thing {
 	}
 
 	function apply_callbacks( $callbacks, $created ) {
-		$updated_fields = array();
+		$updated_fields = [];
 		foreach( $callbacks as $field_name => $generator ) {
 			$updated_fields[$field_name] = $generator->call( $created );
 		}
@@ -98,7 +94,7 @@ abstract class WP_UnitTest_Factory_For_Thing {
 
 	function addslashes_deep($value) {
 		if ( is_array( $value ) ) {
-			$value = array_map( array( $this, 'addslashes_deep' ), $value );
+			$value = array_map( [$this, 'addslashes_deep'], $value );
 		} elseif ( is_object( $value ) ) {
 			$vars = get_object_vars( $value );
 			foreach ($vars as $key=>$data) {

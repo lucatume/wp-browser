@@ -19,18 +19,6 @@ use PHPUnit\Framework\ExpectationFailedException;
 class MethodProphecy
 {
     /**
-     * The fully qualified name of the class the method belongs to.
-     * @var string
-     */
-    protected $class;
-
-    /**
-     * The name of the method this prophecy is for.
-     * @var string
-     */
-    protected $name;
-
-    /**
      * The expected call arguments for the method, if any.
      *
      * @var array<mixed>
@@ -84,10 +72,8 @@ class MethodProphecy
      * @throws StubProphecyException If there's an issue reflecting on the class method or the required argument
      *                               expectations are not satisfied.
      */
-    public function __construct($class, $name, array $expectedArguments = [])
+    public function __construct(protected $class, protected $name, array $expectedArguments = [])
     {
-        $this->class             = $class;
-        $this->name              = $name;
         $this->expectedArguments = $this->setupExpectedArgs($expectedArguments);
     }
 
@@ -228,7 +214,7 @@ class MethodProphecy
                     }
 
                     Assert::assertEquals($expectedArgs[ $i ], $actualArgs[ $i ]);
-                } catch (AssertionFailedError $e) {
+                } catch (AssertionFailedError) {
                     $message = $this->failedArgumentExpectationMessage($expectedArgs, $actualArgs, $i);
                     throw new ExpectationFailedException($message);
                 }
@@ -327,7 +313,7 @@ class MethodProphecy
      *
      * @return void
      */
-    public function setExpectedCallCount($expectedCallCount)
+    public function setExpectedCallCount(int|callable $expectedCallCount)
     {
         if (is_callable($expectedCallCount)) {
             $expectedCallCount = (int)$expectedCallCount();
@@ -435,7 +421,7 @@ class MethodProphecy
         if (is_object($arg)) {
             return method_exists($arg, '__toString')
                 ? $arg->__toString()
-                : sprintf("Instance of '%s'", get_class($arg));
+                : sprintf("Instance of '%s'", $arg::class);
         }
 
         return print_r($arg, true);

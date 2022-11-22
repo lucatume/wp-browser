@@ -18,23 +18,22 @@ Multiple profile blocks are permitted, and they may be nested.
 */
 
 class WPProfiler {
-	var $stack;
-	var $profile;
+	var $stack = [];
+	var $profile = [];
 
 	/**
 	 * PHP5 constructor.
 	 */
-	function __construct() {
-		$this->stack = array();
-		$this->profile = array();
-	}
+	function __construct()
+ {
+ }
 
 	function start($name) {
 		$time = $this->microtime();
 
 		if (!$this->stack) {
 			// log all actions and filters
-			add_filter('all', array($this, 'log_filter'));
+			add_filter('all', [$this, 'log_filter']);
 		}
 
 		// reset the wpdb queries log, storing it on the profile stack if necessary
@@ -42,21 +41,11 @@ class WPProfiler {
 		if ($this->stack) {
 			$this->stack[count($this->stack)-1]['queries'] = $wpdb->queries;
 		}
-		$wpdb->queries = array();
+		$wpdb->queries = [];
 
 		global $wp_object_cache;
 
-		$this->stack[] = array(
-			'start' => $time,
-			'name' => $name,
-			'cache_cold_hits' => $wp_object_cache->cold_cache_hits,
-			'cache_warm_hits' => $wp_object_cache->warm_cache_hits,
-			'cache_misses' => $wp_object_cache->cache_misses,
-			'cache_dirty_objects' => $this->_dirty_objects_count($wp_object_cache->dirty_objects),
-			'actions' => array(),
-			'filters' => array(),
-			'queries' => array(),
-		);
+		$this->stack[] = ['start' => $time, 'name' => $name, 'cache_cold_hits' => $wp_object_cache->cold_cache_hits, 'cache_warm_hits' => $wp_object_cache->warm_cache_hits, 'cache_misses' => $wp_object_cache->cache_misses, 'cache_dirty_objects' => $this->_dirty_objects_count($wp_object_cache->dirty_objects), 'actions' => [], 'filters' => [], 'queries' => []];
 
 	}
 
@@ -86,34 +75,35 @@ class WPProfiler {
 
 		}
 		else {
-			$queries = array();
+			$queries = [];
 			$this->_query_summary($item['queries'], $queries);
-			$this->profile[$name] = array(
-				'time' => $time,
-				'calls' => 1,
-				'cache_cold_hits' => ($wp_object_cache->cold_cache_hits - $item['cache_cold_hits']),
-				'cache_warm_hits' => ($wp_object_cache->warm_cache_hits - $item['cache_warm_hits']),
-				'cache_misses' => ($wp_object_cache->cache_misses - $item['cache_misses']),
-				'cache_dirty_objects' => $cache_dirty_delta,
-				'actions' => $item['actions'],
-				'filters' => $item['filters'],
-#				'queries' => $item['queries'],
-				'queries' => $queries,
-			);
+			$this->profile[$name] = [
+       'time' => $time,
+       'calls' => 1,
+       'cache_cold_hits' => ($wp_object_cache->cold_cache_hits - $item['cache_cold_hits']),
+       'cache_warm_hits' => ($wp_object_cache->warm_cache_hits - $item['cache_warm_hits']),
+       'cache_misses' => ($wp_object_cache->cache_misses - $item['cache_misses']),
+       'cache_dirty_objects' => $cache_dirty_delta,
+       'actions' => $item['actions'],
+       'filters' => $item['filters'],
+       #				'queries' => $item['queries'],
+       'queries' => $queries,
+   ];
 		}
 
 		if (!$this->stack) {
-			remove_filter('all', array($this, 'log_filter'));
+			remove_filter('all', [$this, 'log_filter']);
 		}
 	}
 
 	function microtime($since = 0.0) {
-		list($usec, $sec) = explode(' ', microtime());
+		[$usec, $sec] = explode(' ', microtime());
 		return (float)$sec + (float)$usec - $since;
 	}
 
 	function log_filter($tag) {
-		if ($this->stack) {
+		$arg = null;
+  if ($this->stack) {
 			global $wp_actions;
 			if ($tag == end($wp_actions))
 				@$this->stack[count($this->stack)-1]['actions'][$tag] ++;
@@ -151,7 +141,7 @@ class WPProfiler {
 
 	function _query_count($queries) {
 		// this requires the savequeries patch at https://core.trac.wordpress.org/ticket/5218
-		$out = array();
+		$out = [];
 		foreach ($queries as $q) {
 			if (empty($q[2]))
 				@$out['unknown'] ++;
@@ -162,9 +152,9 @@ class WPProfiler {
 	}
 
 	function _dirty_objects_count($dirty_objects) {
-		$out = array();
+		$out = [];
 		foreach (array_keys($dirty_objects) as $group)
-			$out[$group] = count($dirty_objects[$group]);
+			$out[$group] = is_countable($dirty_objects[$group]) ? count($dirty_objects[$group]) : 0;
 		return $out;
 	}
 

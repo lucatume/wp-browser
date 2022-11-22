@@ -110,9 +110,9 @@ class WPHealthcheck
         WordPressDatabase $database = null,
         WordPressDirectories $directories = null
     ) {
-        $this->constants = $constants ? $constants : new Constants();
-        $this->database = $database ? $database : new WordPressDatabase($this->constants);
-        $this->directories = $directories ? $directories : new WordPressDirectories($this->constants);
+        $this->constants = $constants ?: new Constants();
+        $this->database = $database ?: new WordPressDatabase($this->constants);
+        $this->directories = $directories ?: new WordPressDirectories($this->constants);
     }
 
     /**
@@ -171,7 +171,7 @@ class WPHealthcheck
     {
         return \Codeception\Util\PathResolver::getRelativeDir(
             $path,
-            $root === null ? $this->directories->getAbspath() : $root,
+            $root ?? $this->directories->getAbspath(),
             DIRECTORY_SEPARATOR
         );
     }
@@ -282,16 +282,14 @@ class WPHealthcheck
             return false;
         }
 
-        $matchingTables = array_filter($allTables, static function ($table) use ($table_prefix) {
-            return strpos($table, $table_prefix) === 0;
-        });
+        $matchingTables = array_filter($allTables, static fn($table) => str_starts_with($table, $table_prefix));
 
         if (empty($matchingTables)) {
             $this->dbStructureError = "no tables found for table prefix [{$table_prefix}].";
             return false;
         }
 
-        if (isset($GLOBALS['wpdb']) && get_class($GLOBALS['wpdb']) === 'wpdb') {
+        if (isset($GLOBALS['wpdb']) && $GLOBALS['wpdb']::class === 'wpdb') {
             $expectedTables = $GLOBALS['wpdb']->tables('all', true);
         } else {
             $expectedTables = $this->isMultisite() ?
@@ -323,9 +321,7 @@ class WPHealthcheck
     {
         $tablePrefix = $this->database->getTablePrefix();
 
-        $multiSiteTables = array_map(static function ($tableName) use ($tablePrefix) {
-            return $tablePrefix . $tableName;
-        }, Tables::multisiteTables());
+        $multiSiteTables = array_map(static fn($tableName) => $tablePrefix . $tableName, Tables::multisiteTables());
 
         return array_merge($this->getSingleSiteDefaultTables(), $multiSiteTables);
     }
@@ -339,9 +335,7 @@ class WPHealthcheck
     {
         $tablePrefix = $this->database->getTablePrefix();
 
-        return array_map(static function ($tableName) use ($tablePrefix) {
-            return $tablePrefix . $tableName;
-        }, Tables::blogTables());
+        return array_map(static fn($tableName) => $tablePrefix . $tableName, Tables::blogTables());
     }
 
     /**
@@ -414,12 +408,8 @@ class WPHealthcheck
         }
 
         // Try to read the template and stylesheet from overriding globals if set.
-        $template   = isset($GLOBALS['wp_tests_options']['template']) ?
-            $GLOBALS['wp_tests_options']['template']
-            : $this->database->getOption('template', false);
-        $stylesheet = isset($GLOBALS['wp_tests_options']['stylesheet']) ?
-            $GLOBALS['wp_tests_options']['stylesheet']
-            : $this->database->getOption('stylesheet', false);
+        $template   = $GLOBALS['wp_tests_options']['template'] ?? $this->database->getOption('template', false);
+        $stylesheet = $GLOBALS['wp_tests_options']['stylesheet'] ?? $this->database->getOption('stylesheet', false);
 
         if (false === $template) {
             $this->themeError = "Cannot find the 'template' option in the database.";
@@ -428,7 +418,7 @@ class WPHealthcheck
 
         $themes = [
             'template' => $template,
-            'stylesheet' => $stylesheet ? $stylesheet : 'n/a',
+            'stylesheet' => $stylesheet ?: 'n/a',
         ];
 
         foreach ([$template, $stylesheet] as $target) {
@@ -469,9 +459,7 @@ class WPHealthcheck
 
         $files = new \CallbackFilterIterator(
             new \FilesystemIterator($muPluginsFolder),
-            function (\SplFileInfo $file) {
-                return $file->getExtension() === 'php';
-            }
+            fn(\SplFileInfo $file) => $file->getExtension() === 'php'
         );
 
         if (!iterator_count($files)) {

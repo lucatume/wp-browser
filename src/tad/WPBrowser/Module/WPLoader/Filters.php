@@ -155,14 +155,14 @@ class Filters
     {
         if (count($filter) < 2) {
             throw new ModuleException(
-                __CLASS__,
-                'Callback ' . json_encode($filter) . ' does not specify enough data for a filter: '
+                self::class,
+                'Callback ' . json_encode($filter, JSON_THROW_ON_ERROR) . ' does not specify enough data for a filter: '
                 . 'required at least tag and callback.'
             );
         }
 
         if (empty($filter[0]) || !is_string($filter[0])) {
-            throw new ModuleException(__CLASS__, 'Callback ' . json_encode($filter) . ' does not specify a valid tag.');
+            throw new ModuleException(self::class, 'Callback ' . json_encode($filter, JSON_THROW_ON_ERROR) . ' does not specify a valid tag.');
         }
 
         if (count($filter) === 2) {
@@ -175,8 +175,8 @@ class Filters
 
         if (count($filter) > 4) {
             throw new ModuleException(
-                __CLASS__,
-                'Callback ' . json_encode($filter) . ' contains too many arguments; '
+                self::class,
+                'Callback ' . json_encode($filter, JSON_THROW_ON_ERROR) . ' contains too many arguments; '
                 .'only tag, callback, priority and accepted arguments are supported'
             );
         }
@@ -186,8 +186,8 @@ class Filters
 
         if (empty($callbackFunc) || !(is_string($callbackFunc) || is_array($callbackFunc))) {
             throw new ModuleException(
-                __CLASS__,
-                'Callback for ' . json_encode($filter) . ' is empty or the wrong type: '
+                self::class,
+                'Callback for ' . json_encode($filter, JSON_THROW_ON_ERROR) . ' is empty or the wrong type: '
                 .'it should be a string (a function name) or an array of two strings (class name and a static method).'
             );
         }
@@ -197,8 +197,8 @@ class Filters
                 || count(array_filter($callbackFunc, 'is_string')) !== 2
             ) {
                 throw new ModuleException(
-                    __CLASS__,
-                    'Callback for ' . json_encode($filter) . ' is weird: '
+                    self::class,
+                    'Callback for ' . json_encode($filter, JSON_THROW_ON_ERROR) . ' is weird: '
                     .'it should be a string (function name) or an array of two strings (class name and static method).'
                 );
             }

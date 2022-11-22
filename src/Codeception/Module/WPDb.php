@@ -49,11 +49,11 @@ class WPDb extends Db
 {
     use WithEvents;
 
-    const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
-    const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
-    const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
-    const EVENT_AFTER_DB_PREPARE =  'WPDb.after_db_prepare';
-    const ADMIN_EMAIL_LIFESPAN = 2533080438;
+    public const EVENT_BEFORE_SUITE = 'WPDb.before_suite';
+    public const EVENT_BEFORE_INITIALIZE = 'WPDb.before_initialize';
+    public const EVENT_AFTER_INITIALIZE = 'WPDb.after_initialize';
+    public const EVENT_AFTER_DB_PREPARE =  'WPDb.after_db_prepare';
+    public const ADMIN_EMAIL_LIFESPAN = 2_533_080_438;
 
     /**
      * @var DbDump
@@ -213,7 +213,7 @@ class WPDb extends Db
     public function __construct(ModuleContainer $moduleContainer, $config = null, DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
-        $this->dbDump = $dbDump !== null ? $dbDump : new DbDump();
+        $this->dbDump = $dbDump ?? new DbDump();
     }
 
     /**
@@ -319,7 +319,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function dontSeeOptionInDatabase($criteriaOrName, $value = null)
+    public function dontSeeOptionInDatabase(array|string $criteriaOrName, $value = null)
     {
         $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         $tableName = $this->grabPrefixedTableNameFor('options');
@@ -366,7 +366,7 @@ class WPDb extends Db
      *
      * @return string The serialized value if not serialized or the original value.
      */
-    protected function maybeSerialize($value)
+    protected function maybeSerialize(mixed $value)
     {
         return (is_array($value) || is_object($value)) ? serialize($value) : $value;
     }
@@ -542,7 +542,7 @@ class WPDb extends Db
             $passwordOk = WpPassword::instance()->check($userPass, $hashedPass);
             $this->assertTrue(
                 $passwordOk,
-                'No matching records found for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName
+                'No matching records found for criteria ' . json_encode($allCriteria, JSON_THROW_ON_ERROR) . ' in table ' . $tableName
             );
         }
         $this->seeInDatabase($tableName, $criteria);
@@ -578,7 +578,7 @@ class WPDb extends Db
         $count = $this->countInDatabase($tableName, $criteria);
         $this->assertTrue(
             !$passwordOk && $count < 1,
-            'Unexpectedly found matching records for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName
+            'Unexpectedly found matching records for criteria ' . json_encode($allCriteria, JSON_THROW_ON_ERROR) . ' in table ' . $tableName
         );
     }
 
@@ -766,7 +766,7 @@ class WPDb extends Db
      * @return int The inserted meta `meta_id`.
      *
      */
-    public function havePostmetaInDatabase($postId, $meta_key, $meta_value)
+    public function havePostmetaInDatabase($postId, $meta_key, mixed $meta_value)
     {
         if (!is_int($postId)) {
             throw new BadMethodCallException('Post id must be an int', 1);
@@ -936,7 +936,7 @@ class WPDb extends Db
      *
      * @return int The inserted term meta `meta_id`.
      */
-    public function haveTermMetaInDatabase($term_id, $meta_key, $meta_value)
+    public function haveTermMetaInDatabase($term_id, $meta_key, mixed $meta_value)
     {
         if (!is_int($term_id)) {
             throw new BadMethodCallException('Term id must be an int');
@@ -1313,8 +1313,8 @@ class WPDb extends Db
     {
         try {
             $this->_getDriver()->deleteQueryByCriteria($table, $criteria);
-        } catch (Exception $e) {
-            $this->debug("Couldn't delete record(s) from {$table} with criteria " . json_encode($criteria));
+        } catch (Exception) {
+            $this->debug("Couldn't delete record(s) from {$table} with criteria " . json_encode($criteria, JSON_THROW_ON_ERROR));
         }
     }
 
@@ -1454,7 +1454,7 @@ class WPDb extends Db
      *
      * @return int The inserted option `option_id`.
      */
-    public function haveTransientInDatabase($transient, $value)
+    public function haveTransientInDatabase($transient, mixed $value)
     {
         return $this->haveOptionInDatabase('_transient_' . $transient, $value);
     }
@@ -1476,7 +1476,7 @@ class WPDb extends Db
      *
      * @return int The inserted option `option_id`
      */
-    public function haveOptionInDatabase($option_name, $option_value, $autoload = 'yes')
+    public function haveOptionInDatabase($option_name, mixed $option_value, $autoload = 'yes')
     {
         $table = $this->grabPrefixedTableNameFor('options');
         $this->dontHaveInDatabase($table, ['option_name' => $option_name]);
@@ -1525,6 +1525,7 @@ class WPDb extends Db
      */
     public function dontHaveOptionInDatabase($key, $value = null)
     {
+        $criteria = [];
         $tableName = $this->grabPrefixedTableNameFor('options');
         $criteria['option_name'] = $key;
         if (!empty($value)) {
@@ -1549,7 +1550,7 @@ class WPDb extends Db
      *
      * @return int The inserted option `option_id`.
      */
-    public function haveSiteOptionInDatabase($key, $value)
+    public function haveSiteOptionInDatabase($key, mixed $value)
     {
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
@@ -1642,7 +1643,7 @@ class WPDb extends Db
      *
      * @return int The inserted transient `option_id`
      */
-    public function haveSiteTransientInDatabase($key, $value)
+    public function haveSiteTransientInDatabase($key, mixed $value)
     {
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
@@ -1721,7 +1722,7 @@ class WPDb extends Db
      *
      * @return mixed The unserialized value.
      */
-    protected function maybeUnserialize($value)
+    protected function maybeUnserialize(mixed $value)
     {
         $unserialized = @unserialize($value);
 
@@ -1797,7 +1798,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function seeOptionInDatabase($criteriaOrName, $value = null)
+    public function seeOptionInDatabase(array|string $criteriaOrName, $value = null)
     {
         $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         $tableName = $this->grabPrefixedTableNameFor('options');
@@ -1821,7 +1822,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function seeSiteOptionInDatabase($criteriaOrName, $value = null)
+    public function seeSiteOptionInDatabase(array|string $criteriaOrName, $value = null)
     {
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
@@ -1896,7 +1897,7 @@ class WPDb extends Db
      *
      * @return array<int|string,mixed> The input array with any `{{n}}` placeholder replaced with a number.
      */
-    protected function replaceNumbersInArray($input, $i)
+    protected function replaceNumbersInArray(string|array $input, $i)
     {
         $out = [];
         foreach ((array)$input as $key => $value) {
@@ -2164,7 +2165,7 @@ class WPDb extends Db
      *
      * @return int The inserted comment meta ID.
      */
-    public function haveCommentMetaInDatabase($comment_id, $meta_key, $meta_value)
+    public function haveCommentMetaInDatabase($comment_id, $meta_key, mixed $meta_value)
     {
         if (!is_int($comment_id)) {
             throw new BadMethodCallException('Comment id must be an int');
@@ -2390,7 +2391,7 @@ class WPDb extends Db
         $overrides = $this->setTemplateData($overrides);
         for ($i = 0; $i < $count; $i++) {
             $thisOverrides = $this->replaceNumbersInArray($overrides, $i);
-            $thisUserLogin = false === strpos(
+            $thisUserLogin = !str_contains(
                 $user_login,
                 $this->numberPlaceholder
             ) ? $user_login . '_' . $i : $this->replaceNumbersInString($user_login, $i);
@@ -2448,18 +2449,18 @@ class WPDb extends Db
      *
      * @see WPDb::haveUserCapabilitiesInDatabase() for the roles and caps options.
      */
-    public function haveUserInDatabase($user_login, $role = 'subscriber', array $overrides = [])
+    public function haveUserInDatabase($user_login, string|array $role = 'subscriber', array $overrides = [])
     {
         // Support `meta` and `meta_input` for compatibility w/ format used by Core user factory.
         $hasMeta = !empty($overrides['meta']) || !empty($overrides['meta_input']);
         $meta = [];
         if ($hasMeta) {
-            $meta = isset($overrides['meta']) ? $overrides['meta'] : $overrides['meta_input'];
+            $meta = $overrides['meta'] ?? $overrides['meta_input'];
             unset($overrides['meta'], $overrides['meta_input']);
         }
 
         $userTableData = User::generateUserTableDataFrom($user_login, $overrides);
-        $this->debugSection('Generated users table data', json_encode($userTableData));
+        $this->debugSection('Generated users table data', json_encode($userTableData, JSON_THROW_ON_ERROR));
         $userId = $this->haveInDatabase($this->grabUsersTableName(), $userTableData);
 
         // Handle the user capabilities and associated meta values.
@@ -2550,7 +2551,7 @@ class WPDb extends Db
      *
      * @return array<int|string,array<int>|int> An array of inserted `meta_id`.
      */
-    public function haveUserCapabilitiesInDatabase($userId, $role)
+    public function haveUserCapabilitiesInDatabase($userId, string|array $role)
     {
         $insert = User::buildCapabilities($role, $this->grabTablePrefix());
 
@@ -2582,7 +2583,7 @@ class WPDb extends Db
      *
      * @return array<int> An array of inserted `umeta_id`s.
      */
-    public function haveUserMetaInDatabase($userId, $meta_key, $meta_value)
+    public function haveUserMetaInDatabase($userId, $meta_key, mixed $meta_value)
     {
         $ids = [];
         $meta_values = is_array($meta_value) ? $meta_value : [$meta_value];
@@ -2637,7 +2638,7 @@ class WPDb extends Db
      * ```
      *
      */
-    public function haveUserLevelsInDatabase($userId, $role)
+    public function haveUserLevelsInDatabase($userId, array|string $role)
     {
         $roles = User::buildCapabilities($role, $this->grabTablePrefix());
 
@@ -2682,7 +2683,7 @@ class WPDb extends Db
         $ids = [];
         $overrides = $this->setTemplateData($overrides);
         for ($i = 0; $i < $count; $i++) {
-            $thisName = false === strpos(
+            $thisName = !str_contains(
                 $name,
                 $this->numberPlaceholder
             ) ? $name . ' ' . $i : $this->replaceNumbersInString($name, $i);
@@ -3022,7 +3023,7 @@ class WPDb extends Db
     {
         $base = Blog::makeDefaults();
         if ($subdomain) {
-            $base['domain'] = false !== strpos($domainOrPath, $this->getSiteDomain())
+            $base['domain'] = str_contains($domainOrPath, $this->getSiteDomain())
                 ? $domainOrPath
                 : trim($domainOrPath, '/') . '.' . $this->getSiteDomain();
             $base['path'] = '/';
@@ -3045,7 +3046,7 @@ class WPDb extends Db
             $fs = $this->getWpFilesystemModule();
             $this->debug('Scaffolding blog uploads directories.');
             $fs->makeUploadsDir("sites/{$blogId}");
-        } catch (ModuleException $e) {
+        } catch (ModuleException) {
             $this->debugSection(
                 'Filesystem',
                 'Could not scaffold blog directories: WPFilesystem module not loaded in suite.'
@@ -3127,9 +3128,9 @@ class WPDb extends Db
             $fs = $this->getModule('WPFilesystem');
 
             return $fs;
-        } catch (ModuleException $e) {
+        } catch (ModuleException) {
             $message = 'This method requires the WPFilesystem module.';
-            throw new ModuleException(__CLASS__, $message);
+            throw new ModuleException(self::class, $message);
         }
     }
 
@@ -3176,7 +3177,7 @@ class WPDb extends Db
                 try {
                     $fs = $this->getWpFilesystemModule();
                     $fs->deleteUploadedDir($fs->getBlogUploadsPath($blogId));
-                } catch (ModuleException $e) {
+                } catch (ModuleException) {
                     $this->debugSection(
                         'Filesystem',
                         'Could not delete blog directories: WPFilesystem module not loaded in suite.'
@@ -3240,7 +3241,7 @@ class WPDb extends Db
         try {
             $this->_getDriver()->executeQuery($drop, []);
         } catch (PDOException $e) {
-            if (false === strpos($e->getMessage(), 'table or view not found')) {
+            if (!str_contains($e->getMessage(), 'table or view not found')) {
                 throw $e;
             }
             $this->debug("Table {$fullTableName} not removed from database: it did not exist.");
@@ -3377,7 +3378,7 @@ class WPDb extends Db
         if (!array_key_exists($menuSlug, $this->menus[$this->stylesheet])) {
             throw new RuntimeException("Menu $menuSlug is not a registered menu for the current theme.");
         }
-        $menuOrder = $menuOrder ?: count($this->menuItems[$this->stylesheet][$menuSlug]) + 1;
+        $menuOrder = $menuOrder ?: (is_countable($this->menuItems[$this->stylesheet][$menuSlug]) ? count($this->menuItems[$this->stylesheet][$menuSlug]) : 0) + 1;
         $menuItemId = $this->havePostInDatabase([
             'post_title' => $title,
             'menu_order' => $menuOrder,
@@ -3462,9 +3463,9 @@ class WPDb extends Db
      * Requires the WPFilesystem module.
      *
      */
-    public function haveAttachmentInDatabase($file, $date = 'now', array $overrides = [], $imageSizes = null)
+    public function haveAttachmentInDatabase($file, string|int $date = 'now', array $overrides = [], $imageSizes = null)
     {
-        if (!class_exists('\\Gumlet\\ImageResize')) {
+        if (!class_exists('\\' . \Gumlet\ImageResize::class)) {
             $message = 'The "haveAttachmentInDatabase" method requires the "gumlet/php-image-resize:^1.6" package.' .
                 PHP_EOL .
                 'Please install it using the command "composer require --dev gumlet/php-image-resize:^1.6"';
@@ -3473,7 +3474,7 @@ class WPDb extends Db
 
         try {
             $fs = $this->getWpFilesystemModule();
-        } catch (ModuleException $e) {
+        } catch (ModuleException) {
             throw new ModuleRequireException(
                 $this,
                 'The haveAttachmentInDatabase method requires the WPFilesystem module: update the suite ' .
@@ -3522,7 +3523,7 @@ class WPDb extends Db
             return $id;
         }
 
-        list($imageWidth, $imageHeight) = $imageInfo;
+        [$imageWidth, $imageHeight] = $imageInfo;
 
         if ($imageSizes === null) {
             $imageSizes = [
@@ -3532,7 +3533,7 @@ class WPDb extends Db
             ];
         }
 
-        $extension = isset($pathInfo['extension']) ? $pathInfo['extension'] : '';
+        $extension = $pathInfo['extension'] ?? '';
 
         $createdImages = [];
         foreach ($imageSizes as $size => $thisSizes) {
@@ -3542,8 +3543,8 @@ class WPDb extends Db
 
             try {
                 $image = new ImageResize($file);
-            } catch (ImageResizeException $e) {
-                throw new ModuleException(__CLASS__, "Could not initialize image processing class for file [{$file}]");
+            } catch (ImageResizeException) {
+                throw new ModuleException(self::class, "Could not initialize image processing class for file [{$file}]");
             }
 
             if (empty($height)) {
@@ -3564,14 +3565,12 @@ class WPDb extends Db
             $createdImages[$size] = (object)['width' => $width, 'height' => $height];
         }
 
-        $createSizeEntry = function ($sizes) use ($slug, $mimeType, $extension) {
-            return [
-                'file' => "{$slug}-{$sizes->width}x{$sizes->height}.{$extension}",
-                'width' => $sizes->width,
-                'height' => $sizes->height,
-                'mime-type' => $mimeType,
-            ];
-        };
+        $createSizeEntry = fn($sizes) => [
+            'file' => "{$slug}-{$sizes->width}x{$sizes->height}.{$extension}",
+            'width' => $sizes->width,
+            'height' => $sizes->height,
+            'mime-type' => $mimeType,
+        ];
         $metadata = [
             'width' => $imageWidth,
             'height' => $imageHeight,
@@ -3717,11 +3716,11 @@ class WPDb extends Db
      *
      * @throws ModuleRequireException If the `WPFilesystem` module is not loaded in the suite.
      */
-    public function dontHaveAttachmentFilesInDatabase($attachmentIds)
+    public function dontHaveAttachmentFilesInDatabase(array|int $attachmentIds)
     {
         try {
             $fs = $this->getWpFilesystemModule();
-        } catch (ModuleException $e) {
+        } catch (ModuleException) {
             throw new ModuleRequireException(
                 $this,
                 'The haveAttachmentInDatabase method requires the WPFilesystem module: update the suite ' .
@@ -3917,7 +3916,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function dontHaveUserInDatabase($userIdOrLogin, $purgeMeta = true)
+    public function dontHaveUserInDatabase(int|string $userIdOrLogin, $purgeMeta = true)
     {
         $userId = is_numeric($userIdOrLogin) ? intval($userIdOrLogin) : $this->grabUserIdFromDatabase($userIdOrLogin);
         $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('users'), ['ID' => $userId]);
@@ -3999,7 +3998,7 @@ class WPDb extends Db
         }
 
         foreach ($blogTableNames as $candidate) {
-            if (strpos($candidate, $table) === false) {
+            if (!str_contains($candidate, $table)) {
                 continue;
             }
             return $candidate;
@@ -4107,7 +4106,7 @@ class WPDb extends Db
      *
      * @throws ModuleException If there's any issue with the URL replacement.
      */
-    protected function prepareSqlDump($dump)
+    protected function prepareSqlDump(string|array $dump): string|array
     {
         // Remove C-style comments (except MySQL directives).
         $prepared = preg_replace('%/\*(?!!\d+).*?\*/%s', '', $dump) ?: '';
@@ -4128,7 +4127,7 @@ class WPDb extends Db
      *
      * @throws ModuleException If there's an issue while processing the SQL dump file.
      */
-    public function _replaceUrlInDump($sql)
+    public function _replaceUrlInDump(array|string $sql): string|array
     {
         if ($this->config['urlReplacement'] === false) {
             return $sql;
@@ -4311,7 +4310,7 @@ class WPDb extends Db
         }
 
         if (!empty($createIfNotExist)) {
-            foreach ($createIfNotExist as $dsn => list($user, $pass)) {
+            foreach ($createIfNotExist as $dsn => [$user, $pass]) {
                 $dsnMap = dbDsnToMap((string)$dsn);
                 $dbname = $dsnMap('dbname', '');
 
@@ -4443,7 +4442,7 @@ class WPDb extends Db
      */
     protected function normalizePrefixedOptionName($name, $prefix)
     {
-        return strpos($name, $prefix) === 0 ? $name : $prefix . $name;
+        return str_starts_with($name, $prefix) ? $name : $prefix . $name;
     }
 
     /**
@@ -4463,7 +4462,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function dontSeeSiteOptionInDatabase($criteriaOrName, $value = null)
+    public function dontSeeSiteOptionInDatabase(array|string $criteriaOrName, $value = null)
     {
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
@@ -4481,7 +4480,7 @@ class WPDb extends Db
      * @param mixed|null $value The site option value, only used if the first parameter is not an array.
      * @return array<string,mixed> An array of criteria to search for the site option.
      */
-    protected function buildSiteOptionCriteria($criteriaOrName, $value = null)
+    protected function buildSiteOptionCriteria(string|array $criteriaOrName, $value = null)
     {
         $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         if (isset($criteria['option_name'])) {
@@ -4499,7 +4498,7 @@ class WPDb extends Db
      *
      * @return array<string,mixed> An array of option criteria, normalized.
      */
-    protected function normalizeOptionCriteria($criteriaOrName, $value = null)
+    protected function normalizeOptionCriteria(array|string $criteriaOrName, $value = null)
     {
         $criteria = [];
 

@@ -19,15 +19,7 @@ class Bootstrapper
      */
     protected $bootstrapScriptFilePath;
 
-    /**
-     * @var string|null
-     */
-    private $wpLoadPath;
-
-    /**
-     * @var System
-     */
-    private $system;
+    private \tad\WPBrowser\Environment\System $system;
 
     /**
      * Bootstrapper constructor.
@@ -35,11 +27,10 @@ class Bootstrapper
      * @param string      $wpLoadPath The path to the WordPress root directory to load.
      * @param System|null $system The system operations adapter.
      */
-    public function __construct($wpLoadPath = null, System $system = null)
+    public function __construct(private ?string $wpLoadPath = null, System $system = null)
     {
-        $this->wpLoadPath = $wpLoadPath;
-        $this->bootstrapScriptFilePath = dirname(dirname(__DIR__)) . '/support/wpBootstrap.php';
-        $this->system = $system ? $system : new System();
+        $this->bootstrapScriptFilePath = dirname(__DIR__, 2) . '/support/wpBootstrap.php';
+        $this->system = $system ?: new System();
     }
 
     /**
@@ -50,7 +41,7 @@ class Bootstrapper
      *
      * @return string|false Either the generated nonce, or `false` on failure.
      */
-    public function createNonce($action, array $credentials)
+    public function createNonce($action, array $credentials): string|false
     {
         $request = [
             'action' => $action,
@@ -79,7 +70,7 @@ class Bootstrapper
      *
      * @throws \RuntimeException If the bootstrap happens before the load path is set.
      */
-    public function bootstrapWpAndExec(array $actions)
+    public function bootstrapWpAndExec(array $actions): string|false
     {
         if (empty($this->wpLoadPath)) {
             throw new \RuntimeException('Cannot bootstrap WordPress if load path is not set.');

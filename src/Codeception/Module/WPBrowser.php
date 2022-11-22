@@ -55,12 +55,8 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
-            return preg_match($cookiePattern, $cookie->getName());
-        });
-        $cookieList = array_map(static function ($cookie) {
-            return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
-        }, $matchingCookies);
+        $matchingCookies = array_filter($cookies, static fn($cookie) => preg_match($cookiePattern, $cookie->getName()));
+        $cookieList = array_map(static fn($cookie) => sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue()), $matchingCookies);
 
         $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));
 
@@ -88,7 +84,7 @@ class WPBrowser extends PhpBrowser
      *
      * @return void
      */
-    public function activatePlugin($pluginSlug)
+    public function activatePlugin(string|array $pluginSlug)
     {
         foreach ((array)$pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
@@ -118,7 +114,7 @@ class WPBrowser extends PhpBrowser
      *
      * @return void
      */
-    public function deactivatePlugin($pluginSlug)
+    public function deactivatePlugin(string|array $pluginSlug)
     {
         foreach ((array) $pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');

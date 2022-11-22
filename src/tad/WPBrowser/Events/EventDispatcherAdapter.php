@@ -84,20 +84,12 @@ class EventDispatcherAdapter
     protected static $fallbackAvailable = false;
 
     /**
-     * The wrapped Symfony Event Dispatcher instance.
-     *
-     * @var SymfonyEventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    /**
      * EventDispatcherAdapter constructor.
      *
      * @param SymfonyEventDispatcherInterface $eventDispatcher The Symfony Event Dispatcher instance to wrap.
      */
-    public function __construct(SymfonyEventDispatcherInterface $eventDispatcher)
+    public function __construct(protected SymfonyEventDispatcherInterface $eventDispatcher)
     {
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -222,9 +214,7 @@ class EventDispatcherAdapter
     public static function codeceptionEvents()
     {
         if (null === static::$compiledCodeceptionEvents) {
-            static::$compiledCodeceptionEvents = array_filter(array_map(static function ($const) {
-                return defined($const) ? constant($const) : null;
-            }, static::$allCodeceptionEvents));
+            static::$compiledCodeceptionEvents = array_filter(array_map(static fn($const) => defined($const) ? constant($const) : null, static::$allCodeceptionEvents));
         }
 
         return static::$compiledCodeceptionEvents;
@@ -365,7 +355,7 @@ OUT;
 
         try {
             $methodReflection = new \ReflectionMethod(SymfonyEventDispatcher::class, 'dispatch');
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             self::$dispatchWithObject = false;
 
             return self::$dispatchWithObject;

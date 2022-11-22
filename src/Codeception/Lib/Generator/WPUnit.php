@@ -36,11 +36,6 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
     /**
      * @var string
      */
-    protected $baseClass;
-
-    /**
-     * @var string
-     */
     protected $template = <<<EOF
 <?php
 {{namespace}}
@@ -88,12 +83,11 @@ EOF;
      * @param string $name The template name.
      * @param string $baseClass The base class.
      */
-    public function __construct($settings, $name, $baseClass)
+    public function __construct($settings, $name, protected $baseClass)
     {
         parent::__construct($settings);
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
-        $this->baseClass = $baseClass;
         $this->compatibilityLayer = new Compatibility();
     }
 
@@ -137,7 +131,7 @@ EOF;
             $propertyName = isset($config['actor_suffix']) ?
                 lcfirst($config['actor_suffix'])
                 : '';
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $propertyName = '';
         }
 

@@ -36,14 +36,12 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @var array
      */
-    protected $slow = array();
+    protected $slow = [];
 
     /**
      * Construct a new instance.
-     *
-     * @param array $options
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         $this->loadOptions($options);
     }
@@ -51,8 +49,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * An error occurred.
      *
-     * @param PHPUnit_Framework_Test $test
-     * @param Exception              $e
      * @param float                   $time
      */
     public function addError(PHPUnit_Framework_Test $test, Exception $e, $time)
@@ -62,8 +58,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * A warning occurred.
      *
-     * @param PHPUnit_Framework_Test    $test
-     * @param PHPUnit_Framework_Warning $e
      * @param float                     $time
      * @since Method available since Release 5.1.0
      */
@@ -74,8 +68,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * A failure occurred.
      *
-     * @param PHPUnit_Framework_Test                 $test
-     * @param PHPUnit_Framework_AssertionFailedError $e
      * @param float                                   $time
      */
     public function addFailure(PHPUnit_Framework_Test $test, PHPUnit_Framework_AssertionFailedError $e, $time)
@@ -85,8 +77,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * Incomplete test.
      *
-     * @param PHPUnit_Framework_Test $test
-     * @param Exception              $e
      * @param float                   $time
      */
     public function addIncompleteTest(PHPUnit_Framework_Test $test, Exception $e, $time)
@@ -96,8 +86,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * Risky test.
      *
-     * @param PHPUnit_Framework_Test $test
-     * @param Exception              $e
      * @param float                   $time
      * @since  Method available since Release 4.0.0
      */
@@ -108,8 +96,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * Skipped test.
      *
-     * @param PHPUnit_Framework_Test $test
-     * @param Exception              $e
      * @param float                   $time
      */
     public function addSkippedTest(PHPUnit_Framework_Test $test, Exception $e, $time)
@@ -118,8 +104,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
 
     /**
      * A test started.
-     *
-     * @param PHPUnit_Framework_Test $test
      */
     public function startTest(PHPUnit_Framework_Test $test)
     {
@@ -128,7 +112,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * A test ended.
      *
-     * @param PHPUnit_Framework_Test $test
      * @param float                   $time
      */
     public function endTest(PHPUnit_Framework_Test $test, $time)
@@ -145,8 +128,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
 
     /**
      * A test suite started.
-     *
-     * @param PHPUnit_Framework_TestSuite $suite
      */
     public function startTestSuite(PHPUnit_Framework_TestSuite $suite)
     {
@@ -155,8 +136,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
 
     /**
      * A test suite ended.
-     *
-     * @param PHPUnit_Framework_TestSuite $suite
      */
     public function endTestSuite(PHPUnit_Framework_TestSuite $suite)
     {
@@ -186,7 +165,6 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * Stores a test as slow.
      *
-     * @param PHPUnit_Framework_TestCase $test
      * @param int                         $time Test execution time in milliseconds
      */
     protected function addSlowTest(PHPUnit_Framework_TestCase $test, $time)
@@ -220,12 +198,11 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * Label for describing a test.
      *
-     * @param PHPUnit_Framework_TestCase $test
      * @return string
      */
     protected function makeLabel(PHPUnit_Framework_TestCase $test)
     {
-        return sprintf('%s:%s', get_class($test), $test->getName());
+        return sprintf('%s:%s', $test::class, $test->getName());
     }
 
     /**
@@ -246,7 +223,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     protected function getHiddenCount()
     {
         $total = count($this->slow);
-        $showing = $this->getReportLength($this->slow);
+        $showing = $this->getReportLength();
 
         $hidden = 0;
         if ($total > $showing) {
@@ -271,7 +248,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     {
         $slowTests = $this->slow;
 
-        $length = $this->getReportLength($slowTests);
+        $length = $this->getReportLength();
         for ($i = 1; $i <= $length; ++$i) {
             $label = key($slowTests);
             $time = array_shift($slowTests);
@@ -285,20 +262,18 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      */
     protected function renderFooter()
     {
-        if ($hidden = $this->getHiddenCount($this->slow)) {
+        if ($hidden = $this->getHiddenCount()) {
             echo sprintf("...and there %s %s more above your threshold hidden from view", $hidden == 1 ? 'is' : 'are', $hidden);
         }
     }
 
     /**
      * Populate options into class internals.
-     *
-     * @param array $options
      */
     protected function loadOptions(array $options)
     {
-        $this->slowThreshold = isset($options['slowThreshold']) ? $options['slowThreshold'] : 500;
-        $this->reportLength = isset($options['reportLength']) ? $options['reportLength'] : 10;
+        $this->slowThreshold = $options['slowThreshold'] ?? 500;
+        $this->reportLength = $options['reportLength'] ?? 10;
     }
 
     /**
@@ -320,10 +295,10 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     protected function getSlowThreshold(PHPUnit_Framework_TestCase $test)
     {
         $ann = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($test),
+            $test::class,
             $test->getName(false)
         );
 
-        return isset($ann['method']['slowThreshold'][0]) ? $ann['method']['slowThreshold'][0] : $this->slowThreshold;
+        return $ann['method']['slowThreshold'][0] ?? $this->slowThreshold;
     }
 }

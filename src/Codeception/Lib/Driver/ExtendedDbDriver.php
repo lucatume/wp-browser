@@ -32,21 +32,13 @@ class ExtendedDbDriver extends Db
     {
         $provider = self::getProvider($dsn);
 
-        switch ($provider) {
-            case 'sqlite':
-                return new Sqlite($dsn, $user, $password, $options);
-            case 'mysql':
-                return new ExtendedMySql($dsn, $user, $password, $options);
-            case 'pgsql':
-                return new PostgreSql($dsn, $user, $password, $options);
-            case 'mssql':
-            case 'dblib':
-            case 'sqlsrv':
-                return new SqlSrv($dsn, $user, $password, $options);
-            case 'oci':
-                return new Oci($dsn, $user, $password, $options);
-            default:
-                return new Db($dsn, $user, $password, $options);
-        }
+        return match ($provider) {
+            'sqlite' => new Sqlite($dsn, $user, $password, $options),
+            'mysql' => new ExtendedMySql($dsn, $user, $password, $options),
+            'pgsql' => new PostgreSql($dsn, $user, $password, $options),
+            'mssql', 'dblib', 'sqlsrv' => new SqlSrv($dsn, $user, $password, $options),
+            'oci' => new Oci($dsn, $user, $password, $options),
+            default => new Db($dsn, $user, $password, $options),
+        };
     }
 }

@@ -17,7 +17,7 @@ class Date
     /**
      * The date format used in WordPress databases.
      */
-    const DATE_FORMAT = 'Y-m-d H:i:s';
+    public const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @var int An injectable time value, used in tests.
@@ -30,7 +30,7 @@ class Date
      * @return string|false The current time in WordPress specific format like "2014-06-16 08:27:21" or
      *                      `false` on failure.
      */
-    public static function now()
+    public static function now(): string|false
     {
         return date(self::DATE_FORMAT, self::_time());
     }
@@ -42,7 +42,7 @@ class Date
      */
     public static function _time()
     {
-        $time = self::$time ? self::$time : time();
+        $time = self::$time ?: time();
 
         return $time;
     }
@@ -62,7 +62,7 @@ class Date
      *
      * @return false|string The formatted date or `false` on failure.
      */
-    public static function gmtNow()
+    public static function gmtNow(): false|string
     {
         return gmdate(self::DATE_FORMAT, self::_time());
     }

@@ -27,7 +27,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPAjaxTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPAjaxTestCase::class);
     }
 
     /**

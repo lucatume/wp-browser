@@ -67,7 +67,7 @@ class Process extends Command
      *
      * @return Process A cloned instance of this process to run the specified command.
      */
-    public function withCommand($command)
+    public function withCommand(string|array $command)
     {
         if (is_array($command)) {
             $command = implode(' ', $command);

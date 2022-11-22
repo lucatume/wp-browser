@@ -13,7 +13,7 @@ if ( file_exists( ABSPATH . '/wp-includes/PHPMailer/PHPMailer.php' ) ) {
 // phpcs:enable
 
 class MockPHPMailer extends PHPMailer {
-	var $mock_sent = array();
+	var $mock_sent = [];
 
 	function preSend() {
 		$this->Encoding = '8bit';
@@ -24,14 +24,7 @@ class MockPHPMailer extends PHPMailer {
 	 * Override postSend() so mail isn't actually sent.
 	 */
 	function postSend() {
-		$this->mock_sent[] = array(
-			'to'      => $this->to,
-			'cc'      => $this->cc,
-			'bcc'     => $this->bcc,
-			'header'  => $this->MIMEHeader . $this->mailHeader,
-			'subject' => $this->Subject,
-			'body'    => $this->MIMEBody,
-		);
+		$this->mock_sent[] = ['to'      => $this->to, 'cc'      => $this->cc, 'bcc'     => $this->bcc, 'header'  => $this->MIMEHeader . $this->mailHeader, 'subject' => $this->Subject, 'body'    => $this->MIMEBody];
 
 		return true;
 	}
@@ -62,16 +55,13 @@ class MockPHPMailer extends PHPMailer {
 	 * @param int    $recipient_index Optional. The recipient index in the array.
 	 * @return bool|object Returns object on success, or false if any of the indices don't exist.
 	 */
-	public function get_recipient( $address_type, $mock_sent_index = 0, $recipient_index = 0 ) {
+	public function get_recipient( $address_type, $mock_sent_index = 0, $recipient_index = 0 ): bool|object {
 		$retval = false;
 		$mock = $this->get_sent( $mock_sent_index );
 		if ( $mock ) {
 			if ( isset( $mock->{$address_type}[ $recipient_index ] ) ) {
 				$address_index = $mock->{$address_type}[ $recipient_index ];
-				$recipient_data = array(
-					'address' => ( isset( $address_index[0] ) && ! empty( $address_index[0] ) ) ? $address_index[0] : 'No address set',
-					'name'    => ( isset( $address_index[1] ) && ! empty( $address_index[1] ) ) ? $address_index[1] : 'No name set',
-				);
+				$recipient_data = ['address' => ( isset( $address_index[0] ) && ! empty( $address_index[0] ) ) ? $address_index[0] : 'No address set', 'name'    => ( isset( $address_index[1] ) && ! empty( $address_index[1] ) ) ? $address_index[1] : 'No name set'];
 
 				$retval = (object) $recipient_data;
 			}
@@ -88,7 +78,7 @@ class MockPHPMailer extends PHPMailer {
  *
  * @return object|bool
  */
-function tests_retrieve_phpmailer_instance() {
+function tests_retrieve_phpmailer_instance(): object|bool {
 	$mailer = false;
 	if ( isset( $GLOBALS['phpmailer'] ) ) {
 		$mailer = $GLOBALS['phpmailer'];

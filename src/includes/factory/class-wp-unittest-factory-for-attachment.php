@@ -14,7 +14,7 @@ class WP_UnitTest_Factory_For_Attachment extends WP_UnitTest_Factory_For_Post {
 	 * @param int   $legacy_parent Deprecated.
 	 * @param array $legacy_args   Deprecated
 	 */
-	function create_object( $args, $legacy_parent = 0, $legacy_args = array() ) {
+	function create_object( $args, $legacy_parent = 0, $legacy_args = [] ) {
 		// Backward compatibility for legacy argument format.
 		if ( is_string( $args ) ) {
 			$file = $args;
@@ -23,10 +23,7 @@ class WP_UnitTest_Factory_For_Attachment extends WP_UnitTest_Factory_For_Post {
 			$args['file'] = $file;
 		}
 
-		$r = array_merge( array(
-			'file' => '',
-			'post_parent' => 0,
-		), $args );
+		$r = array_merge( ['file' => '', 'post_parent' => 0], $args );
 
 		return wp_insert_attachment( $r, $r['file'], $r['post_parent'] );
 	}
@@ -44,14 +41,7 @@ class WP_UnitTest_Factory_For_Attachment extends WP_UnitTest_Factory_For_Post {
 				$type = $mime['type'];
 		}
 
-		$attachment = array(
-			'post_title' => basename( $upload['file'] ),
-			'post_content' => '',
-			'post_type' => 'attachment',
-			'post_parent' => $parent,
-			'post_mime_type' => $type,
-			'guid' => $upload[ 'url' ],
-		);
+		$attachment = ['post_title' => basename( $upload['file'] ), 'post_content' => '', 'post_type' => 'attachment', 'post_parent' => $parent, 'post_mime_type' => $type, 'guid' => $upload[ 'url' ]];
 
 		// Save the data
 		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent );

@@ -28,7 +28,7 @@ trait WithCodeceptionModuleConfig
      */
     protected static function _getModuleConfig(Module $moduleInstance)
     {
-        $module = str_replace('Codeception\\Module\\', '', get_class($moduleInstance));
+        $module = str_replace('Codeception\\Module\\', '', $moduleInstance::class);
 
         // Some Codeception functions will not be auto-loaded when this method runs in isolation, load them now.
         require_once vendorDir('codeception/codeception/autoload.php');

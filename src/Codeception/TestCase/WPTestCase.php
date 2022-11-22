@@ -28,10 +28,10 @@ use function tad\WPBrowser\setupPhpunitBootstrapGlobal;
 use function version_compare;
 
 if (!class_exists('WP_UnitTest_Factory')) {
-    require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
+    require_once dirname(__FILE__, 3) . '/includes/factory.php';
 }
 if (!class_exists('TracTickets')) {
-    require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
+    require_once dirname(__FILE__, 3) . '/includes/trac.php';
 }
 
 /*
@@ -58,7 +58,7 @@ if (version_compare(Codecept::VERSION, '3.0.0', '<')) {
     );
 } else {
     class_alias(
-        '\\Codeception\\Test\\Unit',
+        '\\' . \Codeception\Test\Unit::class,
         '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
     );
 }
@@ -80,13 +80,13 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     use WithCodeceptionTestCaseEnhancements;
     use WithRequestTime;
 
-    protected static $forced_tickets = array();
-    protected static $hooks_saved = array();
+    protected static $forced_tickets = [];
+    protected static $hooks_saved = [];
     protected static $ignore_files;
-    protected $expected_deprecated = array();
-    protected $caught_deprecated = array();
-    protected $expected_doing_it_wrong = array();
-    protected $caught_doing_it_wrong = array();
+    protected $expected_deprecated = [];
+    protected $caught_deprecated = [];
+    protected $expected_doing_it_wrong = [];
+    protected $caught_doing_it_wrong = [];
 
     protected $backupGlobals = false;
 
@@ -114,7 +114,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             return;
         }
 
-        call_user_func(array($c, 'wpSetUpBeforeClass'), self::factory());
+        call_user_func([$c, 'wpSetUpBeforeClass'], self::factory());
 
         self::commit_transaction();
     }
@@ -122,7 +122,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public static function get_called_class()
     {
         if (function_exists('get_called_class')) {
-            return get_called_class();
+            return static::class;
         }
 
         // PHP 5.2 only
@@ -166,7 +166,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             return;
         }
 
-        call_user_func(array($c, 'wpTearDownAfterClass'));
+        call_user_func([$c, 'wpTearDownAfterClass']);
 
         self::commit_transaction();
     }
@@ -174,9 +174,9 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public static function flush_cache()
     {
         global $wp_object_cache;
-        $wp_object_cache->group_ops = array();
-        $wp_object_cache->stats = array();
-        $wp_object_cache->memcache_debug = array();
+        $wp_object_cache->group_ops = [];
+        $wp_object_cache->stats = [];
+        $wp_object_cache->memcache_debug = [];
 
         if ($wp_object_cache instanceof WP_Object_Cache) {
             $wp_object_cache->flush();
@@ -188,21 +188,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             $wp_object_cache->__remoteset();
         }
         wp_cache_flush();
-        wp_cache_add_global_groups(array(
-            'users',
-            'userlogins',
-            'usermeta',
-            'user_meta',
-            'site-transient',
-            'site-options',
-            'site-lookup',
-            'blog-lookup',
-            'blog-details',
-            'rss',
-            'global-posts',
-            'blog-id-cache'
-        ));
-        wp_cache_add_non_persistent_groups(array('comment', 'counts', 'plugins'));
+        wp_cache_add_global_groups(['users', 'userlogins', 'usermeta', 'user_meta', 'site-transient', 'site-options', 'site-lookup', 'blog-lookup', 'blog-details', 'rss', 'global-posts', 'blog-id-cache']);
+        wp_cache_add_non_persistent_groups(['comment', 'counts', 'plugins']);
     }
 
     public static function forceTicket($ticket)
@@ -273,7 +260,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
         $this->start_transaction();
         $this->expectDeprecated();
-        add_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
+        add_filter('wp_die_handler', [$this, 'get_wp_die_handler']);
 
         $this->maybeEnhanceTestCaseIfWoDiService();
 
@@ -290,7 +277,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function scan_user_uploads()
     {
-        static $files = array();
+        static $files = [];
         if (!empty($files)) {
             return $files;
         }
@@ -302,10 +289,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function files_in_dir($dir)
     {
-        $files = array();
+        $files = [];
 
         if (!file_exists($dir)) {
-            return array();
+            return [];
         }
 
         $iterator = new RecursiveDirectoryIterator($dir);
@@ -336,16 +323,16 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         global $wp_version;
 
         if (version_compare($wp_version, '4.7.0', '<')) {
-            $globals = array( 'merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter' );
+            $globals = ['merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter'];
             foreach ($globals as $key) {
                 self::$hooks_saved[ $key ] = $GLOBALS[ $key ];
             }
         } else {
-            $globals = array( 'wp_actions', 'wp_current_filter' );
+            $globals = ['wp_actions', 'wp_current_filter'];
             foreach ($globals as $key) {
                 self::$hooks_saved[ $key ] = $GLOBALS[ $key ];
             }
-            self::$hooks_saved['wp_filter'] = array();
+            self::$hooks_saved['wp_filter'] = [];
             foreach ($GLOBALS['wp_filter'] as $hook_name => $hook_object) {
                 self::$hooks_saved['wp_filter'][ $hook_name ] = clone $hook_object;
             }
@@ -354,8 +341,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function clean_up_global_scope()
     {
-        $_GET = array();
-        $_POST = array();
+        $_GET = [];
+        $_POST = [];
         self::flush_cache();
     }
 
@@ -369,7 +356,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     protected function reset_post_types()
     {
         /** @var WP_Post_Type $pt */
-        foreach (get_post_types(array(), 'objects') as $pt) {
+        foreach (get_post_types([], 'objects') as $pt) {
             if (empty($pt->tests_no_auto_unregister)) {
                 _unregister_post_type($pt->name);
             }
@@ -397,7 +384,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
      */
     protected function reset_post_statuses()
     {
-        foreach (get_post_stati(array('_builtin' => false)) as $post_status) {
+        foreach (get_post_stati(['_builtin' => false]) as $post_status) {
             _unregister_post_status($post_status);
         }
     }
@@ -433,18 +420,18 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         global $wpdb;
         $wpdb->query('SET autocommit = 0;');
         $wpdb->query('START TRANSACTION;');
-        add_filter('query', array($this, '_create_temporary_tables'));
-        add_filter('query', array($this, '_drop_temporary_tables'));
+        add_filter('query', [$this, '_create_temporary_tables']);
+        add_filter('query', [$this, '_drop_temporary_tables']);
     }
 
     public function expectDeprecated()
     {
         $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-            get_class($this),
+            $this::class,
             $this->name
         );
 
-        foreach (array('class', 'method') as $depth) {
+        foreach (['class', 'method'] as $depth) {
             if (!empty($annotations[$depth]['expectedDeprecated'])) {
                 $this->expected_deprecated = array_merge(
                     $this->expected_deprecated,
@@ -458,10 +445,10 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
                 );
             }
         }
-        add_action('deprecated_function_run', array($this, 'deprecated_function_run'));
-        add_action('deprecated_argument_run', array($this, 'deprecated_function_run'));
-        add_action('deprecated_hook_run', array($this, 'deprecated_function_run'));
-        add_action('doing_it_wrong_run', array($this, 'doing_it_wrong_run'));
+        add_action('deprecated_function_run', [$this, 'deprecated_function_run']);
+        add_action('deprecated_argument_run', [$this, 'deprecated_function_run']);
+        add_action('deprecated_hook_run', [$this, 'deprecated_function_run']);
+        add_action('doing_it_wrong_run', [$this, 'doing_it_wrong_run']);
         add_action('deprecated_function_trigger_error', '__return_false');
         add_action('deprecated_argument_trigger_error', '__return_false');
         add_action('deprecated_hook_trigger_error', '__return_false');
@@ -489,26 +476,15 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $wp = new WP();
 
         // Reset globals related to the post loop and `setup_postdata()`.
-        $post_globals = array(
-            'post',
-            'id',
-            'authordata',
-            'currentday',
-            'currentmonth',
-            'page',
-            'pages',
-            'multipage',
-            'more',
-            'numpages'
-        );
+        $post_globals = ['post', 'id', 'authordata', 'currentday', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages'];
         foreach ($post_globals as $global) {
             $GLOBALS[$global] = null;
         }
 
         remove_theme_support('html5');
-        remove_filter('query', array($this, '_create_temporary_tables'));
-        remove_filter('query', array($this, '_drop_temporary_tables'));
-        remove_filter('wp_die_handler', array($this, 'get_wp_die_handler'));
+        remove_filter('query', [$this, '_create_temporary_tables']);
+        remove_filter('query', [$this, '_drop_temporary_tables']);
+        remove_filter('wp_die_handler', [$this, 'get_wp_die_handler']);
         $this->_restore_hooks();
         wp_set_current_user(0);
         $this->requestTimeTearDown();
@@ -529,21 +505,21 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         global $wp_version;
 
         if (version_compare($wp_version, '4.7.0', '<')) {
-            $globals = array( 'merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter' );
+            $globals = ['merged_filters', 'wp_actions', 'wp_current_filter', 'wp_filter'];
             foreach ($globals as $key) {
                 if (isset(self::$hooks_saved[ $key ])) {
                     $GLOBALS[ $key ] = self::$hooks_saved[ $key ];
                 }
             }
         } else {
-            $globals = array( 'wp_actions', 'wp_current_filter' );
+            $globals = ['wp_actions', 'wp_current_filter'];
             foreach ($globals as $key) {
                 if (isset(self::$hooks_saved[ $key ])) {
                     $GLOBALS[ $key ] = self::$hooks_saved[ $key ];
                 }
             }
             if (isset(self::$hooks_saved['wp_filter'])) {
-                $GLOBALS['wp_filter'] = array();
+                $GLOBALS['wp_filter'] = [];
                 foreach (self::$hooks_saved['wp_filter'] as $hook_name => $hook_object) {
                     $GLOBALS['wp_filter'][ $hook_name ] = clone $hook_object;
                 }
@@ -553,7 +529,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _create_temporary_tables($query)
     {
-        if ('CREATE TABLE' === substr(trim($query), 0, 12)) {
+        if (str_starts_with(trim($query), 'CREATE TABLE')) {
             return substr_replace(trim($query), 'CREATE TEMPORARY TABLE', 0, 12);
         }
         return $query;
@@ -561,7 +537,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function _drop_temporary_tables($query)
     {
-        if ('DROP TABLE' === substr(trim($query), 0, 10)) {
+        if (str_starts_with(trim($query), 'DROP TABLE')) {
             return substr_replace(trim($query), 'DROP TEMPORARY TABLE', 0, 10);
         }
         return $query;
@@ -569,7 +545,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function get_wp_die_handler()
     {
-        return array($this, 'wp_die_handler');
+        return [$this, 'wp_die_handler'];
     }
 
     public function wp_die_handler($message)
@@ -687,21 +663,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         // note: the WP and WP_Query classes like to silently fetch parameters
         // from all over the place (globals, GET, etc), which makes it tricky
         // to run them more than once without very carefully clearing everything
-        $_GET = $_POST = array();
-        foreach (array(
-                     'query_string',
-                     'id',
-                     'postdata',
-                     'authordata',
-                     'day',
-                     'currentmonth',
-                     'page',
-                     'pages',
-                     'multipage',
-                     'more',
-                     'numpages',
-                     'pagenow'
-                 ) as $v) {
+        $_GET = $_POST = [];
+        foreach (['query_string', 'id', 'postdata', 'authordata', 'day', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages', 'pagenow'] as $v) {
             if (isset($GLOBALS[$v])) {
                 unset($GLOBALS[$v]);
             }
@@ -711,7 +674,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $parts = parse_url($url) ?: [];
 
         if (isset($parts['scheme'])) {
-            $req = isset($parts['path']) ? $parts['path'] : '';
+            $req = $parts['path'] ?? '';
             if (isset($parts['query'])) {
                 $req .= '?' . $parts['query'];
                 // parse the url query vars into $_GET
@@ -750,7 +713,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public function temp_filename()
     {
         $tmp_dir = '';
-        $dirs = array('TMP', 'TMPDIR', 'TEMP');
+        $dirs = ['TMP', 'TMPDIR', 'TEMP'];
         foreach ($dirs as $dir) {
             if (isset($_ENV[$dir]) && !empty($_ENV[$dir])) {
                 $tmp_dir = $dir;
@@ -781,36 +744,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
     public function assertQueryTrue($prop, ...$props)
     {
         global $wp_query;
-        $all = array(
-            'is_404',
-            'is_admin',
-            'is_archive',
-            'is_attachment',
-            'is_author',
-            'is_category',
-            'is_comment_feed',
-            'is_date',
-            'is_day',
-            'is_embed',
-            'is_feed',
-            'is_front_page',
-            'is_home',
-            'is_month',
-            'is_page',
-            'is_paged',
-            'is_post_type_archive',
-            'is_posts_page',
-            'is_preview',
-            'is_robots',
-            'is_search',
-            'is_single',
-            'is_singular',
-            'is_tag',
-            'is_tax',
-            'is_time',
-            'is_trackback',
-            'is_year',
-        );
+        $all = ['is_404', 'is_admin', 'is_archive', 'is_attachment', 'is_author', 'is_category', 'is_comment_feed', 'is_date', 'is_day', 'is_embed', 'is_feed', 'is_front_page', 'is_home', 'is_month', 'is_page', 'is_paged', 'is_post_type_archive', 'is_posts_page', 'is_preview', 'is_robots', 'is_search', 'is_single', 'is_singular', 'is_tag', 'is_tax', 'is_time', 'is_trackback', 'is_year'];
 
         $props = array_merge((array)$prop, ...$props);
 
@@ -819,7 +753,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         }
 
         $passed = true;
-        $not_false = $not_true = array(); // properties that were not set to expected values
+        $not_false = $not_true = []; // properties that were not set to expected values
 
         foreach ($all as $query_thing) {
             $result = is_callable($query_thing) ? $query_thing() : $wp_query->$query_thing;
@@ -875,7 +809,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function delete_folders($path)
     {
-        $this->matched_dirs = array();
+        $this->matched_dirs = [];
         if (!is_dir($path)) {
             return;
         }
@@ -897,7 +831,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         }
 
         foreach ($scandir as $path) {
-            if (0 !== strpos($path, '.') && is_dir($dir . '/' . $path)) {
+            if (!str_starts_with($path, '.') && is_dir($dir . '/' . $path)) {
                 $this->matched_dirs[] = $dir . '/' . $path;
                 $this->scandir($dir . '/' . $path);
             }
@@ -916,14 +850,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
             }
         }
 
-        $attachment = array(
-            'post_title' => basename($upload['file']),
-            'post_content' => '',
-            'post_type' => 'attachment',
-            'post_parent' => $parent_post_id,
-            'post_mime_type' => $type,
-            'guid' => $upload['url'],
-        );
+        $attachment = ['post_title' => basename($upload['file']), 'post_content' => '', 'post_type' => 'attachment', 'post_parent' => $parent_post_id, 'post_mime_type' => $type, 'guid' => $upload['url']];
 
         // Save the data
         $id = wp_insert_attachment($attachment, $upload['file'], $parent_post_id);
@@ -951,7 +878,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
     public function expectedDeprecated()
     {
-        $errors = array();
+        $errors = [];
 
         $not_caught_deprecated = array_diff($this->expected_deprecated, $this->caught_deprecated);
         foreach ($not_caught_deprecated as $not_caught) {

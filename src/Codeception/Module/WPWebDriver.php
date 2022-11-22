@@ -91,7 +91,7 @@ class WPWebDriver extends WebDriver
     {
         if ($this->loginAttempt === $maxAttempts) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not login as [{$username}, {$password}] after {$maxAttempts} attempts."
             );
         }
@@ -143,12 +143,8 @@ class WPWebDriver extends WebDriver
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
-            return preg_match($cookiePattern, $cookie->getName());
-        });
-        $cookieList = array_map(static function ($cookie) {
-            return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());
-        }, $matchingCookies);
+        $matchingCookies = array_filter($cookies, static fn($cookie) => preg_match($cookiePattern, $cookie->getName()));
+        $cookieList = array_map(static fn($cookie) => sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue()), $matchingCookies);
 
         $this->debug('Cookies matching pattern ' . $cookiePattern . ' : ' . implode(', ', $cookieList));
 
@@ -227,7 +223,7 @@ class WPWebDriver extends WebDriver
      *
      * @return void
      */
-    public function deactivatePlugin($pluginSlug)
+    public function deactivatePlugin(string|array $pluginSlug)
     {
         foreach ((array)$pluginSlug as $plugin) {
             $option = '//*[@data-slug="' . $plugin . '"]/th/input';
@@ -260,7 +256,7 @@ class WPWebDriver extends WebDriver
      *
      * @return void
      */
-    public function activatePlugin($pluginSlug)
+    public function activatePlugin(string|array $pluginSlug)
     {
         $plugins = (array)$pluginSlug;
         foreach ($plugins as $plugin) {

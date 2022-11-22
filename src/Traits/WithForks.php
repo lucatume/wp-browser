@@ -54,7 +54,7 @@ trait WithForks
             throw new RuntimeException('Failed to crate IPC socket pair.');
         }
 
-        list($childProcIpcSocket, $parentProcIpcSocket) = $ipcSockets;
+        [$childProcIpcSocket, $parentProcIpcSocket] = $ipcSockets;
 
         $pid = pcntl_fork();
 

@@ -13,7 +13,7 @@
  * @since 4.0.0
  */
 class Basic_Object {
-	private $foo = 'bar';
+	private string $foo = 'bar';
 
 	public function __get( $name ) {
 		return $this->$name;
@@ -32,7 +32,7 @@ class Basic_Object {
 	}
 
 	public function __call( $name, $arguments ) {
-		return call_user_func_array( array( $this, $name ), $arguments );
+		return call_user_func_array( [$this, $name], $arguments );
 	}
 
 	private function callMe() {

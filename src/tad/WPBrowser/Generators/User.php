@@ -16,7 +16,7 @@ class User
      *
      * @return array<int|string,string>             An associative array of column/values for the "users" table.
      */
-    public static function generateUserTableDataFrom($user_login, array $userData = array())
+    public static function generateUserTableDataFrom($user_login, array $userData = [])
     {
         $login = \tad\WPBrowser\sanitize_user($user_login, true);
         $usersTableDefaults = [
@@ -44,7 +44,7 @@ class User
      *
      * @return int The corresponding user level, an integer.
      */
-    public static function getLevelForRole($role = 'subscriber')
+    public static function getLevelForRole(string|int $role = 'subscriber')
     {
         $map = [
             'subscriber' => 0,
@@ -67,7 +67,7 @@ class User
      *
      * @return array<string,array> An array of meta keys to insert to correctly represent the desired user capabilities.
      */
-    public static function buildCapabilities($role, $tablePrefix = 'wp_')
+    public static function buildCapabilities(mixed $role, $tablePrefix = 'wp_')
     {
         $roles = (array)$role;
         $boolValues = count(array_filter($roles, 'is_bool')) === count($roles);

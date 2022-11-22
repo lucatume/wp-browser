@@ -3,7 +3,7 @@
 // misc help functions and utilities
 
 function rand_str($len=32) {
-	return substr(md5(uniqid(mt_rand(), true)), 0, $len);
+	return substr(md5(uniqid(random_int(0, mt_getrandmax()), true)), 0, $len);
 }
 
 function rand_long_str( $length ) {
@@ -11,7 +11,7 @@ function rand_long_str( $length ) {
 	$string = '';
 
 	for ( $i = 0; $i < $length; $i++ ) {
-		$rand = rand( 0, strlen( $chars ) - 1 );
+		$rand = random_int( 0, strlen( $chars ) - 1 );
 		$string .= substr( $chars, $rand, 1 );
 	}
 
@@ -21,7 +21,7 @@ function rand_long_str( $length ) {
 // strip leading and trailing whitespace from each line in the string
 function strip_ws($txt) {
 	$lines = explode("\n", $txt);
-	$result = array();
+	$result = [];
 	foreach ($lines as $line)
 		if (trim($line))
 			$result[] = trim($line);
@@ -35,18 +35,16 @@ function strip_ws($txt) {
 // add_action('foo', array(&$ma, 'action'));
 class MockAction {
 	var $events;
-	var $debug;
 
 	/**
 	 * PHP5 constructor.
 	 */
 	function __construct( $debug = 0 ) {
 		$this->reset();
-		$this->debug = $debug;
 	}
 
 	function reset() {
-		$this->events = array();
+		$this->events = [];
 	}
 
 	function current_filter() {
@@ -59,7 +57,7 @@ class MockAction {
 	function action($arg) {
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 		$args = func_get_args();
-		$this->events[] = array('action' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args);
+		$this->events[] = ['action' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args];
 		return $arg;
 	}
 
@@ -67,7 +65,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 		$args = func_get_args();
-		$this->events[] = array('action' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args);
+		$this->events[] = ['action' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args];
 		return $arg;
 	}
 
@@ -75,7 +73,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 		$args = func_get_args();
-		$this->events[] = array('filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args);
+		$this->events[] = ['filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args];
 		return $arg;
 	}
 
@@ -83,7 +81,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 		$args = func_get_args();
-		$this->events[] = array('filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args);
+		$this->events[] = ['filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args];
 		return $arg;
 	}
 
@@ -91,7 +89,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 		$args = func_get_args();
-		$this->events[] = array('filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args);
+		$this->events[] = ['filter' => __FUNCTION__, 'tag'=>$this->current_filter(), 'args'=>$args];
 		return $arg . '_append';
 	}
 
@@ -100,7 +98,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 		$args = func_get_args();
-		$this->events[] = array('filter' => __FUNCTION__, 'tag'=>$tag, 'args'=>array_slice($args, 1));
+		$this->events[] = ['filter' => __FUNCTION__, 'tag'=>$tag, 'args'=>array_slice($args, 1)];
 	}
 
 	// return a list of all the actions, tags and args
@@ -117,12 +115,12 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 					++$count;
 			return $count;
 		}
-		return count($this->events);
+		return is_countable($this->events) ? count($this->events) : 0;
 	}
 
 	// return an array of the tags that triggered calls to this action
 	function get_tags() {
-		$out = array();
+		$out = [];
 		foreach ($this->events as $e) {
 			$out[] = $e['tag'];
 		}
@@ -131,7 +129,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 
 	// return an array of args passed in calls to this action
 	function get_args() {
-		$out = array();
+		$out = [];
 		foreach ($this->events as $e)
 			$out[] = $e['args'];
 		return $out;
@@ -142,7 +140,7 @@ if ($this->debug) dmp(__FUNCTION__, $this->current_filter());
 // kinda lame but it works with a default php 4 install
 class testXMLParser {
 	var $xml;
-	var $data = array();
+	var $data = [];
 
 	/**
 	 * PHP5 constructor.
@@ -151,8 +149,8 @@ class testXMLParser {
 		$this->xml = xml_parser_create();
 		xml_set_object($this->xml, $this);
 		xml_parser_set_option($this->xml,XML_OPTION_CASE_FOLDING, 0);
-		xml_set_element_handler($this->xml, array($this, 'startHandler'), array($this, 'endHandler'));
-		xml_set_character_data_handler($this->xml, array($this, 'dataHandler'));
+		xml_set_element_handler($this->xml, [$this, 'startHandler'], [$this, 'endHandler']);
+		xml_set_character_data_handler($this->xml, [$this, 'dataHandler']);
 		$this->parse($in);
 	}
 
@@ -168,7 +166,8 @@ class testXMLParser {
 	}
 
 	function startHandler($parser, $name, $attributes) {
-		$data['name'] = $name;
+		$data = [];
+  $data['name'] = $name;
 		if ($attributes) { $data['attributes'] = $attributes; }
 		$this->data[] = $data;
 	}
@@ -196,12 +195,12 @@ function xml_find($tree /*, $el1, $el2, $el3, .. */) {
 	$a = func_get_args();
 	$a = array_slice($a, 1);
 	$n = count($a);
-	$out = array();
+	$out = [];
 
 	if ($n < 1)
 		return $out;
 
-	for ($i=0; $i<count($tree); $i++) {
+	for ($i=0; $i<(is_countable($tree) ? count($tree) : 0); $i++) {
 #		echo "checking '{$tree[$i][name]}' == '{$a[0]}'\n";
 #		var_dump($tree[$i]['name'], $a[0]);
 		if ($tree[$i]['name'] == $a[0]) {
@@ -210,8 +209,8 @@ function xml_find($tree /*, $el1, $el2, $el3, .. */) {
 				$out[] = $tree[$i];
 			else {
 				$subtree =& $tree[$i]['child'];
-				$call_args = array($subtree);
-				$call_args = array_merge($call_args, array_slice($a, 1));
+				$call_args = [$subtree];
+				$call_args = [...$call_args, ...array_slice($a, 1)];
 				$out = array_merge($out, call_user_func_array('xml_find', $call_args));
 			}
 		}
@@ -221,14 +220,14 @@ function xml_find($tree /*, $el1, $el2, $el3, .. */) {
 }
 
 function xml_join_atts($atts) {
-	$a = array();
+	$a = [];
 	foreach ($atts as $k=>$v)
 		$a[] = $k.'="'.$v.'"';
 	return join(' ', $a);
 }
 
 function xml_array_dumbdown(&$data) {
-	$out = array();
+	$out = [];
 
 	foreach (array_keys($data) as $i) {
 		$name = $data[$i]['name'];
@@ -257,7 +256,7 @@ function dmp_filter($a) {
 	return $a;
 }
 
-function get_echo($callable, $args = array()) {
+function get_echo($callable, $args = []) {
 	ob_start();
 	call_user_func_array($callable, $args);
 	return ob_get_clean();
@@ -265,7 +264,7 @@ function get_echo($callable, $args = array()) {
 
 // recursively generate some quick assertEquals tests based on an array
 function gen_tests_array($name, $array) {
-	$out = array();
+	$out = [];
 	foreach ($array as $k=>$v) {
 		if (is_numeric($k))
 			$index = strval($k);
@@ -310,7 +309,7 @@ function print_backtrace() {
 			echo $stack['class'].'::';
 		if ( isset($stack['function']) )
 			echo $stack['function'].'() ';
-		echo "line {$stack[line]} in {$stack[file]}\n";
+		echo "line {$stack[\LINE]} in {$stack[\FILE]}\n";
 	}
 	echo "\n";
 }
@@ -361,20 +360,20 @@ function _cleanup_query_vars() {
 	foreach ( $GLOBALS['wp']->private_query_vars as $v )
 		unset( $GLOBALS[$v] );
 
-	foreach ( get_taxonomies( array() , 'objects' ) as $t ) {
+	foreach ( get_taxonomies( [] , 'objects' ) as $t ) {
 		if ( $t->publicly_queryable && ! empty( $t->query_var ) )
 			$GLOBALS['wp']->add_query_var( $t->query_var );
 	}
 
-	foreach ( get_post_types( array() , 'objects' ) as $t ) {
+	foreach ( get_post_types( [] , 'objects' ) as $t ) {
 		if ( is_post_type_viewable( $t ) && ! empty( $t->query_var ) )
 			$GLOBALS['wp']->add_query_var( $t->query_var );
 	}
 }
 
 function _clean_term_filters() {
-	remove_filter( 'get_terms',     array( 'Featured_Content', 'hide_featured_term'     ), 10, 2 );
-	remove_filter( 'get_the_terms', array( 'Featured_Content', 'hide_the_featured_term' ), 10, 3 );
+	remove_filter( 'get_terms',     ['Featured_Content', 'hide_featured_term'], 10, 2 );
+	remove_filter( 'get_the_terms', ['Featured_Content', 'hide_the_featured_term'], 10, 3 );
 }
 
 /**
@@ -397,7 +396,7 @@ class wpdb_exposed_methods_for_testing extends wpdb {
 	}
 
 	public function __call( $name, $arguments ) {
-		return call_user_func_array( array( $this, $name ), $arguments );
+		return call_user_func_array( [$this, $name], $arguments );
 	}
 }
 
@@ -411,7 +410,7 @@ function benchmark_pcre_backtracking( $pattern, $subject, $strategy ) {
 
 	// Attempt to prevent PHP crashes.  Adjust these lower when needed.
 	if ( version_compare( phpversion(), '5.4.8', '>' ) ) {
-		$limit = 1000000;
+		$limit = 1_000_000;
 	} else {
 		$limit = 20000;  // 20,000 is a reasonable upper limit, but see also https://core.trac.wordpress.org/ticket/29557#comment:10
 	}
@@ -429,7 +428,7 @@ function benchmark_pcre_backtracking( $pattern, $subject, $strategy ) {
 			preg_match( $pattern, $subject );
 			break;
 		case 'match_all':
-			$matches = array();
+			$matches = [];
 			preg_match_all( $pattern, $subject, $matches );
 			break;
 		}
@@ -470,7 +469,7 @@ function test_rest_expand_compact_links( $links ) {
 
 		$name = explode( ':', $rel );
 
-		$curie = wp_list_filter( $links['curies'], array( 'name' => $name[0] ) );
+		$curie = wp_list_filter( $links['curies'], ['name' => $name[0]] );
 		$full_uri = str_replace( '{rel}', $name[1], $curie[0]['href'] );
 		$links[ $full_uri ] = $links_array;
 		unset( $links[ $rel ] );

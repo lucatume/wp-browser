@@ -24,7 +24,7 @@ class Comment
      *
      * @return array<int|string,mixed>                    A column as key array of comment content.
      */
-    public static function makeComment($comment_post_ID, array $overrides = array())
+    public static function makeComment($comment_post_ID, array $overrides = [])
     {
         $defaults = self::generateDefaultsFor($comment_post_ID);
 

@@ -32,10 +32,6 @@ class WPXMLRPCTestCase extends WPTestCase
 
     protected function make_user_by_role($role)
     {
-        return self::factory()->user->create(array(
-            'user_login' => $role,
-            'user_pass' => $role,
-            'role' => $role
-        ));
+        return self::factory()->user->create(['user_login' => $role, 'user_pass' => $role, 'role' => $role]);
     }
 }

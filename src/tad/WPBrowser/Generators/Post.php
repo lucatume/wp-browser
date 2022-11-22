@@ -41,28 +41,7 @@ class Post
     protected static function getDefaults($id, $url)
     {
         $title    = self::generateTitle($id);
-        $defaults = array(
-            'post_author'           => 1,
-            'post_date'             => Date::now(),
-            'post_date_gmt'         => Date::gmtNow(),
-            'post_content'          => self::generateContent($id),
-            'post_title'            => $title,
-            'post_excerpt'          => self::generateExcerpt($id),
-            'post_status'           => 'publish',
-            'comment_status'        => 'open',
-            'ping_status'           => 'open',
-            'post_password'         => '',
-            'post_name'             => slug($title),
-            'to_ping'               => '',
-            'pinged'                => '',
-            'post_modified'         => Date::now(),
-            'post_modified_gmt'     => Date::gmtNow(),
-            'post_content_filtered' => '',
-            'post_parent'           => 0,
-            'guid'                  => "{$url}/?p={$id}",
-            'menu_order'            => 0,
-            'post_type'             => 'post'
-        );
+        $defaults = ['post_author'           => 1, 'post_date'             => Date::now(), 'post_date_gmt'         => Date::gmtNow(), 'post_content'          => self::generateContent($id), 'post_title'            => $title, 'post_excerpt'          => self::generateExcerpt($id), 'post_status'           => 'publish', 'comment_status'        => 'open', 'ping_status'           => 'open', 'post_password'         => '', 'post_name'             => slug($title), 'to_ping'               => '', 'pinged'                => '', 'post_modified'         => Date::now(), 'post_modified_gmt'     => Date::gmtNow(), 'post_content_filtered' => '', 'post_parent'           => 0, 'guid'                  => "{$url}/?p={$id}", 'menu_order'            => 0, 'post_type'             => 'post'];
 
         return $defaults;
     }

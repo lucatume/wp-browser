@@ -4,13 +4,7 @@ class WP_UnitTest_Factory_For_Post extends WP_UnitTest_Factory_For_Thing {
 
 	function __construct( $factory = null ) {
 		parent::__construct( $factory );
-		$this->default_generation_definitions = array(
-			'post_status' => 'publish',
-			'post_title' => new WP_UnitTest_Generator_Sequence( 'Post title %s' ),
-			'post_content' => new WP_UnitTest_Generator_Sequence( 'Post content %s' ),
-			'post_excerpt' => new WP_UnitTest_Generator_Sequence( 'Post excerpt %s' ),
-			'post_type' => 'post'
-		);
+		$this->default_generation_definitions = ['post_status' => 'publish', 'post_title' => new WP_UnitTest_Generator_Sequence( 'Post title %s' ), 'post_content' => new WP_UnitTest_Generator_Sequence( 'Post content %s' ), 'post_excerpt' => new WP_UnitTest_Generator_Sequence( 'Post excerpt %s' ), 'post_type' => 'post'];
 	}
 
 	function create_object( $args ) {

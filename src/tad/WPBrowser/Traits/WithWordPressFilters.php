@@ -119,7 +119,7 @@ trait WithWordPressFilters
      *
      * @return mixed The filter input value, unchanged.
      */
-    public function debugWpFilterInitial(...$args)
+    public function debugWpFilterInitial(mixed ...$args)
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -144,7 +144,7 @@ trait WithWordPressFilters
             return call_user_func($this->wpFiltersFormatCallback, $tag, ...$args);
         }
 
-        $output = json_encode($args);
+        $output = json_encode($args, JSON_THROW_ON_ERROR);
 
         if ($output === false) {
             return 'n/a';
@@ -177,7 +177,7 @@ trait WithWordPressFilters
      *
      * @return mixed The filter input value, unchanged.
      */
-    public function debugWpFilterFinal(...$args)
+    public function debugWpFilterFinal(mixed ...$args)
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -209,7 +209,7 @@ trait WithWordPressFilters
      *
      * @return void
      */
-    public function debugWpActionInitial(...$args)
+    public function debugWpActionInitial(mixed ...$args)
     {
         $tag = array_shift($args);
         global $wp_actions;
@@ -239,7 +239,7 @@ trait WithWordPressFilters
      *
      * @return void
      */
-    public function debugWpActionFinal(...$args)
+    public function debugWpActionFinal(mixed ...$args)
     {
         $tag = array_shift($args);
         global $wp_actions;

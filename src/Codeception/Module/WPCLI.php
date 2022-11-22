@@ -32,7 +32,7 @@ class WPCLI extends Module
 {
     use WithWpCli;
 
-    const DEFAULT_TIMEOUT = 60;
+    public const DEFAULT_TIMEOUT = 60;
 
     /**
      * An array of keys that will not be passed from the configuration to the wp-cli command.
@@ -140,7 +140,7 @@ class WPCLI extends Module
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
      */
-    public function cli($userCommand = 'core version')
+    public function cli(string|array $userCommand = 'core version'): int|string
     {
         $return = $this->run($userCommand);
 
@@ -157,7 +157,7 @@ class WPCLI extends Module
      * @throws ModuleConfigException If the wp-cli path is wrong.
      * @throws ModuleException If there's an issue while running the command.
      */
-    protected function run($userCommand)
+    protected function run(string|array $userCommand)
     {
         $this->validatePath();
 
@@ -226,7 +226,7 @@ class WPCLI extends Module
     {
         if (!is_dir($this->config['path'])) {
             throw new ModuleConfigException(
-                __CLASS__,
+                self::class,
                 'Specified path [' . $this->config['path'] . '] is not a directory.'
             );
         }
@@ -277,19 +277,13 @@ class WPCLI extends Module
     protected function buildProcessEnv()
     {
         return array_filter([
-            'WP_CLI_CACHE_DIR' => isset($this->config['env']['cache-dir']) ? $this->config['env']['cache-dir'] : false,
-            'WP_CLI_CONFIG_PATH' => isset($this->config['env']['config-path']) ?
-                $this->config['env']['config-path']
-                : false,
-            'WP_CLI_CUSTOM_SHELL' => isset($this->config['env']['custom-shell'])
-                ? $this->config['env']['custom-shell']
-                : false,
+            'WP_CLI_CACHE_DIR' => $this->config['env']['cache-dir'] ?? false,
+            'WP_CLI_CONFIG_PATH' => $this->config['env']['config-path'] ?? false,
+            'WP_CLI_CUSTOM_SHELL' => $this->config['env']['custom-shell'] ?? false,
             'WP_CLI_DISABLE_AUTO_CHECK_UPDATE' => empty($this->config['env']['disable-auto-check-update']) ? '0' : '1',
-            'WP_CLI_PACKAGES_DIR' => isset($this->config['env']['packages-dir']) ?
-                $this->config['env']['packages-dir']
-                : false,
-            'WP_CLI_PHP' => isset($this->config['env']['php']) ? $this->config['env']['php'] : false,
-            'WP_CLI_PHP_ARGS' => isset($this->config['env']['php-args']) ? $this->config['env']['php-args'] : false,
+            'WP_CLI_PACKAGES_DIR' => $this->config['env']['packages-dir'] ?? false,
+            'WP_CLI_PHP' => $this->config['env']['php'] ?? false,
+            'WP_CLI_PHP_ARGS' => $this->config['env']['php-args'] ?? false,
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
     }
@@ -311,7 +305,7 @@ class WPCLI extends Module
                 . 'to throw an exception when wp-cli terminates with an error status; '
                 . 'set the `throw` parameter to `false` to avoid this.';
 
-            throw new ModuleException(__CLASS__, $message);
+            throw new ModuleException(self::class, $message);
         }
     }
 
@@ -357,7 +351,7 @@ class WPCLI extends Module
      * });
      * ```
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
+    public function cliToArray(string|array $userCommand = 'post list --format=ids', callable $splitCallback = null)
     {
         $output = (string)$this->cliToString($userCommand);
 
@@ -378,7 +372,7 @@ class WPCLI extends Module
 
         if (!is_array($output) && $hasSplitCallback) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Split callback must return an array, it returned: \n" . print_r(
                     $output,
                     true
@@ -414,7 +408,7 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      */
-    public function cliToString($userCommand)
+    public function cliToString(string|array $userCommand): int|string
     {
         $return = $this->run($userCommand);
 

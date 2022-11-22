@@ -59,7 +59,7 @@ class UriToIndexMapper
             return $this->root . $uriPath;
         }
 
-        $indexFile = isset($this->preResolvedMap[$uriPath]) ? $this->preResolvedMap[$uriPath] : '/index.php';
+        $indexFile = $this->preResolvedMap[$uriPath] ?? '/index.php';
 
         return $this->root . $indexFile;
     }

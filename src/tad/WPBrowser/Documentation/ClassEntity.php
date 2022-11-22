@@ -22,56 +22,46 @@ class ClassEntity extends CodeEntity
      *
      * @var array<\PHPDocsMD\FunctionEntity>
      */
-    private $functions = [];
+    private array $functions = [];
 
     /**
      * Whether the class is an interface or not.
-     *
-     * @var bool
      */
-    private $isInterface = false;
+    private bool $isInterface = false;
 
     /**
      * Whether the class is abstract or not.
-     *
-     * @var bool
      */
-    private $abstract = false;
+    private bool $abstract = false;
 
     /**
      * Whether the class has the ignore tag or not.
-     *
-     * @var bool
      */
-    private $hasIgnoreTag = false;
+    private bool $hasIgnoreTag = false;
 
     /**
      * Whether the class has the internal tag or not.
-     *
-     * @var bool
      */
-    private $hasInternalTag = false;
+    private bool $hasInternalTag = false;
 
     /**
      * The class extended bu the class, if any.
-     *
-     * @var string
      */
-    private $extends = '';
+    private string $extends = '';
 
     /**
      * A list of interfaces the class implements.
      *
      * @var array<string>
      */
-    private $interfaces = [];
+    private array $interfaces = [];
 
     /**
      * A list of see links for the class.
      *
      * @var array<string>
      */
-    private $see = [];
+    private array $see = [];
 
     /**
      * Whether the class is PHP native or not.
@@ -282,7 +272,7 @@ class ClassEntity extends CodeEntity
      */
     public function isSame($class)
     {
-        $className = is_object($class) ? get_class($class) : $class;
+        $className = is_object($class) ? $class::class : $class;
         return Utils::sanitizeClassName($className) == $this->getName();
     }
 

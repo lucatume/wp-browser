@@ -121,7 +121,6 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
      * Generates a markdown formatted table row with information about given function. Then adds the
      * row to the table and returns the markdown formatted string.
      *
-     * @param FunctionEntity $func
      *
      * @return string
      * @throws \DOMException
@@ -134,7 +133,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
         // Skip the method if it's an @internal one.
         $methodFullDoc = (new ReflectionMethod($this->fullClassName, $func->getName()))->getDocComment();
         foreach ((array)explode(PHP_EOL, (string)$methodFullDoc) as $line) {
-            if (strpos($line, ' @internal ') !== false) {
+            if (str_contains($line, ' @internal ')) {
                 return '';
             }
         }
@@ -149,9 +148,7 @@ class TableGenerator implements \PHPDocsMD\TableGenerator
             throw new RuntimeException("Method {$func->getClass()}::{$func->getName()} is missing an example.");
         }
 
-        $exampleLines = array_filter(array_map('trim', explode("\n", $rawExample)), static function ($line) {
-               return ! preg_match('/^`/', $line) ;
-        });
+        $exampleLines = array_filter(array_map('trim', explode("\n", $rawExample)), static fn($line) => ! preg_match('/^`/', $line));
         $str .= "\n```php\n" . implode("\n  ", $exampleLines) . "\n```\n";
 
         if ($func->hasParams()) {

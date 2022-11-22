@@ -17,18 +17,12 @@ abstract class AbstractGenerator
     protected $template = '';
 
     /**
-     * @var array<string,mixed>
-     */
-    protected $settings = [];
-
-    /**
      * AbstractGenerator constructor.
      *
      * @param array<string,mixed> $settings
      */
-    public function __construct(array $settings)
+    public function __construct(protected array $settings)
     {
-        $this->settings = $settings;
         $this->ensureSettings();
         $this->ensureSettingsAreAllStrings();
     }

@@ -94,7 +94,7 @@ function homeDir($path = '')
  *
  * @throws \InvalidArgumentException If the root or path cannot be resolved.
  */
-function resolvePath($path, $root = null)
+function resolvePath($path, $root = null): string|false
 {
     $root = $root ?: getcwd();
 
@@ -199,7 +199,7 @@ function recurseRemoveDir($target)
  *
  * @return string|false The full path to the found result, or `false` to indicate the fragment was not found.
  */
-function findHereOrInParent($path, $root)
+function findHereOrInParent($path, $root): string|false
 {
     if (file_exists($path)) {
         return realpathish($path);
@@ -232,7 +232,7 @@ function findHereOrInParent($path, $root)
  *
  * @return false|string The realpath, or `false` if it could not be resolved.
  */
-function realpathish($path)
+function realpathish($path): false|string
 {
     $realpath = realpath($path);
 
@@ -257,7 +257,7 @@ function realpathish($path)
  *
  * @throws \RuntimeException If the creation of a directory or file fails.
  */
-function mkdirp($pathname, $contents = [], $mode = 0777)
+function mkdirp($pathname, string|array $contents = [], $mode = 0777)
 {
     if (is_array($contents)) {
         if (! is_dir($pathname) && ! mkdir($pathname, $mode, true) && ! is_dir($pathname)) {

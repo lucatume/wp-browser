@@ -31,7 +31,7 @@ class GenerateWPRestController extends GenerateWPUnit implements CustomCommandIn
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestControllerTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPRestControllerTestCase::class);
     }
 
     /**

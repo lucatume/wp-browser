@@ -28,7 +28,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPCanonicalTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPCanonicalTestCase::class);
     }
 
     /**

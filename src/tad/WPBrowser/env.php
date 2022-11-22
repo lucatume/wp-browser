@@ -40,7 +40,7 @@ function envFile($file)
     $vars = array_reduce(
         array_filter(explode("\n", $envFileContents)),
         static function (array $lines, $line) use ($pattern) {
-            if (strpos($line, '#') === 0) {
+            if (str_starts_with($line, '#')) {
                 return $lines;
             }
 
@@ -85,7 +85,7 @@ function os()
         'sol' => 'Solaris'
     ];
 
-    return isset($map[$osSlug]) ? $map[$osSlug] : 'Unknown';
+    return $map[$osSlug] ?? 'Unknown';
 }
 
 /**
@@ -111,9 +111,7 @@ function loadEnvMap(Map $map, $overwrite = true)
     $load = $map->toArray();
 
     if (! $overwrite) {
-        $load = array_filter($load, static function ($key) {
-            return ! isset($_ENV[ $key ]);
-        }, ARRAY_FILTER_USE_KEY);
+        $load = array_filter($load, static fn($key) => ! isset($_ENV[ $key ]), ARRAY_FILTER_USE_KEY);
     }
 
     foreach ($load as $key => $value) {

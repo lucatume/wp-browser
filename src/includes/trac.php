@@ -6,7 +6,7 @@ class TracTickets {
 	 *
 	 * @var array
 	 */
-	protected static $trac_ticket_cache = array();
+	protected static $trac_ticket_cache = [];
 
 	/**
 	 * Checks if track ticket #$ticket_id is resolved
@@ -20,16 +20,16 @@ class TracTickets {
 
 		if ( ! isset( self::$trac_ticket_cache[ $trac_url ] ) ) {
 			// In case you're running the tests offline, keep track of open tickets.
-			$file = DIR_TESTDATA . '/.trac-ticket-cache.' . str_replace( array( 'http://', 'https://', '/' ), array( '', '', '-' ), rtrim( $trac_url, '/' ) );
+			$file = DIR_TESTDATA . '/.trac-ticket-cache.' . str_replace( ['http://', 'https://', '/'], ['', '', '-'], rtrim( $trac_url, '/' ) );
 			$tickets = @file_get_contents( $trac_url . '/query?status=%21closed&format=csv&col=id' );
 			// Check if our HTTP request failed.
 			if ( false === $tickets ) {
 				if ( file_exists( $file ) ) {
-					register_shutdown_function( array( 'TracTickets', 'usingLocalCache' ) );
+					register_shutdown_function( ['TracTickets', 'usingLocalCache'] );
 					$tickets = file_get_contents( $file );
 				} else {
-					register_shutdown_function( array( 'TracTickets', 'forcingKnownBugs' ) );
-					self::$trac_ticket_cache[ $trac_url ] = array();
+					register_shutdown_function( ['TracTickets', 'forcingKnownBugs'] );
+					self::$trac_ticket_cache[ $trac_url ] = [];
 					return true; // Assume the ticket is closed, which means it gets run.
 				}
 			} else {

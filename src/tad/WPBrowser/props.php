@@ -72,7 +72,7 @@ function setPrivateProperties($object, array $props)
     if (! is_object($object)) {
         throw new \InvalidArgumentException('Object is not an object.');
     }
-    $class = get_class($object);
+    $class = $object::class;
     do {
         $object = \tad\WPBrowser\setPropertiesForClass($object, $class, $props);
         $class  = get_parent_class($class);
@@ -99,7 +99,7 @@ function readPrivateProperty($object, $prop)
             sprintf('Cannot get property "%s" of "%s", expecting object', $prop, gettype($object))
         );
     }
-    $class = get_class($object);
+    $class = $object::class;
     do {
         $reflectedEntity = new \ReflectionClass($class);
         if ($reflectedEntity->hasProperty($prop)) {
@@ -111,6 +111,6 @@ function readPrivateProperty($object, $prop)
         $class = get_parent_class($class);
     } while ($class);
     throw new \InvalidArgumentException(
-        sprintf('Property "%s" does not exists in class "%s" and its parents', $prop, get_class($object))
+        sprintf('Property "%s" does not exists in class "%s" and its parents', $prop, $object::class)
     );
 }

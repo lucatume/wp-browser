@@ -24,9 +24,7 @@ function cli_headers_list()
             $headers[$name] = trim(implode(':', $parts));
         }
     }
-    $headers['Content-type'] = isset($headers['Content-type'])
-        ? $headers['Content-type']
-        : "text/html; charset=UTF-8";
+    $headers['Content-type'] ??= "text/html; charset=UTF-8";
 
     return $headers;
 }
@@ -53,7 +51,7 @@ function wpbrowser_buildFilterUniqueId($tag, $function, $priority)
 
     if (is_object($function)) {
         // Closures are currently implemented as objects
-        $function = array( $function, '' );
+        $function = [$function, ''];
     } else {
         $function = (array) $function;
     }
@@ -74,7 +72,7 @@ function wpbrowser_addFilter($tag, $function_to_add, $priority = 10, $accepted_a
         add_filter($tag, $function_to_add, $priority, $accepted_args);
     } else {
         $idx = wpbrowser_buildFilterUniqueId($tag, $function_to_add, $priority);
-        $wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
+        $wp_filter[$tag][$priority][$idx] = ['function' => $function_to_add, 'accepted_args' => $accepted_args];
     }
     return true;
 }

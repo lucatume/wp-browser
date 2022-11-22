@@ -62,9 +62,7 @@ class Arg implements ArgInterface
     public static function any()
     {
         return new self(
-            static function () {
-                return true;
-            },
+            static fn() => true,
             static function ($input) {
                 $inputType = gettype($input);
 
@@ -86,11 +84,9 @@ class Arg implements ArgInterface
     public static function that(callable $callback)
     {
         $argExpectation = new self($callback);
-        $argExpectation->setOnFail(static function () use ($argExpectation) {
-            return $argExpectation->checkException instanceof \Exception ?
-                $argExpectation->checkException->getMessage()
-                : 'Argument was not as expected';
-        });
+        $argExpectation->setOnFail(static fn() => $argExpectation->checkException instanceof \Exception ?
+            $argExpectation->checkException->getMessage()
+            : 'Argument was not as expected');
 
         return $argExpectation;
     }
@@ -112,9 +108,7 @@ class Arg implements ArgInterface
 
                 return str_contains($input, $string);
             },
-            static function ($input) use ($string) {
-                return "Failed asserting that '{$input}' contains '{$string}'.";
-            }
+            static fn($input) => "Failed asserting that '{$input}' contains '{$string}'."
         );
     }
 
@@ -177,9 +171,7 @@ class Arg implements ArgInterface
 
                     return call_user_func($function, $input);
                 },
-                static function () use ($type) {
-                    return "Expected argument of type '{$type}'.";
-                }
+                static fn() => "Expected argument of type '{$type}'."
             );
         }
 
@@ -195,7 +187,7 @@ class Arg implements ArgInterface
                 return is_a($input, $type);
             },
             static function ($input) use ($type) {
-                $inputType = is_string($input) ? $input : get_class($input);
+                $inputType = is_string($input) ? $input : $input::class;
                 return "Expected object of type '{$type}', got '{$inputType}' instead.";
             }
         );

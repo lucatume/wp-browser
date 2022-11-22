@@ -97,7 +97,7 @@ class FactoryStore
             return $this->{$name};
         }
 
-        require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/includes/factory.php';
+        require_once dirname(__DIR__, 4) . '/includes/factory.php';
 
         $factoryForThing = null;
 

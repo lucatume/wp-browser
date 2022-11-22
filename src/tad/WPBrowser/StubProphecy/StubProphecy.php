@@ -37,12 +37,6 @@ use PHPUnit\Framework\TestCase;
 class StubProphecy
 {
     /**
-     * The fully qualified name of the class this stub prophecy was built for.
-     * @var string
-     */
-    protected $class;
-
-    /**
      * A list of all the method prophecies this instance will handle.
      * @var array<MethodProphecy>
      */
@@ -62,21 +56,13 @@ class StubProphecy
     protected $revealed;
 
     /**
-     * The test case instance used by the stub prophecy.
-     * @var TestCase|false
-     */
-    protected $testCase = false;
-
-    /**
      * StubProphecy constructor.
      *
      * @param string $class The fully qualified name of the class to build a stub prophecy for.
      * @param TestCase|false $testCase The test case to attach the stubs to.
      */
-    public function __construct($class, $testCase = false)
+    public function __construct(protected $class, protected $testCase = false)
     {
-        $this->class    = $class;
-        $this->testCase = $testCase;
     }
 
     /**
@@ -111,9 +97,7 @@ class StubProphecy
         if ($returnValue instanceof Promise) {
             $returnValueCallback = $returnValue;
         } else {
-            $returnValueCallback = static function () use ($returnValue) {
-                return $returnValue;
-            };
+            $returnValueCallback = static fn() => $returnValue;
         }
 
         return $this->will($returnValueCallback);
@@ -139,9 +123,7 @@ class StubProphecy
         }
 
         $params = array_combine(
-            array_map(function (MethodProphecy $methodProphecy) {
-                return $methodProphecy->getName();
-            }, $this->methodProphecies),
+            array_map(fn(MethodProphecy $methodProphecy) => $methodProphecy->getName(), $this->methodProphecies),
             array_map([ $this, 'buildProphecy' ], $this->methodProphecies)
         );
 

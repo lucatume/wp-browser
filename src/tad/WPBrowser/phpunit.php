@@ -16,7 +16,7 @@ namespace tad\WPBrowser;
  */
 function phpunitVersion()
 {
-    if (class_exists('PHPUnit\Runner\Version')) {
+    if (class_exists(\PHPUnit\Runner\Version::class)) {
         return \PHPUnit\Runner\Version::series();
     }
 
@@ -41,9 +41,7 @@ function phpunitVersion()
  */
 function setupPhpunitBootstrapGlobal()
 {
-    $composerAutoloadFilePath       = isset($GLOBALS['_composer_autoload_path']) ?
-        $GLOBALS['_composer_autoload_path']
-        : vendorDir('autoload.php');
+    $composerAutoloadFilePath       = $GLOBALS['_composer_autoload_path'] ?? vendorDir('autoload.php');
     $composerAutoloadFileRealpth    = realpath($composerAutoloadFilePath);
     $GLOBALS['__PHPUNIT_BOOTSTRAP'] = $composerAutoloadFileRealpth ?: $composerAutoloadFilePath;
 }

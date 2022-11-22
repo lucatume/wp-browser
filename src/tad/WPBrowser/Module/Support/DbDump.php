@@ -15,16 +15,6 @@ class DbDump
      * @var array<string,string>
      */
     protected static $urlReplacementCache = [];
-
-    /**
-     * @var string
-     */
-    protected $tablePrefix = 'wp_';
-
-    /**
-     * @var string
-     */
-    protected $url = 'http://wordpress.test';
     /**
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
@@ -136,12 +126,10 @@ class DbDump
             '(?<path>/+[A-z0-9/_-]*)*' .
             '~u';
 
-        $replaceCallback = static function (array $matches) use ($replaceScheme, $replaceHost, $replacePort) {
-                return $replaceScheme . '://'
-                        . (isset($matches['subdomain']) ? $matches['subdomain'] : '')
-                        . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
-                        . (isset($matches['path']) ? $matches['path'] : '');
-        };
+        $replaceCallback = static fn(array $matches) => $replaceScheme . '://'
+                . ($matches['subdomain'] ?? '')
+                . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
+                . ($matches['path'] ?? '');
 
         $sql = preg_replace_callback($urlPattern, $replaceCallback, $sql);
 
@@ -244,10 +232,8 @@ class DbDump
      * @param string $url The URL to replace, `null` to have it inferred.
      * @param string $tablePrefix The table prefix to use.
      */
-    public function __construct($url = 'http://wordpress.test', $tablePrefix = 'wp_')
+    public function __construct(protected $url = 'http://wordpress.test', protected $tablePrefix = 'wp_')
     {
-        $this->url         = $url;
-        $this->tablePrefix = $tablePrefix;
     }
 
     /**
@@ -299,7 +285,7 @@ class DbDump
      *
      * @return string|false The first site URL or `false` if the first site URL could not be found.
      */
-    public function getOriginalUrlFromSqlString($sql)
+    public function getOriginalUrlFromSqlString($sql): string|false
     {
         $matches = [];
         $urlPattern = sprintf(

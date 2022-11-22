@@ -129,7 +129,7 @@ class WPFilesystem extends Filesystem
                 if ($mustExistAndIsNotDir) {
                     if (!mkdir($absolutePath, 0777, true) && !is_dir($absolutePath)) {
                         throw new ModuleConfigException(
-                            __CLASS__,
+                            self::class,
                             "The {$configKey} config path [{$path}] does not exist."
                         );
                     }
@@ -173,11 +173,11 @@ class WPFilesystem extends Filesystem
                    . "contains the 'wp-load.php' file.";
 
         if (!(is_dir($wpRoot) && is_readable($wpRoot) && is_writable($wpRoot))) {
-            throw new ModuleConfigException(__CLASS__, $message);
+            throw new ModuleConfigException(self::class, $message);
         }
 
         if (!file_exists($wpRoot . '/wp-load.php')) {
-            throw new ModuleConfigException(__CLASS__, $message);
+            throw new ModuleConfigException(self::class, $message);
         }
 
         $this->config['wpRootFolder'] = untrailslashit($wpRoot) . DIRECTORY_SEPARATOR;
@@ -276,7 +276,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      */
-    public function seeUploadedFileFound($filename, $date = null)
+    public function seeUploadedFileFound($filename, string|int $date = null)
     {
         $path = $this->getUploadsPath($filename, $date);
         PHPUnitAssert::assertFileExists($path);
@@ -298,7 +298,7 @@ class WPFilesystem extends Filesystem
      *
      * @return string The absolute path to an uploaded file.
      */
-    public function getUploadsPath($file = '', $date = null)
+    public function getUploadsPath($file = '', mixed $date = null)
     {
         $dateFrag = $date !== null ?
             $this->buildDateFrag($date)
@@ -306,7 +306,7 @@ class WPFilesystem extends Filesystem
 
         $uploads = untrailslashit($this->config['uploads']);
         $path = $file;
-        if (false === strpos($file, $uploads)) {
+        if (!str_contains($file, $uploads)) {
             $path = implode(DIRECTORY_SEPARATOR, array_filter([
                 $uploads,
                 $dateFrag,
@@ -325,11 +325,11 @@ class WPFilesystem extends Filesystem
      *
      * @return string The relative path with the date path appended, if needed.
      */
-    protected function buildDateFrag($date)
+    protected function buildDateFrag(mixed $date)
     {
         try {
             $date = buildDate($date);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $date;
         }
 
@@ -353,7 +353,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      */
-    public function dontSeeUploadedFileFound($file, $date = null)
+    public function dontSeeUploadedFileFound($file, string|int $date = null)
     {
         Assert::assertFileDoesNotExist($this->getUploadsPath($file, $date));
     }
@@ -376,7 +376,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      */
-    public function seeInUploadedFile($file, $contents, $date = null)
+    public function seeInUploadedFile($file, $contents, string|int $date = null)
     {
         PHPUnitAssert::assertStringEqualsFile(
             $this->getUploadsPath(
@@ -405,7 +405,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      */
-    public function dontSeeInUploadedFile($file, $contents, $date = null)
+    public function dontSeeInUploadedFile($file, $contents, string|int $date = null)
     {
         PHPUnitAssert::assertStringNotEqualsFile(
             $this->getUploadsPath(
@@ -435,12 +435,12 @@ class WPFilesystem extends Filesystem
      * ```
      *
      */
-    public function deleteUploadedDir($dir, $date = null)
+    public function deleteUploadedDir($dir, string|int|\DateTime $date = null)
     {
         $dir = $this->getUploadsPath($dir, $date);
         $this->debug('Deleting folder ' . $dir);
         if (!rrmdir($dir)) {
-            throw new ModuleException(__CLASS__, "Could not remove the [{$dir}] folder.");
+            throw new ModuleException(self::class, "Could not remove the [{$dir}] folder.");
         }
     }
 
@@ -461,7 +461,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void
      */
-    public function deleteUploadedFile($file, $date = null)
+    public function deleteUploadedFile($file, string|int $date = null)
     {
         $file = $this->getUploadsPath($file, $date);
         $this->deleteFile($file);
@@ -484,7 +484,7 @@ class WPFilesystem extends Filesystem
      * ```
      *
      */
-    public function cleanUploadsDir($dir = null, $date = null)
+    public function cleanUploadsDir($dir = null, string|int|\DateTime $date = null)
     {
         $dir = null === $dir ? $this->config['uploads'] : $this->getUploadsPath(
             $dir,
@@ -511,7 +511,7 @@ class WPFilesystem extends Filesystem
      * ```
      *
      */
-    public function copyDirToUploads($src, $dst, $date = null)
+    public function copyDirToUploads($src, $dst, string|int|\DateTime $date = null)
     {
         $this->copyDir($src, $this->getUploadsPath($dst, $date));
     }
@@ -537,20 +537,20 @@ class WPFilesystem extends Filesystem
      * ```
      *
      */
-    public function writeToUploadedFile($filename, $data, $date = null)
+    public function writeToUploadedFile($filename, $data, string|int|\DateTime $date = null)
     {
         $filename = $this->getUploadsPath($filename, $date);
         $dir = dirname($filename);
 
         if (!is_dir($dir)) {
             if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
-                throw new ModuleException(__CLASS__, "Could not create the [{$dir}] folder.");
+                throw new ModuleException(self::class, "Could not create the [{$dir}] folder.");
             }
             $this->toClean[] = $dir;
         }
 
         if (file_put_contents($filename, $data) === false) {
-            throw new ModuleException(__CLASS__, "Could not write data to file[{$filename}].");
+            throw new ModuleException(self::class, "Could not write data to file[{$filename}].");
         }
 
         return $filename;
@@ -573,7 +573,7 @@ class WPFilesystem extends Filesystem
      * ```
      *
      */
-    public function openUploadedFile($filename, $date = null)
+    public function openUploadedFile($filename, string|int|\DateTime $date = null)
     {
         $this->openFile($this->getUploadsPath($filename, $date));
     }
@@ -1118,7 +1118,7 @@ class WPFilesystem extends Filesystem
             $fullPath .= '.php';
         }
 
-        if (strpos($path, '/') === false) {
+        if (!str_contains($path, '/')) {
             $slug = pathinfo($fullPath, PATHINFO_FILENAME);
             $toClean = $fullPath;
         } else {
@@ -1127,7 +1127,7 @@ class WPFilesystem extends Filesystem
 
             if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
                 throw new ModuleException(
-                    __CLASS__,
+                    self::class,
                     "Could not create [{$dir}] plugin folder."
                 );
             }
@@ -1151,7 +1151,7 @@ PHP;
 
         if (!$put) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not create [{$fullPath}] plugin file."
             );
         }
@@ -1193,7 +1193,7 @@ PHP;
         if (!file_exists($dir)) {
             if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
                 throw new ModuleException(
-                    __CLASS__,
+                    self::class,
                     "Could not create [{$dir}] mu-plugin folder."
                 );
             }
@@ -1217,7 +1217,7 @@ PHP;
 
         if (!$put) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not create [{$fullPath}] mu-plugin file."
             );
         }
@@ -1258,7 +1258,7 @@ PHP;
 
         if (!@mkdir($dir, 0777, true) && !is_dir($dir)) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not create [{$dir}] theme folder."
             );
         }
@@ -1277,7 +1277,7 @@ CSS;
 
         if (!$stylePut) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not create [{$styleFile}] theme file."
             );
         }
@@ -1290,7 +1290,7 @@ CSS;
 
         if (!$indexPut) {
             throw new ModuleException(
-                __CLASS__,
+                self::class,
                 "Could not create [{$indexFile}] theme file."
             );
         }
@@ -1302,7 +1302,7 @@ CSS;
 
             if (!$functionsPut) {
                 throw new ModuleException(
-                    __CLASS__,
+                    self::class,
                     "Could not create [{$indexFile}] theme file."
                 );
             }
@@ -1355,7 +1355,7 @@ CSS;
         $uploads = untrailslashit($this->config['uploads']) . "/sites/{$blogId}";
         $path = $file;
 
-        if (false === strpos($file, $uploads)) {
+        if (!str_contains($file, $uploads)) {
             $path = implode(DIRECTORY_SEPARATOR, array_filter([
                 $uploads,
                 $dateFrag,

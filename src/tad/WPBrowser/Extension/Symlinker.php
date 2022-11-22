@@ -76,7 +76,7 @@ class Symlinker extends Extension
             }
         } catch (IOException $event) {
             throw new ExtensionException(
-                __CLASS__,
+                self::class,
                 "Error while trying to symlink plugin or theme to destination.\n\n" . $event->getMessage()
             );
         }
@@ -91,20 +91,14 @@ class Symlinker extends Extension
      */
     protected function getRootFolder(array $settings = [])
     {
-        $rootFolder = isset($this->config['rootFolder']) ?
-            $this->config['rootFolder']
-            : rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
+        $rootFolder = $this->config['rootFolder'] ?? rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR);
 
         if (is_array($rootFolder)) {
             $currentEnvs = $this->getCurrentEnvsFromSettings($settings);
-            $fallbackRootFolder = isset($rootFolder['default']) ?
-                $rootFolder['default']
-                : reset($rootFolder);
+            $fallbackRootFolder = $rootFolder['default'] ?? reset($rootFolder);
             $supportedEnvs      = array_intersect(array_keys($rootFolder), (array)$currentEnvs);
             $firstSupported     = reset($supportedEnvs);
-            $rootFolder         = isset($rootFolder[$firstSupported]) ?
-                $rootFolder[$firstSupported] :
-                $fallbackRootFolder;
+            $rootFolder         = $rootFolder[$firstSupported] ?? $fallbackRootFolder;
         }
 
         return $rootFolder;
@@ -124,10 +118,10 @@ class Symlinker extends Extension
 
         if (is_array($destination)) {
             $currentEnvs = $this->getCurrentEnvsFromSettings($settings);
-            $fallbackDestination = isset($destination['default']) ? $destination['default'] : reset($destination);
+            $fallbackDestination = $destination['default'] ?? reset($destination);
             $supportedEnvs = array_intersect(array_keys($destination), (array)$currentEnvs);
             $firstSupported = reset($supportedEnvs);
-            $destination = isset($destination[$firstSupported]) ? $destination[$firstSupported] : $fallbackDestination;
+            $destination = $destination[$firstSupported] ?? $fallbackDestination;
         }
         $destination = rtrim($destination, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
 
@@ -195,16 +189,16 @@ class Symlinker extends Extension
     protected function checkRequirements()
     {
         if (!isset($this->config['mode'])) {
-            throw new ExtensionException(__CLASS__, 'Required configuration parameter [mode] is missing.');
+            throw new ExtensionException(self::class, 'Required configuration parameter [mode] is missing.');
         }
         if (!array_intersect((array)$this->required['mode'], (array)$this->config['mode'])) {
             throw new ExtensionException(
-                __CLASS__,
+                self::class,
                 '[mode] should be one among these values: [' . implode(', ', (array)$this->required['mode']) . ']'
             );
         }
         if (!isset($this->config['destination'])) {
-            throw new ExtensionException(__CLASS__, 'Required configuration parameter [destination] is missing.');
+            throw new ExtensionException(self::class, 'Required configuration parameter [destination] is missing.');
         }
 
         $destination = (array)$this->config['destination'];
@@ -230,7 +224,7 @@ class Symlinker extends Extension
     {
         if (!(is_dir($destination) && is_writable($destination))) {
             throw new ExtensionException(
-                __CLASS__,
+                self::class,
                 '[destination] parameter [' . $destination . '] is not an existing and writeable directory.'
             );
         }
@@ -249,7 +243,7 @@ class Symlinker extends Extension
     {
         if (!(is_dir($rootFolder) && is_readable($rootFolder))) {
             throw new ExtensionException(
-                __CLASS__,
+                self::class,
                 '[rootFolder] parameter [' . $rootFolder . '] is not an existing and readable directory.'
             );
         }
@@ -262,7 +256,7 @@ class Symlinker extends Extension
      *
      * @return array<int,string>|false. The environment(s) found in the settings, or `default` if none was found.
      */
-    protected function getCurrentEnvsFromSettings(array $settings)
+    protected function getCurrentEnvsFromSettings(array $settings): array|false
     {
         $rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
 

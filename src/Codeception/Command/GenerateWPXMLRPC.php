@@ -40,6 +40,6 @@ class GenerateWPXMLRPC extends GenerateWPUnit implements CustomCommandInterface
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPXMLRPCTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPXMLRPCTestCase::class);
     }
 }

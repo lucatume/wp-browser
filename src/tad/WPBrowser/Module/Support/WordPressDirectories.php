@@ -16,18 +16,11 @@ use tad\WPBrowser\Environment\Constants;
 class WordPressDirectories
 {
     /**
-     * ${CARET}
-     * @var Constants
-     */
-    protected $constants;
-
-    /**
      * WordPressDirectories constructor.
      * @param Constants $constants An instance of the constants wrapper/adapter.
      */
-    public function __construct(Constants $constants)
+    public function __construct(protected Constants $constants)
     {
-        $this->constants = $constants;
     }
 
     /**

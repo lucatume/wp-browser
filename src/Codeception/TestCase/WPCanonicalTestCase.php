@@ -8,11 +8,11 @@ class WPCanonicalTestCase extends WPTestCase
 {
     public static $old_current_user;
     public static $author_id;
-    public static $post_ids = array();
-    public static $comment_ids = array();
-    public static $term_ids = array();
-    public static $terms = array();
-    public static $old_options = array();
+    public static $post_ids = [];
+    public static $comment_ids = [];
+    public static $term_ids = [];
+    public static $terms = [];
+    public static $old_options = [];
 
     /**
      * This can be defined in a subclass of this class which contains its own data() method.
@@ -52,7 +52,7 @@ class WPCanonicalTestCase extends WPTestCase
     public static function generate_shared_fixtures($factory)
     {
         self::$old_current_user = get_current_user_id();
-        self::$author_id = $factory->user->create(array('user_login' => 'canonical-author'));
+        self::$author_id = $factory->user->create(['user_login' => 'canonical-author']);
 
         /*
          * Also set in self::setUp(), but we must configure here to make sure that
@@ -63,108 +63,53 @@ class WPCanonicalTestCase extends WPTestCase
         // Already created by install defaults:
         // self::factory()->term->create( array( 'taxonomy' => 'category', 'name' => 'uncategorized' ) );
 
-        self::$post_ids[] = $factory->post->create(array(
-            'import_id' => 587,
-            'post_title' => 'post-format-test-audio',
-            'post_date' => '2008-06-02 00:00:00'
-        ));
-        self::$post_ids[] = $post_id = $factory->post->create(array(
-            'post_title' => 'post-format-test-gallery',
-            'post_date' => '2008-06-10 00:00:00'
-        ));
-        self::$post_ids[] = $factory->post->create(array(
-            'import_id' => 611,
-            'post_type' => 'attachment',
-            'post_title' => 'canola2',
-            'post_parent' => $post_id
-        ));
+        self::$post_ids[] = $factory->post->create(['import_id' => 587, 'post_title' => 'post-format-test-audio', 'post_date' => '2008-06-02 00:00:00']);
+        self::$post_ids[] = $post_id = $factory->post->create(['post_title' => 'post-format-test-gallery', 'post_date' => '2008-06-10 00:00:00']);
+        self::$post_ids[] = $factory->post->create(['import_id' => 611, 'post_type' => 'attachment', 'post_title' => 'canola2', 'post_parent' => $post_id]);
 
-        self::$post_ids[] = $factory->post->create(array(
-            'post_title' => 'images-test',
-            'post_date' => '2008-09-03 00:00:00',
-            'post_content' => 'Page 1 <!--nextpage--> Page 2 <!--nextpage--> Page 3'
-        ));
+        self::$post_ids[] = $factory->post->create(['post_title' => 'images-test', 'post_date' => '2008-09-03 00:00:00', 'post_content' => 'Page 1 <!--nextpage--> Page 2 <!--nextpage--> Page 3']);
 
-        self::$post_ids[] = $post_id = $factory->post->create(array(
-            'import_id' => 149,
-            'post_title' => 'comment-test',
-            'post_date' => '2008-03-03 00:00:00'
-        ));
+        self::$post_ids[] = $post_id = $factory->post->create(['import_id' => 149, 'post_title' => 'comment-test', 'post_date' => '2008-03-03 00:00:00']);
         self::$comment_ids = $factory->comment->create_post_comments($post_id, 15);
 
-        self::$post_ids[] = $factory->post->create(array('post_date' => '2008-09-05 00:00:00'));
+        self::$post_ids[] = $factory->post->create(['post_date' => '2008-09-05 00:00:00']);
 
-        self::$post_ids[] = $factory->post->create(array('import_id' => 123));
-        self::$post_ids[] = $factory->post->create(array('import_id' => 1));
-        self::$post_ids[] = $factory->post->create(array('import_id' => 358));
+        self::$post_ids[] = $factory->post->create(['import_id' => 123]);
+        self::$post_ids[] = $factory->post->create(['import_id' => 1]);
+        self::$post_ids[] = $factory->post->create(['import_id' => 358]);
 
-        self::$post_ids[] = $factory->post->create(array('post_type' => 'page', 'post_title' => 'sample-page'));
-        self::$post_ids[] = $factory->post->create(array('post_type' => 'page', 'post_title' => 'about'));
-        self::$post_ids[] = $post_id = $factory->post->create(array(
-            'post_type' => 'page',
-            'post_title' => 'parent-page'
-        ));
+        self::$post_ids[] = $factory->post->create(['post_type' => 'page', 'post_title' => 'sample-page']);
+        self::$post_ids[] = $factory->post->create(['post_type' => 'page', 'post_title' => 'about']);
+        self::$post_ids[] = $post_id = $factory->post->create(['post_type' => 'page', 'post_title' => 'parent-page']);
         self::$post_ids[] = $factory->post->create(
-            array(
-                'import_id' => 144,
-                'post_type' => 'page',
-                'post_title' => 'child-page-1',
-                'post_parent' => $post_id,
-            )
+            ['import_id' => 144, 'post_type' => 'page', 'post_title' => 'child-page-1', 'post_parent' => $post_id]
         );
 
-        self::$post_ids[] = $parent_id = $factory->post->create(array(
-            'post_name' => 'parent',
-            'post_type' => 'page',
-        ));
-        self::$post_ids[] = $child_id_1 = $factory->post->create(array(
-            'post_name' => 'child1',
-            'post_type' => 'page',
-            'post_parent' => $parent_id,
-        ));
-        self::$post_ids[] = $child_id_2 = $factory->post->create(array(
-            'post_name' => 'child2',
-            'post_type' => 'page',
-            'post_parent' => $parent_id,
-        ));
-        self::$post_ids[] = $grandchild_id_1 = $factory->post->create(array(
-            'post_name' => 'grandchild',
-            'post_type' => 'page',
-            'post_parent' => $child_id_1,
-        ));
-        self::$post_ids[] = $grandchild_id_2 = $factory->post->create(array(
-            'post_name' => 'grandchild',
-            'post_type' => 'page',
-            'post_parent' => $child_id_2,
-        ));
+        self::$post_ids[] = $parent_id = $factory->post->create(['post_name' => 'parent', 'post_type' => 'page']);
+        self::$post_ids[] = $child_id_1 = $factory->post->create(['post_name' => 'child1', 'post_type' => 'page', 'post_parent' => $parent_id]);
+        self::$post_ids[] = $child_id_2 = $factory->post->create(['post_name' => 'child2', 'post_type' => 'page', 'post_parent' => $parent_id]);
+        self::$post_ids[] = $grandchild_id_1 = $factory->post->create(['post_name' => 'grandchild', 'post_type' => 'page', 'post_parent' => $child_id_1]);
+        self::$post_ids[] = $grandchild_id_2 = $factory->post->create(['post_name' => 'grandchild', 'post_type' => 'page', 'post_parent' => $child_id_2]);
 
-        $cat1 = $factory->term->create(array('taxonomy' => 'category', 'name' => 'parent'));
+        $cat1 = $factory->term->create(['taxonomy' => 'category', 'name' => 'parent']);
         self::$terms['/category/parent/'] = $cat1;
         self::$term_ids[$cat1] = 'category';
 
-        $cat2 = $factory->term->create(array(
-            'taxonomy' => 'category',
-            'name' => 'child-1',
-            'parent' => self::$terms['/category/parent/'],
-        ));
+        $cat2 = $factory->term->create(['taxonomy' => 'category', 'name' => 'child-1', 'parent' => self::$terms['/category/parent/']]);
         self::$terms['/category/parent/child-1/'] = $cat2;
         self::$term_ids[$cat2] = 'category';
 
-        $cat3 = $factory->term->create(array(
-            'taxonomy' => 'category',
-            'name' => 'child-2',
-            'parent' => self::$terms['/category/parent/child-1/'],
-        ));
+        $cat3 = $factory->term->create(['taxonomy' => 'category', 'name' => 'child-2', 'parent' => self::$terms['/category/parent/child-1/']]);
         self::$terms['/category/parent/child-1/child-2/'] = $cat3;
         self::$term_ids[$cat3] = 'category';
 
-        $cat4 = $factory->term->create(array('taxonomy' => 'category', 'name' => 'cat-a'));
+        $cat4 = $factory->term->create(['taxonomy' => 'category', 'name' => 'cat-a']);
         self::$term_ids[$cat4] = 'category';
 
-        $cat5 = $factory->term->create(array('taxonomy' => 'category', 'name' => 'cat-b'));
+        $cat5 = $factory->term->create(['taxonomy' => 'category', 'name' => 'cat-b']);
         self::$term_ids[$cat5] = 'category';
 
-        $tag1 = $factory->term->create(array('name' => 'post-formats'));
+        $tag1 = $factory->term->create(['name' => 'post-formats']);
         self::$term_ids[$tag1] = 'post_tag';
     }
 
@@ -176,10 +121,10 @@ class WPCanonicalTestCase extends WPTestCase
     public static function delete_shared_fixtures()
     {
         self::$author_id = null;
-        self::$post_ids = array();
-        self::$comment_ids = array();
-        self::$term_ids = array();
-        self::$terms = array();
+        self::$post_ids = [];
+        self::$comment_ids = [];
+        self::$term_ids = [];
+        self::$terms = [];
     }
 
     /**
@@ -192,7 +137,7 @@ class WPCanonicalTestCase extends WPTestCase
      * @since 4.1.0
      *
      */
-    public function assertCanonical($test_url, $expected, $ticket = 0, $expected_doing_it_wrong = array())
+    public function assertCanonical($test_url, string|array $expected, $ticket = 0, $expected_doing_it_wrong = [])
     {
         $this->expected_doing_it_wrong = array_merge($this->expected_doing_it_wrong, (array)$expected_doing_it_wrong);
 
@@ -203,9 +148,9 @@ class WPCanonicalTestCase extends WPTestCase
         $ticket_ref = ($ticket > 0) ? 'Ticket #' . $ticket : 'n/a';
 
         if (is_string($expected)) {
-            $expected = array('url' => $expected);
+            $expected = ['url' => $expected];
         } elseif (is_array($expected) && !isset($expected['url']) && !isset($expected['qv'])) {
-            $expected = array('qv' => $expected);
+            $expected = ['qv' => $expected];
         }
 
         if (!isset($expected['url']) && !isset($expected['qv'])) {
@@ -247,7 +192,7 @@ class WPCanonicalTestCase extends WPTestCase
              * present in the Rewrite).
              */
             $this->assertEquals(
-                array(),
+                [],
                 array_intersect($query_vars, $_qv),
                 'Query vars are duplicated from the Rewrite into $_GET; ' . $ticket_ref
             );

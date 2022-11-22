@@ -205,7 +205,7 @@ EOF;
      */
     public function _depends()
     {
-        return ['Codeception\Module\WPDb' => $this->dependencyMessage];
+        return [\Codeception\Module\WPDb::class => $this->dependencyMessage];
     }
 
     /**
@@ -331,7 +331,7 @@ EOF;
      */
     private function isAdminPageRequest($page)
     {
-        return 0 === strpos($page, $this->getAdminPath());
+        return str_starts_with($page, $this->getAdminPath());
     }
 
     /**
@@ -377,16 +377,16 @@ EOF;
                     );
                 }
                 $this->wpRootFolder = $resolvedWpRoot;
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 throw new ModuleConfigException(
-                    __CLASS__,
+                    self::class,
                     "\nThe path `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress " .
                     'installation folder: directory not found.'
                 );
             }
             if (!file_exists(untrailslashit((string)$this->wpRootFolder) . '/wp-settings.php')) {
                 throw new ModuleConfigException(
-                    __CLASS__,
+                    self::class,
                     "\nThe `{$this->config['wpRootFolder']}` is not pointing to a valid WordPress installation " .
                     'folder: wp-settings.php file not found.'
                 );

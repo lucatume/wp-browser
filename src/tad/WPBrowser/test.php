@@ -44,7 +44,7 @@ function debug($message)
         return;
     }
 
-    $message = is_string($message) ? $message : json_encode($message);
+    $message = is_string($message) ? $message : json_encode($message, JSON_THROW_ON_ERROR);
 
     echo "\033[34m[Debug] " . $message . "\033[0m\n";
 }
@@ -76,7 +76,5 @@ function ensure($condition, $message)
  */
 function pregErrorMessage($error)
 {
-    return array_flip(array_filter(get_defined_constants(true)['pcre'], static function ($value) {
-        return substr($value, -6) === '_ERROR';
-    }, ARRAY_FILTER_USE_KEY))[preg_last_error()];
+    return array_flip(array_filter(get_defined_constants(true)['pcre'], static fn($value) => str_ends_with($value, '_ERROR'), ARRAY_FILTER_USE_KEY))[preg_last_error()];
 }

@@ -28,30 +28,22 @@ class Map implements \ArrayAccess
 {
 
     /**
-     * The map of value underlying the map.
-     *
-     * @var array<int|string,mixed>
-     */
-    protected $map = [];
-
-    /**
-     * A map of the aliases, aliases to sources.
-     *
-     * @var array<int|string,string>
-     */
-    protected $aliases;
-
-
-    /**
      * Map constructor.
      *
      * @param array<int|string,mixed> $map The map of values underlying this map.
-     * @param array<int|string,mixed> $aliases The map of aliases for the map.
+     * @param array<int|string, string> $aliases The map of aliases for the map.
      */
-    public function __construct(array $map = [], array $aliases = [])
+    public function __construct(
+        /**
+         * The map of value underlying the map.
+         */
+        protected array $map = [],
+        /**
+         * A map of the aliases, aliases to sources.
+         */
+        protected array $aliases = []
+    )
     {
-        $this->map = $map;
-        $this->aliases = $aliases;
     }
 
     /**
@@ -65,7 +57,7 @@ class Map implements \ArrayAccess
     public function __invoke($key, $default = null)
     {
         $key = $this->redirectAlias($key);
-        return isset($this->map[$key]) ? $this->map[$key] : $default;
+        return $this->map[$key] ?? $default;
     }
 
     /**
@@ -93,7 +85,7 @@ class Map implements \ArrayAccess
     public function offsetGet($offset)
     {
         $offset = $this->redirectAlias($offset);
-        return isset($this->map[$offset]) ? $this->map[$offset] : null;
+        return $this->map[$offset] ?? null;
     }
 
     /**
@@ -105,7 +97,7 @@ class Map implements \ArrayAccess
      * @return $this For chaining.
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, mixed $value)
     {
         $offset = $this->redirectAlias($offset);
         $this->map[$offset] = $value;
@@ -155,7 +147,7 @@ class Map implements \ArrayAccess
     public function get($offset, $default = null)
     {
         $offset = $this->redirectAlias($offset);
-        return isset($this->map[ $offset ]) ? $this->map[ $offset ] : $default;
+        return $this->map[ $offset ] ?? $default;
     }
 
     /**

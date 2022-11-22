@@ -252,8 +252,8 @@ class WPLoader extends Module
         WPHealthcheck $healthcheck = null
     ) {
         parent::__construct($moduleContainer, $config);
-        $this->wp = $wp ? $wp : new WP();
-        $this->healthcheck = $healthcheck ? $healthcheck : new WPHealthcheck();
+        $this->wp = $wp ?: new WP();
+        $this->healthcheck = $healthcheck ?: new WPHealthcheck();
     }
 
     /**
@@ -351,7 +351,7 @@ class WPLoader extends Module
         $this->ensureWPRoot($this->getWpRootFolder());
 
         // WordPress  will deal with database connection errors.
-        $this->wpBootstrapFile = dirname(dirname(__DIR__)) . '/includes/bootstrap.php';
+        $this->wpBootstrapFile = dirname(__DIR__, 2) . '/includes/bootstrap.php';
 
         $loadOnly = ! empty($this->config['loadOnly']);
 
@@ -386,7 +386,7 @@ class WPLoader extends Module
             }
 
             throw new ModuleConfigException(
-                __CLASS__,
+                self::class,
                 "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
             );
         }
@@ -442,7 +442,7 @@ class WPLoader extends Module
             $cleanup_config = $module->_getConfig('cleanup');
             if (! empty($cleanup_config)) {
                 throw new ModuleConflictException(
-                    __CLASS__,
+                    self::class,
                     "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: "
                     . "the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere "
                     . "with the WP Loader module."
@@ -466,10 +466,10 @@ class WPLoader extends Module
             $this->debug('Running as single site');
         }
 
-        require_once dirname(dirname(__DIR__)) . '/includes/functions.php';
+        require_once dirname(__DIR__, 2) . '/includes/functions.php';
 
         if (! $this->config['skipPluggables']) {
-            require_once dirname(dirname(__DIR__)) . '/includes/pluggable-functions.php';
+            require_once dirname(__DIR__, 2) . '/includes/pluggable-functions.php';
         }
 
         if (! empty($this->config['loadOnly'])) {
@@ -559,7 +559,7 @@ class WPLoader extends Module
      */
     protected function requiresIsolatedInstallation()
     {
-        return isset($this->config['isolatedInstall']) ? $this->config['isolatedInstall'] : true;
+        return $this->config['isolatedInstall'] ?? true;
     }
 
     /**
@@ -600,9 +600,9 @@ class WPLoader extends Module
             if ($resolved === false) {
                 throw new \RuntimeException('Could not resolve path.');
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             throw new ModuleConfigException(
-                __CLASS__,
+                self::class,
                 "The path to the plugins directory ('{$candidate}') doesn't exist."
             );
         }
@@ -637,7 +637,7 @@ class WPLoader extends Module
     {
         $serverDefaults = [
             'SERVER_PROTOCOL' => 'HTTP/1.1',
-            'HTTP_HOST'       => getenv('WP_DOMAIN') ? getenv('WP_DOMAIN') : $this->config['domain'],
+            'HTTP_HOST'       => getenv('WP_DOMAIN') ?: $this->config['domain'],
         ];
 
         foreach ($serverDefaults as $key => $value) {
@@ -845,7 +845,7 @@ class WPLoader extends Module
             $path = $pluginsPath . $plugin;
             if (! file_exists($path)) {
                 throw new ModuleConfigException(
-                    __CLASS__,
+                    self::class,
                     "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; "
                     . 'this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion '
                     . 'of one ore more additional config files using the `configFile` setting.'
@@ -889,7 +889,7 @@ class WPLoader extends Module
             return;
         }
 
-        $output = $output ? $output : new ConsoleOutput();
+        $output = $output ?: new ConsoleOutput();
 
         if (Debug::isEnabled()) {
             codecept_debug(
@@ -1031,7 +1031,7 @@ class WPLoader extends Module
                 $configFile = (string)findHereOrInParent($candidate, $root);
                 if (! is_file($configFile)) {
                     throw new ModuleConfigException(
-                        __CLASS__,
+                        self::class,
                         "\nConfig file `{$candidate}` could not be found in WordPress root folder or above."
                     );
                 }
@@ -1093,9 +1093,9 @@ class WPLoader extends Module
             if ($resolved === false) {
                 throw new \RuntimeException('Could not resolve path.');
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             throw new ModuleConfigException(
-                __CLASS__,
+                self::class,
                 "The path to the content directory ('{$candidate}') doesn't exist or is not accessible."
             );
         }
@@ -1113,9 +1113,7 @@ class WPLoader extends Module
     protected function getInstallationConfiguration()
     {
         return new Configuration([
-            'tablesHandling' => isset($this->config['installationTableHandling']) ?
-                $this->config['installationTableHandling']
-                : 'empty'
+            'tablesHandling' => $this->config['installationTableHandling'] ?? 'empty'
         ]);
     }
 }

@@ -20,7 +20,7 @@ class ExtendedMySql extends MySql
         $this->executeQuery("SET SESSION sql_mode='ALLOW_INVALID_DATES'", []);
 
         $columns = array_map(
-            array($this, 'getQuotedName'),
+            [$this, 'getQuotedName'],
             array_keys($data)
         );
         $updateAssignments = $this->getAssignmentsFor($data);
@@ -43,7 +43,7 @@ class ExtendedMySql extends MySql
      */
     protected function getAssignmentsFor(array $data, $glue = ', ')
     {
-        $assignments = array();
+        $assignments = [];
         foreach ($data as $key => $value) {
             $assignments[] = sprintf('%s=\'%s\'', $key, $value);
         }

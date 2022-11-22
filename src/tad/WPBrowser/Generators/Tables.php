@@ -42,9 +42,7 @@ class Tables
     public static function blogTables($table_prefix = '', $blog_id = 1)
     {
         $blog_id = (int)$blog_id < 2 ? '' : $blog_id . '_';
-        return array_map(static function ($table) use ($table_prefix, $blog_id) {
-            return sprintf('%s%s%s', $table_prefix, $blog_id, $table);
-        }, [
+        return array_map(static fn($table) => sprintf('%s%s%s', $table_prefix, $blog_id, $table), [
             'commentmeta',
             'comments',
             'links',
@@ -128,9 +126,7 @@ class Tables
      */
     public static function multisiteTables($table_prefix = '')
     {
-        return array_map(static function ($table) use ($table_prefix) {
-            return $table_prefix . $table;
-        }, [
+        return array_map(static fn($table) => $table_prefix . $table, [
             'blogs',
             'sitemeta',
             'site',

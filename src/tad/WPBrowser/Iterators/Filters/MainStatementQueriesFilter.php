@@ -18,22 +18,14 @@ use function tad\WPBrowser\isRegex;
 class MainStatementQueriesFilter extends \FilterIterator
 {
     /**
-     * The SQL statement to look for.
-     *
-     * @var string
-     */
-    protected $statement;
-
-    /**
      * MainStatementQueriesFilter constructor.
      *
      * @param Iterator<string> $iterator
      * @param string $statement The statement to keep queries for.
      */
-    public function __construct(Iterator $iterator, $statement = 'SELECT')
+    public function __construct(Iterator $iterator, protected $statement = 'SELECT')
     {
         parent::__construct($iterator);
-        $this->statement = $statement;
     }
 
     /**

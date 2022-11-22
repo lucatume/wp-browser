@@ -18,7 +18,7 @@ use Codeception\Lib\ModuleContainer;
  */
 function rootDir($path = '')
 {
-    $root = dirname(dirname(dirname(__DIR__)));
+    $root = dirname(__DIR__, 3);
 
     return $path ? $root . DIRECTORY_SEPARATOR . ltrim($path, '\\/') : $root;
 }
@@ -40,7 +40,7 @@ function vendorDir($path = '')
             // We're in the wp-browser package itself context.
             $vendorDir = $root . '/vendor';
         } else {
-            $vendorDir = dirname(dirname($root));
+            $vendorDir = dirname($root, 2);
         }
     }
 
@@ -98,7 +98,7 @@ function requireCodeceptionModules($module, array $requiredModules = [])
 
     foreach ($requiredModules as $moduleName) {
         if (! (class_exists(ModuleContainer::MODULE_NAMESPACE . $moduleName) || class_exists($moduleName))) {
-            $modulePackage          = isset($packages[ $moduleName ]) ? $packages[ $moduleName ] : 'unknown package';
+            $modulePackage          = $packages[ $moduleName ] ?? 'unknown package';
             $missing[ $moduleName ] = $modulePackage;
             continue;
         }

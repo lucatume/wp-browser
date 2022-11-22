@@ -90,7 +90,7 @@ trait WithWpCli
         if ($this->wpCliRootDir === null) {
             try {
                 $ref = new \ReflectionClass(Configurator::class);
-            } catch (\ReflectionException $e) {
+            } catch (\ReflectionException) {
                 throw WpCliException::becauseConfiguratorClassCannotBeFound();
             }
 
@@ -147,7 +147,7 @@ trait WithWpCli
      *
      * @return array<int|string,mixed> An associative array of all the options found in the command.
      */
-    protected function parseWpCliInlineOptions($command)
+    protected function parseWpCliInlineOptions(string|array $command)
     {
         $parsed = [];
 
@@ -187,7 +187,7 @@ trait WithWpCli
 
         $command = ['option', 'update', $name, $value, $autoloadOption, $formatOption];
 
-        codecept_debug('Updating WordPress option with command: ' . json_encode($command));
+        codecept_debug('Updating WordPress option with command: ' . json_encode($command, JSON_THROW_ON_ERROR));
 
         $set = $this->executeWpCliCommand($command);
 
@@ -253,7 +253,7 @@ trait WithWpCli
      * $wpCliProcess->run();
      * ```
      */
-    public function buildFullCommand($command)
+    public function buildFullCommand(array|string $command)
     {
         $fullCommand = array_merge([
             PHP_BINARY,
@@ -292,11 +292,11 @@ trait WithWpCli
             if ($serverCommandFile === false) {
                 throw WpCliException::becauseServerCommandClassWasNotFound();
             }
-            $routerFilePath = dirname(dirname($serverCommandFile)) . '/router.php';
+            $routerFilePath = dirname($serverCommandFile, 2) . '/router.php';
             if (!file_exists($routerFilePath)) {
                 throw WpCliException::becauseRouterFileWasNotFound($routerFilePath);
             }
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             throw WpCliException::becauseServerCommandClassWasNotFound();
         }
 

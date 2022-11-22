@@ -37,7 +37,7 @@ if(!defined('DISABLE_WP_CRON')){
 		define('DISABLE_WP_CRON', true);
 }
 
-define('REST_TESTS_IMPOSSIBLY_HIGH_NUMBER', 99999999);
+define('REST_TESTS_IMPOSSIBLY_HIGH_NUMBER', 99_999_999);
 
 $memory_settings = [
 	'WP_MEMORY_LIMIT' => -1,
@@ -71,14 +71,14 @@ if ("1" == getenv('WP_MULTISITE') ||
 }
 
 // Override the PHPMailer
-require_once dirname(__FILE__) . '/mock-mailer.php';
+require_once __DIR__ . '/mock-mailer.php';
 $phpmailer = new MockPHPMailer(true);
 
 if (!defined('WP_DEFAULT_THEME')) {
 	define('WP_DEFAULT_THEME', 'default');
 }
 
-$wp_theme_directories = array(DIR_TESTDATA . '/themedir1');
+$wp_theme_directories = [DIR_TESTDATA . '/themedir1'];
 
 $table_prefix = WP_TESTS_TABLE_PREFIX;
 

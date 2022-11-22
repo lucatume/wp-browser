@@ -20,24 +20,13 @@ class WordPressDatabase
 {
     /**
      * The current database connection error message.
-     *
-     * @var string|null
      */
-    private $dbConnectionError;
+    private ?string $dbConnectionError;
 
     /**
      * The current PDO object, if any.
-     *
-     * @var PDO
      */
-    private $pdo;
-
-    /**
-     * An instance of the constants wrapper/adapter.
-     *
-     * @var Constants
-     */
-    private $constants;
+    private ?\PDO $pdo = null;
 
     /**
      * Whether the options table exists or not. Cached value.
@@ -49,9 +38,11 @@ class WordPressDatabase
     /**
      * WordPressDatabase constructor.
      */
-    public function __construct(Constants $constants)
+    public function __construct(/**
+     * An instance of the constants wrapper/adapter.
+     */
+    private Constants $constants)
     {
-        $this->constants = $constants;
         $this->checkDbConnection();
     }
 
@@ -79,8 +70,8 @@ class WordPressDatabase
         if (!isset($dbName, $dbHost)) {
             $this->dbConnectionError = sprintf(
                 'DB_HOST and/or DB_NAME are not set: (DB_NAME: %s, DB_HOST: %s)',
-                null !== $dbName ? $dbName : 'null',
-                null !== $dbHost ? $dbHost : 'null'
+                $dbName ?? 'null',
+                $dbHost ?? 'null'
             );
             return false;
         }
@@ -92,7 +83,7 @@ class WordPressDatabase
             $this->dbConnectionError = 'DB_USER and/or DB_PASSWORD are not set: ' . json_encode([
                     'DB_USER' => $dbUser,
                     'DB_PASSWORD' => $dbPassword
-                ]);
+                ], JSON_THROW_ON_ERROR);
             return false;
         }
         try {
@@ -118,7 +109,7 @@ class WordPressDatabase
      *
      * @return mixed The option value, not unserialized, if serialized.
      */
-    public function getOption($optionName, $default = null)
+    public function getOption($optionName, mixed $default = null)
     {
         if (!$this->checkDbConnection()) {
             return $default;
@@ -173,7 +164,7 @@ class WordPressDatabase
      */
     public function getTablePrefix($default = 'wp_')
     {
-        return isset($GLOBALS['table_prefix']) ? $GLOBALS['table_prefix'] : $default;
+        return $GLOBALS['table_prefix'] ?? $default;
     }
 
     /**
@@ -205,7 +196,7 @@ class WordPressDatabase
      *
      * @return false|PDOStatement The statement result of the query, or `false` if the query fails.
      */
-    public function query($query)
+    public function query($query): false|\PDOStatement
     {
         return $this->pdo->query($query);
     }

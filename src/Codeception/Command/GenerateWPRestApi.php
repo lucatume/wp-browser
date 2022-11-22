@@ -30,7 +30,7 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestApiTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPRestApiTestCase::class);
     }
 
     /**

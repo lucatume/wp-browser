@@ -251,7 +251,7 @@ class Wpbrowser extends Bootstrap
             ],
             'actor_suffix' => 'Tester',
             'extensions'   => [
-                'enabled'  => [ 'Codeception\Extension\RunFailed' ],
+                'enabled'  => [ \Codeception\Extension\RunFailed::class ],
                 'commands' => $this->getAddtionalCommands(),
             ],
             'params'       => [
@@ -275,13 +275,13 @@ class Wpbrowser extends Bootstrap
     protected function getAddtionalCommands()
     {
         return [
-            'Codeception\\Command\\GenerateWPUnit',
-            'Codeception\\Command\\GenerateWPRestApi',
-            'Codeception\\Command\\GenerateWPRestController',
-            'Codeception\\Command\\GenerateWPRestPostTypeController',
-            'Codeception\\Command\\GenerateWPAjax',
-            'Codeception\\Command\\GenerateWPCanonical',
-            'Codeception\\Command\\GenerateWPXMLRPC',
+            \Codeception\Command\GenerateWPUnit::class,
+            \Codeception\Command\GenerateWPRestApi::class,
+            \Codeception\Command\GenerateWPRestController::class,
+            \Codeception\Command\GenerateWPRestPostTypeController::class,
+            \Codeception\Command\GenerateWPAjax::class,
+            \Codeception\Command\GenerateWPCanonical::class,
+            \Codeception\Command\GenerateWPXMLRPC::class,
         ];
     }
 
@@ -312,7 +312,7 @@ class Wpbrowser extends Bootstrap
      *
      * @return array<string,mixed>|Map The installation data as provided by the user.
      */
-    protected function askForInstallationData()
+    protected function askForInstallationData(): array|\tad\WPBrowser\Utils\Map
     {
         $installationData = [
             'activeModules' => [
@@ -535,9 +535,7 @@ class Wpbrowser extends Bootstrap
         $filename = $this->workDir . DIRECTORY_SEPARATOR . $this->envFileName;
         $envVars  = $this->getEnvFileVars($installationData);
 
-        $envFileLines = implode("\n", array_map(static function ($key, $value) {
-            return "{$key}={$value}";
-        }, array_keys($envVars), $envVars));
+        $envFileLines = implode("\n", array_map(static fn($key, $value) => "{$key}={$value}", array_keys($envVars), $envVars));
 
         $put = file_put_contents($filename, $envFileLines . "\n");
 
@@ -851,7 +849,7 @@ EOF;
      *
      * @return array<string,array<string,false>|string>|Map The template default installation data.
      */
-    public function getDefaultInstallationData()
+    public function getDefaultInstallationData(): array|\tad\WPBrowser\Utils\Map
     {
         $installationData  = [
             'acceptanceSuite'       => 'acceptance',

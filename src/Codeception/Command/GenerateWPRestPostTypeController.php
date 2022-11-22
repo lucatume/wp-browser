@@ -31,7 +31,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPRestPostTypeControllerTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPRestPostTypeControllerTestCase::class);
     }
 
     /**

@@ -31,16 +31,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      *
      * @var array
      */
-    protected static $_core_actions_get = array(
-        'fetch-list',
-        'ajax-tag-search',
-        'wp-compression-test',
-        'imgedit-preview',
-        'oembed-cache',
-        'autocomplete-user',
-        'dashboard-widgets',
-        'logged-in',
-    );
+    protected static $_core_actions_get = ['fetch-list', 'ajax-tag-search', 'wp-compression-test', 'imgedit-preview', 'oembed-cache', 'autocomplete-user', 'dashboard-widgets', 'logged-in'];
 
     /**
      * Saved error reporting level
@@ -54,75 +45,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      *
      * @var array
      */
-    protected static $_core_actions_post = array(
-        'oembed_cache',
-        'image-editor',
-        'delete-comment',
-        'delete-tag',
-        'delete-link',
-        'delete-meta',
-        'delete-post',
-        'trash-post',
-        'untrash-post',
-        'delete-page',
-        'dim-comment',
-        'add-link-category',
-        'add-tag',
-        'get-tagcloud',
-        'get-comments',
-        'replyto-comment',
-        'edit-comment',
-        'add-menu-item',
-        'add-meta',
-        'add-user',
-        'closed-postboxes',
-        'hidden-columns',
-        'update-welcome-panel',
-        'menu-get-metabox',
-        'wp-link-ajax',
-        'menu-locations-save',
-        'menu-quick-search',
-        'meta-box-order',
-        'get-permalink',
-        'sample-permalink',
-        'inline-save',
-        'inline-save-tax',
-        'find_posts',
-        'widgets-order',
-        'save-widget',
-        'set-post-thumbnail',
-        'date_format',
-        'time_format',
-        'wp-fullscreen-save-post',
-        'wp-remove-post-lock',
-        'dismiss-wp-pointer',
-        'send-attachment-to-editor',
-        'heartbeat',
-        'nopriv_heartbeat',
-        'get-revision-diffs',
-        'save-user-color-scheme',
-        'update-widget',
-        'query-themes',
-        'parse-embed',
-        'set-attachment-thumbnail',
-        'parse-media-shortcode',
-        'destroy-sessions',
-        'install-plugin',
-        'update-plugin',
-        'press-this-save-post',
-        'press-this-add-category',
-        'crop-image',
-        'generate-password',
-        'save-wporg-username',
-        'delete-plugin',
-        'search-plugins',
-        'search-install-plugins',
-        'activate-plugin',
-        'update-theme',
-        'delete-theme',
-        'install-theme',
-        'get-post-thumbnail-html',
-    );
+    protected static $_core_actions_post = ['oembed_cache', 'image-editor', 'delete-comment', 'delete-tag', 'delete-link', 'delete-meta', 'delete-post', 'trash-post', 'untrash-post', 'delete-page', 'dim-comment', 'add-link-category', 'add-tag', 'get-tagcloud', 'get-comments', 'replyto-comment', 'edit-comment', 'add-menu-item', 'add-meta', 'add-user', 'closed-postboxes', 'hidden-columns', 'update-welcome-panel', 'menu-get-metabox', 'wp-link-ajax', 'menu-locations-save', 'menu-quick-search', 'meta-box-order', 'get-permalink', 'sample-permalink', 'inline-save', 'inline-save-tax', 'find_posts', 'widgets-order', 'save-widget', 'set-post-thumbnail', 'date_format', 'time_format', 'wp-fullscreen-save-post', 'wp-remove-post-lock', 'dismiss-wp-pointer', 'send-attachment-to-editor', 'heartbeat', 'nopriv_heartbeat', 'get-revision-diffs', 'save-user-color-scheme', 'update-widget', 'query-themes', 'parse-embed', 'set-attachment-thumbnail', 'parse-media-shortcode', 'destroy-sessions', 'install-plugin', 'update-plugin', 'press-this-save-post', 'press-this-add-category', 'crop-image', 'generate-password', 'save-wporg-username', 'delete-plugin', 'search-plugins', 'search-install-plugins', 'activate-plugin', 'update-theme', 'delete-theme', 'install-theme', 'get-post-thumbnail-html'];
 
     public static function _setUpBeforeClass()
     {
@@ -155,12 +78,12 @@ abstract class WPAjaxTestCase extends WPTestCase
     {
         parent::_setUp();
 
-        add_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1, 1);
+        add_filter('wp_die_ajax_handler', [$this, 'getDieHandler'], 1, 1);
 
         set_current_screen('ajax');
 
         // Clear logout cookies
-        add_action('clear_auth_cookie', array($this, 'logout'));
+        add_action('clear_auth_cookie', [$this, 'logout']);
 
         // Suppress warnings from "Cannot modify header information - headers already sent by"
         $this->_error_level = error_reporting();
@@ -177,12 +100,12 @@ abstract class WPAjaxTestCase extends WPTestCase
     public function _tearDown()
     {
         parent::_tearDown();
-        $_POST = array();
-        $_GET = array();
+        $_POST = [];
+        $_GET = [];
         unset($GLOBALS['post']);
         unset($GLOBALS['comment']);
-        remove_filter('wp_die_ajax_handler', array($this, 'getDieHandler'), 1);
-        remove_action('clear_auth_cookie', array($this, 'logout'));
+        remove_filter('wp_die_ajax_handler', [$this, 'getDieHandler'], 1);
+        remove_action('clear_auth_cookie', [$this, 'logout']);
         error_reporting($this->_error_level);
         set_current_screen('front');
     }
@@ -194,9 +117,7 @@ abstract class WPAjaxTestCase extends WPTestCase
     {
         unset($GLOBALS['current_user']);
         $cookies = array_filter(array_map(
-            static function ($cookieConst) {
-                return defined($cookieConst) ? constant($cookieConst) : false;
-            },
+            static fn($cookieConst) => defined($cookieConst) ? constant($cookieConst) : false,
             ['AUTH_COOKIE', 'SECURE_AUTH_COOKIE', 'LOGGED_IN_COOKIE', 'USER_COOKIE', 'PASS_COOKIE']
         ));
         foreach ($cookies as $c) {
@@ -211,7 +132,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      */
     public function getDieHandler()
     {
-        return array($this, 'dieHandler');
+        return [$this, 'dieHandler'];
     }
 
     /**
@@ -233,7 +154,7 @@ abstract class WPAjaxTestCase extends WPTestCase
      * @throws \WPAjaxDieContinueException If the accumulated last response is not empty.
      * @throws \WPAjaxDieStopException If the accumulated last response is empty.
      */
-    public function dieHandler($message)
+    public function dieHandler(mixed $message)
     {
         $this->_last_response .= ob_get_clean();
 
@@ -257,7 +178,7 @@ abstract class WPAjaxTestCase extends WPTestCase
     protected function _setRole($role)
     {
         $post = $_POST;
-        $user_id = self::factory()->user->create(array('role' => $role));
+        $user_id = self::factory()->user->create(['role' => $role]);
         wp_set_current_user($user_id);
         $_POST = array_merge($_POST, $post);
     }

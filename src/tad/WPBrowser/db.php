@@ -26,7 +26,7 @@ function importDumpWithMysqlBin($dumpFile, $dbName, $dbUser = 'root', $dbPass = 
 {
     $dbPort = false;
     if (strpos($dbHost, ':') > 0) {
-        list($dbHost, $dbPort) = explode(':', $dbHost);
+        [$dbHost, $dbPort] = explode(':', $dbHost);
     }
 
     $command = [mysqlBin(), '--host=' . escapeshellarg($dbHost), '--user=' . escapeshellarg($dbUser)];
@@ -161,9 +161,7 @@ function dbDsnMap($dbHost)
         // It's a sqlite in-memory database.
         + 16 * preg_match('/^(?<version>sqlite(\\d)*)::memory:$/um', $dbHost, $sqliteMemoryMatches);
 
-    $extract = static function ($frag, $key) {
-        return str_replace($key . '=', '', $frag);
-    };
+    $extract = static fn($frag, $key) => str_replace($key . '=', '', $frag);
 
     switch ($mask) {
         default:
@@ -195,7 +193,7 @@ function dbDsnMap($dbHost)
             // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
             $map['type'] = $type ?: 'mysql';
             $unixSocket = $unixSocketMatches['socket'];
-            if (strpos($unixSocket, '~') === 0) {
+            if (str_starts_with($unixSocket, '~')) {
                 $unixSocket = str_replace('~', homeDir(), $unixSocket);
             }
             $map['unix_socket'] = $unixSocket;
@@ -331,8 +329,8 @@ function dbDsnToMap($dsnString)
     $type = 'mysql';
 
     if (preg_match('/^(?<type>(mysql|sqlite(?<version>\\d)*)):/', $dsnString, $m)) {
-        $type = isset($m['type']) ? $m['type'] : 'mysql';
-        $version = isset($m['version']) ? $m['version'] : null;
+        $type = $m['type'] ?? 'mysql';
+        $version = $m['version'] ?? null;
         $dsnString = str_replace($type . ':', '', $dsnString);
     }
 
@@ -340,7 +338,7 @@ function dbDsnToMap($dsnString)
     if ($type === 'mysql') {
         $frags = explode(';', $dsnString);
         foreach ($frags as $frag) {
-            list($key, $value) = explode('=', $frag);
+            [$key, $value] = explode('=', $frag);
             $map [$key] = $value;
         }
     } else {

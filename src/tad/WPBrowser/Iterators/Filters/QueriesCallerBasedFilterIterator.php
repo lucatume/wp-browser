@@ -33,7 +33,7 @@ abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
     {
         $query = $this->getInnerIterator()->current();
         foreach ($this->needles as $needle) {
-            if (strpos($query[2], $needle) !== false) {
+            if (str_contains($query[2], $needle)) {
                 return false;
             }
         }

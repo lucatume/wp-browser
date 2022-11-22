@@ -6,7 +6,7 @@ if (class_exists( 'WP_Image_Editor' ) ) :
 
 		public static $load_return = true;
 		public static $test_return = true;
-		public static $save_return = array();
+		public static $save_return = [];
 
 		// Allow testing of jpeg_quality filter.
 		public function set_mime_type( $mime_type = null ) {
@@ -16,7 +16,7 @@ if (class_exists( 'WP_Image_Editor' ) ) :
 		public function load() {
 			return self::$load_return;
 		}
-		public static function test( $args = array() ) {
+		public static function test( $args = [] ) {
 			return self::$test_return;
 		}
 		public static function supports_mime_type( $mime_type ) {

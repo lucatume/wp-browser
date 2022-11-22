@@ -103,7 +103,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      */
     protected function getGenerator($config, $class)
     {
-        return new WPUnit($config, $class, '\\Codeception\\TestCase\\WPTestCase');
+        return new WPUnit($config, $class, '\\' . \Codeception\TestCase\WPTestCase::class);
     }
 
     /**

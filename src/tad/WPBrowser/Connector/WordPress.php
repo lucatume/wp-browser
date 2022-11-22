@@ -82,13 +82,13 @@ class WordPress extends Universal
      * @param UriToIndexMapper|null $uriToIndexMapper The URI to URL index mapper.
      */
     public function __construct(
-        array $server = array(),
+        array $server = [],
         History $history = null,
         CookieJar $cookieJar = null,
         UriToIndexMapper $uriToIndexMapper = null
     ) {
         parent::__construct($server, $history, $cookieJar);
-        $this->uriToIndexMapper = $uriToIndexMapper ? $uriToIndexMapper : new UriToIndexMapper($this->rootFolder);
+        $this->uriToIndexMapper = $uriToIndexMapper ?: new UriToIndexMapper($this->rootFolder);
     }
 
     /**
@@ -118,7 +118,7 @@ class WordPress extends Universal
             throw new \RuntimeException('Request URI could not be parsed.');
         }
 
-        $uri = isset($parseResult['path']) ? $parseResult['path'] : '/';
+        $uri = $parseResult['path'] ?? '/';
         if (array_key_exists('query', $parseResult)) {
             $uri .= '?' . $parseResult['query'];
         }
@@ -151,7 +151,7 @@ class WordPress extends Universal
             $env['post'] = $env['request'];
         }
 
-        $requestScript = dirname(dirname(__DIR__)) . '/scripts/request.php';
+        $requestScript = dirname(__DIR__, 2) . '/scripts/request.php';
 
         $command = PHP_BINARY .
             ' ' . escapeshellarg($requestScript) .

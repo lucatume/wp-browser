@@ -35,9 +35,7 @@ function normalizeNewLine($str)
 function slug($string, $sep = '-', $let = false)
 {
     $unquotedSeps = $let ? ['-', '_', $sep] : [$sep];
-    $seps = implode('', array_map(static function ($s) {
-        return preg_quote($s, '~');
-    }, array_unique($unquotedSeps)));
+    $seps = implode('', array_map(static fn($s) => preg_quote($s, '~'), array_unique($unquotedSeps)));
 
     // Prepend the separator to the first uppercase letter and trim the string.
     $step1 = preg_replace('/(?<![A-Z' . $seps . '])([A-Z])/u', $sep . '$1', trim($string));
@@ -100,13 +98,11 @@ function renderString($template, array $data = [], array $fnArgs = [])
     $fnArgs = array_values($fnArgs);
 
     $replace = array_map(
-        static function ($value) use ($fnArgs) {
-            return is_callable($value) ? $value(...$fnArgs) : $value;
-        },
+        static fn($value) => is_callable($value) ? $value(...$fnArgs) : $value,
         $data
     );
 
-    if (false !== strpos($template, '{{#')) {
+    if (str_contains($template, '{{#')) {
         $php = \LightnCandy\LightnCandy::compile($template);
 
         if ($php === false) {
@@ -120,9 +116,7 @@ function renderString($template, array $data = [], array $fnArgs = [])
     }
 
     $search = array_map(
-        static function ($k) {
-            return '{{' . $k . '}}';
-        },
+        static fn($k) => '{{' . $k . '}}',
         array_keys($data)
     );
 
@@ -172,7 +166,7 @@ function isRegex($string)
     try {
         // @phpstan-ignore-next-line
         return @preg_match($string, null) !== false;
-    } catch (\Exception $e) {
+    } catch (\Exception) {
         return false;
     }
 }
@@ -184,7 +178,7 @@ function isRegex($string)
  *
  * @return string|false The list in string format or `false` if the list is empty.
  */
-function andList(array $elements)
+function andList(array $elements): string|false
 {
     $list  = '';
     $count = count($elements);

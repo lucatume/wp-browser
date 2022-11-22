@@ -101,9 +101,9 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
 
         // Check filtered values.
         if (post_type_supports($post->post_type, 'title')) {
-            add_filter('protected_title_format', array($this, 'protected_title_format'));
+            add_filter('protected_title_format', [$this, 'protected_title_format']);
             $this->assertEquals(get_the_title($post->ID), $data['title']['rendered']);
-            remove_filter('protected_title_format', array($this, 'protected_title_format'));
+            remove_filter('protected_title_format', [$this, 'protected_title_format']);
             if ('edit' === $context) {
                 $this->assertEquals($post->post_title, $data['title']['raw']);
             } else {
@@ -159,12 +159,12 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
             }
         }
 
-        $taxonomies = wp_list_filter(get_object_taxonomies($post->post_type, 'objects'), array('show_in_rest' => true));
+        $taxonomies = wp_list_filter(get_object_taxonomies($post->post_type, 'objects'), ['show_in_rest' => true]);
 
         foreach ($taxonomies as $taxonomy) {
             $this->assertTrue(isset($data[$taxonomy->rest_base]));
 
-            $terms = wp_get_object_terms($post->ID, $taxonomy->name, array('fields' => 'ids'));
+            $terms = wp_get_object_terms($post->ID, $taxonomy->name, ['fields' => 'ids']);
 
             if ($terms instanceof \WP_Error) {
                 throw new AssertionFailedError('Error while fetching object terms: ' . $terms->get_error_message());
@@ -216,7 +216,7 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
                 );
             }
 
-            if (!in_array($data['type'], array('attachment', 'nav_menu_item', 'revision'), true)) {
+            if (!in_array($data['type'], ['attachment', 'nav_menu_item', 'revision'], true)) {
                 $this->assertEquals(
                     $links['https://api.w.org/attachment'][0]['href'],
                     add_query_arg('parent', $data['id'], rest_url('wp/v2/media'))
@@ -260,7 +260,7 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
             $links = $data['_links'];
             foreach ($links as &$links_array) {
                 foreach ($links_array as &$link) {
-                    $attributes = array_diff_key($link, array('href' => 1, 'name' => 1));
+                    $attributes = array_diff_key($link, ['href' => 1, 'name' => 1]);
                     $link = array_diff_key($link, $attributes);
                     $link['attributes'] = $attributes;
                 }
@@ -309,34 +309,16 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
         $this->check_post_data($post, $data, 'edit', $response->get_links());
     }
 
-    protected function set_post_data($args = array())
+    protected function set_post_data($args = [])
     {
-        $defaults = array(
-            'title' => 'Post Title',
-            'content' => 'Post content',
-            'excerpt' => 'Post excerpt',
-            'name' => 'test',
-            'status' => 'publish',
-            'author' => get_current_user_id(),
-            'type' => 'post',
-        );
+        $defaults = ['title' => 'Post Title', 'content' => 'Post content', 'excerpt' => 'Post excerpt', 'name' => 'test', 'status' => 'publish', 'author' => get_current_user_id(), 'type' => 'post'];
 
         return wp_parse_args($args, $defaults);
     }
 
-    protected function set_raw_post_data($args = array())
+    protected function set_raw_post_data($args = [])
     {
-        return wp_parse_args($args, $this->set_post_data(array(
-            'title' => array(
-                'raw' => 'Post Title',
-            ),
-            'content' => array(
-                'raw' => 'Post content',
-            ),
-            'excerpt' => array(
-                'raw' => 'Post excerpt',
-            ),
-        )));
+        return wp_parse_args($args, $this->set_post_data(['title' => ['raw' => 'Post Title'], 'content' => ['raw' => 'Post content'], 'excerpt' => ['raw' => 'Post excerpt']]));
     }
 
     /**

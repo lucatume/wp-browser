@@ -111,9 +111,7 @@ foreach ($activePlugins as $activePlugin) {
 $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
 
 // By default empty the tables, do not drop them.
-$tables_handling = isset( $configuration['tablesHandling'] ) ?
-	$configuration['tablesHandling']
-	: 'empty';
+$tables_handling = $configuration['tablesHandling'] ?? 'empty';
 
 switch ( $tables_handling ) {
 	default;

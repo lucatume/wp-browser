@@ -7,10 +7,10 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 
 	// Holds a array of /path/to/file.php and /path/to/dir/ map to an object in $fs above
 	// a fast more efficient way of determining if a path exists, and access to that node
-	private $fs_map = array();
+	private array $fs_map = [];
 
 	public $verbose = false; // Enable to debug WP_Filesystem_Base::find_folder() / etc.
-	public $errors = array();
+	public $errors = [];
 	public $method = 'MockFS';
 
 	function __construct() {}
@@ -39,11 +39,9 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 	 */
 	function init( $paths = '', $home_dir = '/' ) {
 		$this->fs = new MockFS_Directory_Node( '/' );
-		$this->fs_map = array(
-			'/' => $this->fs,
-		);
-		$this->cache = array(); // Used by find_folder() and friends
-		$this->cwd = isset( $this->fs_map[ $home_dir ] ) ? $this->fs_map[ $home_dir ] : '/';
+		$this->fs_map = ['/' => $this->fs];
+		$this->cache = []; // Used by find_folder() and friends
+		$this->cwd = $this->fs_map[ $home_dir ] ?? '/';
 		$this->setfs( $paths );
 	}
 
@@ -74,7 +72,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 	 * Locates a filesystem "node"
 	 */
 	private function locate_node( $path ) {
-		return isset( $this->fs_map[ $path ] ) ? $this->fs_map[ $path ] : false;
+		return $this->fs_map[ $path ] ?? false;
 	}
 
 	/**
@@ -164,7 +162,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 			$path = dirname( $path ) . '/';
 		}
 
-		$ret = array();
+		$ret = [];
 		foreach ( $this->fs_map[ $path ]->children as $entry ) {
 			if ( '.' == $entry->name || '..' == $entry->name )
 				continue;
@@ -175,7 +173,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 			if ( $limit_file && $entry->name != $limit_file )
 				continue;
 
-			$struc = array();
+			$struc = [];
 			$struc['name'] = $entry->name;
 			$struc['type'] = $entry->type;
 
@@ -183,7 +181,7 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 				if ( $recursive )
 					$struc['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struc['name'] ), $include_hidden, $recursive );
 				else
-					$struc['files'] = array();
+					$struc['files'] = [];
 			}
 
 			$ret[ $entry->name ] = $struc;
@@ -195,11 +193,9 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 
 class MockFS_Node {
 	public $name; // The "name" of the entry, does not include a slash (exception, root)
-	public $type; // The type of the entry 'f' for file, 'd' for Directory
-	public $path; // The full path to the entry.
+	public $type; // The full path to the entry.
 
-	function __construct( $path ) {
-		$this->path = $path;
+	function __construct( public $path ) {
 		$this->name = basename( $path );
 	}
 
@@ -214,15 +210,13 @@ class MockFS_Node {
 
 class MockFS_Directory_Node extends MockFS_Node {
 	public $type = 'd';
-	public $children = array(); // The child nodes of this directory
+	public $children = []; // The child nodes of this directory
 }
 
 class MockFS_File_Node extends MockFS_Node {
-	public $type = 'f';
-	public $contents = ''; // The contents of the file
+	public $type = 'f'; // The contents of the file
 
-	function __construct( $path, $contents = '' ) {
+	function __construct( $path, public $contents = '' ) {
 		parent::__construct( $path );
-		$this->contents = $contents;
 	}
 }

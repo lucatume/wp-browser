@@ -37,7 +37,7 @@ class Constants
      *
      * @return bool Whether the constant was defined or not.
      */
-    public function define($key, $value)
+    public function define($key, mixed $value)
     {
         return define($key, $value);
     }
@@ -50,7 +50,7 @@ class Constants
      *
      * @return mixed The value of the constant, if defined, or the default value.
      */
-    public function constant($key, $default = null)
+    public function constant($key, mixed $default = null)
     {
         return defined($key) ? constant($key) : $default;
     }
@@ -63,7 +63,7 @@ class Constants
      *
      * @return void
      */
-    public function defineIfUndefined($key, $value)
+    public function defineIfUndefined($key, mixed $value)
     {
         if (defined($key)) {
             return;

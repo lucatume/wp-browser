@@ -46,7 +46,7 @@ trait WPBrowserMethods
      *
      * @return void
      */
-    public function logOut($redirectTo = false)
+    public function logOut(bool|string $redirectTo = false)
     {
         $previousUri = $this->_getCurrentUri();
         $loginUri = $this->getLoginUrl();
@@ -138,7 +138,7 @@ trait WPBrowserMethods
             return null;
         }
 
-        $pattern = $pattern ? $pattern : '/^wordpress_[a-z0-9]{32}$/';
+        $pattern = $pattern ?: '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
 
         return empty($cookies) ? null : array_pop($cookies);
@@ -157,7 +157,7 @@ trait WPBrowserMethods
             return null;
         }
 
-        $pattern = $pattern ? $pattern : '/^wordpress_logged_in_[a-z0-9]{32}$/';
+        $pattern = $pattern ?: '/^wordpress_logged_in_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
 
         return empty($cookies) ? null : array_pop($cookies);
@@ -308,7 +308,7 @@ trait WPBrowserMethods
      * ```
      *
      */
-    public function seeErrorMessage($classes = '')
+    public function seeErrorMessage(string|array $classes = '')
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -352,7 +352,7 @@ trait WPBrowserMethods
      *
      * @return void
      */
-    public function seeMessage($classes = '')
+    public function seeMessage(array|string $classes = '')
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -418,7 +418,7 @@ trait WPBrowserMethods
      *
      * @return string The admin page path.
      */
-    public function amOnAdminAjaxPage($queryVars = null)
+    public function amOnAdminAjaxPage(string|array $queryVars = null)
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
@@ -441,7 +441,7 @@ trait WPBrowserMethods
      *
      * @return string The page path.
      */
-    public function amOnCronPage($queryVars = null)
+    public function amOnCronPage(string|array $queryVars = null)
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {

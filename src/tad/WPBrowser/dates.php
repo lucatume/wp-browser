@@ -15,7 +15,7 @@ namespace tad\WPBrowser;
  * @return \DateTimeImmutable The built date or `now` date if the date is not parsable by the `strtotime` function.
  * @throws \Exception If the `$date` is a string not parsable by the `strtotime` function.
  */
-function buildDate($date)
+function buildDate(mixed $date)
 {
     if ($date instanceof \DateTimeImmutable) {
         return $date;

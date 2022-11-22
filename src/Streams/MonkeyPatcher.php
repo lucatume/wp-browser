@@ -30,24 +30,20 @@ class MonkeyPatcher
 
     /**
      * Whether the class is currently registered as wrapper or not.
-     *
-     * @var bool
      */
-    private static $registered = false;
+    private static bool $registered = false;
 
     /**
      * A map from file paths to the function that should be used to patch them on load.
      *
      * @var array<string,callable>
      */
-    private static $fileTargets = [];
+    private static array $fileTargets = [];
 
     /**
      * The file extension that should be used for the patched files.
-     *
-     * @var string
      */
-    private static $patchedFileExtension = 'monkey';
+    private static string $patchedFileExtension = 'monkey';
     /**
      * The current resource context, set by the PHP engine.
      *
@@ -84,7 +80,7 @@ class MonkeyPatcher
     public static function register()
     {
         if (! self::$registered) {
-            self::$registered = stream_wrapper_unregister('file') && stream_wrapper_register('file', __CLASS__);
+            self::$registered = stream_wrapper_unregister('file') && stream_wrapper_register('file', self::class);
         }
 
         return self::$registered;
@@ -207,7 +203,7 @@ class MonkeyPatcher
      *
      * @return false|string Either the read file contents, or `false` if the file resource could not be read.
      */
-    public function stream_read($count)
+    public function stream_read($count): false|string
     {
         return is_resource($this->fileResource) ? fread($this->fileResource, $count) : false;
     }
@@ -244,7 +240,7 @@ class MonkeyPatcher
      *
      * @return bool Whether the option setting was successful or not.
      */
-    public function stream_set_option($option, $arg1, $arg2)
+    public function stream_set_option($option, int|bool $arg1, $arg2)
     {
         switch ($option) {
             case STREAM_OPTION_BLOCKING:
@@ -269,7 +265,7 @@ class MonkeyPatcher
      *
      * @return false|int The amount of written bytes to the file, or `false` if the write failed.
      */
-    public function stream_write($data)
+    public function stream_write($data): false|int
     {
         return is_resource($this->fileResource) ? fwrite($this->fileResource, $data) : false;
     }
@@ -371,7 +367,7 @@ class MonkeyPatcher
     {
         $stat = is_resource($this->fileResource) ? fstat($this->fileResource) : false;
         if ($stat) {
-            $stat['mtime'] = (isset($stat['mtime']) ? $stat['mtime'] : 0) + 1;
+            $stat['mtime'] = ($stat['mtime'] ?? 0) + 1;
         }
 
         return $stat;
@@ -386,13 +382,13 @@ class MonkeyPatcher
      *
      * @return bool Whether the application of the stream metadata was successful or not.
      */
-    public function stream_metadata($path, $option, $value)
+    public function stream_metadata($path, $option, array|int|string $value)
     {
         static::unregister();
 
         switch ($option) {
             case STREAM_META_TOUCH:
-                list($mtime, $atime) = array_replace([null, null], (array)$value);
+                [$mtime, $atime] = array_replace([null, null], (array)$value);
                 $result = touch($path, $mtime, $atime);
                 break;
             case STREAM_META_OWNER_NAME:
@@ -419,7 +415,7 @@ class MonkeyPatcher
 
         static::register();
 
-        return isset($result) ? $result : false;
+        return $result ?? false;
     }
 
     /**
@@ -461,7 +457,7 @@ class MonkeyPatcher
      *
      * @return string|false The next file name, or `false` is there is no more files in the directory.
      */
-    public function dir_readdir()
+    public function dir_readdir(): string|false
     {
         return is_resource($this->fileResource) ? readdir($this->fileResource) : false;
     }
@@ -512,7 +508,7 @@ class MonkeyPatcher
      *
      * @return array<int|string,int|false>|false A map of the file stats.
      */
-    public function url_stat($path, $flags)
+    public function url_stat($path, $flags): array|false
     {
         static::unregister();
 
@@ -520,7 +516,7 @@ class MonkeyPatcher
         });
         try {
             $result = stat($path);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $result = null;
         }
         restore_error_handler();

@@ -77,9 +77,7 @@ class FunctionProphecy
         }
         $prophecy = new StubProphecy($className);
 
-        $closure = static function (...$args) use ($prophecy, $safeName) {
-            return $prophecy->reveal()->{$safeName}(...$args);
-        };
+        $closure = static fn(...$args) => $prophecy->reveal()->{$safeName}(...$args);
 
         // Pre-load the dependency tree if the replaced function is about files.
         class_exists(MethodProphecy::class, true);

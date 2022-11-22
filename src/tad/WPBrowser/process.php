@@ -76,7 +76,7 @@ function processReadPipe($pipe, $length = null)
  *
  * @throws \RuntimeException If the process cannot be started.
  */
-function process($cmd = [], $cwd = null, $env = null)
+function process(array|string $cmd = [], $cwd = null, $env = null)
 {
     if (PHP_VERSION_ID < 70400 && is_array($cmd)) {
         $escapedCommand = implode(' ', $cmd);
@@ -162,13 +162,11 @@ function process($cmd = [], $cwd = null, $env = null)
  *
  * @return array<string> The parsed command line, in array format. Untouched if originally already an array.
  */
-function buildCommandline($command)
+function buildCommandline(string|array $command)
 {
     if (empty($command) || is_array($command)) {
-        return array_values(array_filter((array)$command, static function ($commandArg) {
-            // Drop only the empty fragments.
-            return ! empty($commandArg) || is_numeric($commandArg);
-        }));
+        return array_values(array_filter((array)$command, static fn($commandArg) => // Drop only the empty fragments.
+! empty($commandArg) || is_numeric($commandArg)));
     }
     $escapedCommandLine = [];
     $pattern = '/' .
@@ -189,7 +187,7 @@ function buildCommandline($command)
                 return;
             }
 
-            if (strpos($value, '=') !== false) {
+            if (str_contains($value, '=')) {
                 // option=value format.
                 $keyAndValue = explode('=', $value, 2);
                 if (is_array($keyAndValue) && count($keyAndValue) === 2) {

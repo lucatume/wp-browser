@@ -11,7 +11,7 @@ function tad_functions() {
  *
  * @return mixed The callback return value.
  */
-function _without_filters( $callback, $whitelist = array() ) {
+function _without_filters( $callback, $whitelist = [] ) {
 	if ( ! is_callable( $callback ) ) {
 		throw new InvalidArgumentException( 'Callback must be callable' );
 	}

@@ -27,7 +27,7 @@ function composerFile($file)
         throw new \InvalidArgumentException("Cannot read file {$file}.");
     }
 
-    $decoded = json_decode($composerFileContents, true);
+    $decoded = json_decode($composerFileContents, true, 512, JSON_THROW_ON_ERROR);
 
     if ($decoded === null) {
         throw new \InvalidArgumentException("Cannot parse the contents of the {$file} file.");

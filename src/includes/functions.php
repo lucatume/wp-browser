@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . '/class-basic-object.php';
-require_once dirname(__FILE__) . '/class-basic-subclass.php';
+require_once __DIR__ . '/class-basic-object.php';
+require_once __DIR__ . '/class-basic-subclass.php';
 
 /**
  * Resets various `$_SERVER` variables that can get altered during tests.
@@ -29,7 +29,7 @@ function tests_add_filter($tag, $function_to_add, $priority = 10, $accepted_args
         add_filter($tag, $function_to_add, $priority, $accepted_args);
     } else {
         $idx = _test_filter_build_unique_id($tag, $function_to_add, $priority);
-        $wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
+        $wp_filter[$tag][$priority][$idx] = ['function' => $function_to_add, 'accepted_args' => $accepted_args];
     }
     return true;
 }
@@ -42,7 +42,7 @@ function _test_filter_build_unique_id($tag, $function, $priority)
 
     if (is_object($function)) {
         // Closures are currently implemented as objects
-        $function = array( $function, '' );
+        $function = [$function, ''];
     } else {
         $function = (array) $function;
     }
@@ -59,21 +59,11 @@ function _delete_all_data()
 {
     global $wpdb;
 
-    foreach (array(
-        $wpdb->posts,
-        $wpdb->postmeta,
-        $wpdb->comments,
-        $wpdb->commentmeta,
-        $wpdb->term_relationships,
-        $wpdb->termmeta
-    ) as $table) {
+    foreach ([$wpdb->posts, $wpdb->postmeta, $wpdb->comments, $wpdb->commentmeta, $wpdb->term_relationships, $wpdb->termmeta] as $table) {
         $wpdb->query("DELETE FROM {$table}");
     }
 
-    foreach (array(
-        $wpdb->terms,
-        $wpdb->term_taxonomy
-    ) as $table) {
+    foreach ([$wpdb->terms, $wpdb->term_taxonomy] as $table) {
         $wpdb->query("DELETE FROM {$table} WHERE term_id != 1");
     }
 
@@ -101,10 +91,10 @@ function _delete_all_posts()
     }
 }
 
-function _wp_die_handler($message, $title = '', $args = array())
+function _wp_die_handler($message, $title = '', $args = [])
 {
     if (!$GLOBALS['_wp_die_disabled']) {
-        _wp_die_handler_filter($message, $title, $args);
+        _wp_die_handler_filter();
     } else {
         //Ignore at our peril
     }
