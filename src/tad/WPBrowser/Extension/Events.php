@@ -46,7 +46,7 @@ class Events extends Extension
      *
      * @return array<string,string> A map of all Codeception events to the magic `__call` proxy.
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         if (static::$subscribedEvents === null) {
             $codeceptionEvents = EventDispatcherAdapter::codeceptionEvents();

@@ -15,7 +15,7 @@ class GenerateWPXMLRPC extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wpxmlrpc';
     }
@@ -25,7 +25,7 @@ class GenerateWPXMLRPC extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The generator description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase extension with Codeception super-powers.';
     }

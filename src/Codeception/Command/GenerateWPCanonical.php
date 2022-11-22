@@ -13,7 +13,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase extension with Codeception super-powers.';
     }
@@ -36,7 +36,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wpcanonical';
     }

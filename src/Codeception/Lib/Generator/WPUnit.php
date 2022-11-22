@@ -26,7 +26,7 @@ class WPUnit extends AbstractGenerator implements GeneratorInterface
     /**
      * @var array<string,mixed>
      */
-    protected $settings;
+    protected array $settings;
 
     /**
      * @var string

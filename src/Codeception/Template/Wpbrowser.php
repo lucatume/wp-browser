@@ -90,7 +90,7 @@ class Wpbrowser extends Bootstrap
      *
      * @throws \Exception If there's an error processing the installation information or context.
      */
-    public function setup($interactive = true)
+    public function setup($interactive = true): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->checkInstalled($this->workDir);
@@ -225,7 +225,7 @@ class Wpbrowser extends Bootstrap
      *
      * @return void
      */
-    protected function say($message = '')
+    protected function say($message = ''): void
     {
         if ($this->quiet) {
             return;
@@ -239,7 +239,7 @@ class Wpbrowser extends Bootstrap
      * @return void
      *
      */
-    public function createGlobalConfig()
+    public function createGlobalConfig(): void
     {
         $basicConfig = [
             'paths'        => [
@@ -629,7 +629,7 @@ EOF;
      *
      * @return void
      */
-    protected function createUnitSuite($actor = 'Unit')
+    protected function createUnitSuite($actor = 'Unit'): void
     {
         $suiteConfig = <<<EOF
 # Codeception Test Suite Configuration
@@ -655,7 +655,7 @@ EOF;
      *
      * @return void
      */
-    protected function createSuite($suite, $actor, $config)
+    protected function createSuite($suite, $actor, $config): void
     {
         $this->createDirectoryFor("tests/$suite", "$suite.suite.yml");
         if ($this->createHelpers) {
@@ -677,7 +677,7 @@ EOF;
      *
      * @return void
      */
-    protected function createFunctionalSuite($actor = 'Functional', array $installationData = [])
+    protected function createFunctionalSuite($actor = 'Functional', array $installationData = []): void
     {
         $installationData = new Data($installationData);
         $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';
@@ -738,7 +738,7 @@ EOF;
      *
      * @return void
      */
-    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = [])
+    protected function createAcceptanceSuite($actor = 'Acceptance', array $installationData = []): void
     {
         $installationData = new Data($installationData);
         $WPDb             = ! empty($installationData['activeModules']['WPDb']) ? '- WPDb' : '# - WPDb';

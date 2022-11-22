@@ -51,7 +51,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @param float                   $time
      */
-    public function addError(PHPUnit_Framework_Test $test, Exception $e, $time)
+    public function addError(PHPUnit_Framework_Test $test, Throwable $e, float $time): void
     {
     }
 
@@ -61,7 +61,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      * @param float                     $time
      * @since Method available since Release 5.1.0
      */
-    public function addWarning(PHPUnit_Framework_Test $test, PHPUnit_Framework_Warning $e, $time)
+    public function addWarning(PHPUnit_Framework_Test $test, PHPUnit_Framework_Warning $e, $time): void
     {
     }
 
@@ -70,7 +70,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @param float                                   $time
      */
-    public function addFailure(PHPUnit_Framework_Test $test, PHPUnit_Framework_AssertionFailedError $e, $time)
+    public function addFailure(PHPUnit_Framework_Test $test, PHPUnit_Framework_AssertionFailedError $e, $time): void
     {
     }
 
@@ -79,7 +79,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @param float                   $time
      */
-    public function addIncompleteTest(PHPUnit_Framework_Test $test, Exception $e, $time)
+    public function addIncompleteTest(PHPUnit_Framework_Test $test, Throwable $e, $time): void
     {
     }
 
@@ -89,7 +89,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      * @param float                   $time
      * @since  Method available since Release 4.0.0
      */
-    public function addRiskyTest(PHPUnit_Framework_Test $test, Exception $e, $time)
+    public function addRiskyTest(PHPUnit_Framework_Test $test, Throwable $e, $time): void
     {
     }
 
@@ -98,14 +98,14 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @param float                   $time
      */
-    public function addSkippedTest(PHPUnit_Framework_Test $test, Exception $e, $time)
+    public function addSkippedTest(PHPUnit_Framework_Test $test, Throwable $e, $time): void
     {
     }
 
     /**
      * A test started.
      */
-    public function startTest(PHPUnit_Framework_Test $test)
+    public function startTest(PHPUnit_Framework_Test $test): void
     {
     }
 
@@ -114,7 +114,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
      *
      * @param float                   $time
      */
-    public function endTest(PHPUnit_Framework_Test $test, $time)
+    public function endTest(PHPUnit_Framework_Test $test, $time): void
     {
         if (!$test instanceof PHPUnit_Framework_TestCase) return;
 
@@ -129,7 +129,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * A test suite started.
      */
-    public function startTestSuite(PHPUnit_Framework_TestSuite $suite)
+    public function startTestSuite(PHPUnit_Framework_TestSuite $suite): void
     {
         $this->suites++;
     }
@@ -137,7 +137,7 @@ class SpeedTrapListener implements PHPUnit_Framework_TestListener
     /**
      * A test suite ended.
      */
-    public function endTestSuite(PHPUnit_Framework_TestSuite $suite)
+    public function endTestSuite(PHPUnit_Framework_TestSuite $suite): void
     {
         $this->suites--;
 

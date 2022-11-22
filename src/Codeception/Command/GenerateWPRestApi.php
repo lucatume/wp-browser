@@ -15,7 +15,7 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_TestCase extension with Codeception super-powers.';
     }
@@ -38,7 +38,7 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wprest';
     }

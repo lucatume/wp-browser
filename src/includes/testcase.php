@@ -637,9 +637,9 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 
 		$message = '';
 		if ( count($not_true) )
-			$message .= implode( $not_true, ', ' ) . ' is expected to be true. ';
+			$message .= implode( ', ', $not_true ) . ' is expected to be true. ';
 		if ( count($not_false) )
-			$message .= implode( $not_false, ', ' ) . ' is expected to be false.';
+			$message .= implode( ', ', $not_false ) . ' is expected to be false.';
 		$this->assertTrue( $passed, $message );
 	}
 

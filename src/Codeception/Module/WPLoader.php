@@ -55,21 +55,21 @@ class WPLoader extends Module
      *
      * @var bool
      */
-    public static $includeInheritedActions = true;
+    public static bool $includeInheritedActions = true;
 
     /**
      * Allows to explicitly set what methods have this class.
      *
      * @var array<string>
      */
-    public static $onlyActions = [];
+    public static array $onlyActions = [];
 
     /**
      * Allows to explicitly exclude actions from module.
      *
      * @var array<string>
      */
-    public static $excludeActions = [];
+    public static array $excludeActions = [];
 
     /**
      * A flag to indicate whether the module should late init or not.
@@ -94,7 +94,7 @@ class WPLoader extends Module
      *
      * @var array<string>
      */
-    protected $requiredFields = [
+    protected array $requiredFields = [
         'wpRootFolder',
         'dbName',
         'dbHost',
@@ -146,7 +146,7 @@ class WPLoader extends Module
      *
      * @var array<string,mixed>|Configuration
      */
-    protected $config
+    protected array $config
         = [
             'loadOnly'                  => false,
             'isolatedInstall'           => true,

@@ -12,7 +12,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase extension with Codeception super-powers.';
     }
@@ -35,7 +35,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
 
         return 'generate:wpajax';

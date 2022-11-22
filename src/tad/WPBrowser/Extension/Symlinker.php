@@ -173,7 +173,7 @@ class Symlinker extends Extension
      *
      * @return void
      */
-    public function _initialize()
+    public function _initialize(): void
     {
         parent::_initialize();
         $this->checkRequirements();

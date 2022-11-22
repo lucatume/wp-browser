@@ -56,7 +56,7 @@ class WPCLI extends Module
      *
      * @var array<string>
      */
-    protected $requiredFields = ['path'];
+    protected array $requiredFields = ['path'];
 
     /**
      * The module pretty name in debug.
@@ -83,7 +83,7 @@ class WPCLI extends Module
      *
      * @var array<string,mixed>
      */
-    protected $config = [
+    protected array $config = [
         'throw' => true,
         'timeout' => 60,
     ];
@@ -242,7 +242,7 @@ class WPCLI extends Module
      *
      * @return void
      */
-    protected function debugSection($title, $message)
+    protected function debugSection($title, $message): void
     {
         parent::debugSection($this->prettyName . ' ' . $title, $message);
     }
@@ -515,7 +515,7 @@ class WPCLI extends Module
      *
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         parent::validateConfig();
         $this->validateTimeout();

@@ -28,7 +28,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return "generate:wpunit";
     }
@@ -38,7 +38,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception super-powers.';
     }
@@ -51,7 +51,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return int|null Either the command return value or `null`.
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $suite = $input->getArgument('suite');
         /** @var string $class */
@@ -111,7 +111,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDefinition([
 

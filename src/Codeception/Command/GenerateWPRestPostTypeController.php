@@ -15,7 +15,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
      *
      * @return string The command description.
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_Post_Type_Controller_Testcase extension '
                . 'with Codeception super-powers.';
@@ -39,7 +39,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
      *
      * @return string The command name.
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'generate:wprestposttypecontroller';
     }

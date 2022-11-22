@@ -203,7 +203,7 @@ EOF;
      *
      * @return array<string,string> A list of module dependencies.
      */
-    public function _depends()
+    public function _depends(): array
     {
         return [\Codeception\Module\WPDb::class => $this->dependencyMessage];
     }
