@@ -31,7 +31,7 @@ class WPWebDriver extends WebDriver
      *
      * @var array<string>
      */
-    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
+    protected array $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * The login attempts counter.
