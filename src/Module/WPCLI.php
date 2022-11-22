@@ -111,15 +111,14 @@ class WPCLI extends Module
      *
      * @param ModuleContainer $moduleContainer The module container containing this module.
      * @param array<string,mixed>|null $config The module configuration.
-     * @param Process|null $process The process adapter.
      *
      * @throws WpCliException If there's an issue setting up the module using the current configuration.
      */
-    public function __construct(ModuleContainer $moduleContainer, ?array $config = null, Process $process = null)
+    public function __construct(ModuleContainer $moduleContainer, ?array $config = null)
     {
         parent::__construct($moduleContainer, $config);
         $wpRootFolder = $config['path'];
-        $this->setUpWpCli($wpRootFolder, $process);
+        $this->setUpWpCli($wpRootFolder);
     }
 
     /**
@@ -368,7 +367,7 @@ class WPCLI extends Module
         if (is_callable($splitCallback)) {
             $output = $splitCallback($output, $userCommand, $this);
         } else {
-            $output = !preg_match('/[\\n]+/', $output) ?
+            $output = !preg_match('/\n+/', $output) ?
                 preg_split('/\\s+/', $output)
                 : preg_split('/\\s*\\n+\\s*/', $output);
         }

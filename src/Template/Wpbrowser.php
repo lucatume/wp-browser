@@ -609,7 +609,7 @@ EOF;
         return [
             'TEST_SITE_DB_DSN' => Db::dbDsnString($testSiteDsnMap),
             'TEST_SITE_DB_HOST' => Db::dbDsnString($testDbDsnMap, true),
-            'TEST_SITE_DB_NAME' => $testSiteDsnMap('dbname', 'wordpress'),
+            'TEST_SITE_DB_NAME' => $testSiteDsnMap['dbname'] ?? 'wordpress',
             'TEST_SITE_DB_USER' => $installationData['testSiteDbUser'],
             'TEST_SITE_DB_PASSWORD' => $installationData['testSiteDbPassword'],
             'TEST_SITE_TABLE_PREFIX' => $installationData['testSiteTablePrefix'],

@@ -15,7 +15,7 @@ class Dispatcher
 
     private static function getCodecept(): ?Codecept
     {
-        if (self::$codeceptInstance === null) {
+        if (self::$codeceptInstance !== null) {
             return self::$codeceptInstance;
         }
 

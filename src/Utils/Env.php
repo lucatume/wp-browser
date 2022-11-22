@@ -10,6 +10,9 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use InvalidArgumentException;
+use RuntimeException;
+
 class Env
 {
     /**
@@ -19,21 +22,21 @@ class Env
      *
      * @return array The map of the read environment variables.
      *
-     * @throws \RuntimeException If the env file does not exist or is not readable.
+     * @throws RuntimeException If the env file does not exist or is not readable.
      */
     public static function envFile(string $file): array
     {
         if (!(is_file($file))) {
-            throw new \InvalidArgumentException('File ' . $file . ' does not exist.');
+            throw new InvalidArgumentException('File ' . $file . ' does not exist.');
         }
         if (!is_readable($file)) {
-            throw new \InvalidArgumentException('File ' . $file . ' is not readable.');
+            throw new InvalidArgumentException('File ' . $file . ' is not readable.');
         }
 
         $envFileContents = file_get_contents($file);
 
         if ($envFileContents === false) {
-            throw new \InvalidArgumentException('Could not read ' . $file . ' contents.');
+            throw new InvalidArgumentException('Could not read ' . $file . ' contents.');
         }
 
         $envFileContents = str_replace("\r\n", "\n", $envFileContents);

@@ -4,47 +4,59 @@ namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
+use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
-use lucatume\WPBrowser\Process\Process;
-use lucatume\WPBrowser\Process\ProcessFailedException;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\StubProphecy\Arg;
-use lucatume\WPBrowser\StubProphecy\StubProphecy;
+use lucatume\WPBrowser\Tests\Traits\WithUopz;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
+use PHPUnit\Framework\Assert;
+use Symfony\Component\Process\Process;
+use UnitTester;
 
-class WPCLITest extends \Codeception\Test\Unit
+class WPCLITest extends Unit
 {
     use WithStubProphecy;
+    use WithUopz;
 
     protected $backupGlobals = false;
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
-    protected $tester;
-
-    /**
-     * @var ModuleContainer
-     */
-    protected $moduleContainer;
-
-    /**
-     * @var vfsStreamDirectory
-     */
-    protected $root;
+    protected UnitTester $tester;
 
     /**
      * @var array
      */
-    protected $config = [
+    protected array $config = [
+        'path' => __DIR__,
         'throw' => true
     ];
-    /**
-     * A mock of the process handler.
-     *
-     * @var StubProphecy|Process
-     */
-    protected $process;
+
+    private function assertProcCallArgsAndReturn(array $expectedArgs, string $runCommand = 'exit 0'): void
+    {
+        $this->uopzSetStaticMethodReturn(
+            Process::class,
+            'fromShellCommandLine',
+            static function () use ($expectedArgs, $runCommand) {
+                $cwd = getcwd();
+                $callArgs = func_get_args();
+                foreach ($callArgs as &$callArg) {
+                    $callArg = is_string($callArg) ? str_replace($cwd, '', $callArg) : $callArg;
+                }
+                unset($callArg);
+                Assert::assertEquals($expectedArgs, $callArgs);
+
+                return Process::fromShellCommandline($runCommand);
+            },
+            true);
+    }
+
+    private function module(): WPCLI
+    {
+        $moduleContainer = new ModuleContainer(new Di(), []);
+        return new WPCLI($moduleContainer, $this->config);
+    }
 
     /**
      * @test
@@ -52,20 +64,9 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_be_instantiatable()
     {
-        $cli = $this->makeInstance();
+        $cli = $this->module();
 
         $this->assertInstanceOf(WPCLI::class, $cli);
-    }
-
-    /**
-     * @return WPCLI
-     */
-    private function makeInstance()
-    {
-        $mockModuleContainer = $this->moduleContainer->reveal();
-        $mockProcess  = $this->process->reveal();
-
-        return new WPCLI($mockModuleContainer, $this->config, $mockProcess);
     }
 
     /**
@@ -78,7 +79,7 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $this->expectException(ModuleConfigException::class);
 
-        $this->makeInstance()->cli(['core','version']);
+        $this->module()->cli(['core', 'version']);
     }
 
     /**
@@ -87,25 +88,22 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_call_the_process_with_proper_parameters()
     {
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn('1.2.3');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand([ "'core'", "'version'" ]),
-            $this->root->url() . '/wp'
-        )->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ]
+        );
 
-        $cliStatus = $this->makeInstance()->cli('core version');
+        $cliStatus = $this->module()->cli('core version');
 
         $this->assertEquals(0, $cliStatus);
     }
 
-    public function optionalOptionsWithArguments()
+    public function optionalOptionsWithArguments(): array
     {
         return [
             ['ssh', 'some-ssh'],
@@ -127,25 +125,20 @@ class WPCLITest extends \Codeception\Test\Unit
     public function it_should_allow_setting_additional_wp_cli_options_in_the_config_file($option, $optionValue)
     {
         $this->config[$option] = $optionValue;
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --$option=$optionValue core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ]
+        );
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn('1.2.3');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand([ "--{$option}={$optionValue}", "'core'", "'version'" ]),
-            $path
-        )->willReturn($mockProcess->reveal());
-
-        $this->makeInstance()->cli('core version');
+        $this->module()->cli('core version');
     }
 
-    public function skippedOptions()
+    public function skippedOptions(): array
     {
         return [
             ['debug'],
@@ -164,19 +157,17 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config[$option] = true;
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn('1.2.3');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([ "'core'", "'version'" ]), $path)
-                      ->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ]
+        );
 
-        $this->makeInstance()->cli('core version');
+        $this->module()->cli('core version');
     }
 
     /**
@@ -189,21 +180,17 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->config[$option] = $optionValue;
         $overrideValue = 'another-' . $option . '-value';
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn('1.2.3');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand([ "'core'", "'version'", "--{$option}='{$overrideValue}'" ]),
-            $path
-        )->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version --$option='$overrideValue'",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ]
+        );
 
-        $this->makeInstance()->cli("core version --{$option}='{$overrideValue}'");
+        $this->module()->cli("core version --{$option}='{$overrideValue}'");
     }
 
     /**
@@ -214,32 +201,23 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $error = md5(time());
-
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn($error);
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(-1);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand(["'core'","'version'"]),
-            $path
-        ) ->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'echo "for reasons" 1>&2; exit 1'
+        );
 
         $this->expectException(ModuleException::class);
 
-        $pattern = '/' . preg_quote($error, '/') . '/';
-        if (method_exists($this, 'expectExceptionMessageMatches')) {
-            $this->expectExceptionMessageMatches($pattern);
-        } else {
-            $this->expectExceptionMessageRegExp($pattern);
-        }
+        $pattern = '/for reasons/';
+        $this->expectExceptionMessageMatches($pattern);
 
-        $this->makeInstance()->cli('core version');
+        $this->module()->cli('core version');
     }
 
     /**
@@ -250,26 +228,21 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = false;
 
-        $error = md5(time());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'echo "for reasons" 1>&2; exit 1'
+        );
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn($error);
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(-1);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand(["'core'","'version'"]),
-            $path
-        )->willReturn($mockProcess->reveal());
-
-        $this->makeInstance()->cli('core version');
+        $this->module()->cli('core version');
     }
 
-    public function cliReturnValues()
+    public function cliReturnValues(): array
     {
         return [
             ['1 2 3 4 5', [1, 2, 3, 4, 5]],
@@ -288,25 +261,18 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_not_cast_output_to_any_format($raw, $expected)
     {
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn($raw);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand([
-                "'post'",
-                "'list'",
-                "'--format=ids'"
-            ]),
-            $path
-        )->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n '$raw'"
+        );
 
-        $ids = $this->makeInstance()->cliToArray('post list --format=ids');
+        $ids = $this->module()->cliToArray('post list --format=ids');
 
         $this->assertEquals($expected, $ids);
     }
@@ -322,25 +288,18 @@ class WPCLITest extends \Codeception\Test\Unit
             return $expected;
         };
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn('23 12');
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand(
-            $this->buildExpectedCommand([
-                "'post'",
-                "'list'",
-                "'--format=ids'"
-            ]),
-            $path
-        )->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n '23 12'"
+        );
 
-        $ids = $this->makeInstance()->cliToArray('post list --format=ids', $splitCallback);
+        $ids = $this->module()->cliToArray('post list --format=ids', $splitCallback);
 
         $this->assertEquals($expected, $ids);
     }
@@ -355,20 +314,20 @@ class WPCLITest extends \Codeception\Test\Unit
             return 'foo';
         };
 
-        $this->process = $this->stubProphecy(Process::class);
-        $this->process->getOutput()->willReturn('23 12');
-        $this->process->getExitCode()->willReturn(0);
-        $path = $this->root->url() . '/wp';
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($this->process->reveal(true));
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n '23 12'"
+        );
 
         $this->expectException(ModuleException::class);
 
-        $this->makeInstance()->cliToArray('post list --format=ids', $splitCallback);
+        $this->module()->cliToArray('post list --format=ids', $splitCallback);
     }
 
     /**
@@ -377,22 +336,18 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_handle_the_case_where_the_command_output_is_an_empty_array()
     {
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn([]);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo ''"
+        );
 
-        $this->assertEquals([], $this->makeInstance()->cliToArray('post list --format=ids'));
+        $this->assertEquals([], $this->module()->cliToArray('post list --format=ids'));
     }
 
     /**
@@ -401,22 +356,18 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function it_should_handle_the_case_where_the_command_output_is_null()
     {
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "exit 0"
+        );
 
-        $this->assertEquals([], $this->makeInstance()->cliToArray('post list --format=ids'));
+        $this->assertEquals([], $this->module()->cliToArray('post list --format=ids'));
     }
 
     /**
@@ -428,22 +379,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['timeout'] = 23;
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(23)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                23
+            ],
+            "exit 0"
+        );
 
-        $this->makeInstance()->cliToArray('post list --format=ids');
+        $this->module()->cliToArray('post list --format=ids');
     }
 
     /**
@@ -456,22 +403,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['timeout'] = $timeoutValue;
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(null)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                $timeoutValue
+            ],
+            "exit 0"
+        );
 
-        $this->makeInstance()->cliToArray('post list --format=ids');
+        $this->module()->cliToArray('post list --format=ids');
     }
 
     /**
@@ -485,10 +428,10 @@ class WPCLITest extends \Codeception\Test\Unit
 
         $this->expectException(ModuleConfigException::class);
 
-        $this->makeInstance();
+        $this->module();
     }
 
-    public function nullTimeoutValues()
+    public function nullTimeoutValues(): array
     {
         return [
             'null' => [null],
@@ -500,12 +443,6 @@ class WPCLITest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
-        $this->root = vfsStream::setup('root');
-        $wpDir = vfsStream::newDirectory('wp');
-        $this->root->addChild($wpDir);
-        $this->config = ['path' => $this->root->url() . '/wp'];
-        $this->process = $this->stubProphecy(Process::class);
     }
 
     /**
@@ -517,22 +454,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['allow-root'] = true;
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            "--allow-root",
-            "'core'",
-            "'version'",
-        ]), $path)->willReturn($mockProcess->reveal(true));
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --allow-root core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "exit 0"
+        );
 
-        $this->makeInstance()->cli('core version');
+        $this->module()->cli('core version');
     }
 
     /**
@@ -544,22 +477,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['some-option'] = 'some-value';
 
-        $mockProcess = $this->stubProphecy(Process::class);
-        $mockProcess->getError()->willReturn('');
-        $mockProcess->getOutput()->willReturn(null);
-        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
-        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->getExitCode()->willReturn(0);
-        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
-        $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
-        $this->process->withCommand($this->buildExpectedCommand([
-            '--some-option=some-value',
-            'core',
-            'version'
-        ]), $path)->willReturn($mockProcess->reveal());
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --some-option=some-value core version",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "exit 0"
+        );
 
-        $this->makeInstance()->cli(['core','version']);
+        $this->module()->cli(['core', 'version']);
     }
 
     /**
@@ -571,19 +500,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $adminEmail = 'luca@theaveragedev.com';
 
-        $this->process = $this->stubProphecy(Process::class);
-        $this->process->getError()->willReturn(null);
-        $this->process->getOutput()->willReturn($adminEmail);
-        $this->process->getExitCode()->willReturn(0);
-        $path = $this->root->url() . '/wp';
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            'option',
-            'get',
-            'admin_email'
-        ]), $path)->willReturn($this->process->reveal(true));
+        $this->assertProcCallArgsAndReturn(
+            [
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module option get admin_email",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n $adminEmail"
+        );
 
-        $this->assertEquals($adminEmail, $this->makeInstance()->cliToString([ 'option','get','admin_email' ]));
+        $this->assertEquals($adminEmail, $this->module()->cliToString(['option', 'get', 'admin_email']));
     }
 
     /**
@@ -595,33 +523,20 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'mustRun' => function () {
-                    $process = $this->stubProphecy(
-                        Process::class,
-                        [
-                            'isSuccessful' => false,
-                            'getCommand' => 'invalid',
-                            'getExitCode' => 1,
-                            'getError' => 'error!',
-                            'getWorkingDirectory' => __DIR__,
-                        ]
-                    );
-                    throw new ProcessFailedException($process->reveal());
-                },
-                'getError'      => 'error!',
-            ]
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module invalid",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'echo -n "error!" 1>&2; exit 1'
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            'invalid'
-        ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
         $this->expectException(ModuleException::class);
 
-        $this->makeInstance()->cliToString([ 'invalid' ]);
+        $this->module()->cliToString(['invalid']);
     }
 
     /**
@@ -633,32 +548,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = false;
 
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'mustRun' => function () {
-                    $process = $this->makeEmpty(
-                        Process::class,
-                        [
-                            'isSuccessful'        => false,
-                            'getCommand'      => 'invalid',
-                            'getExitCode'         => 1,
-                            'getError'      => 'error!',
-                            'getWorkingDirectory' => __DIR__,
-                        ]
-                    );
-                    throw new ProcessFailedException($process);
-                },
-                'getError'      => 'error!',
-                'getExitCode' => 1
-            ]
+                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module invalid",
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'echo -n "error!" 1>&2; exit 1'
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            'invalid'
-        ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
-        $this->assertEquals('error!', $this->makeInstance()->cliToString([ 'invalid' ]));
+        $this->assertEquals('error!', $this->module()->cliToString(['invalid']));
     }
 
     /**
@@ -669,42 +570,31 @@ class WPCLITest extends \Codeception\Test\Unit
     public function should_support_the_wp_cli_strict_args_mode_env_argument()
     {
         $this->config['env']['strict-args'] = true;
-        $matchesExpectedEnv = function (array $env) {
-            $this->assertArrayHasKey('WP_CLI_STRICT_ARGS_MODE', $env);
-            $this->assertEquals('1', $env['WP_CLI_STRICT_ARGS_MODE']);
-        };
 
         $output = 'Success: Added widget to sidebar.';
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getError' => '',
-                'getExitCode' => 0,
-                'getOutput' => $output,
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module widget add rss sidebar --title=My feedx --url="https://wordpress.org/news/feed/"',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                ['WP_CLI_STRICT_ARGS_MODE' =>  '1'],
+                null,
+                60
+            ],
+            "echo -n '$output'"
         );
-        $this->process->withEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            "widget",
-            "add",
-            "rss",
-            "sidebar",
-            "--title=My feedx",
-            '--url="https://wordpress.org/news/feed/"'
-        ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
-        $this->assertEquals($output, $this->makeInstance()->cliToString([
-            'widget',
-            'add',
-            'rss',
-            'sidebar',
-            '--title=My feedx',
-            '--url="https://wordpress.org/news/feed/"'
-        ]));
+        $this->assertEquals($output,
+            $this->module()->cliToString([
+                'widget',
+                'add',
+                'rss',
+                'sidebar',
+                '--title=My feedx',
+                '--url="https://wordpress.org/news/feed/"'
+            ]));
     }
 
-    public function envParametersDataProvider()
+    public function envParametersDataProvider(): array
     {
         return [
             'cache-dir' => ['cache-dir', '/tmp/wp-cli-cache', 'WP_CLI_CACHE_DIR', '/tmp/wp-cli-cache'],
@@ -716,6 +606,7 @@ class WPCLITest extends \Codeception\Test\Unit
             'php-args' => ['php-args', 'foo=bar some=23', 'WP_CLI_PHP_ARGS', 'foo=bar some=23'],
         ];
     }
+
     /**
      * It should correctly parse other env parameters
      *
@@ -726,25 +617,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['env'][$envKey] = $envValue;
 
-        $matchesExpectedEnv = function (array $env) use ($expectedEnvName, $expectedEnvValue) {
-            $this->assertArrayHasKey($expectedEnvName, $env);
-            $this->assertEquals($expectedEnvValue, $env[$expectedEnvName]);
-        };
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getError' => '',
-                'getExitCode' => 0,
-                'getOutput' => '5.2.2',
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [$expectedEnvName =>  $expectedEnvValue],
+                null,
+                60
+            ],
+            "echo -n '5.2.2'"
         );
-        $this->process->withEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            'core'  ,'version'
-        ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
-        $this->assertEquals('5.2.2', $this->makeInstance()->cliToString([ 'core' ,'version' ]));
+        $this->assertEquals('5.2.2', $this->module()->cliToString(['core', 'version']));
     }
 
     /**
@@ -756,18 +640,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getExitCode' => 0,
-                'getOutput' => 'stdout',
-                'getError' => 'stderr',
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n 'stdout'"
         );
-        $command = $this->buildExpectedCommand([ 'test' ]);
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($command, $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
-        $this->assertEquals('stdout', $this->makeInstance()->cliToString([ 'test' ]));
+
+        $this->assertEquals('stdout', $this->module()->cliToString(['test']));
     }
 
     /**
@@ -779,18 +663,18 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getExitCode' => 0,
-                'getOutput' => '',
-                'getError' => 'stderr'
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'echo -n "stderr" 1>&2; exit 0'
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
-        $this->assertEquals('stderr', $this->makeInstance()->cliToString([ 'test' ]));
+        $this->assertEquals('stderr', $this->module()->cliToString(['test']));
     }
 
     /**
@@ -802,29 +686,20 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->config['throw'] = true;
 
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getExitCode' => -1,
-                'getOutput' => 'stdout',
-                'getError' => 'stderr'
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'exit 1'
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
         $this->expectException(ModuleException::class);
 
-        $this->makeInstance()->cliToString(['test']);
-    }
-
-    protected function buildExpectedCommand(array $arr)
-    {
-        return array_merge([
-            escapeshellarg(PHP_BINARY),
-            codecept_root_dir('vendor/wp-cli/wp-cli/php/boot-fs.php'),
-            '--path=' . $this->root->url() . '/wp'
-        ], $arr);
+        $this->module()->cliToString(['test']);
     }
 
     /**
@@ -836,7 +711,7 @@ class WPCLITest extends \Codeception\Test\Unit
     {
         $this->expectException(ModuleException::class);
 
-        $this->makeInstance()->grabLastShellOutput();
+        $this->module()->grabLastShellOutput();
     }
 
     /**
@@ -846,21 +721,18 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function should_return_empty_string_when_grabbing_output_of_last_command_that_produced_no_output()
     {
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getExitCode' => 0,
-                'getOutput'   => '',
-                'getError'    => ''
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            'exit 0'
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand(
-            $this->buildExpectedCommand(['test']),
-            $this->root->url() . '/wp'
-        )->willReturn($this->process->reveal(true));
 
-        $cli = $this->makeInstance();
+        $cli = $this->module();
         $cli->cli(['test']);
         $lastOutput = $cli->grabLastShellOutput();
 
@@ -874,24 +746,22 @@ class WPCLITest extends \Codeception\Test\Unit
      */
     public function should_allow_grabbing_the_output_of_the_last_ran_command()
     {
-        $this->process = $this->stubProphecy(
-            Process::class,
+        $this->assertProcCallArgsAndReturn(
             [
-                'getExitCode' => 0,
-                'getOutput'   => 'some output from the command',
-                'getError'    => ''
-            ]
+                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
+                '/tests/unit/lucatume/WPBrowser/Module',
+                [],
+                null,
+                60
+            ],
+            "echo -n 'some output from the command'"
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand(
-            $this->buildExpectedCommand(['test']),
-            $this->root->url() . '/wp'
-        )->willReturn($this->process->reveal(true));
 
-        $cli = $this->makeInstance();
+        $cli = $this->module();
         $cli->cli(['test']);
         $lastOutput = $cli->grabLastShellOutput();
 
         $this->assertEquals('some output from the command', $lastOutput);
     }
+
 }

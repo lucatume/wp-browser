@@ -43,28 +43,28 @@ class WordPress extends Universal
      *
      * @var string
      */
-    protected $url;
+    protected string $url;
 
     /**
      * The current domain.
      *
      * @var string
      */
-    protected $domain;
+    protected string $domain;
 
     /**
      * An array of the current headers.
      *
      * @var array<string,string>
      */
-    protected $headers;
+    protected array $headers;
 
     /**
      * The current document root.
      *
      * @var string
      */
-    protected $rootFolder;
+    protected string $rootFolder;
 
     /**
      * The URI ot file mapper.
@@ -90,16 +90,17 @@ class WordPress extends Universal
     }
 
     /**
-     * Executes the current reques in process.
+     * Executes the current request in process.
      *
      * @param Request $request The request object.
      *
      * @return Response The request response.
      *
-     * @throws \RuntimeException If the request URI could not be parsed.
+     * @throws \RuntimeException|ModuleException If the request URI could not be parsed.
      */
     public function doRequestInProcess($request)
     {
+        // @todo refactor to use the lucatume\WPBrowser\WordPress\Installation class.
         if ($this->mockedResponse) {
             $response = $this->mockedResponse;
             $this->mockedResponse = null;
@@ -149,9 +150,9 @@ class WordPress extends Universal
             $env['post'] = $env['request'];
         }
 
-        $requestScript = dirname(dirname(__DIR__)) . '/scripts/request.php';
+        $requestScript = dirname(__DIR__, 2) . '/scripts/request.php';
 
-        $command = [PHP_BINARY, $requestScript, $this->index, base64_encode(serialize($env)];
+        $command = [PHP_BINARY, $requestScript, $this->index, base64_encode(serialize($env))];
 
         $process = new Process($command);
         $process->run();

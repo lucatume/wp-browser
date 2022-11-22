@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-use Codeception\Codecept;
 use Codeception\Exception\ConfigurationException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Lib\Framework;
@@ -53,7 +52,9 @@ class Codeception
                 array_slice(
                     array_reverse(
                         debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
-                    ), 0, 20)
+                    ),
+                    0,
+                    20)
             );
 
             foreach ($reverseBacktraceHead as $backtraceEntry) {

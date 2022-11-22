@@ -279,38 +279,38 @@ class Db
      */
     public static function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {
-        $type = $dbDsnMap('type', 'mysql');
+        $type = $dbDsnMap['type'] ?? 'mysql';
         $dsn = '';
 
         if ($type === 'mysql') {
             $dsn = $forDbHost ? '' : 'mysql:';
-            $dbname = $dbDsnMap('dbname');
+            $dbname = $dbDsnMap['dbname'] ?? null;
 
-            if ($dbDsnMap('unix_socket')) {
+            if (isset($dbDsnMap['unix_socket'])) {
                 $dsn .= $forDbHost ?
-                    $dbDsnMap('host', 'localhost') . ':' . $dbDsnMap('unix_socket')
-                    : 'unix_socket=' . $dbDsnMap('unix_socket');
+                    ($dbDsnMap['host']?? 'localhost') . ':' . ($dbDsnMap['unix_socket'] ?? null)
+                    : 'unix_socket=' . ($dbDsnMap['unix_socket'] ?? null);
 
                 return $dbname && !$forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
             }
 
             $dsn .= $forDbHost ?
-                $dbDsnMap('host', 'localhost')
-                : 'host=' . $dbDsnMap('host', 'localhost');
+                $dbDsnMap['host'] ??  'localhost'
+                : 'host=' . ($dbDsnMap['host'] ?? 'localhost');
 
-            $port = $dbDsnMap('port');
+            $port = $dbDsnMap['port'] ?? null;
 
             if ($port) {
-                $dsn .= $forDbHost ? ':' . $port : ';port=' . $dbDsnMap('port');
+                $dsn .= $forDbHost ? ':' . $port : ';port=' . $port;
             }
 
             return $dbname && !$forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
         }
 
-        if ($type === 'sqlite') {
-            $dsn = $forDbHost ?
-                $dbDsnMap('file')
-                : $dbDsnMap('version') . ':' . $dbDsnMap('file');
+        if ($type === 'sqlite' && isset($dbDsnMap['file'])) {
+            $dsn = $forDbHost && isset($dbDsnMap['version']) ?
+                $dbDsnMap['version'] . ':' . $dbDsnMap('file')
+                : $dbDsnMap['file'];
         }
 
         return $dsn;
