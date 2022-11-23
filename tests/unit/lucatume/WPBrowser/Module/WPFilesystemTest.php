@@ -6,17 +6,13 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use Codeception\TestInterface;
 use DateTime;
-use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Strings;
 use PHPUnit\Framework\AssertionFailedError;
 
 class WPFilesystemTest extends Unit
 {
-    use WithStubProphecy;
-
     /**
      * @var ModuleContainer
      */

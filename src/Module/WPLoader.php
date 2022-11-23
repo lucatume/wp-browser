@@ -18,6 +18,7 @@ use Codeception\Util\Debug;
 use Exception;
 use JsonException;
 use lucatume\WPBrowser\Adapters\WP;
+use lucatume\WPBrowser\Deprecated\Map;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
@@ -28,10 +29,9 @@ use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Deprecated\Map;
 use lucatume\WPBrowser\Utils\Password;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -237,28 +237,19 @@ class WPLoader extends Module
     protected ?WPHealthcheck $healthcheck = null;
 
     /**
-     * An instance of the WordPress adapter.
-     */
-    protected WP $wp;
-
-    /**
      * WPLoader constructor.
      *
      * @param ModuleContainer     $moduleContainer The current module container.
      * @param array<string,mixed> $config          The current module configuration.
-     * @param WP|null             $wp              An instance of the WordPress adapter.
      * @param WPHealthcheck|null  $healthcheck     An instance of the WPHealthcheck object.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
         ?array $config,
-        WP $wp = null,
-        WPHealthcheck $healthcheck = null,
-        WPLoader\ClosureFactory $closure = null
+        WPHealthcheck $healthcheck = null
     ) {
         parent::__construct($moduleContainer, $config);
-        $this->wp = $wp ?: new WP();
-        $this->healthcheck = $healthcheck ?: new WPHealthcheck();
+        $this->healthcheck = $healthcheck ?? new WPHealthcheck();
     }
 
     /**
@@ -327,26 +318,17 @@ class WPLoader extends Module
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
      *
-     * @throws ModuleConfigException|ModuleConflictException If there's any configuration error.
-     */
-    public function _initialize(): void
-    {
-        $this->initialize();
-    }
-
-    /**
-     * Initializes the module making some initial checks and setting up the paths.
+     * @param bool $loadWordpress Whether WordPress should be loaded or not.
      *
-     *
-     * @throws ModuleConfigException If the WordPress root directory specified in the configuration is not valid.
-     * @throws ModuleConflictException If a *Db module is loaded alongside this one and the settings of each are not
-     *                                 compatible with each other.
+     * @throws JsonException
+     * @throws ModuleConfigException
+     * @throws ModuleConflictException
      */
-    protected function initialize(): void
+    public function _initialize(bool $loadWordpress = true): void
     {
         // Read the configuration from the suite configuration file.
         self::$didInit = true;
-        $this->config = (new Map($this->config, [
+        $this->config = array_merge($this->config, [
             'wpRootDir' => 'wpRootFolder',
             'pluginsDir' => 'pluginsFolder',
             'contentDir' => 'contentFolder',
@@ -358,7 +340,10 @@ class WPLoader extends Module
             'secure_auth_salt' => 'secureAuthSalt',
             'logged_in_salt' => 'loggedInSalt',
             'nonce_salt' => 'nonceSalt',
-        ]))->toArray();
+        ]);
+
+        $this->ensureWPRoot($this->getWpRootFolder());
+
         foreach ([
                      'authKey',
                      'secureAuthKey',
@@ -374,10 +359,6 @@ class WPLoader extends Module
             }
         }
 
-        $this->ensureWPRoot($this->getWpRootFolder());
-
-        // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
-        define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
         $this->wpBootstrapFile = CorePHPUnit::path('/includes/bootstrap.php');
 
         // @todo review this: use WP_TESTS_SKIP_INSTALL?
@@ -392,7 +373,11 @@ class WPLoader extends Module
         // Any *Db Module should either not be running or properly configured if this has to run alongside it.
         $this->ensureDbModuleCompat();
 
-        $this->_loadWordpress();
+        if ($loadWordpress) {
+            // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
+            define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
+            $this->_loadWordpress();
+        }
     }
 
     /**
@@ -422,29 +407,35 @@ class WPLoader extends Module
     }
 
     /**
-     * Parses and validates the WordPress root directory path from the configuration.
+     * Returns the absolute path to the WordPress root folder or a path within it..
      *
-     * @param string $path An optional path to append to the WordPress root folder path.
+     * @param string|null $path The path to append to the WordPress root folder.
      *
-     * @return string The absolute path to the WordPress root directory.
+     * @return string The absolute path to the WordPress root folder or a path within it.
+     *
+     * @throws ModuleConfigException If the specified WordPress root folder is not found or not valid.
      */
-    private function getWpRootFolder(string $path = ''): string
+    public function getWpRootFolder(string $path = null): string
     {
-        if (empty($this->wpRootFolder)) {
-            $wpRootFolder = $this->config['wpRootFolder'];
-            // Maybe the user is using the `~` symbol for home?
-            $wpRootFolder = (string)FS::resolvePath($wpRootFolder);
-            // Remove `\ ` spaces in folder paths.
-            $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
-            // Resolve to real path if relative or symlinked.
-            if ($realPath = realpath($wpRootFolder)) {
-                $wpRootFolder = $realPath;
-            }
-            // Allow me not to bother with trailing slashes.
-            $this->wpRootFolder = FS::untrailslashit($wpRootFolder) . '/';
-        }
 
-        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
+        try {
+            if (empty($this->wpRootFolder)) {
+                $wpRootFolder = $this->config['wpRootFolder'];
+                // Maybe the user is using the `~` symbol for home?
+                $wpRootFolder = (string)FS::resolvePath($wpRootFolder);
+                // Remove `\ ` spaces in folder paths.
+                $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
+                // Resolve to real path if relative or symlinked.
+                if ($realPath = realpath($wpRootFolder)) {
+                    $wpRootFolder = $realPath;
+                }
+                // Normalize trailing slashes.
+                $this->wpRootFolder = FS::untrailslashit($wpRootFolder) . '/';
+            }
+            return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
+        } catch (Exception $e) {
+            throw new ModuleConfigException(__CLASS__, $e->getMessage(), $e);
+        }
     }
 
     /**
@@ -741,7 +732,7 @@ class WPLoader extends Module
         );
 
         [$stylesheet] = $this->getStylesheetTemplateFromConfig();
-        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet,$multisite);
+        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet, $multisite);
 
         $loop = new Loop($jobs, 1, true);
 

@@ -307,4 +307,25 @@ class Filesystem
     {
         return self::mkdirp(codecept_output_dir('tmp/' . $prefix . md5(microtime())));
     }
+
+    public static function relativePath(string $from, string $to, $separator = DIRECTORY_SEPARATOR): string
+    {
+        // Kudos to https://stackoverflow.com/questions/2090723/how-to-get-the-relative-directory-no-matter-from-where-its-included-in-php
+        $fromPath = explode($separator, str_replace(['/', '\\'], $separator, $from));
+        $toPath = explode($separator, str_replace(['/', '\\'], $separator, $to));
+        $relpath = [];
+        $dotted = 0;
+        $fromPathCount = count($fromPath);
+        $toPathCount = count($toPath);
+        for ($i = 0; $i < $fromPathCount; $i++) {
+            if ($i >= $toPathCount) {
+                $dotted++;
+            } elseif ($toPath[$i] !== $fromPath[$i]) {
+                $relpath[] = $toPath[$i];
+                $dotted++;
+            }
+        }
+        return str_repeat('..' . $separator, $dotted) . implode($separator,
+                array_merge($relpath, array_slice($toPath, $fromPathCount)));
+    }
 }
