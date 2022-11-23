@@ -195,7 +195,7 @@ class WPWebDriver extends WebDriver
      * @return void
      * @throws ModuleConfigException|ModuleException If there's an issue with the configuration.
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         $this->configBackCompat();
 
