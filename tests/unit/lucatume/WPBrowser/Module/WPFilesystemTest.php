@@ -3,90 +3,35 @@
 namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
+use Codeception\Test\Unit;
 use Codeception\TestInterface;
-use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
+use DateTime;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Property;
+use lucatume\WPBrowser\Utils\Strings;
 use PHPUnit\Framework\AssertionFailedError;
 
-class WPFilesystemTest extends \Codeception\Test\Unit
+class WPFilesystemTest extends Unit
 {
     use WithStubProphecy;
+
     /**
-     * @var \Codeception\Lib\ModuleContainer
+     * @var ModuleContainer
      */
-    protected $moduleContainer;
-    protected $config;
-    protected $sandbox;
+    protected ModuleContainer $moduleContainer;
+    protected array $config = [];
     protected $backupGlobals = false;
     protected $nowUploads;
 
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
-
-    public function _before()
+    protected function module(): WPFilesystem
     {
-        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
-    }
-
-    /**
-     * It should be instantiatable
-     *
-     * @test
-     */
-    public function be_instantiatable()
-    {
-        $this->assertInstanceOf(WPFilesystem::class, $this->make_instance());
-    }
-
-    /**
-     * @return WPFilesystem
-     */
-    protected function make_instance()
-    {
-        $this->config = $this->config ?? $this->getDefaultConfig();
-        $instance = new WPFilesystem($this->moduleContainer->reveal(), $this->config);
+        $moduleContainer = new ModuleContainer(new Di(), []);
+        $instance = new WPFilesystem($moduleContainer, $this->config);
         $instance->_initialize();
 
         return $instance;
-    }
-
-    protected function getDefaultConfig(array $overrides = [])
-    {
-        $wpFolder = isset($overrides['wp']) ? $overrides['wp'] : '';
-
-        $this->sandbox = codecept_output_dir('sandbox' . $wpFolder);
-
-        FS::rrmdir($this->sandbox);
-
-        mkdir($this->sandbox . $wpFolder, 0777, true);
-        file_put_contents($this->sandbox . '/wp-load.php', '<?php //silence is golden;');
-
-        $themes = isset($overrides['themes']) ? $overrides['themes'] : '/wp-content/themes';
-        $plugins = isset($overrides['plugins']) ? $overrides['plugins'] : '/wp-content/plugins';
-        $muPlugins = isset($overrides['mu-plugins']) ? $overrides['mu-plugins'] : '/wp-content/mu-plugins';
-        $uploads = isset($overrides['uploads']) ? $overrides['uploads'] : "/wp-content/uploads";
-
-        mkdir($this->sandbox . $themes, 0777, true);
-        mkdir($this->sandbox . $plugins, 0777, true);
-        mkdir($this->sandbox . $muPlugins, 0777, true);
-        $Y = date('Y');
-        $m = date('m');
-        $nowUploads = $this->sandbox . "{$uploads}/{$Y}/{$m}";
-        $this->nowUploads = $nowUploads;
-        mkdir($nowUploads, 0777, true);
-
-        return [
-            'wpRootFolder' => $this->sandbox,
-            'themes'       => $themes,
-            'plugins'      => $plugins,
-            'mu-plugins'   => $muPlugins,
-            'uploads'      => $uploads,
-        ];
     }
 
     /**
@@ -94,13 +39,13 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_throw_if_wp_root_folder_param_is_missing()
+    public function it_should_throw_if_wp_root_folder_param_is_missing(): void
     {
         $this->config = [];
 
         $this->expectException(ModuleConfigException::class);
 
-        $this->make_instance();
+        $this->module();
     }
 
     /**
@@ -108,17 +53,17 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_only_require_the_wp_root_folder_path_parameter_and_default_the_other_parameters()
+    public function it_should_only_require_the_wp_root_folder_path_parameter_and_default_the_other_parameters(): void
     {
-        $config = $this->getDefaultConfig();
-        $wpRoot = $config['wpRootFolder'];
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
         $this->config = ['wpRootFolder' => $wpRoot];
 
-        $sut = $this->make_instance();
+        $sut = $this->module();
         $sut->_initialize();
 
         $moduleConfig = $sut->_getConfig();
-        $this->assertEquals(FS::untrailslashit($wpRoot) . 'WPFilesystemTest.php/', $moduleConfig['wpRootFolder']);
+        $this->assertEquals($wpRoot . '/', $moduleConfig['wpRootFolder']);
         $this->assertEquals($wpRoot . '/wp-content/themes/', $moduleConfig['themes']);
         $this->assertEquals($wpRoot . '/wp-content/plugins/', $moduleConfig['plugins']);
         $this->assertEquals($wpRoot . '/wp-content/mu-plugins/', $moduleConfig['mu-plugins']);
@@ -126,61 +71,53 @@ class WPFilesystemTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should allow passing optional parameters as relative paths
-     *
-     * @test
-     */
-    public function it_should_allow_passing_optional_parameters_as_relative_paths()
-    {
-    }
-
-    public function optionalRequiredPathParameters()
-    {
-        return [
-            ['themes'],
-            ['plugins'],
-            ['mu-plugins'],
-            ['uploads'],
-        ];
-    }
-
-    /**
      * It should allow specifying wpRootFolder as relative path to the project root
      *
      * @test
      */
-    public function it_should_allow_specifying_wp_root_folder_as_relative_path_to_the_project_root()
+    public function it_should_allow_specifying_wp_root_folder_as_relative_path_to_the_project_root(): void
     {
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        $wpRootRelative = str_replace(codecept_root_dir(), '', $wpRoot);
+        touch($wpRoot . '/wp-load.php');
         $this->config = [
-            'wpRootFolder' => '/tests/_output/sandbox',
+            'wpRootFolder' => $wpRootRelative
         ];
 
-        $this->getDefaultConfig();
-        $sut = $this->make_instance();
+        $sut = $this->module();
         $sut->_initialize();
-        $this->assertEquals(codecept_output_dir('sandbox/'), $sut->_getConfig('wpRootFolder'));
+        $this->assertEquals($wpRootRelative . '/', $sut->_getConfig('wpRootFolder'));
     }
 
     /**
      * It should allow specifying optional path parameters as relative paths
      *
      * @test
-     * @dataProvider optionalRequiredPathParameters
      */
-    public function it_should_allow_specifying_optional_path_parameters_as_relative_paths($parameter)
+    public function it_should_allow_specifying_optional_path_parameters_as_relative_paths(): void
     {
-        $config = $this->getDefaultConfig();
-        $path = $config['wpRootFolder'] . '/foo/';
-        mkdir($path, 0777, true);
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        mkdir($wpRoot . '/' . 'test-themes');
+        mkdir($wpRoot . '/' . 'test-plugins');
+        mkdir($wpRoot . '/' . 'test-mu-plugins');
+        mkdir($wpRoot . '/' . 'test-uploads');
 
         $this->config = [
-            'wpRootFolder' => $config['wpRootFolder'],
-            $parameter     => 'foo',
+            'wpRootFolder' => $wpRoot,
+            'themes' => 'test-themes',
+            'plugins' => 'test-plugins',
+            'mu-plugins' => 'test-mu-plugins',
+            'uploads' => 'test-uploads',
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->module();
         $sut->_initialize();
-        $this->assertEquals($path, $sut->_getConfig($parameter));
+
+        $this->assertEquals($wpRoot . '/test-themes/', $sut->_getConfig('themes'));
+        $this->assertEquals($wpRoot . '/test-plugins/', $sut->_getConfig('plugins'));
+        $this->assertEquals($wpRoot . '/test-mu-plugins/', $sut->_getConfig('mu-plugins'));
+        $this->assertEquals($wpRoot . '/test-uploads/', $sut->_getConfig('uploads'));
     }
 
     /**
@@ -188,15 +125,17 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_the_uploads_path()
+    public function it_should_allow_being_in_the_uploads_path(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, ['wp-content' => ['uploads' => []]]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
+        $sut = $this->module();
         $sut->amInUploadsPath();
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
-
-        $this->assertEquals($uploadsPath, getcwd());
+        $this->assertEquals($wpRoot . '/wp-content/uploads', getcwd());
     }
 
     /**
@@ -204,22 +143,30 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_an_uploads_subfolder()
+    public function it_should_allow_being_in_an_uploads_subfolder(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [],
+                    '2017' => [
+                        '04' => []
+                    ],
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+        $sut = $this->module();
+        $sut->amInUploadsPath('test_1');
 
-        mkdir($uploadsPath . '/foo', 0777, true);
-        mkdir($uploadsPath . '/2017/04', 0777, true);
-
-        $sut->amInUploadsPath('foo');
-
-        $this->assertEquals($uploadsPath . '/foo', getcwd());
+        $this->assertEquals($wpRoot . '/wp-content/uploads/test_1', getcwd());
 
         $sut->amInUploadsPath('2017/04');
 
-        $this->assertEquals($uploadsPath . '/2017/04', getcwd());
+        $this->assertEquals($wpRoot . '/wp-content/uploads/2017/04', getcwd());
     }
 
     /**
@@ -227,28 +174,37 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_an_uploads_path_year_month_subfolder_from_date()
+    public function it_should_allow_being_in_an_uploads_path_year_month_subfolder_from_date(): void
     {
-        $sut = $this->make_instance();
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
-
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
         $Y = date('Y');
         $m = date('m');
-        $expected = $uploadsPath . "/{$Y}/{$m}";
-        $nextMonthY = date('Y', strtotime('next month'));
-        $nextMonthM = date('m', strtotime('next month'));
-        $nextMonth = $uploadsPath . "/{$nextMonthY}/{$nextMonthM}";
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [],
+                    '2019' => [
+                        '03' => []
+                    ],
+                    $Y => [
+                        $m => []
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        mkdir($nextMonth, 0777, true);
+        $sut = $this->module();
+
+        $sut->amInUploadsPath('2019-03');
+
+        $this->assertEquals($wpRoot . '/wp-content/uploads/2019/03', getcwd());
 
         $sut->amInUploadsPath('now');
 
-        $this->assertEquals($expected, getcwd());
-
-        $sut->amInUploadsPath('next month');
-
-        $this->assertEquals($nextMonth, getcwd());
+        $this->assertEquals($wpRoot . "/wp-content/uploads/$Y/$m", getcwd());
     }
 
     /**
@@ -256,22 +212,33 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_being_in_time_based_uploads_folder_with_unix_timestamp()
+    public function it_should_being_in_time_based_uploads_folder_with_unix_timestamp(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $lastMonthTimestamp = strtotime('last month');
+        $lastMonth = new DateTime('@' . $lastMonthTimestamp);
+        $lastMonthYear = $lastMonth->format('Y');
+        $lastMonthMonth = $lastMonth->format('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [],
+                    '2019' => [
+                        '03' => []
+                    ],
+                    $lastMonthYear => [
+                        $lastMonthMonth => []
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+        $sut = $this->module();
+        $sut->amInUploadsPath($lastMonthTimestamp);
 
-        $time = strtotime('next month');
-        $Y = date('Y', $time);
-        $m = date('m', $time);
-        $expected = $uploadsPath . "/{$Y}/{$m}";
-
-        mkdir($expected, 0777, true);
-
-        $sut->amInUploadsPath($time);
-
-        $this->assertEquals($expected, getcwd());
+        $this->assertEquals($wpRoot . "/wp-content/uploads/$lastMonthYear/$lastMonthMonth", getcwd());
     }
 
     /**
@@ -279,18 +246,28 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_seeing_uploaded_files()
+    public function it_should_allow_seeing_uploaded_files(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => ['file.txt' => 'test test test']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+        $sut = $this->module();
 
-        $sut->seeUploadedFileFound(str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads) . '/file.txt');
-
+        $sut->seeUploadedFileFound("/$Y/$m/file.txt");
         $sut->dontSeeUploadedFileFound('file.txt');
-
         $this->expectException(AssertionFailedError::class);
-
         $sut->seeUploadedFileFound('some-other-file.txt');
         $sut->dontSeeUploadedFileFound('some-other-file.txt');
     }
@@ -300,19 +277,30 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_see_a_file_in_the_uploads_folder_based_on_the_date()
+    public function it_should_allow_to_see_a_file_in_the_uploads_folder_based_on_the_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => ['file.txt' => 'test test test']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+        $sut = $this->module();
 
         $sut->seeUploadedFileFound('file.txt', time());
-        $sut->dontSeeUploadedFileFound('file.txt', 'somewhere/else');
-
+        $sut->dontSeeUploadedFileFound('file.txt', 'last month');
         $this->expectException(AssertionFailedError::class);
-
         $sut->seeUploadedFileFound('some-other-file.txt', 'now');
-        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'somewhere/else');
+        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'last month');
     }
 
     /**
@@ -320,20 +308,27 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_see_in_an_uploaded_file_contents()
+    public function it_should_allow_to_see_in_an_uploaded_file_contents(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => ['file.txt' => 'lorem dolor']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+        $sut = $this->module();
 
-        $dateFrag = str_replace($this->config['wpRootFolder'] . $this->config['uploads'], '', $this->nowUploads);
-        $sut->seeInUploadedFile($dateFrag . '/file.txt', 'foo bar');
-        $sut->dontSeeInUploadedFile($dateFrag . '/file.txt', 'nope');
-
-        $this->expectException(AssertionFailedError::class);
-
-        $sut->seeInUploadedFile('some-other-file.txt', 'foo');
-        $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo');
+        $sut->seeInUploadedFile("/$Y/$m/file.txt", 'lorem dolor');
+        $sut->dontSeeInUploadedFile("/$Y/$m/file.txt", 'nunquam');
     }
 
     /**
@@ -341,19 +336,27 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_see_an_uploaded_file_content_based_on_the_date()
+    public function it_should_allow_to_see_an_uploaded_file_content_based_on_the_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => ['file.txt' => 'lorem dolor']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        file_put_contents($this->nowUploads . '/file.txt', 'foo bar');
+        $sut = $this->module();
 
-        $sut->seeInUploadedFile('file.txt', 'foo bar', 'now');
-        $sut->dontSeeInUploadedFile('file.txt', 'nope', 'now');
-
-        $this->expectException(AssertionFailedError::class);
-
-        $sut->seeInUploadedFile('some-other-file.txt', 'foo', 'now');
-        $sut->dontSeeInUploadedFile('some-other-file.txt', 'foo', 'now');
+        $sut->seeInUploadedFile("/file.txt", 'lorem dolor', 'now');
+        $sut->dontSeeInUploadedFile("/file.txt", 'nunquam', 'now');
     }
 
     /**
@@ -361,19 +364,30 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_delete_uploads_dirs()
+    public function it_should_allow_to_delete_uploads_dirs(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [
+                        'test_2' => ['file.txt' => 'lorem dolor']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+        $sut = $this->module();
 
-        mkdir($uploadsPath . '/folder1', 0777, true);
+        $sut->seeUploadedFileFound('test_1');
+        $sut->seeUploadedFileFound('test_1/test_2');
 
-        $sut->seeUploadedFileFound('folder1');
+        $sut->deleteUploadedDir('test_1');
 
-        $sut->deleteUploadedDir('folder1');
-
-        $sut->dontSeeUploadedFileFound('folder1');
+        $sut->dontSeeUploadedFileFound('test_1');
+        $sut->dontSeeUploadedFileFound('test_1/test_2');
     }
 
     /**
@@ -381,17 +395,36 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_dir_using_date()
+    public function it_should_allow_to_delete_upload_dir_using_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => [
+                            'test_1' => [
+                                'test_2' => ['file.txt' => 'lorem dolor']
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        mkdir($this->nowUploads . '/folder1', 0777, true);
+        $sut = $this->module();
 
-        $sut->seeUploadedFileFound('folder1', 'now');
+        $sut->seeUploadedFileFound('test_1', time());
+        $sut->seeUploadedFileFound('test_1/test_2', time());
 
-        $sut->deleteUploadedDir('folder1', 'now');
+        $sut->deleteUploadedDir('test_1', time());
 
-        $sut->dontSeeUploadedFileFound('folder1', 'now');
+        $sut->dontSeeUploadedFileFound('test_1', time());
+        $sut->dontSeeUploadedFileFound('test_1/test_2', time());
     }
 
     /**
@@ -399,20 +432,28 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_files()
+    public function it_should_allow_to_delete_upload_files(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [
+                        'test_2' => ['file.txt' => 'lorem dolor']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $uploadsPath = $this->config['wpRootFolder'] . $this->config['uploads'];
+        $sut = $this->module();
 
-        file_put_contents($uploadsPath . '/file.txt', 'foo');
+        $sut->seeUploadedFileFound('test_1/test_2/file.txt');
+        $sut->deleteUploadedFile('test_1/test_2/file.txt');
 
-        $sut->seeUploadedFileFound('file.txt');
-
-        $sut->deleteUploadedFile('file.txt');
-
-        $sut->dontSeeUploadedFileFound('file.txt');
-        Assert::assertFileDoesNotExist($uploadsPath . '/file.txt');
+        $sut->dontSeeUploadedFileFound('test_1/test_2/file.txt');
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1/test_2/file.txt');
     }
 
     /**
@@ -420,18 +461,30 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_to_delete_upload_file_using_date()
+    public function it_should_allow_to_delete_upload_file_using_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => ['file.txt' => 'lorem dolor']
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        file_put_contents($this->nowUploads . '/file.txt', 'foo');
+        $sut = $this->module();
 
-        $sut->seeUploadedFileFound('file.txt', 'now');
+        $sut->seeUploadedFileFound("$Y/$m/file.txt");
+        $sut->deleteUploadedFile("$Y/$m/file.txt");
 
-        $sut->deleteUploadedFile('file.txt', 'now');
-
-        $sut->dontSeeUploadedFileFound('file.txt', 'now');
-        Assert::assertFileDoesNotExist($this->nowUploads . '/file.txt');
+        $sut->dontSeeUploadedFileFound(file: "$Y/$m/file.txt");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/file.txt");
     }
 
     /**
@@ -439,26 +492,29 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_cleaning_the_uploads_dir()
+    public function it_should_allow_cleaning_the_uploads_dir(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => ['file.txt' => 'lorem dolor']
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $folder = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder1';
-        $file = $folder . '/file.txt';
-        mkdir($folder, 0777, true);
-        file_put_contents($file, 'foo');
+        $sut = $this->module();
 
-        $this->assertFileExists($folder);
-        $this->assertFileExists($file);
+        $sut->cleanUploadsDir('test_1');
 
-        $sut->cleanUploadsDir('folder1');
-
-        $this->assertFileExists($folder);
-        Assert::assertFileDoesNotExist($file);
+        $this->assertFileExists($wpRoot . '/wp-content/uploads/test_1');
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1/file.txt');
 
         $sut->cleanUploadsDir();
 
-        Assert::assertFileDoesNotExist($folder);
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1');
     }
 
     /**
@@ -466,26 +522,43 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_cleaning_upload_dirs_by_date()
+    public function it_should_allow_cleaning_upload_dirs_by_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => [
+                            'test_1' => [
+                                'test_2' => [
+                                    'file.txt' => 'lorem dolor'
+                                ]
+                            ],
+                            'file.txt' => 'lorem dolor'
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $folder = $this->nowUploads . '/folder1';
-        $file = $folder . '/file.txt';
-        mkdir($folder, 0777, true);
-        file_put_contents($file, 'foo');
+        $sut = $this->module();
 
-        $this->assertFileExists($folder);
-        $this->assertFileExists($file);
+        $sut->cleanUploadsDir('test_1', time());
 
-        $sut->cleanUploadsDir('folder1', 'now');
+        $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m");
+        $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m/test_1");
+        $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m/file.txt");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/test_1/test_2");
 
-        $this->assertFileExists($folder);
-        Assert::assertFileDoesNotExist($file);
+        $sut->cleanUploadsDir('/', time());
 
-        $sut->cleanUploadsDir();
-
-        Assert::assertFileDoesNotExist($folder);
+        $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/test_1");
     }
 
     /**
@@ -493,20 +566,37 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_copying_dirs_to_the_uploads_dir()
+    public function it_should_allow_copying_dirs_to_the_uploads_dir(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    'test_1' => [
+                        'test_2' => [
+                            'file.txt' => 'lorem dolor'
+                        ]
+                    ],
+                    'file.txt' => 'lorem dolor'
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+
+        $sut = $this->module();
 
         $src = codecept_data_dir('folder-structures/folder1');
-        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/folder2';
+        $dest = $wpRoot . '/wp-content/uploads/folder2';
 
         $this->assertFileExists($src);
-        Assert::assertFileDoesNotExist($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->copyDirToUploads($src, 'folder2');
 
         $this->assertFileExists($src);
         $this->assertFileExists($dest);
+        $this->assertFileExists($dest . '/index.html');
     }
 
     /**
@@ -514,20 +604,38 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_copying_dirs_to_the_uploads_dir_by_date()
+    public function it_should_allow_copying_dirs_to_the_uploads_dir_by_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => [
+
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+
+        $sut = $this->module();
 
         $src = codecept_data_dir('folder-structures/folder1');
-        $dest = $this->nowUploads . '/folder2';
+        $dest = $wpRoot . "/wp-content/uploads/$Y/$m/folder2";
 
         $this->assertFileExists($src);
-        Assert::assertFileDoesNotExist($dest);
+        $this->assertFileDoesNotExist($dest);
 
-        $sut->copyDirToUploads($src, 'folder2', 'today');
+        $sut->copyDirToUploads($src, 'folder2', time());
 
         $this->assertFileExists($src);
         $this->assertFileExists($dest);
+        $this->assertFileExists($dest . '/index.html');
     }
 
     /**
@@ -535,13 +643,23 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_writing_to_uploads_file()
+    public function it_should_allow_writing_to_uploads_file(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
+        $sut = $this->module();
 
-        Assert::assertFileDoesNotExist($dest);
+        $dest = $wpRoot . '/wp-content/uploads/some-file.txt';
+
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
 
@@ -554,15 +672,32 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_writing_to_uploads_file_by_date()
+    public function it_should_allow_writing_to_uploads_file_by_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => [
 
-        $dest = $this->nowUploads . '/some-file.txt';
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        Assert::assertFileDoesNotExist($dest);
+        $sut = $this->module();
 
-        $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
+        $dest = $wpRoot . "/wp-content/uploads/$Y/$m/some-file.txt";
+
+        $this->assertFileDoesNotExist($dest);
+
+        $sut->writeToUploadedFile('some-file.txt', 'foo', time());
 
         $this->assertFileExists($dest);
         $this->assertStringEqualsFile($dest, 'foo');
@@ -573,13 +708,23 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_opening_an_uploaded_file()
+    public function it_should_allow_opening_an_uploaded_file(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $dest = $this->config['wpRootFolder'] . $this->config['uploads'] . '/some-file.txt';
+        $sut = $this->module();
 
-        Assert::assertFileDoesNotExist($dest);
+        $dest = $wpRoot . '/wp-content/uploads/some-file.txt';
+
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
         $sut->openUploadedFile('some-file.txt');
@@ -593,13 +738,30 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_opening_an_uploaded_file_by_date()
+    public function it_should_allow_opening_an_uploaded_file_by_date(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        $Y = date('Y');
+        $m = date('m');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'uploads' => [
+                    $Y => [
+                        $m => [
 
-        $dest = $this->nowUploads . '/some-file.txt';
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        Assert::assertFileDoesNotExist($dest);
+        $sut = $this->module();
+
+        $dest = $wpRoot . "/wp-content/uploads/$Y/$m/some-file.txt";
+
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
         $sut->openUploadedFile('some-file.txt', 'today');
@@ -613,13 +775,25 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_a_plugin_path()
+    public function it_should_allow_being_in_a_plugin_path(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => [
+                    'plugin1' => [
+                        'sub' => [
+                            'folder' => []
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $pluginFolder = $wpRoot . '/wp-content/plugins/plugin1';
 
-        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/plugin1';
-        mkdir($pluginFolder, 0777, true);
-        mkdir($pluginFolder . '/sub/folder', 0777, true);
+        $sut = $this->module();
 
         $sut->amInPluginPath('plugin1');
 
@@ -640,7 +814,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deletePluginFile('plugin1/some-file.txt');
 
-        Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($pluginFolder . '/some-file.txt');
 
         $sut->dontSeePluginFileFound('plugin1/some-file.txt');
 
@@ -656,7 +830,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanPluginDir('plugin1');
 
-        Assert::assertFileDoesNotExist($pluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($pluginFolder . '/some-file.txt');
     }
 
     /**
@@ -664,13 +838,25 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_a_themes_path()
+    public function it_should_allow_being_in_a_themes_path(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'themes' => [
+                    'theme1' => [
+                        'sub' => [
+                            'folder' => []
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $themeFolder = $wpRoot . '/wp-content/themes/theme1';
 
-        $themeFolder = $this->config['wpRootFolder'] . $this->config['themes'] . '/theme1';
-        mkdir($themeFolder, 0777, true);
-        mkdir($themeFolder . '/sub/folder', 0777, true);
+        $sut = $this->module();
 
         $sut->amInThemePath('theme1');
 
@@ -691,7 +877,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deleteThemeFile('theme1/some-file.txt');
 
-        Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($themeFolder . '/some-file.txt');
 
         $sut->dontSeeThemeFileFound('theme1/some-file.txt');
 
@@ -707,7 +893,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanThemeDir('theme1');
 
-        Assert::assertFileDoesNotExist($themeFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($themeFolder . '/some-file.txt');
     }
 
     /**
@@ -715,13 +901,25 @@ class WPFilesystemTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_being_in_a_mu_plugin_path()
+    public function it_should_allow_being_in_a_mu_plugin_path(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'mu-plugins' => [
+                    'muplugin1' => [
+                        'sub' => [
+                            'folder' => []
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $mupluginFolder = $wpRoot . '/wp-content/mu-plugins/muplugin1';
 
-        $mupluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'] . '/muplugin1';
-        mkdir($mupluginFolder, 0777, true);
-        mkdir($mupluginFolder . '/sub/folder', 0777, true);
+        $sut = $this->module();
 
         $sut->amInMuPluginPath('muplugin1');
 
@@ -742,7 +940,7 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->deleteMuPluginFile('muplugin1/some-file.txt');
 
-        Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
 
         $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
 
@@ -758,44 +956,27 @@ class WPFilesystemTest extends \Codeception\Test\Unit
 
         $sut->cleanMuPluginDir('muplugin1');
 
-        Assert::assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
-    }
-
-    protected function _after()
-    {
-        if (! empty($this->sandbox) && file_exists($this->sandbox)) {
-            FS::rrmdir($this->sandbox);
-        }
-    }
-
-    /**
-     * Cleans up the warnings for deprecated PHPUnit methods.
-     *
-     * This is not ideal, but it's required to keep back compoat.
-     *
-     * @postCondition
-     */
-    public function cleanupDeprecatedPHPUnitMethodsWarnings()
-    {
-        $currentWarnings = Property::readPrivate($this, 'warnings');
-
-        $warnings = array_filter($currentWarnings, static function ($warning) {
-            return strpos($warning, 'assertFileNotExists() is deprecated') === false;
-        });
-
-        Property::setPrivateProperties($this, [ 'warnings' => $warnings ]);
+        $this->assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
     }
 
     /**
      * It should allow having a plugin with code
      * @test
      */
-    public function it_should_allow_having_a_plugin_with_code()
+    public function it_should_allow_having_a_plugin_with_code(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $pluginFolder = $wpRoot . '/wp-content/plugins/foo';
+        $pluginFile = $pluginFolder . '/plugin.php';
 
-        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/foo';
-        $pluginFile   = $pluginFolder . '/plugin.php';
+        $sut = $this->module();
 
         $code = "echo 'Hello world';";
         $sut->havePlugin('foo/plugin.php', $code);
@@ -812,24 +993,34 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($pluginFile);
-        Assert::assertFileDoesNotExist($pluginFolder);
+        $this->assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFolder);
     }
 
     /**
      * It should allow having a single file plugin with code
      * @test
      */
-    public function it_should_allow_having_a_single_file_plugin_with_code()
+    public function it_should_allow_having_a_single_file_plugin_with_code(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $pluginsFolder = $wpRoot . '/wp-content/plugins';
+        $pluginFile = $pluginsFolder . '/plugin.php';
 
-        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
-        $pluginFile =  $pluginsFolder . '/plugin.php';
+        $sut = $this->module();
 
         $code = "echo 'Hello world';";
         $sut->havePlugin('plugin.php', $code);
@@ -845,11 +1036,13 @@ Description: plugin
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFile);
         $this->assertFileExists($pluginsFolder);
     }
 
@@ -857,12 +1050,20 @@ PHP;
      * It should allow having a mu-plugin with code
      * @test
      */
-    public function it_should_allow_having_a_mu_plugin_with_code()
+    public function it_should_allow_having_a_mu_plugin_with_code(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'mu-plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $muPluginFolder = $wpRoot . '/wp-content/mu-plugins';
+        $muPluginFile = $muPluginFolder . '/test-mu-plugin.php';
 
-        $muPluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
-        $muPluginFile   = $muPluginFolder . '/test-mu-plugin.php';
+        $sut = $this->module();
 
         $code = "echo 'Hello world';";
         $sut->haveMuPlugin('test-mu-plugin.php', $code);
@@ -880,11 +1081,13 @@ Description: Test mu-plugin 1
 echo 'Hello world';
 PHP;
 
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($muPluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($muPluginFile);
+        $this->assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -892,18 +1095,26 @@ PHP;
      * It should allow having a theme with code
      * @test
      */
-    public function it_should_allow_having_a_theme_with_code()
+    public function it_should_allow_having_a_theme_with_code(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'themes' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $themesFolder = $wpRoot . '/wp-content/themes';
+        $themeIndexFile = $themesFolder . '/test/index.php';
+        $themeStyleFile = $themesFolder . '/test/style.css';
 
-        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
-        $themeIndexFile = $themeFolder . '/test/index.php';
-        $themeStyleFile = $themeFolder . '/test/style.css';
+        $sut = $this->module();
 
         $code = "echo 'Hello world';";
         $sut->haveTheme('test', $code);
 
-        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themesFolder);
         $this->assertFileExists($themeIndexFile);
         $this->assertFileExists($themeStyleFile);
 
@@ -920,34 +1131,46 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedCss),
+            Strings::normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
+            Strings::normalizeNewLine(file_get_contents($themeIndexFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($themeStyleFile);
-        Assert::assertFileDoesNotExist($themeIndexFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
     }
 
     /**
      * It should allow having a theme with code and functions file
      * @test
      */
-    public function it_should_allow_having_a_theme_with_code_and_functions_file()
+    public function it_should_allow_having_a_theme_with_code_and_functions_file(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'themes' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
+        $themesFolder = $wpRoot . '/wp-content/themes';
+        $themeIndexFile = $themesFolder . '/test/index.php';
+        $themeStyleFile = $themesFolder . '/test/style.css';
+        $themeFunctionsFile = $themesFolder . '/test/functions.php';
 
-        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
-        $themeIndexFile = $themeFolder . '/test/index.php';
-        $themeStyleFile = $themeFolder . '/test/style.css';
-        $themeFunctionsFile = $themeFolder . '/test/functions.php';
+        $sut = $this->module();
 
         $code = "echo 'Hello world';";
         $sut->haveTheme('test', $code, $code);
 
-        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themesFolder);
         $this->assertFileExists($themeIndexFile);
         $this->assertFileExists($themeStyleFile);
+        $this->assertFileExists($themeFunctionsFile);
 
         $expectedCss = <<<CSS
 /*
@@ -962,15 +1185,19 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
-        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeFunctionsFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedCss),
+            Strings::normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
+            Strings::normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
+            Strings::normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($themeStyleFile);
-        Assert::assertFileDoesNotExist($themeIndexFile);
-        Assert::assertFileDoesNotExist($themeFunctionsFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
+        $this->assertFileDoesNotExist($themeFunctionsFile);
     }
 
     /**
@@ -978,12 +1205,21 @@ PHP;
      *
      * @test
      */
-    public function should_allow_opening_php_tag_when_having_plugin()
+    public function should_allow_opening_php_tag_when_having_plugin(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $pluginFolder = $this->config['wpRootFolder'] . $this->config['plugins'] . '/foo';
-        $pluginFile   = $pluginFolder . '/plugin.php';
+        $sut = $this->module();
+
+        $pluginFolder =$wpRoot  . '/wp-content/plugins/foo';
+        $pluginFile = $pluginFolder . '/plugin.php';
 
         $code = "<?php echo 'Hello world';";
         $sut->havePlugin('foo/plugin.php', $code);
@@ -1000,12 +1236,14 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($pluginFile);
-        Assert::assertFileDoesNotExist($pluginFolder);
+        $this->assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFolder);
     }
 
     /**
@@ -1013,12 +1251,21 @@ PHP;
      *
      * @test
      */
-    public function should_allow_the_opening_php_tag_when_having_a_mu_plugin()
+    public function should_allow_the_opening_php_tag_when_having_a_mu_plugin(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'mu-plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $muPluginFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
-        $muPluginFile   = $muPluginFolder . '/test-mu-plugin.php';
+        $sut = $this->module();
+
+        $muPluginFolder = $wpRoot . '/wp-content/mu-plugins';
+        $muPluginFile = $muPluginFolder . '/test-mu-plugin.php';
 
         $code = "<?php\necho 'Hello world';";
         $sut->haveMuPlugin('test-mu-plugin.php', $code);
@@ -1036,11 +1283,13 @@ Description: Test mu-plugin 1
 echo 'Hello world';
 PHP;
 
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($muPluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($muPluginFile);
+        $this->assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -1049,19 +1298,28 @@ PHP;
      *
      * @test
      */
-    public function should_allow_the_opening_php_tag_when_having_a_theme()
+    public function should_allow_the_opening_php_tag_when_having_a_theme(): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'themes' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $themeFolder    = $this->config['wpRootFolder'] . $this->config['themes'];
-        $themeIndexFile = $themeFolder . '/test/index.php';
-        $themeStyleFile = $themeFolder . '/test/style.css';
-        $themeFunctionsFile = $themeFolder . '/test/functions.php';
+        $sut = $this->module();
+
+        $themesFolder = $wpRoot . '/wp-content/themes';
+        $themeIndexFile = $themesFolder . '/test/index.php';
+        $themeStyleFile = $themesFolder . '/test/style.css';
+        $themeFunctionsFile = $themesFolder . '/test/functions.php';
 
         $code = "<?php\necho 'Hello world';";
         $sut->haveTheme('test', $code, $code);
 
-        $this->assertFileExists($themeFolder);
+        $this->assertFileExists($themesFolder);
         $this->assertFileExists($themeIndexFile);
         $this->assertFileExists($themeStyleFile);
 
@@ -1078,18 +1336,22 @@ CSS;
 <?php echo 'Hello world';
 PHP;
 
-        $this->assertEquals($this->normalizeNewLine($expectedCss), $this->normalizeNewLine(file_get_contents($themeStyleFile)));
-        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeIndexFile)));
-        $this->assertEquals($this->normalizeNewLine($expectedIndex), $this->normalizeNewLine(file_get_contents($themeFunctionsFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedCss),
+            Strings::normalizeNewLine(file_get_contents($themeStyleFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
+            Strings::normalizeNewLine(file_get_contents($themeIndexFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
+            Strings::normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($themeStyleFile);
-        Assert::assertFileDoesNotExist($themeIndexFile);
-        Assert::assertFileDoesNotExist($themeFunctionsFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
+        $this->assertFileDoesNotExist($themeFunctionsFile);
     }
 
-    public function plugin_path_with_diff_path_separators_data_provider()
+    public function plugin_path_with_diff_path_separators_data_provider(): array
     {
         return [
             '/' => ['foo/plugin.php'],
@@ -1103,12 +1365,21 @@ PHP;
      * @test
      * @dataProvider plugin_path_with_diff_path_separators_data_provider
      */
-    public function should_allow_using_different_directory_separators_to_have_plugin($pluginPath)
+    public function should_allow_using_different_directory_separators_to_have_plugin($pluginPath): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
-        $pluginFile =  $pluginsFolder . '/foo/plugin.php';
+        $sut = $this->module();
+
+        $pluginsFolder = $wpRoot . '/wp-content/plugins';
+        $pluginFile = $pluginsFolder . '/foo/plugin.php';
 
         $code = "echo 'Hello world';";
         $sut->havePlugin($pluginPath, $code);
@@ -1124,15 +1395,17 @@ Description: foo
 
 echo 'Hello world';
 PHP;
-        $this->assertEquals($this->normalizeNewLine($expected), $this->normalizeNewLine(file_get_contents($pluginFile)));
+        $this->assertEquals(Strings::normalizeNewLine($expected),
+            Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after($this->stubProphecy(TestInterface::class)->reveal());
+        $sut->_after(new class extends Unit {
+        });
 
-        Assert::assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFile);
         $this->assertFileExists($pluginsFolder);
     }
 
-    public function plugin_path_without_extension()
+    public function plugin_path_without_extension(): array
     {
         return [
             ['input' => 'foo', 'expected' => 'foo.php'],
@@ -1146,11 +1419,20 @@ PHP;
      * @test
      * @dataProvider plugin_path_without_extension
      */
-    public function should_allow_passing_plugin_filename_without_extension($input, $expected)
+    public function should_allow_passing_plugin_filename_without_extension($input, $expected): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $pluginsFolder = $this->config['wpRootFolder'] . $this->config['plugins'];
+        $sut = $this->module();
+
+        $pluginsFolder = $wpRoot . '/wp-content/plugins';
         $pluginFile = "$pluginsFolder/$expected";
 
         $sut->havePlugin($input, '');
@@ -1162,20 +1444,24 @@ PHP;
      * @test
      * @dataProvider plugin_path_without_extension
      */
-    public function should_allow_passing_muplugin_filename_without_extension($input, $expected)
+    public function should_allow_passing_muplugin_filename_without_extension($input, $expected): void
     {
-        $sut = $this->make_instance();
+        $wpRoot = FS::tmpDir('wpfilesystem_' . md5(microtime(true)));
+        touch($wpRoot . '/wp-load.php');
+        FS::mkdirp($wpRoot, [
+            'wp-content' => [
+                'mu-plugins' => []
+            ]
+        ]);
+        $this->config['wpRootFolder'] = $wpRoot;
 
-        $muPluginsFolder = $this->config['wpRootFolder'] . $this->config['mu-plugins'];
+        $sut = $this->module();
+
+        $muPluginsFolder = $wpRoot . '/wp-content/mu-plugins';
         $muPluginFile = "$muPluginsFolder/$expected";
 
         $sut->haveMuPlugin($input, '');
 
         $this->assertFileExists($muPluginFile);
-    }
-
-    private function normalizeNewLine(string $str): string
-    {
-        return (string)preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $str);
     }
 }

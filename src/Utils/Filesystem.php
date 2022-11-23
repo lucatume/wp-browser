@@ -280,7 +280,7 @@ class Filesystem
             }
             foreach ($contents as $subPath => $subContents) {
                 self::mkdirp(
-                    rtrim($pathname, '\\/') . '/' . ltrim($subPath, '\\/'),
+                    rtrim($pathname, '\\/') . '/' . ltrim((string)$subPath, '\\/'),
                     $subContents,
                     $mode
                 );
@@ -305,6 +305,6 @@ class Filesystem
      */
     public static function tmpDir(?string $prefix = ''): string
     {
-        return self::mkdirp(codecept_output_dir('/tmp/' . $prefix . md5(microtime())));
+        return self::mkdirp(codecept_output_dir('tmp/' . $prefix . md5(microtime())));
     }
 }
