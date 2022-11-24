@@ -7,15 +7,27 @@ use lucatume\WPBrowser\Utils\Filesystem;
 
 class FilesystemTest extends Unit
 {
-    public function resolvePathDataSet()
+    public function resolvePathDataSet(): array
     {
+        $tmpDir = Filesystem::tmpDir();
+        Filesystem::mkdirp(
+            $tmpDir,
+            [
+                'Some Path' => [
+                    'Some File' => 'Some Content',
+                ]
+            ]
+        );
+        $pathWithSpace =  $tmpDir . '/Some\ Path/Some\ File';
+
         return [
             [ '', null, getcwd() ],
             [ '/', null, '/' ],
             [ '~', null, getenv('HOME') ],
             [ __DIR__, null, __DIR__ ],
             [ __FILE__, null, __FILE__ ],
-            [ basename(__FILE__), __DIR__, __FILE__ ]
+            [ basename(__FILE__), __DIR__, __FILE__ ],
+            [$tmpDir . '/Some\ Path/Some\ File',null, $tmpDir . '/Some Path/Some File']
         ];
     }
 
@@ -24,12 +36,12 @@ class FilesystemTest extends Unit
      *
      * @dataProvider resolvePathDataSet
      */
-    public function test_resolve_path($path, $root, $expected)
+    public function test_resolve_path($path, $root, $expected): void
     {
         $this->assertEquals($expected, Filesystem::resolvePath($path, $root));
     }
 
-    public function findHereOrInParentDataSet()
+    public function findHereOrInParentDataSet(): array
     {
         return [
             [ '/foo/bar/baz', '~', false ],
@@ -43,12 +55,12 @@ class FilesystemTest extends Unit
      * Test findHereOrInParent
      * @dataProvider findHereOrInParentDataSet
      */
-    public function test_find_here_or_in_parent($path, $root, $expected)
+    public function test_find_here_or_in_parent($path, $root, $expected): void
     {
         $this->assertEquals($expected, Filesystem::findHereOrInParent($path, $root));
     }
 
-    public function test_rrmdir()
+    public function test_rrmdir(): void
     {
         $root            = codecept_output_dir('rrmdirTest');
         $createDirStruct = static function ($key, $value) use (&$createDirStruct) {
@@ -127,7 +139,7 @@ class FilesystemTest extends Unit
         }
     }
 
-    public function test_mkdirp_creates_nested_trees_wo_specifying_content()
+    public function test_mkdirp_creates_nested_trees_wo_specifying_content(): void
     {
         $dir = codecept_output_dir('one/two/three/four');
 
@@ -137,5 +149,60 @@ class FilesystemTest extends Unit
         $this->assertDirectoryExists(codecept_output_dir('one/two'));
         $this->assertDirectoryExists(codecept_output_dir('one/two/three'));
         $this->assertDirectoryExists(codecept_output_dir('one/two/three/four'));
+    }
+
+    public function relativePathDataSet(): \Generator
+    {
+//        yield 'empty' => ['', '', '/', ''];
+        yield 'empty from, absolute to' => ['', __DIR__, '/', __DIR__];
+        yield 'empty to' => [__DIR__, '', '/', ''];
+
+        $tmpDir = Filesystem::tmpDir();
+        Filesystem::mkdirp($tmpDir, [
+            'dir_1' => [
+                'dir_2_1' => [
+                   'foo-file' => 'test',
+                ]
+            ],
+            'dir_2' => [
+                'dir_2_1' => [
+                     'bar-file' => 'test',
+                ],
+            ],
+        ]);
+
+        yield 'siblings' => [$tmpDir . '/dir_1', $tmpDir . '/dir_2', '/', '../dir_2'];
+        yield 'siblings to sub-dir' => [$tmpDir . '/dir_1', $tmpDir . '/dir_2/dir_2_1', '/', '../dir_2/dir_2_1'];
+        yield 'siblings from sub-dir' => [$tmpDir . '/dir_2/dir_2_1', $tmpDir . '/dir_1', '/', '../../dir_1'];
+
+        yield 'siblings win' => [$tmpDir . '/dir_1', $tmpDir . '/dir_2', '\\', '..\dir_2'];
+        yield 'siblings to sub-dir win' => [$tmpDir . '/dir_1', $tmpDir . '/dir_2/dir_2_1', '\\', '..\dir_2\dir_2_1'];
+        yield 'siblings from sub-dir win' => [$tmpDir . '/dir_2/dir_2_1', $tmpDir . '/dir_1', '\\', '..\..\dir_1'];
+
+        $tmpDir2 = Filesystem::tmpDir();
+        Filesystem::mkdirp($tmpDir2, [
+            'dir_1' => [
+                'dir_2_1' => [
+                    'foo-file' => 'test',
+                ]
+            ]
+        ]);
+        $tmpDir2DirName = basename($tmpDir2);
+        yield 'distant roots' => [
+            $tmpDir . '/dir_1/dir_2_1',
+            $tmpDir2 . '/dir_1/dir_2_1/foo-file',
+            '/',
+            "../../../$tmpDir2DirName/dir_1/dir_2_1/foo-file"
+        ];
+    }
+
+    /**
+     * @dataProvider relativePathDataSet
+     */
+    public function test_relativePath(string $from, string $to, string $separator, string $expected): void
+    {
+        $this->assertEquals($expected, Filesystem::relativePath($from, $to, $separator));
+        $fullRelPath = $from . '/' . $expected;
+        $this->assertFileExists(str_replace('\\', '/', $fullRelPath));
     }
 }

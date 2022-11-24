@@ -8,7 +8,7 @@ use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\StubProphecy\Arg;
-use lucatume\WPBrowser\Tests\Traits\WithUopz;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Process\Process;
@@ -17,7 +17,7 @@ use UnitTester;
 class WPCLITest extends Unit
 {
     use WithStubProphecy;
-    use WithUopz;
+    use UopzFunctions;
 
     protected $backupGlobals = false;
     /**

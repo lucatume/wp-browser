@@ -119,13 +119,13 @@ class Filesystem
 
         $homeDir = self::homeDir();
 
-        $root = (string)preg_replace('/^~/', $homeDir, $root);
+        $root = (string)str_replace(['~','\ '], [$homeDir, ' '], $root);
 
         if (empty($path)) {
             return self::realpath($root);
         }
 
-        $path = (string)preg_replace('/^~/', $homeDir, $path);
+        $path = (string)str_replace(['~','\ '], [$homeDir, ' '], $path);
 
         if (file_exists($path)) {
             return self::realpath($path);
@@ -310,22 +310,26 @@ class Filesystem
 
     public static function relativePath(string $from, string $to, $separator = DIRECTORY_SEPARATOR): string
     {
-        // Kudos to https://stackoverflow.com/questions/2090723/how-to-get-the-relative-directory-no-matter-from-where-its-included-in-php
-        $fromPath = explode($separator, str_replace(['/', '\\'], $separator, $from));
-        $toPath = explode($separator, str_replace(['/', '\\'], $separator, $to));
-        $relpath = [];
-        $dotted = 0;
-        $fromPathCount = count($fromPath);
-        $toPathCount = count($toPath);
-        for ($i = 0; $i < $fromPathCount; $i++) {
-            if ($i >= $toPathCount) {
-                $dotted++;
-            } elseif ($toPath[$i] !== $fromPath[$i]) {
-                $relpath[] = $toPath[$i];
-                $dotted++;
-            }
+        if ($from === '') {
+            return $to;
         }
-        return str_repeat('..' . $separator, $dotted) . implode($separator,
-                array_merge($relpath, array_slice($toPath, $fromPathCount)));
+
+        if ($to === '') {
+            return '';
+        }
+
+        $fromRealPath = self::realpath($from) ?: $from;
+        $toRealPath = self::realpath($to) ?: $to;
+        $from = str_replace(['/', '\\'], $separator, $fromRealPath);
+        $to = str_replace(['/', '\\'], $separator, $toRealPath);
+
+        $fromParts = explode($separator, rtrim($from, $separator));
+        $toParts = explode($separator, rtrim($to, $separator));
+        while (count($fromParts) && count($toParts) && ($fromParts[0] === $toParts[0])) {
+            array_shift($fromParts);
+            array_shift($toParts);
+        }
+
+        return str_repeat('..' . $separator, count($fromParts)) . implode($separator, $toParts);
     }
 }

@@ -2,26 +2,14 @@
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
-trait WithUopz
+trait UopzFunctions
 {
     private array $uopzSetFunctionReturns = [];
     private array $uopzSetStaticMethodReturns = [];
     private array $uopzRedefinedConstants = [];
     private array $uopzRedefinedClassConstants = [];
 
-    /**
-     * Replaces a set of functions or static methods using the uopz extension, calls a function and restores the
-     * original return values.
-     *
-     * @param array<string,mixed> $what A map relating the name of the function or static method to their replacements.
-     *                                  Static methods should have key `class::method`.
-     * @param callable            $do   The callback that will be called while replacements are in place.
-     *
-     * @return void
-     * @throws \RuntimeException|\Exception If the uopz extension is not loaded or a defined replacement is neither
-     *                                      a function nor a static method.
-     */
-    function replacingWithUopz(array $what, callable $do)
+    function replacingWithUopz(array $what, callable $do): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');

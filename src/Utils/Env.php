@@ -128,4 +128,9 @@ class Env
             $_ENV[$key] = $value;
         }
     }
+
+    public static function get($key, $default = null): array|string|false
+    {
+        return $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: $default;
+    }
 }

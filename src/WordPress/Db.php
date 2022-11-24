@@ -108,8 +108,6 @@ class Db
         if ($this->pdo()->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
             throw new DbException('Could not create database ' . $this->dbName);
         }
-
-        $this->pdo()->query('USE ' . $this->dbName);
     }
 
     public function drop(): void

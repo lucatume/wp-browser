@@ -11,4 +11,9 @@ class CorePHPUnit
 
         return $string ? $path . '/' . ltrim($string, '\\/') : $path;
     }
+
+    public static function bootstrapFile(): string
+    {
+        return self::path('/includes/bootstrap.php');
+    }
 }

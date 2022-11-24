@@ -29,7 +29,7 @@ class Installation
     private string $secureAuthKey;
     private string $secureAuthSalt;
     private string $title;
-    private string $version;
+    private Version $version;
     private string $wpRootFolder;
     private string $wpConfigFile;
     private bool $isMultisite = false;
@@ -41,7 +41,6 @@ class Installation
      */
     public function __construct(
         string $wpRootFolder,
-        ?string $version = 'latest',
         ?Db $db = null,
         bool $multisite = false,
         ?string $url = null
@@ -50,10 +49,11 @@ class Installation
             throw new InstallationException("{$wpRootFolder} is not an existing, readable and writable folder.");
         }
 
-        $this->wpRootFolder = rtrim($wpRootFolder, '\\/');
+        $this->wpRootFolder = FS::untrailslashit((string)FS::resolvePath($wpRootFolder)) . '/';
+        $this->checkWpRootFolder();
         $this->wpConfigFile = WP::findWpConfigFile($wpRootFolder);
         $this->db = $db;
-        $this->version = $version;
+        $this->version = new Version($this->wpRootFolder);
         $this->authKey = Password::salt(64);
         $this->secureAuthKey = Password::salt(64);
         $this->loggedInKey = Password::salt(64);
@@ -103,12 +103,12 @@ class Installation
             ->install();
     }
 
-    public function scaffold(string $version = 'latest'): self
+    public static function scaffold(string $wpRootDir, string $version = 'latest'): self
     {
-        $source = $this->getWordPressSource($version);
-        codecept_debug(sprintf("Copying %s to %s ... ", $source, $this->wpRootFolder));
-        FS::recurseCopy($source, $this->wpRootFolder);
-        return $this;
+        $sourceDir = Source::getForVersion($version);
+        codecept_debug(sprintf("Copying %s to %s ... ", $sourceDir, $wpRootDir));
+        FS::recurseCopy($sourceDir, $wpRootDir);
+        return new self($wpRootDir);
     }
 
     public function configure(): self
@@ -190,7 +190,7 @@ class Installation
 
         codecept_debug("Installing WordPress at $this->wpRootFolder ...");
 
-        $this->db->create();
+        $this->createDb();
 
         $request = $this->requestClosuresFactory->toInstall(
             $this->title,
@@ -219,40 +219,6 @@ class Installation
 
         return $this;
     }
-
-    private function getWordPressSource(string $version): string
-    {
-        $sourceDirectory = codecept_output_dir('_cache/wordpress/' . $version);
-
-        if (!is_dir($sourceDirectory) || !is_file($sourceDirectory . '/wp-config-sample.php')) {
-            FS::mkdirp($sourceDirectory);
-            $zipFile = codecept_output_dir("_cache/wordpress-$version.zip");
-
-            if (!is_file($zipFile)) {
-                $zipFile = Download::fileFromUrl($this->getWPDownloadUrl($version), $zipFile);
-            }
-
-            Zip::extractTo($zipFile, dirname($sourceDirectory));
-            FS::rrmdir($sourceDirectory);
-            rename(dirname($sourceDirectory) . '/wordpress', $sourceDirectory);
-
-            if (!unlink($zipFile)) {
-                throw new InstallationException("Could not delete $zipFile.");
-            }
-        }
-
-        return $sourceDirectory;
-    }
-
-    private function getWPDownloadUrl(string $version): string
-    {
-        return match ($version) {
-            'latest' => 'https://wordpress.org/latest.zip',
-            'nightly' => 'https://wordpress.org/nightly-builds/wordpress-latest.zip',
-            default => "https://wordpress.org/wordpress-{$version}.zip",
-        };
-    }
-
     public function getAuthKey(): string
     {
         return $this->authKey;
@@ -307,5 +273,39 @@ class Installation
     public function getHomeUrl(): string
     {
         return $this->db->getOption('home');
+    }
+
+    public function createDb():void
+    {
+        $this->db->create();
+    }
+
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    private function readVersionFromFiles():string
+    {
+        $versionFile = $this->wpRootFolder . '/wp-includes/version.php';
+        if (!is_file($versionFile)) {
+            throw new InstallationException("File $versionFile not found.");
+        }
+
+        return $readVersion;
+    }
+
+    private function checkWpRootFolder(): void
+    {
+        if (!file_exists($this->wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
+            throw new InstallationException(
+                "WordPress root folder {$this->wpRootFolder} does not contain the wp-settings.php file."
+            );
+        }
+    }
+
+    public function getWpRootFolder(?string $path = null): string
+    {
+        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
     }
 }

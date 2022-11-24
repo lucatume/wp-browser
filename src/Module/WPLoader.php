@@ -30,8 +30,10 @@ use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Password;
+use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
+use lucatume\WPBrowser\WordPress\Installation;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -154,7 +156,6 @@ class WPLoader extends Module
      */
     protected array $config = [
         'loadOnly' => false,
-        'isolatedInstall' => true,
         'installationTableHandling' => 'empty',
         'wpDebug' => true,
         'multisite' => false,
@@ -172,8 +173,7 @@ class WPLoader extends Module
         'pluginsFolder' => '',
         'plugins' => '',
         'bootstrapActions' => '',
-        'template' => '',
-        'stylesheet' => '',
+        'theme' => '',
         'authKey' => '',
         'secureAuthKey' => '',
         'loggedInKey' => '',
@@ -227,14 +227,9 @@ class WPLoader extends Module
      *
      * @var array<string,int>
      */
-    protected array $loadRedirections = [];
-
-    /**
-     * An instance of the WordPress healthcheck provider object.
-     *
-     * @var WPHealthcheck|null
-     */
-    protected ?WPHealthcheck $healthcheck = null;
+    private array $loadRedirections = [];
+    private ?WPHealthcheck $healthcheck = null;
+    private Installation $wpInstallation;
 
     /**
      * WPLoader constructor.
@@ -326,23 +321,19 @@ class WPLoader extends Module
      */
     public function _initialize(bool $loadWordpress = true): void
     {
-        // Read the configuration from the suite configuration file.
-        self::$didInit = true;
-        $this->config = array_merge($this->config, [
-            'wpRootDir' => 'wpRootFolder',
-            'pluginsDir' => 'pluginsFolder',
-            'contentDir' => 'contentFolder',
-            'auth_key' => 'authKey',
-            'secure_auth_key' => 'secureAuthKey',
-            'logged_in_key' => 'loggedInKey',
-            'nonce_key' => 'nonceKey',
-            'auth_salt' => 'authSalt',
-            'secure_auth_salt' => 'secureAuthSalt',
-            'logged_in_salt' => 'loggedInSalt',
-            'nonce_salt' => 'nonceSalt',
-        ]);
-
-        $this->ensureWPRoot($this->getWpRootFolder());
+        $wpDb = new Db(
+            $this->config['dbName'],
+            $this->config['dbHost'],
+            $this->config['dbUser'],
+            $this->config['dbPassword']
+        );
+        $this->wpInstallation = new Installation(
+            $this->config['wpRootFolder'],
+            null,
+            $wpDb,
+            $this->config['multisite'],
+            $this->config['domain']
+        );
 
         foreach ([
                      'authKey',
@@ -360,50 +351,28 @@ class WPLoader extends Module
         }
 
         $this->wpBootstrapFile = CorePHPUnit::path('/includes/bootstrap.php');
+        // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
+        defined('WP_TESTS_CONFIG_FILE_PATH')
+        || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
 
+        // Load WordPress now, to make sure the suite bootstrap file will find WordPress loaded.
         // @todo review this: use WP_TESTS_SKIP_INSTALL?
-        if (!empty($this->config['loadOnly'])) {
+        if (!empty($this->config['loadOnly']) && $loadWordpress) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
             Dispatcher::addListener(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
 
             return;
         }
 
+        $this->wpInstallation->createDb();
+
         // @todo review this: still required?
         // Any *Db Module should either not be running or properly configured if this has to run alongside it.
         $this->ensureDbModuleCompat();
 
         if ($loadWordpress) {
-            // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
-            define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
             $this->_loadWordpress();
         }
-    }
-
-    /**
-     * Checks the root directory.
-     *
-     * @param string $wpRootFolder The current WordPress root directory.
-     * @param bool   $throw        Whether to throw an exception on invalid path or return a value.
-     *
-     * @return bool Whether the current root directory is valid or not.
-     *
-     * @throws ModuleConfigException If the specified WordPress root folder is not found or not valid.
-     */
-    protected function ensureWPRoot(string $wpRootFolder, bool $throw = true): bool
-    {
-        if (!file_exists($wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
-            if (!$throw) {
-                return false;
-            }
-
-            throw new ModuleConfigException(
-                __CLASS__,
-                "\nThe path `{$wpRootFolder}` is not pointing to a valid WordPress installation folder."
-            );
-        }
-
-        return true;
     }
 
     /**
@@ -417,25 +386,7 @@ class WPLoader extends Module
      */
     public function getWpRootFolder(string $path = null): string
     {
-
-        try {
-            if (empty($this->wpRootFolder)) {
-                $wpRootFolder = $this->config['wpRootFolder'];
-                // Maybe the user is using the `~` symbol for home?
-                $wpRootFolder = (string)FS::resolvePath($wpRootFolder);
-                // Remove `\ ` spaces in folder paths.
-                $wpRootFolder = str_replace('\ ', ' ', $wpRootFolder);
-                // Resolve to real path if relative or symlinked.
-                if ($realPath = realpath($wpRootFolder)) {
-                    $wpRootFolder = $realPath;
-                }
-                // Normalize trailing slashes.
-                $this->wpRootFolder = FS::untrailslashit($wpRootFolder) . '/';
-            }
-            return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
-        } catch (Exception $e) {
-            throw new ModuleConfigException(__CLASS__, $e->getMessage(), $e);
-        }
+        return $this->wpInstallation->getWpRootFolder($path);
     }
 
     /**
@@ -707,7 +658,7 @@ class WPLoader extends Module
         $wpLoaderConfig = $this->config;
 
         ob_start($this->relayOutputToDebug('WPLoader/install'));
-        require_once $this->wpBootstrapFile;
+        require $this->wpBootstrapFile;
         ob_end_clean();
 
         $this->activatePluginsSwitchThemeInSeparateProcess();
@@ -716,7 +667,7 @@ class WPLoader extends Module
 
     private function activatePluginsSwitchThemeInSeparateProcess(): void
     {
-        $plugins = $this->config['activatePlugins'] ?: $this->config['plugins'] ?: [];
+        $plugins = $this->config['activatePlugins'] ?? ($this->config['plugins'] ?: []);
 
         if (empty($plugins)) {
             return;
@@ -1019,8 +970,9 @@ class WPLoader extends Module
 
     protected function getStylesheetTemplateFromConfig(): array
     {
-        $template = $this->config['template'] ?: $this->config['theme'] ?: null;
-        $stylesheet = $this->config['stylesheet'] ?: $template;
+        [$template, $stylesheet] = array_replace([null, null], (array)$this->config['theme']);
+        $template = $template ?: $this->config['theme'];
+        $stylesheet = $stylesheet ?: $this->config['theme'];
         return array($stylesheet, $template);
     }
 

@@ -47,6 +47,7 @@
   "require-dev": {
     "ext-sockets": "*",
     "ext-pcntl": "*",
+    "ext-mysqli": "*",
     "erusev/parsedown": "^1.7",
     "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
@@ -68,7 +69,6 @@
   "autoload-dev": {
     "psr-4": {
       "tad\\Test\\": "tests/_support/lib",
-      "Codeception\\": "tests/_data/classes/Codeception",
       "lucatume\\WPBrowser\\Tests\\": "tests/_support"
     },
     "files": [

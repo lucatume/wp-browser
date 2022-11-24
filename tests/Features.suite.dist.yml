@@ -1,5 +1,0 @@
-actor: FeaturesTester
-suite_namespace: \Features
-modules:
-    # enable helpers as array
-    enabled: []

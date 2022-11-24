@@ -11,14 +11,14 @@ class Version
     private string $requiredPhpVersion;
     private string $requiredMySqlVersion;
 
-    public function __construct(string $rootDir)
+    public function __construct(string $wpRootDir)
     {
-        if (!is_dir($rootDir)) {
+        if (!is_dir($wpRootDir)) {
             throw new InstallationException('The WordPress installation directory does not exist.');
         }
 
 
-        $this->versionFile = rtrim($rootDir, '\\/') . '/' . 'wp-includes/version.php';
+        $this->versionFile = rtrim($wpRootDir, '\\/') . '/' . 'wp-includes/version.php';
 
         if (!file_exists($this->versionFile)) {
             throw new InstallationException('The WordPress installation directory does not contain a version.php file.');
@@ -66,5 +66,16 @@ class Version
     public function getRequiredMySqlVersion(): string
     {
         return $this->requiredMySqlVersion;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'wpVersion' => $this->getWpVersion(),
+            'wpDbVersion' => $this->getWpDbVersion(),
+            'tinymceVersion' => $this->getTinymceVersion(),
+            'requiredPhpVersion' => $this->getRequiredPhpVersion(),
+            'requiredMySqlVersion' => $this->getRequiredMySqlVersion()
+        ];
     }
 }
