@@ -25,7 +25,10 @@ class Source
             rename(dirname($sourceDir) . '/wordpress', $sourceDir);
 
             if (!unlink($zipFile)) {
-                throw new InstallationException("Could not delete $zipFile.");
+                throw new InstallationException(
+                    "Could not delete $zipFile.",
+                    InstallationException::DELETE_ERROR
+                );
             }
         }
 

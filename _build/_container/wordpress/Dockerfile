@@ -10,4 +10,3 @@ RUN chmod a+x /usr/local/bin/xdebug-on && \
     xdebug-off \
     echo "xdebug.mode=develop,debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     chmod -R a+rwx /usr/local/etc/php/conf.d
-

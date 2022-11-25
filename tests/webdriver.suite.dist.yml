@@ -11,7 +11,7 @@ modules:
       adminUsername: '%WORDPRESS_ADMIN_USER%'
       adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
       adminPath: '/wp-admin'
-      browser: chrome
+      browser: chr`ome
       host: '%CHROMEDRIVER_HOST%'
       port: '%CHROMEDRIVER_PORT%'
       window_size: false

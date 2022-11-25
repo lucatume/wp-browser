@@ -2,19 +2,20 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use lucatume\WPBrowser\Process\Loop;
-use lucatume\WPBrowser\Utils\Download;
+use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Password;
-use lucatume\WPBrowser\Utils\WP;
-use lucatume\WPBrowser\Utils\Zip;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
+use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 
 class Installation
 {
-    private ?Db $db;
+    use WordPressChecks;
+
+    private ?Db $db = null;
     private FileRequestFactory $fileRequestFactory;
     private FileRequestClosureFactory $requestClosuresFactory;
     private string $adminEmail;
@@ -29,283 +30,187 @@ class Installation
     private string $secureAuthKey;
     private string $secureAuthSalt;
     private string $title;
-    private Version $version;
-    private string $wpRootFolder;
-    private string $wpConfigFile;
-    private bool $isMultisite = false;
+    private ?Version $version = null;
+    private string $wpRootDir;
+    private ?string $wpConfigFilePath = null;
+    private ?bool $isMultisite = null;
     private CodeExecutionFactory $codeExecutionFactory;
     private string $url;
+    private ?WPConfigFile $wpConfigFileReader = null;
+    private InstallationState\InstallationStateInterface $installationState;
 
     /**
      * @throws InstallationException
      */
     public function __construct(
-        string $wpRootFolder,
+        string $wpRootDir,
         ?Db $db = null,
-        bool $multisite = false,
-        ?string $url = null
     ) {
-        if (!is_dir($wpRootFolder) && is_readable($wpRootFolder) && is_writable($wpRootFolder)) {
-            throw new InstallationException("{$wpRootFolder} is not an existing, readable and writable folder.");
-        }
-
-        $this->wpRootFolder = FS::untrailslashit((string)FS::resolvePath($wpRootFolder)) . '/';
-        $this->checkWpRootFolder();
-        $this->wpConfigFile = WP::findWpConfigFile($wpRootFolder);
+        $this->wpRootDir = $this->checkWpRootDir($wpRootDir);
+        $this->installationState = $this->setInstallationState();
         $this->db = $db;
-        $this->version = new Version($this->wpRootFolder);
-        $this->authKey = Password::salt(64);
-        $this->secureAuthKey = Password::salt(64);
-        $this->loggedInKey = Password::salt(64);
-        $this->nonceKey = Password::salt(64);
-        $this->authSalt = Password::salt(64);
-        $this->secureAuthSalt = Password::salt(64);
-        $this->loggedInSalt = Password::salt(64);
-        $this->nonceSalt = Password::salt(64);
-        $domain = parse_url($url, PHP_URL_HOST) ?: 'localhost';
-        $this->fileRequestFactory = new FileRequestFactory($this->wpRootFolder, $domain);
-        $this->requestClosuresFactory = new FileRequestClosureFactory($this->fileRequestFactory);
-        $this->codeExecutionFactory = new CodeExecutionFactory($this->wpRootFolder);
-        $this->title = 'WP Browser';
-        $this->adminUser = 'admin';
-        $this->adminPassword = Password::salt(12);
-        $this->adminEmail = 'admin@installation.test';
-        $this->isMultisite = $multisite;
-        $this->url = $url ?? 'http://localhost:2389';
     }
 
     /**
      * @throws InstallationException
      */
-    public static function fromRootDir(string $rootDir): self
-    {
-        try {
-            $version = (new Version($rootDir))->getWpVersion();
-            $db = Db::fromRootDir($rootDir);
-            $multisite = (new WpConfigInclude($rootDir))->isDefinedAnyConst(
-                'MULTISITE',
-                'SUBDOMAIN_INSTALL',
-                'VHOST',
-                'SUNRISE');
-            $url = $db->getOption('home');
-        } catch (\Exception $e) {
-            throw new InstallationException($e->getMessage(), $e->getCode(), $e);
-        }
-        $installation = new self($rootDir, $version, $db, $multisite, $url);
-
-        return $installation;
-    }
-
-    public function up(): self
-    {
-        return $this->scaffold($this->version)
-            ->configure()
-            ->install();
-    }
-
     public static function scaffold(string $wpRootDir, string $version = 'latest'): self
     {
-        $sourceDir = Source::getForVersion($version);
-        codecept_debug(sprintf("Copying %s to %s ... ", $sourceDir, $wpRootDir));
-        FS::recurseCopy($sourceDir, $wpRootDir);
+        $emptyDir = new EmptyDir($wpRootDir);
+        $emptyDir->scaffold($version);
+
         return new self($wpRootDir);
     }
 
-    public function configure(): self
+    public function configure(
+        Db $db,
+        ?int $multisite = InstallationStateInterface::SINGLE_SITE,
+        ?ConfigurationData $configurationData = null
+    ): self {
+        $this->installationState = $this->installationState->configure($db, $multisite, $configurationData);
+
+        return $this;
+    }
+
+    public function convertToMultisite($subdomainInstall = false): self
     {
-        $wpConfigFile = $this->wpRootFolder . '/wp-config.php';
-
-        if (is_file($wpConfigFile)) {
-            codecept_debug('wp-config.php file found in the WordPress installation, skipping configuration.');
-            return $this;
-        }
-
-        codecept_debug("Creating the $wpConfigFile file ...");
-
-        $wpConfigSampleFile = $this->wpRootFolder . '/wp-config-sample.php';
-
-        $wpConfigFileContents = str_replace(
-            [
-                'database_name_here',
-                'username_here',
-                'password_here',
-                'localhost',
-                'wp_',
-            ],
-            [
-                $this->db->getDbName(),
-                $this->db->getDbUser(),
-                $this->db->getDbPassword(),
-                $this->db->getDbHost(),
-                $this->db->getTablePrefix()
-            ],
-            file_get_contents($wpConfigSampleFile)
-        );
-
-        $wpConfigFileContents = preg_replace([
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-            '/put your unique phrase here/',
-        ], [
-            $this->getAuthKey(),
-            $this->getSecureAuthKey(),
-            $this->getLoggedInKey(),
-            $this->getNonceKey(),
-            $this->getAuthSalt(),
-            $this->getSecureAuthSalt(),
-            $this->getLoggedInSalt(),
-            $this->getNonceSalt(),
-        ], $wpConfigFileContents, 1);
-
-        if (!file_put_contents($wpConfigFile, $wpConfigFileContents, LOCK_EX)) {
-            throw new InstallationException("Could not write to {$wpConfigFile}");
-        }
+        $this->installationState = $this->installationState->convertToMultisite($subdomainInstall);
 
         return $this;
     }
 
 
-    private function isInstalled(): bool
-    {
-        if (!$this->db->exists()) {
-            return false;
-        }
-
-        $result = Loop::executeClosure($this->codeExecutionFactory->toCheckIfWpIsInstalled($this->isMultisite));
-
-        return $result->getReturnValue() === true;
-    }
-
-    public function install(): self
-    {
-        if ($this->isInstalled()) {
-            codecept_debug('WordPress already installed, skipping installation.');
-            return $this;
-        }
-
-        codecept_debug("Installing WordPress at $this->wpRootFolder ...");
-
-        $this->createDb();
-
-        $request = $this->requestClosuresFactory->toInstall(
-            $this->title,
-            $this->adminUser,
-            $this->adminPassword,
-            $this->adminEmail,
-            $this->url,
-        );
-
-        $result = Loop::executeClosure($request);
-
-        if ($result->getExitCode() !== 0) {
-            $returnValue = $result->getReturnValue();
-
-            if ($returnValue instanceof \Throwable) {
-                throw $returnValue;
-            }
-
-            $reason = $result->getStdoutBuffer();
-            throw new InstallationException('Could not install WordPress: ' . $reason);
-        }
-
-        if (!$this->isInstalled()) {
-            throw new InstallationException('WordPress installation failed.');
-        }
-
-        return $this;
-    }
     public function getAuthKey(): string
     {
-        return $this->authKey;
+        return $this->installationState->getAuthKey();
     }
 
     public function getSecureAuthKey(): string
     {
-        return $this->secureAuthKey;
+        return $this->installationState->getSecureAuthKey();
     }
 
     public function getLoggedInKey(): string
     {
-        return $this->loggedInKey;
+        return $this->installationState->getLoggedInKey();
     }
 
     public function getNonceKey(): string
     {
-        return $this->nonceKey;
+        return $this->installationState->getNonceKey();
     }
 
     public function getAuthSalt(): string
     {
-        return $this->authSalt;
+        return $this->installationState->getAuthSalt();
     }
 
     public function getSecureAuthSalt(): string
     {
-        return $this->secureAuthSalt;
+        return $this->installationState->getSecureAuthSalt();
     }
 
     public function getLoggedInSalt(): string
     {
-        return $this->loggedInSalt;
+        return $this->installationState->getLoggedInSalt();
     }
 
     public function getNonceSalt(): string
     {
-        return $this->nonceSalt;
+        return $this->installationState->getNonceSalt();
     }
 
     public function getRootDir(): string
     {
-        return $this->wpRootFolder;
+        return $this->installationState->getWpRootDir();
     }
 
-    public function destroy(): void
+    public function getVersion(): ?Version
     {
-        $this->db->drop();
-        FS::rrmdir($this->wpRootFolder);
+        return $this->installationState->getVersion();
     }
 
-    public function getHomeUrl(): string
+    public function isMultisite(): bool
     {
-        return $this->db->getOption('home');
+        return $this->installationState->isMultisite();
     }
 
-    public function createDb():void
+    public function getDb(): ?Db
     {
-        $this->db->create();
+        return $this->installationState->getDb();
     }
 
-    public function getVersion(): Version
+    public function getWpRootDir(?string $path = null): string
     {
-        return $this->version;
+        return empty($path) ? $this->wpRootDir : $this->wpRootDir . FS::unleadslashit($path);
     }
 
-    private function readVersionFromFiles():string
+    /**
+     * @throws DbException
+     * @throws InstallationException
+     * @throws ProcessException
+     */
+    private function setInstallationState(): InstallationState\InstallationStateInterface
     {
-        $versionFile = $this->wpRootFolder . '/wp-includes/version.php';
-        if (!is_file($versionFile)) {
-            throw new InstallationException("File $versionFile not found.");
+        if (!is_file($this->wpRootDir . '/wp-load.php')) {
+            return new InstallationState\EmptyDir($this->wpRootDir);
         }
 
-        return $readVersion;
-    }
+        $wpConfigFilePath = $this->findWpConfigFilePath($this->wpRootDir);
 
-    private function checkWpRootFolder(): void
-    {
-        if (!file_exists($this->wpRootFolder . DIRECTORY_SEPARATOR . 'wp-settings.php')) {
-            throw new InstallationException(
-                "WordPress root folder {$this->wpRootFolder} does not contain the wp-settings.php file."
-            );
+        if (!$wpConfigFilePath) {
+            return new InstallationState\Scaffolded($this->wpRootDir);
         }
+
+        $db = $this->db ?? Db::fromWpConfigFile(new WPConfigFile($this->wpRootDir, $wpConfigFilePath));
+
+        $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath, $db);
+        $multisite = $installationState->isMultisite();
+
+        if ($this->db === null || !$this->isInstalled($multisite)) {
+            return $installationState;
+        }
+
+        return $multisite ?
+            new InstallationState\Multisite($this->wpRootDir, $wpConfigFilePath, $this->db)
+            : new InstallationState\Single($this->wpRootDir, $wpConfigFilePath, $this->db);
     }
 
-    public function getWpRootFolder(?string $path = null): string
+    public function isEmpty(): bool
     {
-        return empty($path) ? $this->wpRootFolder : $this->wpRootFolder . FS::unleadslashit($path);
+        return $this->installationState instanceof InstallationState\EmptyDir;
+    }
+
+    public function install(
+        string $url,
+        string $adminUser,
+        string $adminPassword,
+        string $adminEmail,
+        string $title
+    ): self {
+        $this->installationState = $this->installationState->install(
+            $url,
+            $adminUser,
+            $adminPassword,
+            $adminEmail,
+            $title
+        );
+
+        return $this;
+    }
+
+    public function getState(): InstallationState\InstallationStateInterface
+    {
+        return $this->installationState;
+    }
+
+    public function isConfigured(): bool
+    {
+        return $this->installationState->isConfigured();
+    }
+
+    public function getSalts(): array
+    {
+        return $this->installationState->getSalts();
     }
 }

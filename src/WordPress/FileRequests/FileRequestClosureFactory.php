@@ -51,8 +51,7 @@ class FileRequestClosureFactory
         string $password,
         string $email,
         ?string $url = null
-    ): Closure
-    {
+    ): Closure {
         $request = $this->requestFactory->buildPostRequest('/wp-admin/install.php?step=2', [
             'weblog_title' => $title,
             'user_name' => $username,
@@ -62,11 +61,11 @@ class FileRequestClosureFactory
             'blog_public' => 1,
         ], 0);
 
-        if($url !== null){
+        if ($url !== null) {
             $request->setServerVar('HTTP_HOST', $url);
         }
 
-        // Avoid any mail being sent during the installation.
+        // Do not send mails during the installation, avoid failures due to a missing mail function.
         $request->addPreloadClosure(static function () {
             if (!function_exists('wp_mail')) {
                 function wp_mail()
@@ -76,8 +75,15 @@ class FileRequestClosureFactory
             }
         });
 
+        $request->setConstant('WP_HTTP_BLOCK_EXTERNAL', true)
+            ->setPreloadFilter('block_local_requests', '__return_true');
+
         return static function () use ($request): void {
             $request->execute();
         };
+    }
+
+    public function toCheckIfWpIsInstalled():Closure
+    {
     }
 }

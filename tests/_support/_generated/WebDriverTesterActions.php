@@ -2390,7 +2390,7 @@ trait WebDriverTesterActions
      * <form action="/sign_up">
      *     Login:
      *     <input type="text" name="user[login]" /><br/>
-     *     Password:
+     *     Random:
      *     <input type="password" name="user[password]" /><br/>
      *     Do you agree to our terms?
      *     <input type="checkbox" name="user[agree]" /><br/>

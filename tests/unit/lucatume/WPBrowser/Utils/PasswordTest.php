@@ -23,10 +23,10 @@ class PasswordTest extends Unit
      */
     public function test_salt(int $len): void
     {
-        $salt1 = Password::salt($len);
-        $salt2 = Password::salt($len);
-        $this->assertEquals(strlen(Password::salt($len)), $len);
-        $this->assertEquals(strlen(Password::salt($len)), $len);
+        $salt1 = Random::salt($len);
+        $salt2 = Random::salt($len);
+        $this->assertEquals(strlen(Random::salt($len)), $len);
+        $this->assertEquals(strlen(Random::salt($len)), $len);
         if ($len > 0) {
             $this->assertNotEquals($salt1, $salt2);
         }

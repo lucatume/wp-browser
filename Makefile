@@ -167,6 +167,10 @@ down:
 clean_output:
 	rm -rf tests/_output && mkdir tests/_output
 
+.PHONY: clean_tmp
+clean_tmp:
+	rm -rf tests/_output/tmp && mkdir tests/_output/tmp
+
 .PHONY: clean
 clean: down clean_output
 	rm -f _build/_container/php/iidfile

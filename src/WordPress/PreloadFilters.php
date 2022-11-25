@@ -18,9 +18,9 @@ class PreloadFilters
         self::addFilter('wp_die_handler', static fn() => $throwWPDieException, PHP_INT_MAX);
     }
 
-    private static function addFilter(
+    public static function addFilter(
         string $hookName,
-        callable $callback,
+        callable|string|array $callback,
         int $priority = 10,
         int $acceptedArgs = 1
     ): void {

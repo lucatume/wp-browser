@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\WordPress\FileRequests;
 use Closure;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
+use ParagonIE\Sodium\File;
 use Serializable;
 use function _PHPStan_9a6ded56a\RingCentral\Psr7\parse_query;
 
@@ -37,11 +38,19 @@ abstract class FileRequest implements Serializable
     /**
      * @var array<Closure>
      */
-    private array $preLoadClosures = [];
+    private array $preloadClosures = [];
     /**
      * @var array<string,bool|int|string|float>
      */
     private array $constants;
+    /**
+     * @var array<array{string, callable, int, int}>
+     */
+    private array $preloadFilters = [];
+    /**
+     * @var array<Closure>
+     */
+    private array $afterLoadClosures = [];
 
     public function __construct(
         string $domain,
@@ -65,7 +74,7 @@ abstract class FileRequest implements Serializable
 
     abstract protected function getMethod(): string;
 
-    public function execute(): void
+    public function execute(): mixed
     {
         if (count($this->presetGlobalVars) > 0) {
             foreach ($this->presetGlobalVars as $global) {
@@ -116,6 +125,10 @@ abstract class FileRequest implements Serializable
         // Intercept calls to wp_die to cast them to exceptions.
         PreloadFilters::filterWpDieHandlerToExit();
 
+        foreach ($this->preloadFilters as [$hookName, $callback, $priority, $acceptedArgs]) {
+            PreloadFilters::addFilter($hookName, $callback, $priority, $acceptedArgs);
+        }
+
         // Reveal the errors.
         define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
 
@@ -124,7 +137,7 @@ abstract class FileRequest implements Serializable
             $_COOKIE[$key] = $value;
         }
 
-        foreach ($this->preLoadClosures as $preLoadClosure) {
+        foreach ($this->preloadClosures as $preLoadClosure) {
             $preLoadClosure($this->targetFile);
         }
 
@@ -137,6 +150,13 @@ abstract class FileRequest implements Serializable
         $status, $page;
 
         require $this->targetFile;
+
+        $returnValues = [];
+        foreach ($this->afterLoadClosures as $afterLoadClosures) {
+            $returnValues[] = $afterLoadClosures($this->targetFile);
+        }
+
+        return $returnValues;
     }
 
     public function serialize()
@@ -150,13 +170,19 @@ abstract class FileRequest implements Serializable
             'requestUri' => $this->requestUri,
             'targetFile' => $this->targetFile,
             'cookieJar' => $this->cookieJar,
-            'constants' => $this->constants
+            'constants' => $this->constants,
+            'preloadClosures' => $this->preloadClosures,
+            'preloadFilters' => $this->preloadFilters,
+            'afterLoadClosures' => $this->afterLoadClosures
         ]);
     }
 
+    /**
+     * @throws FileRequestException
+     */
     public function unserialize(string $data)
     {
-        $unserializedData = unserialize($data, ['allowed_classes' => false]);
+        $unserializedData = $this->unserializeData($data);
 
         $this->presetGlobalVars = $unserializedData['presetGlobalVars'] ?? false;
         $this->presetLocalVars = $unserializedData['presetLocalVars'] ?? [];
@@ -167,6 +193,9 @@ abstract class FileRequest implements Serializable
         $this->targetFile = $unserializedData['targetFile'] ?? false;
         $this->cookieJar = $unserializedData['cookieJar'] ?? false;
         $this->constants = $unserializedData['constants'] ?? [];
+        $this->preloadClosures = $unserializedData['preloadClosures'] ?? [];
+        $this->preloadFilters = $unserializedData['preloadFilters'] ?? [];
+        $this->afterLoadClosures = $unserializedData['afterLoadClosures'] ?? [];
 
         if (!$this->targetFile) {
             throw new FileRequestException('No target file specified.');
@@ -179,9 +208,18 @@ abstract class FileRequest implements Serializable
         return $this;
     }
 
-    public function addPreloadClosure(Closure $preLoadClosure): void
+    public function addPreloadClosure(Closure $preloadClosure): FileRequest
     {
-        $this->preLoadClosures[] = $preLoadClosure;
+        $this->preloadClosures[] = $preloadClosure;
+
+        return $this;
+    }
+
+    public function addAfterLoadClosure(Closure $afterLoadClosure): FileRequest
+    {
+        $this->afterLoadClosures[] = $afterLoadClosure;
+
+        return $this;
     }
 
     public function defineConstant(string $constant, int|string|float|bool $value): FileRequest
@@ -190,4 +228,96 @@ abstract class FileRequest implements Serializable
 
         return $this;
     }
+
+    private function collectIncompleteClasses(mixed $unserializedData, array &$carry = []): array
+    {
+        if (!is_array($unserializedData)) {
+            return $unserializedData;
+        }
+
+        foreach ($unserializedData as $datum) {
+            if (is_array($datum)) {
+                $carry = array_merge($carry, $this->collectIncompleteClasses($datum, $carry));
+                continue;
+            }
+
+            if ($datum instanceof \__PHP_Incomplete_Class) {
+                $serialized = serialize($datum);
+                $class = preg_match('/^O:\d+:"([^"]+)"/', $serialized, $matches) ? $matches[1] : null;
+                $carry[] = $class;
+            }
+        }
+
+        return $carry;
+    }
+
+    /**
+     * @throws FileRequestException
+     */
+    private function unserializeData(string $data): mixed
+    {
+        $unserializationErorr = '';
+        set_error_handler(static function ($errno, $errstr) use (&$unserializationErorr) {
+            $unserializationErorr = $errstr;
+        }, E_WARNING);
+        $unserializedData = unserialize($data, ['allowed_classes' => true]);
+        restore_error_handler();
+
+        if ($unserializationErorr !== '') {
+            $message = $unserializationErorr;
+            $incompletes = $this->collectIncompleteClasses($unserializedData);
+
+            if (count($incompletes)) {
+                $message = 'These classes are not available at unserialize time: ' . implode(', ', $incompletes);
+            }
+
+            throw new FileRequestException($message);
+        }
+
+        return $unserializedData;
+    }
+
+    public function setConstant(string $constant, bool|int|float|string $value): FileRequest
+    {
+        $this->constants[$constant] = $value;
+
+        return $this;
+    }
+
+    public function setPreloadFilter(
+        string $hookName,
+        string $callback,
+        int $priority = 10,
+        int $acceptedArgs = 1
+    ): FileRequest {
+        $this->preloadFilters[] = [$hookName, $callback, $priority, $acceptedArgs];
+
+        return $this;
+    }
+
+    public function blockHttpRequests(): FileRequest
+    {
+        // Do not send mails.
+        $this->addPreloadClosure(static function () {
+            if (!function_exists('wp_mail')) {
+                function wp_mail()
+                {
+                    return true;
+                }
+            }
+        });
+
+        // Do not trigger external and internal requests.
+        $this->setConstant('WP_HTTP_BLOCK_EXTERNAL', true)
+            ->setPreloadFilter('block_local_requests', '__return_true');
+
+        return $this;
+    }
+
+    public function setTargetFile(string $targetFile):FileRequest
+    {
+        $this->targetFile = $targetFile;
+        return $this;
+    }
+
 }

@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
 use PDO;
@@ -18,6 +17,9 @@ class Db
     private string $tablePrefix;
     private array $optionsCache = [];
 
+    /**
+     * @throws DbException
+     */
     public function __construct(
         string $dbName,
         string $dbUser,
@@ -25,6 +27,13 @@ class Db
         string $dbHost,
         string $tablePrefix = 'wp_'
     ) {
+        if (!preg_match('/^[a-zA-Z][\w_]{0,23}$/', $dbName) || str_starts_with('ii', $dbName)) {
+            throw new DbException(
+                "Invalid database name: $dbName",
+                DbException::INVALID_DB_NAME
+            );
+        }
+
         $this->dbName = $dbName;
         $this->dbUser = $dbUser;
         $this->dbPassword = $dbPassword;
@@ -34,36 +43,17 @@ class Db
     }
 
     /**
-     * @throws InstallationException
+     * @throws DbException|WpConfigFileException
      */
-    public static function fromRootDir(string $rootDir): self
+    public static function fromWpConfigFile(WPConfigFile $wpConfigFile): self
     {
-        try {
-            $wpConfig = new WpConfigInclude($rootDir);
+        $dbName = $wpConfigFile->getConstantOrThrow('DB_NAME');
+        $dbUser = $wpConfigFile->getConstantOrThrow('DB_USER');
+        $dbPassword = $wpConfigFile->getConstantOrThrow('DB_PASSWORD');
+        $dbHost = $wpConfigFile->getConstantOrThrow('DB_HOST');
+        $tablePrefix = $wpConfigFile->getVariableOrThrow('table_prefix');
 
-            if (
-                !(
-                    $wpConfig->isDefinedConst('DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST')
-                    && $wpConfig->issetVar('table_prefix')
-                )
-            ) {
-                throw new InstallationException('Could not find all required database credentials in the wp-config.php file.');
-            }
-
-            $dbName = $wpConfig->getConstant('DB_NAME');
-            $dbUser = $wpConfig->getConstant('DB_USER');
-            $dbPassword = $wpConfig->getConstant('DB_PASSWORD');
-            $dbHost = $wpConfig->getConstant('DB_HOST');
-            $tablePrefix = $wpConfig->getVariable('table_prefix');
-
-            $db = new self($dbName, $dbUser, $dbPassword, $dbHost, $tablePrefix);
-
-            return $db;
-        } catch (ProcessException $e) {
-            throw new InstallationException(
-                "Parsing of wp-config.php file failed: {$e->getMessage()}", $e->getCode(), $e
-            );
-        }
+        return new self($dbName, $dbUser, $dbPassword, $dbHost, $tablePrefix);
     }
 
     public function getDbName(): string
@@ -91,29 +81,55 @@ class Db
         return $this->tablePrefix;
     }
 
+    /**
+     * @throws DbException
+     */
     public function pdo(): PDO
     {
         if (!$this->pdo instanceof PDO) {
-            $this->pdo = new PDO($this->dsn, $this->dbUser, $this->dbPassword);
+            try {
+                $this->pdo = new PDO($this->dsn, $this->dbUser, $this->dbPassword);
+            } catch (\PDOException $e) {
+                throw new DbException(
+                    "Could not connect to the database: {$e->getMessage()}",
+                    DbException::INVALID_CONNECTION_PARAMETERS
+                );
+            }
+
             if ($this->exists()) {
-                $this->pdo->query('USE ' . $this->dbName);
+                $this->useDb($this->dbName);
             }
         }
 
         return $this->pdo;
     }
 
-    public function create(): void
+    /**
+     * @throws DbException
+     */
+    public function create(): self
     {
         if ($this->pdo()->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
-            throw new DbException('Could not create database ' . $this->dbName);
+            throw new DbException(
+                'Could not create database ' . $this->dbName . ':' . json_encode($this->pdo->errorInfo()),
+                DbException::FAILED_QUERY
+            );
         }
+        $this->useDb($this->dbName);
+
+        return $this;
     }
 
+    /**
+     * @throws DbException
+     */
     public function drop(): void
     {
         if ($this->pdo()->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
-            throw new DbException('Could not drop database ' . $this->dbName);
+            throw new DbException(
+                'Could not drop database ' . $this->dbName . ': ' . json_encode($this->pdo->errorInfo()),
+                DbException::FAILED_QUERY
+            );
         }
     }
 
@@ -134,5 +150,18 @@ class Db
         }
 
         return $this->optionsCache[$optionName] ?? $default;
+    }
+
+    /**
+     * @throws DbException
+     */
+    private function useDb(string $dbName): void
+    {
+        if ($this->pdo->query('USE ' . $dbName) === false) {
+            throw new DbException(
+                'Could not use database ' . $this->dbName . ': ' . json_encode($this->pdo->errorInfo()),
+                DbException::FAILED_QUERY
+            );
+        }
     }
 }

@@ -29,11 +29,14 @@ use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\Password;
+use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\InstallationException;
+use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -229,7 +232,7 @@ class WPLoader extends Module
      */
     private array $loadRedirections = [];
     private ?WPHealthcheck $healthcheck = null;
-    private Installation $wpInstallation;
+    private Installation $installation;
 
     /**
      * WPLoader constructor.
@@ -315,47 +318,61 @@ class WPLoader extends Module
      *
      * @param bool $loadWordpress Whether WordPress should be loaded or not.
      *
-     * @throws JsonException
      * @throws ModuleConfigException
      * @throws ModuleConflictException
+     * @throws ModuleException
      */
     public function _initialize(bool $loadWordpress = true): void
     {
-        $wpDb = new Db(
-            $this->config['dbName'],
-            $this->config['dbHost'],
-            $this->config['dbUser'],
-            $this->config['dbPassword']
-        );
-        $this->wpInstallation = new Installation(
-            $this->config['wpRootFolder'],
-            null,
-            $wpDb,
-            $this->config['multisite'],
-            $this->config['domain']
-        );
+        try {
+            $db = new Db(
+                $this->config['dbName'],
+                $this->config['dbUser'],
+                $this->config['dbPassword'],
+                $this->config['dbHost'],
+                $this->config['tablePrefix']
+            );
+            $db->pdo();
 
-        foreach ([
-                     'authKey',
-                     'secureAuthKey',
-                     'loggedInKey',
-                     'nonceKey',
-                     'authSalt',
-                     'secureAuthSalt',
-                     'loggedInSalt',
-                     'nonceSalt',
-                 ] as $salt) {
-            if (empty($this->config[$salt])) {
-                $this->config[$salt] = Password::salt();
+            $this->installation = new Installation($this->config['wpRootFolder'], $db);
+
+            $installationState = $this->installation->getState();
+
+            if ($installationState instanceof EmptyDir) {
+                $wpRootDir = $this->installation->getWpRootDir();
+                Installation::scaffold($wpRootDir);
+                $this->installation = new Installation($wpRootDir, $db);
             }
+
+            $configurationSalts = $this->installation->isConfigured() ?
+                $this->installation->getSalts()
+                : [];
+
+            foreach ([
+                         'authKey',
+                         'secureAuthKey',
+                         'loggedInKey',
+                         'nonceKey',
+                         'authSalt',
+                         'secureAuthSalt',
+                         'loggedInSalt',
+                         'nonceSalt',
+                     ] as $salt) {
+                if (empty($this->config[$salt])) {
+                    $this->config[$salt] = $this->config[$salt] ?? $configurationSalts[$salt] ?? Random::salt();
+                }
+            }
+        } catch (DbException|InstallationException $e) {
+            throw new ModuleConfigException($this, $e->getMessage(), $e);
         }
 
         $this->wpBootstrapFile = CorePHPUnit::path('/includes/bootstrap.php');
+
         // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
         defined('WP_TESTS_CONFIG_FILE_PATH')
-        || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
+        || define('WP_TESTS_CONFIG_FILE_PATH',
+            CorePHPUnit::path('/wp-tests-config.php'));// Load WordPress now, to make sure the suite bootstrap file will find WordPress loaded.
 
-        // Load WordPress now, to make sure the suite bootstrap file will find WordPress loaded.
         // @todo review this: use WP_TESTS_SKIP_INSTALL?
         if (!empty($this->config['loadOnly']) && $loadWordpress) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
@@ -364,9 +381,8 @@ class WPLoader extends Module
             return;
         }
 
-        $this->wpInstallation->createDb();
+        $db->create();
 
-        // @todo review this: still required?
         // Any *Db Module should either not be running or properly configured if this has to run alongside it.
         $this->ensureDbModuleCompat();
 
@@ -381,12 +397,10 @@ class WPLoader extends Module
      * @param string|null $path The path to append to the WordPress root folder.
      *
      * @return string The absolute path to the WordPress root folder or a path within it.
-     *
-     * @throws ModuleConfigException If the specified WordPress root folder is not found or not valid.
      */
     public function getWpRootFolder(string $path = null): string
     {
-        return $this->wpInstallation->getWpRootFolder($path);
+        return $this->installation->getWpRootDir($path);
     }
 
     /**
@@ -1022,5 +1036,10 @@ class WPLoader extends Module
             ]
         );
         return new FileRequestClosureFactory($requestFactory);
+    }
+
+    public function getInstallation(): Installation
+    {
+        return $this->installation;
     }
 }

@@ -10,10 +10,8 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-use FilesystemIterator;
 use InvalidArgumentException;
 use RuntimeException;
-use SplFileInfo;
 
 /**
  * Class Filesystem.
@@ -34,12 +32,12 @@ class Filesystem
     public static function rrmdir(string $src): bool
     {
         if (is_file($src) || is_link($src)) {
-            if (! unlink($src)) {
+            if (!unlink($src)) {
                 return false;
             }
         }
 
-        if (! is_dir($src)) {
+        if (!is_dir($src)) {
             return true;
         }
 
@@ -49,8 +47,8 @@ class Filesystem
             throw new RuntimeException("Could not open dir {$dir}.");
         }
 
-        while (false !== ( $file = readdir($dir) )) {
-            if (( $file !== '.' ) && ( $file !== '..' )) {
+        while (false !== ($file = readdir($dir))) {
+            if (($file !== '.') && ($file !== '..')) {
                 $full = $src . '/' . $file;
                 if (is_dir($full)) {
                     if (!self::rrmdir($full)) {
@@ -76,22 +74,18 @@ class Filesystem
      */
     public static function homeDir(string $path = ''): string
     {
-        static $home;
-
-        if ($home === null) {
-            foreach ([ 'HOME', 'HOMEDRIVE', 'HOMEPATH' ] as $homeCandidate) {
-                if (isset($_SERVER[ $homeCandidate ])) {
-                    $home = self::untrailslashit($_SERVER[ $homeCandidate ]);
-                    break;
-                }
-                if (isset($_ENV[ $homeCandidate ])) {
-                    $home = self::untrailslashit($_ENV[ $homeCandidate ]);
-                    break;
-                }
+        foreach (['HOME', 'HOMEDRIVE', 'HOMEPATH'] as $homeCandidate) {
+            if (isset($_SERVER[$homeCandidate])) {
+                $home = self::untrailslashit($_SERVER[$homeCandidate]);
+                break;
+            }
+            if (isset($_ENV[$homeCandidate])) {
+                $home = self::untrailslashit($_ENV[$homeCandidate]);
+                break;
             }
         }
 
-        if (! empty($home)) {
+        if (!empty($home)) {
             return empty($path) ? $home : $home . '/' . self::unleadslashit($path);
         }
 
@@ -101,7 +95,7 @@ class Filesystem
     /**
      * Resolves a path from a specified root to an absolute path.
      *
-     * @param string $path The path to resolve from the root.
+     * @param string      $path The path to resolve from the root.
      * @param string|null $root Either the absolute path to resolve the path from, or `null` to use the current working
      *                          directory.
      *
@@ -119,13 +113,13 @@ class Filesystem
 
         $homeDir = self::homeDir();
 
-        $root = (string)str_replace(['~','\ '], [$homeDir, ' '], $root);
+        $root = (string)str_replace(['~', '\ '], [$homeDir, ' '], $root);
 
         if (empty($path)) {
             return self::realpath($root);
         }
 
-        $path = (string)str_replace(['~','\ '], [$homeDir, ' '], $path);
+        $path = (string)str_replace(['~', '\ '], [$homeDir, ' '], $path);
 
         if (file_exists($path)) {
             return self::realpath($path);
@@ -174,19 +168,37 @@ class Filesystem
      */
     public static function recurseCopy(string $source, string $destination): bool
     {
-        if (! is_dir($destination) && ! mkdir($destination) && ! is_dir($destination)) {
+        if (!is_dir($destination) && !mkdir($destination) && !is_dir($destination)) {
             throw new RuntimeException(sprintf('Directory "%s" was not created', $destination));
         }
 
-        /** @var SplFileInfo $file */
-        foreach (new FilesystemIterator($source, FilesystemIterator::SKIP_DOTS) as $file) {
-            if ($file->isDir()) {
-                if (! self::recurseCopy($file->getPathname(), $destination . '/' . $file->getBasename())) {
-                    return false;
-                }
-            } elseif (! copy($file->getPathname(), $destination . '/' . $file->getBasename())) {
-                return false;
+        $resolvedSource = self::resolvePath($source);
+        $resolvedDestination = self::resolvePath($destination);
+        $escapedSource = escapeshellarg($resolvedSource);
+        $escapedDestination = escapeshellarg($resolvedDestination);
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $command = "xcopy /E /I /Y $escapedSource $escapedDestination";
+        } else {
+            if (is_dir($resolvedSource)) {
+                $resolvedSource = rtrim($resolvedSource, '\\/') . '/.';
+                $resolvedDestination = rtrim($resolvedDestination, '\\/') . '/';
             }
+            $escapedSource = escapeshellarg($resolvedSource);
+            $escapedDestination = escapeshellarg($resolvedDestination);
+            $command = "cp -R -u $escapedSource $escapedDestination";
+        }
+
+        try {
+            exec($command, $output, $exitCode);
+        } catch (\Exception $e) {
+            $exitCode = $e->getCode();
+            $output = $e->getMessage();
+        }
+
+        if ($exitCode !== 0) {
+            codecept_debug("Recursive copy failed with exit code $exitCode and message: " . implode(PHP_EOL,
+                    $output));
+            return false;
         }
 
         return true;
@@ -226,14 +238,14 @@ class Filesystem
             return false;
         }
 
-        if (! is_dir($resolvedRoot)) {
+        if (!is_dir($resolvedRoot)) {
             $resolvedRoot = dirname($resolvedRoot);
         }
 
-        $dir  = self::untrailslashit($resolvedRoot);
+        $dir = self::untrailslashit($resolvedRoot);
         $path = self::unleadslashit($path);
 
-        while (! file_exists($dir . '/' . $path) && '/' !== $dir) {
+        while (!file_exists($dir . '/' . $path) && '/' !== $dir) {
             $dir = dirname($dir);
         }
 
@@ -261,11 +273,12 @@ class Filesystem
     /**
      * Recursively Create a directory structure with files and sub-directories starting at a root path.
      *
-     * @param string $pathname The path to the root directory, if not existing, it will be
+     * @param string                            $pathname The path to the root directory, if not existing, it will be
      *                                                    recursively created.
-     * @param string|array<string,array|string> $contents Either a directory structure to produce or the contents of a file
-     *                                                    to create.
-     * @param int $mode     The filemode that will be used to create each directory in the
+     * @param string|array<string,array|string> $contents Either a directory structure to produce or the contents of a
+     *                                                    file to create.
+     * @param int                               $mode     The filemode that will be used to create each directory in
+     *                                                    the
      *                                                    directory tree.
      *
      * @return string The path to the created directory.
@@ -275,7 +288,7 @@ class Filesystem
     public static function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): string
     {
         if (is_array($contents)) {
-            if (! is_dir($pathname) && ! mkdir($pathname, $mode, true) && ! is_dir($pathname)) {
+            if (!is_dir($pathname) && !mkdir($pathname, $mode, true) && !is_dir($pathname)) {
                 throw new RuntimeException("Could not create directory {$pathname}");
             }
             foreach ($contents as $subPath => $subContents) {
@@ -289,23 +302,20 @@ class Filesystem
             return $pathname;
         }
 
-        if (! file_put_contents($pathname, $contents)) {
+        if (!file_put_contents($pathname, $contents)) {
             throw new RuntimeException("Could not put file contents in file {$pathname}");
         }
 
         return $pathname;
     }
 
-    /**
-     * Creates and return the path to a temporary directory in the Codeception _output directory.
-     *
-     * @param ?string $prefix A prefix to use for the temporary directory name.
-     *
-     * @return string The path to the temporary directory.
-     */
-    public static function tmpDir(?string $prefix = ''): string
+    public static function tmpDir(string $prefix = '', array $contents = [], int $mode = 0777): string
     {
-        return self::mkdirp(codecept_output_dir('tmp/' . $prefix . md5(microtime())));
+        return self::mkdirp(
+            codecept_output_dir('tmp/' . $prefix . md5(microtime())),
+            $contents,
+            $mode
+        );
     }
 
     public static function relativePath(string $from, string $to, $separator = DIRECTORY_SEPARATOR): string

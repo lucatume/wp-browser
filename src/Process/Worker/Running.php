@@ -168,7 +168,11 @@ class Running implements WorkerInterface
         }
 
         // Kill signal.
-        $this->cachedStatus['exitcode'] = proc_close($this->proc);
+        $procClose = proc_close($this->proc);
+        if ($procClose !== -1) {
+            // Do not update the cached status if the process had already terminated.
+            $this->cachedStatus['exitcode'] = $procClose;
+        }
 
         return Exited::fromRunningWorker($this);
     }

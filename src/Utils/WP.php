@@ -77,17 +77,6 @@ class WP
         return $emptiedTables;
     }
 
-    public static function findWpConfigFile(string $rootDir): string
-    {
-        $wpConfigFile = rtrim($rootDir, '\\/') . '/wp-config.php';
-
-        if (!is_file($wpConfigFile)) {
-            $wpConfigFile = dirname($rootDir) . '/wp-config.php';
-        }
-
-        return $wpConfigFile;
-    }
-
     /**
      * @throws RuntimeException
      */

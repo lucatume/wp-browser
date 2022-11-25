@@ -15,4 +15,13 @@ class Arr
         }
         return $index;
     }
+
+    public static function firstFrom(mixed $value, mixed $default = null): mixed
+    {
+        if (is_array($value)) {
+            return reset($value);
+        }
+
+        return $default;
+    }
 }
