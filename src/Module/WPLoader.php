@@ -18,7 +18,6 @@ use Codeception\Util\Debug;
 use Exception;
 use JsonException;
 use lucatume\WPBrowser\Adapters\WP;
-use lucatume\WPBrowser\Deprecated\Map;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
