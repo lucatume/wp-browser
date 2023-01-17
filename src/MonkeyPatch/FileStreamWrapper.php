@@ -73,20 +73,20 @@ class FileStreamWrapper
         }
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function stream_open(string $path, string $mode, int $options, string &$openedPath = null): bool
     {
         self::unregister();
 
         $absPath = FS::realpath($path);
-
-        if (!is_string($absPath)) {
-            throw new MonkeyPatchingException("File $path real path could not be resolved.");
-        }
-
+        $absPathResolved = !empty($absPath) && is_string($absPath);
+        $openedPath = $absPathResolved ? $absPath : $path;
         $useIncludePath = (bool)(STREAM_USE_PATH & $options);
-        $openedPath = $absPath;
 
-        if (isset(self::$fileToPatcherMap[$absPath])) {
+        // The stream wrapper will only patch existing files.
+        if ($absPathResolved && isset(self::$fileToPatcherMap[$absPath])) {
             $openedPath = $this->patchFile($absPath);
             unset(self::$fileToPatcherMap[$absPath]);
 
@@ -99,7 +99,7 @@ class FileStreamWrapper
             return true;
         }
 
-        $this->openFile($absPath, $mode, $useIncludePath);
+        $this->openFile($openedPath, $mode, $useIncludePath);
         self::register();
 
         return is_resource($this->fileResource);
@@ -125,6 +125,8 @@ class FileStreamWrapper
 
     public function stream_lock(int $operation): bool
     {
+        // Deal with the fact that PHP might not specify the operation correctly when using `LOCK_EX`.
+        $operation = in_array($operation, [LOCK_SH, LOCK_EX, LOCK_UN, LOCK_NB], true) ? $operation : LOCK_EX;
         return is_resource($this->fileResource) && flock($this->fileResource, $operation);
     }
 

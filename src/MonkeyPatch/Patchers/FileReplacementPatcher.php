@@ -13,7 +13,7 @@ class FileReplacementPatcher implements PatcherInterface
         $this->replacementFile = $replacementFile;
     }
 
-    public function patch(mixed $fileContents, string $pathname): array
+    public function patch(string $fileContents, string $pathname): array
     {
         $replacementFileContents = file_get_contents($this->replacementFile);
 
