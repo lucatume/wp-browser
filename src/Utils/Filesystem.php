@@ -342,4 +342,19 @@ class Filesystem
 
         return str_repeat('..' . $separator, count($fromParts)) . implode($separator, $toParts);
     }
+
+    public static function getTmpSubDir(string $dirname, array $contents = [], int $mode = 0777): string
+    {
+        $pathname = codecept_output_dir('tmp/' . $dirname);
+
+        if (is_dir($pathname)) {
+            return $pathname;
+        }
+
+        return self::mkdirp(
+            $pathname,
+            $contents,
+            $mode
+        );
+    }
 }
