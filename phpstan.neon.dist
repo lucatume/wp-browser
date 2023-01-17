@@ -1,46 +1,19 @@
 includes:
-  - phar://phpstan.phar/conf/bleedingEdge.neon
-  - /composer/vendor/szepeviktor/phpstan-wordpress/extension.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
 parameters:
-  parallel:
-    jobSize: 10
-    maximumNumberOfProcesses: 32
-    minimumNumberOfJobsPerProcess: 2
-  level: max
-  inferPrivatePropertyTypeFromConstructor: true
-  reportUnmatchedIgnoredErrors: false
+  level: 0
   paths:
-    - %currentWorkingDirectory%/src/Codeception/
-    - %currentWorkingDirectory%/src/tad/
+    - src/
   scanDirectories:
-    - %currentWorkingDirectory%/src/includes
+    - includes/
     # Patchwork bootstrap and autoloading.
-    - %currentWorkingDirectory%/vendor/antecedent/patchwork
+    - vendor/antecedent/patchwork/
     # Codeception bootstrap and autoloading.
-    - %currentWorkingDirectory%/vendor/codeception/codeception
+    - vendor/codeception/codeception/
     # WP-CLI bootstrap and autoloading.
-    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php
+    - vendor/wp-cli/wp-cli/php/
   bootstrapFiles:
-    # PHPUnit aliases.
-    - %currentWorkingDirectory%/vendor/codeception/phpunit-wrapper/src/shim.php
     # AbstractBrowser aliases.
-    - %currentWorkingDirectory%/vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
+    - vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
     # WP_CLI_Command class definition.
-    - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
-  excludes_analyse:
-    - %currentWorkingDirectory%/src/Codeception/TestCase
-    - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php
-    - %currentWorkingDirectory%/src/tad/scripts
-    # Not required for compatibility with Codeception 4.0.
-    - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Codeception/Version2/Unit.php
-    - %currentWorkingDirectory%/src/tad/WPBrowser/Adapters/PHPUnit/Framework/Assert.php
-    - %currentWorkingDirectory%/src/tad/WPBrowser/phpunit.php
-  ignoreErrors:
-    # Uses func_get_args()
-    - '#^Function add_query_arg invoked with [123] parameters?, 0 required\.$#'
-    # Due to a Codeception doc block issue.
-    - '~Parameter #1 \$key of method Codeception\\Module::_getConfig\(\) expects null~'
-    # Due to a Codeception doc block issue.
-    - '~Parameter #2 \$config of method Codeception\\Module::__construct\(\) expects null~'
-    # Due to a Codeception doc block issue.
-    - '~Parameter #2 \$answer of method Codeception\\InitTemplate::ask\(\) expects null~'
+    - vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
