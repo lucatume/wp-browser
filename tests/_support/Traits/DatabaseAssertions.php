@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
+use mysqli;
+
 trait DatabaseAssertions
 {
     private function assertDatabaseExists(

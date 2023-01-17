@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
+use lucatume\WPBrowser\MonkeyPatch\MonkeyPatchingAssertions;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Env;
@@ -55,6 +56,23 @@ class WPLoaderTest extends \Codeception\Test\Unit
             $_SERVER['HOME'] = $this->homeServerBackup;
         }
         unset($this->homeServerBackup);
+    }
+
+    /**
+     * @after
+     */
+    public function undefineConstants(): void
+    {
+        foreach ([
+                     'DB_HOST',
+                     'DB_NAME',
+                     'DB_USER',
+                     'DB_PASSWORD',
+                 ] as $const) {
+            if (defined($const)) {
+                uopz_undefine($const);
+            }
+        }
     }
 
 
@@ -301,143 +319,123 @@ class WPLoaderTest extends \Codeception\Test\Unit
     }
 
 
-//    /**
-//     * It should allow getting paths from the wpRootFolder
-//     *
-//     * @test
-//     */
-//    public function should_allow_getting_paths_from_the_wp_root_folder(): void
-//    {
-//        $tmpDir = FS::tmpDir();
-//        FS::mkdirp($tmpDir, [
-//            'wp-config.php' => 'test',
-//            'wp-load.php' => 'test',
-//            'wp-settings.php' => 'test'
-//        ]);
-//        $dbName = Random::dbName();
-//        $this->config = [
-//            'wpRootFolder' => $tmpDir,
-//            'dbName' => $dbName,
-//            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
-//            'dbUser' => Env::get('WORDPRESS_DB_USER'),
-//            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
-//        ];
-//
-//        $wpLoader = $this->module();
-//        $wpLoader->_initialize(false);
-//
-//        $this->assertEquals($tmpDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
-//        $this->assertEquals($tmpDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
-//        $this->assertEquals($tmpDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
-//    }
-//
-//    /**
-//     * It should set some default values for salt keys
-//     *
-//     * @test
-//     */
-//    public function should_set_some_default_values_for_salt_keys(): void
-//    {
-//        $tmpDir = FS::tmpDir();
-//        FS::mkdirp($tmpDir, [
-//            'wp-config.php' => 'test',
-//            'wp-load.php' => 'test',
-//            'wp-settings.php' => 'test'
-//        ]);
-//        $dbName = Random::dbName();
-//        $this->config = [
-//            'wpRootFolder' => $tmpDir,
-//            'dbName' => $dbName,
-//            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
-//            'dbUser' => Env::get('WORDPRESS_DB_USER'),
-//            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
-//        ];
-//
-//        $wpLoader = $this->module();
-//        $wpLoader->_initialize(false);
-//
-//        $var = [
-//            'authKey',
-//            'secureAuthKey',
-//            'loggedInKey',
-//            'nonceKey',
-//            'authSalt',
-//            'secureAuthSalt',
-//            'loggedInSalt',
-//            'nonceSalt',
-//        ];
-//        foreach ($var as $i => $key) {
-//            if ($i > 0) {
-//                $this->assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
-//            }
-//            $this->assertEquals(64, strlen($wpLoader->_getConfig($key)));
-//        }
-//    }
-//
-//    /**
-//     * It should create the database if it does not exist
-//     *
-//     * @test
-//     */
-//    public function should_create_the_database_if_it_does_not_exist()
-//    {
-//        $hash = $dbName = Random::dbName();
-//        $tmpDir = FS::tmpDir();
-//        FS::mkdirp($tmpDir, [
-//            'wp-config.php' => "putenv('WP_CONFIG_LOADED=$hash')'",
-//            'wp-load.php' => "putenv('WP_LOAD_LOADED=$hash')'",
-//            'wp-settings.php' => "putenv('WP_SETTINGS_LOADED=$hash')'",
-//        ]);
-//        $dbHost = Env::get('WORDPRESS_DB_HOST');
-//        $dbUser = Env::get('WORDPRESS_DB_USER');
-//        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-//        $this->config = [
-//            'wpRootFolder' => $tmpDir,
-//            'dbName' => $dbName,
-//            'dbHost' => $dbHost,
-//            'dbUser' => $dbUser,
-//            'dbPassword' => $dbPassword,
-//        ];
-//        // Null the Core PHPUnit bootstrap file to avoid loading it.
-//        MonkeyPatch::redirectFileToFile(CorePHPUnit::bootstrapFile(), MonkeyPatch::dudFile());
-//
-//        $wpLoader = $this->module();
-//        $wpLoader->_initialize(true);
-//
-//        $this->assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
-//    }
-//
-//    /**
-//     * It should load wordpress correctly
-//     *
-//     * @test
-//     */
-//    public function should_load_wordpress_correctly(): void
-//    {
-//        $hash = $dbName = Random::dbName();
-//        $tmpDir = FS::tmpDir();
-//        FS::mkdirp($tmpDir, [
-//            'wp-config.php' => "putenv('WP_CONFIG_LOADED=$hash')'",
-//            'wp-load.php' => "putenv('WP_LOAD_LOADED=$hash')'",
-//            'wp-settings.php' => "putenv('WP_SETTINGS_LOADED=$hash')'",
-//        ]);
-//        $this->config = [
-//            'wpRootFolder' => $tmpDir,
-//            'dbName' => $dbName,
-//            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
-//            'dbUser' => Env::get('WORDPRESS_DB_USER'),
-//            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
-//        ];
-//        // Null the Core PHPUnit bootstrap file to avoid loading it.
-//        MonkeyPatch::redirectFileToFile(CorePHPUnit::bootstrapFile(), MonkeyPatch::dudFile());
-//
-//        $wpLoader = $this->module();
-//        $wpLoader->_initialize(true);
-//
-//        $this->assertEquals(Env::get('WP_CONFIG_LOADED'), $hash);
-//        $this->assertEquals(Env::get('WP_LOAD_LOADED'), $hash);
-//        $this->assertEquals(Env::get('WP_SETTINGS_LOADED'), $hash);
-//    }
+    /**
+     * It should allow getting paths from the wpRootFolder
+     *
+     * @test
+     */
+    public function should_allow_getting_paths_from_the_wp_root_folder(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
+            'dbUser' => Env::get('WORDPRESS_DB_USER'),
+            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
+        ];
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize(false);
+
+        $this->assertEquals($wpRootDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
+        $this->assertEquals($wpRootDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
+        $this->assertEquals($wpRootDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
+    }
+
+    /**
+     * It should set some default values for salt keys
+     *
+     * @test
+     */
+    public function should_set_some_default_values_for_salt_keys(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
+            'dbUser' => Env::get('WORDPRESS_DB_USER'),
+            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
+        ];
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize(false);
+
+        $var = [
+            'authKey',
+            'secureAuthKey',
+            'loggedInKey',
+            'nonceKey',
+            'authSalt',
+            'secureAuthSalt',
+            'loggedInSalt',
+            'nonceSalt',
+        ];
+        foreach ($var as $i => $key) {
+            if ($i > 0) {
+                $this->assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
+            }
+            $this->assertEquals(64, strlen($wpLoader->_getConfig($key)));
+        }
+    }
+
+    /**
+     * It should create the database if it does not exist
+     *
+     * @test
+     */
+    public function should_create_the_database_if_it_does_not_exist(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+        ];
+        // Null the Core PHPUnit bootstrap file to avoid loading it.
+        MonkeyPatch::redirectFileToFile(CorePHPUnit::bootstrapFile(), MonkeyPatch::dudFile());
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize(true);
+
+        $this->assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
+    }
+
+    /**
+     * It should load the core phpunit suite bootstrap file correctly
+     *
+     * @test
+     */
+    public function should_load_the_core_phpunit_suite_bootstrap_file_correctly(): void
+    {
+        $this->config = [
+            'wpRootFolder' => FS::tmpDir('wploader_'),
+            'dbName' => Random::dbName(),
+            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
+            'dbUser' => Env::get('WORDPRESS_DB_USER'),
+            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD')
+        ];
+        $corePhpunitUnitBootstrapFileContents = <<< PHP
+<?php
+
+putenv('CORE_PHPUNIT_BOOTSTRAP_FILE_LOADED=1');
+PHP;
+        MonkeyPatch::redirectFileContents(CorePHPUnit::bootstrapFile(), $corePhpunitUnitBootstrapFileContents);
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize(true);
+
+        $this->assertEquals(1, getenv('CORE_PHPUNIT_BOOTSTRAP_FILE_LOADED'));
+    }
 
     /////////////////////////////////// old test code //////////////////////////
 

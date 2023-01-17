@@ -317,9 +317,10 @@ class WPLoader extends Module
      *
      * @param bool $loadWordpress Whether WordPress should be loaded or not.
      *
+     * @throws DbException
+     * @throws JsonException
      * @throws ModuleConfigException
      * @throws ModuleConflictException
-     * @throws ModuleException
      */
     public function _initialize(bool $loadWordpress = true): void
     {
@@ -331,12 +332,13 @@ class WPLoader extends Module
                 $this->config['dbHost'],
                 $this->config['tablePrefix']
             );
-            $db->pdo();
+            // Try and initialize the database connection now.
+            $db->create();
 
             $this->installation = new Installation($this->config['wpRootFolder'], $db);
-
             $installationState = $this->installation->getState();
 
+            // The WordPress root directory should be at least scaffolded, it cannot be empty.
             if ($installationState instanceof EmptyDir) {
                 $wpRootDir = $this->installation->getWpRootDir();
                 Installation::scaffold($wpRootDir);
@@ -358,7 +360,7 @@ class WPLoader extends Module
                          'nonceSalt',
                      ] as $salt) {
                 if (empty($this->config[$salt])) {
-                    $this->config[$salt] = $this->config[$salt] ?? $configurationSalts[$salt] ?? Random::salt();
+                    $this->config[$salt] = $configurationSalts[$salt] ?? Random::salt();
                 }
             }
         } catch (DbException|InstallationException $e) {
@@ -439,7 +441,7 @@ class WPLoader extends Module
      */
     public function _loadWordpress(): void
     {
-        $this->loadConfigFile();
+        $this->loadConfigFiles();
 
         // @todo review this: still required? Use skip installation?
         if (!empty($this->config['loadOnly'])) {
@@ -515,7 +517,7 @@ class WPLoader extends Module
      *
      * @throws ModuleConfigException If the specified configuration file cannot be found.
      */
-    protected function loadConfigFile(string $folder = null): void
+    private function loadConfigFiles(string $folder = null): void
     {
         foreach ($this->_getConfigFiles($folder) as $configFile) {
             require_once $configFile;
