@@ -22,6 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Deprecated the `WPLoaer.activatePlugins` parameter: the `WPLoader.plugins` parameter should be used instead.
 - Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
 - Removed the `isolatedInstall` parameter from the `WPLoader` configuration: installation will always happen in isolation.
+- Removed the `mikey179/vfsStream` development dependency.
 
 ## [3.1.6] 2022-04-28;
 
