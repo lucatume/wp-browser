@@ -9,7 +9,6 @@ use lucatume\WPBrowser\Command\GenerateWPRestController;
 use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
-use lucatume\WPBrowser\Module\WordPress;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -46,7 +45,6 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\Module\\WPLoader' => WPLoader::class,
         'Codeception\\Module\\WPQueries' => WPQueries::class,
         'Codeception\\Module\\WPWebDriver' => WPWebDriver::class,
-        'Codeception\\Module\\WordPress' => WordPress::class,
         'Codeception\\Command\\GenerateWPAjax' => GenerateWPAjax::class,
         'Codeception\\Command\\GenerateWPCanonical' => GenerateWPCanonical::class,
         'Codeception\\Command\\GenerateWPRestApi' => GenerateWPRestApi::class,

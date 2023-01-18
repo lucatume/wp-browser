@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
 - Removed the `isolatedInstall` parameter from the `WPLoader` configuration: installation will always happen in isolation.
 - Removed the `mikey179/vfsStream` development dependency.
+- Removed the `WordPress` module and related support classes.
 
 ## [3.1.6] 2022-04-28;
 
