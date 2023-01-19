@@ -302,7 +302,10 @@ class Filesystem
             return $pathname;
         }
 
-        if (!file_put_contents($pathname, $contents)) {
+        if (empty($contents)) {
+            // If the file contents are empty, then just touch the file.
+            touch($pathname);
+        } elseif (!file_put_contents($pathname, $contents)) {
             throw new RuntimeException("Could not put file contents in file {$pathname}");
         }
 
