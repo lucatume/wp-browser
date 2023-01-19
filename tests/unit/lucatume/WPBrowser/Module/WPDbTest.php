@@ -2,57 +2,73 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
-use lucatume\WPBrowser\Lib\Driver\ExtendedMySql;
+use Codeception\Test\Unit;
+use InvalidArgumentException;
 use lucatume\WPBrowser\Module\Support\DbDump;
-use lucatume\WPBrowser\StubProphecy\Arg;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Traits\WithStubProphecy;
-use org\bovigo\vfs\vfsStream;
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+use PDO;
+use RuntimeException;
 
-class WPDbTest extends \Codeception\Test\Unit
+class WPDbTest extends Unit
 {
     use WithStubProphecy;
+    use UopzFunctions;
+
     protected $backupGlobals = false;
+    private array $config = [
+    ];
+    private static ?PDO $pdo;
 
     /**
-     * @var \UnitTester
+     * @before
      */
-    protected $tester;
-
-    /**
-     * @var ModuleContainer
-     */
-    protected $moduleContainer;
-
-
-    /**
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * @var \lucatume\WPBrowser\Module\Support\DbDump
-     */
-    protected $dbDump;
-
-    /**
-     * @test
-     * it should be instantiatable
-     */
-    public function it_should_be_instantiatable()
+    public static function createTestDatabase(): void
     {
-        $sut = $this->make_instance();
+        $dbName = 'wpdb_module_test_db';
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $pdo = new PDO("mysql:host=$dbHost", $dbUser, $dbPassword);
+        if ($pdo->exec("DROP DATABASE IF EXISTS `" . $dbName . "`") === false) {
+            throw new RuntimeException("Could not drop database $dbName");
+        }
+        if ($pdo->exec("CREATE DATABASE `" . $dbName . "`") === false) {
+            throw new RuntimeException("Could not create database $dbName");
+        }
+        if ($pdo->exec('USE `' . $dbName . '`') === false) {
+            throw new RuntimeException("Could not use database $dbName");
+        }
+        self::$pdo = $pdo;
+    }
 
-        $this->assertInstanceOf(WPDb::class, $sut);
+    /**
+     * @after
+     */
+    public static function dropTestDatabase(): void
+    {
+        if (self::$pdo->exec("DROP DATABASE IF EXISTS `wpdb_module_test_db`") === false) {
+            throw new RuntimeException("Could not drop database wpdb_module_test_db");
+        }
     }
 
 
     /**
      * @return WPDb
      */
-    private function make_instance()
+    private function makeInstance(): WPDb
     {
-        return new WPDb($this->moduleContainer->reveal(), $this->config, $this->dbDump->reveal());
+        $this->config = array_merge([
+            'dsn' => 'mysql:host=' . Env::get('WORDPRESS_DB_HOST') . ';dbname=wpdb_module_test_db',
+            'user' => Env::get('WORDPRESS_DB_USER'),
+            'password' => Env::get('WORDPRESS_DB_PASSWORD'),
+            'url' => 'https://some-wp.dev',
+        ], $this->config);
+        return new WPDb(new ModuleContainer(new Di, []), $this->config, new DbDump());
     }
 
     /**
@@ -60,19 +76,34 @@ class WPDbTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_allow_specifying_a_dump_file_to_import()
+    public function it_should_allow_specifying_a_dump_file_to_import(): void
     {
-        $root    = vfsStream::setup('root');
-        $dumpFle = vfsStream::newFile('foo.sql', 0777);
-        $root->addChild($dumpFle);
-        $path = $root->url() . '/foo.sql';
+        // The test SQL will drop and create the 'test_table' table.
+        $sql = <<< SQL
+DROP TABLE IF EXISTS `test_table`;
+CREATE TABLE `test_table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--Add some entries in the table.
+INSERT INTO `test_table` (`id`, `name`) VALUES
+(1, 'test1'),
+(2, 'test2'),
+(3, 'test3');
+SQL;
 
-        $driver = $this->stubProphecy(ExtendedMySql::class);
-        $driver->load([])->shouldBeCalled();
+        $root = FS::tmpDir('wpdb_', ['dump.sql' => $sql]);
+        $path = $root . '/dump.sql';
 
-        $sut = $this->make_instance();
-        $sut->_setDriver($driver->reveal());
-        $sut->importSqlDumpFile($path);
+        $wpdb = $this->makeInstance();
+        $wpdb->_initialize();
+        $wpdb->importSqlDumpFile($path);
+
+        $this->assertEquals(
+            ['test_table'],
+            self::$pdo->query("SHOW TABLES LIKE 'test_table'")->fetchAll(PDO::FETCH_COLUMN)
+        );
     }
 
     /**
@@ -80,17 +111,14 @@ class WPDbTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_throw_if_specified_dump_file_does_not_exist()
+    public function it_should_throw_if_specified_dump_file_does_not_exist(): void
     {
-        $path = __DIR__ . '/foo.sql';
+        $path = __DIR__ . '/dump.sql';
 
-        $driver = $this->stubProphecy(ExtendedMySql::class);
-        $driver->load($path)->shouldNotBeCalled();
+        $this->expectException(InvalidArgumentException::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-
-        $sut = $this->make_instance();
-        $sut->_setDriver($driver->reveal());
+        $sut = $this->makeInstance();
+        $sut->_initialize();
 
         $sut->importSqlDumpFile($path);
     }
@@ -100,35 +128,20 @@ class WPDbTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function it_should_throw_is_specified_dump_file_is_not_readable()
+    public function it_should_throw_is_specified_dump_file_is_not_readable(): void
     {
-        $root    = vfsStream::setup('root');
-        $dumpFle = vfsStream::newFile('foo.sql', 0000);
-        $root->addChild($dumpFle);
-        $path = $root->url() . '/foo.sql';
+        $root = FS::tmpDir('wpdb_', ['dump.sql' => 'SELECT 1']);
+        $filepath = $root . '/dump.sql';
+        $this->uopzSetFunctionReturn('is_readable', static function (string $file) use ($filepath) {
+            return $file !== $filepath && is_readable($file);
+        }, true);
 
-        $driver = $this->stubProphecy(ExtendedMySql::class);
-        $driver->load($path)->shouldNotBeCalled();
+        $this->expectException(InvalidArgumentException::class);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $sut = $this->makeInstance();
+        $sut->_initialize();
 
-        $sut = $this->make_instance();
-        $sut->_setDriver($driver->reveal());
-
-        $sut->importSqlDumpFile($path);
-    }
-
-    protected function _before()
-    {
-        $this->moduleContainer = $this->stubProphecy(ModuleContainer::class);
-        $this->config          = [
-            'dsn'         => 'some-dsn',
-            'user'        => 'some-user',
-            'password'    => 'some-password',
-            'url'         => 'http://some-wp.dev',
-            'tablePrefix' => 'wp_',
-        ];
-        $this->dbDump = $this->stubProphecy(DbDump::class);
+        $sut->importSqlDumpFile($filepath);
     }
 
     /**
@@ -136,24 +149,63 @@ class WPDbTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_not_try_to_replace_the_site_url_in_the_dump_if_url_replacement_is_false()
+    public function should_not_try_to_replace_the_site_url_in_the_dump_if_url_replacement_is_false(): void
     {
+        $sql = <<< SQL
+--Drop and recreate the wp_options table.
+DROP TABLE IF EXISTS `wp_options`;
+CREATE TABLE `wp_options` (
+  `option_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `option_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `option_value` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `autoload` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'yes',
+  PRIMARY KEY (`option_id`),
+  UNIQUE KEY `option_name` (`option_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--Insert the siteurl option in the wp_options table.
+INSERT INTO `wp_options` (`option_id`, `option_name`, `option_value`, `autoload`) VALUES
+(1, 'siteurl', 'https://some-other-site.dev', 'yes');
+--Insert the home option in the wp_options table.
+INSERT INTO `wp_options` (`option_id`, `option_name`, `option_value`, `autoload`) VALUES
+(2, 'home', 'https://some-other-site.dev/home', 'yes');
+--Drop and recreate the test table
+DROP TABLE IF EXISTS `test_urls`;
+CREATE TABLE `test_urls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--Add some entries in the table.
+INSERT INTO `test_urls` (`id`, `url`) VALUES
+(1, 'https://some-wp.dev'),
+(2, 'https://some-other-site.dev'),
+(3, 'https://localhost:8080');
+SQL;
+
+        $root = FS::tmpDir('wpdb_', ['dump.sql' => $sql]);
         $this->config = [
-            'dsn'            => 'some-dsn',
-            'user'           => 'some-user',
-            'password'       => 'some-password',
-            'url'            => 'http://some-wp.dev',
-            'tablePrefix'    => 'wp_',
+            'url' => 'https://some-wp.dev',
             'urlReplacement' => false,
-            'dump'           => 'some-sql',
-            'populate'       => true,
+            'dump' => FS::relativePath(codecept_root_dir(), $root . '/dump.sql'),
+            'populate' => true,
         ];
 
-        $this->dbDump->replaceSiteDomainInSqlString(Arg::any(), Arg::any())->shouldNotBeCalled();
-        $this->dbDump->replaceSiteDomainInMultisiteSqlString(Arg::any(), Arg::any())->shouldNotBeCalled();
+        $sut = $this->makeInstance();
+        $sut->_initialize();
+        $sut->_beforeSuite();
 
-        $sut = $this->make_instance();
-
-        $sut->_replaceUrlInDump('foo-bar');
+        $this->assertEquals('https://some-other-site.dev',
+            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'siteurl']));
+        $this->assertEquals('https://some-other-site.dev/home',
+            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'home']));
+        $this->assertEquals('https://some-wp.dev',
+            self::$pdo->query("SELECT url FROM test_urls WHERE id = 1")->fetchColumn()
+        );
+        $this->assertEquals('https://some-other-site.dev',
+            self::$pdo->query("SELECT url FROM test_urls WHERE id = 2")->fetchColumn()
+        );
+        $this->assertEquals('https://localhost:8080',
+            self::$pdo->query("SELECT url FROM test_urls WHERE id = 3")->fetchColumn()
+        );
     }
 }
