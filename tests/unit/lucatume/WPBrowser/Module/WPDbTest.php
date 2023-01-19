@@ -8,7 +8,6 @@ use Codeception\Test\Unit;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\Traits\WithStubProphecy;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PDO;
@@ -16,7 +15,6 @@ use RuntimeException;
 
 class WPDbTest extends Unit
 {
-    use WithStubProphecy;
     use UopzFunctions;
 
     protected $backupGlobals = false;
