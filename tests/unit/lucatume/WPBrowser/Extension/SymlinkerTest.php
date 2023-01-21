@@ -8,7 +8,6 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Test\Unit;
 use Exception;
-use lucatume\WPBrowser\Extension\Symlinker;
 use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\StubProphecy\FunctionProphecy as the_function;
 use lucatume\WPBrowser\StubProphecy\StubProphecy;
