@@ -7,16 +7,13 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\StubProphecy\Arg;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\Traits\WithStubProphecy;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Process\Process;
 use UnitTester;
 
 class WPCLITest extends Unit
 {
-    use WithStubProphecy;
     use UopzFunctions;
 
     protected $backupGlobals = false;
@@ -62,7 +59,7 @@ class WPCLITest extends Unit
      * @test
      * it should be instantiatable
      */
-    public function it_should_be_instantiatable()
+    public function it_should_be_instantiatable(): void
     {
         $cli = $this->module();
 
@@ -73,7 +70,7 @@ class WPCLITest extends Unit
      * @test
      * it should throw if path is not folder at run time
      */
-    public function it_should_throw_if_path_is_not_folder_at_run_time()
+    public function it_should_throw_if_path_is_not_folder_at_run_time(): void
     {
         $this->config = ['path' => '/some/path/to/null'];
 
@@ -86,7 +83,7 @@ class WPCLITest extends Unit
      * @test
      * it should call the proces with proper parameters
      */
-    public function it_should_call_the_process_with_proper_parameters()
+    public function it_should_call_the_process_with_proper_parameters(): void
     {
         $this->assertProcCallArgsAndReturn(
             [
@@ -122,7 +119,7 @@ class WPCLITest extends Unit
      * it should allow setting additional wp-cli options in the config file
      * @dataProvider optionalOptionsWithArguments
      */
-    public function it_should_allow_setting_additional_wp_cli_options_in_the_config_file($option, $optionValue)
+    public function it_should_allow_setting_additional_wp_cli_options_in_the_config_file($option, $optionValue): void
     {
         $this->config[$option] = $optionValue;
         $this->assertProcCallArgsAndReturn(
@@ -153,7 +150,7 @@ class WPCLITest extends Unit
      * it should skip some options by default
      * @dataProvider skippedOptions
      */
-    public function it_should_skip_some_options_by_default($option)
+    public function it_should_skip_some_options_by_default($option): void
     {
         $this->config[$option] = true;
 
@@ -175,7 +172,7 @@ class WPCLITest extends Unit
      * it should allow overriding options with inline command
      * @dataProvider optionalOptionsWithArguments
      */
-    public function it_should_allow_overriding_options_with_inline_command($option, $optionValue)
+    public function it_should_allow_overriding_options_with_inline_command($option, $optionValue): void
     {
         $this->config[$option] = $optionValue;
         $overrideValue = 'another-' . $option . '-value';
@@ -197,7 +194,7 @@ class WPCLITest extends Unit
      * @test
      * it should cast wp-cli errors to exceptions if specified in config
      */
-    public function it_should_cast_wp_cli_errors_to_exceptions_if_specified_in_config()
+    public function it_should_cast_wp_cli_errors_to_exceptions_if_specified_in_config(): void
     {
         $this->config['throw'] = true;
 
@@ -224,7 +221,7 @@ class WPCLITest extends Unit
      * @test
      * it should not throw any exception if specified in config
      */
-    public function it_should_not_throw_any_exception_if_specified_in_config()
+    public function it_should_not_throw_any_exception_if_specified_in_config(): void
     {
         $this->config['throw'] = false;
 
@@ -259,7 +256,7 @@ class WPCLITest extends Unit
      * it should not cast output to any format
      * @dataProvider cliReturnValues
      */
-    public function it_should_not_cast_output_to_any_format($raw, $expected)
+    public function it_should_not_cast_output_to_any_format($raw, $expected): void
     {
         $this->assertProcCallArgsAndReturn(
             [
@@ -281,7 +278,7 @@ class WPCLITest extends Unit
      * @test
      * it should allow defining a split callback function
      */
-    public function it_should_allow_defining_a_split_callback_function()
+    public function it_should_allow_defining_a_split_callback_function(): void
     {
         $expected = [1, 2, 3];
         $splitCallback = static function () use ($expected) {
@@ -308,7 +305,7 @@ class WPCLITest extends Unit
      * @test
      * it should throw if split callback function does not return an array
      */
-    public function it_should_throw_if_split_callback_function_does_not_return_an_array()
+    public function it_should_throw_if_split_callback_function_does_not_return_an_array(): void
     {
         $splitCallback = static function () {
             return 'foo';
@@ -334,7 +331,7 @@ class WPCLITest extends Unit
      * @test
      * it should handle the case where the command output is an empty array
      */
-    public function it_should_handle_the_case_where_the_command_output_is_an_empty_array()
+    public function it_should_handle_the_case_where_the_command_output_is_an_empty_array(): void
     {
         $this->assertProcCallArgsAndReturn(
             [
@@ -354,7 +351,7 @@ class WPCLITest extends Unit
      * @test
      * it should handle the case where the command output is null
      */
-    public function it_should_handle_the_case_where_the_command_output_is_null()
+    public function it_should_handle_the_case_where_the_command_output_is_null(): void
     {
         $this->assertProcCallArgsAndReturn(
             [
@@ -375,7 +372,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_allow_setting_a_timeout_in_the_configuration()
+    public function should_allow_setting_a_timeout_in_the_configuration(): void
     {
         $this->config['timeout'] = 23;
 
@@ -399,7 +396,7 @@ class WPCLITest extends Unit
      * @test
      * @dataProvider nullTimeoutValues
      */
-    public function should_set_the_process_timeout_to_null_if_set_to_nullable_value($timeoutValue)
+    public function should_set_the_process_timeout_to_null_if_set_to_nullable_value($timeoutValue): void
     {
         $this->config['timeout'] = $timeoutValue;
 
@@ -422,7 +419,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_throw_if_timeout_value_is_not_valid()
+    public function should_throw_if_timeout_value_is_not_valid(): void
     {
         $this->config['timeout'] = 'foo-bar';
 
@@ -450,7 +447,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_support_and_allow_root_configuration_parameter()
+    public function should_support_and_allow_root_configuration_parameter(): void
     {
         $this->config['allow-root'] = true;
 
@@ -473,7 +470,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_forward_options_from_the_configuration_to_the_wp_cli_command()
+    public function should_forward_options_from_the_configuration_to_the_wp_cli_command(): void
     {
         $this->config['some-option'] = 'some-value';
 
@@ -496,7 +493,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_allow_getting_a_command_output_as_a_string()
+    public function should_allow_getting_a_command_output_as_a_string(): void
     {
         $adminEmail = 'luca@theaveragedev.com';
 
@@ -519,7 +516,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_handle_exceptions_thrown_by_the_process_by_throwing()
+    public function should_handle_exceptions_thrown_by_the_process_by_throwing(): void
     {
         $this->config['throw'] = true;
 
@@ -544,7 +541,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_handle_exceptions_thrown_by_the_process()
+    public function should_handle_exceptions_thrown_by_the_process(): void
     {
         $this->config['throw'] = false;
 
@@ -567,7 +564,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_support_the_wp_cli_strict_args_mode_env_argument()
+    public function should_support_the_wp_cli_strict_args_mode_env_argument(): void
     {
         $this->config['env']['strict-args'] = true;
 
@@ -613,7 +610,7 @@ class WPCLITest extends Unit
      * @test
      * @dataProvider envParametersDataProvider
      */
-    public function should_correctly_parse_other_env_parameters($envKey, $envValue, $expectedEnvName, $expectedEnvValue)
+    public function should_correctly_parse_other_env_parameters($envKey, $envValue, $expectedEnvName, $expectedEnvValue): void
     {
         $this->config['env'][$envKey] = $envValue;
 
@@ -636,7 +633,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_not_throw_on_0_exit_status_code()
+    public function should_not_throw_on_0_exit_status_code(): void
     {
         $this->config['throw'] = true;
 
@@ -659,7 +656,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_output_stderr_on_0_exit_status_code_and_wrong_stdout()
+    public function should_output_stderr_on_0_exit_status_code_and_wrong_stdout(): void
     {
         $this->config['throw'] = true;
 
@@ -682,7 +679,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_throw_if_exit_code_not_0_and_stderr_empty()
+    public function should_throw_if_exit_code_not_0_and_stderr_empty(): void
     {
         $this->config['throw'] = true;
 
@@ -707,7 +704,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_throw_if_trying_to_grab_output_from_last_command_when_no_command_ever_ran()
+    public function should_throw_if_trying_to_grab_output_from_last_command_when_no_command_ever_ran(): void
     {
         $this->expectException(ModuleException::class);
 
@@ -719,7 +716,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_return_empty_string_when_grabbing_output_of_last_command_that_produced_no_output()
+    public function should_return_empty_string_when_grabbing_output_of_last_command_that_produced_no_output(): void
     {
         $this->assertProcCallArgsAndReturn(
             [
@@ -744,7 +741,7 @@ class WPCLITest extends Unit
      *
      * @test
      */
-    public function should_allow_grabbing_the_output_of_the_last_ran_command()
+    public function should_allow_grabbing_the_output_of_the_last_ran_command(): void
     {
         $this->assertProcCallArgsAndReturn(
             [
