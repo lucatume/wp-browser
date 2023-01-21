@@ -2,7 +2,8 @@
 
 class wpdb
 {
-    public $tables = [];
+    public array $queries = [];
+    public array $tables = [];
 
     public function __call($name, array $args)
     {

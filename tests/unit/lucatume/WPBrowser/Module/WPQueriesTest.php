@@ -1,135 +1,183 @@
 <?php
+
 namespace lucatume\WPBrowser\Module;
 
+use Codeception\Exception\ModuleException;
+use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
-use lucatume\WPBrowser\Environment\Constants;
-use lucatume\WPBrowser\Traits\WithStubProphecy;
+use Codeception\Test\Unit;
+use Gettext\Extractors\Mo;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
+use wpdb;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class WPQueriesTest extends \Codeception\Test\Unit
+if (!class_exists(wpdb::class)) {
+    require_once codecept_root_dir('tests/_support/lib/wpdb.php');
+}
+
+class WPQueriesTest extends Unit
 {
-    use WithStubProphecy;
+    use UopzFunctions;
 
+    private static ?string $wpRootDir = null;
     protected $backupGlobals = false;
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
+    private array $config = [];
+    private ?wpdb $wpdb;
+
+    private function makeInstance(): WPQueries
+    {
+        if (self::$wpRootDir === null) {
+            self::$wpRootDir = FS::tmpDir('wpqueries_');
+            Installation::scaffold(self::$wpRootDir, '6.1.1');
+        }
+
+        $moduleContainer = new ModuleContainer(new Di,
+            [
+                'modules' => [
+                    'config' => [
+                        WPLoader::class => [
+                            'wpRootFolder' => self::$wpRootDir,
+                            'dbName' => Random::dbName(),
+                            'dbUser' => getenv('WORDPRESS_DB_USER'),
+                            'dbPassword' => getenv('WORDPRESS_DB_PASSWORD'),
+                            'dbHost' => getenv('WORDPRESS_DB_HOST'),
+                        ]
+                    ]
+                ]
+            ]
+        );
+        $moduleContainer->create(WPLoader::class);
+        $wpQueries = new WPQueries($moduleContainer, $this->config, $this->wpdb);
+
+        return $wpQueries;
+    }
 
     /**
-     * @var ModuleContainer
-     */
-    protected $moduleContainer;
-
-    /**
-     * @var array
-     */
-    protected $config = [];
-
-    /**
-     * @var Constants
-     */
-    protected $constants;
-
-    /**
-     * @var \wpdb
-     */
-    protected $wpdb;
-
-    /**
+     * It should throw if wpdb not provided and global would not be found
+     *
      * @test
-     * it should be instantiatable
      */
-    public function it_should_be_instantiatable()
+    public function should_throw_if_wpdb_not_provided_and_global_would_not_be_found(): void
     {
-        $sut = $this->make_instance();
+        $this->expectException(ModuleException::class);
 
-        $this->assertInstanceOf('lucatume\WPBrowser\Module\WPQueries', $sut);
+        $this->wpdb = null;
+        $this->makeInstance();
     }
 
     /**
-     * @return WPQueries
+     * It should use the globally available instance of wpdb if none provided
+     *
+     * @test
      */
-    private function make_instance()
+    public function should_use_the_globally_available_instance_of_wpdb_if_none_provided(): void
     {
-        return new WPQueries($this->moduleContainer->reveal(), $this->config, $this->constants->reveal(), $this->wpdb);
+        $globalWpdb = new wpdb;
+        $GLOBALS['wpdb'] = $globalWpdb;
+        $this->wpdb = null;
+        $wpQueries = $this->makeInstance();
+
+        $this->assertSame($globalWpdb, $wpQueries->_getWpdb());
     }
+
     /**
      * @test
      * it should define the SAVEQUERIES constant if not defined already
      */
-    public function it_should_define_the_savequeries_constant_if_not_defined_already()
+    public function it_should_define_the_savequeries_constant_if_not_defined_already(): void
     {
-        $this->constants->defineIfUndefined('SAVEQUERIES', true)->shouldBeCalled();
-        $this->constants->constant('SAVEQUERIES')->willReturn(true);
-        $sut = $this->make_instance();
-        $sut->_initialize();
+        $this->uopzUndefineConstant('SAVEQUERIES');
+        $this->assertFalse(defined('SAVEQUERIES'));
+
+        $this->wpdb = new wpdb;
+        $wpQueries = $this->makeInstance();
+        $wpQueries->_initialize();
+
+        $this->assertTrue(defined('SAVEQUERIES'));
+    }
+
+    /**
+     * It should throw if SAVEQUERIES defined and false
+     *
+     * @test
+     */
+    public function should_throw_if_savequeries_defined_and_false(): void
+    {
+        $this->uopzRedefineConstant('SAVEQUERIES', false);
+        $this->assertTrue(defined('SAVEQUERIES'));
+        $this->assertFalse(SAVEQUERIES);
+
+        $this->expectException(ModuleException::class);
+
+        $this->wpdb = new wpdb;
+        $wpQueries = $this->makeInstance();
+        $wpQueries->_initialize();
     }
 
     /**
      * @test
      * it should filter setUp and tearDown queries by default
      */
-    public function it_should_filter_set_up_and_tear_down_queries_by_default()
+    public function it_should_filter_set_up_and_tear_down_queries_by_default(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
-                'first SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                'query 1',
+                123, // ms timing.
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
-                'second SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                'query 2',
+                34, // ms timing.
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
             ],
             [
-                'third SQL statement',
-                'some ms timing',
-                'a stack trace calling Acme\MyPlugin->someMethod'
+                'query 3',
+                14, // ms timing.
+                'trace calling Acme\MyPlugin->someMethod'
             ],
             [
-                'fourth SQL statement',
-                'some ms timing',
-                'a stack trace including WP_UnitTest_Factory_For_Thing->create'
+                'query 4',
+                34, // ms timing.
+                'trace including WP_UnitTest_Factory_For_Thing->create'
             ],
             [
-                'fifth SQL statement',
-                'some ms timing',
-                'a stack trace including WP_UnitTest_Factory_For_Thing->create'
+                'query 5',
+                4, // ms timing.
+                'trace including WP_UnitTest_Factory_For_Thing->create'
             ],
             [
-                'sixth SQL statement',
-                'some ms timing',
-                'a stack trace calling Acme\MyPlugin->someMethod'
+                'query 6',
+                1343, // ms timing.
+                'trace calling Acme\MyPlugin->someMethod'
             ],
             [
-                'seventh SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                'query 7',
+                234, // ms timing.
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
             ],
         ];
 
-        $sut = $this->make_instance();
-        $iterator = $sut->_getFilteredQueriesIterator($this->wpdb);
+        $wpQueries = $this->makeInstance();
 
-        $items = [];
-
-        foreach ($iterator as $item) {
-            $items[] = $item;
-        }
-
-        $this->assertCount(2, $items);
-        $this->assertEquals('third SQL statement', $items[0][0]);
-        $this->assertEquals('sixth SQL statement', $items[1][0]);
+        $queries = $wpQueries->getQueries();
+        $this->assertCount(2, $queries);
+        $this->assertEquals('query 3', $queries[0][0]);
+        $this->assertEquals('query 6', $queries[1][0]);
     }
 
     /**
      * @test
      * it should return false if asserting queries and there were no queries
      */
-    public function it_should_return_false_if_asserting_queries_and_there_were_no_queries()
+    public function it_should_return_false_if_asserting_queries_and_there_were_no_queries(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'first SQL statement',
@@ -160,7 +208,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
 
         $this->expectException(AssertionFailedError::class);
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertQueries();
     }
 
@@ -168,8 +216,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should not fail if asserting queries and there were queries
      */
-    public function it_should_not_fail_if_asserting_queries_and_there_were_queries()
+    public function it_should_not_fail_if_asserting_queries_and_there_were_queries(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'first SQL statement',
@@ -188,7 +237,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertQueries();
     }
 
@@ -196,8 +245,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should fail if asserting no queries but queries were made
      */
-    public function it_should_fail_if_asserting_no_queries_but_queries_were_made()
+    public function it_should_fail_if_asserting_no_queries_but_queries_were_made(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'first SQL statement',
@@ -218,7 +268,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
 
         $this->expectException(AssertionFailedError::class);
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertNotQueries();
     }
 
@@ -226,8 +276,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should succeed if asserting no queries and no queries were made
      */
-    public function it_should_succeed_if_asserting_no_queries_and_no_queries_were_made()
+    public function it_should_succeed_if_asserting_no_queries_and_no_queries_were_made(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'first SQL statement',
@@ -241,7 +292,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertNotQueries();
     }
 
@@ -249,8 +300,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow counting the queries
      */
-    public function it_should_allow_counting_the_queries()
+    public function it_should_allow_counting_the_queries(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'SQL statement',
@@ -274,7 +326,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertCountQueries(2);
     }
 
@@ -282,8 +334,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should fail if asserting wrong queries count
      */
-    public function it_should_fail_if_asserting_wrong_queries_count()
+    public function it_should_fail_if_asserting_wrong_queries_count(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'SQL statement',
@@ -309,7 +362,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
 
         $this->expectException(AssertionFailedError::class);
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
         $sut->assertCountQueries(1);
     }
 
@@ -317,8 +370,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries count by statement
      */
-    public function it_should_allow_asserting_queries_by_statement()
+    public function it_should_allow_asserting_queries_by_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -342,7 +396,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByStatement('SELECT');
         $sut->assertQueriesCountByStatement(2, 'SELECT');
@@ -368,8 +422,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by class method
      */
-    public function it_should_allow_asserting_queries_by_class_method()
+    public function it_should_allow_asserting_queries_by_class_method(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -393,7 +448,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByMethod('Acme\MyPlugin', 'methodOne');
         $sut->assertQueriesByMethod('\Acme\MyPlugin', 'methodOne');
@@ -417,8 +472,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by function
      */
-    public function it_should_allow_asserting_queries_by_function()
+    public function it_should_allow_asserting_queries_by_function(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -442,7 +498,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByFunction('functionOne');
         $sut->assertQueriesCountByFunction(2, 'functionTwo');
@@ -465,8 +521,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by class method and statement
      */
-    public function it_should_allow_asserting_queries_by_class_method_and_statement()
+    public function it_should_allow_asserting_queries_by_class_method_and_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -490,7 +547,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByStatementAndMethod('INSERT', 'Acme\MyPlugin', 'methodOne');
         $sut->assertQueriesCountByStatementAndMethod(2, 'SELECT', 'Acme\MyPlugin', 'methodTwo');
@@ -510,8 +567,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by function and statement
      */
-    public function it_should_allow_asserting_queries_by_function_and_statement()
+    public function it_should_allow_asserting_queries_by_function_and_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -535,7 +593,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByStatementAndFunction('INSERT', 'functionOne');
         $sut->assertQueriesCountByStatementAndFunction(2, 'SELECT', 'functionTwo');
@@ -555,8 +613,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by action
      */
-    public function it_should_allow_asserting_queries_by_action()
+    public function it_should_allow_asserting_queries_by_action(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -580,7 +639,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByAction('actionOne');
         $sut->assertQueriesCountByAction(2, 'actionTwo');
@@ -600,8 +659,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by action and statement
      */
-    public function it_should_allow_asserting_queries_by_action_and_statement()
+    public function it_should_allow_asserting_queries_by_action_and_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -625,7 +685,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByStatementAndAction('INSERT', 'actionOne');
         $sut->assertQueriesCountByStatementAndAction(2, 'SELECT', 'actionTwo');
@@ -645,8 +705,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by filter
      */
-    public function it_should_allow_asserting_queries_by_filter()
+    public function it_should_allow_asserting_queries_by_filter(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -670,7 +731,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByFilter('filterOne');
         $sut->assertQueriesCountByFilter(2, 'filterTwo');
@@ -690,8 +751,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow asserting queries by filter and statement
      */
-    public function it_should_allow_asserting_queries_by_filter_and_statement()
+    public function it_should_allow_asserting_queries_by_filter_and_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
@@ -715,7 +777,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesByStatementAndFilter('INSERT', 'filterOne');
         $sut->assertQueriesCountByStatementAndFilter(2, 'SELECT', 'filterTwo');
@@ -735,8 +797,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      * @test
      * it should allow using regexes when asserting queries by statement
      */
-    public function it_should_allow_using_regexes_when_asserting_queries_by_statement()
+    public function it_should_allow_using_regexes_when_asserting_queries_by_statement(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
@@ -760,7 +823,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $sut->assertQueriesCountByStatement(1, "/SELECT .* AND pm.meta_key = 'some_key'/");
         $sut->assertQueriesCountByStatement(3, 'SELECT');
@@ -773,8 +836,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_getting_the_count_of_the_queries()
+    public function should_allow_getting_the_count_of_the_queries(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
@@ -798,7 +862,7 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $this->assertEquals(4, $sut->countQueries());
     }
@@ -808,8 +872,9 @@ class WPQueriesTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_getting_the_queries()
+    public function should_allow_getting_the_queries(): void
     {
+        $this->wpdb = new wpdb;
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
@@ -833,16 +898,8 @@ class WPQueriesTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
         $this->assertEquals($this->wpdb->queries, $sut->getQueries());
-    }
-
-    protected function _before()
-    {
-        $this->moduleContainer = $this->stubProphecy('Codeception\Lib\ModuleContainer');
-        $this->moduleContainer->hasModule('WPLoader')->willReturn(true);
-        $this->constants = $this->stubProphecy('lucatume\WPBrowser\Environment\Constants');
-        $this->wpdb = (object)['queries' => []];
     }
 }

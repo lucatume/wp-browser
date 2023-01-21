@@ -11,7 +11,6 @@ use ArrayIterator;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
-use lucatume\WPBrowser\Environment\Constants;
 use lucatume\WPBrowser\Iterators\Filters\ActionsQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\FactoryQueriesFilter;
@@ -20,6 +19,7 @@ use lucatume\WPBrowser\Iterators\Filters\FunctionQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\MainStatementQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter;
 use PHPUnit\Framework\Assert;
+use wpdb;
 
 /**
  * Class WPQueries
@@ -39,27 +39,29 @@ class WPQueries extends Module
      * @var callable[]
      */
     protected array $assertions = [];
-    private ?\wpdb $wpdb = null;
-    private Constants $constants;
+    private wpdb $wpdb;
 
     /**
      * WPQueries constructor.
      *
-     * @param ModuleContainer $moduleContainer The current module container.
-     * @param array<string,mixed>|null $config The current module configuration.
-     * @param Constants|null $constants The constants adapter.
-     * @param \wpdb|null $wpdbInstance The current wpdb instance.
+     * @param ModuleContainer          $moduleContainer The current module container.
+     * @param array<string,mixed>|null $config          The current module configuration.
+     * @param \wpdb|null               $wpdbInstance    The current wpdb instance.
+     * @throws ModuleException
      */
     public function __construct(
         ModuleContainer $moduleContainer,
         ?array $config,
-        Constants $constants = null,
-        \wpdb $wpdbInstance = null
+       ?wpdb $wpdbInstance
     ) {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-        $this->constants = $constants ?: new Constants();
-        $this->wpdb = $wpdbInstance ?: $wpdb;
+        $wpdbInstance = $wpdbInstance ?? $GLOBALS['wpdb'] ?? null;
+        if (!$wpdbInstance instanceof wpdb) {
+            throw new ModuleException(
+                __CLASS__,
+                'The wpdb instance is not available: either provide it or make sure to load WordPress before using this module.'
+            );
+        }
+        $this->wpdb = $wpdbInstance;
         parent::__construct($moduleContainer, $config);
     }
 
@@ -78,11 +80,11 @@ class WPQueries extends Module
             );
         }
 
-        $this->constants->defineIfUndefined('SAVEQUERIES', true);
-
-        if (!$this->constants->constant('SAVEQUERIES')) {
-            $message = 'The "SAVEQUERIES" should either not be set or set to "true";'
-                . ' this module cannot work if "SAVEQUERIES" is not set to "true".';
+        if (!defined('SAVEQUERIES')) {
+            define('SAVEQUERIES', true);
+        } elseif (!SAVEQUERIES) {
+            $message = 'The "SAVEQUERIES" should either not be set or set to "true";' .
+                ' this module cannot work if "SAVEQUERIES" is not set to "true".';
             throw new ModuleException(__CLASS__, $message);
         }
     }
@@ -1046,5 +1048,10 @@ class WPQueries extends Module
     public function getQueries(\wpdb $wpdb = null): array
     {
         return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
+    }
+
+    public function _getWpdb(): wpdb
+    {
+        return $this->wpdb;
     }
 }

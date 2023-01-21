@@ -70,7 +70,7 @@ trait UopzFunctions
         $this->uopzSetStaticMethodReturns[] = $class . '::' . $method;
     }
 
-    private function uopzRedefinedConstant(string $constant, string|int|bool|null $value): void
+    private function uopzRedefineConstant(string $constant, string|int|bool|null $value): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -111,7 +111,7 @@ trait UopzFunctions
         foreach ($this->uopzRedefinedConstants as $constant => [$wasDefined, $previousValue]) {
             uopz_undefine($constant);
             if ($wasDefined) {
-                uopz_define($constant, $previousValue);
+                uopz_redefine($constant, $previousValue);
             }
         }
 
@@ -119,8 +119,25 @@ trait UopzFunctions
             [$class, $constant] = explode($classAndConstant, '::', 2);
             uopz_undefine($class, $constant);
             if ($wasDefined) {
-                uopz_define($class, $constant, $previousValue);
+                uopz_redefine($class, $constant, $previousValue);
             }
         }
+    }
+
+    private function uopzUndefineConstant(string $constant): void
+    {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('This test requires the uopz extension');
+        }
+
+        if (!defined($constant)) {
+            // The constant was not defined, let's make sure to reset during tear down.
+            $this->uopzRedefinedConstants[$constant] = [false, null];
+            return;
+        }
+
+        $this->uopzRedefinedConstants[$constant] = [true, constant($constant)];
+
+        uopz_undefine($constant);
     }
 }
