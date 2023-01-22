@@ -6,14 +6,13 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use Gettext\Extractors\Mo;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
 use wpdb;
-use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 if (!class_exists(wpdb::class)) {
     require_once codecept_root_dir('tests/_support/lib/wpdb.php');
@@ -42,9 +41,9 @@ class WPQueriesTest extends Unit
                         WPLoader::class => [
                             'wpRootFolder' => self::$wpRootDir,
                             'dbName' => Random::dbName(),
-                            'dbUser' => getenv('WORDPRESS_DB_USER'),
-                            'dbPassword' => getenv('WORDPRESS_DB_PASSWORD'),
-                            'dbHost' => getenv('WORDPRESS_DB_HOST'),
+                            'dbUser' => Env::get('WORDPRESS_DB_USER'),
+                            'dbPassword' => Env::get('WORDPRESS_DB_PASSWORD'),
+                            'dbHost' => Env::get('WORDPRESS_DB_HOST'),
                         ]
                     ]
                 ]

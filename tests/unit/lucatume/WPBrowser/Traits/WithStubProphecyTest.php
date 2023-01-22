@@ -8,15 +8,15 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class TestObject
 {
-    public function returnInt()
+    public function returnInt(): void
     {
     }
 
-    public function returnString()
+    public function returnString(): void
     {
     }
 
-    public function returnFloat()
+    public function returnFloat(): void
     {
     }
 }
@@ -36,7 +36,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_creating_a_method_prophecy_that_will_return_a_value()
+    public function should_allow_creating_a_method_prophecy_that_will_return_a_value(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
             ->getWpRootFolder()->willReturn(__DIR__);
@@ -51,10 +51,10 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_fail_if_arg_expectation_fails()
+    public function should_fail_if_arg_expectation_fails(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
+            ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
 
         // Expect a failure a first time as the expected arguments are not passed.
         $this->expectException(AssertionFailedError::class);
@@ -69,10 +69,10 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_not_throw_if_arg_expectation_is_matched()
+    public function should_not_throw_if_arg_expectation_is_matched(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
+            ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
 
         $revealed = $fs->reveal();
 
@@ -84,10 +84,10 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_fail_if_actual_argument_is_not_expected()
+    public function should_fail_if_actual_argument_is_not_expected(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
+            ->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(__DIR__);
 
         // Expect a failure a first time as the expected arguments are not passed.
         $this->expectException(AssertionFailedError::class);
@@ -102,14 +102,14 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_parameter_expectations_using_closures()
+    public function should_allow_setting_parameter_expectations_using_closures(): void
     {
         $assertSameDate = static function ($date) {
             return $date instanceof \DateTime && $date->format('Y-m-d') === '2019-01-01';
         };
-        $fs             = $this->stubProphecy(WPFilesystem::class)
-                               ->getBlogUploadsPath(23, 'some/file/foo.php', Arg::that($assertSameDate))
-                               ->willReturn(__DIR__);
+        $fs = $this->stubProphecy(WPFilesystem::class)
+            ->getBlogUploadsPath(23, 'some/file/foo.php', Arg::that($assertSameDate))
+            ->willReturn(__DIR__);
 
         $revealed = $fs->reveal();
 
@@ -121,14 +121,14 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_fail_correctly_when_using_closures_for_assertions_()
+    public function should_fail_correctly_when_using_closures_for_assertions_(): void
     {
         $assertSameDate = static function ($date) {
             return $date instanceof \DateTime && $date->format('Y-m-d') === '2020-01-01';
         };
-        $fs             = $this->stubProphecy(WPFilesystem::class)
-                               ->getBlogUploadsPath(23, 'some/file/foo.php', $assertSameDate)
-                               ->willReturn(__DIR__);
+        $fs = $this->stubProphecy(WPFilesystem::class)
+            ->getBlogUploadsPath(23, 'some/file/foo.php', $assertSameDate)
+            ->willReturn(__DIR__);
 
         $revealed = $fs->reveal();
 
@@ -142,11 +142,11 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_fail_if_method_not_expected_to_be_called()
+    public function should_fail_if_method_not_expected_to_be_called(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')
-                   ->shouldNotBeCalled();
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->shouldNotBeCalled();
 
         $revealed = $fs->reveal();
 
@@ -160,11 +160,11 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_fail_if_method_called_more_than_expected_times()
+    public function should_fail_if_method_called_more_than_expected_times(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')
-                   ->shouldBeCalledOnce();
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->shouldBeCalledOnce();
 
         $revealed = $fs->reveal();
 
@@ -180,11 +180,11 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_expectations_on_a_method_to_be_called_at_least_once()
+    public function should_allow_setting_expectations_on_a_method_to_be_called_at_least_once(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')
-                   ->shouldBeCalled();
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->shouldBeCalled();
 
         $revealed = $fs->reveal();
 
@@ -198,11 +198,11 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_not_fail_if_method_expected_to_be_called_at_least_once_is_called()
+    public function should_not_fail_if_method_expected_to_be_called_at_least_once_is_called(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')
-                   ->shouldBeCalled();
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->shouldBeCalled();
 
         $revealed = $fs->reveal();
         $revealed->getBlogUploadsPath(23, 'some/file/foo.php');
@@ -215,11 +215,11 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_return_the_same_revealed_prophecy_when_revealing_stub_prophecy_a_second_time()
+    public function should_return_the_same_revealed_prophecy_when_revealing_stub_prophecy_a_second_time(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
-                   ->getBlogUploadsPath(23, 'some/file/foo.php')
-                   ->willReturn('some-path');
+            ->getBlogUploadsPath(23, 'some/file/foo.php')
+            ->willReturn('some-path');
 
         $this->assertSame($fs->reveal(), $fs->reveal());
     }
@@ -229,7 +229,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_returning_a_new_revelead_prophecy_when_revealing_a_second_time_anew()
+    public function should_allow_returning_a_new_revelead_prophecy_when_revealing_a_second_time_anew(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
             ->getBlogUploadsPath(23, 'some/file/foo.php')
@@ -247,7 +247,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_not_cache_the_revealed_anew_prophecy_if_first_reveal_call()
+    public function should_not_cache_the_revealed_anew_prophecy_if_first_reveal_call(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class)
             ->getBlogUploadsPath(23, 'some/file/foo.php')
@@ -263,7 +263,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_the_revealed_prophecy_as_return_value_in_will_return_method()
+    public function should_allow_setting_the_revealed_prophecy_as_return_value_in_will_return_method(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(23);
@@ -279,7 +279,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_support_null_as_a_valid_expected_parameter_value()
+    public function should_support_null_as_a_valid_expected_parameter_value(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->amInPluginPath(null)->willReturn(true);
@@ -290,7 +290,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_more_than_one_expectation_for_method()
+    public function should_allow_setting_more_than_one_expectation_for_method(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(23);
@@ -307,7 +307,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_expecting_calls_on_the_same_method_w_diff_arguments()
+    public function should_allow_expecting_calls_on_the_same_method_w_diff_arguments(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(23, 'some/file/foo.php')->willReturn(23);
@@ -327,7 +327,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_expectations_on_the_type_of_the_argument()
+    public function should_allow_setting_expectations_on_the_type_of_the_argument(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(Arg::type('int'), Arg::type('string'))->willReturn(23);
@@ -346,7 +346,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_expectations_for_the_instanceof_the_input_argument()
+    public function should_allow_setting_expectations_for_the_instanceof_the_input_argument(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(Arg::type(WPFilesystem::class), Arg::type('string'))->willReturn(23);
@@ -360,21 +360,22 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
         $revealed->getBlogUploadsPath('foo-bar', 'some/file/foo.php');
     }
 
-    public function typeExpectationsDataProvider()
+    public function typeExpectationsDataProvider(): array
     {
         return [
-        'object' => [new \stdClass()],
-        'string' => ['foo-bar'],
-        'null' => [null]
-        ]   ;
+            'object' => [new \stdClass()],
+            'string' => ['foo-bar'],
+            'null' => [null]
+        ];
     }
+
     /**
      * It should correctly format error when argument expectation is a type
      *
      * @test
      * @dataProvider typeExpectationsDataProvider
      */
-    public function should_correctly_format_error_when_argument_expectation_is_a_type($input)
+    public function should_correctly_format_error_when_argument_expectation_is_a_type($input): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(Arg::type('array'), Arg::type('string'))->willReturn(23);
@@ -393,12 +394,12 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_building_promises_with_will_method()
+    public function should_allow_building_promises_with_will_method(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(23, Arg::type('string'))->will(static function ($input) use (&$calls) {
             $calls++;
-            return $input+ 23   ;
+            return $input + 23;
         });
 
         $revealed = $fs->reveal();
@@ -412,14 +413,14 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_support_cetera_argument_expectation()
+    public function should_support_cetera_argument_expectation(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(Arg::cetera())->willReturn(23);
 
         $revealed = $fs->reveal();
 
-        $this->assertEquals(23, $revealed->getBlogUploadsPath(new \stdClass(), ['foo'=>'bar']));
+        $this->assertEquals(23, $revealed->getBlogUploadsPath(new \stdClass(), ['foo' => 'bar']));
     }
 
     /**
@@ -427,9 +428,9 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_a_closure_as_expected_argument()
+    public function should_allow_setting_a_closure_as_expected_argument(): void
     {
-        $fs      = $this->stubProphecy(WPFilesystem::class);
+        $fs = $this->stubProphecy(WPFilesystem::class);
         $closure = static function () {
         };
         $fs->getBlogUploadsPath(23, $closure)->willReturn(23);
@@ -446,7 +447,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_setting_expectation_on_argument_containing_string()
+    public function should_allow_setting_expectation_on_argument_containing_string(): void
     {
         $fs = $this->stubProphecy(WPFilesystem::class);
         $fs->getBlogUploadsPath(23, Arg::containingString('foo'))->willReturn(23);
@@ -468,7 +469,7 @@ class WithStubProphecyTest extends \Codeception\Test\Unit
      *
      * @test
      */
-    public function should_allow_bulk_setting_return_value_and_callbacks()
+    public function should_allow_bulk_setting_return_value_and_callbacks(): void
     {
         $prefix = 'lorem';
         $stub = $this->stubProphecy(TestObject::class, [

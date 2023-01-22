@@ -30,14 +30,20 @@ class WP
         $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
         $droppedTables = [];
 
-        foreach ($tablesList as $table => $prefixedTable) {
-            $dropped = $wpdb->query("DROP TABLE IF EXISTS {$prefixedTable}");
+        if ($wpdb->query('SET FOREIGN_KEY_CHECKS = 0') === false) {
+            throw new RuntimeException('Could not disable foreign key checks.');
+        }
 
-            if ($dropped !== true) {
+        foreach ($tablesList as $prefixedTable) {
+            if ($wpdb->query("DROP TABLE IF EXISTS {$prefixedTable}") !== true) {
                 throw new RuntimeException("Could not DROP table {$prefixedTable}: " . $wpdb->last_error);
             }
 
             $droppedTables[] = $prefixedTable;
+        }
+
+        if ($wpdb->query('SET FOREIGN_KEY_CHECKS = 1') === false) {
+            throw new RuntimeException('Could not re-enable foreign key checks.');
         }
 
         return $droppedTables;
@@ -58,70 +64,26 @@ class WP
         $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
         $emptiedTables = [];
 
-        foreach ($tablesList as $table => $prefixedTable) {
-            $exists = (int)$wpdb->query("SHOW TABLES LIKE '{$prefixedTable}'");
+        if ($wpdb->query('SET FOREIGN_KEY_CHECKS = 0') === false) {
+            throw new RuntimeException('Could not disable foreign key checks.');
+        }
 
-            if (!$exists) {
+        foreach ($tablesList as $prefixedTable) {
+            if (!((int)$wpdb->query("SHOW TABLES LIKE '{$prefixedTable}'"))) {
                 continue;
             }
 
-            $deleted = $wpdb->query("TRUNCATE TABLE {$prefixedTable}");
-
-            if ($deleted === false) {
+            if ($wpdb->query("TRUNCATE TABLE {$prefixedTable}") === false) {
                 throw new RuntimeException("Could not empty table {$prefixedTable}: " . $wpdb->last_error);
             }
 
             $emptiedTables[] = $prefixedTable;
         }
 
+        if ($wpdb->query('SET FOREIGN_KEY_CHECKS = 1') === false) {
+            throw new RuntimeException('Could not re-enable foreign key checks.');
+        }
+
         return $emptiedTables;
     }
-
-    /**
-     * @throws RuntimeException
-     */
-    public static function findWpConfigFileOrThrow(string $rootDir): string
-    {
-        $wpConfigFile = self::findWpConfigFile($rootDir);
-        if (!is_file($wpConfigFile)) {
-            throw new RuntimeException("wp-config.php file not found in $rootDir or in its parent directory.");
-        }
-        return $wpConfigFile;
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public static function findWpSettingsFileOrThrow(string $rootDir): string
-    {
-        $wpSettingsFile = rtrim($rootDir, '\\/') . '/wp-settings.php';
-        if (!is_file($wpSettingsFile)) {
-            throw new RuntimeException("wp-settings.php file not found in $rootDir.");
-        }
-        return $wpSettingsFile;
-    }
-
-    public static function findRootDirFromDirOrThrow(string $workDir): string
-    {
-        $dir = self::findRootDirFromDir($workDir);
-
-        if ($dir === false) {
-            throw new RuntimeException("Could not find WordPress root directory from $workDir.");
-        }
-
-        return $dir;
-    }
-
-    public static function findRootDirFromDir(string $workDir): string|false
-    {
-        $dir = $workDir;
-
-        while (!(file_exists($dir . '/wp-load.php') || $dir === '/')) {
-            $dir = dirname($dir);
-        }
-
-        return file_exists( $dir . '/wp-load.php') ? $dir : false;
-    }
-
 }
-
