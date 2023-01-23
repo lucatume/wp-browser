@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Inheritance of current env if the `env` key is set in the configuration of the `WPCLI` module (thanks @calvinalkan).
+- Other environment inheritance and manipulation issues (thanks @calvinalkan).
+
+### Added
+
+- Control global and per-process environment variables in the `WPCLI::cli()` method. (thanks @calvinalkan).
+- Add the `haveInShellEnvironment` and `dontInheritShellEnvironment` methods to the `WPCLI` module. (thanks @calvinalkan).
+
+## [3.1.6] 2022-04-28;
+
 ### Changed
 
 - Add the `WPCLI::grabLastShellOutput` method (thanks @calvinalkan).

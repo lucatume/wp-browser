@@ -112,17 +112,17 @@ class WPCLI extends Module
      * @var int|null
      */
     protected $lastResultCode;
-    
+
     /**
      * @var array
      */
     protected $global_env_vars = [];
-    
+
     /**
      * @var array
      */
     protected $blocked_global_env_vars = [];
-    
+
     /**
      * WPCLI constructor.
      *
@@ -140,14 +140,14 @@ class WPCLI extends Module
     {
         parent::_before($test);
         $this->global_env_vars = [];
-        
+
         if(isset($this->config['without_env'])){
             $this->blocked_global_env_vars = (array) $this->config['without_env'];
         }else {
             $this->blocked_global_env_vars = [];
         }
     }
-    
+
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
@@ -184,8 +184,11 @@ class WPCLI extends Module
 
         return $return[1];
     }
-    
+
     /**
+     * Adds a set of environment variables to the set of environment variables that will be passed to the
+     * next wp-cli commands
+     *
      * @param array<string,mixed> $env_vars Environment variables that are added to all commands.
      *
      * @return void
@@ -196,8 +199,11 @@ class WPCLI extends Module
             $env_vars
         );
     }
-    
+
     /**
+     * Removes a set of environment variables from the set of environment variables that will be passed to the
+     * next wp-cli commands.
+     *
      * @note PHP7.1+ only
      *
      * @param string[] $blocked_env_var_names Environment variables names that are not inherited from the (global) runner shell.
@@ -211,7 +217,7 @@ class WPCLI extends Module
             $blocked_env_var_names
         );
     }
-    
+
     /**
      * Runs a wp-cli command and returns its output and status.
      *
@@ -240,7 +246,7 @@ class WPCLI extends Module
         $global_process_env = $this->buildProcessEnv();
         // Allow per process env vars to overwrite global env vars.
         $process_env = array_replace($global_process_env, $process_env);
-        
+
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that the process will pick it up while populating the env.
@@ -251,7 +257,7 @@ class WPCLI extends Module
         }else {
             $process_env = array_merge(['WPBROWSER_HOST_REQUEST' => '1'], $process_env);
         }
-        
+
         $this->debugSection('command with configuration options', $command);
         $this->debugSection('command with environment', $process_env);
 
@@ -369,7 +375,7 @@ class WPCLI extends Module
             'WP_CLI_PHP_ARGS' => isset($this->config['env']['php-args']) ? $this->config['env']['php-args'] : false,
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
-        
+
         $config_env_vars = isset($this->config['env']) ? $this->config['env'] : [];
         $config_env_vars = array_diff($config_env_vars, array_flip([
             'cache-dir',
@@ -381,7 +387,7 @@ class WPCLI extends Module
             'php-args',
             'strict-args'
         ]));
-    
+
         return array_merge($config_env_vars, $wp_cli_env_args, $this->global_env_vars);
     }
 
