@@ -2,810 +2,357 @@
 
 namespace lucatume\WPBrowser\Extension;
 
-use Codeception\Event\PrintResultEvent;
+use Closure;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Test\Unit;
 use Exception;
-use lucatume\WPBrowser\StubProphecy\Arg;
-use lucatume\WPBrowser\StubProphecy\FunctionProphecy as the_function;
-use lucatume\WPBrowser\StubProphecy\StubProphecy;
-use lucatume\WPBrowser\Traits\WithStubProphecy;
+use Generator;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Filesystem\Exception\IOException;
-use UnitTester;
 
 class SymlinkerTest extends Unit
 {
-    use WithStubProphecy;
+    use UopzFunctions;
 
     protected $backupGlobals = false;
-    protected UnitTester $tester;
-    protected array $config = ['mode' => 'plugin', 'destination' => __DIR__];
+    protected array $config = ['destination' => __DIR__];
     private array $options = ['silent' => true];
-    protected StubProphecy $event;
     protected string $filename;
-    protected StubProphecy $printEvent;
 
-    /**
-     * @test
-     * it should be instantiatable
-     */
-    public function it_should_be_instantiatable()
-    {
-        $sut = $this->make_instance();
-
-        $this->assertInstanceOf('lucatume\WPBrowser\Extension\Symlinker', $sut);
-    }
-
-    private function make_instance()
+    private function makeInstance(): Symlinker
     {
         return new Symlinker($this->config, $this->options);
     }
 
     /**
      * @test
-     * it should throw if symlinking mode is missing
+     * it should throw if symlinking destination is missing
      */
-    public function it_should_throw_if_symlinking_mode_is_missing()
+    public function it_should_throw_if_symlinking_destination_is_missing(): void
     {
         $this->config = [];
 
         $this->expectException(ExtensionException::class);
 
-        $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should throw if symlinking destination is missing
-     */
-    public function it_should_throw_if_symlinking_destination_is_missing()
-    {
-        $this->config = ['mode' => 'plugin'];
-
-        $this->expectException(ExtensionException::class);
-
-        $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should throw if mode is not `plugin` or `theme`
-     */
-    public function it_should_throw_if_mode_is_not_plugin_or_theme_()
-    {
-        $this->config = ['mode' => 'something', 'destination' => __DIR__];
-
-        $this->expectException(ExtensionException::class);
-
-        $this->make_instance();
+        $this->makeInstance();
     }
 
     /**
      * @test
      * it should throw if destination is not dir
      */
-    public function it_should_throw_if_destination_is_not_dir()
+    public function it_should_throw_if_destination_is_not_dir(): void
     {
-        $this->config = ['mode' => 'something', 'destination' => __DIR__];
-        the_function::is_dir(__DIR__)->willReturn(false);
+        $this->config = ['destination' => __FILE__];
 
         $this->expectException(ExtensionException::class);
 
-        $this->make_instance();
+        $this->makeInstance();
+    }
+
+    public function bad_root_folder_provider(): Generator
+    {
+        yield 'not a string in config' => [
+            [
+                'rootFolder' => 231,
+                'destination' => __DIR__
+            ],
+            []
+        ];
+        yield 'not readable dir in config' => [
+            [
+                'rootFolder' => __DIR__,
+                'destination' => __DIR__
+            ],
+            [],
+            function () {
+                $this->uopzSetFunctionReturn('is_readable', function (string $file) {
+                    return $file !== __DIR__ && is_readable($file);
+                }, true);
+            }
+        ];
+        yield 'not a dir in config' => [
+            [
+                'rootFolder' => __FILE__,
+                'destination' => __DIR__
+            ],
+            []
+        ];
+        yield 'not a string in env based config, no env specfied' => [
+            [
+                'rootFolder' => [
+                    'first' => 231,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__,
+            ],
+            []
+        ];
+        yield 'not a string in env based config, env specfied' => [
+            [
+                'rootFolder' => [
+                    'first' => 231,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__,
+            ],
+            ['current_environment' => 'first']
+        ];
+        yield 'not a string in env based config, default env specfied' => [
+            [
+                'rootFolder' => [
+                    'default' => 231,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__,
+            ],
+            []
+        ];
+        yield 'not readable dir in env' => [
+            [
+                'rootFolder' => [
+                    'default' => __DIR__,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__
+            ],
+            [],
+            function () {
+                $this->uopzSetFunctionReturn('is_readable', function (string $file) {
+                    return $file !== __DIR__ && is_readable($file);
+                }, true);
+            }
+        ];
+        yield 'not readable dir in default env' => [
+            [
+                'rootFolder' => [
+                    'default' => __DIR__,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__
+            ],
+            ['current_environment' => 'default'],
+            function () {
+                $this->uopzSetFunctionReturn('is_readable', function (string $file) {
+                    return $file !== __DIR__ && is_readable($file);
+                }, true);
+            }
+        ];
+        yield 'not readable dir in specific env' => [
+            [
+                'rootFolder' => [
+                    'default' => __DIR__,
+                    'second' => __DIR__
+                ],
+                'destination' => __DIR__
+            ],
+            ['current_environment' => 'second'],
+            function () {
+                $this->uopzSetFunctionReturn('is_readable', function (string $file) {
+                    return $file !== __DIR__ && is_readable($file);
+                }, true);
+            }
+        ];
+    }
+
+    /**
+     * It should throw on bad rootFolder
+     *
+     * @test
+     * @dataProvider bad_root_folder_provider
+     */
+    public function should_throw_on_bad_root_folder(array $config, array $eventConfig, Closure $fixture = null): void
+    {
+        $fixture && $fixture();
+        $this->expectException(ExtensionException::class);
+
+        $this->config = $config;
+        $this->makeInstance()->symlink(new SuiteEvent(null, $eventConfig));
     }
 
     /**
      * @test
      * it should throw if destination is not writeable
      */
-    public function it_should_throw_if_destination_is_not_writeable()
+    public function it_should_throw_if_destination_is_not_writeable(): void
     {
-        $this->config = ['mode' => 'something', 'destination' => __DIR__];
-        the_function::is_dir(__DIR__)->willReturn(true);
-        the_function::is_writable(__DIR__)->willReturn(false);
+        $this->config = ['destination' => __DIR__];
+        $thisDir = __DIR__;
+        $this->uopzSetFunctionReturn('is_writable', static function (string $file) use ($thisDir) {
+            return $file !== $thisDir && is_writable($file);
+        }, true);
 
         $this->expectException(ExtensionException::class);
 
-        $this->make_instance();
+        $this->makeInstance();
     }
 
-    /**
-     * @test
-     * it should symlink the root folder into the destination before the suite runs
-     */
-    public function it_should_symlink_the_root_folder_into_the_destination_before_the_suite_runs()
+    public function symlink_data_provider(): Generator
     {
-        $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, true);
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $this->filename,
-            true
-        )->shouldBeCalled()->willReturn(true);
 
-        $sut = $this->make_instance();
-        $sut->symlink($this->event->reveal());
-    }
+        $destination = FS::tmpDir('symlinker_');
+        $rootFolder = FS::tmpDir('symlinker_');
 
-    private function givenFileExists($filename, $exists)
-    {
-        the_function::file_exists(Arg::any())->will(static function ($file) use ($filename, $exists) {
-            if ($file === $filename) {
-                return $exists;
-            }
-            return file_exists($file);
-        });
-    }
-
-    /**
-     * @test
-     * it should not attempt re-linking if file exists already
-     */
-    public function it_should_not_attempt_re_linking_if_file_exists_already()
-    {
-        $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, true);
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $this->filename,
-            true
-        )->shouldNotBeCalled();
-
-        $sut = $this->make_instance();
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should symlink the files over to the destination if mode is theme before the suite runs
-     */
-    public function it_should_symlink_the_files_over_to_the_destination_if_mode_is_theme_before_the_suite_runs()
-    {
-        $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, false);
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $this->filename,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should unlink the root folder from the destination after the suite ran
-     */
-    public function it_should_unlink_the_root_folder_from_the_destination_after_the_suite_ran()
-    {
-        $this->config = ['mode' => 'plugin', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, true);
-        the_function::unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-        $sut->unlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should unlink the linked theme from the destination folder after the suite ran if mode is theme
-     */
-    public function it_should_unlink_the_linked_theme_from_the_destination_folder_after_the_suite_ran_if_mode_is_theme()
-    {
-        $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, true);
-        the_function::unlink($this->filename)->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-        $sut->unlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should not attempt unlinking if destination file does not exist
-     */
-    public function it_should_not_attempt_unlinking_if_destination_file_does_not_exist()
-    {
-        $this->config = ['mode' => 'theme', 'destination' => __DIR__];
-        $this->givenFileExists($this->filename, false);
-        the_function::unlink(__DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir()))->shouldNotBeCalled();
-
-        $sut = $this->make_instance();
-        $sut->unlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should support array of destinations to allow for environments settings
-     */
-    public function it_should_support_array_of_destinations_to_allow_for_environments_settings()
-    {
-        $fooDestinationFolder = '/foo';
-        $barDestinationFolder = '/bar';
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $this->config = [
-            'mode' => 'theme',
-            'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder],
+        yield 'rootFolder in config' => [
+            ['destination' => $destination, 'rootFolder' => $rootFolder],
+            [],
+            $rootFolder,
+            $destination . '/' . basename($rootFolder),
         ];
-        $this->event->getSettings()->willReturn(['current_environment' => 'foo']);
-        $returnTrueOrRelayTo = $this->ifIn([$fooDestinationFolder, $barDestinationFolder]);
-        the_function::is_dir(Arg::type('string'))->will($returnTrueOrRelayTo('is_dir'));
-        the_function::is_writable(Arg::type('string'))->will($returnTrueOrRelayTo('is_writable'));
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            if ($filename === $barDestination) {
-                throw new AssertionFailedError("is_file should not be called with {$barDestination}");
-            }
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $fooDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
 
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    private function ifIn(array $matches)
-    {
-        return static function ($relay) use ($matches) {
-            return static function ($filename) use ($relay, $matches) {
-                if (in_array($filename, $matches, true)) {
-                    return true;
-                }
-                return $relay($filename);
-            };
-        };
-    }
-
-    /**
-     * @test
-     * it should fallback to use the first available destination if multiple envs destination are set but no cli env specified
-     */
-    public function it_should_fallback_to_use_the_first_available_destination_if_multiple_envs_destination_are_set_but_no_cli_env_specified()
-    {
-        $fooDestinationFolder = '/foo';
-        $barDestinationFolder = '/bar';
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $this->config = [
-            'mode' => 'theme',
-            'destination' => ['foo' => $fooDestinationFolder, 'bar' => $barDestinationFolder],
+        yield 'no rootFolder in config' => [
+            ['destination' => $destination],
+            [],
+            rtrim(codecept_root_dir(), '/'),
+            $destination . '/' . basename(codecept_root_dir())
         ];
-        $this->event->getSettings()->willReturn([]);
-        $matches = [$fooDestinationFolder, $barDestinationFolder];
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($barDestination, $fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            if ($filename === $barDestination) {
-                throw new AssertionFailedError('is_file should not be called with ' . $barDestination);
-            }
-            return is_file($filename);
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $fooDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
 
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
+        $rootFolder2 = FS::tmpDir('symlinker_');
+        yield 'array rootFolder in config w/ default, no env specified' => [
+            [
+                'destination' => $destination,
+                'rootFolder' => [
+                    'default' => $rootFolder,
+                    'alternate' => $rootFolder2,
+                ]
+            ],
+            [],
+            $rootFolder,
+            $destination . '/' . basename($rootFolder)
+        ];
+        yield 'array rootFolder in config w/ default, default env specified' => [
+            [
+                'destination' => $destination,
+                'rootFolder' => [
+                    'default' => $rootFolder,
+                    'alternate' => $rootFolder2,
+                ]
+            ],
+            ['current_environment' => 'default'],
+            $rootFolder,
+            $destination . '/' . basename($rootFolder)
+        ];
+        yield 'array rootFolder in config w/ default, alternate env specified' => [
+            [
+                'destination' => $destination,
+                'rootFolder' => [
+                    'default' => $rootFolder,
+                    'alternate' => $rootFolder2,
+                ]
+            ],
+            ['current_environment' => 'alternate'],
+            $rootFolder2,
+            $destination . '/' . basename($rootFolder2)
+        ];
+        yield 'array rootFolder in config w/ default, non existing env specified' => [
+            [
+                'destination' => $destination,
+                'rootFolder' => [
+                    'default' => $rootFolder,
+                    'alternate' => $rootFolder2,
+                ]
+            ],
+            ['current_environment' => 'not-existing'],
+            $rootFolder,
+            $destination . '/' . basename($rootFolder)
+        ];
+        yield 'array rootFolder in config w/ default, multiple envs specified' => [
+            [
+                'destination' => $destination,
+                'rootFolder' => [
+                    'default' => $rootFolder,
+                    'alternate' => $rootFolder2,
+                ]
+            ],
+            ['current_environment' => 'default,alternate,not-existing'],
+            $rootFolder,
+            $destination . '/' . basename($rootFolder)
+        ];
     }
 
     /**
      * @test
-     * it should fallback to use the default destination if multiple envs destinations are set but no cli env specified
+     * it should symlink and unlink the root folder into the destination correctly
+     *
+     * @dataProvider symlink_data_provider
      */
-    public function it_should_fallback_to_use_the_default_destination_if_multiple_envs_destinations_are_set_but_no_cli_env_specified()
-    {
-        $fooDestinationFolder = '/foo';
-        $barDestinationFolder = '/bar';
-        $defaultDestinationFolder = '/default';
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
+    public function it_should_symlink_and_unlink_the_root_folder_into_the_destination_correctly(
+        array $config,
+        array $eventConfig,
+        string $expectedTarget,
+        string $expectedLink
+    ): void {
+        $this->config = $config;
 
-        $this->config = [
-            'mode' => 'theme',
+        $sut = $this->makeInstance();
+
+        $this->assertTrue($sut->symlink(new SuiteEvent(null, $eventConfig)));
+
+        $this->assertTrue(is_link($expectedLink));
+        $this->assertEquals($expectedTarget, readlink($expectedLink));
+
+        $sut->unlink(new SuiteEvent(null, $eventConfig));
+
+        $this->assertFalse(is_link($expectedLink));
+    }
+
+    /**
+     * @test
+     * it should not attempt re-linking if directory exists already
+     */
+    public function it_should_not_attempt_re_linking_if_directory_exists_already(): void
+    {
+        $fs = FS::tmpDir('symlinker_', [
+            'my-plugin' => [
+                'plugin.php' => '<?php //Something',
+            ],
             'destination' => [
-                'foo' => $fooDestinationFolder,
-                'bar' => $barDestinationFolder,
-                'default' => $defaultDestinationFolder,
-            ],
-        ];
-        $this->event->getSettings()->willReturn([]);
-        $matches = [$fooDestinationFolder, $barDestinationFolder, $defaultDestinationFolder];
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file  should not be called');
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $defaultDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
+                'my-plugin' => [
+                    'plugin.php' => '<?php //Something',
+                ]
+            ]
+        ]);
+        $this->config = ['rootFolder' => $fs . '/my-plugin', 'destination' => $fs . '/destination'];
 
-        $sut = $this->make_instance();
+        $sut = $this->makeInstance();
 
-        $sut->symlink($this->event->reveal());
+        $this->assertFalse($sut->symlink(new SuiteEvent(null, [])));
     }
 
     /**
-     * @test
-     * it should fallback to use default destination if current env has no destination assigned and default destination is specified
-     */
-    public function it_should_fallback_to_use_default_destination_if_current_env_has_no_destination_assigned_and_default_destination_is_specified()
-    {
-        $fooDestinationFolder = '/foo';
-        $barDestinationFolder = '/bar';
-        $defaultDestinationFolder = '/default';
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $barDestination = $barDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $this->config = [
-            'mode' => 'theme',
-            'destination' => [
-                'foo' => $fooDestinationFolder,
-                'bar' => $barDestinationFolder,
-                'default' => $defaultDestinationFolder,
-            ],
-        ];
-        $matches = [$fooDestinationFolder, $barDestinationFolder, $defaultDestinationFolder];
-        $this->event->getSettings()->willReturn(['current_environment' => 'another']);
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $defaultDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should read supported env from comma separated list of envs
-     */
-    public function it_should_read_supported_env_from_comma_separated_list_of_envs()
-    {
-        $fooDestinationFolder = '/foo';
-        $defaultDestinationFolder = '/default';
-
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $envDestinations = ['foo' => $fooDestinationFolder, 'default' => $defaultDestinationFolder];
-        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
-        $this->event->getSettings()->willReturn(['current_environment' => 'some,other,env,foo']);
-
-        $matches = [$fooDestinationFolder, $defaultDestinationFolder];
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $fooDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should fallback to first destination if specifying multiple envs and none supported
-     */
-    public function it_should_fallback_to_first_destination_if_specifying_multiple_envs_and_none_supported()
-    {
-        $fooDestinationFolder = '/foo';
-        $gooDestinationFolder = '/goo';
-
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $envDestinations = ['foo' => $fooDestinationFolder, 'goo' => $gooDestinationFolder];
-        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
-        $this->event->getSettings()->willReturn(['current_environment' => 'bar, baz']);
-
-        $matches = [$fooDestinationFolder, $gooDestinationFolder];
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination) {
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $fooDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should fallback to default destination if specified and multiple envs and none supported
-     */
-    public function it_should_fallback_to_default_destination_if_specified_and_multiple_envs_and_none_supported()
-    {
-        $fooDestinationFolder = '/foo';
-        $defaultDestinationFolder = '/default';
-
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $defaultDestination = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $envDestinations = ['foo' => $fooDestinationFolder, 'default' => $defaultDestinationFolder];
-        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
-        $this->event->getSettings()->willReturn(['current_environment' => 'bar, baz']);
-
-        $matches = [$fooDestinationFolder, $defaultDestinationFolder];
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($matches) {
-            return in_array($filename, $matches, true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($defaultDestination) {
-            if ($filename === $defaultDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file should not be called');
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $defaultDestination,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should throw if config specified root folder is not a folder
-     */
-    public function it_should_throw_if_config_specified_root_folder_is_not_a_folder()
-    {
-        $this->config['rootFolder'] = __DIR__;
-        the_function::is_dir(__DIR__)->willReturn(false);
-
-        $this->expectException('Codeception\Exception\ExtensionException');
-
-        $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should throw if config specified root folder is not readable
-     */
-    public function it_should_throw_if_config_specified_root_folder_is_not_readable()
-    {
-        $this->config['rootFolder'] = __DIR__;
-        the_function::is_dir(__DIR__)->willReturn(true);
-        the_function::is_readable(__DIR__)->willReturn(false);
-
-        $this->expectException('Codeception\Exception\ExtensionException');
-
-        $this->make_instance();
-    }
-
-    /**
-     * @test
-     * it should allow specifying the root folder in the configuration
-     */
-    public function it_should_allow_specifying_the_root_folder_in_the_configuration()
-    {
-        $rootFolder = __DIR__;
-        $defaultDestinationFolder = '/default';
-        $envDestinations = ['default' => $defaultDestinationFolder];
-        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations, 'rootFolder' => $rootFolder];
-        $this->event->getSettings()->willReturn(['current_environment' => 'default']);
-        $expected = $defaultDestinationFolder . DIRECTORY_SEPARATOR . basename($rootFolder);
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($expected) {
-            return $filename === $expected ? false : is_file($filename);
-        });
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($rootFolder, $defaultDestinationFolder) {
-            return in_array($filename, [$defaultDestinationFolder, $rootFolder], true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($fileanme) use ($defaultDestinationFolder) {
-            return $fileanme === $defaultDestinationFolder ?: is_writable($fileanme);
-        });
-        the_function::is_readable(Arg::type('string'))->will(static function ($fileanme) use ($defaultDestinationFolder) {
-            return $fileanme === $defaultDestinationFolder ?: is_readable($fileanme);
-        });
-        the_function::symlink(
-            rtrim($rootFolder, DIRECTORY_SEPARATOR),
-            $expected,
-            true
-        )->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * @test
-     * it should support array of root folders to allow for environments settings
-     */
-    public function it_should_support_array_of_root_folders_to_allow_for_environments_settings()
-    {
-        $settings = [
-            'current_environment' => 'bar',
-        ];
-        $destination = '/some/path';
-        $this->config = [
-            'mode' => 'plugin',
-            'rootFolder' => [
-                'foo' => '/',
-                'bar' => '/one',
-                'baz' => '/two',
-            ],
-            'destination' => $destination,
-        ];
-
-        $this->event->getSettings()->willReturn($settings);
-
-        $rootFolders = array_values($this->config['rootFolder']);
-        $haystack = array_merge([$destination], $rootFolders);
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($haystack) {
-            return in_array($filename, $haystack, true) ?: is_dir($filename);
-        });
-        the_function::is_readable(Arg::type('string'))->will(static function ($filename) use ($rootFolders) {
-            return in_array($filename, $rootFolders, true) ?: is_readable($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($destination) {
-            return $filename === $destination ?: is_writable($filename);
-        });
-        the_function::symlink('/one', $destination . '/one', true)->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * It should fall back to first root folder if array is provided, env does not match and default is not set
+     * It should throw if symliking fails
      *
      * @test
      */
-    public function should_fall_back_to_first_root_folder_if_array_is_provided_env_does_not_match_and_default_is_not_set()
+    public function should_throw_if_symliking_fails(): void
     {
-        $settings = [
-            'current_environment' => 'zoop',
-        ];
-        $destination = '/some/path';
-        $this->config = [
-            'mode' => 'plugin',
-            'rootFolder' => [
-                'foo' => '/first',
-                'bar' => '/second',
-                'baz' => '/third',
-            ],
-            'destination' => $destination,
-        ];
-
-        $this->event->getSettings()->willReturn($settings);
-
-        $rootFolders = array_values($this->config['rootFolder']);
-        $haystack = array_merge([$destination], $rootFolders);
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($haystack) {
-            return in_array($filename, $haystack, true) ?: is_dir($filename);
-        });
-        the_function::is_readable(Arg::type('string'))->will(static function ($filename) use ($rootFolders) {
-            return in_array($filename, $rootFolders, true) ?: is_readable($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($destination) {
-            return $filename === $destination ?: is_writable($filename);
-        });
-        the_function::symlink('/first', $destination . '/first', true)->shouldBeCalled()->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * It should fall back to default root folder if array is provided and env does not match
-     *
-     * @test
-     */
-    public function should_fall_back_to_default_root_folder_if_array_is_provided_and_env_does_not_match()
-    {
-        $settings = [
-            'current_environment' => 'zoop',
-        ];
-        $destination = '/some/path';
-        $this->config = [
-            'mode' => 'plugin',
-            'rootFolder' => [
-                'foo' => '/first',
-                'bar' => '/second',
-                'baz' => '/third',
-                'default' => '/default'
-            ],
-            'destination' => $destination,
-        ];
-
-        $this->event->getSettings()->willReturn($settings);
-
-        $rootFolders = array_values($this->config['rootFolder']);
-        $haystack = array_merge([$destination, '/default'], $rootFolders);
-        the_function::is_dir(Arg::type('string'))->will(static function ($dir) use ($haystack) {
-            return in_array($dir, $haystack, true) ?: is_dir($dir);
-        });
-        the_function::is_readable(Arg::type('string'))->will(static function ($filename) use ($rootFolders) {
-            return in_array($filename, $rootFolders, true) ?: is_readable($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($destination) {
-            return $filename === $destination ?: is_writable($filename);
-        });
-        the_function::symlink('/default', $destination . '/default', true)->shouldBeCalled(true)->willReturn(true);
-
-        $sut = $this->make_instance();
-
-        $sut->symlink($this->event->reveal());
-    }
-
-    /**
-     * It should throw if file cannot be symlinked
-     *
-     * @test
-     */
-    public function should_throw_if_file_cannot_be_symlinked()
-    {
-        $fooDestinationFolder = '/foo';
-        $gooDestinationFolder = '/goo';
-
-        $fooDestination = $fooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $gooDestination = $gooDestinationFolder . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $envDestinations = ['foo' => $fooDestinationFolder, 'goo' => $gooDestinationFolder];
-        $this->config = ['mode' => 'plugin', 'destination' => $envDestinations];
-        $this->event->getSettings()->willReturn([]);
-
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) use ($fooDestinationFolder, $gooDestinationFolder) {
-            return in_array($filename, [$fooDestinationFolder, $gooDestinationFolder], true) ?: is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) use ($fooDestinationFolder, $gooDestinationFolder) {
-            return in_array($filename, [$fooDestinationFolder, $gooDestinationFolder], true) ?: is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($fooDestination, $gooDestination) {
-            if (!in_array($filename, [$fooDestination, $gooDestination], true)) {
-                return is_file($filename);
-            }
-            if ($filename === $fooDestination) {
-                return false;
-            }
-            throw new AssertionFailedError('is_file shoould not be called with ' . $gooDestination);
-        });
-        the_function::symlink(
-            rtrim(codecept_root_dir(), DIRECTORY_SEPARATOR),
-            $fooDestination,
-            true
-        )->will(static function () {
-            throw new IOException('Symlink failed.');
-        });
-
-        $sut = $this->make_instance();
+        $this->uopzSetFunctionReturn('symlink', false);
 
         $this->expectException(ExtensionException::class);
-        $sut->symlink($this->event->reveal());
+
+        $this->config = ['rootFolder' => __DIR__, 'destination' => __DIR__ . '/link'];
+        $this->makeInstance()->symlink(new SuiteEvent(null, []));
     }
 
     /**
-     * It should throw if unlink operation throws
+     * It should throw if unlinking fails
      *
      * @test
      */
-    public function should_throw_if_unlink_operation_throws()
+    public function should_throw_if_unlinking_fails(): void
     {
-        $dest = '/foo' . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-        $this->config = ['mode' => 'plugin', 'destination' => ['foo' => '/foo']];
-        $this->event->getSettings()->willReturn([]);
-        the_function::is_dir(Arg::type('string'))->will(static function ($filename) {
-            return $filename === '/foo' || is_dir($filename);
-        });
-        the_function::is_writable(Arg::type('string'))->will(static function ($filename) {
-            return $filename === '/foo' || is_writable($filename);
-        });
-        the_function::is_file(Arg::type('string'))->will(static function ($filename) use ($dest) {
-            return $filename === $dest || is_file($filename);
-        });
-        the_function::unlink(Arg::type('string'))->will(static function ($filename) use ($dest) {
-            if ($filename !== $dest) {
-                return unlink($filename);
-            }
-
-            throw new Exception('Something happened');
-        });
-        $sut = $this->make_instance();
-        $testOutput = new class extends Output{
-            public function __construct()
-            {
-                parent::__construct([]);
-            }
-        };
-
-        $sut->setOutput($testOutput);
-
-        $sut->unlink($this->event->reveal());
-    }
-
-    protected function _before()
-    {
-        if (!extension_loaded('uopz')) {
-            $this->markTestSkipped('This test will require PHP 7.0+ and the uopz extension to run.');
+        $source = FS::tmpDir('symlinker_');
+        $destination = FS::tmpDir('symlinker_');
+        $this->uopzSetFunctionReturn('unlink', false);
+        $this->config = ['rootFolder' => $source, 'destination' => $destination];
+        if (!symlink($source, $destination . '/' . basename($source))) {
+            $this->fail('Could not create symlink');
         }
 
-        $this->filename = __DIR__ . DIRECTORY_SEPARATOR . basename(codecept_root_dir());
-
-        $this->event = $this->stubProphecy(SuiteEvent::class);
-        $this->printEvent = $this->stubProphecy(PrintResultEvent::class);
-    }
-
-    protected function _after()
-    {
-        the_function::reset();
+        $this->assertFalse($this->makeInstance()->unlink(new SuiteEvent(null, [])));
     }
 }

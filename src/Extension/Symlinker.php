@@ -13,6 +13,7 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use Codeception\Lib\Console\Output;
 use Exception;
+use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -37,7 +38,7 @@ class Symlinker extends Extension
      *
      * @var array<int|string,array<int,string>|string>
      */
-    protected array $required = ['mode' => ['plugin', 'theme'], 'destination'];
+    protected array $required = ['destination'];
 
     /**
      * Symlinker constructor.
@@ -56,30 +57,31 @@ class Symlinker extends Extension
      * @param SuiteEvent $event The event the method is running on.
      *
      * @throws ExtensionException If there are issues with the source or destination folders.
+     *
+     * @return bool Whether the symlink operation was required or not.
      */
-    public function symlink(SuiteEvent $event): void
+    public function symlink(SuiteEvent $event): bool
     {
-        $eventSettings =(array)$event->getSettings();
+        $eventSettings = $event->getSettings();
         $rootFolder = $this->getRootFolder($eventSettings);
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
-        try {
-            if (!file_exists($destination)) {
-                if (!symlink($rootFolder, $destination)) {
-                    throw new ExtensionException(
-                        $this,
-                        "Symbolic linking {$rootFolder} -> {$destination} failed; " .
-                        "it will never succeed on Windows, use the Copier extension."
-                    );
-                }
-                $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
-            }
-        } catch (IOException $event) {
+        if (file_exists($destination)) {
+            // Symlink already exists, no need to create it.
+            return false;
+        }
+
+        if (!@symlink($rootFolder, $destination)) {
             throw new ExtensionException(
-                __CLASS__,
-                "Error while trying to symlink plugin or theme to destination.\n\n" . $event->getMessage()
+                $this,
+                "Symbolic linking {$rootFolder} -> {$destination} failed; " .
+                "it will never succeed on Windows, use the Copier extension."
             );
         }
+
+        $this->writeln('Symbolically linked plugin folder [' . $destination . ']');
+
+        return true;
     }
 
     /**
@@ -123,36 +125,34 @@ class Symlinker extends Extension
      * Unlinks the plugin(s) symbolically linked by the extension.
      *
      * @param SuiteEvent $event The suite event the operation is hooking on.
+     *
+     * @return bool Whether the unlink operation was required or not, and if required, whether it was successful or not.
      */
-    public function unlink(SuiteEvent $event): void
+    public function unlink(SuiteEvent $event): bool
     {
-        $eventSettings =(array)$event->getSettings();
+        $eventSettings = $event->getSettings();
         $rootFolder = $this->getRootFolder($eventSettings);
         $destination = $this->getDestination($rootFolder, $eventSettings);
 
-        if (is_file($destination)) {
-            try {
-                if (!(unlink($destination))) {
-                    // Let's not kill the suite but let's notify the user.
-                    $this->writeln(
-                        sprintf(
-                            'Could not unlink file [%s], manual removal is required.',
-                            $destination
-                        )
-                    );
-                }
-            } catch (Exception $event) {
-                // Let's not kill the suite but let's notify the user.
-                $this->writeln(sprintf(
-                    "There was an error while trying to unlink file [%s], manual removal is required.\nError: %s",
-                    $destination,
-                    $event->getMessage()
-                ));
-                return;
-            }
-
-            $this->writeln('Unliked plugin folder [' . $destination . ']');
+        if (!is_link($destination)) {
+            return false;
         }
+
+        if (!(@unlink($destination))) {
+            // Let's not kill the suite but let's notify the user.
+            $this->writeln(
+                sprintf(
+                    'Could not unlink file [%s], manual removal is required.',
+                    $destination
+                )
+            );
+
+            return false;
+        }
+
+        $this->writeln('Unliked plugin folder [' . $destination . ']');
+
+        return true;
     }
 
     /**
@@ -174,15 +174,6 @@ class Symlinker extends Extension
      */
     protected function checkRequirements(): void
     {
-        if (!isset($this->config['mode'])) {
-            throw new ExtensionException(__CLASS__, 'Required configuration parameter [mode] is missing.');
-        }
-        if (!array_intersect((array)$this->required['mode'], (array)$this->config['mode'])) {
-            throw new ExtensionException(
-                __CLASS__,
-                '[mode] should be one among these values: [' . implode(', ', (array)$this->required['mode']) . ']'
-            );
-        }
         if (!isset($this->config['destination'])) {
             throw new ExtensionException(__CLASS__, 'Required configuration parameter [destination] is missing.');
         }
@@ -216,7 +207,7 @@ class Symlinker extends Extension
     }
 
     /**
-     * Checks the root folder specified in the settings to make sure it exists and it's writeable.
+     * Checks the root folder specified in the settings to make sure it exists and it's readable.
      *
      * @param string $rootFolder The path to the root folder.
      *
