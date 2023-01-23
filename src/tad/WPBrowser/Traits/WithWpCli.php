@@ -211,14 +211,19 @@ trait WithWpCli
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
-    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [], $inherit_env = true)
+    protected function executeWpCliCommand(
+        array $command = ['version'],
+        $timeout = 60,
+        array $env = [],
+        $inherit_env = true
+    )
     {
         $fullCommand = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
-        
+
         $process = $this->wpCliProcess->withCommand($fullCommand)
                                       ->withCwd($this->wpCliWpRootDir)
                                       ->withBlockedGlobalEnv($this->blocked_global_env_vars);
-        
+
         $process->setTimeout($timeout);
         $process->inheritEnvironmentVariables($inherit_env);
         if (count($env)) {

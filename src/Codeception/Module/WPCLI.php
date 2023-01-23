@@ -151,25 +151,6 @@ class WPCLI extends Module
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                                          minus `wp`.
-     *                                          For back-compatibility purposes you can still pass the commandline as a
-     *                                          string, but the array format is the preferred and supported method.
-     *
-     * @param array<string,string> $env Additional environment per process.
-     *
-     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
-     *                          Env variables passed from the yaml configuration are still inherited if set to false.
-     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
-     *
-     * @return int|string The command exit value; `0` usually means success.
-     *
-     *
-     * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
-     *                                                parameter is set to `true`.
-     * @throws ModuleConfigException If a required wp-cli file cannot be found or the WordPress path does not exist
-     *                               at runtime.
-     *
      * @example
      * ```php
      * // Activate a plugin via wp-cli in the test WordPress site.
@@ -177,6 +158,26 @@ class WPCLI extends Module
      * // Change a user password.
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
+     *@param array<string,string> $env Additional environment per process.
+     *
+     * @param bool $inherit_env                 Indicate if the current test process env should be passed to the cli
+     *                                          command. Env variables passed from the yaml configuration are still
+     *                                          inherited if set to false. Env variables passed from
+     *                                          $I->haveInShellEnvironment() are still inherited if set to
+     *                                          `false`.
+     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                                          minus `wp`.
+     *                                          For back-compatibility purposes you can still pass the commandline as a
+     *                                          string, but the array format is the preferred and supported method.
+     *
+     * @return int|string The command exit value; `0` usually means success.
+     *
+     *
+     * @throws ModuleConfigException If a required wp-cli file cannot be found or the WordPress path does not exist
+     *                               at runtime.
+     *
+     * @throws ModuleException If the status evaluates to non-zero and the `throw` configuration
+     *                                                parameter is set to `true`.
      */
     public function cli($userCommand = 'core version', array $env = [], $inherit_env = true)
     {
@@ -207,7 +208,8 @@ class WPCLI extends Module
      *
      * @note PHP7.1+ only
      *
-     * @param string[] $blocked_env_var_names Environment variables names that are not inherited from the (global) runner shell.
+     * @param string[] $blocked_env_var_names Environment variables names that are not inherited from the (global)
+     *                                        runner shell.
      *
      * @return void
      */
@@ -223,12 +225,11 @@ class WPCLI extends Module
      * Runs a wp-cli command and returns its output and status.
      *
      * @param string|array<string> $userCommand The user command, in the format supported by the Symfony Process class.
-     *
      * @param array<string,string> $process_env Additional environment per process.
-     *
-     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
-     *                          Env variables passed from the yaml configuration are still inherited if set to false.
-     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
+     * @param bool                 $inherit_env Indicate if the current test process env should be passed to the cli
+     *                                          command. Env variables passed from the yaml configuration are still
+     *                                          inherited if set to false. Env variables passed from
+     *                                          $I->haveInShellEnvironment() are still inherited if set to `false`.
      *
      * @return array<string|int> The command process output and status.
      *
@@ -457,7 +458,12 @@ class WPCLI extends Module
      * });
      * ```
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null, array $env = [], $inherit_env = true)
+    public function cliToArray(
+        $userCommand = 'post list --format=ids',
+        callable $splitCallback = null,
+        array $env = [],
+        $inherit_env = true
+    )
     {
         $output = (string)$this->cliToString($userCommand, $env, $inherit_env);
 
@@ -495,18 +501,6 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as a string.
      *
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                                          minus `wp`.
-     *                                          For back-compatibility purposes you can still pass the commandline as a
-     *                                          string, but the array format is the preferred and supported method.
-     *
-     * @param array<string,string> $env Additional environment per process.
-     *
-     * @return int|string The command output, if any.
-     *
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
-     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
-     *
      * @example
      * ```php
      * // Return the current site administrator email, using string command format.
@@ -515,6 +509,18 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
+     * @param array<string,string> $env         Additional environment per process.
+     *
+     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     *                                          minus `wp`.
+     *                                          For back-compatibility purposes you can still pass the commandline as a
+     *                                          string, but the array format is the preferred and supported method.
+     *
+     * @return int|string The command output, if any.
+     *
+     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
+     *
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
      */
     public function cliToString($userCommand, array $env = [], $inherit_env = true)
     {
