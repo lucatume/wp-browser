@@ -79,8 +79,7 @@ class Process extends Command
         
         try {
             return parent::execute();
-        }
-        finally {
+        } finally {
             // Reset in case this process runs several times.
             $this->procEnv = $explicit_proc_env;
         }
@@ -219,7 +218,7 @@ class Process extends Command
              *
              * $_ENV is NOT passed to the child process. It's impossible.
              */
-            if ( ! $this->isPHP71000OrHigher()) {
+            if (! $this->isPHP71000OrHigher()) {
                 return null;
             }
             /*
@@ -227,7 +226,7 @@ class Process extends Command
              * $_ENV variables are inherited and not only those set by putenv
              */
             return array_diff_key(
-                array_merge($_ENV,getenv()),
+                array_merge($_ENV, getenv()),
                 $blocked_env
             );
         }
@@ -237,7 +236,7 @@ class Process extends Command
          * We have to merge the current env with the explicitly passed env vars.
          * This was previously broken with wp-browser.
          */
-        if ( ! $this->isPHP71000OrHigher()) {
+        if (! $this->isPHP71000OrHigher()) {
             /*
              * FOR PHP < 7.1 this is the best we can do.
              *
@@ -247,7 +246,7 @@ class Process extends Command
              * was broken previously anyway.
              */
             $runner_env = array_diff_key($_ENV, $blocked_env);
-        }else {
+        } else {
             $runner_env = array_diff_key(
                 array_merge($_ENV, getenv()),
                 $blocked_env
@@ -256,5 +255,4 @@ class Process extends Command
     
         return array_merge($runner_env, $explicit_env);
     }
-    
 }

@@ -141,9 +141,9 @@ class WPCLI extends Module
         parent::_before($test);
         $this->global_env_vars = [];
 
-        if(isset($this->config['without_env'])){
+        if (isset($this->config['without_env'])) {
             $this->blocked_global_env_vars = (array) $this->config['without_env'];
-        }else {
+        } else {
             $this->blocked_global_env_vars = [];
         }
     }
@@ -193,7 +193,8 @@ class WPCLI extends Module
      *
      * @return void
      */
-    public function haveInShellEnvironment(array $env_vars) {
+    public function haveInShellEnvironment(array $env_vars)
+    {
         $this->global_env_vars = array_merge(
             $this->global_env_vars,
             $env_vars
@@ -251,10 +252,10 @@ class WPCLI extends Module
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that the process will pick it up while populating the env.
          */
-        if($inherit_env){
+        if ($inherit_env) {
             putenv('WPBROWSER_HOST_REQUEST="1"');
             $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
-        }else {
+        } else {
             $process_env = array_merge(['WPBROWSER_HOST_REQUEST' => '1'], $process_env);
         }
 
