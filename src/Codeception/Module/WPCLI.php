@@ -7,6 +7,7 @@
 
 namespace Codeception\Module;
 
+use Codeception\TestInterface;
 use RuntimeException;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
@@ -16,8 +17,16 @@ use tad\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use tad\WPBrowser\Exceptions\WpCliException;
 use tad\WPBrowser\Process\Process;
 use tad\WPBrowser\Traits\WithWpCli;
+
+use function array_diff;
+use function array_flip;
+use function array_intersect_key;
+use function array_keys;
+use function array_merge;
+use function array_replace;
 use function tad\WPBrowser\buildCommandline;
 use function tad\WPBrowser\requireCodeceptionModules;
+use function var_dump;
 
 //phpcs:disable
 requireCodeceptionModules('WPCLI', [ 'Cli' ]);
@@ -48,7 +57,8 @@ class WPCLI extends Module
         'quiet' => true,
         'env' => [
             'strict-args' => false
-        ]
+        ],
+        'without_env' => true,
     ];
 
     /**
@@ -102,7 +112,17 @@ class WPCLI extends Module
      * @var int|null
      */
     protected $lastResultCode;
-
+    
+    /**
+     * @var array
+     */
+    protected $global_env_vars = [];
+    
+    /**
+     * @var array
+     */
+    protected $blocked_global_env_vars = [];
+    
     /**
      * WPCLI constructor.
      *
@@ -116,6 +136,18 @@ class WPCLI extends Module
         $this->wpCliProcess = $process ?: new Process();
     }
 
+    public function _before(TestInterface $test)
+    {
+        parent::_before($test);
+        $this->global_env_vars = [];
+        
+        if(isset($this->config['without_env'])){
+            $this->blocked_global_env_vars = (array) $this->config['without_env'];
+        }else {
+            $this->blocked_global_env_vars = [];
+        }
+    }
+    
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
      *
@@ -123,6 +155,12 @@ class WPCLI extends Module
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
+     *
+     * @param array<string,string> $env Additional environment per process.
+     *
+     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
+     *                          Env variables passed from the yaml configuration are still inherited if set to false.
+     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
      *
      * @return int|string The command exit value; `0` usually means success.
      *
@@ -140,46 +178,85 @@ class WPCLI extends Module
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
      */
-    public function cli($userCommand = 'core version')
+    public function cli($userCommand = 'core version', array $env = [], $inherit_env = true)
     {
-        $return = $this->run($userCommand);
+        $return = $this->run($userCommand, $env, $inherit_env);
 
         return $return[1];
     }
-
+    
+    /**
+     * @param array<string,mixed> $env_vars Environment variables that are added to all commands.
+     *
+     * @return void
+     */
+    public function haveInShellEnvironment(array $env_vars) {
+        $this->global_env_vars = array_merge(
+            $this->global_env_vars,
+            $env_vars
+        );
+    }
+    
+    /**
+     * @note PHP7.1+ only
+     *
+     * @param string[] $blocked_env_var_names Environment variables names that are not inherited from the (global) runner shell.
+     *
+     * @return void
+     */
+    public function dontInheritShellEnvironment(array $blocked_env_var_names)
+    {
+        $this->blocked_global_env_vars = array_merge(
+            $this->blocked_global_env_vars,
+            $blocked_env_var_names
+        );
+    }
+    
     /**
      * Runs a wp-cli command and returns its output and status.
      *
      * @param string|array<string> $userCommand The user command, in the format supported by the Symfony Process class.
+     *
+     * @param array<string,string> $process_env Additional environment per process.
+     *
+     * @param bool $inherit_env Indicate if the current test process env should be passed to the cli command.
+     *                          Env variables passed from the yaml configuration are still inherited if set to false.
+     *                          Env variables passed from $I->haveInShellEnvironment() are still inherited if set to false.
      *
      * @return array<string|int> The command process output and status.
      *
      * @throws ModuleConfigException If the wp-cli path is wrong.
      * @throws ModuleException If there's an issue while running the command.
      */
-    protected function run($userCommand)
+    protected function run($userCommand, array $process_env = [], $inherit_env = true)
     {
         $this->validatePath();
 
         $userCommand = buildCommandline($userCommand);
 
+        $this->debugSection('command', $userCommand);
+
+        $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
+        $global_process_env = $this->buildProcessEnv();
+        // Allow per process env vars to overwrite global env vars.
+        $process_env = array_replace($global_process_env, $process_env);
+        
         /**
          * Set an environment variable to let client code know the request is coming from the host machine.
          * Set the value to a string to make it so that the process will pick it up while populating the env.
          */
-        putenv('WPBROWSER_HOST_REQUEST="1"');
-        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
-
-        $this->debugSection('command', $userCommand);
-
-        $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
-        $env = $this->buildProcessEnv();
-
+        if($inherit_env){
+            putenv('WPBROWSER_HOST_REQUEST="1"');
+            $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
+        }else {
+            $process_env = array_merge(['WPBROWSER_HOST_REQUEST' => '1'], $process_env);
+        }
+        
         $this->debugSection('command with configuration options', $command);
-        $this->debugSection('command with environment', $env);
+        $this->debugSection('command with environment', $process_env);
 
         try {
-            $process = $this->executeWpCliCommand($command, $this->timeout, $env);
+            $process = $this->executeWpCliCommand($command, $this->timeout, $process_env, $inherit_env);
         } catch (WpCliException $e) {
             if (!empty($this->config['throw'])) {
                 throw new ModuleException($this, $e->getMessage());
@@ -276,7 +353,7 @@ class WPCLI extends Module
      */
     protected function buildProcessEnv()
     {
-        return array_filter([
+        $wp_cli_env_args = array_filter([
             'WP_CLI_CACHE_DIR' => isset($this->config['env']['cache-dir']) ? $this->config['env']['cache-dir'] : false,
             'WP_CLI_CONFIG_PATH' => isset($this->config['env']['config-path']) ?
                 $this->config['env']['config-path']
@@ -292,6 +369,20 @@ class WPCLI extends Module
             'WP_CLI_PHP_ARGS' => isset($this->config['env']['php-args']) ? $this->config['env']['php-args'] : false,
             'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
         ]);
+        
+        $config_env_vars = isset($this->config['env']) ? $this->config['env'] : [];
+        $config_env_vars = array_diff($config_env_vars, array_flip([
+            'cache-dir',
+            'config-path',
+            'custom-shell',
+            'disable-auto-check-update',
+            'packages-dir',
+            'php',
+            'php-args',
+            'strict-args'
+        ]));
+    
+        return array_merge($config_env_vars, $wp_cli_env_args, $this->global_env_vars);
     }
 
     /**
@@ -340,6 +431,8 @@ class WPCLI extends Module
      *                                            supported method.
      * @param callable             $splitCallback An optional callback function to split the results array.
      *
+     * @param array<string,string> $env Additional environment per process.
+     *
      * @return array<string> An array containing the output of wp-cli split into single elements.
      *
      * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
@@ -357,9 +450,9 @@ class WPCLI extends Module
      * });
      * ```
      */
-    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null)
+    public function cliToArray($userCommand = 'post list --format=ids', callable $splitCallback = null, array $env = [], $inherit_env = true)
     {
-        $output = (string)$this->cliToString($userCommand);
+        $output = (string)$this->cliToString($userCommand, $env, $inherit_env);
 
         if (empty($output)) {
             return [];
@@ -400,6 +493,8 @@ class WPCLI extends Module
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
      *
+     * @param array<string,string> $env Additional environment per process.
+     *
      * @return int|string The command output, if any.
      *
      * @throws ModuleConfigException If the path to the WordPress installation does not exist.
@@ -414,9 +509,9 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      */
-    public function cliToString($userCommand)
+    public function cliToString($userCommand, array $env = [], $inherit_env = true)
     {
-        $return = $this->run($userCommand);
+        $return = $this->run($userCommand, $env, $inherit_env);
 
         return $return[0];
     }

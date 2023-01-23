@@ -205,17 +205,22 @@ trait WithWpCli
      * @param int|null $timeout The timeout, in seconds, to use for the command. Use `null` to remove the timeout.
      * @param array<string,string|int|float> $env An optional,associative array of environment variables to set for
      *                                                the process.
+     * @param bool $inherit_env
      *
      * @return Process The process object that executed the command.
      *
      * @throws WpCliException If the wp-cli boot file path cannot be found.
      */
-    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [])
+    protected function executeWpCliCommand(array $command = ['version'], $timeout = 60, array $env = [], $inherit_env = true)
     {
-        $fullCommand   = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
-        $process       = $this->wpCliProcess->withCommand($fullCommand)->withCwd($this->wpCliWpRootDir);
+        $fullCommand = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
+        
+        $process = $this->wpCliProcess->withCommand($fullCommand)
+                                      ->withCwd($this->wpCliWpRootDir)
+                                      ->withBlockedGlobalEnv($this->blocked_global_env_vars);
+        
         $process->setTimeout($timeout);
-        $process->inheritEnvironmentVariables(true);
+        $process->inheritEnvironmentVariables($inherit_env);
         if (count($env)) {
             $currentEnv = (array)$process->getEnv();
             $process = $process->withEnv(array_merge($currentEnv, $env));
