@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Control global and per-process environment variables in the `WPCLI::cli()` method. (thanks @calvinalkan).
 - Add the `haveInShellEnvironment` and `dontInheritShellEnvironment` methods to the `WPCLI` module. (thanks @calvinalkan).
+- `amEditingUserWithId` method to the `WPBrowser` and `WPWebDriver` modules. (thanks @johnbillion).
 
 ## [3.1.6] 2022-04-28;
 
