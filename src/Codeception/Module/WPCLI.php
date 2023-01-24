@@ -468,8 +468,7 @@ class WPCLI extends Module
         callable $splitCallback = null,
         array $env = [],
         $inherit_env = true
-    )
-    {
+    ) {
         $output = (string)$this->cliToString($userCommand, $env, $inherit_env);
 
         if (empty($output)) {

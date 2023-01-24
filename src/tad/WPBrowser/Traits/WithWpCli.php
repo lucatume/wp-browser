@@ -216,8 +216,7 @@ trait WithWpCli
         $timeout = 60,
         array $env = [],
         $inherit_env = true
-    )
-    {
+    ) {
         $fullCommand = $this->buildFullCommand(array_merge(['--path=' . $this->wpCliWpRootDir], $command));
 
         $process = $this->wpCliProcess->withCommand($fullCommand)
