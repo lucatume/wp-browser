@@ -450,10 +450,7 @@ wp_download_twentytwenty_theme:
 	unzip -o "$(PWD)/_wordpress/wordpress/wp-content/themes/twentytwenty.zip" -d "$(PWD)/_wordpress/wordpress/wp-content/themes/"
 	rm "$(PWD)/_wordpress/wordpress/wp-content/themes/twentytwenty.zip"
 
-wp_clean_plugins:
-	rm -rf "$(PWD)/_wordpress/wordpress/wp-content/plugins/" && mkdir "$(PWD)/_wordpress/wordpress/wp-content/plugins/"
-
-wp_up: db_up php_container wp_config php_container_up wp_download_twentytwenty_theme wp_clean_plugins
+wp_up: db_up php_container wp_config php_container_up wp_download_twentytwenty_theme
 	echo "Server address: http://localhost:$(WORDPRESS_LOCALHOST_PORT)"
 
 wp_stop:
