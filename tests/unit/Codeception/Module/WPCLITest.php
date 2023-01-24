@@ -95,7 +95,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand([ "'core'", "'version'" ]),
             $this->root->url() . '/wp'
@@ -137,7 +140,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand([ "--{$option}={$optionValue}", "'core'", "'version'" ]),
             $path
@@ -173,7 +179,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([ "'core'", "'version'" ]), $path)
                       ->willReturn($mockProcess->reveal());
 
@@ -198,7 +207,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand([ "'core'", "'version'", "--{$option}='{$overrideValue}'" ]),
             $path
@@ -225,7 +237,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(-1);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand(["'core'","'version'"]),
             $path
@@ -261,7 +276,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(-1);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand(["'core'","'version'"]),
             $path
@@ -297,7 +315,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand([
                 "'post'",
@@ -331,7 +352,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand([
                 "'post'",
@@ -356,16 +380,26 @@ class WPCLITest extends \Codeception\Test\Unit
             return 'foo';
         };
 
-        $this->process = $this->stubProphecy(Process::class);
-        $this->process->getOutput()->willReturn('23 12');
-        $this->process->getExitCode()->willReturn(0);
+        $mockProcess = $this->stubProphecy(Process::class);
+        $mockProcess->getError()->willReturn('');
+        $mockProcess->getOutput()->willReturn('23 12');
+        $mockProcess->setTimeout(WPCLI::DEFAULT_TIMEOUT)->shouldBeCalled();
+        $mockProcess->mustRun()->shouldBeCalled()->willReturn($mockProcess->itself());
+        $mockProcess->getExitCode()->willReturn(0);
+        $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
-        $this->process->withCommand($this->buildExpectedCommand([
-            "'post'",
-            "'list'",
-            "'--format=ids'"
-        ]), $path)->willReturn($this->process->reveal(true));
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
+        $this->process->withCommand(
+            $this->buildExpectedCommand([
+                "'post'",
+                "'list'",
+                "'--format=ids'"
+            ]),
+            $path
+        )->willReturn($mockProcess->reveal());
 
         $this->expectException(ModuleException::class);
 
@@ -386,7 +420,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "'post'",
             "'list'",
@@ -410,7 +447,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "'post'",
             "'list'",
@@ -437,7 +477,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "'post'",
             "'list'",
@@ -465,7 +508,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "'post'",
             "'list'",
@@ -526,7 +572,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal(true));
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "--allow-root",
             "'core'",
@@ -553,7 +602,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $mockProcess->getExitCode()->willReturn(0);
         $mockProcess->inheritEnvironmentVariables(true)->shouldBeCalled();
         $path = $this->root->url() . '/wp';
-        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->reveal());
+        $mockProcess->withCwd(Arg::type('string'))->willReturn($mockProcess->itself());
+        $mockProcess->withBlockedGlobalEnv(Arg::type('array'))->will(function () use ($mockProcess) {
+            return $mockProcess->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             '--some-option=some-value',
             'core',
@@ -577,7 +629,10 @@ class WPCLITest extends \Codeception\Test\Unit
         $this->process->getOutput()->willReturn($adminEmail);
         $this->process->getExitCode()->willReturn(0);
         $path = $this->root->url() . '/wp';
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             'option',
             'get',
@@ -615,7 +670,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getError'      => 'error!',
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             'invalid'
         ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
@@ -654,7 +712,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getExitCode' => 1
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             'invalid'
         ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
@@ -685,7 +746,10 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $this->process->withEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             "widget",
             "add",
@@ -740,7 +804,10 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $this->process->withEnv(Arg::that($matchesExpectedEnv))->willReturn($this->process->reveal(true));
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand([
             'core'  ,'version'
         ]), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
@@ -766,7 +833,10 @@ class WPCLITest extends \Codeception\Test\Unit
             ]
         );
         $command = $this->buildExpectedCommand([ 'test' ]);
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($command, $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
         $this->assertEquals('stdout', $this->makeInstance()->cliToString([ 'test' ]));
     }
@@ -788,7 +858,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getError' => 'stderr'
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
         $this->assertEquals('stderr', $this->makeInstance()->cliToString([ 'test' ]));
@@ -811,7 +884,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getError' => 'stderr'
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand($this->buildExpectedCommand(['test']), $this->root->url() . '/wp')->willReturn($this->process->reveal(true));
 
         $this->expectException(ModuleException::class);
@@ -855,7 +931,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getError'    => ''
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself());
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand(['test']),
             $this->root->url() . '/wp'
@@ -883,7 +962,10 @@ class WPCLITest extends \Codeception\Test\Unit
                 'getError'    => ''
             ]
         );
-        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->reveal(true));
+        $this->process->withCwd(Arg::type('string'))->willReturn($this->process->itself(true));
+        $this->process->withBlockedGlobalEnv(Arg::type('array'))->will(function () {
+            return $this->process->reveal();
+        });
         $this->process->withCommand(
             $this->buildExpectedCommand(['test']),
             $this->root->url() . '/wp'
