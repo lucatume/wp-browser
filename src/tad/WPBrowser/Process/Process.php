@@ -17,19 +17,19 @@ use function getenv;
 
 class Process extends Command
 {
-    
+
     /**
      * Whether the process should inherit the current `$_ENV` or not.
      *
      * @var bool
      */
     protected $inheritEnvironmentVariables;
-    
+
     /**
-     * @var string[]
+     * @var array<string>
      */
     private $blockEnvVars = [];
-    
+
     /**
      * Sets the process output.
      *
@@ -42,7 +42,7 @@ class Process extends Command
         // @phpstan-ignore-next-line
         $this->timeout = $timeout === null ? $timeout : abs($timeout);
     }
-    
+
     /**
      * Sets whether the process should inherit the current `$_ENV` or not.
      *
@@ -54,7 +54,7 @@ class Process extends Command
     {
         $this->inheritEnvironmentVariables = (bool)$inheritEnvironmentVariables;
     }
-    
+
     /**
      * Runs the process, throwing an exception if the process fails.
      *
@@ -67,16 +67,16 @@ class Process extends Command
         if ($this->execute() === false) {
             throw new ProcessFailedException($this);
         }
-        
+
         return $this;
     }
-    
+
     public function execute()
     {
         $explicit_proc_env = $this->procEnv;
-        
+
         $this->procEnv = $this->buildFullEnv($explicit_proc_env);
-        
+
         try {
             return parent::execute();
         } finally {
@@ -84,7 +84,7 @@ class Process extends Command
             $this->procEnv = $explicit_proc_env;
         }
     }
-    
+
     /**
      * Clones the current instance and returns a new one for the specified command.
      *
@@ -98,10 +98,10 @@ class Process extends Command
             $command = implode(' ', $command);
         }
         $clone = clone $this;
-        
+
         return $clone->setCommand($command);
     }
-    
+
     /**
      * Returns an instance of this process with the modified environment.
      *
@@ -115,11 +115,11 @@ class Process extends Command
         $clone->procEnv = $env;
         return $clone;
     }
-    
+
     /**
      * Returns an instance of this process that will not inherit the specified env var names.
      *
-     * @param string[] $env_var_names Global env vars not to inherit.
+     * @param array<string> $env_var_names Global env vars not to inherit.
      *
      * @return Process A modified clone of the current process.
      */
@@ -129,7 +129,7 @@ class Process extends Command
         $clone->blockEnvVars = $env_var_names;
         return $clone;
     }
-    
+
     /**
      * Returns the current process environment variables.
      *
@@ -139,7 +139,7 @@ class Process extends Command
     {
         return (array)$this->procEnv;
     }
-    
+
     /**
      * Builds and returns a new instance of the process with the specified working directory.
      *
@@ -151,10 +151,10 @@ class Process extends Command
     {
         $clone = clone $this;
         $clone->procCwd = $cwd;
-        
+
         return $clone;
     }
-    
+
     /**
      * Returns whether the process was successful (exit 0) or not.
      *
@@ -164,7 +164,7 @@ class Process extends Command
     {
         return (int)$this->getExitCode() === 0;
     }
-    
+
     /**
      * Returns the process current working directory.
      *
@@ -174,7 +174,7 @@ class Process extends Command
     {
         return $this->procCwd;
     }
-    
+
     /**
      * @return bool
      */
@@ -182,9 +182,11 @@ class Process extends Command
     {
         return PHP_VERSION_ID >= 70100;
     }
-    
+
     /**
-     * @return array|null
+     * @param array<string,mixed>|null $explicit_env
+     *
+     * @return array<string,mixed>|null
      */
     private function buildFullEnv(array $explicit_env = null)
     {
@@ -196,7 +198,7 @@ class Process extends Command
          * is inherited.
          *
          * Only the local environment is inherited, meaning that WP_BROWSER_HOST_REQUEST
-         * musst be passed explicitly.
+         * must be passed explicitly.
          */
         if (!$this->inheritEnvironmentVariables) {
             return (array)$explicit_env;
@@ -206,9 +208,11 @@ class Process extends Command
          * set for this process instance.
          *
          * In that case we want to use the global environment.
+         *
+         * @var array<string,int> $blocked_env
          */
         $blocked_env = array_flip($this->blockEnvVars);
-        
+
         if (empty($explicit_env)) {
             /*
              * On PHP < 7.1 we can't call getenv() to get all env vars.
@@ -225,6 +229,7 @@ class Process extends Command
              * On PHP >=7.1 we can merge $_ENV and getenv() so that also
              * $_ENV variables are inherited and not only those set by putenv
              */
+            // @phpstan-ignore-next-line - array_diff_key() will confuse the return type into array<int|string,mixed>.
             return array_diff_key(
                 array_merge($_ENV, getenv()),
                 $blocked_env
@@ -252,7 +257,11 @@ class Process extends Command
                 $blocked_env
             );
         }
-    
+
+        /**
+         * @var array<string,mixed> $runner_env
+         * @var array<string,mixed> $explicit_env
+         */
         return array_merge($runner_env, $explicit_env);
     }
 }

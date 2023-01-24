@@ -114,12 +114,12 @@ class WPCLI extends Module
     protected $lastResultCode;
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected $global_env_vars = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected $blocked_global_env_vars = [];
 
@@ -136,6 +136,10 @@ class WPCLI extends Module
         $this->wpCliProcess = $process ?: new Process();
     }
 
+    /**
+     * @param TestInterface $test
+     * @return void
+     */
     public function _before(TestInterface $test)
     {
         parent::_before($test);
@@ -357,7 +361,7 @@ class WPCLI extends Module
     /**
      * Builds the process environment from the configuration options.
      *
-     * @return array<string,mixed> An associative array of environment variables..
+     * @return array<string,mixed> An associative array of environment variables.
      */
     protected function buildProcessEnv()
     {
@@ -390,6 +394,7 @@ class WPCLI extends Module
             'strict-args'
         ]));
 
+        // @phpstan-ignore-next-line - array_merge() will confuse the return type into array<int|string,mixed>.
         return array_merge($config_env_vars, $wp_cli_env_args, $this->global_env_vars);
     }
 
@@ -433,19 +438,6 @@ class WPCLI extends Module
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
      *
-     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
-     *                                            minus `wp`. For back-compatibility purposes you can still pass the
-     *                                            commandline as a string, but the array format is the preferred and
-     *                                            supported method.
-     * @param callable             $splitCallback An optional callback function to split the results array.
-     *
-     * @param array<string,string> $env Additional environment per process.
-     *
-     * @return array<string> An array containing the output of wp-cli split into single elements.
-     *
-     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
-     *
      * @example
      * ```php
      * // Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
@@ -457,6 +449,19 @@ class WPCLI extends Module
      *      });
      * });
      * ```
+     * @param callable             $splitCallback An optional callback function to split the results array.
+     * @param array<string,string> $env           Additional environment per process.
+     * @param bool                 $inherit_env   Whether to inherit the environment variables from the parent process.
+     *
+     * @param string|array<string> $userCommand   The string of command and parameters as it would be passed to wp-cli
+     *                                            minus `wp`. For back-compatibility purposes you can still pass the
+     *                                            commandline as a string, but the array format is the preferred and
+     *                                            supported method.
+     * @return array<string> An array containing the output of wp-cli split into single elements.
+     *
+     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
+     *
+     * @throws \Codeception\Exception\ModuleException If the $splitCallback function does not return an array.
      */
     public function cliToArray(
         $userCommand = 'post list --format=ids',
@@ -515,6 +520,7 @@ class WPCLI extends Module
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
+     * @param bool                 $inherit_env Whether to inherit the environment variables from the current process.
      *
      * @return int|string The command output, if any.
      *
