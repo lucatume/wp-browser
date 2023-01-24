@@ -32,6 +32,7 @@
         "Must-use plugins health-check:": "mu-plugins directory (../../vendor/wordpress/wordpress/wp-content/plugins) does not exist.",
         "Plugins health-check:": {
             "Active plugin [airplane-mode/airplane-mode.php]": "file [wp-content/plugins/airplane-mode/airplane-mode.php] does not exist.",
+            "Inactive plugin [akismet]": "wp-content/plugins/akismet",
             "Inactive plugin [isolated-test-plugin-two]": "wp-content/plugins/isolated-test-plugin-two",
             "Inactive plugin [isolated-test-plugin]": "wp-content/plugins/isolated-test-plugin",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1",
