@@ -2,6 +2,9 @@
 .idea
 .DS_Store
 
+_build/*.zip
+_build/*.gz
+
 # Composer files.
 vendor/
 
