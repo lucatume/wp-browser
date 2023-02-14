@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Inheritance of current env if the `env` key is set in the configuration of the `WPCLI` module (thanks @calvinalkan).
 - Other environment inheritance and manipulation issues (thanks @calvinalkan).
+- Indirect modification notice in the `WPLoader::_swithchTheme` method.
 
 ### Added
 

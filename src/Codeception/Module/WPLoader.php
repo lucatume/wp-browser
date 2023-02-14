@@ -792,9 +792,11 @@ class WPLoader extends Module
             return;
         }
 
-        $stylesheet = is_array($this->config['theme']) ?
-            end($this->config['theme'])
-            : $this->config['theme'];
+        if (is_array($this->config['theme'])) {
+            $stylesheet = $this->config['theme'][1];
+        } else {
+            $stylesheet = $this->config['theme'];
+        }
         $functionsFile = $this->wp->getWpContentDir() . '/themes/' . $stylesheet . '/functions.php';
         if (file_exists($functionsFile)) {
             require_once($functionsFile);
