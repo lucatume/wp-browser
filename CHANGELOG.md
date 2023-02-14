@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.1.7] 2023-02-14;
+
 ### Fixed
 
 - Inheritance of current env if the `env` key is set in the configuration of the `WPCLI` module (thanks @calvinalkan).
 - Other environment inheritance and manipulation issues (thanks @calvinalkan).
+- Indirect modification notice in the `WPLoader::_swithchTheme` method.
 
 ### Added
 
@@ -1809,4 +1812,6 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.3]: https://github.com/lucatume/wp-browser/compare/3.1.2...3.1.3
 [3.1.4]: https://github.com/lucatume/wp-browser/compare/3.1.3...3.1.4
 [3.1.5]: https://github.com/lucatume/wp-browser/compare/3.1.4...3.1.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.5...HEAD
+[3.1.6]: https://github.com/lucatume/wp-browser/compare/3.1.5...3.1.6
+[3.1.7]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.7...HEAD

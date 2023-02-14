@@ -153,7 +153,7 @@ logs)
   ;;
 ssh)
   setup_docker_compose_env $2
-  docker-compose exec -u "$(id -u):$(id -g)" -it wordpress bash
+  docker-compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
   ;;
 *)
   echo "Unknown command: ${COMMAND}"
