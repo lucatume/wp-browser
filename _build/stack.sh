@@ -216,7 +216,7 @@ function composer_update() {
 
 }
 
-function run_tests(){
+function run_tests() {
   setup_docker_compose_env
   composer_update
   ensure_test_databases
