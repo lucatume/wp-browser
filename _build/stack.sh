@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 function print_help() {
   echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-d] [-h] [--] [COMMAND]"
