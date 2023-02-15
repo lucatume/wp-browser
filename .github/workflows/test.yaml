@@ -6,9 +6,8 @@ jobs:
       matrix:
         php_version: [ '5.6', '7.4' ]
         codeception_version: [ 2, 3 ]
-        composer_version: [ 2 ]
-    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
-    runs-on: ubuntu-18.04
+    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -20,25 +19,16 @@ jobs:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Build
-        run: make build
-        env:
-          PHP_VERSION: ${{ matrix.php_version }}
-          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
-          COMPOSER_VERSION: ${{ matrix.composer_version }}
+        run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Test
-        run: make test
-        env:
-          PHP_VERSION: ${{ matrix.php_version }}
-          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
-          COMPOSER_VERSION: ${{ matrix.composer_version }}
+        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
   test_codeception_4:
     strategy:
       matrix:
         php_version: [ '5.6', '7.4', '8.0', '8.1' ]
         codeception_version: [ 4 ]
-        composer_version: [ 2 ]
-    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}, Composer ${{ matrix.composer_version }}
-    runs-on: ubuntu-18.04
+    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -50,14 +40,6 @@ jobs:
           path: vendor
           key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
       - name: Build
-        run: make build
-        env:
-          PHP_VERSION: ${{ matrix.php_version }}
-          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
-          COMPOSER_VERSION: ${{ matrix.composer_version }}
+        run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Test
-        run: make test
-        env:
-          PHP_VERSION: ${{ matrix.php_version }}
-          CODECEPTION_MAJOR_VERSION: ${{ matrix.codeception_version }}
-          COMPOSER_VERSION: ${{ matrix.composer_version }}
+        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test

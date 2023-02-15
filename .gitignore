@@ -38,4 +38,4 @@ wp-cli.yml
 
 # The docker configuration file, produced in the make `build` target.
 .env.testing.docker
-
+composer.codecept-4.lock

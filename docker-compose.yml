@@ -46,12 +46,18 @@ services:
           - two.wordpress.test
           - test1.wordpress.test
           - test2.wordpress.test
+          - blog0.wordpress.test
+          - blog1.wordpress.test
+          - blog2.wordpress.test
     extra_hosts:
       - "wordpress.test:127.0.0.1"
       - "one.wordpress.test:127.0.0.1"
       - "two.wordpress.test:127.0.0.1"
       - "test1.wordpress.test:127.0.0.1"
       - "test2.wordpress.test:127.0.0.1"
+      - "blog0.wordpress.test:127.0.0.1"
+      - "blog1.wordpress.test:127.0.0.1"
+      - "blog2.wordpress.test:127.0.0.1"
     volumes:
       - ./_wordpress:/var/www/html
       - "${PWD}:${PWD}"
