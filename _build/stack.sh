@@ -171,7 +171,7 @@ function build() {
   # Build the PHP container for the required PHP version using docker-compose.
   docker-compose build --build-arg PHP_VERSION=${PHP_VERSION} wordpress
   # Start the database container and wait for it to be healthy.
-  docker-compose up -d --wait database
+  docker-compose up -d --force-recreate --wait database
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
   ensure_wordpress_installed
