@@ -1,14 +1,4 @@
-#!/usr/bin/env sh
-
-function print_help() {
-  echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-d] [-h] [--] [COMMAND]"
-  echo "  -p PHP_VERSION: The PHP version to use. Default: 5.6"
-  echo "  -c CODECEPTION_VERSION: The Codeception version to use. Default: 4"
-  echo "  -d: Enable debug mode."
-  echo "  -h: Display this help message."
-  echo ""
-  echo "Available commands: build, clean, config, ps, logs, ssh, test, help"
-}
+#!/usr/bin/env bash
 
 # Parse the arguments using getopts
 while getopts "p:c:hd" opt; do
@@ -62,6 +52,16 @@ if [[ ! " ${SUPPORTED_CODECEPTION_VERSIONS[@]} " =~ " ${CODECEPTION_VERSION} " ]
 fi
 
 TEST_DATABASES=(wordpress test_subdir test_subdomain test_empty)
+
+function print_help() {
+  echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-d] [-h] [--] [COMMAND]"
+  echo "  -p PHP_VERSION: The PHP version to use. Default: 5.6"
+  echo "  -c CODECEPTION_VERSION: The Codeception version to use. Default: 4"
+  echo "  -d: Enable debug mode."
+  echo "  -h: Display this help message."
+  echo ""
+  echo "Available commands: build, clean, config, ps, logs, ssh, test, help"
+}
 
 function setup_docker_compose_env() {
   export PHP_VERSION=${PHP_VERSION}
