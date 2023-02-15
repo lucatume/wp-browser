@@ -38,7 +38,7 @@ jobs:
         uses: gerbal/always-cache@v1
         with:
           path: vendor
-          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.codecept-4.json') }}-${{ env.SRC_HASH }}
       - name: Build
         run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Test
