@@ -14,7 +14,7 @@ use function tad\WPBrowser\importDumpWithMysqlBin;
  */
 function testEnvFile()
 {
-    return '.env.testing.docker';
+    return '.env.testing';
 }
 
 /**
