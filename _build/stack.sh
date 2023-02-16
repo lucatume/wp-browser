@@ -11,6 +11,7 @@ function print_help() {
   echo "  clean            Remove the containers and images, remove the wordpress installation."
   echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
   echo "  config           Show the docker-compose configuration for the specified PHP version."
+  echo "  exec             Execute a command in the WordPress/php container for the specified PHP version."
   echo "  logs             Show the logs of the containers for the specified PHP version."
   echo "  ps               Show the status of the containers for the specified PHP version."
   echo "  ssh              SSH into the WordPress/php container for the specified PHP version."
@@ -262,6 +263,10 @@ composer_update)
   ;;
 config)
   config
+  ;;
+exec)
+  setup_docker_compose_env
+  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress ${@:2}
   ;;
 help)
   print_help
