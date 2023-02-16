@@ -11,22 +11,19 @@ jobs:
     name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
     runs-on: ubuntu-22.04
     steps:
-      - run: docker-compose --version
-      - run: docker --version
-      - run: docker compose --help
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Set src directory hash
-#        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
-#      - name: Cache Composer dependencies
-#        uses: gerbal/always-cache@v1
-#        with:
-#          path: vendor
-#          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
-#      - name: Build
-#        run: _build/stack.sh -p${{ matrix.php_version }} build
-#      - name: Test
-#        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set src directory hash
+        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
+      - name: Cache Composer dependencies
+        uses: gerbal/always-cache@v1
+        with:
+          path: vendor
+          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
+      - name: Build
+        run: _build/stack.sh -p${{ matrix.php_version }} build
+      - name: Test
+        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
 #  test_codeception_4:
 #    strategy:
 #      matrix:
