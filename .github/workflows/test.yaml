@@ -24,6 +24,7 @@ jobs:
         uses: php-actions/composer@v6
         with:
           php_version: ${{ matrix.php_version }}
+          php_extensions: sockets pcntl gd
           version: 2.2
           command: update
           args: --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
