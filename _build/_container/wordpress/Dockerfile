@@ -33,6 +33,9 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 COPY bashrc_scripts.sh /etc/bashrc_scripts.sh
 RUN chmod a+x /etc/bashrc_scripts.sh && echo ". /etc/bashrc_scripts.sh" >> /etc/bash.bashrc
+COPY xdebug-on.sh /usr/local/bin/xdebug-on
+COPY xdebug-off.sh /usr/local/bin/xdebug-off
+RUN chmod a+x /usr/local/bin/xdebug-on && chmod a+x /usr/local/bin/xdebug-off
 
 # Ensure the gropup and user exist.
 RUN getent group ${USER_GID} || groupadd -g ${USER_GID} ${USER_NAME}

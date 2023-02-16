@@ -14,6 +14,8 @@ function print_help() {
   echo "  logs             Show the logs of the containers for the specified PHP version."
   echo "  ps               Show the status of the containers for the specified PHP version."
   echo "  ssh              SSH into the WordPress/php container for the specified PHP version."
+  echo "  xdebug-on        Activates XDebug in the WordPress/php container."
+  echo "  xdebug-off       Deactivates XDebug in the WordPress/php container."
 }
 
 # Parse the arguments using getopts
@@ -236,43 +238,57 @@ function run_tests() {
   done
 }
 
+function xdebug_off() {
+  setup_docker_compose_env
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-off || exit 1
+}
+
+function xdebug_on() {
+  setup_docker_compose_env
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-on || exit 1
+}
+
 COMMAND=${1:-help}
 
 case $COMMAND in
-help)
-  print_help
-  ;;
 build)
   build
   ;;
 clean)
   clean
   ;;
+composer_update)
+  composer_update
+  ;;
 config)
   config
   ;;
-ps)
-  setup_docker_compose_env
-  docker compose ps
+help)
+  print_help
   ;;
 logs)
   setup_docker_compose_env
   docker compose logs -f
   ;;
+ps)
+  setup_docker_compose_env
+  docker compose ps
+  ;;
 ssh)
   setup_docker_compose_env
-  composer_update
   docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
-  ;;
-composer_update)
-  composer_update
   ;;
 test)
   run_tests
+  ;;
+xdebug-off)
+  xdebug_off
+  ;;
+xdebug-on)
+  xdebug_on
   ;;
 *)
   echo "Unknown command: ${COMMAND}"
   print_help
   ;;
 esac
-
