@@ -28,13 +28,8 @@ jobs:
           version: 2.2
           command: update
           args: --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
-      - run: ls -la _wordpress/wp-content
-      - run: ls -la _wordpress/wp-content/uploads
-      - run: _build/stack.sh -p${{ matrix.php_version }} exec ls -la
-      - run: _build/stack.sh -p${{ matrix.php_version }} exec ls -la /var/www/html/wp-content
-      - run: _build/stack.sh -p${{ matrix.php_version }} exec ls -la /var/www/html/wp-content/uploads
-#      - name: Test
-#        run: _build/stack.sh -p${{ matrix.php_version }} test
+      - name: Test
+        run: _build/stack.sh -p${{ matrix.php_version }} test
 #  test_codeception_4:
 #    strategy:
 #      matrix:
