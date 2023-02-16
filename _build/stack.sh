@@ -224,7 +224,7 @@ function composer_update() {
   fi
 
   docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-    wordpress bash -c "COMPOSER=$composer_file composer update"
+    wordpress bash -c "COMPOSER=$composer_file composer update --with codeception/codeception:^${CODECEPTION_VERSION}.0"
 
 }
 
