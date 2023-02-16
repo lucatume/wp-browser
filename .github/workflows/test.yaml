@@ -22,7 +22,7 @@ jobs:
         uses: php-actions/composer@v6
         with:
           php_version: ${{ matrix.php_version }}
-          version: 2.x
+          version: 2.2
           command: update
           args: --ignore-platform-reqs --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
       - name: Build
