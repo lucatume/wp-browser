@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Build
+        run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
@@ -25,10 +27,8 @@ jobs:
           version: 2.2
           command: update
           args: --ignore-platform-reqs --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
-      - name: Build
-        run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Test
-        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
+        run: _build/stack.sh -p${{ matrix.php_version }} test
 #  test_codeception_4:
 #    strategy:
 #      matrix:

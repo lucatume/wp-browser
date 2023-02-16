@@ -226,8 +226,8 @@ function composer_update() {
 
 function run_tests() {
   setup_docker_compose_env
-  composer_update
   ensure_test_databases
+  xdebug_off
   suites=$(find "$(pwd)/tests" -name '*.suite.dist.yml' -print0 | xargs -0 -n1 basename | cut -d. -f1)
   for suite in $suites; do
     echo ""
