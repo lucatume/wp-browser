@@ -73,12 +73,16 @@ fi
 TEST_DATABASES=(wordpress test_subdir test_subdomain test_empty)
 
 function setup_docker_compose_env() {
-  export PHP_VERSION=${PHP_VERSION}
-  export CODECEPTION_VERSION=${CODECEPTION_VERSION}
-  export USER_UID=$(id -u)
-  export USER_GID=$(id -g)
-  export USER_NAME=$(id -un)
-  export PWD=$(pwd)
+  export PHP_VERSION
+  export CODECEPTION_VERSION
+  USER_UID=$(id -u)
+  export USER_UID
+  USER_GID=$(id -g)
+  export USER_GID
+  USER_NAME=$(id -un)
+  export USER_NAME
+  PWD=$(pwd)
+  export PWD
 }
 
 function ensure_twentytwenty_theme() {
@@ -93,7 +97,7 @@ function ensure_twentytwenty_theme() {
 
 function ensure_test_databases() {
   # Create the test databases, use a for loop and exit on failure.
-  for database in ${TEST_DATABASES[@]}; do
+  for database in "${TEST_DATABASES[@]}"; do
     docker compose exec -T database mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS ${database}" || exit 1
   done
 }
@@ -105,13 +109,28 @@ function ensure_wordpress_scaffolded() {
 
   if [ ! -f _build/wordpress-latest.tar.gz ]; then
     # Download WordPress latest version.
-    curl -s -o _build/wordpress-latest.tar.gz https://wordpress.org/latest.tar.gz || exit 1
+    if ! curl -s -o _build/wordpress-latest.tar.gz https://wordpress.org/latest.tar.gz; then
+      echo "Failed to download the latest WordPress version."
+      exit 1
+    fi
   fi
 
   # If _wordpress/the wp-config-sample.php file is not found, unzip the latest WordPress version.
   if [ ! -f _wordpress/wp-config-sample.php ]; then
-    tar -xzf _build/wordpress-latest.tar.gz -C _wordpress --strip-components=1 || exit 1
+    if ! tar -xzf _build/wordpress-latest.tar.gz -C _wordpress --strip-components=1; then
+      echo "Failed to unzip the latest WordPress version."
+      exit 1
+    fi
   fi
+}
+
+function run_wp_cli_command() {
+  docker run --rm -v "$(pwd)/_wordpress:/var/www/html" \
+    --network "wpbrowser_php_${PHP_VERSION}" \
+    -w /var/www/html \
+    -u "${USER_UID}:${USER_GID}" \
+    "wp-browser-wordpress:php${PHP_VERSION}-apache" \
+    wp --allow-root "$@"
 }
 
 function ensure_wordpress_configured() {
@@ -121,19 +140,18 @@ function ensure_wordpress_configured() {
 
   # If the _wordpress/wp-config.php file is not found, configure WordPress using wp-cli.
   # Configure WordPress using wp-cli.
-  docker run --rm -v $(pwd)/_wordpress:/var/www/html \
-    --network wpbrowser_php_${PHP_VERSION} \
-    -w /var/www/html wp-browser-wordpress:php${PHP_VERSION}-apache \
+  if ! docker run --rm -v "$(pwd)/_wordpress:/var/www/html" \
+    --network "wpbrowser_php_${PHP_VERSION}" \
+    -w /var/www/html \
+    -u "${USER_UID}:${USER_GID}" \
+    "wp-browser-wordpress:php${PHP_VERSION}-apache" \
     bash -c "wp --allow-root core config --dbname=wordpress --dbuser=root --dbpass=password --dbhost=database --dbprefix=wp_ --extra-php <<PHP
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
 define( 'WP_DEBUG_DISPLAY', false );
 define( 'DISABLE_CRON', true );
 define( 'WP_HTTP_BLOCK_EXTERNAL', true );
-PHP"
-
-  # If the configuration failed, then exit.
-  if [ $? -ne 0 ]; then
+PHP"; then
     echo "Failed to configure WordPress."
     exit 1
   fi
@@ -141,35 +159,18 @@ PHP"
 
 function ensure_wordpress_installed() {
   # If WordPress is already installed, then return. Use wp-cli to check if WordPress is installed.
-  docker run --rm -v $(pwd)/_wordpress:/var/www/html \
-    --network wpbrowser_php_${PHP_VERSION} \
-    -w /var/www/html wp-browser-wordpress:php${PHP_VERSION}-apache \
-    wp --allow-root core is-installed
-
-  if [ $? -eq 0 ]; then
+  if run_wp_cli_command core is-installed; then
     return
   fi
 
   # Install WordPress using wp-cli.
-  docker run --rm -v $(pwd)/_wordpress:/var/www/html \
-    --network wpbrowser_php_${PHP_VERSION} \
-    -w /var/www/html wp-browser-wordpress:php${PHP_VERSION}-apache \
-    wp --allow-root core install --url=http://wordpress.test --title="TEST" --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email
-
-  # If the installation failed, then exit.
-  if [ $? -ne 0 ]; then
+  if ! run_wp_cli_command core install --url=http://wordpress.test --title="TEST" --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email; then
     echo "Failed to install WordPress."
     exit 1
   fi
 
   # Convert the site to multisite using wp-cli.
-  docker run --rm -v $(pwd)/_wordpress:/var/www/html \
-    --network wpbrowser_php_${PHP_VERSION} \
-    -w /var/www/html wp-browser-wordpress:php${PHP_VERSION}-apache \
-    wp --allow-root core multisite-convert
-
-  # If the conversion failed, then exit.
-  if [ $? -ne 0 ]; then
+  if ! run_wp_cli_command core multisite-convert; then
     echo "Failed to convert the site to multisite."
     exit 1
   fi
@@ -191,16 +192,18 @@ function build() {
 }
 
 function clean() {
+  pre_clean_php_version=${PHP_VERSION}
   # Foreach supported PHP version, remove the containers and images.
   for PHP_VERSION in "${SUPPORTED_PHP_VERSIONS[@]}"; do
-    setup_docker_compose_env ${PHP_VERSION}
+    setup_docker_compose_env
 
     docker compose down -v
     docker compose rm -f
-    docker rmi wp-browser-wordpress:php${PHP_VERSION-apache}
+    docker rmi "wp-browser-wordpress:php${PHP_VERSION-apache}"
   done
 
   rm -rf _wordpress
+  export PHP_VERSION=${pre_clean_php_version}
 }
 
 function config() {
@@ -214,7 +217,7 @@ function composer_update() {
   setup_docker_compose_env
 
   # If the Codeception version is 4, then use the composer.codecept-4.json file.
-  if [ ${CODECEPTION_VERSION} == 4 ]; then
+  if [ "${CODECEPTION_VERSION}" == 4 ]; then
     composer_file="composer.codecept-4.json"
   else
     composer_file="composer.json"
@@ -266,7 +269,7 @@ config)
   ;;
 exec)
   setup_docker_compose_env
-  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress ${@:2}
+  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress "${@:2}"
   ;;
 help)
   print_help
