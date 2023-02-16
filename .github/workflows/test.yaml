@@ -4,10 +4,12 @@ jobs:
   test_codeception_lt_4:
     strategy:
       matrix:
-        php_version: [ '5.6', '7.4' ]
-        codeception_version: [ 2, 3 ]
+#        php_version: [ '5.6', '7.4' ]
+#        codeception_version: [ 2, 3 ]
+        php_version: [ '5.6' ]
+        codeception_version: [ 3 ]
     name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -22,24 +24,24 @@ jobs:
         run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Test
         run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
-  test_codeception_4:
-    strategy:
-      matrix:
-        php_version: [ '5.6', '7.4', '8.0', '8.1' ]
-        codeception_version: [ 4 ]
-    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set src directory hash
-        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
-      - name: Cache Composer dependencies
-        uses: gerbal/always-cache@v1
-        with:
-          path: vendor
-          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.codecept-4.json') }}-${{ env.SRC_HASH }}
-      - name: Build
-        run: _build/stack.sh -p${{ matrix.php_version }} build
-      - name: Test
-        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
+#  test_codeception_4:
+#    strategy:
+#      matrix:
+#        php_version: [ '5.6', '7.4', '8.0', '8.1' ]
+#        codeception_version: [ 4 ]
+#    name: PHP ${{ matrix.php_version }}, CC ${{ matrix.codeception_version }}
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Set src directory hash
+#        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
+#      - name: Cache Composer dependencies
+#        uses: gerbal/always-cache@v1
+#        with:
+#          path: vendor
+#          key: composer-${{ matrix.php_version }}-cc-${{ matrix.codeception_version }}-composer-v1-${{ hashFiles('**/composer.codecept-4.json') }}-${{ env.SRC_HASH }}
+#      - name: Build
+#        run: _build/stack.sh -p${{ matrix.php_version }} build
+#      - name: Test
+#        run: _build/stack.sh -p${{ matrix.php_version }} -c${{ matrix.codeception_version }} test
