@@ -10,14 +10,14 @@ build:
 .PHONY: build
 
 test:
-	./_build/stack.sh -p5.6 -c2 test
-	./_build/stack.sh -p5.6 -c3 test
-	./_build/stack.sh -p5.6 -c4 test
-	./_build/stack.sh -p7.4 -c2 test
-	./_build/stack.sh -p7.4 -c3 test
-	./_build/stack.sh -p7.4 -c4 test
-	./_build/stack.sh -p8.0 -c4 test
-	./_build/stack.sh -p8.1 -c4 test
+	./_build/stack.sh -c2 composer_update && ./_build/stack.sh -p5.6 test
+	./_build/stack.sh -c3 composer_update && ./_build/stack.sh -p5.6 test
+	./_build/stack.sh -c4 composer_update && ./_build/stack.sh -p5.6 test
+	./_build/stack.sh -c2 composer_update && ./_build/stack.sh -p7.4 test
+	./_build/stack.sh -c3 composer_update && ./_build/stack.sh -p7.4 test
+	./_build/stack.sh -c4 composer_update && ./_build/stack.sh -p7.4 test
+	./_build/stack.sh -c4 composer_update && ./_build/stack.sh -p8.0 test
+	./_build/stack.sh -c4 composer_update && ./_build/stack.sh -p8.1 test
 .PHONY: test
 
 clean:

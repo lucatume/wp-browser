@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+function print_help() {
+  echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-d] [-h] [--] [COMMAND]"
+  echo "  -p<PHP_VERSION>         The PHP version to use. Default: 5.6"
+  echo "  -<CODECEPTION_VERSION> The Codeception version to use. Default: 4"
+  echo "  -d                      Enable debug mode."
+  echo "  -h                      Display this help message."
+  echo "COMMAND can be one of:"
+  echo "  build            Build the images for the specified PHP version."
+  echo "  clean            Remove the containers and images, remove the wordpress installation."
+  echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
+  echo "  config           Show the docker-compose configuration for the specified PHP version."
+  echo "  logs             Show the logs of the containers for the specified PHP version."
+  echo "  ps               Show the status of the containers for the specified PHP version."
+  echo "  ssh              SSH into the WordPress/php container for the specified PHP version."
+}
+
 # Parse the arguments using getopts
 while getopts "p:c:hd" opt; do
   case $opt in
@@ -52,16 +68,6 @@ if [[ ! " ${SUPPORTED_CODECEPTION_VERSIONS[@]} " =~ " ${CODECEPTION_VERSION} " ]
 fi
 
 TEST_DATABASES=(wordpress test_subdir test_subdomain test_empty)
-
-function print_help() {
-  echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-d] [-h] [--] [COMMAND]"
-  echo "  -p PHP_VERSION: The PHP version to use. Default: 5.6"
-  echo "  -c CODECEPTION_VERSION: The Codeception version to use. Default: 4"
-  echo "  -d: Enable debug mode."
-  echo "  -h: Display this help message."
-  echo ""
-  echo "Available commands: build, clean, config, ps, logs, ssh, test, help"
-}
 
 function setup_docker_compose_env() {
   export PHP_VERSION=${PHP_VERSION}
@@ -230,10 +236,8 @@ function run_tests() {
   done
 }
 
-# The first argument is the sub-command, if not provide, use `help`.
 COMMAND=${1:-help}
 
-# Depending on the sub-command, execute the corresponding function.
 case $COMMAND in
 help)
   print_help
@@ -260,6 +264,9 @@ ssh)
   composer_update
   docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
   ;;
+composer_update)
+  composer_update
+  ;;
 test)
   run_tests
   ;;
@@ -268,3 +275,4 @@ test)
   print_help
   ;;
 esac
+
