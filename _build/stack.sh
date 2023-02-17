@@ -72,17 +72,13 @@ fi
 
 TEST_DATABASES=(wordpress test_subdir test_subdomain test_empty)
 
-function setup_docker_compose_env() {
-  export PHP_VERSION
-  export CODECEPTION_VERSION
-  USER_UID=$(id -u)
-  export USER_UID
-  USER_GID=$(id -g)
-  export USER_GID
-  USER_NAME=$(id -un)
-  export USER_NAME
-  PWD=$(pwd)
-  export PWD
+docker_compose(){
+  PHP_VERSION=${PHP_VERSION:-5.6} \
+  CODECEPTION_VERSION=${CODECEPTION_VERSION:-4} \
+  USER_UID=$(id -u) \
+  USER_GID=$(id -g) \
+  USER_NAME=$(id -un) \
+  PWD=$(pwd) docker compose $@
 }
 
 function ensure_twentytwenty_theme() {
@@ -98,7 +94,7 @@ function ensure_twentytwenty_theme() {
 function ensure_test_databases() {
   # Create the test databases, use a for loop and exit on failure.
   for database in "${TEST_DATABASES[@]}"; do
-    docker compose exec -T database mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS ${database}" || exit 1
+    docker_compose exec -T database mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS ${database}" || exit 1
   done
 }
 
@@ -177,16 +173,15 @@ function ensure_wordpress_installed() {
 }
 
 function build() {
-  setup_docker_compose_env
   # Build the PHP container for the required PHP version using docker compose.
-  docker compose build --build-arg PHP_VERSION=${PHP_VERSION} wordpress
+  docker_compose build --build-arg PHP_VERSION=${PHP_VERSION} wordpress
   # Start the database container and wait for it to be healthy.
-  docker compose up -d --force-recreate --wait database
+  docker_compose up -d --force-recreate --wait database
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
   ensure_wordpress_installed
-  docker compose up -d --wait wordpress
-  docker compose up -d --wait chrome
+  docker_compose up -d --wait wordpress
+  docker_compose up -d --wait chrome
   ensure_test_databases
   ensure_twentytwenty_theme
 }
@@ -195,10 +190,8 @@ function clean() {
   pre_clean_php_version=${PHP_VERSION}
   # Foreach supported PHP version, remove the containers and images.
   for PHP_VERSION in "${SUPPORTED_PHP_VERSIONS[@]}"; do
-    setup_docker_compose_env
-
-    docker compose down -v
-    docker compose rm -f
+    docker_compose down -v
+    docker_compose rm -f
     docker rmi "wp-browser-wordpress:php${PHP_VERSION-apache}"
   done
 
@@ -207,15 +200,11 @@ function clean() {
 }
 
 function config() {
-  setup_docker_compose_env
-
   # Show the docker-compse configuration for the required PHP version.
-  docker compose config
+  docker_compose config
 }
 
 function composer_update() {
-  setup_docker_compose_env
-
   # If the Codeception version is 4, then use the composer.codecept-4.json file.
   if [ "${CODECEPTION_VERSION}" == 4 ]; then
     composer_file="composer.codecept-4.json"
@@ -223,13 +212,12 @@ function composer_update() {
     composer_file="composer.json"
   fi
 
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
+  docker_compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
     wordpress bash -c "COMPOSER=$composer_file composer update --with codeception/codeception:^${CODECEPTION_VERSION}.0"
 
 }
 
 function run_tests() {
-  setup_docker_compose_env
   ensure_test_databases
   xdebug_off
   suites=$(find "$(pwd)/tests" -name '*.suite.dist.yml' -print0 | xargs -0 -n1 basename | cut -d. -f1)
@@ -237,19 +225,17 @@ function run_tests() {
     echo ""
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
-    docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
+    docker_compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
       wordpress bash -c "vendor/bin/codecept run $suite --ext DotReporter" || exit 1
   done
 }
 
 function xdebug_off() {
-  setup_docker_compose_env
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-off || exit 1
+  docker_compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-off || exit 1
 }
 
 function xdebug_on() {
-  setup_docker_compose_env
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-on || exit 1
+  docker_compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-on || exit 1
 }
 
 COMMAND=${1:-help}
@@ -268,23 +254,19 @@ config)
   config
   ;;
 exec)
-  setup_docker_compose_env
-  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress "${@:2}"
+  docker_compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress "${@:2}"
   ;;
 help)
   print_help
   ;;
 logs)
-  setup_docker_compose_env
-  docker compose logs -f
+  docker_compose logs -f
   ;;
 ps)
-  setup_docker_compose_env
-  docker compose ps
+  docker_compose ps
   ;;
 ssh)
-  setup_docker_compose_env
-  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
+  docker_compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
   ;;
 test)
   run_tests
