@@ -76,4 +76,14 @@ class Assert
             PHPUnitAssert::assertNotRegExp($pattern, $string, $message);
         }
     }
+
+    public static function markTestSkipped($string)
+    {
+        if (class_exists('PHPUnit\Framework\Assert')) {
+            $class = 'PHPUnit\Framework\Assert';
+        } else {
+            $class = 'PHPUnit_Framework_Assert';
+        }
+        $class::markTestSkipped($string);
+    }
 }
