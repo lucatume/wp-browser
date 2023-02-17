@@ -27,6 +27,7 @@ services:
     build:
       context: ./_build/_container/wordpress
       args:
+        PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-www-data}"
         USER_NAME: "${USER_NAME:-www-data}"
