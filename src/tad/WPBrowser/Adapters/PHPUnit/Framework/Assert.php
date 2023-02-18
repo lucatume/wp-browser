@@ -77,6 +77,13 @@ class Assert
         }
     }
 
+    /**
+     * Adapter and proxy for the `markTestSkipped` method.
+     *
+     * @param string $string The message to display when skipping the test.
+     *
+     * @return void The test method is marked as skipped.
+     */
     public static function markTestSkipped($string)
     {
         if (class_exists('PHPUnit\Framework\Assert')) {
