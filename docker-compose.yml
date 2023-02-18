@@ -39,6 +39,8 @@ services:
       interval: 1s
       timeout: 1s
       retries: 30
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/.cache/composer"
     networks:
       test:
         aliases:
