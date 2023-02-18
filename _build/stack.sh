@@ -171,6 +171,7 @@ function ensure_wordpress_installed() {
 }
 
 function build() {
+  [ ! -d "$(pwd)/.cache/composer" ] && mkdir -p "$(pwd)/.cache/composer"
   docker compose pull --ignore-buildable || exit 1
   docker compose build wordpress || exit 1
   docker compose up -d --force-recreate --wait database || exit 1
