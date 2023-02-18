@@ -12,6 +12,11 @@ class EnvironmentCest
 
     public function test_that_environment_is_inherited_from_putenv(ClimoduleTester $I)
     {
+        if (PHP_VERSION_ID < 70000) {
+            Assert::markTestSkipped('This test should only run on PHP >= 7.0');
+            return;
+        }
+
         putenv('BAZ=BIZ');
 
         try {
@@ -97,6 +102,11 @@ class EnvironmentCest
 
     public function test_that_per_process_environment_variables_can_be_set(ClimoduleTester $I)
     {
+        if (PHP_VERSION_ID < 70000) {
+            Assert::markTestSkipped('This test should only run on PHP >= 7.0');
+            return;
+        }
+
         $I->cli(['eval', '"var_dump(\$_SERVER[\'BAZ\'] ?? \'Not set\');"'], ['BAZ' => 'BIZ']);
         $I->seeInShellOutput('BIZ');
 
@@ -114,6 +124,11 @@ class EnvironmentCest
 
     public function test_that_global_env_variables_can_be_set_in_the_module(ClimoduleTester $I)
     {
+        if (PHP_VERSION_ID < 70000) {
+            Assert::markTestSkipped('This test should only run on PHP >= 7.0');
+            return;
+        }
+
         $I->haveInShellEnvironment(['FOO' => 'BAR']);
 
         $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
@@ -143,6 +158,11 @@ class EnvironmentCest
 
     public function test_that_global_env_variables_can_be_passed_from_the_config_file(ClimoduleTester $I)
     {
+        if (PHP_VERSION_ID < 70000) {
+            Assert::markTestSkipped('This test should only run on PHP >= 7.0');
+            return;
+        }
+
         // This emulates having a FOO key under the env config.
         $I->setCliEnv('FOO', 'BAR');
         $I->setCliEnv('disable-auto-check-update', '1');
@@ -181,6 +201,11 @@ class EnvironmentCest
 
     public function test_that_inheriting_anything_from_the_global_environment_can_be_prevented(ClimoduleTester $I)
     {
+        if (PHP_VERSION_ID < 70000) {
+            Assert::markTestSkipped('This test should only run on PHP >= 7.0');
+            return;
+        }
+
         putenv('FOO=global_BAR');
 
         try {
