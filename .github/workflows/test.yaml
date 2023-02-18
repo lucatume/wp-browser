@@ -18,7 +18,7 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
-          path: /tmp/composer-cache
+          path: ./.cache/composer
           key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.codeception_version }}
       - name: Install dependencies
         uses: php-actions/composer@v6
