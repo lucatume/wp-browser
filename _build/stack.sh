@@ -124,7 +124,7 @@ function run_wp_cli_command() {
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
     "wp-browser-wordpress:php${PHP_VERSION}-apache" \
-    wp --allow-root "$@"
+    wp --allow-root --url=http://wordpress.test --path=/var/www/html "$@"
 }
 
 function ensure_wordpress_configured() {
