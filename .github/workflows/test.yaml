@@ -32,11 +32,13 @@ jobs:
     strategy:
       matrix:
         php_version: [ '5.6', '7.4', '8.0', '8.1' ]
-    name: PHP ${{ matrix.php_version }}, Codeception ${{ matrix.codeception_version }}
+    name: PHP ${{ matrix.php_version }}, Codeception 4
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Build
+        run: _build/stack.sh -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
