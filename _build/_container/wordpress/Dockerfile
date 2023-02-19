@@ -13,11 +13,12 @@ ARG USER_NAME=www-data
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp
 RUN chmod a+rx /usr/local/bin/wp
 
-# Install required extensions
+# Install required extensions, remove the ini file that would enable uopz for Apache: it will be loaded on the
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod a+x /usr/local/bin/install-php-extensions && \
     chmod -R a+rwx /usr/local/etc/php/conf.d && \
-    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip uopz pcntl sockets
+    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip uopz pcntl sockets \
+    && rm -f /usr/local/etc/php/conf.d/docker-php-ext-uopz.ini
 
 # Install required utils
 RUN apt-get update && apt-get install -y \
@@ -25,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set up PHP defaults
-COPY php.ini /usr/local/etc/php/conf.d/docker-php-defaults.ini
+COPY php.ini /usr/local/etc/php/conf.d/999-php-custom.ini
 # Make the PHP configuration world-accessible.
 
 # Copy over Composer
