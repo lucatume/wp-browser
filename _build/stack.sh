@@ -5,6 +5,7 @@ function print_help() {
   echo "  -p<PHP_VERSION>         The PHP version to use. Default: 5.6"
   echo "  -<CODECEPTION_VERSION> The Codeception version to use. Default: 4"
   echo "  -d                      Enable debug mode."
+  echo "  -r                      Access container as root."
   echo "  -h                      Display this help message."
   echo "COMMAND can be one of:"
   echo "  build            Build the images for the specified PHP version."
@@ -20,13 +21,16 @@ function print_help() {
 }
 
 # Parse the arguments using getopts
-while getopts "p:c:hd" opt; do
+while getopts "p:c:hdr" opt; do
   case $opt in
   p)
     PHP_VERSION=$OPTARG
     ;;
   c)
     CODECEPTION_VERSION=$OPTARG
+    ;;
+  r)
+    ROOT=1
     ;;
   d)
     set -x
@@ -219,12 +223,13 @@ function run_tests() {
   ensure_test_databases
   xdebug_off
   suites=$(find "$(pwd)/tests" -name '*.suite.dist.yml' -print0 | xargs -0 -n1 basename | cut -d. -f1)
+  # Run the testes enabling the uopz extension in CLI context only.
   for suite in $suites; do
     echo ""
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
     docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-      wordpress bash -c "vendor/bin/codecept run $suite --ext DotReporter" || exit 1
+      wordpress bash -c "php -dextension=uopz.so vendor/bin/codecept run $suite --ext DotReporter" || exit 1
   done
 }
 
@@ -264,7 +269,13 @@ ps)
   docker compose ps
   ;;
 ssh)
-  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress bash
+  # If ROOT is set, set the user to "0:0", else set the user to the current user.
+  if [ "${ROOT}" ]; then
+    docker_user="0:0"
+  else
+    docker_user="$(id -u):$(id -g)"
+  fi
+  docker compose exec -u "${docker_user}" -it -w "$(pwd)" wordpress bash
   ;;
 test)
   run_tests
