@@ -34,11 +34,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://wordpress.test" ]
-      interval: 1s
-      timeout: 1s
-      retries: 30
     environment:
       COMPOSER_CACHE_DIR: "${PWD}/.cache/composer"
     networks:
@@ -70,5 +65,4 @@ services:
     networks:
       - test
     depends_on:
-      wordpress:
-        condition: service_healthy
+      - wordpress
