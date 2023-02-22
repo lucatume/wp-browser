@@ -11,24 +11,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v2
       - name: Build WordPress image
         uses: docker/build-push-action@v4
         with:
           context: containers/wordpress
-          file: Dockerfile
+          file: containers/wordpress/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
           cache-from: type=gha,scope=${{ matrix.php_version }}
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args:
+            PHP_VERSION=${{ matrix.php_version }}
       - name: Build Codeception image
         uses: docker/build-push-action@v4
         with:
           context: containers/codeception
-          file: Dockerfile
+          file: containers/codeception/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
           cache-from: type=gha,scope=${{ matrix.php_version }}
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args:
+            PHP_VERSION=${{ matrix.php_version }}
       - name: Build stack
         run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
@@ -49,24 +54,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v2
       - name: Build WordPress image
         uses: docker/build-push-action@v4
         with:
           context: containers/wordpress
-          file: Dockerfile
+          file: containers/wordpress/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
           cache-from: type=gha,scope=${{ matrix.php_version }}
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args:
+            PHP_VERSION=${{ matrix.php_version }}
       - name: Build Codeception image
         uses: docker/build-push-action@v4
         with:
           context: containers/codeception
-          file: Dockerfile
+          file: containers/codeception/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
           cache-from: type=gha,scope=${{ matrix.php_version }}
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args:
+            PHP_VERSION=${{ matrix.php_version }}
       - name: Build
         run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
