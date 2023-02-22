@@ -1,7 +1,5 @@
 # wp-browser
 
-[![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
-
 wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
 whole sites using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
 
