@@ -1,5 +1,6 @@
 ARG PHP_VERSION=5.6
 ARG COMPOSER_VERSION=2.2
+ARG TARGET=wordpress
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
@@ -18,6 +19,9 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod a+x /usr/local/bin/install-php-extensions && \
     chmod -R a+rwx /usr/local/etc/php/conf.d && \
     install-php-extensions gd xdebug pdo pdo_mysql mysqli zip pcntl sockets
+
+# If the target is `codeception`, then install the uopz extension.
+RUN if [ "${TARGET}" = "codeception" ]; then install-php-extensions uopz; fi
 
 # Install required utils
 RUN apt-get update && apt-get install -y \

@@ -25,7 +25,7 @@ services:
       - net.ipv4.ip_unprivileged_port_start=0
     image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-apache
     build:
-      context: ./containers/wordpress
+      context: ./containers/php
       args:
         PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"
@@ -59,12 +59,13 @@ services:
     user: "${USER_UID}:${USER_GID}"
     image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-codeception
     build:
-      context: ./containers/codeception
+      context: ./containers/php
       args:
         PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-www-data}"
         USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
     depends_on:
       - database
       - wordpress
@@ -75,3 +76,5 @@ services:
       - test
     volumes:
       - "${PWD}:${PWD}"
+    command:
+      - tail -f /dev/null

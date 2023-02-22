@@ -183,7 +183,7 @@ function build() {
   ensure_wordpress_installed
   docker compose up -d --wait wordpress
   docker compose up -d --wait chrome
-  docker compose up -d --wait codecept
+  docker compose up -d codecept
   ensure_test_databases
   ensure_twentytwenty_theme
 }
