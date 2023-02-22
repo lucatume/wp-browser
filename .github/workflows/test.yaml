@@ -11,7 +11,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build
+      - name: Build WordPress image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/wordpress
+          file: Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+      - name: Build Codeception image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/codeception
+          file: Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+      - name: Build stack
         run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
@@ -31,6 +49,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Build WordPress image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/wordpress
+          file: Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+      - name: Build Codeception image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/codeception
+          file: Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
       - name: Build
         run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
