@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: _build/stack.sh -p${{ matrix.php_version }} build
+        run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
@@ -27,7 +27,7 @@ jobs:
           command: update
           args: --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
       - name: Test
-        run: _build/stack.sh -p${{ matrix.php_version }} test
+        run: bin/stack -p${{ matrix.php_version }} test
   test_codeception_4:
     strategy:
       matrix:
@@ -38,7 +38,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: _build/stack.sh -p${{ matrix.php_version }} build
+        run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
@@ -53,4 +53,4 @@ jobs:
           command: update
           args: --with codeception/codeception:^4.0 --with-all-dependencies
       - name: Test
-        run: _build/stack.sh -p${{ matrix.php_version }} test
+        run: bin/stack -p${{ matrix.php_version }} test
