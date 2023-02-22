@@ -1,6 +1,6 @@
 {
     "constants": {
-        "ABSPATH": "_wordpress/",
+        "ABSPATH": "var/wordpress/",
         "WP_DEFAULT_THEME": "not set",
         "WP_CONTENT_DIR": "not set",
         "WP_PLUGIN_DIR": "not set",
@@ -27,7 +27,7 @@
         "Theme :": {
             "template": "twentytwenty",
             "stylesheet": "twentytwenty",
-            "twentytwenty directory": "_wordpress/wp-content/themes/twentytwenty"
+            "twentytwenty directory": "var/wordpress/wp-content/themes/twentytwenty"
         },
         "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {

@@ -14,8 +14,8 @@ tests/*.suite.yml
 .env.testing.local
 tests/_output
 
-# Cache folder.
-.cache
+# Var folder for cached and compiled stuff.
+var
 
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json

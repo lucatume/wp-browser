@@ -25,7 +25,7 @@ services:
       - net.ipv4.ip_unprivileged_port_start=0
     image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-apache
     build:
-      context: ./_build/_container/wordpress
+      context: ./containers/wordpress
       args:
         PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"
@@ -34,8 +34,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    environment:
-      COMPOSER_CACHE_DIR: "${PWD}/.cache/composer"
     networks:
       test:
         aliases:
@@ -47,18 +45,8 @@ services:
           - blog0.wordpress.test
           - blog1.wordpress.test
           - blog2.wordpress.test
-    extra_hosts:
-      - "wordpress.test:127.0.0.1"
-      - "one.wordpress.test:127.0.0.1"
-      - "two.wordpress.test:127.0.0.1"
-      - "test1.wordpress.test:127.0.0.1"
-      - "test2.wordpress.test:127.0.0.1"
-      - "blog0.wordpress.test:127.0.0.1"
-      - "blog1.wordpress.test:127.0.0.1"
-      - "blog2.wordpress.test:127.0.0.1"
     volumes:
-      - ./_wordpress:/var/www/html
-      - "${PWD}:${PWD}"
+      - ./var/wordpress:/var/www/html
   chrome:
     container_name: wpbrowser_php_${PHP_VERSION:-5.6}_chrome
     image: selenium/standalone-chrome:3.141.59-20210105
@@ -66,3 +54,24 @@ services:
       - test
     depends_on:
       - wordpress
+  codecept:
+    container_name: wpbrowser_php_${PHP_VERSION:-5.6}_codeception
+    user: "${USER_UID}:${USER_GID}"
+    image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-codeception
+    build:
+      context: ./containers/codeception
+      args:
+        PHP_VERSION: "${PHP_VERSION:-5.6}"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-www-data}"
+        USER_NAME: "${USER_NAME:-www-data}"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"

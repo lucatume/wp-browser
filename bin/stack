@@ -12,12 +12,12 @@ function print_help() {
   echo "  clean            Remove the containers and images, remove the wordpress installation."
   echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
   echo "  config           Show the docker-compose configuration for the specified PHP version."
-  echo "  exec             Execute a command in the WordPress/php container for the specified PHP version."
+  echo "  exec             Execute a command in a service for the specified PHP version."
   echo "  logs             Show the logs of the containers for the specified PHP version."
   echo "  ps               Show the status of the containers for the specified PHP version."
-  echo "  ssh              SSH into the WordPress/php container for the specified PHP version."
-  echo "  xdebug-on        Activates XDebug in the WordPress/php container."
-  echo "  xdebug-off       Deactivates XDebug in the WordPress/php container."
+  echo "  ssh              SSH into a service for the specified PHP version."
+  echo "  xdebug-on        Activates XDebug in the WordPress and Codeception service."
+  echo "  xdebug-off       Deactivates XDebug in the WordPress and Codeception service."
 }
 
 # Parse the arguments using getopts
@@ -84,13 +84,13 @@ export USER_NAME=$(id -un)
 export PWD="$(pwd)"
 
 function ensure_twentytwenty_theme() {
-  if [ -d "$(pwd)/_wordpress/wp-content/themes/twentytwenty" ]; then
+  if [ -d "${PWD}/var/wordpress/wp-content/themes/twentytwenty" ]; then
     return
   fi
 
   # Download and install the twentytwenty theme.
-  curl -sSL https://downloads.wordpress.org/theme/twentytwenty.2.1.zip -o "$(pwd)/_wordpress/wp-content/themes/twentytwenty.zip" || exit 1
-  unzip -q "$(pwd)/_wordpress/wp-content/themes/twentytwenty.zip" -d "$(pwd)/_wordpress/wp-content/themes/" || exit 1
+  curl -sSL https://downloads.wordpress.org/theme/twentytwenty.2.1.zip -o "${PWD}/var/wordpress/wp-content/themes/twentytwenty.zip" || exit 1
+  unzip -q "${PWD}/var/wordpress/wp-content/themes/twentytwenty.zip" -d "${PWD}/var/wordpress/wp-content/themes/" || exit 1
 }
 
 function ensure_test_databases() {
@@ -101,21 +101,19 @@ function ensure_test_databases() {
 }
 
 function ensure_wordpress_scaffolded() {
-  if [ ! -d _wordpress ]; then
-    mkdir -p _wordpress || exit 1
+  if [ ! -d "${PWD}/var/wordpress" ]; then
+    mkdir -p "${PWD}/var/wordpress" || exit 1
   fi
 
-  if [ ! -f _build/wordpress-latest.tar.gz ]; then
-    # Download WordPress latest version.
-    if ! curl -s -o _build/wordpress-latest.tar.gz https://wordpress.org/latest.tar.gz; then
+  if [ ! -f "${PWD}/var/wordpress-latest.tar.gz" ]; then
+    if ! curl -s -o "${PWD}/var/wordpress-latest.tar.gz https://wordpress.org/latest.tar.gz"; then
       echo "Failed to download the latest WordPress version."
       exit 1
     fi
   fi
 
-  # If _wordpress/the wp-config-sample.php file is not found, unzip the latest WordPress version.
-  if [ ! -f _wordpress/wp-config-sample.php ]; then
-    if ! tar -xzf _build/wordpress-latest.tar.gz -C _wordpress --strip-components=1; then
+  if [ ! -f "${PWD}/var/wordpress/wp-config-sample.php" ]; then
+    if ! tar -xzf "${PWD}/var/wordpress-latest.tar.gz" -C "${PWD}/var/wordpress" --strip-components=1; then
       echo "Failed to unzip the latest WordPress version."
       exit 1
     fi
@@ -123,7 +121,7 @@ function ensure_wordpress_scaffolded() {
 }
 
 function run_wp_cli_command() {
-  docker run --rm -v "$(pwd)/_wordpress:/var/www/html" \
+  docker run --rm -v "${PWD}/var/wordpress:/var/www/html" \
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
@@ -132,13 +130,13 @@ function run_wp_cli_command() {
 }
 
 function ensure_wordpress_configured() {
-  if [ -f _wordpress/wp-config.php ]; then
+  if [ -f "${PWD}/var/wordpress/wp-config.php" ]; then
     return
   fi
 
-  # If the _wordpress/wp-config.php file is not found, configure WordPress using wp-cli.
+  # If the var/wordpress/wp-config.php file is not found, configure WordPress using wp-cli.
   # Configure WordPress using wp-cli.
-  if ! docker run --rm -v "$(pwd)/_wordpress:/var/www/html" \
+  if ! docker run --rm -v "${PWD}/var/wordpress:/var/www/html" \
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
@@ -175,15 +173,17 @@ function ensure_wordpress_installed() {
 }
 
 function build() {
-  [ ! -d "$(pwd)/.cache/composer" ] && mkdir -p "$(pwd)/.cache/composer"
+  [ ! -d "${PWD}/var/cache/composer" ] && mkdir -p "${PWD}/var/cache/composer"
   docker compose pull --ignore-buildable || exit 1
   docker compose build wordpress || exit 1
+  docker compose build codecept || exit 1
   docker compose up -d --force-recreate --wait database || exit 1
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
   ensure_wordpress_installed
   docker compose up -d --wait wordpress
   docker compose up -d --wait chrome
+  docker compose up -d --wait codecept
   ensure_test_databases
   ensure_twentytwenty_theme
 }
@@ -194,10 +194,11 @@ function clean() {
   for PHP_VERSION in "${SUPPORTED_PHP_VERSIONS[@]}"; do
     docker compose down -v
     docker compose rm -f
-    docker rmi "wp-browser-wordpress:php${PHP_VERSION-apache}"
+    docker rmi "wp-browser-wordpress:php${PHP_VERSION:-5.6}-apache"
+    docker rmi "wp-browser-wordpress:php${PHP_VERSION:-5.6}-codeception"
   done
 
-  rm -rf _wordpress
+  rm -rf var/wordpress
   export PHP_VERSION=${pre_clean_php_version}
 }
 
@@ -215,30 +216,31 @@ function composer_update() {
   fi
 
   docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-    wordpress bash -c "COMPOSER=$composer_file composer update --with codeception/codeception:^${CODECEPTION_VERSION}.0"
+    codecept bash -c "COMPOSER=$composer_file composer update --with codeception/codeception:^${CODECEPTION_VERSION}.0"
 
 }
 
 function run_tests() {
   ensure_test_databases
   xdebug_off
-  suites=$(find "$(pwd)/tests" -name '*.suite.dist.yml' -print0 | xargs -0 -n1 basename | cut -d. -f1)
-  # Run the testes enabling the uopz extension in CLI context only.
+  suites=$(find "${PWD}/tests" -name '*.suite.dist.yml' -print0 | xargs -0 -n1 basename | cut -d. -f1)
   for suite in $suites; do
     echo ""
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
     docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-      wordpress bash -c "php -dextension=uopz.so vendor/bin/codecept run $suite --ext DotReporter" || exit 1
+      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter" || exit 1
   done
 }
 
 function xdebug_off() {
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-off || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" wordpress bash xdebug-off || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" codecept bash xdebug-off || exit 1
 }
 
 function xdebug_on() {
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" wordpress bash xdebug-on || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" wordpress bash xdebug-on || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" codecept bash xdebug-on || exit 1
 }
 
 COMMAND=${1:-help}
@@ -257,7 +259,8 @@ config)
   config
   ;;
 exec)
-  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" wordpress "${@:2}"
+  service=${2:-codecept}
+  docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" "$service" "${@:2}"
   ;;
 help)
   print_help
@@ -269,13 +272,14 @@ ps)
   docker compose ps
   ;;
 ssh)
+  service=${2:-codecept}
   # If ROOT is set, set the user to "0:0", else set the user to the current user.
   if [ "${ROOT}" ]; then
     docker_user="0:0"
   else
     docker_user="$(id -u):$(id -g)"
   fi
-  docker compose exec -u "${docker_user}" -it -w "$(pwd)" wordpress bash
+  docker compose exec -u "${docker_user}" -it -w "$(pwd)" "$service" bash
   ;;
 test)
   run_tests

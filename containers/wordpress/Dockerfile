@@ -17,8 +17,7 @@ RUN chmod a+rx /usr/local/bin/wp
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod a+x /usr/local/bin/install-php-extensions && \
     chmod -R a+rwx /usr/local/etc/php/conf.d && \
-    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip uopz pcntl sockets \
-    && rm -f /usr/local/etc/php/conf.d/docker-php-ext-uopz.ini
+    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip pcntl sockets
 
 # Install required utils
 RUN apt-get update && apt-get install -y \

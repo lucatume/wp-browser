@@ -5,27 +5,27 @@
  *
  * Usage:
  *
- *  _build/release.php patch
- *  _build/release.php minor
- *  _build/release.php major
+ *  bin/release.php patch
+ *  bin/release.php minor
+ *  bin/release.php major
  *
  * Release w/o prompt confirmation:
  *
- *  _build/release.php -q patch
- *  _build/release.php --no-interactive minor
+ *  bin/release.php -q patch
+ *  bin/release.php --no-interactive minor
  *
  * Release w/o checking for dirty or unpushed changes:
  *
- *  _build/release.php --no-dirty-check minor
- *  _build/release.php --no-unpushed-check patch
+ *  bin/release.php --no-dirty-check minor
+ *  bin/release.php --no-unpushed-check patch
  *
  * Run a dry-run test:
  *
- *  _build/release.php --dry-run patch
+ *  bin/release.php --dry-run patch
  *
  * Update the changelog:
  *
- *  _build/release.php --changelog-update patch
+ *  bin/release.php --changelog-update patch
  */
 
 namespace tad\WPBrowser;
