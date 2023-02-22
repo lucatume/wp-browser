@@ -16,16 +16,17 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
-          path: ./.cache/composer
+          path: var/cache/composer
           key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.codeception_version }}
       - name: Install dependencies
-        uses: php-actions/composer@v6
-        with:
-          php_version: ${{ matrix.php_version }}
-          php_extensions: sockets pcntl gd zip
-          version: 2.2
-          command: update
-          args: --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
+        run: bin/stack -p${{ matrix.php_version }} -c{{ matrix.codeception_version }} composer_update
+#        uses: php-actions/composer@v6
+#        with:
+#          php_version: ${{ matrix.php_version }}
+#          php_extensions: sockets pcntl gd zip
+#          version: 2.2
+#          command: update
+#          args: --with codeception/codeception:^${{ matrix.codeception_version }}.0 --with-all-dependencies
       - name: Test
         run: bin/stack -p${{ matrix.php_version }} test
   test_codeception_4:
@@ -42,15 +43,16 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
-          path: ./.cache/composer
+          path: var/cache/composer
           key: ${{ runner.os }}-${{ hashFiles('**/composer.codecept-4.json') }}-${{ matrix.codeception_version }}
       - name: Install dependencies
-        uses: php-actions/composer@v6
-        with:
-          php_version: ${{ matrix.php_version }}
-          php_extensions: sockets pcntl gd zip
-          version: 2.2
-          command: update
-          args: --with codeception/codeception:^4.0 --with-all-dependencies
+        run: bin/stack -p{{ matrix.php_version }} -c4 composer_update
+#        uses: php-actions/composer@v6
+#        with:
+#          php_version: ${{ matrix.php_version }}
+#          php_extensions: sockets pcntl gd zip
+#          version: 2.2
+#          command: update
+#          args: --with codeception/codeception:^4.0 --with-all-dependencies
       - name: Test
         run: bin/stack -p${{ matrix.php_version }} test
