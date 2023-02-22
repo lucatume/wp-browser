@@ -106,7 +106,7 @@ function ensure_wordpress_scaffolded() {
   fi
 
   if [ ! -f "${PWD}/var/wordpress-latest.tar.gz" ]; then
-    if ! curl -s -o "${PWD}/var/wordpress-latest.tar.gz https://wordpress.org/latest.tar.gz"; then
+    if ! curl -s -o "${PWD}/var/wordpress-latest.tar.gz" https://wordpress.org/latest.tar.gz; then
       echo "Failed to download the latest WordPress version."
       exit 1
     fi
