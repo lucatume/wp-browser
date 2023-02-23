@@ -11,7 +11,8 @@ function print_help() {
   echo "  build            Build the images for the specified PHP version."
   echo "  clean            Remove the containers and images, remove the wordpress installation."
   echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
-  echo "  config           Show the docker-compose configuration for the specified PHP version."
+  echo "  config           Show the docker compose configuration for the specified PHP version."
+  echo "  dc               Execute a docker compose command fore the specified PHP version."
   echo "  exec             Execute a command in a service for the specified PHP version."
   echo "  logs             Show the logs of the containers for the specified PHP version."
   echo "  ps               Show the status of the containers for the specified PHP version."
@@ -258,6 +259,10 @@ composer_update)
 config)
   config
   ;;
+dc)
+  shift
+  docker compose "${@}"
+  ;;
 exec)
   service=${2:-codecept}
   docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" "$service" "${@:2}"
@@ -279,7 +284,7 @@ ssh)
   else
     docker_user="$(id -u):$(id -g)"
   fi
-  docker compose exec -u "${docker_user}" -it -w "$(pwd)" "$service" bash
+  docker compose exec -u "${docker_user}" -it "$service" bash
   ;;
 test)
   run_tests

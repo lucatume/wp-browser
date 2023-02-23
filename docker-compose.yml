@@ -47,6 +47,7 @@ services:
           - blog2.wordpress.test
     volumes:
       - ./var/wordpress:/var/www/html
+    working_dir: /var/www/html
   chrome:
     container_name: wpbrowser_php_${PHP_VERSION:-5.6}_chrome
     image: selenium/standalone-chrome:3.141.59-20210105
@@ -76,5 +77,5 @@ services:
       - test
     volumes:
       - "${PWD}:${PWD}"
-    command:
-      - tail -f /dev/null
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
