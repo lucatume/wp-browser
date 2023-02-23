@@ -1,3 +1,5 @@
+[![test](https://github.com/lucatume/wp-browser/actions/workflows/test.yaml/badge.svg)](https://github.com/lucatume/wp-browser/actions/workflows/test.yaml)
+
 # wp-browser
 
 wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
