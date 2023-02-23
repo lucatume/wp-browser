@@ -18,6 +18,8 @@ services:
       retries: 30
     networks:
       - test
+    tmpfs:
+      - /var/lib/mysql
   wordpress:
     container_name: wpbrowser_php_${PHP_VERSION:-5.6}_wordpress
     user: "${USER_UID}:${USER_GID}"
