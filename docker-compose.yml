@@ -31,6 +31,7 @@ services:
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-www-data}"
         USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "wordpress"
     depends_on:
       database:
         condition: service_healthy

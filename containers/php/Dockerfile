@@ -1,6 +1,5 @@
 ARG PHP_VERSION=5.6
 ARG COMPOSER_VERSION=2.2
-ARG TARGET=wordpress
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
@@ -9,6 +8,7 @@ FROM wordpress:php${PHP_VERSION}-apache
 ARG USER_UID=33
 ARG USER_GID=33
 ARG USER_NAME=www-data
+ARG TARGET=wordpress
 
 # Install wp-cli
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp
