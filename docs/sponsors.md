@@ -21,6 +21,8 @@ My sincere thanks to my sponsors: you make the above easier.
 * [@jerclarke](https://github.com/jerclarke)
 * [@johnbillion](https://github.com/johnbillion)
 * [@joppuyo](https://github.com/joppuyo)
+* [@kkarpieszuk](https://github.com/kkarpieszuk)
 * [@pods-framework](https://github.com/pods)
 * [@roborourke](https://github.com/roborourke)
+* [@wp-staging](https://github.com/wp-staging)
 * [@zackkatz](https://github.com/zackkatz)

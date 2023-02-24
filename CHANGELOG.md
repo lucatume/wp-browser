@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Clean up and update the build and stack.
+- Update `.gitattributes` to remove more files.
+- Updated sponsors.
+
 ## [3.1.7] 2023-02-14;
 
 ### Fixed
