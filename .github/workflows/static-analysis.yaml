@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         uses: php-actions/composer@v6
         with:
-          php_version: "5.6"
-          php_extensions: sockets pcntl gd
+          php_version: 7.4
           version: 2.2
+          args: --ignore-platform-reqs
       - run: make phpstan
