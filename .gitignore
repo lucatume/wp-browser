@@ -20,7 +20,6 @@ var
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json
 src/includes/patchwork.json
-composer.lock
 
 # Some local vim files
 tags

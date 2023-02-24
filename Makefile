@@ -52,7 +52,7 @@ phpstan:
 		--volume "$(PWD):$(PWD):ro" \
 		--workdir "$(PWD)" \
 		lucatume/wpstan:0.12.42 analyze \
-			-l $(PHPSTAN_LEVEL)
+			-l max
 phpstan:
 	docker run --rm --volume "$(PWD):$(PWD):ro" --workdir "$(PWD)" lucatume/wpstan:0.12.42 analyze -l max
 .PHONY: phpstan

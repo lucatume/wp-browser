@@ -10,6 +10,7 @@
 /.gitignore                 export-ignore
 /codeception.dist.yml       export-ignore
 /composer.codecept-4.json   export-ignore
+/composer.lock              export-ignore
 /docker-compose.yml         export-ignore
 /dynamicReturnTypeMeta.json export-ignore
 /Makefile                   export-ignore
