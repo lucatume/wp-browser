@@ -34,5 +34,3 @@ tags
 # WordPress test directory.
 _wordpress
 wp-cli.yml
-
-composer.codecept-4.lock
