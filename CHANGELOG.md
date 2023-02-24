@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.1.8] 2023-02-24;
+
 ### Changed
 
 - Clean up and update the build and stack.
@@ -1820,4 +1822,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.5]: https://github.com/lucatume/wp-browser/compare/3.1.4...3.1.5
 [3.1.6]: https://github.com/lucatume/wp-browser/compare/3.1.5...3.1.6
 [3.1.7]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.7...HEAD
+[3.1.8]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.8...HEAD
