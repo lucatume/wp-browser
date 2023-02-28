@@ -1,0 +1,48 @@
+name: Test
+on: [ push ]
+jobs:
+  test:
+    strategy:
+      matrix:
+        php_version: [ '8.0', '8.1', '8.2' ]
+    name: PHP ${{ matrix.php_version }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v2
+      - name: Build WordPress image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/php
+          file: containers/php/Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+            TARGET=wordpress
+      - name: Build Codeception image
+        uses: docker/build-push-action@v4
+        with:
+          context: containers/php
+          file: containers/php/Dockerfile
+          push: false
+          tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+            TARGET=codeception
+      - name: Build
+        run: bin/stack -p${{ matrix.php_version }} build
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: var/cache/composer
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}
+      - name: Install dependencies
+        run: bin/stack -p${{ matrix.php_version }} composer_update
+      - name: Test
+        run: bin/stack -p${{ matrix.php_version }} test

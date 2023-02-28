@@ -7,7 +7,7 @@ modules:
         - Asserts
     config:
         WPDb:
-            dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
+            dsn: '%WORDPRESS_DB_DSN%'
             user: %WORDPRESS_DB_USER%
             password: %WORDPRESS_DB_PASSWORD%
             dump: 'tests/_data/wploader-wpdb-dump.sql'

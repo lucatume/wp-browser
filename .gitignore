@@ -5,32 +5,21 @@
 # Composer files.
 vendor/
 
+# Cache
+var
+
 # Local test configuration files.
 codeception.yml
 tests/*.suite.yml
 tests/_output
-
-# Cache folder.
-.cache
 
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json
 lib/includes/patchwork.json
 composer.lock
 
-# Some local vim files
-tags
-*.swp
-
 # Release notes
 .rel
 
 # Backup files and folders
 *.bak
-
-# The test env configuration file, produced in the make `build` target.
-.env.testing
-
-# iidfiles for containers
-_build/_container/php/iidfile
-_build/_container/wordpress/iidfile

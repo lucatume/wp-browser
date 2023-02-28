@@ -12,7 +12,7 @@ use lucatume\WPBrowser\Utils\Env;
  */
 function testEnvFile(): string
 {
-    return '.env.testing';
+    return 'tests/.env';
 }
 
 /**

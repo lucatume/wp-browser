@@ -105,6 +105,6 @@ extensions:
         - Codeception\Command\GenerateWPCanonical
         - Codeception\Command\GenerateWPXMLRPC
 params:
-    - .env.testing
+    - tests/.env
 
 <<< /codeception.dist.yml <<<

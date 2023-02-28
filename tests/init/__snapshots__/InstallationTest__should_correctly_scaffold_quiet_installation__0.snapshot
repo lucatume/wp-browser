@@ -1,4 +1,4 @@
->>> /.env.testing >>>
+>>> /tests/.env >>>
 TEST_SITE_DB_DSN=mysql:host=localhost;dbname=test
 TEST_SITE_DB_HOST=localhost
 TEST_SITE_DB_NAME=test
@@ -18,7 +18,7 @@ TEST_SITE_WP_URL=http://wordpress.test
 TEST_SITE_WP_DOMAIN=wordpress.test
 TEST_SITE_ADMIN_EMAIL=admin@wordpress.test
 
-<<< /.env.testing <<<
+<<< /tests/.env <<<
 
 >>> /tests/Support/end2endTester.php >>>
 <?php
@@ -7637,6 +7637,6 @@ extensions:
         - Codeception\Command\GenerateWPCanonical
         - Codeception\Command\GenerateWPXMLRPC
 params:
-    - .env.testing
+    - tests/.env
 
 <<< /codeception.dist.yml <<<

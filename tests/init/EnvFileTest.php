@@ -36,8 +36,8 @@ class EnvFileTest extends BaseTest
         $init->setWorkDir($workDir);
         $init->writeEnvFile($installationData);
 
-        $this->assertFileExists($workDir . '/.env.testing');
-        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/.env.testing'));
+        $this->assertFileExists($workDir . '/tests/.env');
+        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/tests/.env'));
     }
 
     /**
@@ -63,8 +63,8 @@ class EnvFileTest extends BaseTest
         $init->setWorkDir($workDir);
         $init->writeEnvFile($installationData);
 
-        $this->assertFileExists($workDir . '/.env.testing');
-        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/.env.testing'));
+        $this->assertFileExists($workDir . '/tests/.env');
+        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/tests/.env'));
     }
 
     /**
@@ -90,8 +90,8 @@ class EnvFileTest extends BaseTest
         $init->setWorkDir($workDir);
         $init->writeEnvFile($installationData);
 
-        $this->assertFileExists($workDir . '/.env.testing');
-        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/.env.testing'));
+        $this->assertFileExists($workDir . '/tests/.env');
+        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/tests/.env'));
     }
 
     /**
@@ -117,7 +117,7 @@ class EnvFileTest extends BaseTest
         $init->setWorkDir($workDir);
         $init->writeEnvFile($installationData);
 
-        $this->assertFileExists($workDir . '/.env.testing');
-        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/.env.testing'));
+        $this->assertFileExists($workDir . '/tests/.env');
+        $this->assertMatchesStringSnapshot(file_get_contents($workDir . '/tests/.env'));
     }
 }
