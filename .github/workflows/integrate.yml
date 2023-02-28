@@ -6,7 +6,6 @@ on:  # yamllint disable-line rule:truthy
     push:
         branches:
         - "master"
-        - "version-4/minimum-compat-pass"
     pull_request: null
 # Add [skip ci] to commit message to skip CI.
 
