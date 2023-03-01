@@ -22,3 +22,11 @@ clean:
 package: test
 	bin/gitattributes-update
 .PHONY: package
+
+update_core_phpunit_includes:
+	rm -rf includes/core-phpunit/includes
+	mkdir -p includes/core-phpunit
+	cd includes/core-phpunit && \
+		svn export https://github.com/WordPress/wordpress-develop/branches/trunk/tests/phpunit/includes
+	git apply config/patches/core-phpunit/abstract-testcase.php.patch
+.PHONY: update_core_phpunit_includes
