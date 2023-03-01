@@ -179,6 +179,7 @@ class Wpbrowser extends Bootstrap
     private function getAddtionalCommands(): array
     {
         return [
+            'Codeception\\Command\\RunAll',
             'Codeception\\Command\\GenerateWPUnit',
             'Codeception\\Command\\GenerateWPRestApi',
             'Codeception\\Command\\GenerateWPRestController',

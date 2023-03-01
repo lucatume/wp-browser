@@ -29,6 +29,7 @@ extensions:
                'tests/_data/plugins/isolated-test-plugin': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin'
                'tests/_data/plugins/isolated-test-plugin-two': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin-two'
     commands:
+        - "lucatume\\WPBrowser\\Command\\RunAll"
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
         - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
         - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
