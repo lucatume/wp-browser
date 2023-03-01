@@ -8,6 +8,7 @@ build:
 .PHONY: build
 
 test:
+	#todo Run static analysis here
 	for php_version in $(PHP_VERSIONS); do \
 		bin/stack -p$$php_version composer_update &&\
 		bin/stack -p$$php_version test || exit 1; \
@@ -17,3 +18,7 @@ test:
 clean:
 	bin/stack deep_clean
 .PHONY: clean
+
+package: test
+	bin/gitattributes-update
+.PHONY: package

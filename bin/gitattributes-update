@@ -1,0 +1,35 @@
+#! /usr/bin/env php
+<?php
+
+$root = dirname(__DIR__);
+$keep = json_decode(file_get_contents($root . '/config/release.json'),
+    true,
+    512,
+    JSON_THROW_ON_ERROR)['keep_files'];
+$flags = FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS | FilesystemIterator::CURRENT_AS_PATHNAME;
+$files = iterator_to_array(new CallbackFilterIterator(
+    new FilesystemIterator($root, $flags),
+    fn(string $pathname) => !in_array(basename($pathname), $keep, true)
+),
+    false);
+sort($files);
+$longest = max(array_map(fn(string $path) => strlen(basename($path)), $files));
+
+$gitattributes = $root . '/.gitattributes';
+if (is_file($gitattributes)) {
+    unlink($gitattributes);
+}
+
+$handle = fopen($gitattributes, 'wb');
+
+if (!is_resource($handle)) {
+    throw new RuntimeException('Could not create .gitattributes file');
+}
+
+foreach ($files as $file) {
+    if (!fwrite($handle, str_pad('/' . basename($file), $longest) . "\texport-ignore\n")) {
+        throw new RuntimeException('Could not write to .gitattributes file');
+    }
+}
+
+fclose($handle);
