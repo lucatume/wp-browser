@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 networks:
   test:
     name: wpbrowser_php_${PHP_VERSION:-8.0}
@@ -51,13 +51,24 @@ services:
     volumes:
       - ./var/wordpress:/var/www/html
     working_dir: /var/www/html
+    healthcheck:
+      test: [ "CMD", "service", "apache2", "status" ]
+      interval: 1s
+      timeout: 10s
+      retries: 5
   chrome:
     container_name: wpbrowser_php_${PHP_VERSION:-8.0}_chrome
     image: selenium/standalone-chrome:3.141.59-20210105
     networks:
       - test
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
+      interval: 1s
+      timeout: 10s
+      retries: 5
   codecept:
     container_name: wpbrowser_php_${PHP_VERSION:-8.0}_codeception
     user: "${USER_UID}:${USER_GID}"
@@ -71,9 +82,12 @@ services:
         USER_NAME: "${USER_NAME:-www-data}"
         TARGET: "codeception"
     depends_on:
-      - database
-      - wordpress
-      - chrome
+      database:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
+      chrome:
+        condition: service_healthy
     environment:
       COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
     networks:
