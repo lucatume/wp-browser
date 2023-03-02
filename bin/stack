@@ -17,12 +17,14 @@ function print_help() {
   echo "  config           Show the docker compose configuration for the specified PHP version."
   echo "  dc               Execute a docker compose command fore the specified PHP version."
   echo "  deep_clean       Like clean, additionally remove the /var directory."
+  echo "  down             Tears down the containers for the specified PHP version."
   echo "  exec             Execute a command in a service for the specified PHP version."
   echo "  logs             Show the logs of the containers for the specified PHP version."
   echo "  ps               Show the status of the containers for the specified PHP version."
   echo "  ssh              SSH into a service for the specified PHP version."
-  echo "  xdebug-on        Activates XDebug in the WordPress and Codeception service."
+  echo "  up               Starts the containers for the specified PHP version."
   echo "  xdebug-off       Deactivates XDebug in the WordPress and Codeception service."
+  echo "  xdebug-on        Activates XDebug in the WordPress and Codeception service."
 }
 
 # Parse the arguments using getopts
@@ -199,7 +201,7 @@ function build() {
   ensure_wordpress_installed
   docker compose up -d --wait wordpress
   docker compose up -d --wait chrome
-  docker compose up -d codecept
+  docker compose up -d --wait codecept
   ensure_test_databases
   ensure_twentytwenty_theme
 }
@@ -273,6 +275,10 @@ deep_clean)
   clean
   rm -rf var && mkdir -p var
   ;;
+down)
+  shift
+  docker compose down "${@}"
+  ;;
 exec)
   service=${2:-codecept}
   docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" "$service" "${@:2}"
@@ -298,6 +304,10 @@ ssh)
   ;;
 test)
   run_tests
+  ;;
+up)
+  shift
+  docker compose up "${@}"
   ;;
 xdebug-off)
   xdebug_off
