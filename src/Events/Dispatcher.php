@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Events;
 
+use Symfony\Component\Console\Command\Command;
 use Codeception\Codecept;
 use lucatume\WPBrowser\Utils\Property;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -30,9 +31,21 @@ class Dispatcher
 
         foreach ($reverseBacktraceHead as $backtraceEntry) {
             $object = $backtraceEntry['object'] ?? null;
-            if ($object instanceof Codecept) {
-                self::$codeceptInstance = $object;
-                return $object;
+
+            if (!$object instanceof Command) {
+                continue;
+            }
+
+            try {
+                $codeceptInstance = Property::readPrivate($object, 'codecept');
+
+                if (!$codeceptInstance instanceof Codecept) {
+                    continue;
+                }
+
+                self::$codeceptInstance = $codeceptInstance;
+                return self::$codeceptInstance;
+            } catch (\ReflectionException $e) {
             }
         }
 
@@ -41,19 +54,22 @@ class Dispatcher
 
     private static function getCodeceptionEventDispatcher(): ?EventDispatcherInterface
     {
-        if (self::$codeceptionEventDispatcherInstance === null) {
-            $codeceptInstance = self::getCodecept();
-
-            if ($codeceptInstance === null) {
-                return null;
-            }
-
-            try {
-                self::$codeceptionEventDispatcherInstance = Property::readPrivate($codeceptInstance, 'dispatcher');
-            } catch (\ReflectionException $e) {
-                return null;
-            }
+        if (self::$codeceptionEventDispatcherInstance !== null) {
+            return self::$codeceptionEventDispatcherInstance;
         }
+
+        $codeceptInstance = self::getCodecept();
+
+        if ($codeceptInstance === null) {
+            return null;
+        }
+
+        try {
+            self::$codeceptionEventDispatcherInstance = Property::readPrivate($codeceptInstance, 'dispatcher');
+        } catch (\ReflectionException $e) {
+            return null;
+        }
+
         return self::$codeceptionEventDispatcherInstance;
     }
 
@@ -86,11 +102,19 @@ class Dispatcher
      *                                       event.
      *
      * @return object The dispatched event.
+     *
+     * @throws EventDispatcherException If the Codeception application event dispatcher cannot be found or built.
      */
     public static function dispatch(string $name, mixed $origin = null, array $context = []): object
     {
         $event = new Event($name, $context, $origin);
 
-        return self::getCodeceptionEventDispatcher()?->dispatch($event, $name);
+        $eventDispatcher = self::getCodeceptionEventDispatcher();
+
+        if (!$eventDispatcher instanceof EventDispatcherInterface) {
+            throw new EventDispatcherException('Could not find the Codeception event dispatcher.');
+        }
+
+        return $eventDispatcher?->dispatch($event, $name);
     }
 }
