@@ -4,12 +4,13 @@ namespace lucatume\WPBrowser\Tests\Traits;
 
 trait UopzFunctions
 {
-    private array $uopzSetFunctionReturns = [];
-    private array $uopzSetStaticMethodReturns = [];
-    private array $uopzRedefinedConstants = [];
-    private array $uopzRedefinedClassConstants = [];
+    protected static array $uopzSetFunctionReturns = [];
+    protected static array $uopzSetStaticMethodReturns = [];
+    protected static array $uopzRedefinedConstants = [];
+    protected static array $uopzRedefinedClassConstants = [];
+    protected static array $uopzSetMocks = [];
 
-    function replacingWithUopz(array $what, callable $do): void
+    protected function replacingWithUopz(array $what, callable $do): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -46,17 +47,17 @@ trait UopzFunctions
         }
     }
 
-    private function uopzSetFunctionReturn(string $function, $return, bool $execute = false): void
+    protected function uopzSetFunctionReturn(string $function, $return, bool $execute = false): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
         }
 
         uopz_set_return($function, $return, $execute);
-        $this->uopzSetFunctionReturns[] = $function;
+        self::$uopzSetFunctionReturns[] = $function;
     }
 
-    private function uopzSetStaticMethodReturn(
+    protected function uopzSetStaticMethodReturn(
         string $class,
         string $method,
         mixed $return,
@@ -67,10 +68,10 @@ trait UopzFunctions
         }
 
         uopz_set_return($class, $method, $return, $execute);
-        $this->uopzSetStaticMethodReturns[] = $class . '::' . $method;
+        self::$uopzSetStaticMethodReturns[] = $class . '::' . $method;
     }
 
-    private function uopzRedefineConstant(string $constant, string|int|bool|null $value): void
+    protected function uopzRedefineConstant(string $constant, string|int|bool|null $value): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -79,10 +80,10 @@ trait UopzFunctions
         uopz_redefine($constant, $value);
         $wasDefined = defined($constant);
         $previousValue = $wasDefined ? constant($constant) : null;
-        $this->uopzRedefinedConstants[$constant] = [$wasDefined, $previousValue];
+        self::$uopzRedefinedConstants[$constant] = [$wasDefined, $previousValue];
     }
 
-    private function uopzRedefinedClassConstant(string $class, string $constant, string|int|bool|null $value): void
+    protected function uopzRedefinedClassConstant(string $class, string $constant, string|int|bool|null $value): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -91,7 +92,7 @@ trait UopzFunctions
         uopz_redefine($class, $constant, $value);
         $wasDefined = defined($class . '::' . $constant);
         $previousValue = $wasDefined ? constant($class . '::' . $constant) : null;
-        $this->uopzRedefinedClassConstants[$class . '::' . $constant] = [$wasDefined, $previousValue];;
+        self::$uopzRedefinedClassConstants[$class . '::' . $constant] = [$wasDefined, $previousValue];;
     }
 
     /**
@@ -99,32 +100,41 @@ trait UopzFunctions
      */
     public function uopzTearDown(): void
     {
-        foreach ($this->uopzSetFunctionReturns as $function) {
+        foreach (self::$uopzSetFunctionReturns as $function) {
             uopz_unset_return($function);
         }
+        self::$uopzSetFunctionReturns = [];
 
-        foreach ($this->uopzSetStaticMethodReturns as $classAndMethod) {
+        foreach (self::$uopzSetStaticMethodReturns as $classAndMethod) {
             [$class, $function] = explode('::', $classAndMethod, 2);
             uopz_unset_return($class, $function);
         }
+        self::$uopzSetStaticMethodReturns = [];
 
-        foreach ($this->uopzRedefinedConstants as $constant => [$wasDefined, $previousValue]) {
+        foreach (self::$uopzRedefinedConstants as $constant => [$wasDefined, $previousValue]) {
             uopz_undefine($constant);
             if ($wasDefined) {
                 uopz_redefine($constant, $previousValue);
             }
         }
+        self::$uopzRedefinedConstants = [];
 
-        foreach ($this->uopzRedefinedClassConstants as $classAndConstant => [$wasDefined, $previousValue]) {
+        foreach (self::$uopzRedefinedClassConstants as $classAndConstant => [$wasDefined, $previousValue]) {
             [$class, $constant] = explode($classAndConstant, '::', 2);
             uopz_undefine($class, $constant);
             if ($wasDefined) {
                 uopz_redefine($class, $constant, $previousValue);
             }
         }
+        self::$uopzRedefinedClassConstants = [];
+
+        foreach (self::$uopzSetMocks as $class) {
+            uopz_unset_mock($class);
+        }
+        self::$uopzSetMocks = [];
     }
 
-    private function uopzUndefineConstant(string $constant): void
+    protected function uopzUndefineConstant(string $constant): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -132,12 +142,22 @@ trait UopzFunctions
 
         if (!defined($constant)) {
             // The constant was not defined, let's make sure to reset during tear down.
-            $this->uopzRedefinedConstants[$constant] = [false, null];
+            self::$uopzRedefinedConstants[$constant] = [false, null];
             return;
         }
 
-        $this->uopzRedefinedConstants[$constant] = [true, constant($constant)];
+        self::$uopzRedefinedConstants[$constant] = [true, constant($constant)];
 
         uopz_undefine($constant);
+    }
+
+    protected function uopzSetMock(string $class, mixed $mock): void
+    {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('This test requires the uopz extension');
+        }
+
+        self::$uopzSetMocks[] = $class;
+        uopz_set_mock($class, $mock);
     }
 }
