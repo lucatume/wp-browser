@@ -48,7 +48,7 @@
     "ext-pcntl": "*",
     "ext-mysqli": "*",
     "erusev/parsedown": "^1.7",
-    "lucatume/codeception-snapshot-assertions": "^0.2",
+    "lucatume/codeception-snapshot-assertions": "v1.0.0.x-dev",
     "victorjonsson/markdowndocs": "dev-master",
     "gumlet/php-image-resize": "^1.6",
     "vlucas/phpdotenv": "^5.0",
