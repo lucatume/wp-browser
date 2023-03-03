@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\Command;
 use Codeception\Command\Run as CodeceptionRunCommand;
 use Codeception\Command\Shared\ConfigTrait;
 use Codeception\CustomCommandInterface;
+use lucatume\WPBrowser\Utils\System;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +28,7 @@ class RunAll extends Command implements CustomCommandInterface
     protected function configure()
     {
         $codeceptionRunCommandDefinition = (new CodeceptionRunCommand)->getDefinition();
-        $this->setName($this->getName())
+        $this->setName(self::getCommandName())
             ->setDescription($this->getDescription())
             ->setDefinition($codeceptionRunCommandDefinition);
     }
@@ -35,18 +36,14 @@ class RunAll extends Command implements CustomCommandInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         global $_composer_bin_dir;
-        if (stripos(PHP_OS_FAMILY, 'win') === 0) {
-            $codeceptBin = str_replace('\\', '/', $_composer_bin_dir . '/codecept.bat');
-        } else {
-            $codeceptBin = str_replace('\\', '/', $_composer_bin_dir . '/codecept');
-        }
-
+        $codeceptBin = DIRECTORY_SEPARATOR === '\\' ? 'codecept.bat' : 'codecept';
+        $codeceptBinPathname = $_composer_bin_dir . DIRECTORY_SEPARATOR . $codeceptBin;
         $commandString = $input->__toString();
         $runOptions = array_slice(explode(' ', $commandString), 1);
 
         foreach ($this->getSuites() as $suite) {
             try {
-                $process = new Process([$codeceptBin, 'run', $suite, ...$runOptions]);
+                $process = new Process([$codeceptBinPathname, 'run', $suite, ...$runOptions]);
                 $process->setTimeout(null);
                 $process->start();
 
