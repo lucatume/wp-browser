@@ -2,7 +2,7 @@
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
-use lucatume\WPBrowser\Tests\StubFactory;
+use lucatume\WPBrowser\Tests\StubClassFactory;
 
 trait ClassStubs
 {
@@ -11,11 +11,11 @@ trait ClassStubs
      */
     public function tearDownClassStubs(): void
     {
-        StubFactory::tearDown();
+        StubClassFactory::tearDown();
     }
 
     protected function makeEmptyClass(string $class, array $parameters): string
     {
-        return StubFactory::makeEmptyClass($class, $parameters);
+        return StubClassFactory::makeEmptyClass($class, $parameters);
     }
 }

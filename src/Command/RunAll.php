@@ -5,7 +5,6 @@ namespace lucatume\WPBrowser\Command;
 use Codeception\Command\Run as CodeceptionRunCommand;
 use Codeception\Command\Shared\ConfigTrait;
 use Codeception\CustomCommandInterface;
-use lucatume\WPBrowser\Utils\System;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,7 +47,7 @@ class RunAll extends Command implements CustomCommandInterface
                 $process->start();
 
                 foreach ($process as $data) {
-                    echo $data;
+                    $output->write($data);
                 }
 
                 if (!$process->isSuccessful()) {

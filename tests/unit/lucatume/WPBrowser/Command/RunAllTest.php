@@ -34,17 +34,28 @@ class RunAllTest extends Unit
      */
     public function should_invoke_codecept_bin_once_for_each_suite(): void
     {
-        $mockProcessClass = $this->makeEmptyClass(Process::class, [
-            '__construct' => fn(array $command) => Assert::assertIsArray($command),
-            'getIterator' => fn() => yield 'Running ...',
+        $calls = 0;
+        $mockParams = [
+            '__construct' => function (array $command) use (&$calls) {
+                global $_composer_bin_dir;
+                $expectedCommand = [
+                    "$_composer_bin_dir/codecept",
+                    'run',
+                    'suite-' . ++$calls
+                ];
+                Assert::assertEquals($expectedCommand, $command);
+            },
+            'getIterator' => fn() => yield from ["Running suite\n", "Done\n"],
             'isSuccessful' => fn() => true,
-        ]);
+        ];
+        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
         $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
-        $this->uopzSetMock(Process::class, $mockProcessClass);
 
         $command = new RunAll();
-        $return = $command->run(new ArrayInput([], $command->getDefinition()), new BufferedOutput());
+        $output = new BufferedOutput();
+        $return = $command->run(new ArrayInput([], $command->getDefinition()), $output);
 
         $this->assertEquals(0, $return);
+        $this->assertEquals("Running suite\nDone\nRunning suite\nDone\nRunning suite\nDone\n", $output->fetch());
     }
 }

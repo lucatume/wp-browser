@@ -2,6 +2,11 @@
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
+use Exception;
+use Generator;
+use PHPStan\Rules\Generics\EnumAncestorsRule;
+use RuntimeException;
+
 trait UopzFunctions
 {
     protected static array $uopzSetFunctionReturns = [];
@@ -29,12 +34,12 @@ trait UopzFunctions
                 continue;
             }
 
-            throw new \RuntimeException("{$key} is neither a function nor a static method.");
+            throw new RuntimeException("{$key} is neither a function nor a static method.");
         }
 
         try {
             $do();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             foreach ($replaced as $key => $type) {
                 if ($type === 'func') {
                     uopz_unset_return($key);
@@ -92,7 +97,7 @@ trait UopzFunctions
         uopz_redefine($class, $constant, $value);
         $wasDefined = defined($class . '::' . $constant);
         $previousValue = $wasDefined ? constant($class . '::' . $constant) : null;
-        self::$uopzRedefinedClassConstants[$class . '::' . $constant] = [$wasDefined, $previousValue];;
+        self::$uopzRedefinedClassConstants[$class . '::' . $constant] = [$wasDefined, $previousValue];
     }
 
     /**
@@ -151,13 +156,16 @@ trait UopzFunctions
         uopz_undefine($constant);
     }
 
-    protected function uopzSetMock(string $class, mixed $mock): void
+    protected function uopzSetMock(string $class, string|object $mock): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
         }
 
         self::$uopzSetMocks[] = $class;
+        if($mock instanceof Generator){
+           $mock = $mock->current();
+        }
         uopz_set_mock($class, $mock);
     }
 }

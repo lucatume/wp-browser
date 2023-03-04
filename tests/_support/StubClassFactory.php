@@ -7,9 +7,8 @@ use Exception;
 use lucatume\WPBrowser\Utils\Property;
 use ReflectionException;
 use ReflectionMethod;
-use WeakMap;
 
-class StubFactory
+class StubClassFactory
 {
     private static string $classTemplate = 'class %1$s extends %2$s
 {
