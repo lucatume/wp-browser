@@ -34,15 +34,14 @@ class RunAll extends Command implements CustomCommandInterface
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        global $_composer_bin_dir;
-        $codeceptBin = DIRECTORY_SEPARATOR === '\\' ? 'codecept.bat' : 'codecept';
-        $codeceptBinPathname = $_composer_bin_dir . DIRECTORY_SEPARATOR . $codeceptBin;
+        global $argv;
+        $codeceptBin = $argv[0];
         $commandString = $input->__toString();
         $runOptions = array_slice(explode(' ', $commandString), 1);
 
         foreach ($this->getSuites() as $suite) {
             try {
-                $process = new Process([$codeceptBinPathname, 'run', $suite, ...$runOptions]);
+                $process = new Process([$codeceptBin, 'run', $suite, ...$runOptions]);
                 $process->setTimeout(null);
                 $process->start();
 

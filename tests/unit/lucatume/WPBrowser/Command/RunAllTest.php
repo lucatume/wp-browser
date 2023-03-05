@@ -37,9 +37,9 @@ class RunAllTest extends Unit
         $calls = 0;
         $mockParams = [
             '__construct' => function (array $command) use (&$calls) {
-                global $_composer_bin_dir;
+                global $argv;
                 $expectedCommand = [
-                    "$_composer_bin_dir/codecept",
+                    $argv[0],
                     'run',
                     'suite-' . ++$calls
                 ];
@@ -57,5 +57,61 @@ class RunAllTest extends Unit
 
         $this->assertEquals(0, $return);
         $this->assertEquals("Running suite\nDone\nRunning suite\nDone\nRunning suite\nDone\n", $output->fetch());
+    }
+
+    public function failingSuiteProvider(): array
+    {
+        return [
+            'suite-1 fails' => [1, "..."],
+            'suite-2 fails' => [2, "......"],
+            'suite-3 fails' => [3, "........."]
+        ];
+    }
+
+    /**
+     * It should return 1 if any suite fails
+     *
+     * @test
+     * @dataProvider failingSuiteProvider
+     */
+    public function should_return_1_if_any_suite_fails(int $failingSuite, string $expectedOutput): void
+    {
+        $currentSuite = 1;
+        $mockParams = [
+            'getIterator' => fn() => yield from ['.', '.', '.'],
+            // Fail on the 2nd call.
+            'isSuccessful' => function () use ($failingSuite, &$currentSuite) {
+                return $currentSuite++ !== $failingSuite;
+            },
+        ];
+        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
+        $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
+
+        $command = new RunAll();
+        $output = new BufferedOutput();
+        $return = $command->run(new ArrayInput([], $command->getDefinition()), $output);
+
+        $this->assertEquals(1, $return);
+        $this->assertEquals($expectedOutput, $output->fetch());
+    }
+
+    /**
+     * It should return 1 if failing to build process
+     *
+     * @test
+     */
+    public function should_return_1_if_failing_to_build_process(): void
+    {
+        $this->uopzSetMock(Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => fn() => throw new \Exception('Failed to build process.')
+            ]));
+        $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
+
+        $command = new RunAll();
+        $output = new BufferedOutput();
+        $return = $command->run(new ArrayInput([], $command->getDefinition()), $output);
+
+        $this->assertEquals(1, $return);
     }
 }
