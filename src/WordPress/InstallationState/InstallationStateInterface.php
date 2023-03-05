@@ -65,4 +65,6 @@ interface InstallationStateInterface
     public function getConstant(string $constant): mixed;
 
     public function getDb(): Db;
+
+    public function getConstants():array;
 }

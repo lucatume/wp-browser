@@ -389,7 +389,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Configured($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
         $this->assertFalse($single->isMultisite());
         $this->assertEquals($wpRootDir . '/', $single->getWpRootDir());
@@ -436,11 +436,58 @@ class SingleTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $single = new Configured($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
         $this->assertEquals($dbName, $single->getDb()->getDbName());
         $this->assertEquals($dbHost, $single->getDb()->getDbHost());
         $this->assertEquals($dbUser, $single->getDb()->getDbUser());
         $this->assertEquals($dbPassword, $single->getDb()->getDbPassword());
+    }
+
+    /**
+     * It should allow getting the site constants
+     *
+     * @test
+     */
+    public function should_allow_getting_the_site_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db)->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $constants = $single->getConstants();
+
+        $expected = [
+            'DB_NAME' => $dbName,
+            'DB_USER' => $dbUser,
+            'DB_PASSWORD' => $dbPassword,
+            'DB_HOST' => $dbHost,
+            'DB_CHARSET' => 'utf8',
+            'DB_COLLATE' => '',
+            'AUTH_KEY' => $single->getAuthKey(),
+            'SECURE_AUTH_KEY' => $single->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $single->getLoggedInKey(),
+            'NONCE_KEY' => $single->getNonceKey(),
+            'AUTH_SALT' => $single->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $single->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $single->getLoggedInSalt(),
+            'NONCE_SALT' => $single->getNonceSalt(),
+            'WP_DEBUG' => false,
+            'ABSPATH' => $wpRootDir
+        ];
+        $this->assertCount(count($expected), $constants);
+        foreach ($expected as $key => $expectedValue) {
+            $this->assertArrayHasKey($key, $constants);
+        }
     }
 }

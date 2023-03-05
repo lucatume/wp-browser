@@ -139,4 +139,9 @@ trait ConfiguredStateTrait
     {
         return $this->wpConfigFile->getConstant($constant);
     }
+
+    public function getConstants(): array
+    {
+        return $this->wpConfigFile->getConstants();
+    }
 }

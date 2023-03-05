@@ -486,4 +486,46 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $this->assertEquals($dbUser, $configured->getDb()->getDbUser());
         $this->assertEquals($dbPassword, $configured->getDb()->getDbPassword());
     }
+
+    /**
+     * It should allow getting the site constants
+     *
+     * @test
+     */
+    public function should_allow_getting_the_site_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $constants = $configured->getConstants();
+
+        $expected = [
+            'DB_NAME' => $dbName,
+            'DB_USER' => $dbUser,
+            'DB_PASSWORD' => $dbPassword,
+            'DB_HOST' => $dbHost,
+            'DB_CHARSET' => 'utf8',
+            'DB_COLLATE' => '',
+            'AUTH_KEY' => $configured->getAuthKey(),
+            'SECURE_AUTH_KEY' => $configured->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $configured->getLoggedInKey(),
+            'NONCE_KEY' => $configured->getNonceKey(),
+            'AUTH_SALT' => $configured->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $configured->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $configured->getLoggedInSalt(),
+            'NONCE_SALT' => $configured->getNonceSalt(),
+            'WP_DEBUG' => false,
+            'ABSPATH' => $wpRootDir
+        ];
+        $this->assertCount(count($expected), $constants);
+        foreach ($expected as $key => $expectedValue) {
+            $this->assertArrayHasKey($key, $constants);
+        }
+    }
 }

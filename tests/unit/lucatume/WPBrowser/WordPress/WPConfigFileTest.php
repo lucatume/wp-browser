@@ -163,5 +163,11 @@ PHP;
         $this->assertEquals(['foo' => 23, 'bar'=> '89'], $wpConfigFile->getConstant('VAR4'));
         $this->assertFalse($wpConfigFile->isDefinedConst('VAR5'));
         $this->assertNull($wpConfigFile->getConstant('VAR5'));
+        $this->assertEquals([
+            'VAR1' => 23,
+            'VAR2' => 'foo',
+            'VAR3' => 2389,
+            'VAR4' => ['foo' => 23, 'bar' => '89'],
+        ], $wpConfigFile->getConstants());
     }
 }

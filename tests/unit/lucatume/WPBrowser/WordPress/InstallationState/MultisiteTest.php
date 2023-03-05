@@ -201,7 +201,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->assertTrue(strlen($multisite->getSecureAuthSalt()) === 64 && $multisite->getSecureAuthSalt() !== $multisite->getLoggedInSalt());
         $this->assertTrue(strlen($multisite->getLoggedInSalt()) === 64 && $multisite->getLoggedInSalt() !== $multisite->getNonceSalt());
         $this->assertSame(64, strlen($multisite->getNonceSalt()));
-        $this->assertEquals('test_',$multisite->getTablePrefix());
+        $this->assertEquals('test_', $multisite->getTablePrefix());
         $this->assertTrue($multisite->isConfigured());
         $this->assertEquals([
             'authKey' => $multisite->getAuthKey(),
@@ -228,14 +228,12 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $installation = Installation::scaffold($wpRootDir, '6.1.1');
-        $installation ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER)
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
@@ -243,5 +241,59 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->assertEquals($dbHost, $multisite->getDb()->getDbHost());
         $this->assertEquals($dbUser, $multisite->getDb()->getDbUser());
         $this->assertEquals($dbPassword, $multisite->getDb()->getDbPassword());
+    }
+
+    /**
+     * It should allow getting the site constants
+     *
+     * @test
+     */
+    public function should_allow_getting_the_site_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $constants = $multisite->getConstants();
+
+        $expected = [
+            'DB_NAME' => $dbName,
+            'DB_USER' => $dbUser,
+            'DB_PASSWORD' => $dbPassword,
+            'DB_HOST' => $dbHost,
+            'DB_CHARSET' => 'utf8',
+            'DB_COLLATE' => '',
+            'AUTH_KEY' => $multisite->getAuthKey(),
+            'SECURE_AUTH_KEY' => $multisite->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $multisite->getLoggedInKey(),
+            'NONCE_KEY' => $multisite->getNonceKey(),
+            'AUTH_SALT' => $multisite->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $multisite->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $multisite->getLoggedInSalt(),
+            'NONCE_SALT' => $multisite->getNonceSalt(),
+            'WP_DEBUG' => false,
+            'WP_ALLOW_MULTISITE' => true,
+            'MULTISITE' => true,
+            'SUBDOMAIN_INSTALL' => false,
+            'DOMAIN_CURRENT_SITE' => null,
+            'PATH_CURRENT_SITE' => '/',
+            'SITE_ID_CURRENT_SITE' => 1,
+            'BLOG_ID_CURRENT_SITE' => 1,
+            'ABSPATH' => $wpRootDir
+        ];
+        $this->assertCount(count($expected), $constants);
+        foreach ($expected as $key => $expectedValue) {
+            $this->assertArrayHasKey($key, $constants);
+        }
     }
 }

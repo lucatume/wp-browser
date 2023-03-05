@@ -318,4 +318,21 @@ class EmptyDirTest extends \Codeception\Test\Unit
 
         $emptyDir->getDb();
     }
+
+    /**
+     * It should throw when trying to get constants
+     *
+     * @test
+     */
+    public function should_throw_when_trying_to_get_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->getConstants();
+    }
 }

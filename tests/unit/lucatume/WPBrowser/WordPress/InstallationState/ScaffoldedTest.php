@@ -140,7 +140,6 @@ class ScaffoldedTest extends \Codeception\Test\Unit
      * It should allow configuring an installation
      *
      * @test
-     * @skip
      */
     public function should_allow_configuring_an_installation(): void
     {
@@ -449,5 +448,23 @@ PHP;
         $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
 
         $scaffolded->getDb();
+    }
+
+    /**
+     * It should allow getting the installation constants
+     *
+     * @test
+     */
+    public function should_allow_getting_the_installation_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $constants = $scaffolded->getConstants();
+
+        $this->assertCount(1, $constants);
+        $this->assertEquals($scaffolded->getWpRootDir(), $constants['ABSPATH']);
     }
 }

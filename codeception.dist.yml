@@ -1,10 +1,10 @@
 actor: Tester
 paths:
     tests: tests
-    log: tests/_output
     data: tests/_data
     helpers: tests/_support
-    output: tests/_output
+    log: var/_output
+    output: var/_output
 settings:
     colors: true
     memory_limit: 1024M

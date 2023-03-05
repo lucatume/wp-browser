@@ -795,6 +795,7 @@ class WPLoader extends Module
 
         if (Debug::isEnabled()) {
             codecept_debug(
+                'WordPress status: ' . json_encode($this->installation->report(),
                 'WordPress status: ' . json_encode($this->healthcheck->run(),
                     JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             );

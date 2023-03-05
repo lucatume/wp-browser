@@ -213,4 +213,23 @@ class Installation
     {
         return $this->installationState->getSalts();
     }
+
+    public function report(array $checkKeys = null): array
+    {
+        $map = [
+            'rootDir' => fn() => $this->installationState->getWpRootDir(),
+            'version' => fn() => $this->installationState->getVersion()->toArray(),
+            'constants' => fn() => $this->installationState->getConstants(),
+            'globals' => fn() => $this->installationState->getGlobals(),
+            'checks' => fn() => $this->installationState->getVersion(),
+        ];
+
+        $checksMap = $checkKeys === null ? $map : array_intersect_key($map, array_flip($checkKeys));
+
+        foreach ($checksMap as &$value) {
+            $value = $value();
+        }
+
+        return $checksMap;
+    }
 }

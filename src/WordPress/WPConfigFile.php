@@ -62,6 +62,10 @@ class WPConfigFile
         return $this->constants[$constant] ?? null;
     }
 
+    public function getConstants():array{
+        return $this->constants;
+    }
+
     public function getVariable(string $varName): mixed
     {
         return $this->variables[$varName] ?? null;
@@ -79,11 +83,17 @@ class WPConfigFile
             $result = Loop::executeClosure(static function () use ($wpSettingsFile, $wpConfigFile): array {
                 // Include the wp-config.php file, but do not include the wp-settings.php file.
                 MonkeyPatch::redirectFileToFile($wpSettingsFile, MonkeyPatch::dudFile());
+                $definedConstantsBefore = get_defined_constants(true)['user'] ?? [];
                 include $wpConfigFile;
 
-                $constants = get_defined_constants(true)['user'] ?? [];
+                $constants= array_diff_key(get_defined_constants(true)['user'] ?? [], $definedConstantsBefore);
                 $variables = get_defined_vars();
-                unset($variables['constants'], $variables['wpSettingsFile'], $variables['wpConfigFile']);
+                unset(
+                    $variables['constants'],
+                    $variables['wpSettingsFile'],
+                    $variables['wpConfigFile'],
+                    $variables['definedConstantsBefore']
+                );
 
                 return ['constants' => $constants, 'variables' => $variables];
             });
@@ -100,7 +110,7 @@ class WPConfigFile
             $values = $returnValue;
 
             if (!(is_array($values) && isset($values['constants'], $values['variables']))) {
-                throw new ProcessException("Inclusiong if wp-config file {$this->wpConfigFilePath} did not return expected values.");
+                throw new ProcessException("Inclusion of wp-config file {$this->wpConfigFilePath} did not return expected values.");
             }
 
             $this->constants = $values['constants'];

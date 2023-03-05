@@ -275,4 +275,11 @@ class Scaffolded implements InstallationStateInterface
             InstallationException::STATE_SCAFFOLDED
         );
     }
+
+    public function getConstants(): array
+    {
+        return [
+            'ABSPATH' => $this->wpRootDir,
+        ];
+    }
 }
