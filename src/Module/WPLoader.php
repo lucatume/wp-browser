@@ -351,8 +351,7 @@ class WPLoader extends Module
 
         // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
         defined('WP_TESTS_CONFIG_FILE_PATH')
-        || define('WP_TESTS_CONFIG_FILE_PATH',
-            CorePHPUnit::path('/wp-tests-config.php'));// Load WordPress now, to make sure the suite bootstrap file will find WordPress loaded.
+        || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
 
         // @todo review this: use WP_TESTS_SKIP_INSTALL?
         if (!empty($this->config['loadOnly']) && $loadWordpress) {
