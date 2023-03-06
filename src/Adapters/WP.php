@@ -7,8 +7,6 @@
 
 namespace lucatume\WPBrowser\Adapters;
 
-use lucatume\WPBrowser\Traits\WPHealthcheck;
-
 /**
  * Class WP
  * @package lucatume\WPBrowser\Adapters

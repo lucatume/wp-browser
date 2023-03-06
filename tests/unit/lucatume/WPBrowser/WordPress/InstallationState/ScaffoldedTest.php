@@ -467,4 +467,22 @@ PHP;
         $this->assertCount(1, $constants);
         $this->assertEquals($scaffolded->getWpRootDir(), $constants['ABSPATH']);
     }
+
+    /**
+     * It should allow getting the installation globals
+     *
+     * @test
+     */
+    public function should_allow_getting_the_installation_globals(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $globals = $scaffolded->getGlobals();
+
+        $this->assertCount(1, $globals);
+        $this->assertEquals('wp_', $globals['table_prefix']);
+    }
 }

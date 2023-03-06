@@ -220,8 +220,7 @@ class Installation
             'rootDir' => fn() => $this->installationState->getWpRootDir(),
             'version' => fn() => $this->installationState->getVersion()->toArray(),
             'constants' => fn() => $this->installationState->getConstants(),
-            'globals' => fn() => $this->installationState->getGlobals(),
-            'checks' => fn() => $this->installationState->getVersion(),
+            'globals' => fn() => $this->installationState->getGlobals()
         ];
 
         $checksMap = $checkKeys === null ? $map : array_intersect_key($map, array_flip($checkKeys));

@@ -12,14 +12,12 @@ use Codeception\Command\Shared\ConfigTrait;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Exception\ModuleException;
-use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\Util\Debug;
 use Exception;
 use JsonException;
 use lucatume\WPBrowser\Adapters\WP;
 use lucatume\WPBrowser\Events\Dispatcher;
-use lucatume\WPBrowser\Module\Support\WPHealthcheck;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
@@ -230,24 +228,7 @@ class WPLoader extends Module
      * @var array<string,int>
      */
     private array $loadRedirections = [];
-    private ?WPHealthcheck $healthcheck = null;
     private Installation $installation;
-
-    /**
-     * WPLoader constructor.
-     *
-     * @param ModuleContainer     $moduleContainer The current module container.
-     * @param array<string,mixed> $config          The current module configuration.
-     * @param WPHealthcheck|null  $healthcheck     An instance of the WPHealthcheck object.
-     */
-    public function __construct(
-        ModuleContainer $moduleContainer,
-        ?array $config,
-        WPHealthcheck $healthcheck = null
-    ) {
-        parent::__construct($moduleContainer, $config);
-        $this->healthcheck = $healthcheck ?? new WPHealthcheck();
-    }
 
     /**
      * Initializes the module if not already initialized.
@@ -301,7 +282,6 @@ class WPLoader extends Module
         }
 
         $instance->wp = new WP();
-        $instance->healthcheck = new WPHealthcheck();
         $instance->_setConfig(static::_getModuleConfig($instance));
 
         return $instance;
@@ -453,8 +433,8 @@ class WPLoader extends Module
         // Make the `factory` property available on the `$tester` property.
         $this->setupFactoryStore();
 
-        if ($this->healthcheck instanceof WPHealthcheck && Debug::isEnabled()) {
-            codecept_debug('WordPress status: ' . json_encode($this->healthcheck->run(),
+        if (Debug::isEnabled()) {
+            codecept_debug('WordPress status: ' . json_encode($this->installation->report(),
                     JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
     }
@@ -787,16 +767,11 @@ class WPLoader extends Module
      */
     public function _wordPressExitHandler(OutputInterface $output = null): void
     {
-        if ($this->wpDidLoadCorrectly || !$this->healthcheck instanceof WPHealthcheck) {
-            return;
-        }
-
         $output = $output ?: new ConsoleOutput();
 
         if (Debug::isEnabled()) {
             codecept_debug(
                 'WordPress status: ' . json_encode($this->installation->report(),
-                'WordPress status: ' . json_encode($this->healthcheck->run(),
                     JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             );
         }

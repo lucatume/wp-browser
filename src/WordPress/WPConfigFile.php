@@ -129,6 +129,11 @@ class WPConfigFile
         return $this->variables[$varName] ?? null;
     }
 
+    public function getVariables(): array
+    {
+        return $this->variables;
+    }
+
     public function getFilePath(): string
     {
         return $this->wpConfigFilePath;

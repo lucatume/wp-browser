@@ -67,4 +67,8 @@ interface InstallationStateInterface
     public function getDb(): Db;
 
     public function getConstants():array;
+
+    public function getGlobals():array;
+
+    public function getChecks():array;
 }

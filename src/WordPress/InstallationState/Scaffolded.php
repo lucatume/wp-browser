@@ -282,4 +282,9 @@ class Scaffolded implements InstallationStateInterface
             'ABSPATH' => $this->wpRootDir,
         ];
     }
+
+    public function getGlobals(): array
+    {
+        return ['table_prefix' => 'wp_'];
+    }
 }

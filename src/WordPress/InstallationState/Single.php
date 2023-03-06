@@ -73,7 +73,10 @@ class Single implements InstallationStateInterface
     }
 
     /**
+     * @return InstallationStateInterface
+     * @throws DbException
      * @throws InstallationException
+     * @throws ProcessException
      */
     public function convertToMultisite(bool $subdomainInstall = false): InstallationStateInterface
     {

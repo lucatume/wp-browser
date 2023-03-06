@@ -490,4 +490,36 @@ class SingleTest extends \Codeception\Test\Unit
             $this->assertArrayHasKey($key, $constants);
         }
     }
+
+    /**
+     * It should allow getting the site globals
+     *
+     * @test
+     */
+    public function should_allow_getting_the_site_globals(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db)->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $globals = $single->getGlobals();
+
+        $expected = [
+            'table_prefix' => 'test_',
+        ];
+        $this->assertCount(count($expected), $globals);
+        foreach ($expected as $key => $expectedValue) {
+            $this->assertArrayHasKey($key, $globals);
+        }
+    }
 }
