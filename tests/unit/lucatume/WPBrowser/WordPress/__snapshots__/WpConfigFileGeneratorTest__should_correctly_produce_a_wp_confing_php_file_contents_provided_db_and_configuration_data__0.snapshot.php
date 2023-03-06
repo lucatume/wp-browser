@@ -23,13 +23,13 @@
 define( 'DB_NAME', 'test_123' );
 
 /** Database username */
-define( 'DB_USER', 'test' );
+define( 'DB_USER', 'root' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'test' );
+define( 'DB_PASSWORD', 'password' );
 
 /** Database hostname */
-define( 'DB_HOST', 'db' );
+define( 'DB_HOST', 'database' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
