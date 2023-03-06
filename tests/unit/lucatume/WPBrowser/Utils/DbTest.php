@@ -1,7 +1,6 @@
 <?php namespace lucatume\WPBrowser;
 
 use lucatume\WPBrowser\Utils\Db;
-use lucatume\WPBrowser\Deprecated\Map;
 
 class dbTest extends \Codeception\Test\Unit
 {
@@ -190,7 +189,7 @@ class dbTest extends \Codeception\Test\Unit
     {
         $map = Db::dbDsnMap($input);
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $map($key));
+            $this->assertEquals($value, $map[$key]);
         }
     }
 
@@ -225,10 +224,10 @@ class dbTest extends \Codeception\Test\Unit
      */
     public function test_db_credentials($dsn, $user, $pass, array $expected)
     {
-        $creds = Db::dbCredentials(dbDsnMap($dsn), $user, $pass);
+        $creds = Db::dbCredentials(Db::dbDsnMap($dsn), $user, $pass);
 
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $creds($key));
+            $this->assertEquals($value, $creds[$key]);
         }
     }
 
@@ -337,7 +336,7 @@ class dbTest extends \Codeception\Test\Unit
      */
     public function test_dbDsnString($inputMap, $forDbHost, $expected)
     {
-        $this->assertEquals($expected, Db::dbDsnString(new Map($inputMap), $forDbHost));
+        $this->assertEquals($expected, Db::dbDsnString($inputMap, $forDbHost));
     }
 
     public function dbDsnToMapDataProvider()
@@ -384,7 +383,7 @@ class dbTest extends \Codeception\Test\Unit
      */
     public function test_db_dsn_to_map($input, $expected)
     {
-        $this->assertEquals($expected, Db::dbDsnToMap($input)->toArray());
+        $this->assertEquals($expected, Db::dbDsnToMap($input));
     }
 
     public function dbDsnToMapBadInputDataProvider()

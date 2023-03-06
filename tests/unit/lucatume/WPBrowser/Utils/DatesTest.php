@@ -18,7 +18,7 @@ class DatesTest extends Unit
         $timezone = new DateTimezone($timezoneString);
         $format = 'Y-m-d H:i:s';
 
-        yield 'now' => ['now', (new DateTimeImmutable('now', $timezone))->format($format)];
+        yield 'today 9am' => ['today 9am', (new DateTimeImmutable('today 9am', $timezone))->format($format)];
         yield 'yesterday 9am' => [
             'yesterday 9am',
             (new DateTimeImmutable('yesterday 9am', $timezone))->format($format)

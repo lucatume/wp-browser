@@ -137,8 +137,17 @@ class Db
      */
     public static function dbDsnMap(string $dbHost): array
     {
+        $defaults = [
+            'type' => null,
+            'host' => null,
+            'port' => null,
+            'unix_socket' => null,
+            'version' => null,
+            'file' => null,
+            'memory' => false,
+        ];
         if (self::isDsnString($dbHost)) {
-            return self::dbDsnToMap($dbHost);
+            return \array_replace($defaults,self::dbDsnToMap($dbHost));
         }
 
         $map = [];
@@ -230,7 +239,7 @@ class Db
                 break;
         }
 
-        return $map;
+        return \array_replace($defaults, $map);
     }
 
     /**
@@ -250,13 +259,13 @@ class Db
         $dbpass = empty($dbpass) ? 'password' : $dbpass;
 
         $dsnFrags = [
-            $dsn('host') ? 'host=' . $dsn('host') : null,
-            $dsn('port') ? 'port=' . $dsn('port') : null,
-            $dsn('unix_socket') ? 'unix_socket=' . $dsn('unix_socket') : null,
+            !empty($dsn['host']) ? 'host=' . $dsn['host'] : null,
+            !empty($dsn['port']) ? 'port=' . $dsn['port'] : null,
+            !empty($dsn['unix_socket']) ? 'unix_socket=' . $dsn['unix_socket'] : null,
             $dbname ? 'dbname=' . $dbname : null
         ];
 
-        $type = $dsn('type', 'mysql');
+        $type = $dsn['type'] ?? 'mysql';
 
         $dsnString = $type . ':' . implode(';', array_filter($dsnFrags));
 
@@ -368,6 +377,11 @@ class Db
             ]);
         }
 
-        return array_replace(['type' => 'mysql', 'host' => 'localhost'], $map);
+        return array_replace(
+            [
+                'type' => 'mysql',
+                'host' => 'localhost'
+            ],
+            $map);
     }
 }
