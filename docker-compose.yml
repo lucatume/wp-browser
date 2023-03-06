@@ -94,5 +94,7 @@ services:
       - test
     volumes:
       - "${PWD}:${PWD}"
+    tmpfs:
+      - "${PWD}/var/tmp"
     working_dir: "${PWD}"
     entrypoint: tail -f /dev/null

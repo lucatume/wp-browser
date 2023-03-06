@@ -314,8 +314,10 @@ class Filesystem
 
     public static function tmpDir(string $prefix = '', array $contents = [], int $mode = 0777): string
     {
+        $tmpRootDir = Env::get('TEST_TMP_ROOT_DIR', null) ?? codecept_output_dir('tmp');
+        $tmpRootDir = self::realpath($tmpRootDir) ?: $tmpRootDir;
         return self::mkdirp(
-            codecept_output_dir('tmp/' . $prefix . md5(microtime())),
+            $tmpRootDir . DIRECTORY_SEPARATOR . $prefix . md5(microtime()),
             $contents,
             $mode
         );
