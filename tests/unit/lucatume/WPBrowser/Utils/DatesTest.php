@@ -5,7 +5,6 @@ namespace Unit\lucatume\WPBrowser\Utils;
 use Codeception\Test\Unit;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Generator;
 use lucatume\WPBrowser\Utils\Dates;
