@@ -25,6 +25,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `mikey179/vfsStream` development dependency.
 - Removed the `WordPress` module and related support classes.
 - Removed the `mode` configuration parameter from the `Symlinker` extension.
+- Removed the `StubProphecy` and `FunctionProphecy` classes.
+- Removed the `WPHealthcheck` class in favor of reports provided by the `WordPress\Installation` class.
 
 ## [3.1.6] 2022-04-28;
 
