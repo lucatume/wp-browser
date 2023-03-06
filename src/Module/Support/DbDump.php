@@ -4,7 +4,6 @@ namespace lucatume\WPBrowser\Module\Support;
 
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Yaml\Exception\DumpException;
-use lucatume\WPBrowser\Filesystem\Utils;
 
 class DbDump
 {
@@ -67,7 +66,7 @@ class DbDump
     /**
      * Replaces the WordPress domains in a SQL dump string.
      *
-     * @param string $sql   The input SQL dump string.
+     * @param string $sql The input SQL dump string.
      *
      * @return string The modified SQL string.
      *
@@ -75,7 +74,7 @@ class DbDump
      */
     public function replaceSiteDomainInSqlString(string $sql): string
     {
-        $cacheKey = md5($sql) . '-' . md5($this->url) . '-single' ;
+        $cacheKey = md5($sql) . '-' . md5($this->url) . '-single';
 
         if (isset(static::$urlReplacementCache[$cacheKey])) {
             return static::$urlReplacementCache[$cacheKey];
@@ -100,7 +99,7 @@ class DbDump
             );
         }
 
-        $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path','port']));
+        $originalFrags = array_intersect_key($originalFrags, array_flip(['host', 'path', 'port']));
         if (!empty($originalFrags['port'])) {
             $originalFrags['port'] = ':' . $originalFrags['port'];
         }
@@ -125,10 +124,10 @@ class DbDump
             '~u';
 
         $replaceCallback = static function (array $matches) use ($replaceScheme, $replaceHost, $replacePort): string {
-                return $replaceScheme . '://'
-                        . ($matches['subdomain'] ?? '')
-                        . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
-                        . ($matches['path'] ?? '');
+            return $replaceScheme . '://'
+                . ($matches['subdomain'] ?? '')
+                . $replaceHost . ($replacePort ? ":{$replacePort}" : '')
+                . ($matches['path'] ?? '');
         };
 
         $sql = preg_replace_callback($urlPattern, $replaceCallback, $sql);
@@ -157,13 +156,13 @@ class DbDump
      * Replaces the site domain in the multisite tables of a SQL dump.
      *
      * @param string $sql   The SQL code to apply the replacements to.
-     * @param bool $debug Whether to debug the replacement operation or not.
+     * @param bool   $debug Whether to debug the replacement operation or not.
      *
      * @return string The SQL code, with the URL replaced in it.
      */
     public function replaceSiteDomainInMultisiteSqlString(string $sql, bool $debug = false): string
     {
-        $cacheKey = md5($sql) . '-' . md5($this->url) . '-multisite' ;
+        $cacheKey = md5($sql) . '-' . md5($this->url) . '-multisite';
 
         if (isset(static::$urlReplacementCache[$cacheKey])) {
             return static::$urlReplacementCache[$cacheKey];
@@ -175,21 +174,21 @@ class DbDump
 
         $tables = [
             'blogs' => "VALUES\\s+\\(\\d+,\\s*\\d+,\\s*)'(.*)',/uiU",
-            'site'  => "VALUES\\s+\\(\\d+,\\s*)'(.*)',/uiU",
+            'site' => "VALUES\\s+\\(\\d+,\\s*)'(.*)',/uiU",
         ];
 
         $thisSiteUrl = preg_replace('~https?:\\/\\/~', '', $this->url);
 
         foreach ($tables as $table => $pattern) {
             $currentTable = $this->tablePrefix . $table;
-            $matches      = [];
+            $matches = [];
             $fullPattern = "/(INSERT\\s+INTO\\s+`{$currentTable}`\\s+{$pattern}";
             preg_match($fullPattern, (string)$sql, $matches);
 
             if (empty($matches) || empty($matches[1])) {
                 if ($debug) {
-                    codecept_debug('Dump file does not contain a table INSERT instruction for table ['.
-                     $table . '], not replacing.');
+                    codecept_debug('Dump file does not contain a table INSERT instruction for table [' .
+                        $table . '], not replacing.');
                 }
                 continue;
             }
@@ -205,7 +204,7 @@ class DbDump
             if ($dumpSiteUrl === $thisSiteUrl) {
                 if ($debug) {
                     codecept_debug('Dump file domain identical to the one specified in the configuration ['
-                                   . $dumpSiteUrl . ']; not replacing');
+                        . $dumpSiteUrl . ']; not replacing');
                 }
                 continue;
             }
@@ -229,7 +228,7 @@ class DbDump
     /**
      * DbDump constructor.
      *
-     * @param string $url The URL to replace, `null` to have it inferred.
+     * @param string $url         The URL to replace, `null` to have it inferred.
      * @param string $tablePrefix The table prefix to use.
      */
     public function __construct(protected string $url = 'http://wordpress.test', protected string $tablePrefix = 'wp_')
@@ -306,14 +305,14 @@ class DbDump
         }
 
         $originalUrl = trim($originalUrl);
-        $parsed      = parse_url($originalUrl);
+        $parsed = parse_url($originalUrl);
 
-        if ($parsed === false || ! is_array($parsed)) {
+        if ($parsed === false || !is_array($parsed)) {
             return;
         }
 
-        $originalUrlFrags = array_replace([ 'scheme' => 'http', 'host' => '', 'path' => '' ], $parsed);
-        $originalUrl      = $originalUrlFrags['scheme'] . '://' . $originalUrlFrags['host'] . $originalUrlFrags['path'];
+        $originalUrlFrags = array_replace(['scheme' => 'http', 'host' => '', 'path' => ''], $parsed);
+        $originalUrl = $originalUrlFrags['scheme'] . '://' . $originalUrlFrags['host'] . $originalUrlFrags['path'];
 
         $this->originalUrl = FS::untrailslashit($originalUrl);
     }
