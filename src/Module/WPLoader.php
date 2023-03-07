@@ -16,7 +16,6 @@ use Codeception\Module;
 use Codeception\Util\Debug;
 use Exception;
 use JsonException;
-use lucatume\WPBrowser\Adapters\WP;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
@@ -281,7 +280,6 @@ class WPLoader extends Module
             throw new ModuleException($instance, 'Could not build instance.');
         }
 
-        $instance->wp = new WP();
         $instance->_setConfig(static::_getModuleConfig($instance));
 
         return $instance;
@@ -295,14 +293,12 @@ class WPLoader extends Module
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
      *
-     * @param bool $loadWordpress Whether WordPress should be loaded or not.
-     *
      * @throws DbException
      * @throws JsonException
      * @throws ModuleConfigException
      * @throws ModuleConflictException
      */
-    public function _initialize(bool $loadWordpress = true): void
+    public function _initialize(): void
     {
         try {
             $db = new Db(
@@ -361,14 +357,13 @@ class WPLoader extends Module
             return;
         }
 
+        // If the database does not already exist, then create it now.
         $db->create();
 
         // Any *Db Module should either not be running or properly configured if this has to run alongside it.
         $this->ensureDbModuleCompat();
 
-        if ($loadWordpress) {
-            $this->_loadWordpress();
-        }
+        $this->_loadWordpress();
     }
 
     /**
@@ -498,7 +493,7 @@ class WPLoader extends Module
      */
     private function loadConfigFiles(string $folder = null): void
     {
-        foreach ($this->_getConfigFiles($folder) as $configFile) {
+        foreach ($this->getConfigFiles($folder) as $configFile) {
             require_once $configFile;
         }
     }
@@ -888,7 +883,7 @@ class WPLoader extends Module
      *
      * @throws ModuleConfigException If a specified configuration file does not exist.
      */
-    public function _getConfigFiles(string $root = null): array
+    private function getConfigFiles(string $root = null): array
     {
         $root = $root ?: codecept_root_dir();
 
