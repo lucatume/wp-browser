@@ -312,10 +312,20 @@ class Filesystem
         return $pathname;
     }
 
-    public static function tmpDir(string $prefix = '', array $contents = [], int $mode = 0777): string
+    public static function tmpDir(
+        string $prefix = '',
+        array $contents = [],
+        int $mode = 0777,
+        string $tmpRootDir = null
+    ): string
     {
-        $tmpRootDir = Env::get('TEST_TMP_ROOT_DIR', null) ?? codecept_output_dir('tmp');
-        $tmpRootDir = self::realpath($tmpRootDir) ?: $tmpRootDir;
+        if ($tmpRootDir === null) {
+            $tmpRootDir = Env::get('TEST_TMP_ROOT_DIR', null) ?? codecept_output_dir('tmp');
+            if (!is_dir($tmpRootDir)) {
+                $tmpRootDir = self::mkdirp($tmpRootDir, [], 0777);
+            }
+            $tmpRootDir = self::realpath($tmpRootDir) ?: $tmpRootDir;
+        }
         return self::mkdirp(
             $tmpRootDir . DIRECTORY_SEPARATOR . $prefix . md5(microtime()),
             $contents,
