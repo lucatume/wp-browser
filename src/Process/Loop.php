@@ -56,38 +56,28 @@ class Loop
         array $workers = [],
         int $parallelism = 1,
         bool $fastFailure = false,
-        float $timeout = 30
+        float $timeout = 30,
+        array $options = []
     ) {
-        $this->addWorkers($workers);
+        $this->addWorkers($workers, $options);
         $this->parallelism = $parallelism;
         $this->fastFailure = $fastFailure;
         $this->timeout = $timeout;
     }
 
-    public static function executeClosure(Closure $closure): Result
-    {
-        $results = (new Loop([$closure], 1, true))
-            ->run()
-            ->getResults();
-        return reset($results);
-    }
-
     /**
+     * @param Closure                                         $closure
+     * @param array{requireFiles: array<string>, cwd: string} $options
+     *
+     * @return Result
      * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
      */
-    public static function executeClosureOrThrow(Closure $closure): Result
+    public static function executeClosure(Closure $closure, array $options = []): Result
     {
-        $result = self::executeClosure($closure);
-
-        if ($result->getExitCode() !== 0) {
-            throw new ProcessException(sprintf(
-                    "Closure execution failed with exit code %s and message '%s'",
-                    $result->getExitCode(), $result->getStderrBuffer()
-                )
-            );
-        }
-
-        return $result;
+        $results = (new Loop([$closure], 1, true, 30, $options))->run()->getResults();
+        return reset($results);
     }
 
     /**
@@ -98,9 +88,26 @@ class Loop
         return $this->workers;
     }
 
-    public function addWorkers(array $workers): Loop
+    /**
+     * @param array<callable>                                 $workers
+     * @param array{requireFiles: array<string>, cwd: string} $options
+     */
+    public function addWorkers(array $workers, array $options): Loop
     {
         $builtWorkers = array_map([$this, 'ensureWorker'], array_keys($workers), $workers);
+
+        if (isset($options['requireFiles'])) {
+            foreach ($builtWorkers as $worker) {
+                $worker->setRequireFiles($options['requireFiles']);
+            }
+        }
+
+        if (isset($options['cwd'])) {
+            foreach ($builtWorkers as $worker) {
+                $worker->setCwd($options['cwd']);
+            }
+        }
+
         array_push($this->workers, ...$builtWorkers);
         $this->sortWorkersByResource();
 

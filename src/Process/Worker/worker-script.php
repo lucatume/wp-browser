@@ -8,9 +8,9 @@ use Opis\Closure\SerializableClosure;
 $serializedControl = base64_decode($base64EncodedControl);
 $serializedSerializableClosure = base64_decode($base64EncodedSerializedClosure);
 
-/** @var array{autoloadFile: string, returnValueSeparator: string} $control */
+/** @var array{autoloadFile: string, requireFiles: array<string>, returnValueSeparator: string} $control */
 $control = array_replace(
-    ['autoloadFile' => '', 'returnValueSeparator' => '~=returnValueSep=~'],
+    ['autoloadFile' => '', 'requireFiles' => [], 'cwd' => null, 'returnValueSeparator' => '~=returnValueSep=~'],
     unserialize($serializedControl, ['allowed_classes' => false])
 );
 
@@ -19,6 +19,16 @@ if (is_file($control['autoloadFile'])) {
 }
 
 try {
+    if (count($control['requireFiles'])) {
+        foreach ($control['requireFiles'] as $file) {
+            require_once $file;
+        }
+    }
+
+    if (isset($control['cwd'])) {
+        chdir($control['cwd']);
+    }
+
     $serializableClosure = unserialize($serializedSerializableClosure, ['allowed_classes' => true]);
     $exitValue = 0;
     $returnValue = $serializableClosure();

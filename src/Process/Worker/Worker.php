@@ -61,7 +61,21 @@ class Worker implements WorkerInterface
     {
         return [
             'autoloadFile' => Composer::autoloadPath(),
+            'requireFiles' => [],
+            'cwd' => getcwd(),
             'returnValueSeparator' => md5(uniqid('sep_', true))
         ];
+    }
+
+    public function setRequireFiles(array $requireFiles):self
+    {
+        $this->control['requireFiles'] = $requireFiles;
+        return $this;
+    }
+
+    public function setCwd(string $cwd): self
+    {
+        $this->control['cwd'] = $cwd;
+        return $this;
     }
 }
