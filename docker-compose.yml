@@ -95,6 +95,6 @@ services:
     volumes:
       - "${PWD}:${PWD}"
     tmpfs:
-      - "${PWD}/var/tmp"
+      - ${PWD}/var/tmp;mode=1777;uid=${USER_UID};gid=${USER_GID}
     working_dir: "${PWD}"
     entrypoint: tail -f /dev/null
