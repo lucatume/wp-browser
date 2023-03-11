@@ -77,7 +77,14 @@ class Loop
     public static function executeClosure(Closure $closure, array $options = []): Result
     {
         $results = (new Loop([$closure], 1, true, 30, $options))->run()->getResults();
-        return reset($results);
+        $result = reset($results);
+        $returnValue = $result->getReturnValue();
+
+        if (!empty($options['rethrow'] && $returnValue instanceof Throwable)) {
+            throw $returnValue;
+        }
+
+        return $result;
     }
 
     /**
