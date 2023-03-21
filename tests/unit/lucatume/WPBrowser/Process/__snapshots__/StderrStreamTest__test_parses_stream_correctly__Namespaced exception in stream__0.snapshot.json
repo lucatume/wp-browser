@@ -1,0 +1,24 @@
+[
+    {
+        "isException": true,
+        "exceptionClass": "PHPUnit\\Framework\\MockObject\\RuntimeException",
+        "date": "17-Mar-2023",
+        "time": "16:32:35",
+        "timezone": "Europe\/Paris",
+        "type": "Fatal error",
+        "message": "Uncaught PHPUnit\\Framework\\MockObject\\RuntimeException: Mocking did not work.",
+        "file": "\/src\/Process\/Worker\/worker-script.php",
+        "line": "15",
+        "trace": [
+            {
+                "date": "17-Mar-2023",
+                "time": "16:32:35",
+                "timezone": "Europe\/Paris",
+                "call": "n\/a",
+                "args": "n\/a",
+                "file": "\/src\/Process\/Worker\/worker-script.php",
+                "line": "15"
+            }
+        ]
+    }
+]

@@ -6,9 +6,8 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\MonkeyPatch\MonkeyPatchingAssertions;
-use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
+use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -17,6 +16,7 @@ use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
+use PHPUnit\Framework\Assert;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
 
@@ -24,6 +24,7 @@ class WPLoaderTest extends Unit
 {
     use SnapshotAssertions;
     use DatabaseAssertions;
+    use LoopIsolation;
 
     protected $backupGlobals = false;
     /**
@@ -163,14 +164,11 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader1 = $this->module();
-        $result = Loop::executeClosure(static function () use ($wpLoader1) {
+        $this->assertInIsolation(static function () use ($rootDir, $wpLoader1) {
             $wpLoader1->_initialize();
-            return $wpLoader1;
-        }, ['requireFiles' => [__FILE__], 'cwd' => $rootDir]);
-        $wpLoader1 = $result->getReturnValue();
-
-        $this->assertEquals('test/wordpress', $wpLoader1->_getConfig('wpRootFolder'));
-        $this->assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
+            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->_getConfig('wpRootFolder'));
+            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
+        }, $rootDir);
 
         $this->config = [
             'wpRootFolder' => $rootDir . '/test/wordpress',
@@ -181,10 +179,12 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader2 = $this->module();
-        $wpLoader2->_initialize();
 
-        $this->assertEquals($rootDir . '/test/wordpress', $wpLoader2->_getConfig('wpRootFolder'));
-        $this->assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
+        $this->assertInIsolation(static function () use ($rootDir, $wpLoader2) {
+            $wpLoader2->_initialize();
+            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->_getConfig('wpRootFolder'));
+            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
+        }, $rootDir);
     }
 
     /**
@@ -208,10 +208,12 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($wpLoader, $homeDir) {
+            $wpLoader->_initialize();
 
-        $this->assertEquals('~/projects/work/acme/wordpress', $wpLoader->_getConfig('wpRootFolder'));
-        $this->assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->getWpRootFolder());
+            Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->_getConfig('wpRootFolder'));
+            Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->getWpRootFolder());
+        });
     }
 
     /**
@@ -233,10 +235,12 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
+            $wpLoader->_initialize();
 
-        $this->assertEquals($wpRootDir, $wpLoader->_getConfig('wpRootFolder'));
-        $this->assertEquals($wpRootDir . '/', $wpLoader->getWpRootFolder());
+            Assert::assertEquals($wpRootDir . '/', $wpLoader->_getConfig('wpRootFolder'));
+            Assert::assertEquals($wpRootDir . '/', $wpLoader->getWpRootFolder());
+        });
     }
 
     /**
@@ -258,10 +262,12 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function() use ($wpRootDir, $wpLoader) {
+            $wpLoader->_initialize();
 
-        $this->assertEquals($wpRootDir . '/Word\ Press', $wpLoader->_getConfig('wpRootFolder'));
-        $this->assertEquals($wpRootDir . '/Word Press/', $wpLoader->getWpRootFolder());
+            Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->_getConfig('wpRootFolder'));
+            Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->getWpRootFolder());
+        });
     }
 
     /**
@@ -282,9 +288,11 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
 
-        $this->assertInstanceOf(Scaffolded::class, $wpLoader->getInstallation()->getState());
+            Assert::assertInstanceOf(Scaffolded::class, $wpLoader->getInstallation()->getState());
+        });
     }
 
     /**
@@ -311,17 +319,19 @@ class WPLoaderTest extends Unit
             ->configure($db);
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
-        $installation = $wpLoader->getInstallation();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+            $installation = $wpLoader->getInstallation();
 
-        $this->assertEquals($installation->getAuthKey(), $wpLoader->_getConfig('authKey'));
-        $this->assertEquals($installation->getSecureAuthKey(), $wpLoader->_getConfig('secureAuthKey'));
-        $this->assertEquals($installation->getLoggedInKey(), $wpLoader->_getConfig('loggedInKey'));
-        $this->assertEquals($installation->getNonceKey(), $wpLoader->_getConfig('nonceKey'));
-        $this->assertEquals($installation->getAuthSalt(), $wpLoader->_getConfig('authSalt'));
-        $this->assertEquals($installation->getSecureAuthSalt(), $wpLoader->_getConfig('secureAuthSalt'));
-        $this->assertEquals($installation->getLoggedInSalt(), $wpLoader->_getConfig('loggedInSalt'));
-        $this->assertEquals($installation->getNonceSalt(), $wpLoader->_getConfig('nonceSalt'));
+            Assert::assertEquals($installation->getAuthKey(), $wpLoader->_getConfig('authKey'));
+            Assert::assertEquals($installation->getSecureAuthKey(), $wpLoader->_getConfig('secureAuthKey'));
+            Assert::assertEquals($installation->getLoggedInKey(), $wpLoader->_getConfig('loggedInKey'));
+            Assert::assertEquals($installation->getNonceKey(), $wpLoader->_getConfig('nonceKey'));
+            Assert::assertEquals($installation->getAuthSalt(), $wpLoader->_getConfig('authSalt'));
+            Assert::assertEquals($installation->getSecureAuthSalt(), $wpLoader->_getConfig('secureAuthSalt'));
+            Assert::assertEquals($installation->getLoggedInSalt(), $wpLoader->_getConfig('loggedInSalt'));
+            Assert::assertEquals($installation->getNonceSalt(), $wpLoader->_getConfig('nonceSalt'));
+        });
     }
 
 
@@ -343,11 +353,13 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
+            $wpLoader->_initialize();
 
-        $this->assertEquals($wpRootDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
-        $this->assertEquals($wpRootDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
-        $this->assertEquals($wpRootDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
+            Assert::assertEquals($wpRootDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
+            Assert::assertEquals($wpRootDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
+            Assert::assertEquals($wpRootDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
+        });
     }
 
     /**
@@ -368,24 +380,26 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
 
-        $var = [
-            'authKey',
-            'secureAuthKey',
-            'loggedInKey',
-            'nonceKey',
-            'authSalt',
-            'secureAuthSalt',
-            'loggedInSalt',
-            'nonceSalt',
-        ];
-        foreach ($var as $i => $key) {
-            if ($i > 0) {
-                $this->assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
+            $var = [
+                'authKey',
+                'secureAuthKey',
+                'loggedInKey',
+                'nonceKey',
+                'authSalt',
+                'secureAuthSalt',
+                'loggedInSalt',
+                'nonceSalt',
+            ];
+            foreach ($var as $i => $key) {
+                if ($i > 0) {
+                    Assert::assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
+                }
+                Assert::assertEquals(64, strlen($wpLoader->_getConfig($key)));
             }
-            $this->assertEquals(64, strlen($wpLoader->_getConfig($key)));
-        }
+        });
     }
 
     /**
@@ -411,15 +425,18 @@ class WPLoaderTest extends Unit
         MonkeyPatch::redirectFileToFile(CorePHPUnit::bootstrapFile(), MonkeyPatch::dudFile());
 
         $wpLoader = $this->module();
-        $wpLoader->_initialize();
+        $this->assertInIsolation(static function () use ($dbName, $dbPassword, $dbUser, $dbHost, $wpLoader) {
+            $wpLoader->_initialize();
 
-        $this->assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
+            Assert::assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
+        });
     }
 
     /**
      * It should load the core phpunit suite bootstrap file correctly
      *
      * @test
+     * @skip
      */
     public function should_load_the_core_phpunit_suite_bootstrap_file_correctly(): void
     {

@@ -49,10 +49,7 @@ if (!$wpInstalling && empty($wpLoaderIncludeWpSettings)) {
     require_once CorePHPUnit::path('/yoast-phpunit-polyfills-testcase-stub.php');
 }
 
-// Resolve the ABSPATH to a real file path, if possible, and format it correctly.
-$abspath = realpath($wpLoaderConfig['wpRootFolder']);
-$abspath = $abspath ?? $wpLoaderConfig['wpRootFolder'];
-$abspath = rtrim($abspath, '\\/') . '/';
+$abspath = rtrim($wpLoaderConfig['wpRootFolder'], '\\/') . '/';
 
 foreach ([
              'ABSPATH' => $abspath,

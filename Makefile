@@ -19,6 +19,10 @@ clean:
 	bin/stack deep_clean
 .PHONY: clean
 
+clean_tmp:
+	bin/stack clean_tmp
+.PHONY: clean_tmp
+
 update_core_phpunit_includes:
 	bin/update-core-phpunit-includes
 .PHONY: update_core_phpunit_includes

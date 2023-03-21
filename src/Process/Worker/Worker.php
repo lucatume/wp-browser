@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
+use Codeception\Configuration;
+use Composer\Config;
 use lucatume\WPBrowser\Utils\Composer;
 
 class Worker implements WorkerInterface
@@ -63,7 +65,7 @@ class Worker implements WorkerInterface
             'autoloadFile' => Composer::autoloadPath(),
             'requireFiles' => [],
             'cwd' => getcwd(),
-            'returnValueSeparator' => md5(uniqid('sep_', true))
+            'codeceptionConfig' =>Configuration::config(),
         ];
     }
 

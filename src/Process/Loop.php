@@ -76,7 +76,7 @@ class Loop
      */
     public static function executeClosure(Closure $closure, array $options = []): Result
     {
-        $results = (new Loop([$closure], 1, true, 30, $options))->run()->getResults();
+        $results = (new self([$closure], 1, true, 30, $options))->run()->getResults();
         $result = reset($results);
         $returnValue = $result->getReturnValue();
 

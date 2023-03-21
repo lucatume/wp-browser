@@ -5,6 +5,8 @@ namespace lucatume\WPBrowser\Process\Worker;
 use BadMethodCallException;
 use Closure;
 use lucatume\WPBrowser\Process\MemoryUsage;
+use lucatume\WPBrowser\Process\Protocol\Request;
+use lucatume\WPBrowser\Process\Protocol\Response;
 use Opis\Closure\SerializableClosure;
 use RuntimeException;
 
@@ -81,7 +83,6 @@ class Running implements WorkerInterface
         $this->id = $id;
         $this->proc = $proc;
         $this->startTime = $startTime;
-        $this->returnValueSeparator = $control['returnValueSeparator'] ?? md5(uniqid('sep_', true));
         $this->requiredResourcesIds = $requiredResourcesIds;
     }
 
@@ -94,15 +95,17 @@ class Running implements WorkerInterface
                 return $workerCallable();
             };
 
-        $workerSerializableClosure = new SerializableClosure($workerClosure);
-        $serializedWorkerClosure = serialize($workerSerializableClosure);
+
         $workerScriptPathname = __DIR__ . '/worker-script.php';
+        $control = $worker->getControl();
+        $workerSerializableClosure = new SerializableClosure($workerClosure);
+        $request = new Request($control, $workerSerializableClosure);
+
         $workerCommand = sprintf(
-            "%s %s %s %s",
+            "%s %s %s",
             escapeshellarg(PHP_BINARY),
             escapeshellarg($workerScriptPathname),
-            base64_encode(serialize($worker->getControl())),
-            base64_encode($serializedWorkerClosure),
+            escapeshellarg($request->getPayload())
         );
         $pipesDef = [
             0 => ['pipe', 'r'],
@@ -121,7 +124,7 @@ class Running implements WorkerInterface
             $workerProc,
             $pipes,
             $startTime,
-            $worker->getControl(),
+            $control,
             $worker->getRequiredResourcesIds()
         );
     }
@@ -272,35 +275,17 @@ class Running implements WorkerInterface
     {
         $stderrBufferString = $this->stderrBuffer;
 
-        if (!str_contains($stderrBufferString, $this->returnValueSeparator)) {
+        if (empty($stderrBufferString)) {
             return;
         }
 
-        if (empty($this->stderrBuffer)) {
-            return;
-        }
+        $response = Response::fromStderr($stderrBufferString);
+        $returnValue = $response->getReturnValue();
+        $telemetry = $response->getTelemetry();
 
-        [$stderrBuffer, $base64EncodedSerializedReturnValueClosure, $base64EncodedSerializedTelemetry] = explode(
-            $this->returnValueSeparator,
-            $this->stderrBuffer,
-            3
-        );
-
-        $serializedReturnValueClosure = (string)base64_decode($base64EncodedSerializedReturnValueClosure);
-        $returnValueClosure = null;
-        if ($serializedReturnValueClosure !== '') {
-            $returnValueClosure = @unserialize($serializedReturnValueClosure, ['allowed_classes' => true]);
-        }
-        $serializedTelemetry = (string)base64_decode($base64EncodedSerializedTelemetry);
-        /** @var array{memoryPeakUsage: int } $telemetry */
-        $telemetry = ['memoryPeakUsage' => 0];
-        if ($serializedTelemetry !== '') {
-            // Telemetry will be just an array.
-            $telemetry = array_replace($telemetry, @unserialize($serializedTelemetry, ['allowed_classes' => false]));
-        }
-        $this->stderrBuffer = $stderrBuffer;
+        $this->stderrBuffer = substr($stderrBufferString, 0, $response->getStderrLength());
         $this->memoryUsage = $telemetry['memoryPeakUsage'] ?? null;
-        $this->returnValue = $returnValueClosure instanceof SerializableClosure ? $returnValueClosure() : null;
+        $this->returnValue = $returnValue;
     }
 
     /**

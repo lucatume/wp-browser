@@ -16,6 +16,7 @@ function print_help() {
   echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
   echo "  config           Show the docker compose configuration for the specified PHP version."
   echo "  dc               Execute a docker compose command fore the specified PHP version."
+  echo "  clean_tmp        Remove the var/tmp directory."
   echo "  deep_clean       Like clean, additionally remove the /var directory."
   echo "  down             Tears down the containers for the specified PHP version."
   echo "  exec             Execute a command in a service for the specified PHP version."
@@ -217,6 +218,10 @@ function clean() {
   rm -rf var/wordpress
 }
 
+function clean_tmp() {
+  rm -rf "$(pwd)/var/tmp"
+}
+
 function config() {
   # Show the docker-compse configuration for the required PHP version.
   docker compose config
@@ -260,6 +265,9 @@ build)
   ;;
 clean)
   clean
+  ;;
+clean_tmp)
+  clean_tmp
   ;;
 composer_update)
   composer_update

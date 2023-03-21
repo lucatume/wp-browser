@@ -321,6 +321,8 @@ class WPLoader extends Module
                 $this->installation = new Installation($wpRootDir, $db);
             }
 
+            $this->config['wpRootFolder'] = $this->installation->getWpRootDir();
+
             $configurationSalts = $this->installation->isConfigured() ?
                 $this->installation->getSalts()
                 : [];
@@ -350,7 +352,7 @@ class WPLoader extends Module
         || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
 
         // @todo review this: use WP_TESTS_SKIP_INSTALL?
-        if (!empty($this->config['loadOnly']) && $loadWordpress) {
+        if (!empty($this->config['loadOnly'])) {
             $this->debug('WPLoader module will load WordPress when all other modules initialized.');
             Dispatcher::addListener(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
 
@@ -411,7 +413,7 @@ class WPLoader extends Module
      * Loads WordPress calling the bootstrap file.
      *
      * @throws ModuleConfigException If there's an issue loading the module configuration.
-     * @throws JsonException If there's an issue encoding the error messgae.
+     * @throws JsonException If there's an issue encoding the error message.
      */
     public function _loadWordpress(): void
     {

@@ -26,10 +26,6 @@ class FileStreamWrapper
      */
     private $fileResource;
 
-    public function __construct()
-    {
-    }
-
     public static function setPatcherForFile(string $file, PatcherInterface $patcher): void
     {
         self::$fileToPatcherMap[FS::realpath($file)] = $patcher;

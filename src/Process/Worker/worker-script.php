@@ -1,55 +1,29 @@
 <?php
 
+use lucatume\WPBrowser\Process\Protocol\Request;
+use lucatume\WPBrowser\Process\Protocol\Response;
 use lucatume\WPBrowser\Process\SerializableThrowable;
-use Opis\Closure\SerializableClosure;
 
-[$base64EncodedControl, $base64EncodedSerializedClosure] = array_slice($argv, 1);
-
-$serializedControl = base64_decode($base64EncodedControl);
-$serializedSerializableClosure = base64_decode($base64EncodedSerializedClosure);
-
-/** @var array{autoloadFile: string, requireFiles: array<string>, returnValueSeparator: string} $control */
-$control = array_replace(
-    ['autoloadFile' => '', 'requireFiles' => [], 'cwd' => null, 'returnValueSeparator' => '~=returnValueSep=~'],
-    unserialize($serializedControl, ['allowed_classes' => false])
-);
-
-if (is_file($control['autoloadFile'])) {
-    require_once $control['autoloadFile'];
-}
+$processSrcRoot = __DIR__ . '/..';
+require_once $processSrcRoot . '/Protocol/Parser.php';
+require_once $processSrcRoot . '/Protocol/Control.php';
+require_once $processSrcRoot . '/Protocol/Request.php';
+require_once $processSrcRoot . '/Protocol/ProtocolException.php';
+require_once $processSrcRoot . '/../Utils/ErrorHandling.php';
 
 try {
-    if (count($control['requireFiles'])) {
-        foreach ($control['requireFiles'] as $file) {
-            require_once $file;
-        }
-    }
-
-    if (isset($control['cwd'])) {
-        chdir($control['cwd']);
-    }
-
-    $serializableClosure = unserialize($serializedSerializableClosure, ['allowed_classes' => true]);
-    $exitValue = 0;
+    $request = Request::fromPayload($argv[1]);
+    $serializableClosure = $request->getSerializableClosure();
     $returnValue = $serializableClosure();
 } catch (\Throwable $throwable) {
     $exitValue = 1;
     $returnValue = new SerializableThrowable($throwable);
 }
 
-$returnValueSeparator = $control['returnValueSeparator'];
-$base64EncodedReturnValueStderrPayload = $returnValueSeparator . base64_encode(
-        serialize(
-            (new SerializableClosure(static function () use ($returnValue) {
-                return $returnValue;
-            }))
-        )
-    ) . $returnValueSeparator . base64_encode(
-        serialize([
-            'memoryPeakUsage' => memory_get_peak_usage()
-        ])
-    );
-fwrite(STDERR, $base64EncodedReturnValueStderrPayload, strlen($base64EncodedReturnValueStderrPayload));
+$response = new Response($returnValue);
+$responsePayload = $response->getPayload();
 
-exit($exitValue);
+fwrite(STDERR, $responsePayload, strlen($responsePayload));
+
+exit($response->getExitValue());
 

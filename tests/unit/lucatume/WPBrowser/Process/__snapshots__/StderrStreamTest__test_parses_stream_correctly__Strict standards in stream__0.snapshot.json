@@ -1,0 +1,14 @@
+[
+    {
+        "isException": false,
+        "exceptionClass": null,
+        "date": "17-Mar-2023",
+        "time": "16:54:06",
+        "timezone": "Europe\/Paris",
+        "type": "Strict Standards",
+        "message": "Declaration of Foo::bar() should be compatible with Bar::bar()",
+        "file": "\/src\/Process\/Worker\/worker-script.php ",
+        "line": "15",
+        "trace": []
+    }
+]

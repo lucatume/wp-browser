@@ -1,0 +1,14 @@
+[
+    {
+        "isException": false,
+        "exceptionClass": null,
+        "date": "17-Mar-2023",
+        "time": "16:54:06",
+        "timezone": "Europe\/Paris",
+        "type": "Notice",
+        "message": "Undefined variable: foo",
+        "file": "\/src\/Process\/Worker\/worker-script.php ",
+        "line": "15",
+        "trace": []
+    }
+]
