@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Configuration;
+use Composer\Config;
 
 class Control
 {
@@ -40,6 +41,7 @@ class Control
         }
 
         if (!empty($control['codeceptionConfig']) && class_exists(Configuration::class)) {
+            Configuration::config();
             Configuration::append($control['codeceptionConfig']);
         }
     }
