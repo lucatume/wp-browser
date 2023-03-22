@@ -11,21 +11,24 @@ function print_help() {
   echo "  -r                      Access container as root."
   echo "  -h                      Display this help message."
   echo "Supported COMMANDs"
-  echo "  build            Build the images for the specified PHP version."
-  echo "  clean            Remove the containers and images, remove the wordpress installation."
-  echo "  composer_update  Update the composer dependencies for the specified PHP and Codeception version."
-  echo "  config           Show the docker compose configuration for the specified PHP version."
-  echo "  dc               Execute a docker compose command fore the specified PHP version."
-  echo "  clean_tmp        Remove the var/tmp directory."
-  echo "  deep_clean       Like clean, additionally remove the /var directory."
-  echo "  down             Tears down the containers for the specified PHP version."
-  echo "  exec             Execute a command in a service for the specified PHP version."
-  echo "  logs             Show the logs of the containers for the specified PHP version."
-  echo "  ps               Show the status of the containers for the specified PHP version."
-  echo "  ssh              SSH into a service for the specified PHP version."
-  echo "  up               Starts the containers for the specified PHP version."
-  echo "  xdebug-off       Deactivates XDebug in the WordPress and Codeception service."
-  echo "  xdebug-on        Activates XDebug in the WordPress and Codeception service."
+  echo "  build                 Build the images for the specified PHP version."
+  echo "  clean                 Remove the containers and images, remove the wordpress installation."
+  echo "  composer_update       Update the composer dependencies for the specified PHP and Codeception version."
+  echo "  config                Show the docker compose configuration for the specified PHP version."
+  echo "  create_macos_ramdisk  Create a RAM disk for the /var directory on macOS."
+  echo "  dc                    Execute a docker compose command fore the specified PHP version."
+  echo "  clean_tmp             Remove the var/tmp directory."
+  echo "  deep_clean            Like clean, additionally remove the /var directory."
+  echo "  down                  Tears down the containers for the specified PHP version."
+  echo "  exec                  Execute a command in a service for the specified PHP version."
+  echo "  logs                  Show the logs of the containers for the specified PHP version."
+  echo "  macos_overrides       Apply macOS specific overrides to the docker compose configuration."
+  echo "  remove_macos_ramdisk  Remove the RAM disk for the /var directory on macOS."
+  echo "  ps                    Show the status of the containers for the specified PHP version."
+  echo "  ssh                   SSH into a service for the specified PHP version."
+  echo "  up                    Starts the containers for the specified PHP version."
+  echo "  xdebug-off            Deactivates XDebug in the WordPress and Codeception service."
+  echo "  xdebug-on             Activates XDebug in the WordPress and Codeception service."
 }
 
 # Parse the arguments using getopts
@@ -219,11 +222,14 @@ function clean() {
 }
 
 function clean_tmp() {
-  rm -rf "$(pwd)/var/tmp"
+  if [[ "$OSTYPE" == "darwin"* ]] && [ -f docker-compose.override.yml ] && [ -d /Volumes/WP-Browser-Ram-Disk/ ]; then
+    rm -rf /Volumes/WP-Browser-Ram-Disk/*
+  else
+    rm -rf "$(pwd)/var/tmp"
+  fi
 }
 
 function config() {
-  # Show the docker-compse configuration for the required PHP version.
   docker compose config
 }
 
@@ -257,6 +263,46 @@ function xdebug_on() {
   docker compose exec -u "$(id -u):$(id -g)" codecept bash xdebug-on || exit 1
 }
 
+function create_macos_ramdisk() {
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    echo "Not a macOs system."
+    return
+  fi
+
+  if [ -d "/Volumes/WP-Browser-Ram-Disk" ]; then
+    echo "The /Volumes/WP-Browser-Ram-Disk directory already exists: skipping creation."
+    return
+  fi
+
+  echo "Creating a 6Gb RAM disk at /Volumes/WP-Browser-Ram-Disk ..."
+  sudo diskutil erasevolume HFS+ "WP-Browser-Ram-Disk" $(hdiutil attach -nomount ram://12582912) || exit 1
+}
+
+function remove_macos_ramdisk() {
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    echo "Not a macOs system."
+    return
+  fi
+
+  if [ ! -d "/Volumes/WP-Browser-Ram-Disk" ]; then
+    echo "The /Volumes/WP-Browser-Ram-Disk directory does not exist."
+    return
+  fi
+
+  echo "Removing the /Volumes/WP-Browser-Ram-Disk volume and directory ..."
+  diskutil unmount force /Volumes/WP-Browser-Ram-Disk &&
+    rm -rf /Volumes/WP-Browser-Ram-Disk || exit 1
+}
+
+function place_docker_compose_macos_overrides() {
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    echo "Not a macOs system."
+    return
+  fi
+
+  cp config/docker-compose.macos-override.yml docker-compose.override.yml
+}
+
 COMMAND=${1:-help}
 
 case $COMMAND in
@@ -265,6 +311,8 @@ build)
   ;;
 clean)
   clean
+  remove_macos_ramdisk
+  rm -f docker-compose.override.yml
   ;;
 clean_tmp)
   clean_tmp
@@ -274,6 +322,9 @@ composer_update)
   ;;
 config)
   config
+  ;;
+create_macos_ramdisk)
+  create_macos_ramdisk
   ;;
 dc)
   shift
@@ -297,8 +348,15 @@ help)
 logs)
   docker compose logs -f
   ;;
+macos_overrides)
+  create_macos_ramdisk
+  place_docker_compose_macos_overrides
+  ;;
 ps)
   docker compose ps
+  ;;
+remove_macos_ramdisk)
+  remove_macos_ramdisk
   ;;
 ssh)
   service=${2:-codecept}

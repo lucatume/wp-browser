@@ -8,10 +8,11 @@ vendor/
 # Cache
 var
 
-# Local test configuration files.
+# Local configuration files.
 codeception.yml
 tests/*.suite.yml
 tests/_output
+docker-compose.override.yml
 
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json
