@@ -3,7 +3,7 @@
 namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Configuration;
-use Composer\Config;
+use Codeception\Exception\ConfigurationException;
 
 class Control
 {
@@ -14,35 +14,72 @@ class Control
         $config = class_exists(Configuration::class) ? Configuration::config() : [];
         $this->control = array_replace(
             [
-                'autoloadFile' => $GLOBALS['__composer_autoload_file'] ?? null,
+                'autoloadFile' => $GLOBALS['_composer_autoload_path'] ?? null,
                 'requireFiles' => [],
                 'cwd' => getcwd(),
-                'codeceptionConfig' => $config,
+                'codeceptionRootDir' => null,
+                'codeceptionConfig' => $config
             ],
             $controlArray
         );
     }
 
+    /**
+     * @throws ConfigurationException
+     * @throws ProtocolException
+     */
     public function apply(): void
     {
         $control = $this->control;
 
-        if (is_file($control['autoloadFile'])) {
+        if (isset($control['autoloadFile'])) {
+            if (!is_file($control['autoloadFile'])) {
+                $message = 'Autoload file not found: ' . $control['autoloadFile'];
+                throw new ProtocolException($message, ProtocolException::AUTLOAD_FILE_NOT_FOUND);
+            }
+
             require_once $control['autoloadFile'];
         }
+
         if (count($control['requireFiles'])) {
             foreach ($control['requireFiles'] as $file) {
+                if (!is_file($file)) {
+                    $message = 'Required file not found: ' . $file;
+                    throw new ProtocolException($message, ProtocolException::REQUIRED_FILE_NOT_FOUND);
+                }
                 require_once $file;
             }
         }
 
-        if (isset($control['cwd'])) {
-            chdir($control['cwd']);
-        }
-
         if (!empty($control['codeceptionConfig']) && class_exists(Configuration::class)) {
+            if (!empty($control['codeceptionRootDir'])) {
+                if (!is_dir($control['codeceptionRootDir'])) {
+                    $message = 'Codeception root dir not found: ' . $control['codeceptionRootDir'];
+                    throw new ProtocolException($message, ProtocolException::CODECEPTION_ROOT_DIR_NOT_FOUND);
+                }
+                chdir($control['codeceptionRootDir']);
+                $cwd = getcwd();
+            }
+
             Configuration::config();
             Configuration::append($control['codeceptionConfig']);
+
+            if (isset($cwd)) {
+                chdir($cwd);
+            }
         }
+
+        if (isset($control['cwd'])) {
+            if (!is_dir($control['cwd'])) {
+                $message = 'CWD not found: ' . $control['cwd'];
+                throw new ProtocolException($message, ProtocolException::CWD_NOT_FOUND);
+            }
+            chdir($control['cwd']);
+        }
+    }
+
+    public function toArray(): array
+    {
+        return $this->control;
     }
 }

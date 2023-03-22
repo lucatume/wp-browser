@@ -65,6 +65,7 @@ class Worker implements WorkerInterface
             'autoloadFile' => Composer::autoloadPath(),
             'requireFiles' => [],
             'cwd' => getcwd(),
+            'codeceptionRootDir' => codecept_root_dir(),
             'codeceptionConfig' =>Configuration::config(),
         ];
     }

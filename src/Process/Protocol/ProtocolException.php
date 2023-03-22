@@ -11,4 +11,8 @@ class ProtocolException extends \Exception
     public const MISSING_ENDING_CRLF = 4;
     public const INCORRECT_ENCODING = 5;
     public const DECODE_NEGATIVE_OFFSET = 6;
+    public const AUTLOAD_FILE_NOT_FOUND = 7;
+    public const REQUIRED_FILE_NOT_FOUND = 8;
+    public const CODECEPTION_ROOT_DIR_NOT_FOUND = 9;
+    public const CWD_NOT_FOUND = 10;
 }
