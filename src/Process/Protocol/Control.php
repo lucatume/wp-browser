@@ -18,7 +18,9 @@ class Control
                 'requireFiles' => [],
                 'cwd' => getcwd(),
                 'codeceptionRootDir' => null,
-                'codeceptionConfig' => $config
+                'codeceptionConfig' => $config,
+                'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
+                'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
             ],
             $controlArray
         );
@@ -31,6 +33,24 @@ class Control
     public function apply(): void
     {
         $control = $this->control;
+
+        if (isset($control['composerAutoloadPath'])) {
+            if (!is_file($control['composerAutoloadPath'])) {
+                $message = 'Composer autoload file not found: ' . $control['composerAutoloadPath'];
+                throw new ProtocolException($message, ProtocolException::COMPOSER_AUTOLOAD_FILE_NOT_FOUND);
+            }
+
+            $GLOBALS['_composer_autoload_path'] = $control['composerAutoloadPath'];
+        }
+
+        if (isset($control['composerBinDir'])) {
+            if (!is_dir($control['composerBinDir'])) {
+                $message = 'Composer bin dir not found: ' . $control['composerBinDir'];
+                throw new ProtocolException($message, ProtocolException::COMPOSER_BIN_DIR_NOT_FOUND);
+            }
+
+            $GLOBALS['_composer_bin_dir'] = $control['composerBinDir'];
+        }
 
         if (isset($control['autoloadFile'])) {
             if (!is_file($control['autoloadFile'])) {

@@ -66,8 +66,8 @@ class Loop
     }
 
     /**
-     * @param Closure                                         $closure
-     * @param array{requireFiles: array<string>, cwd: string} $options
+     * @param Closure             $closure
+     * @param array<string,mixed> $options
      *
      * @return Result
      * @throws ProcessException
@@ -80,7 +80,7 @@ class Loop
         $result = reset($results);
         $returnValue = $result->getReturnValue();
 
-        if (!empty($options['rethrow'] && $returnValue instanceof Throwable)) {
+        if (!empty($options['rethrow']) && $returnValue instanceof Throwable) {
             throw $returnValue;
         }
 

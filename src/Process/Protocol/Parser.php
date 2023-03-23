@@ -7,7 +7,7 @@ class Parser
     /**
      * @throws ProtocolException
      */
-    public static function decode(string $input, ?int $offset = 0, ?int $count = null): array
+    public static function decode(string $input, int $offset = 0, ?int $count = null): array
     {
         if ($offset < 0) {
             throw new ProtocolException('Decode offset cannot be negative', ProtocolException::DECODE_NEGATIVE_OFFSET);

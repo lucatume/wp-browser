@@ -13,14 +13,27 @@ class ControlTest extends Unit
 {
     use UopzFunctions;
 
+    private ?string $composerAutoloadPath = null;
+    private ?string $composerBinDir = null;
+
     /**
      * @before
+     */
+    public function backupComposerAutoloadPath(): void
+    {
+        $this->composerAutoloadPath = $GLOBALS['_composer_autoload_path'];
+        $this->composerBinDir = $GLOBALS['_composer_bin_dir'];
+    }
+
+    /**
      * @after
      */
-    public function unsetLoadedEnvVar(): void
+    public function restoreEnv(): void
     {
         putenv('LOADED');
         putenv('LOADED_2');
+        $GLOBALS['_composer_autoload_path'] = $this->composerAutoloadPath;
+        $GLOBALS['_composer_bin_dir'] = $this->composerBinDir;
     }
 
     public function testConstructWithDefaultArguments(): void
@@ -32,7 +45,9 @@ class ControlTest extends Unit
             'requireFiles' => [],
             'cwd' => getcwd(),
             'codeceptionRootDir' => null,
-            'codeceptionConfig' => Configuration::config()
+            'codeceptionConfig' => Configuration::config(),
+            'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'],
+            'composerBinDir' => $GLOBALS['_composer_bin_dir'],
         ], $control->toArray());
     }
 
@@ -43,7 +58,9 @@ class ControlTest extends Unit
             'requireFiles' => ['file1.php', 'file2.php'],
             'cwd' => '/tmp',
             'codeceptionRootDir' => __DIR__,
-            'codeceptionConfig' => ['config' => 'value']
+            'codeceptionConfig' => ['config' => 'value'],
+            'composerAutoloadPath' => 'autoload.php',
+            'composerBinDir' => '/var/bin',
         ]);
 
         $this->assertEquals([
@@ -51,7 +68,9 @@ class ControlTest extends Unit
             'requireFiles' => ['file1.php', 'file2.php'],
             'cwd' => '/tmp',
             'codeceptionRootDir' => __DIR__,
-            'codeceptionConfig' => ['config' => 'value']
+            'codeceptionConfig' => ['config' => 'value'],
+            'composerAutoloadPath' => 'autoload.php',
+            'composerBinDir' => '/var/bin',
         ], $control->toArray());
     }
 
@@ -186,6 +205,48 @@ class ControlTest extends Unit
 
         $control = new Control([
             'cwd' => codecept_data_dir('files/some-dir'),
+        ]);
+        $control->apply();
+    }
+
+    public function testSetsComposerAutoloadPathIfSet(): void
+    {
+        $control = new Control([
+            'composerAutoloadPath' => codecept_data_dir('files/test_file_001.php'),
+        ]);
+        $control->apply();
+
+        $this->assertEquals(codecept_data_dir('files/test_file_001.php'), $GLOBALS['_composer_autoload_path']);
+    }
+
+    public function testThrowsIfComposerAutoloadPathIsNotFile(): void
+    {
+        $this->expectException(ProtocolException::class);
+        $this->expectExceptionCode(ProtocolException::COMPOSER_AUTOLOAD_FILE_NOT_FOUND);
+
+        $control = new Control([
+            'composerAutoloadPath' => codecept_data_dir('files/some-file.php'),
+        ]);
+        $control->apply();
+    }
+
+    public function testSetsComposerBinDirIfSet(): void
+    {
+        $control = new Control([
+            'composerBinDir' => codecept_data_dir('files'),
+        ]);
+        $control->apply();
+
+        $this->assertEquals(codecept_data_dir('files'), $GLOBALS['_composer_bin_dir']);
+    }
+
+    public function testThrowsIfComposerBinDirIsNotDir(): void
+    {
+        $this->expectException(ProtocolException::class);
+        $this->expectExceptionCode(ProtocolException::COMPOSER_BIN_DIR_NOT_FOUND);
+
+        $control = new Control([
+            'composerBinDir' => codecept_data_dir('some-bin-dir'),
         ]);
         $control->apply();
     }

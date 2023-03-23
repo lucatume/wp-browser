@@ -21,7 +21,7 @@ try {
 }
 
 $response = new Response($returnValue);
-$responsePayload = $response->getPayload();
+$responsePayload = Response::$stderrValueSeparator . $response->getPayload();
 
 fwrite(STDERR, $responsePayload, strlen($responsePayload));
 

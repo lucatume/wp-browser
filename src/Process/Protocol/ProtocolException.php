@@ -15,4 +15,6 @@ class ProtocolException extends \Exception
     public const REQUIRED_FILE_NOT_FOUND = 8;
     public const CODECEPTION_ROOT_DIR_NOT_FOUND = 9;
     public const CWD_NOT_FOUND = 10;
+    public const COMPOSER_AUTOLOAD_FILE_NOT_FOUND = 11;
+    public const COMPOSER_BIN_DIR_NOT_FOUND = 12;
 }
