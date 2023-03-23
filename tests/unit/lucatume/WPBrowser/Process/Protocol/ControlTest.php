@@ -32,6 +32,8 @@ class ControlTest extends Unit
     {
         putenv('LOADED');
         putenv('LOADED_2');
+        putenv('LOADED_3');
+        putenv('LOADED_4');
         $GLOBALS['_composer_autoload_path'] = $this->composerAutoloadPath;
         $GLOBALS['_composer_bin_dir'] = $this->composerBinDir;
     }
@@ -209,14 +211,15 @@ class ControlTest extends Unit
         $control->apply();
     }
 
-    public function testSetsComposerAutoloadPathIfSet(): void
+    public function testSetsAndLoadsComposerAutoloadPathIfSet(): void
     {
         $control = new Control([
-            'composerAutoloadPath' => codecept_data_dir('files/test_file_001.php'),
+            'composerAutoloadPath' => codecept_data_dir('files/test_file_004.php'),
         ]);
         $control->apply();
 
-        $this->assertEquals(codecept_data_dir('files/test_file_001.php'), $GLOBALS['_composer_autoload_path']);
+        $this->assertEquals(codecept_data_dir('files/test_file_004.php'), $GLOBALS['_composer_autoload_path']);
+        $this->assertEquals('test_file_004.php', getenv('LOADED_4'));
     }
 
     public function testThrowsIfComposerAutoloadPathIsNotFile(): void

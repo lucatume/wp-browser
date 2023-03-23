@@ -421,14 +421,12 @@ class WPLoaderTest extends Unit
             'dbUser' => $dbUser,
             'dbPassword' => $dbPassword,
         ];
-        // Null the Core PHPUnit bootstrap file to avoid loading it.
-        MonkeyPatch::redirectFileToFile(CorePHPUnit::bootstrapFile(), MonkeyPatch::dudFile());
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($dbName, $dbPassword, $dbUser, $dbHost, $wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
+            self::assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
         });
     }
 

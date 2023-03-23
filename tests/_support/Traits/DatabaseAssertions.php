@@ -3,10 +3,11 @@
 namespace lucatume\WPBrowser\Tests\Traits;
 
 use mysqli;
+use PHPUnit\Framework\Assert;
 
 trait DatabaseAssertions
 {
-    private function assertDatabaseExists(
+    private static function assertDatabaseExists(
         ?string $host = null,
         ?string $user = null,
         ?string $password = null,
@@ -17,14 +18,15 @@ trait DatabaseAssertions
             'user',
             'password',
             'database',
-        ], func_get_args()
+        ],
+            func_get_args()
         ));
         try {
             $mysqli = mysqli_connect($host, $user, $password, $database);
-            $this->assertInstanceOF(mysqli::class, $mysqli, "Failed asserting the database exists $data.");
+            Assert::assertInstanceOF(mysqli::class, $mysqli, "Failed asserting the database exists: $data.");
             $mysqli->close();
         } catch (\Throwable $t) {
-            $this->fail("Failed asserting the database exists $data.");
+            Assert::fail("Failed asserting the database exists: $data.");
         }
     }
 }

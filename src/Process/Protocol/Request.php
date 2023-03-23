@@ -6,18 +6,18 @@ use Opis\Closure\SerializableClosure;
 
 class Request
 {
-    private array $control;
+    private Control $control;
     private SerializableClosure $serializableClosure;
 
-    public function __construct(array $control, SerializableClosure $serializableClosure)
+    public function __construct(array $controlArray, SerializableClosure $serializableClosure)
     {
-        $this->control = $control;
+        $this->control = new Control($controlArray);
         $this->serializableClosure = $serializableClosure;
     }
 
     public function getPayload(): string
     {
-        return Parser::encode([$this->control, $this->serializableClosure]);
+        return Parser::encode([$this->control->toArray(), $this->serializableClosure]);
     }
 
     public static function fromPayload(string $payload): self
@@ -40,6 +40,6 @@ class Request
 
     public function getControl(): Control
     {
-        return new Control($this->control);
+        return clone $this->control;
     }
 }

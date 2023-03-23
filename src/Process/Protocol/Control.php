@@ -39,7 +39,7 @@ class Control
                 $message = 'Composer autoload file not found: ' . $control['composerAutoloadPath'];
                 throw new ProtocolException($message, ProtocolException::COMPOSER_AUTOLOAD_FILE_NOT_FOUND);
             }
-
+            require_once $control['composerAutoloadPath'];
             $GLOBALS['_composer_autoload_path'] = $control['composerAutoloadPath'];
         }
 
