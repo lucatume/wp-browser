@@ -295,4 +295,26 @@ class EmptyDir implements InstallationStateInterface
             InstallationException::STATE_EMPTY
         );
     }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getPluginDir(string $path = ''): string
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
 }

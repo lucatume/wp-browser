@@ -6,6 +6,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
@@ -204,14 +205,14 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->assertEquals('test_', $multisite->getTablePrefix());
         $this->assertTrue($multisite->isConfigured());
         $this->assertEquals([
-            'authKey' => $multisite->getAuthKey(),
-            'secureAuthKey' => $multisite->getSecureAuthKey(),
-            'loggedInKey' => $multisite->getLoggedInKey(),
-            'nonceKey' => $multisite->getNonceKey(),
-            'authSalt' => $multisite->getAuthSalt(),
-            'secureAuthSalt' => $multisite->getSecureAuthSalt(),
-            'loggedInSalt' => $multisite->getLoggedInSalt(),
-            'nonceSalt' => $multisite->getNonceSalt(),
+            'AUTH_KEY' => $multisite->getAuthKey(),
+            'SECURE_AUTH_KEY' => $multisite->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $multisite->getLoggedInKey(),
+            'NONCE_KEY' => $multisite->getNonceKey(),
+            'AUTH_SALT' => $multisite->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $multisite->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $multisite->getLoggedInSalt(),
+            'NONCE_SALT' => $multisite->getNonceSalt(),
         ], $multisite->getSalts());
     }
 
@@ -250,7 +251,7 @@ class MultisiteTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_constants(): void
     {
-        $wpRootDir = FS::tmpDir('configured_');
+        $wpRootDir = FS::tmpDir('multisite_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -304,7 +305,7 @@ class MultisiteTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_globals(): void
     {
-        $wpRootDir = FS::tmpDir('configured_');
+        $wpRootDir = FS::tmpDir('multisite_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -327,5 +328,88 @@ class MultisiteTest extends \Codeception\Test\Unit
         foreach ($expected as $key => $expectedValue) {
             $this->assertArrayHasKey($key, $globals);
         }
+    }
+
+    /**
+     * It should return plugin directory
+     *
+     * @test
+     */
+    public function should_return_plugin_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $multisite->getPluginDir());
+    }
+
+    /**
+     * It should return plugin directory build from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_build_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData())
+            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-content/plugins', $multisite->getPluginDir());
+    }
+
+    /**
+     * It should return plugin directory build from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_build_from_wp_plugin_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData())
+            ->setConst('WP_PLUGIN_DIR', $wpRootDir . '/site-plugins');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-plugins', $multisite->getPluginDir());
+        $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $multisite->getPluginDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/site-plugins/test-plugin', $multisite->getPluginDir('test-plugin'));
     }
 }

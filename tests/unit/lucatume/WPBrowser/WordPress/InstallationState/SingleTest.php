@@ -6,6 +6,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
@@ -405,14 +406,14 @@ class SingleTest extends \Codeception\Test\Unit
         $this->assertEquals('test_', $single->getTablePrefix());
         $this->assertTrue($single->isConfigured());
         $this->assertEquals([
-            'authKey' => $single->getAuthKey(),
-            'secureAuthKey' => $single->getSecureAuthKey(),
-            'loggedInKey' => $single->getLoggedInKey(),
-            'nonceKey' => $single->getNonceKey(),
-            'authSalt' => $single->getAuthSalt(),
-            'secureAuthSalt' => $single->getSecureAuthSalt(),
-            'loggedInSalt' => $single->getLoggedInSalt(),
-            'nonceSalt' => $single->getNonceSalt(),
+            'AUTH_KEY' => $single->getAuthKey(),
+            'SECURE_AUTH_KEY' => $single->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $single->getLoggedInKey(),
+            'NONCE_KEY' => $single->getNonceKey(),
+            'AUTH_SALT' => $single->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $single->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $single->getLoggedInSalt(),
+            'NONCE_SALT' => $single->getNonceSalt(),
         ], $single->getSalts());
     }
 
@@ -451,7 +452,7 @@ class SingleTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_constants(): void
     {
-        $wpRootDir = FS::tmpDir('configured_');
+        $wpRootDir = FS::tmpDir('single_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -498,7 +499,7 @@ class SingleTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_globals(): void
     {
-        $wpRootDir = FS::tmpDir('configured_');
+        $wpRootDir = FS::tmpDir('single_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -521,5 +522,92 @@ class SingleTest extends \Codeception\Test\Unit
         foreach ($expected as $key => $expectedValue) {
             $this->assertArrayHasKey($key, $globals);
         }
+    }
+
+    /**
+     * It should return plugin directory
+     *
+     * @test
+     */
+    public function should_return_plugin_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $single->getPluginDir());
+    }
+
+    /**
+     * It should return plugin directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-content/plugins', $single->getPluginDir());
+    }
+
+    /**
+     * It should return plugin directory built from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_built_from_wp_plugin_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WP_PLUGIN_DIR', $wpRootDir . '/site-plugins');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-plugins', $single->getPluginDir());
+        $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $single->getPluginDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/site-plugins/test-plugin', $single->getPluginDir('test-plugin'));
     }
 }

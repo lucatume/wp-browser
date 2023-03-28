@@ -5,9 +5,9 @@ namespace lucatume\WPBrowser\WordPress;
 use Exception;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use Throwable;
 
 class WPConfigFile
 {
@@ -101,10 +101,8 @@ class WPConfigFile
             $returnValue = $result->getReturnValue();
 
             if ($result->getExitCode() !== 0) {
-                if ($returnValue instanceof SerializableThrowable) {
-                    throw $returnValue;
-                }
-                throw new ProcessException($result->getStderrBuffer());
+                $previous = $returnValue instanceof Throwable ? $returnValue : null;
+                throw new ProcessException($result->getStderrBuffer(), $result->getExitCode(),$previous);
             }
 
             $values = $returnValue;

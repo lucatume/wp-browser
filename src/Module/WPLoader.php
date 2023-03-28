@@ -9,11 +9,13 @@ namespace lucatume\WPBrowser\Module;
 
 use Closure;
 use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleConflictException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Util\Debug;
+use ErrorException;
 use Exception;
 use JsonException;
 use lucatume\WPBrowser\Events\Dispatcher;
@@ -33,12 +35,14 @@ use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
+use lucatume\WPBrowser\WordPress\LoadSandbox;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
 use stdClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * Class WPLoader
@@ -153,6 +157,7 @@ class WPLoader extends Module
      *
      * @var array<string,mixed>
      */
+    // @todo review for unused/deprecated
     protected array $config = [
         'loadOnly' => false,
         'installationTableHandling' => 'empty',
@@ -173,14 +178,14 @@ class WPLoader extends Module
         'plugins' => '',
         'bootstrapActions' => '',
         'theme' => '',
-        'authKey' => '',
-        'secureAuthKey' => '',
-        'loggedInKey' => '',
-        'nonceKey' => '',
-        'authSalt' => '',
-        'secureAuthSalt' => '',
-        'loggedInSalt' => '',
-        'nonceSalt' => '',
+        'AUTH_KEY' => '',
+        'SECURE_AUTH_KEY' => '',
+        'LOGGED_IN_KEY' => '',
+        'NONCE_KEY' => '',
+        'AUTH_SALT' => '',
+        'SECURE_AUTH_SALT' => '',
+        'LOGGED_IN_SALT' => '',
+        'NONCE_SALT' => '',
     ];
 
     /**
@@ -189,11 +194,6 @@ class WPLoader extends Module
      * @var string
      */
     protected string $wpBootstrapFile;
-
-    /**
-     * @var string The absolute path to WP root folder (`ABSPATH`).
-     */
-    protected string $wpRootFolder;
 
     /**
      * The absolute path to the plugins directory.
@@ -213,13 +213,6 @@ class WPLoader extends Module
      * @var FactoryStore
      */
     protected FactoryStore $factoryStore;
-
-    /**
-     * Whether WordPress did load correctly or not.
-     *
-     * @var bool
-     */
-    protected bool $wpDidLoadCorrectly = false;
 
     /**
      * A list of redirections triggered by WordPress during load in the shape location to status codes.
@@ -297,6 +290,8 @@ class WPLoader extends Module
      * @throws JsonException
      * @throws ModuleConfigException
      * @throws ModuleConflictException
+     * @throws ModuleException
+     * @throws ErrorException
      */
     public function _initialize(): void
     {
@@ -328,14 +323,14 @@ class WPLoader extends Module
                 : [];
 
             foreach ([
-                         'authKey',
-                         'secureAuthKey',
-                         'loggedInKey',
-                         'nonceKey',
-                         'authSalt',
-                         'secureAuthSalt',
-                         'loggedInSalt',
-                         'nonceSalt',
+                         'AUTH_KEY',
+                         'SECURE_AUTH_KEY',
+                         'LOGGED_IN_KEY',
+                         'NONCE_KEY',
+                         'AUTH_SALT',
+                         'SECURE_AUTH_SALT',
+                         'LOGGED_IN_SALT',
+                         'NONCE_SALT',
                      ] as $salt) {
                 if (empty($this->config[$salt])) {
                     $this->config[$salt] = $configurationSalts[$salt] ?? Random::salt();
@@ -351,10 +346,9 @@ class WPLoader extends Module
         defined('WP_TESTS_CONFIG_FILE_PATH')
         || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
 
-        // @todo review this: use WP_TESTS_SKIP_INSTALL?
         if (!empty($this->config['loadOnly'])) {
-            $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-            Dispatcher::addListener(WPDb::EVENT_BEFORE_SUITE, [$this, '_loadWordpress']);
+            $this->checkInstallationToLoadOnly();
+            $this->loadWordPressBeforeSuite();
 
             return;
         }
@@ -365,7 +359,7 @@ class WPLoader extends Module
         // Any *Db Module should either not be running or properly configured if this has to run alongside it.
         $this->ensureDbModuleCompat();
 
-        $this->_loadWordpress();
+        $this->loadWordPress();
     }
 
     /**
@@ -390,12 +384,13 @@ class WPLoader extends Module
      */
     protected function ensureDbModuleCompat(): void
     {
-        $interference_candidates = ['Db', 'WPDb'];
+        $dbModules = ['Db', 'WPDb'];
         $allModules = $this->moduleContainer->all();
-        foreach ($interference_candidates as $moduleName) {
+        foreach ($dbModules as $moduleName) {
             if (!$this->moduleContainer->hasModule($moduleName)) {
                 continue;
             }
+
             $module = $allModules[$moduleName];
             $cleanup_config = $module->_getConfig('cleanup');
             if (!empty($cleanup_config)) {
@@ -412,16 +407,15 @@ class WPLoader extends Module
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     * @throws ModuleConfigException If there's an issue loading the module configuration.
-     * @throws JsonException If there's an issue encoding the error message.
+     * @throws ModuleConfigException|JsonException|ErrorException
      */
-    public function _loadWordpress(): void
+    private function loadWordPress(bool $loadOnly = false): void
     {
         $this->loadConfigFiles();
 
-        // @todo review this: still required? Use skip installation?
-        if (!empty($this->config['loadOnly'])) {
-            $this->bootstrapWP();
+        if ($loadOnly) {
+            $loadSandbox = new LoadSandbox($this->installation->getWpRootDir(), $this->config['domain']);
+            $loadSandbox->load();
         } else {
             $this->installAndBootstrapInstallation();
         }
@@ -432,71 +426,6 @@ class WPLoader extends Module
         if (Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode($this->installation->report(),
                     JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        }
-    }
-
-    /**
-     * Defines the globals needed by WordPress to run to user set values.
-     *
-     * The method replaces the "wp-tests-config.php" file the original
-     * testing workflow included to allow run-time customization of the
-     * globals in a Codeception friendly way.
-     *
-     * @return array{WPCEPT_ISOLATED_INSTALL: bool, ABSPATH: string, DB_NAME: mixed, DB_USER: mixed, DB_PASSWORD:
-     *                                        mixed, DB_HOST: mixed, DB_CHARSET: mixed, DB_COLLATE: mixed,
-     *                                        WP_TESTS_TABLE_PREFIX: mixed, WP_TESTS_DOMAIN: mixed, WP_TESTS_EMAIL:
-     *                                        mixed, WP_TESTS_TITLE: mixed, WP_PHP_BINARY: mixed, WPLANG: mixed,
-     *                                        WP_DEBUG: mixed, WP_TESTS_MULTISITE: mixed, WP_PLUGIN_DIR?: string,
-     *                                        WP_CONTENT_DIR?: string} The map of the defined constants.
-     *
-     * @throws ModuleConfigException If a `configFile` parameter is defined in the configuration, but cannot be found.
-     */
-    public function _getConstants(): array
-    {
-        $wpRootFolder = $this->getWpRootFolder();
-
-        $constants = [
-            // By default install WordPress in an isolated process.
-            'ABSPATH' => $wpRootFolder,
-            'DB_NAME' => $this->config['dbName'],
-            'DB_USER' => $this->config['dbUser'],
-            'DB_PASSWORD' => $this->config['dbPassword'],
-            'DB_HOST' => $this->config['dbHost'],
-            'DB_CHARSET' => $this->config['dbCharset'],
-            'DB_COLLATE' => $this->config['dbCollate'],
-            'WP_TESTS_TABLE_PREFIX' => $this->config['tablePrefix'],
-            'WP_TESTS_DOMAIN' => $this->config['domain'],
-            'WP_TESTS_EMAIL' => $this->config['adminEmail'],
-            'WP_TESTS_TITLE' => $this->config['title'],
-            'WP_PHP_BINARY' => $this->config['phpBinary'],
-            'WPLANG' => $this->config['language'],
-            'WP_DEBUG' => $this->config['wpDebug'],
-            'WP_TESTS_MULTISITE' => $this->config['multisite'],
-        ];
-
-        if (!defined('WP_PLUGIN_DIR') && !empty($this->config['pluginsFolder'])) {
-            $constants['WP_PLUGIN_DIR'] = $this->getPluginsFolder();
-        }
-
-        if (!defined('WP_CONTENT_DIR') && !empty($this->config['contentFolder'])) {
-            $constants['WP_CONTENT_DIR'] = $this->getContentFolder();
-        }
-
-        return $constants;
-    }
-
-    /**
-     * Loads an extra configuration file, if specified in the user configuration.
-     *
-     * @param string|null $folder The directory to load configuration files from.
-     *
-     *
-     * @throws ModuleConfigException If the specified configuration file cannot be found.
-     */
-    private function loadConfigFiles(string $folder = null): void
-    {
-        foreach ($this->getConfigFiles($folder) as $configFile) {
-            require_once $configFile;
         }
     }
 
@@ -548,70 +477,6 @@ class WPLoader extends Module
         $this->pluginDir = FS::untrailslashit($resolved);
 
         return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
-    }
-
-    /**
-     * Bootstraps the WordPress installation using the same steps taken by the Core PHPUnit test suite.
-     */
-    protected function bootstrapWP(): void
-    {
-        $this->ensureServerVars();
-
-        $this->setupLoadWatchers();
-        include_once FS::untrailslashit($this->wpRootFolder) . '/wp-load.php';
-        $this->removeLoadWatchers();
-
-        $this->setupCurrentSite();
-    }
-
-    /**
-     * Sets up the required `$_SERVER` variables to ensure the WordPress installation will work correctly.
-     */
-    protected function ensureServerVars(): void
-    {
-        $serverDefaults = [
-            'SERVER_PROTOCOL' => 'HTTP/1.1',
-            'HTTP_HOST' => getenv('WP_DOMAIN') ?: $this->config['domain'],
-        ];
-
-        foreach ($serverDefaults as $key => $value) {
-            if (empty($_SERVER[$key])) {
-                $_SERVER[$key] = $value;
-            }
-        }
-    }
-
-    /**
-     * Sets up the `current_site` global handling multisite and single site
-     * installation cases.
-     */
-    protected function setupCurrentSite(): void
-    {
-        /** @var wpdb $wpdb */
-        global $current_site, $wpdb;
-
-        $current_site = new stdClass;
-
-        if (!empty($wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}blogs'"))) {
-            $query = "SELECT domain, path  FROM {$wpdb->prefix}blogs WHERE blog_id = 1 AND site_id = 1";
-            $data = $wpdb->get_row($query);
-            $current_site->domain = $data->domain;
-            $current_site->path = $data->path;
-            $current_site->site_name = ucfirst($data->domain);
-        } else {
-            $site_url = $wpdb->get_var("SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'");
-            if (!empty($site_url)) {
-                $current_site->domain = parse_url($site_url, PHP_URL_HOST);
-                if ($port = parse_url($site_url, PHP_URL_PORT)) {
-                    $current_site->domain .= ":{$port}";
-                }
-            } else {
-                $current_site->domain = $this->config['domain'];
-            }
-            $current_site->path = '/';
-        }
-        $current_site->site_name = ucfirst($current_site->domain);
-        $current_site->id = 1;
     }
 
     private function filterActivePlugins(): void
@@ -761,7 +626,7 @@ class WPLoader extends Module
      * @param OutputInterface|null $output An output stream.
      * @throws JsonException If there's an issue debugging the error.
      */
-    public function _wordPressExitHandler(OutputInterface $output = null): void
+    private function handleWordPressExit(OutputInterface $output = null): void
     {
         $output = $output ?: new ConsoleOutput();
 
@@ -827,50 +692,9 @@ class WPLoader extends Module
     }
 
     /**
-     * Returns the current redirect handler callback.
-     *
-     * @param string $location The redirect location.
-     * @param int    $status   The redirection status code.
-     *
-     * @return string The redirect location.
-     */
-    public function _wordPressRedirectHandler($location, $status): string
-    {
-        $this->loadRedirections [$location] = $status;
-
-        codecept_debug(sprintf(
-            'WordPress redirected to [%s] with status [%s] before exiting.',
-            $location,
-            $status
-        ));
-
-        return $location;
-    }
-
-    /**
-     * Sets up the load watchers.
-     */
-    protected function setupLoadWatchers(): void
-    {
-        register_shutdown_function([$this, '_wordPressExitHandler']);
-        tests_add_filter('wp_redirect', [$this, '_wordPressRedirectHandler'], 0, 2);
-        $this->loadRedirections = [];
-    }
-
-    /**
-     * Removes the set load watchers.
-     */
-    protected function removeLoadWatchers(): void
-    {
-        $this->wpDidLoadCorrectly = true;
-        remove_filter('wp_redirect', [$this, '_wordPressRedirectHandler'], 0);
-        $this->loadRedirections = [];
-    }
-
-    /**
      * Instantiates and sets up the factory store that will be available on the suite tester.
      */
-    protected function setupFactoryStore(): void
+    private function setupFactoryStore(): void
     {
         $this->factoryStore = new FactoryStore();
     }
@@ -878,34 +702,26 @@ class WPLoader extends Module
     /**
      * Returns an array of the configuration files specified with the `configFile` parameter of the module configuarion.
      *
-     * @param string|null $root   The start directory to search for configuration files. If not found in the starting
-     *                            directory, then files will be searched in the directory parents.
-     *
-     * @return array<int,string|false> An array of configuration files absolute paths.
-     *
      * @throws ModuleConfigException If a specified configuration file does not exist.
      */
-    private function getConfigFiles(string $root = null): array
+    private function loadConfigFiles(): void
     {
-        $root = $root ?: codecept_root_dir();
-
         $candidates = $this->config['configFile'];
         $configFiles = [];
+        $candidates = array_filter((array)$candidates);
 
-        foreach ((array)$candidates as $candidate) {
-            if (!empty($candidate)) {
-                $configFile = (string)FS::findHereOrInParent($candidate, $root);
-                if (!is_file($configFile)) {
-                    throw new ModuleConfigException(
-                        __CLASS__,
-                        "\nConfig file `{$candidate}` could not be found in WordPress root folder or above."
-                    );
-                }
-                $configFiles[] = $configFile;
+        foreach ($candidates as $candidate) {
+            $configFile = FS::realpath($candidate);
+
+            if ($configFile === false || !is_file($configFile)) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "\nConfig file `{$candidate}` could not be found in WordPress root folder or above."
+                );
             }
-        }
 
-        return array_unique($configFiles);
+            require_once $configFile;
+        }
     }
 
     /**
@@ -955,7 +771,7 @@ class WPLoader extends Module
         return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
     }
 
-    protected function getStylesheetTemplateFromConfig(): array
+    private function getStylesheetTemplateFromConfig(): array
     {
         [$template, $stylesheet] = array_replace([null, null], (array)$this->config['theme']);
         $template = $template ?: $this->config['theme'];
@@ -1014,5 +830,41 @@ class WPLoader extends Module
     public function getInstallation(): Installation
     {
         return $this->installation;
+    }
+
+    private function loadWordPressBeforeSuite(): void
+    {
+        $this->debug('WPLoader module will load WordPress when all other modules initialized.');
+
+        Dispatcher::addListener(Events::SUITE_BEFORE, function () {
+            $this->loadWordPress(true);
+        }, -100);
+    }
+
+    /**
+     * @throws ModuleException
+     * @throws ModuleConfigException
+     */
+    private function checkInstallationToLoadOnly(): void
+    {
+        if (!$this->installation->isConfigured()) {
+            $dir = $this->installation->getWpRootDir();
+            throw new ModuleException(
+                __CLASS__,
+                'The WPLoader module is configured to load WordPress only,' .
+                " but the WordPress installation at {$dir} is not configured."
+            );
+        }
+
+        $domain = getenv('WP_DOMAIN') ?: $this->config['domain'];
+
+        if (empty($domain)) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'When using the WPLoader module to load WordPress,' .
+                ' the `domain` configuration parameter must be set.'
+            );
+        }
+
     }
 }

@@ -2,52 +2,114 @@
 
 namespace lucatume\WPBrowser\Process;
 
-use Exception;
-use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
+use lucatume\WPBrowser\Utils\Serializer;
+use ReflectionException;
 use Throwable;
 
-class SerializableThrowable extends Exception implements \Serializable{
-    private array $serializableData;
-    private string $wrappedThrowableClass;
+class SerializableThrowable
+{
+    public const RELATIVE_PAHTNAMES = 1;
 
-    public function __construct(Throwable $t)
+    private Throwable $throwable;
+    private array $trace;
+    private string $file;
+    private int $line;
+    private int $code;
+    private string $message;
+
+    public function __construct(Throwable $throwable)
     {
-        $message = $t->getMessage();
-        $code = $t->getCode();
-        parent::__construct($message, $code, null);
-        $this->serializableData = [
-            'message' => $message,
-            'code' => $code,
-            'file' => $t->getFile(),
-            'line' => $t->getLine(),
-            'trace' => ErrorHandling::makeTraceSerializable($t->getTrace()),
-            'traceAsString' => $t->getTraceAsString(),
-            'wrappedThrowableClass' => get_class($t),
+        $this->throwable = Serializer::makeThrowableSerializable($throwable);
+        $this->message = $throwable->getMessage();
+        $this->code = $throwable->getCode();
+        $trace = $throwable->getTrace();
+        foreach ($trace as $traceEntry) {
+            unset($trace['args']);
+        }
+        $this->trace = $trace;
+        $this->file = $throwable->getFile();
+        $this->line = $throwable->getLine();
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'throwable' => $this->throwable,
+            'message' => $this->message,
+            'code' => $this->code,
+            'file' => $this->file,
+            'line' => $this->line,
+            'trace' => $this->trace,
         ];
     }
 
-    public function serialize()
+    public function __unserialize(array $data): void
     {
-        return serialize($this->serializableData);
-    }
-
-    public function unserialize(string $data)
-    {
-        $this->serializableData = unserialize($data, ['allowed_classes' => [self::class]]);
-        $this->message = $this->serializableData['message'];
-        $this->code = $this->serializableData['code'];
-        $this->file = $this->serializableData['file'];
-        $this->line = $this->serializableData['line'];
-        $this->wrappedThrowableClass = $this->serializableData['wrappedThrowableClass'];
-        Property::setPrivateProperties($this, [
-            'trace' => $this->serializableData['trace'],
-            'traceAsString' => $this->serializableData['traceAsString']
+        $this->throwable = $data['throwable'];
+        Property::setPrivateProperties($this->throwable, [
+            'message' => $data['message'],
+            'trace' => $this->prettyPrintTrace($data['trace']),
+            'file' => $data['file'],
+            'line' => $data['line'],
+            'code' => $data['code'],
         ]);
     }
 
-    public function getWrappedThrowableClass(): string
+    public function getThrowable(int $options = 0): Throwable
     {
-        return $this->wrappedThrowableClass;
+        if ($options & self::RELATIVE_PAHTNAMES) {
+            $this->makeTraceFilesRelative();
+        }
+
+        return $this->throwable;
+    }
+
+    private function prettyPrintTrace(array $trace): array
+    {
+        $updatedTrace = [];
+        foreach ($trace as $k => $traceEntry) {
+            if (!(isset($traceEntry['file']) && str_contains($traceEntry['file'], 'closure://'))) {
+                $updatedTrace[$k] = $traceEntry;
+                continue;
+            }
+
+            $line = $traceEntry['line'];
+            $correctLine = $line - 2;
+            if ($correctLine < 1) {
+                $updatedTrace[$k] = $traceEntry;
+                continue;
+            }
+            $lines = explode("\n", $traceEntry['file']);
+            $linesCount = count($lines);
+            for ($i = 1; $i < $linesCount; $i++) {
+                $linePrefix = ($i === $correctLine ? '>' : '') . " $i|";
+                $lines[$i] = str_pad($linePrefix, 5, ' ', STR_PAD_LEFT) . $lines[$i];
+            }
+            $lines[$i - 1] = preg_replace('~}:\\d+~', '', $lines[$i - 1]);
+            $traceEntry['file'] = implode(PHP_EOL, $lines);
+            $traceEntry['line'] = $correctLine;
+            $updatedTrace[$k] = $traceEntry;
+        }
+        return $updatedTrace;
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    protected function makeTraceFilesRelative(): void
+    {
+        $relativePathnameTrace = [];
+        foreach ($this->throwable->getTrace() as $k => $traceEntry) {
+            if (!isset($traceEntry['file']) || str_contains($traceEntry['file'], 'closure://')) {
+                $relativePathnameTrace[$k] = $traceEntry;
+                continue;
+            }
+            $traceEntry['file'] = str_replace(getcwd(), '', $traceEntry['file']);
+            $relativePathnameTrace[$k] = $traceEntry;
+        }
+        Property::setPrivateProperties($this->throwable, [
+            'trace' => $relativePathnameTrace,
+        ]);
     }
 }

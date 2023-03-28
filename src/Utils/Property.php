@@ -38,7 +38,7 @@ class Property
     /**
      * Sets private and protected properties for an object of a class.
      *
-     * @param object              $object The object to set the properties of.
+     * @param object|null         $object $object The object to set the properties of, `null` if using a class.
      * @param string              $class  The object class to set the properties for.
      * @param array<string,mixed> $props  A map of the names and values of the properties to set.
      *
@@ -46,7 +46,7 @@ class Property
      *
      * @throws ReflectionException If there's an issue reflecting on the object or its properties.
      */
-    public static function setPropertiesForClass(object $object, string $class, array $props): object
+    public static function setPropertiesForClass(?object $object, string $class, array $props): object
     {
         // @phpstan-ignore-next-line
         $reflectedEntity = new ReflectionClass($class);
@@ -95,10 +95,13 @@ class Property
      */
     public static function setPrivateProperties(object|string $object, array $props): void
     {
-        if (!is_object($object)) {
-            throw new InvalidArgumentException('Object is not an object.');
+        if (is_string($object)) {
+            $class = $object;
+            $object = null;
+        } else {
+            $class = $object::class;
         }
-        $class = $object::class;
+
         do {
             $object = self::setPropertiesForClass($object, $class, $props);
             $class = get_parent_class($class);

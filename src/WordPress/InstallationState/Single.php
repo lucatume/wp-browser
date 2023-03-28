@@ -14,6 +14,7 @@ class Single implements InstallationStateInterface
     use WordPressChecks;
     use ConfiguredStateTrait;
     use ScaffoldedStateTrait;
+    use InstalledTrait;
 
     /**
      * @throws InstallationException|ProcessException|DbException

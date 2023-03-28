@@ -34,10 +34,12 @@ trait LoopIsolation
 
         $options['cwd'] = !empty($options['cwd']) ? $options['cwd'] : getcwd();
 
-        $result = Loop::executeClosure($runAssertions, $options);
+        $result = Loop::executeClosure($runAssertions, 30, $options);
         $returnValue = $result->getReturnValue();
 
         if (! $returnValue instanceof \Throwable && $result->getExitCode() !== 0) {
+            codecept_debug('STDOUT: ' . $result->getStdoutBuffer());
+            codecept_debug('STDERR: ' . $result->getStderrBuffer());
             $this->fail('Loop execution failed with exit code ' . $result->getExitCode());
         }
 

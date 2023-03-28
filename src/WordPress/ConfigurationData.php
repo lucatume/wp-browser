@@ -15,12 +15,15 @@ class ConfigurationData
     private ?string $loggedInSalt = null;
     private ?string $nonceSalt = null;
     private ?string $extraPHP = null;
+    private array $extraConstants = [];
 
     public static function fromArray(array $array): ConfigurationData
     {
         $instance = new self;
         foreach ($array as $key => $value) {
-            $method = 'set' . ucfirst($key);
+            // From SOME_KEY to SomeKey
+            $key = implode('', array_map('ucfirst', explode('_', strtolower($key))));
+            $method = 'set' . $key;
 
             if (!method_exists($instance, $method)) {
                 throw new \InvalidArgumentException("Invalid configuration key: {$key}");
@@ -165,6 +168,28 @@ class ConfigurationData
 
     public function getExtraPHP(): ?string
     {
-        return $this->extraPHP;
+        $extraConstants = implode(PHP_EOL,
+            array_map(
+                static function ($const, string|int|float|bool|null $value) {
+                    if (is_bool($value)) {
+                        $value = $value ? 'true' : 'false';
+                    } elseif (is_null($value)) {
+                        $value = 'null';
+                    } elseif (is_string($value)) {
+                        $value = "'$value'";
+                    }
+                    return "define( '$const', $value );";
+                },
+                array_keys($this->extraConstants),
+                $this->extraConstants
+            ));
+        return $extraConstants . PHP_EOL . $this->extraPHP;
+    }
+
+    public function setConst(string $const, string|int|float|bool|null $value): self
+    {
+        $this->extraConstants[$const] = $value;
+
+        return $this;
     }
 }

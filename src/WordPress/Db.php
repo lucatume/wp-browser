@@ -15,7 +15,7 @@ class Db
     private string $dbUser;
     private string $dsn;
     private string $tablePrefix;
-    private array $optionsCache = [];
+    private string $dbUrl;
 
     /**
      * @throws DbException
@@ -40,6 +40,12 @@ class Db
         $this->dbHost = $dbHost;
         $this->tablePrefix = $tablePrefix;
         $this->dsn = DbUtil::dbDsnString(DbUtil::dbDsnMap($dbHost));
+        $this->dbUrl = sprintf('mysql://%s:%s@%s/%s',
+            $dbUser,
+            $dbPassword,
+            $dbHost,
+            $dbName
+        );
     }
 
     /**
@@ -84,7 +90,7 @@ class Db
     /**
      * @throws DbException
      */
-    public function pdo(): PDO
+    public function getPDO(): PDO
     {
         if (!$this->pdo instanceof PDO) {
             try {
@@ -109,7 +115,7 @@ class Db
      */
     public function create(): self
     {
-        if ($this->pdo()->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
+        if ($this->getPDO()->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
             throw new DbException(
                 'Could not create database ' . $this->dbName . ':' . json_encode($this->pdo->errorInfo()),
                 DbException::FAILED_QUERY
@@ -123,39 +129,29 @@ class Db
     /**
      * @throws DbException
      */
-    public function drop(): void
+    public function drop(): self
     {
-        if ($this->pdo()->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
+        if ($this->getPDO()->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
             throw new DbException(
                 'Could not drop database ' . $this->dbName . ': ' . json_encode($this->pdo->errorInfo()),
                 DbException::FAILED_QUERY
             );
         }
+
+        return $this;
     }
 
     public function exists(): bool
     {
-        $result = $this->pdo()->query("SHOW DATABASES LIKE '$this->dbName'", PDO::FETCH_COLUMN, 0);
+        $result = $this->getPDO()->query("SHOW DATABASES LIKE '$this->dbName'", PDO::FETCH_COLUMN, 0);
         $matches = iterator_to_array($result, false);
         return !empty($matches);
-    }
-
-    public function getOption(string $optionName, mixed $default = null): mixed
-    {
-        if (!isset($this->optionsCache[$optionName])) {
-            $statement = $this->pdo()->prepare("SELECT option_value FROM {$this->tablePrefix}options WHERE option_name = :option_name");
-            $executed = $statement->execute(['option_name' => $optionName]);
-            $optionValue = $executed ? $statement->fetchColumn() : null;
-            $this->optionsCache[$optionName] = Serializer::maybeUnserialize($optionValue);
-        }
-
-        return $this->optionsCache[$optionName] ?? $default;
     }
 
     /**
      * @throws DbException
      */
-    private function useDb(string $dbName): void
+    public function useDb(string $dbName): self
     {
         if ($this->pdo->query('USE ' . $dbName) === false) {
             throw new DbException(
@@ -163,5 +159,73 @@ class Db
                 DbException::FAILED_QUERY
             );
         }
+
+        return $this;
+    }
+
+    /**
+     * @throws DbException
+     */
+    public function query(string $query, array $params = []): int
+    {
+        $statement = $this->getPDO()->prepare($query);
+        $executed = $statement->execute($params);
+        if ($executed === false) {
+            throw new DbException(
+                'Could not execute query ' . $query . ': ' . json_encode($statement->errorInfo(), JSON_PRETTY_PRINT),
+                DbException::FAILED_QUERY
+            );
+        }
+        return $statement->rowCount();
+    }
+
+    public function getDsn(): string
+    {
+        return $this->dsn;
+    }
+
+    public function getDbUrl(): string
+    {
+        return $this->dbUrl;
+    }
+
+    /**
+     * @throws DbException
+     */
+    public function updateOption(string $name, mixed $value): int
+    {
+        $table = $this->getTablePrefix() . 'options';
+        return $this->query(
+            "INSERT INTO $table (option_name, option_value) VALUES (:name, :value) ON DUPLICATE KEY UPDATE option_value = :value",
+            ['value' => Serializer::maybeSerialize($value), 'name' => $name]
+        );
+    }
+
+    /**
+     * @throws DbException
+     */
+    public function getOption(string $name, mixed $default = null): mixed
+    {
+        $table = $this->getTablePrefix() . 'options';
+        $query = "SELECT option_value FROM $table WHERE option_name = :name";
+
+        return $this->fetchFirst($query, ['name' => $name], $default);
+    }
+
+    /**
+     * @throws DbException
+     */
+    private function fetchFirst(string $query, array $parameters = [], mixed $default = null): mixed
+    {
+        $statement = $this->getPDO()->prepare($query);
+        $executed = $statement->execute($parameters);
+        if ($executed === false) {
+            throw new DbException(
+                'Could not execute query ' . $query . ': ' . json_encode($statement->errorInfo(), JSON_PRETTY_PRINT),
+                DbException::FAILED_QUERY
+            );
+        }
+        $value = $statement->fetchColumn();
+        return $value === false ? $default : Serializer::maybeUnserialize($value);
     }
 }

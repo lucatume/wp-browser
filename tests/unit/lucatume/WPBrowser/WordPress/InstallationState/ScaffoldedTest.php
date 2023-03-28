@@ -485,4 +485,21 @@ PHP;
         $this->assertCount(1, $globals);
         $this->assertEquals('wp_', $globals['table_prefix']);
     }
+
+    /**
+     * It should return plugin directory
+     *
+     * @test
+     */
+    public function should_return_plugin_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/', $scaffolded->getPluginDir());
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php', $scaffolded->getPluginDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/test-plugin', $scaffolded->getPluginDir('test-plugin'));
+    }
 }

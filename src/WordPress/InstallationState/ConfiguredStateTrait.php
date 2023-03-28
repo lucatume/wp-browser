@@ -10,7 +10,6 @@ use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 trait ConfiguredStateTrait
 {
-
     private WPConfigFile $wpConfigFile;
     private string $wpRootDir;
     private Db $db;
@@ -112,14 +111,14 @@ trait ConfiguredStateTrait
     public function getSalts(): array
     {
         return [
-            'authKey' => $this->getAuthKey(),
-            'secureAuthKey' => $this->getSecureAuthKey(),
-            'loggedInKey' => $this->getLoggedInKey(),
-            'nonceKey' => $this->getNonceKey(),
-            'authSalt' => $this->getAuthSalt(),
-            'secureAuthSalt' => $this->getSecureAuthSalt(),
-            'loggedInSalt' => $this->getLoggedInSalt(),
-            'nonceSalt' => $this->getNonceSalt(),
+            'AUTH_KEY' => $this->getAuthKey(),
+            'SECURE_AUTH_KEY' => $this->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $this->getLoggedInKey(),
+            'NONCE_KEY' => $this->getNonceKey(),
+            'AUTH_SALT' => $this->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $this->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $this->getLoggedInSalt(),
+            'NONCE_SALT' => $this->getNonceSalt(),
         ];
     }
 
@@ -148,5 +147,22 @@ trait ConfiguredStateTrait
     public function getGlobals(): array
     {
         return $this->wpConfigFile->getVariables();
+    }
+
+    public function getPluginDir(string $path = ''): string
+    {
+        $pluginsDir = rtrim($this->wpRootDir, '\\/') . '/wp-content/plugins';
+
+        if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
+            $pluginsDir = $wpContentDirConst . '/plugins';
+        }
+
+        if ($wpPluginDirConst = $this->getConstant('WP_PLUGIN_DIR')) {
+            $pluginsDir = $wpPluginDirConst;
+        }
+
+        $pluginsDir = rtrim($pluginsDir, '\\/');
+
+        return $path ? $pluginsDir . '/' . ltrim($path, '\\/') : $pluginsDir;
     }
 }

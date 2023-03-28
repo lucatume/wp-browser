@@ -15,6 +15,7 @@ class Multisite implements InstallationStateInterface
     use WordPressChecks;
     use ScaffoldedStateTrait;
     use ConfiguredStateTrait;
+    use InstalledTrait;
 
     /**
      * @throws InstallationException|ProcessException|DbException

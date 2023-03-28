@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use PHPUnit\Framework\ExpectationFailedException;
+use SebastianBergmann\Comparator\ComparisonFailure;
+use Throwable;
+
 /**
  * Class Serializer.
  *
@@ -44,6 +48,31 @@ class Serializer
 
     public static function maybeSerialize(mixed $value): mixed
     {
-        return is_array($value) || is_object($value) ? serialize($value) : $value;
+        return is_array($value) || is_object($value) || $value === null ? serialize($value) : $value;
+    }
+
+    public static function makeThrowableSerializable(Throwable $throwable): Throwable
+    {
+        $trace = Property::readPrivate($throwable, 'trace');
+        foreach ($trace as &$traceEntry) {
+            unset($traceEntry['args']);
+        }
+
+        Property::setPrivateProperties($throwable, ['trace' => $trace]);
+
+        if ($throwable instanceof ExpectationFailedException) {
+            // @see https://github.com/sebastianbergmann/comparator/pull/47
+            $comparisonFailure = $throwable->getComparisonFailure();
+            if ($comparisonFailure instanceof ComparisonFailure) {
+                self::makeThrowableSerializable($comparisonFailure);
+            }
+        }
+
+        $previous = $throwable->getPrevious();
+        if ($previous instanceof Throwable) {
+            self::makeThrowableSerializable($previous);
+        }
+
+        return $throwable;
     }
 }

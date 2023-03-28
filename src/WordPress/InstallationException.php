@@ -28,4 +28,35 @@ class InstallationException extends Exception
     public const WRITE_ERROR = 21;
     public const WP_CONFIG_FILE_MISSING_PLACEHOLDER = 22;
     public const DELETE_ERROR = 23;
+    public const LOAD_FAIL = 24;
+    public const NOT_INSTALLED = 25;
+    public const MULTISITE_SUBDOMAIN_NOT_INSTALLED = 26;
+    public const MULTISITE_SUBFOLDER_NOT_INSTALLED = 27;
+    public const ERROR_DURING_LOADING = 28;
+
+    public static function becauseWordPressFailedToLoad(string $bodyContent): self
+    {
+        return new self(
+            'WordPress failed to load for the following reason: ' . lcfirst(rtrim($bodyContent, '.') . '.'),
+            self::LOAD_FAIL
+        );
+    }
+
+    public static function becauseWordPressIsNotInstalled(): self
+    {
+        return new self(
+            'WordPress is not installed.',
+            self::NOT_INSTALLED
+        );
+    }
+
+    public static function becauseWordPressMultsiteIsNotInstalled(bool $isSubdomainInstall): self
+    {
+        if ($isSubdomainInstall) {
+            return new self('WordPress multisite (sub-domain) is not installed.',
+                self::MULTISITE_SUBDOMAIN_NOT_INSTALLED);
+        }
+
+        return new self('WordPress multisite (sub-folder) is not installed.', self::MULTISITE_SUBFOLDER_NOT_INSTALLED);
+    }
 }

@@ -3,6 +3,7 @@
 use lucatume\WPBrowser\Process\Protocol\Request;
 use lucatume\WPBrowser\Process\Protocol\Response;
 use lucatume\WPBrowser\Process\SerializableThrowable;
+use lucatume\WPBrowser\Utils\Serializer;
 
 $processSrcRoot = __DIR__ . '/..';
 require_once $processSrcRoot . '/Protocol/Parser.php';

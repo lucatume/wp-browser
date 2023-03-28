@@ -53,6 +53,7 @@ class Running implements WorkerInterface
 
     private string $stdoutBuffer = '';
     private string $stderrBuffer = '';
+    private bool $didExtractReturnValueFromStderr = false;
 
     public function __construct(
         string $id,
@@ -273,7 +274,13 @@ class Running implements WorkerInterface
 
     private function extractReturnValueFromStderr(): void
     {
+        if ($this->didExtractReturnValueFromStderr) {
+            return;
+        }
+
         $stderrBufferString = $this->stderrBuffer;
+
+        $this->didExtractReturnValueFromStderr = true;
 
         if (empty($stderrBufferString)) {
             return;

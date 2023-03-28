@@ -65,11 +65,11 @@ class WpConfigFileGeneratorTest extends Unit
     }
 
     /**
-     * It should correctly produce a wp-confing.php file contents provided db and configuration data
+     * It should correctly produce a wp-config.php file contents provided db and configuration data
      *
      * @test
      */
-    public function should_correctly_produce_a_wp_confing_php_file_contents_provided_db_and_configuration_data(): void
+    public function should_correctly_produce_a_wp_config_php_file_contents_provided_db_and_configuration_data(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
         Installation::scaffold($wpRootDir, '6.1.1');
@@ -87,6 +87,42 @@ class WpConfigFileGeneratorTest extends Unit
         $configurationData->setSecureAuthSalt('secure-auth-salt');
         $configurationData->setLoggedInSalt('logged-in-salt');
         $configurationData->setNonceSalt('nonce-salt');
+
+        $generator = new WpConfigFileGenerator($wpRootDir);
+        $produced = $generator->produce($db, $configurationData);
+
+        $this->assertMatchesCodeSnapshot($produced);
+    }
+
+    /**
+     * It should correctly produce a wp-config.php file with custom constants
+     *
+     * @test
+     */
+    public function should_correctly_produce_a_wp_config_php_file_with_custom_constants(): void
+    {
+        $wpRootDir = FS::tmpDir('wp-config_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $dbName = 'test_123';
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $configurationData = new ConfigurationData();
+        $configurationData->setAuthKey('auth-key');
+        $configurationData->setSecureAuthKey('secure-auth-key');
+        $configurationData->setLoggedInKey('logged-in-key');
+        $configurationData->setNonceKey('nonce-key');
+        $configurationData->setAuthSalt('auth-salt');
+        $configurationData->setSecureAuthSalt('secure-auth-salt');
+        $configurationData->setLoggedInSalt('logged-in-salt');
+        $configurationData->setNonceSalt('nonce-salt');
+        $configurationData->setConst('FOO','BAR');
+        $configurationData->setConst('BAR',23);
+        $configurationData->setConst('BAZ',23.89);
+        $configurationData->setConst('BAZBAR',true);
+        $configurationData->setConst('BAZBARFOO',false);
+        $configurationData->setConst('NULL_CONST',null);
 
         $generator = new WpConfigFileGenerator($wpRootDir);
         $produced = $generator->produce($db, $configurationData);

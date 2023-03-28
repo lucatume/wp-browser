@@ -231,4 +231,14 @@ class Installation
 
         return $checksMap;
     }
+
+    public function getPluginDir(string $path = ''): string
+    {
+        return $this->installationState->getPluginDir($path);
+    }
+
+    public function updateOption(string $option, array $value): int
+    {
+        return $this->installationState->updateOption($option, $value);
+    }
 }

@@ -173,14 +173,14 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = ConfigurationData::fromArray([
-            'authKey' => 'auth-key-salt',
-            'secureAuthKey' => 'secure-auth-key-salt',
-            'loggedInKey' => 'logged-in-key-salt',
-            'nonceKey' => 'nonce-key-salt',
-            'authSalt' => 'auth-salt-salt',
-            'secureAuthSalt' => 'secure-auth-salt',
-            'loggedInSalt' => 'logged-in-salt',
-            'nonceSalt' => 'nonce-salt-salt'
+            'AUTH_KEY' => 'auth-key-salt',
+            'SECURE_AUTH_KEY' => 'secure-auth-key-salt',
+            'LOGGED_IN_KEY' => 'logged-in-key-salt',
+            'NONCE_KEY' => 'nonce-key-salt',
+            'AUTH_SALT' => 'auth-salt-salt',
+            'SECURE_AUTH_SALT' => 'secure-auth-salt',
+            'LOGGED_IN_SALT' => 'logged-in-salt',
+            'NONCE_SALT' => 'nonce-salt-salt'
         ]);
         Installation::scaffold($wpRootDir)->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData);
 
@@ -449,14 +449,14 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $this->assertEquals('test_', $configured->getTablePrefix());
         $this->assertTrue($configured->isConfigured());
         $this->assertEquals([
-            'authKey' => $configured->getAuthKey(),
-            'secureAuthKey' => $configured->getSecureAuthKey(),
-            'loggedInKey' => $configured->getLoggedInKey(),
-            'nonceKey' => $configured->getNonceKey(),
-            'authSalt' => $configured->getAuthSalt(),
-            'secureAuthSalt' => $configured->getSecureAuthSalt(),
-            'loggedInSalt' => $configured->getLoggedInSalt(),
-            'nonceSalt' => $configured->getNonceSalt(),
+            'AUTH_KEY' => $configured->getAuthKey(),
+            'SECURE_AUTH_KEY' => $configured->getSecureAuthKey(),
+            'LOGGED_IN_KEY' => $configured->getLoggedInKey(),
+            'NONCE_KEY' => $configured->getNonceKey(),
+            'AUTH_SALT' => $configured->getAuthSalt(),
+            'SECURE_AUTH_SALT' => $configured->getSecureAuthSalt(),
+            'LOGGED_IN_SALT' => $configured->getLoggedInSalt(),
+            'NONCE_SALT' => $configured->getNonceSalt(),
         ], $configured->getSalts());
         $this->assertEquals($dbName, $configured->getConstant('DB_NAME'));
         $this->assertEquals($dbHost, $configured->getConstant('DB_HOST'));
@@ -554,5 +554,67 @@ class ConfiguredTest extends \Codeception\Test\Unit
         foreach ($expected as $key => $expectedValue) {
             $this->assertArrayHasKey($key, $globals);
         }
+    }
+
+    /**
+     * It should return plugin directory
+     *
+     * @test
+     */
+    public function should_return_plugin_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $configured->getPluginDir());
+    }
+
+    /**
+     * It should return plugin directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/site-content/plugins', $configured->getPluginDir());
+
+    }
+
+    /**
+     * It should return plugin directory built from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_plugin_directory_built_from_wp_plugin_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_PLUGIN_DIR', $wpRootDir . '/plugins'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/plugins', $configured->getPluginDir());
     }
 }

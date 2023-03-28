@@ -114,4 +114,15 @@ class Configured implements InstallationStateInterface
             InstallationException::STATE_CONFIGURED
         );
     }
+
+    /**
+     * @throws InstallationException
+     */
+    public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation has not been installed yet.',
+            InstallationException::STATE_CONFIGURED
+        );
+    }
 }

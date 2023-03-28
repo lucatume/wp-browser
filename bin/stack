@@ -23,6 +23,7 @@ function print_help() {
   echo "  exec                  Execute a command in a service for the specified PHP version."
   echo "  logs                  Show the logs of the containers for the specified PHP version."
   echo "  macos_overrides       Apply macOS specific overrides to the docker compose configuration."
+  echo "  mysql                 Open a MySQL shell for the database service for the specified PHP version."
   echo "  remove_macos_ramdisk  Remove the RAM disk for the /var directory on macOS."
   echo "  ps                    Show the status of the containers for the specified PHP version."
   echo "  ssh                   SSH into a service for the specified PHP version."
@@ -351,6 +352,9 @@ logs)
 macos_overrides)
   create_macos_ramdisk
   place_docker_compose_macos_overrides
+  ;;
+mysql)
+  docker compose exec database mysql -u root -ppassword
   ;;
 ps)
   docker compose ps

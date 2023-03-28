@@ -67,6 +67,7 @@ class Loop
 
     /**
      * @param Closure             $closure
+     * @param int                 $timeout
      * @param array<string,mixed> $options
      *
      * @return Result
@@ -74,9 +75,10 @@ class Loop
      * @throws Throwable
      * @throws WorkerException
      */
-    public static function executeClosure(Closure $closure, array $options = []): Result
+    public static function executeClosure(Closure $closure, int $timeout = 30, array $options = []): Result
     {
-        $results = (new self([$closure], 1, true, 30, $options))->run()->getResults();
+        $loop = (new self([$closure], 1, true, $timeout, $options))->run();
+        $results = $loop->getResults();
         $result = reset($results);
         $returnValue = $result->getReturnValue();
 

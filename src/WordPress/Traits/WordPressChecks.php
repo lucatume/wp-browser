@@ -2,12 +2,17 @@
 
 namespace lucatume\WPBrowser\WordPress\Traits;
 
+use Exception;
 use lucatume\WPBrowser\Process\Loop;
+use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
+use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
+use Throwable;
 
 trait WordPressChecks
 {
@@ -21,6 +26,7 @@ trait WordPressChecks
         string $adminEmail,
         string $title
     ): void {
+        /** @noinspection BypassedUrlValidationInspection */
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new InstallationException(
                 "The URL $url is not a valid URL.",
@@ -58,6 +64,12 @@ trait WordPressChecks
         }
     }
 
+    /**
+     * @throws Throwable
+     * @throws DbException
+     * @throws WorkerException
+     * @throws ProcessException
+     */
     protected function isInstalled(bool $multisite): bool
     {
         if (!($this->wpRootDir && $this->db->exists())) {
@@ -90,7 +102,7 @@ trait WordPressChecks
     {
         try {
             $wpRootDir = FS::untrailslashit((string)FS::resolvePath($wpRootDir)) . '/';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InstallationException("{$wpRootDir} does not exist.",
                 InstallationException::ROOT_DIR_NOT_FOUND, $e);
         }

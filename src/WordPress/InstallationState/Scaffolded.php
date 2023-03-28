@@ -287,4 +287,20 @@ class Scaffolded implements InstallationStateInterface
     {
         return ['table_prefix' => 'wp_'];
     }
+
+    public function getPluginDir(string $path = ''): string
+    {
+        return $this->wpRootDir . 'wp-content/plugins/' . $path;
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation has not been configured yet.',
+            InstallationException::STATE_SCAFFOLDED
+        );
+    }
 }

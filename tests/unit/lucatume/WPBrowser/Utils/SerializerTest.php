@@ -3,8 +3,15 @@
 namespace lucatume\WPBrowser\Utils;
 
 use Codeception\Test\Unit;
+use Error;
+use Exception;
 use Generator;
+use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\ExpectationFailedException;
+use RuntimeException;
+use SebastianBergmann\Comparator\ComparisonFailure;
 use Serializable;
+use Throwable;
 
 class TestSerializableObject implements Serializable
 {
@@ -137,7 +144,7 @@ class SerializerTest extends Unit
     {
         $serializableObject = new TestSerializableObject();
 
-        yield 'null' => [null, null];
+        yield 'null' => [null, serialize(null)];
         yield 'serialized null' => [serialize(null), serialize(null)];
         yield 'empty string' => ['', ''];
         yield 'serialized empty string' => [serialize(''), serialize('')];
@@ -191,5 +198,37 @@ class SerializerTest extends Unit
     public function test_maybeSerialize(mixed $input, mixed $expected): void
     {
         $this->assertEquals($expected, Serializer::maybeSerialize($input));
+    }
+
+    public function throwableDataProvider(): Generator
+    {
+        yield 'Error' => [new Error('Error message')];
+        yield 'Exception' => [new Exception('Exception message')];
+        yield 'RuntimeException' => [new RuntimeException('Runtime exception message')];
+        yield 'ExpectationFailedException' => [
+            new ExpectationFailedException('Expectation failed exception message',
+                new ComparisonFailure('foo', 'bar', 'foo', 'bar'))
+        ];
+        yield 'AssertionFailedError' => [new AssertionFailedError('Assertion failed error message')];
+        yield 'ExpectationFailedException w/o Comparison Failure' => [
+            new ExpectationFailedException('Expectation failed exception message')
+        ];
+        yield 'ExpectationFailedException w/ previous' => [
+            new ExpectationFailedException('Expectation failed exception message',
+                new ComparisonFailure('foo', 'bar', 'foo', 'bar'),
+                new Exception('Previous'))
+        ];
+    }
+
+    /**
+     * It should make throwable serializable
+     *
+     * @test
+     * @dataProvider throwableDataProvider
+     */
+    public function should_make_throwable_serializable(Throwable $throwable): void
+    {
+        $serializableThrowable = Serializer::makeThrowableSerializable($throwable);
+        $this->assertIsString(serialize($serializableThrowable));
     }
 }

@@ -69,4 +69,6 @@ interface InstallationStateInterface
     public function getConstants():array;
 
     public function getGlobals():array;
+
+    public function getPluginDir(string $path = ''): string;
 }
