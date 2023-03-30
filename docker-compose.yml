@@ -2,6 +2,11 @@ version: "3.9"
 networks:
   test:
     name: wpbrowser_php_${PHP_VERSION:-8.0}
+volumes:
+  tmp_vol:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
 services:
   database:
     container_name: wpbrowser_php_${PHP_VERSION:-8.0}_database
@@ -94,7 +99,6 @@ services:
       - test
     volumes:
       - "${PWD}:${PWD}"
-    tmpfs:
-      - ${PWD}/var/tmp;mode=1777;uid=${USER_UID};gid=${USER_GID}
+      - tmp_vol:${PWD}/var/tmp
     working_dir: "${PWD}"
     entrypoint: tail -f /dev/null
