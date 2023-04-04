@@ -11,7 +11,6 @@ use Codeception\Exception\ModuleException;
 use lucatume\WPBrowser\Module\WPLoader;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
-use org\bovigo\vfs\vfsStreamException;
 use WP_UnitTest_Factory_For_Attachment;
 use WP_UnitTest_Factory_For_Blog;
 use WP_UnitTest_Factory_For_Bookmark;
@@ -23,18 +22,18 @@ use WP_UnitTest_Factory_For_Thing as ThingFactory;
 use WP_UnitTest_Factory_For_User;
 
 /**
-* Class FactoryStore
+ * Class FactoryStore
  *
  * @package lucatume\WPBrowser\Module\WPLoader
  *
- * @property WP_UnitTest_Factory_For_Post $post
- * @property WP_UnitTest_Factory_For_Bookmark $bookmark
+ * @property WP_UnitTest_Factory_For_Post       $post
+ * @property WP_UnitTest_Factory_For_Bookmark   $bookmark
  * @property WP_UnitTest_Factory_For_Attachment $attachment
- * @property WP_UnitTest_Factory_For_User $user
- * @property WP_UnitTest_Factory_For_Comment $comment
- * @property WP_UnitTest_Factory_For_Blog $blog
- * @property WP_UnitTest_Factory_For_Network $network
- * @property WP_UnitTest_Factory_For_Term $term
+ * @property WP_UnitTest_Factory_For_User       $user
+ * @property WP_UnitTest_Factory_For_Comment    $comment
+ * @property WP_UnitTest_Factory_For_Blog       $blog
+ * @property WP_UnitTest_Factory_For_Network    $network
+ * @property WP_UnitTest_Factory_For_Term       $term
  */
 class FactoryStore
 {
@@ -114,28 +113,28 @@ class FactoryStore
 
         switch ($name) {
             case 'post':
-                $this->post      = new WP_UnitTest_Factory_For_Post();
+                $this->post = new WP_UnitTest_Factory_For_Post();
                 $factoryForThing = $this->post;
                 break;
             case 'bookmark':
-                $this->bookmark  = new WP_UnitTest_Factory_For_Bookmark();
+                $this->bookmark = new WP_UnitTest_Factory_For_Bookmark();
                 $factoryForThing = $this->bookmark;
                 break;
             case 'attachment':
                 require_once ABSPATH . 'wp-admin/includes/image.php';
                 $this->attachment = new WP_UnitTest_Factory_For_Attachment();
-                $factoryForThing  = $this->attachment;
+                $factoryForThing = $this->attachment;
                 break;
             case 'user':
-                $this->user      = new WP_UnitTest_Factory_For_User();
+                $this->user = new WP_UnitTest_Factory_For_User();
                 $factoryForThing = $this->user;
                 break;
             case 'comment':
-                $this->comment   = new WP_UnitTest_Factory_For_Comment();
+                $this->comment = new WP_UnitTest_Factory_For_Comment();
                 $factoryForThing = $this->comment;
                 break;
             case 'blog':
-                if (! function_exists('is_multisite') || ! is_multisite()) {
+                if (!function_exists('is_multisite') || !is_multisite()) {
                     throw new ModuleException(
                         WPLoader::class,
                         'The `blog` factory can only be used in multisite context:' .
@@ -143,22 +142,19 @@ class FactoryStore
                         'https://wpbrowser.wptestkit.dev/summary/modules/wploader#configuration'
                     );
                 }
-                $this->blog      = new WP_UnitTest_Factory_For_Blog();
+                $this->blog = new WP_UnitTest_Factory_For_Blog();
                 $factoryForThing = $this->blog;
                 break;
             case 'network':
-                $this->network   = new WP_UnitTest_Factory_For_Network();
+                $this->network = new WP_UnitTest_Factory_For_Network();
                 $factoryForThing = $this->network;
                 break;
             case 'term':
-                $this->term      = new WP_UnitTest_Factory_For_Term();
+                $this->term = new WP_UnitTest_Factory_For_Term();
                 $factoryForThing = $this->term;
                 break;
             default:
-        }
-
-        if (!$factoryForThing instanceof ThingFactory) {
-            throw new InvalidArgumentException("No factory available for key '{$name}'");
+                throw new InvalidArgumentException("No factory available for key '{$name}'");
         }
 
         return $factoryForThing;

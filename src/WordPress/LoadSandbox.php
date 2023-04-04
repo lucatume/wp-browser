@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Closure;
 use Throwable;
 
 class LoadSandbox
@@ -10,6 +11,7 @@ class LoadSandbox
     private string $domain;
     private array $redirects = [];
     private string $bufferedOutput = '';
+    private ?Closure $onThrow = null;
 
     public function __construct(string $wpRootDir, string $domain)
     {
@@ -54,7 +56,7 @@ class LoadSandbox
     /**
      * @throws InstallationException
      */
-    public function obCallback($buffer): bool
+    public function obCallback(string $buffer): bool
     {
         $this->bufferedOutput .= $buffer;
         $bodyContent = $this->extractBodyContent($buffer);

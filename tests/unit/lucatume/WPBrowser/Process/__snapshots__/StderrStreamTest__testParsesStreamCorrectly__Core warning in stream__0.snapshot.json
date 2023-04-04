@@ -6,9 +6,9 @@
         "time": "16:54:06",
         "timezone": "Europe\/Paris",
         "type": "Core warning",
-        "message": "Unknown: Cannot use output buffering",
-        "file": "output buffering display handlers in Unknown ",
-        "line": "0",
+        "message": "Unknown: Cannot use output buffering in output buffering display handlers",
+        "file": "\/src\/Process\/Worker\/worker-script.php ",
+        "line": "15",
         "trace": []
     }
 ]

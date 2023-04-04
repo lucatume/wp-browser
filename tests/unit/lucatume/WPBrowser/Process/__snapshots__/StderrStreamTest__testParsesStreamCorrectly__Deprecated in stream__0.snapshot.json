@@ -6,8 +6,8 @@
         "time": "16:54:06",
         "timezone": "Europe\/Paris",
         "type": "Deprecated",
-        "message": "Methods with the same name as their class will not be constructors",
-        "file": "a future version of PHP; Foo has a deprecated constructor in \/src\/Process\/Worker\/worker-script.php ",
+        "message": "Methods with the same name as their class will not be constructors in a future version of PHP; Foo has a deprecated constructor",
+        "file": "\/src\/Process\/Worker\/worker-script.php ",
         "line": "15",
         "trace": []
     }

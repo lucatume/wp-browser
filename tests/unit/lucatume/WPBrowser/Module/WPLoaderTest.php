@@ -2,28 +2,27 @@
 
 namespace lucatume\WPBrowser\Module;
 
-use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
-use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Events\Dispatcher;
+use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
-use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use PHPUnit\Framework\Assert;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
+use lucatume\WPBrowser\WordPress\Assert as WPAssert;
 
 class WPLoaderTest extends Unit
 {
@@ -44,6 +43,7 @@ class WPLoaderTest extends Unit
     private ?string $previousCwd = null;
     private ?string $homeEnvBackup = null;
     private ?string $homeServerBackup = null;
+    private ?ModuleContainer $mockModuleContainer = null;
 
     /**
      * @after
@@ -112,8 +112,8 @@ class WPLoaderTest extends Unit
      */
     private function module(): WPLoader
     {
-        $moduleContainer = new ModuleContainer(new Di(), []);
-        return new WPLoader($moduleContainer, $this->config);
+        $this->mockModuleContainer = new ModuleContainer(new Di(), []);
+        return new WPLoader($this->mockModuleContainer, $this->config);
     }
 
     /**
@@ -398,14 +398,14 @@ class WPLoaderTest extends Unit
             $wpLoader->_initialize();
 
             $var = [
-                'authKey',
-                'secureAuthKey',
-                'loggedInKey',
-                'nonceKey',
-                'authSalt',
-                'secureAuthSalt',
-                'loggedInSalt',
-                'nonceSalt',
+                'AUTH_KEY',
+                'SECURE_AUTH_KEY',
+                'LOGGED_IN_KEY',
+                'NONCE_KEY',
+                'AUTH_SALT',
+                'SECURE_AUTH_SALT',
+                'LOGGED_IN_SALT',
+                'NONCE_SALT',
             ];
             foreach ($var as $i => $key) {
                 if ($i > 0) {
@@ -413,34 +413,6 @@ class WPLoaderTest extends Unit
                 }
                 Assert::assertEquals(64, strlen($wpLoader->_getConfig($key)));
             }
-        });
-    }
-
-    /**
-     * It should create the database if it does not exist
-     *
-     * @test
-     */
-    public function should_create_the_database_if_it_does_not_exist(): void
-    {
-        $wpRootDir = FS::tmpDir('wploader_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $this->config = [
-            'wpRootFolder' => $wpRootDir,
-            'dbName' => $dbName,
-            'dbHost' => $dbHost,
-            'dbUser' => $dbUser,
-            'dbPassword' => $dbPassword,
-        ];
-
-        $wpLoader = $this->module();
-        $this->assertInIsolation(static function () use ($dbName, $dbPassword, $dbUser, $dbHost, $wpLoader) {
-            $wpLoader->_initialize();
-
-            self::assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
         });
     }
 
@@ -623,12 +595,46 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
-        $wpLoader = $this->module();
-
         $this->expectException(ModuleConfigException::class);
 
-        $this->assertInIsolation(static function () use ($wpLoader) {
+        $wpLoader = $this->module();
+        $wpLoader->_initialize();
+    }
+
+    /**
+     * It should throw if loadOnly and WordPress not installed
+     *
+     * @test
+     */
+    public function should_throw_if_load_only_and_word_press_not_installed(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'loadOnly' => true,
+            'domain' => 'wordpress.test'
+        ];
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db);
+
+        $wpLoader = $this->module();
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionMessage(InstallationException::becauseWordPressIsNotInstalled()->getMessage());
+
+        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
+
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
         });
     }
 
@@ -652,11 +658,18 @@ class WPLoaderTest extends Unit
             'dbPassword' => $dbPassword,
             'loadOnly' => true,
             'domain' => 'wordpress.test',
-            'configFile' => codecept_data_dir('files/test_file_002.php')
+            'configFile' => codecept_data_dir('files/test_file_002.php'),
         ];
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
-            ->configure($db);
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
 
         $wpLoader = $this->module();
 
@@ -666,10 +679,308 @@ class WPLoaderTest extends Unit
             Assert::assertEquals('', getenv('LOADED_2'));
             Assert::assertFalse(defined('ABSPATH'));
 
+            $actions = [];
+            Dispatcher::addListener(WPLoader::ACTION_BEFORE_LOADONLY, static function () use (&$actions) {
+                $actions[] = WPLoader::ACTION_BEFORE_LOADONLY;
+            });
+            Dispatcher::addListener(WPLoader::ACTION_AFTER_LOADONLY, static function () use (&$actions) {
+                $actions[] = WPLoader::ACTION_AFTER_LOADONLY;
+            });
+
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
-            Assert::assertEquals('', getenv('LOADED_2'));
-            Assert::assertEquals(ABSPATH, $wpRootDir);
+            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertEquals([
+                WPLoader::ACTION_BEFORE_LOADONLY,
+                WPLoader::ACTION_AFTER_LOADONLY,
+            ], $actions);
+            Assert::assertInstanceOf(FactoryStore::class, $wpLoader->factory());
+        });
+    }
+
+    /**
+     * It should create the database if it does not exist
+     *
+     * @test
+     */
+    public function should_create_the_database_if_it_does_not_exist(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+        ];
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($dbName, $dbPassword, $dbUser, $dbHost, $wpLoader) {
+            $wpLoader->_initialize();
+
+            self::assertDatabaseExists($dbHost, $dbUser, $dbPassword, $dbName);
+        });
+    }
+
+    public function dbModuleCompatDataProvider(): \Generator
+    {
+        yield 'Db' => ['Db', Db::class];
+        yield 'WPDb' => ['WPDb', WPDb::class];
+        yield WPDb::class => [WPDb::class, WPDb::class];
+    }
+
+    /**
+     * It should not throw when loadOnly true and using DB module
+     *
+     * @test
+     * @dataProvider dbModuleCompatDataProvider
+     */
+    public function should_not_throw_when_load_only_true_and_using_db_module(
+        string $dbModuleName,
+        string $dbModuleClass
+    ): void {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'loadOnly' => true,
+            'domain' => 'wordpress.test',
+            'configFile' => codecept_data_dir('files/test_file_002.php')
+        ];
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        $wpLoader = $this->module();
+        $mockDbModule = $this->createStub($dbModuleClass);
+        $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
+
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
+
+            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+        });
+    }
+
+    /**
+     * It should throw if using with WPDb and not loadOnly
+     *
+     * @test
+     * @dataProvider dbModuleCompatDataProvider
+     */
+    public function should_throw_if_using_with_wp_db_and_not_load_only(
+        string $dbModuleName,
+        string $dbModuleClass
+    ): void {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+        ];
+
+        $wpLoader = $this->module();
+        $mockDbModule = $this->createStub($dbModuleClass);
+        $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
+
+        $this->expectException(ModuleConfigException::class);
+        $this->expectExceptionMessageMatches('/The WPLoader module is not being used to only load ' .
+            'WordPress, but to also install it/');
+
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should throw if configFile not found
+     *
+     * @test
+     */
+    public function should_throw_if_config_file_not_found(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => __DIR__ . '/some-file-that-does-not-exist.php',
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $wpLoader = $this->module();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should install and bootstrap single site using constants' names
+     *
+     * @test
+     */
+    public function should_should_install_and_bootstrap_single_site_using_constants_names(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'ABSPATH' => $wpRootDir,
+            'DB_NAME' => $dbName,
+            'DB_HOST' => $dbHost,
+            'DB_USER' => $dbUser,
+            'DB_PASSWORD' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+
+            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertTrue(defined('WP_DEBUG'));
+            Assert::assertTrue(\WP_DEBUG);
+        });
+    }
+
+    /**
+     * It should throw module exception on error during bootstrap
+     *
+     * @test
+     */
+    public function should_throw_module_exception_on_error_during_bootstrap(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(ModuleException::class);
+        $this->expectExceptionMessageMatches('/WordPress bootstrap failed/');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            // This will cause an exit 1 during bootstrap.
+            uopz_set_return('tests_get_phpunit_version', '5.0.0');
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should install and bootstrap single installation
+     *
+     * @test
+     */
+    public function should_install_and_bootstrap_single_installation(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'hello-dolly/hello.php',
+                'akismet/akismet.php',
+                'woocommerce/woocommerce.php',
+            ],
+            'theme' => 'twentytwenty',
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $actions = [];
+            Dispatcher::addListener(WPLoader::ACTION_BEFORE_INSTALL, function () use (&$actions) {
+                $actions[] = 'before_install';
+            });
+            Dispatcher::addListener(WPLoader::ACTION_AFTER_INSTALL, function () use (&$actions) {
+                $actions[] = 'after_install';
+            });
+
+            $wpLoader->_initialize();
+
+            Assert::assertEquals([
+                'hello-dolly/hello.php',
+                'akismet/akismet.php',
+                'woocommerce/woocommerce.php',
+            ], get_option('active_plugins'));
+            Assert::assertEquals([
+                'before_install',
+                'after_install',
+            ], $actions);
+            Assert::assertEquals('twentytwenty', get_option('template'));
+            Assert::assertEquals('twentytwenty', get_option('stylesheet'));
+            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertTrue(defined('WP_DEBUG'));
+            Assert::assertTrue(\WP_DEBUG);
+            Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
+            WPAssert::assertTableExists('posts');
+            WPAssert::assertTableExists('woocommerce_order_items');
         });
     }
 }

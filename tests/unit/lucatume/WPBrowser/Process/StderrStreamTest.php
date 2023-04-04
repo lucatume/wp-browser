@@ -3,6 +3,7 @@
 
 namespace Unit\lucatume\WPBrowser\Process;
 
+use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
 use Generator;
 use lucatume\WPBrowser\Process\StderrStream;
@@ -158,56 +159,72 @@ EOT;
         ];
 
         yield 'Core error in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core error:  Unknown: Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core error:  Unknown: Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_CORE_ERROR
         ];
 
         yield 'Core warning in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core warning:  Unknown: Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core warning:  Unknown: Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_CORE_WARNING
         ];
 
         yield 'Compile error in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \CompileError::class
         ];
 
         yield 'Compile warning in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile warning:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile warning:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_COMPILE_WARNING
         ];
 
         yield 'User error in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User error:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_USER_ERROR
         ];
 
         yield 'User warning in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User warning:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User warning:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_USER_WARNING
         ];
 
         yield 'User notice in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User notice:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User notice:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_USER_NOTICE
         ];
 
         yield 'User deprecated in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User deprecated:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP User deprecated:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_USER_DEPRECATED
         ];
 
-        yield 'Weird erorr in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Weird error:  Cannot use output buffering in output buffering display handlers in Unknown on line 0',
+        yield 'Weird error in stream' => [
+            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Weird error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
             \ErrorException::class,
             E_ERROR
+        ];
+
+        $exceptionWithLineBreaks = <<<EXCEPTION
+[01-Apr-2023 19:14:58 Europe/Paris] PHP Fatal error:  Uncaught Codeception\Exception\ModuleException: lucatume\WPBrowser\Module\WPLoader: WordPress bootstrap failed.
+Error: Looks like you're using PHPUnit 5.0.0. WordPress requires at least PHPUnit 5.7.21.
+Please use the latest PHPUnit version supported for the PHP version you are running the tests on.
+ in /Users/lucatume/oss/wp-browser/src/Module/WPLoader.php:475
+Stack trace:
+#0 [internal function]: lucatume\WPBrowser\Module\WPLoader::lucatume\WPBrowser\Module\{closure}('Error: Looks li...', 9)
+#1 {main}
+  thrown in /Users/lucatume/oss/wp-browser/src/Module/WPLoader.php on line 475
+EXCEPTION;
+
+        yield 'Exception with line breaks in message' => [
+            $exceptionWithLineBreaks,
+            ModuleException::class
         ];
     }
 

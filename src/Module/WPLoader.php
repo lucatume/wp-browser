@@ -62,35 +62,12 @@ class WPLoader extends Module
     use WithWordPressFilters;
     use ConfigTrait;
     use WithCodeceptionModuleConfig;
-    use DebugWrapping;
 
-    /**
-     * Whether to include inherited actions or not.
-     *
-     * @var bool
-     */
-    public static bool $includeInheritedActions = true;
-
-    /**
-     * Allows to explicitly set what methods have this class.
-     *
-     * @var array<string>
-     */
-    public static array $onlyActions = [];
-
-    /**
-     * Allows to explicitly exclude actions from module.
-     *
-     * @var array<string>
-     */
-    public static array $excludeActions = [];
-
-    /**
-     * A flag to indicate whether the module should late init or not.
-     *
-     * @var bool
-     */
-    public static bool $didInit = false;
+    public const ACTION_BEFORE_INSTALL = 'wploader.before_install';
+    public const ACTION_BEFORE_LOADONLY = 'wploader.before_loadonly';
+    public const ACTION_AFTER_LOADONLY = 'wploader.after_loadonly';
+    public const ACTION_AFTER_INSTALL = 'wploader.after_install';
+    public const ACTION_AFTER_BOOTSTRAP = 'wploader.after_bootstrap';
 
     /**
      * The fields the user will have to set to legit values for the module to
@@ -150,7 +127,7 @@ class WPLoader extends Module
      * after mu-plugins have been loaded; these should be defined in the
      * `folder/plugin-file.php` format.
      * bootstrapActions - array, def. `[]`, a list of actions that should be
-     * called after before any test case runs.
+     * called before any test case runs.
      * skipPluggables - bool, def. `false`, if set to `true` will skip the
      * definition of pluggable functions.
      *
@@ -160,10 +137,7 @@ class WPLoader extends Module
     // @todo review for unused/deprecated
     protected array $config = [
         'loadOnly' => false,
-        'installationTableHandling' => 'empty',
-        'wpDebug' => true,
         'multisite' => false,
-        'skipPluggables' => false,
         'dbCharset' => 'utf8',
         'dbCollate' => '',
         'tablePrefix' => 'wptests_',
@@ -186,6 +160,7 @@ class WPLoader extends Module
         'SECURE_AUTH_SALT' => '',
         'LOGGED_IN_SALT' => '',
         'NONCE_SALT' => '',
+        'dump' => '', // @todo implement
     ];
 
     /**
@@ -221,61 +196,37 @@ class WPLoader extends Module
      */
     private array $loadRedirections = [];
     private Installation $installation;
+    private string|false $bootstrapOutput;
 
-    /**
-     * Initializes the module if not already initialized.
-     *
-     * When this method runs, the `ABSPATH` constant is not set then the module will init itself and
-     * load WordPress.
-     * It should really not be used elsewhere.
-     *
-     * @return array<string,mixed>An export-able array that will define objects and variables expected to be global when
-     *                            this is called.
-     *
-     * @throws ModuleConfigException|ModuleException If there's any configuration error.
-     * @throws ReflectionException If there's an issue building an instance of the module using reflection.
-     *
-     * @internal This method is very much tailored to the use in `WPTestCase` to support tests running in isolation.
-     */
-    public static function _maybeInit(): array
+    protected function validateConfig(): void
     {
-        if (defined('ABSPATH') || self::$didInit) {
-            // Already initialized.
-            return [];
+        $this->config['wpRootFolder'] = $this->config['ABSPATH'] ?? $this->config['wpRootFolder'] ?? '';
+        $this->config['dbName'] = $this->config['DB_NAME'] ?? $this->config['dbName'] ?? '';
+        $this->config['dbHost'] = $this->config['DB_HOST'] ?? $this->config['dbHost'] ?? '';
+        $this->config['dbUser'] = $this->config['DB_USER'] ?? $this->config['dbUser'] ?? '';
+        $this->config['dbPassword'] = $this->config['DB_PASSWORD'] ?? $this->config['dbPassword'] ?? '';
+        $this->config['dbCharset'] = $this->config['DB_CHARSET'] ?? $this->config['dbCharset'] ?? '';
+        $this->config['dbCollate'] = $this->config['DB_COLLATE'] ?? $this->config['dbCollate'] ?? '';
+        $this->config['multisite'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? '';
+        $this->config['theme'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['theme'] ?? '';
+        $this->config['loadOnly'] = !empty($this->config['loadOnly']);
+
+        if ($this->config['loadOnly'] && empty($this->config['domain'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'When using the WPLoader module to load WordPress,' .
+                ' the `domain` configuration parameter must be set.'
+            );
         }
 
-        self::$didInit = true;
+        $this->config['domain'] = $this->config['WP_TESTS_DOMAIN'] ?? $this->config['domain'] ?? 'example.org';
+        $this->config['adminEmail'] = $this->config['WP_TESTS_EMAIL'] ?? $this->config['adminEmail'] ?? 'admin@example.org';
+        $this->config['title'] = $this->config['WP_TESTS_TITLE'] ?? $this->config['title'] ?? 'Test Blog';
+        $this->config['bootstrapActions'] = array_values(array_filter((array)($this->config['bootstrapActions'] ?? [])));
+        $this->config['configFile'] = array_values(array_filter((array)($this->config['configFile'] ?? [])));
 
-        $instance = static::_newInstanceWithoutConstructor();
 
-        $instance->filterActivePlugins();
-        $instance->filterTemplateStylesheet();
-
-        return [
-            'skipWordPressInstall' => true,
-        ];
-    }
-
-    /**
-     * Builds a new instance of the module without calling its constructor.
-     *
-     *
-     * @return static A new instance of the module, built without calling its constructor method.
-     *
-     * @throws ModuleException|ModuleConfigException If an instance of the module cannot be built.
-     * @throws ReflectionException if there's an issue building an instance of the module using reflection.
-     */
-    protected static function _newInstanceWithoutConstructor(): static
-    {
-        $instance = (new ReflectionClass(self::class))->newInstanceWithoutConstructor();
-
-        if (!$instance instanceof static) {
-            throw new ModuleException($instance, 'Could not build instance.');
-        }
-
-        $instance->_setConfig(static::_getModuleConfig($instance));
-
-        return $instance;
+        parent::validateConfig();
     }
 
     /**
@@ -289,9 +240,8 @@ class WPLoader extends Module
      * @throws DbException
      * @throws JsonException
      * @throws ModuleConfigException
-     * @throws ModuleConflictException
      * @throws ModuleException
-     * @throws ErrorException
+     * @throws InstallationException
      */
     public function _initialize(): void
     {
@@ -353,11 +303,10 @@ class WPLoader extends Module
             return;
         }
 
+        $this->ensureDbModuleCompat();
+
         // If the database does not already exist, then create it now.
         $db->create();
-
-        // Any *Db Module should either not be running or properly configured if this has to run alongside it.
-        $this->ensureDbModuleCompat();
 
         $this->loadWordPress();
     }
@@ -375,53 +324,53 @@ class WPLoader extends Module
     }
 
     /**
-     * Checks the *Db modules loaded in the suite to ensure their configuration is compatible with this module current
-     * one.
-     *
-     *
-     * @throws ModuleConflictException If the configuration of one *Db module is not compatible with this module
-     *                                 configuration.
+     * @throws ModuleConfigException
      */
-    protected function ensureDbModuleCompat(): void
+    private function ensureDbModuleCompat(): void
     {
-        $dbModules = ['Db', 'WPDb'];
-        $allModules = $this->moduleContainer->all();
-        foreach ($dbModules as $moduleName) {
+        foreach (['Db', 'WPDb', WPDb::class] as $moduleName) {
             if (!$this->moduleContainer->hasModule($moduleName)) {
                 continue;
             }
 
-            $module = $allModules[$moduleName];
-            $cleanup_config = $module->_getConfig('cleanup');
-            if (!empty($cleanup_config)) {
-                throw new ModuleConflictException(
-                    __CLASS__,
-                    "{$moduleName}\nThe WP Loader module is being used together with the {$moduleName} module: "
-                    . "the {$moduleName} module should have the 'cleanup' parameter set to 'false' not to interfere "
-                    . "with the WP Loader module."
-                );
-            }
+            $message = sprintf(
+                'The WPLoader module is not being used to only load WordPress, but to also install it.' . PHP_EOL .
+                'The %1$s module is enabled in the suite, and will try to manage the database state interfering with ' .
+                'the WPLoader module.' . PHP_EOL .
+                'Either:' . PHP_EOL .
+                ' - remove or disable the %1$s module from the suite configuration;' . PHP_EOL .
+                ' - or, configure the WPLoader module to only load WordPress, by setting the `loadOnly` configuration ' .
+                'key to `true`;' . PHP_EOL .
+                'If you are using the %1$s module to load a SQL dump file, you can use the `dump` configuration key of ' .
+                'the WPLoader module to load one or more SQL dump files.',
+                $moduleName
+            );
+
+            throw new ModuleConfigException($this, $message);
         }
+
+        // @todo add dump support
     }
 
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     * @throws ModuleConfigException|JsonException|ErrorException
+     * @throws ModuleConfigException|JsonException|InstallationException
      */
     private function loadWordPress(bool $loadOnly = false): void
     {
         $this->loadConfigFiles();
 
         if ($loadOnly) {
+            Dispatcher::dispatch(self::ACTION_BEFORE_LOADONLY, $this);
             $loadSandbox = new LoadSandbox($this->installation->getWpRootDir(), $this->config['domain']);
             $loadSandbox->load();
+            Dispatcher::dispatch(self::ACTION_AFTER_LOADONLY, $this);
         } else {
             $this->installAndBootstrapInstallation();
         }
 
-        // Make the `factory` property available on the `$tester` property.
-        $this->setupFactoryStore();
+        $this->factoryStore = new FactoryStore();
 
         if (Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode($this->installation->report(),
@@ -505,6 +454,7 @@ class WPLoader extends Module
 
     /**
      * Installs and bootstraps the WordPress installation.
+     * @throws ModuleException
      */
     private function installAndBootstrapInstallation(): void
     {
@@ -513,17 +463,33 @@ class WPLoader extends Module
 
         $wpLoaderConfig = $this->config;
 
-        ob_start($this->relayOutputToDebug('WPLoader/install'));
+        Dispatcher::dispatch(self::ACTION_BEFORE_INSTALL, $this);
+
+        $bootstrapSuccessful = false;
+        ob_start(static function ($buffer) use (&$bootstrapSuccessful) {
+            if ($bootstrapSuccessful === true) {
+                return;
+            }
+
+            // The bootstrap failed and called exit 1.
+            throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . $buffer);
+        });
         require $this->wpBootstrapFile;
+        $bootstrapSuccessful = true;
         ob_end_clean();
 
+        Dispatcher::dispatch(self::ACTION_AFTER_INSTALL, $this);
+
         $this->activatePluginsSwitchThemeInSeparateProcess();
+
+        Dispatcher::dispatch(self::ACTION_AFTER_BOOTSTRAP, $this);
+
         $this->runBootstrapActions();
     }
 
     private function activatePluginsSwitchThemeInSeparateProcess(): void
     {
-        $plugins = $this->config['activatePlugins'] ?? ($this->config['plugins'] ?: []);
+        $plugins = (array)($this->config['plugins'] ?: []);
 
         if (empty($plugins)) {
             return;
@@ -559,10 +525,6 @@ class WPLoader extends Module
      */
     private function runBootstrapActions(): void
     {
-        if (empty($this->config['bootstrapActions'])) {
-            return;
-        }
-
         foreach ($this->config['bootstrapActions'] as $action) {
             if (!is_callable($action)) {
                 do_action($action);
@@ -620,84 +582,6 @@ class WPLoader extends Module
         return $this->factoryStore;
     }
 
-    /**
-     * Returns a closure to handle the exit of WordPress during the bootstrap process.
-     *
-     * @param OutputInterface|null $output An output stream.
-     * @throws JsonException If there's an issue debugging the error.
-     */
-    private function handleWordPressExit(OutputInterface $output = null): void
-    {
-        $output = $output ?: new ConsoleOutput();
-
-        if (Debug::isEnabled()) {
-            codecept_debug(
-                'WordPress status: ' . json_encode($this->installation->report(),
-                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-            );
-        }
-
-        $lines = [
-            'WPLoader could not correctly load WordPress.',
-            'If you do not see any other output beside this, probably a call to `die` or `exit` might have been'
-            . ' made while loading WordPress files.',
-            'There are a number of reasons why this might happen and the most common is an empty, incomplete or'
-            . ' incoherent database status.',
-            '',
-            'E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain '
-            . 'multisite tables.',
-            'Run the same test command again activating debug (-vvv) to run a WordPress status check.'
-        ];
-
-        $moduleContainer = $this->moduleContainer;
-
-        if ($moduleContainer->hasModule('WPDb') || $moduleContainer->hasModule('Db')) {
-            $dbModule = $moduleContainer->hasModule('WPDb') ? 'WPDb' : 'Db';
-            $lines [] = '';
-            $lines[] = "It looks like, alongside the WPLoader module, you are using the {$dbModule} one.";
-            if (empty($this->config['loadOnly'])) {
-                $lines[] = 'Since the `WPLoader::loadOnly` parameter is not set or set to `false` both the '
-                    . "WPLoader module and the {$dbModule} one are trying to populate the database.";
-                $lines[] = "If you want to fill the database with a dump then keep using the {$dbModule} "
-                    . 'module but set the `WPLoader::loadOnly` parameter to `true` and make sure that, '
-                    . "in the suite configuration file, in the `modules` section, the {$dbModule} module comes"
-                    . ' before the WPLoader one.';
-                $lines[] = '';
-                $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
-                    . " {$dbModule} module or should set the `populate` and `cleanup` arguments to `false`";
-            } else {
-                $lines[] = 'Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module'
-                    . ' will not try to populate the database.';
-                $lines[] = "The database should be populated from a dump using the {$dbModule} modules.";
-                $lines[] = 'Make sure the SQL dump you\'re trying to use is not empty and correct for the kind '
-                    . 'of installation you are trying to test.';
-                $lines[] = 'Make also sure that, in the suite configuration file, in the `modules` section, ' .
-                    "the {$dbModule} modules comes before the WPLoader one." .
-                    $lines[] = '';
-                $lines[] = 'If you are, instead, trying to run integration tests you do not probably need the'
-                    . " {$dbModule} module or should set the `populate` and `cleanup` arguments to `false` and "
-                    . 'set the `WPLoader::loadOnly` parameter to `false` to let the WPLoader module populate the'
-                    . ' database for you.';
-            }
-            $lines[] = 'Find out more about this at '
-                . 'https://wpbrowser.wptestkit.dev/summary/modules/wploader'
-                . '#wploader-to-only-bootstrap-wordpress';
-        } else {
-            $lines[] = 'Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module'
-                . ' will not try to populate the database.';
-            $lines[] = 'The database should be populated from a dump using the WPDb/Db modules.';
-        }
-
-        $output->writeln('<error>' . implode(PHP_EOL, $lines) . '</error>');
-    }
-
-    /**
-     * Instantiates and sets up the factory store that will be available on the suite tester.
-     */
-    private function setupFactoryStore(): void
-    {
-        $this->factoryStore = new FactoryStore();
-    }
 
     /**
      * Returns an array of the configuration files specified with the `configFile` parameter of the module configuarion.
@@ -853,16 +737,6 @@ class WPLoader extends Module
                 __CLASS__,
                 'The WPLoader module is configured to load WordPress only,' .
                 " but the WordPress installation at {$dir} is not configured."
-            );
-        }
-
-        $domain = getenv('WP_DOMAIN') ?: $this->config['domain'];
-
-        if (empty($domain)) {
-            throw new ModuleConfigException(
-                __CLASS__,
-                'When using the WPLoader module to load WordPress,' .
-                ' the `domain` configuration parameter must be set.'
             );
         }
 

@@ -159,7 +159,6 @@ define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
 define( 'WP_DEBUG_DISPLAY', false );
 define( 'DISABLE_CRON', true );
-define( 'WP_HTTP_BLOCK_EXTERNAL', true );
 PHP"; then
     echo "Failed to configure WordPress."
     exit 1
@@ -195,6 +194,15 @@ function ensure_wordpress_installed() {
   run_wp_cli_command db export "/var/www/html/installed.sql" || exit 1
 }
 
+function ensure_test_plugins() {
+  # Install the required test plugins.
+  run_wp_cli_command plugin install woocommerce akismet hello-dolly || exit 1
+}
+
+function ensure_externals_blocked(){
+  run_wp_cli_command config set WP_HTTP_BLOCK_EXTERNAL true || exit 1
+}
+
 function build() {
   [ ! -d "${PWD}/var/cache/composer" ] && mkdir -p "${PWD}/var/cache/composer"
   docker compose pull --ignore-buildable || exit 1
@@ -209,6 +217,8 @@ function build() {
   docker compose up -d --wait codecept
   ensure_test_databases
   ensure_twentytwenty_theme
+  ensure_test_plugins
+  ensure_externals_blocked
 }
 
 function clean() {

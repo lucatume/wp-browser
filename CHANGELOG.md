@@ -28,7 +28,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `StubProphecy` and `FunctionProphecy` classes.
 - Removed the `WPHealthcheck` class in favor of reports provided by the `WordPress\Installation` class.
 - Removed the `tad\WPBrowser\Utils\Map` class
-
+- Deprecated the following `WPLoader` module configuration keys:
+  - `installationTableHandling` - no more required.
+  - `skipPluggables` - no more required.
+  - `wpDebug` - the `WP_DEBUG` constant is always set to `true` during tests.
+  - `activatePlugins` - plugins specified in the `plugins` configuration key will be always activated.
+- Added the following configuraiton keys to the `WPLoader` module:
+  - `dump` - allows specifying one or more dump files to be loaded after the installation and before the first test runs.
+  - `AUTH_KEY` - `SECURE_AUTH_KEY` - `LOGGED_IN_KEY` - `NONCE_KEY` - `AUTH_SALT` - `SECURE_AUTH_SALT` - `LOGGED_IN_SALT` - `NONCE_SALT` - allows specifying the WordPress salts.
+  - Support configuring the module using the WordPress constant name directly according to the following map (keys are aliased):
+    - `ABSPATH` or `wpRootFolder`
+    - `DB_NAME` or `dbName`
+    - `DB_USER` or `dbUser`
+    - `DB_HOST` or `dbHost`
+    - `DB_PASSWORD` or `dbPassword`
+    - `DB_CHARSET` or `dbCharset`
+    - `DB_COLLATE` or `dbCollate`
+    - `WP_TESTS_MULTISITE` or `multisite`
+    - `WP_DEFAULT_THEME` or `theme`
+    - `WP_TESTS_DOMAIN` or `domain`
+    - `WP_TESTS_EMAIL` or `adminEmail`
+    - `WP_TESTS_TITLE` or `title`
 ## [3.1.6] 2022-04-28;
 
 ### Changed

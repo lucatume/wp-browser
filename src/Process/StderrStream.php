@@ -6,6 +6,8 @@ use CompileError;
 use ErrorException;
 use lucatume\WPBrowser\Utils\Property;
 use ParseError;
+use ReflectionClass;
+use ReflectionException;
 use Throwable;
 
 class StderrStream
@@ -66,7 +68,9 @@ class StderrStream
         $currentError = null;
         $isNumericStackTrace = false;
 
-        $typePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP (?<type>[\\w\\s]+?):\\s+(?<message>.+?) in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
+        $typePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*) in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
+        $typeStartPattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*)$/';
+        $typeEndPattern = '/ in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
         $dateTracePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP\\s+\\d+\\. (?<call>.+?)\\((?<args>.*?)\\) (?<file>.+?):(?<line>\\d+)$/';
         $numberTracePattern = '/^#\\d+ /';
         $numberTraceInlinePattern = '/^#\\d+ (?<file>.+?)\\((?<line>\\d+)\\): (?<call>.+?)\\((?<args>.*?)\\)$/';
@@ -96,6 +100,41 @@ class StderrStream
                     $currentError['isException'] = true;
                     $currentError['exceptionClass'] = $uncaughtExceptionMatches['exceptionClass'];
                 }
+
+                $currentError = $this->applyOptions($currentError, $options);
+
+                $currentError['trace'] = [];
+
+                continue;
+            }
+
+            if (preg_match($typeStartPattern, $line, $typeStartMatches)) {
+                if ($currentError !== null) {
+                    $parsed[] = $this->formatInvertedTraceError($currentError, $isNumericStackTrace);
+                }
+
+                // Start a new error
+                $currentError = [
+                    'isException' => false,
+                    'exceptionClass' => null,
+                ];
+                $isNumericStackTrace = false;
+                foreach (['date', 'time', 'timezone', 'type', 'message'] as $key) {
+                    $currentError[$key] = $typeStartMatches[$key];
+                }
+
+                // Keep ingesting until the line matches with $typeEndPattern
+                while (isset($lines[$i]) && !preg_match($typeEndPattern, $lines[$i], $typeEndMatches)) {
+                    $currentError['message'] .= PHP_EOL . $lines[$i++];
+                }
+
+                if (preg_match($uncaughtExceptionPattern, $currentError['message'], $uncaughtExceptionMatches)) {
+                    $currentError['isException'] = true;
+                    $currentError['exceptionClass'] = $uncaughtExceptionMatches['exceptionClass'];
+                }
+
+                $currentError['file'] = $typeEndMatches['file'];
+                $currentError['line'] = $typeEndMatches['line'];
 
                 $currentError = $this->applyOptions($currentError, $options);
 
@@ -177,6 +216,9 @@ class StderrStream
         $this->parsed = $parsed;
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function getThrowable(): ?Throwable
     {
         if (!count($this->parsed)) {
@@ -200,12 +242,14 @@ class StderrStream
                 $sourceError['line']);
         }
 
-        $throwable = new $throwableClass($sourceError['message']);
+        $throwable = (new ReflectionClass($throwableClass))->newInstanceWithoutConstructor();
 
         Property::setPrivateProperties($throwable, [
+            'message' => $sourceError['message'],
             'file' => $sourceError['file'],
             'line' => $sourceError['line'],
             'trace' => $sourceError['trace'],
+            'code' => 0, // The code is not available in the error log.
         ]);
 
         return $throwable;

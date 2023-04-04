@@ -68,6 +68,8 @@ class SerializableThrowable
     private function prettyPrintTrace(array $trace): array
     {
         $updatedTrace = [];
+        $colorize = stream_isatty(STDOUT);
+        // Detect whether to use colors or not depdending on the TTY.
         foreach ($trace as $k => $traceEntry) {
             if (!(isset($traceEntry['file']) && str_contains($traceEntry['file'], 'closure://'))) {
                 $updatedTrace[$k] = $traceEntry;
@@ -83,8 +85,14 @@ class SerializableThrowable
             $lines = explode("\n", $traceEntry['file']);
             $linesCount = count($lines);
             for ($i = 1; $i < $linesCount; $i++) {
-                $linePrefix = ($i === $correctLine ? '>' : '') . " $i|";
-                $lines[$i] = str_pad($linePrefix, 5, ' ', STR_PAD_LEFT) . $lines[$i];
+                $isCorrectLine = $i === $correctLine;
+                $linePrefix = ($isCorrectLine ? '>' : '') . " $i|";
+                $paddedLine = str_pad($linePrefix, 5, ' ', STR_PAD_LEFT) . $lines[$i];
+                if ($isCorrectLine && $colorize) {
+                    // Colorize the line in pink.
+                    $paddedLine = "\e[35m" . $paddedLine . "\e[0m";
+                }
+                $lines[$i] = $paddedLine;
             }
             $lines[$i - 1] = preg_replace('~}:\\d+~', '', $lines[$i - 1]);
             $traceEntry['file'] = implode(PHP_EOL, $lines);

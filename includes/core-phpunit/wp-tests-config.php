@@ -55,7 +55,7 @@ foreach ([
              'ABSPATH' => $abspath,
              'WP_DEFAULT_THEME' => $wpLoaderConfig['theme'],
              'WP_TESTS_MULTISITE' => $wpLoaderConfig['multisite'],
-             'WP_DEBUG' => $wpLoaderConfig['wpDebug'],
+             'WP_DEBUG' => true,
              'DB_NAME' => $wpLoaderConfig['dbName'],
              'DB_USER' => $wpLoaderConfig['dbUser'],
              'DB_PASSWORD' => $wpLoaderConfig['dbPassword'],
