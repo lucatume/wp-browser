@@ -1830,4 +1830,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.7]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.7
 [3.1.8]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.8
 [3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.8...3.1.9
+[3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.9
 [unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.9...HEAD
