@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- If possible, load the `wpdb` class from the `wp-includes/class-wpdb.php` file on newer versions of WordPress.
+
 ## [3.1.8] 2023-02-24;
 
 ### Changed
