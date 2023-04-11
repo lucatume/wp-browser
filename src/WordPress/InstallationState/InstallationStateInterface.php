@@ -12,7 +12,7 @@ interface InstallationStateInterface
     public const MULTISITE_SUBFOLDER = 1;
     public const MULTISITE_SUBDOMAIN = 2;
 
-    public function getWpRootDir(): string;
+    public function getWpRootDir(string $path = ''): string;
 
     public function isMultisite(): bool;
 
@@ -66,9 +66,11 @@ interface InstallationStateInterface
 
     public function getDb(): Db;
 
-    public function getConstants():array;
+    public function getConstants(): array;
 
-    public function getGlobals():array;
+    public function getGlobals(): array;
 
-    public function getPluginDir(string $path = ''): string;
+    public function getPluginsDir(string $path = ''): string;
+
+    public function getThemesDir(string $path = ''): string;
 }

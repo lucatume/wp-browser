@@ -31,4 +31,9 @@ class FileContentsReplacementPatcher implements PatcherInterface
 
         return [$replacementFileContents, $replacementFile];
     }
+
+    public function stat(string $pathname): array|false
+    {
+        return stat($pathname);
+    }
 }

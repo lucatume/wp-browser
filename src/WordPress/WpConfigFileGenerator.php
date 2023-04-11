@@ -132,24 +132,27 @@ PHP;
         return $this->wpConfigFileContents;
     }
 
+    /**
+     * @throws InstallationException
+     */
     private function setExtraPHP(?string $extraPHP = null): self
     {
         if (!$extraPHP) {
             return $this;
         }
 
-        $placeholder = '/* That\'s all, stop editing! Happy publishing. */';
 
-        if (!\str_contains($this->wpConfigFileContents, $placeholder)) {
+        $placeholderPattern = '/^\\/\\*\\s*?That\'s all, stop editing!.*?$/um';
+        if (!\preg_match($placeholderPattern, $this->wpConfigFileContents,$placeholderMatches)) {
             throw new InstallationException(
                 "Could not find the placeholder string in the wp-config.php file contents.",
                 InstallationException::WP_CONFIG_FILE_MISSING_PLACEHOLDER
             );
         }
 
-        $this->wpConfigFileContents = str_replace(
-            $placeholder,
-            $extraPHP . PHP_EOL . $placeholder,
+        $this->wpConfigFileContents = preg_replace(
+            $placeholderPattern,
+            $extraPHP . PHP_EOL . $placeholderMatches[0],
             $this->wpConfigFileContents
         );
 

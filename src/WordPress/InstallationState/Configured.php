@@ -125,4 +125,5 @@ class Configured implements InstallationStateInterface
             InstallationException::STATE_CONFIGURED
         );
     }
+
 }

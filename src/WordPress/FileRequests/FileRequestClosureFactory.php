@@ -13,38 +13,6 @@ class FileRequestClosureFactory
         $this->requestFactory = $requestFactory;
     }
 
-    public function toActivatePlugin(string $plugin, bool $multisite = false): Closure
-    {
-        $request = $this->requestFactory->buildGetRequest('/wp-admin/plugins.php', [
-            '_wpnonce' => static fn() => wp_create_nonce('activate-plugin_' . $plugin),
-            'action' => 'activate',
-            'paged' => 1,
-            'plugin' => $plugin,
-            's' => ''
-        ], 1);
-
-        if ($multisite) {
-            $request = $request->defineConstant('MULTISITE', true);
-        }
-
-        return static function () use ($request): void {
-            $request->execute();
-        };
-    }
-
-    public function toSwitchTheme(string $stylesheet): Closure
-    {
-        $request = $this->requestFactory->buildGetRequest('/wp-admin/themes.php', [
-            '_wpnonce' => static fn() => wp_create_nonce('switch-theme_' . $stylesheet),
-            'action' => 'activate',
-            'stylesheet' => $stylesheet
-        ], 1);
-
-        return static function () use ($request): void {
-            $request->execute();
-        };
-    }
-
     public function toInstall(
         string $title,
         string $username,
@@ -59,7 +27,7 @@ class FileRequestClosureFactory
             'admin_password2' => $password,
             'admin_email' => $email,
             'blog_public' => 1,
-        ], 0);
+        ]);
 
         if ($url !== null) {
             $request->setServerVar('HTTP_HOST', $url);
@@ -81,9 +49,5 @@ class FileRequestClosureFactory
         return static function () use ($request): void {
             $request->execute();
         };
-    }
-
-    public function toCheckIfWpIsInstalled():Closure
-    {
     }
 }

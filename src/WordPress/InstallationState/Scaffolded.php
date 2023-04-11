@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
-use Exception;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
@@ -54,9 +53,9 @@ class Scaffolded implements InstallationStateInterface
         );
     }
 
-    public function getWpRootDir(): string
+    public function getWpRootDir(string $path = ''): string
     {
-        return $this->wpRootDir;
+        return $path ? $this->wpRootDir . ltrim($path, '\\/') : $this->wpRootDir;
     }
 
     /**
@@ -288,7 +287,7 @@ class Scaffolded implements InstallationStateInterface
         return ['table_prefix' => 'wp_'];
     }
 
-    public function getPluginDir(string $path = ''): string
+    public function getPluginsDir(string $path = ''): string
     {
         return $this->wpRootDir . 'wp-content/plugins/' . $path;
     }
@@ -302,5 +301,10 @@ class Scaffolded implements InstallationStateInterface
             'The WordPress installation has not been configured yet.',
             InstallationException::STATE_SCAFFOLDED
         );
+    }
+
+    public function getThemesDir(string $path = ''): string
+    {
+        return $this->wpRootDir . 'wp-content/themes/' . $path;
     }
 }

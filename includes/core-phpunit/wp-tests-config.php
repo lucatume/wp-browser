@@ -8,6 +8,7 @@
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 
 $didReadConfigFromEnvVar = false;
+global $wpLoaderConfig, $wpLoaderIncludeWpSettings;
 
 $wpInstalling = defined('WP_INSTALLING') && WP_INSTALLING;
 
@@ -77,6 +78,8 @@ foreach ([
              'WPLANG' => $wpLoaderConfig['language'] ?? '',
              'WP_RUN_CORE_TESTS' => false,
              'WP_TESTS_FORCE_KNOWN_BUGS' => false,
+             'AUTOMATIC_UPDATER_DISABLED' => $wpLoaderConfig['AUTOMATIC_UPDATER_DISABLED'],
+             'WP_HTTP_BLOCK_EXTERNAL' => $wpLoaderConfig['WP_HTTP_BLOCK_EXTERNAL'],
          ] as $const => $value) {
     if (!defined($const)) {
         define($const, $value);

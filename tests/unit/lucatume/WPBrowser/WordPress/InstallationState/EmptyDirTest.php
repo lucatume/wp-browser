@@ -354,11 +354,11 @@ class EmptyDirTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should throw if trying to get plugin directory
+     * It should throw if trying to get plugins directory
      *
      * @test
      */
-    public function should_throw_if_trying_to_get_plugin_directory(): void
+    public function should_throw_if_trying_to_get_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('empty-dir_');
 
@@ -367,6 +367,23 @@ class EmptyDirTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
 
-        $emptyDir->getPluginDir();
+        $emptyDir->getPluginsDir();
+    }
+
+    /**
+     * It should throw if trying to get themes directory
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_get_themes_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->getThemesDir();
     }
 }

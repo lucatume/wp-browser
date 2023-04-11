@@ -22,12 +22,16 @@ use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
+use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\Worker\Exited;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
@@ -35,7 +39,9 @@ use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
+use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use lucatume\WPBrowser\WordPress\LoadSandbox;
+use lucatume\WPBrowser\WordPress\PreloadFilters;
 use ReflectionClass;
 use ReflectionException;
 use RuntimeException;
@@ -63,11 +69,11 @@ class WPLoader extends Module
     use ConfigTrait;
     use WithCodeceptionModuleConfig;
 
-    public const ACTION_BEFORE_INSTALL = 'wploader.before_install';
-    public const ACTION_BEFORE_LOADONLY = 'wploader.before_loadonly';
-    public const ACTION_AFTER_LOADONLY = 'wploader.after_loadonly';
-    public const ACTION_AFTER_INSTALL = 'wploader.after_install';
-    public const ACTION_AFTER_BOOTSTRAP = 'wploader.after_bootstrap';
+    public const EVENT_BEFORE_INSTALL = 'wploader.before_install';
+    public const EVENT_BEFORE_LOADONLY = 'wploader.before_loadonly';
+    public const EVENT_AFTER_LOADONLY = 'wploader.after_loadonly';
+    public const EVENT_AFTER_INSTALL = 'wploader.after_install';
+    public const EVENT_AFTER_BOOTSTRAP = 'wploader.after_bootstrap';
 
     /**
      * The fields the user will have to set to legit values for the module to
@@ -160,6 +166,8 @@ class WPLoader extends Module
         'SECURE_AUTH_SALT' => '',
         'LOGGED_IN_SALT' => '',
         'NONCE_SALT' => '',
+        'AUTOMATIC_UPDATER_DISABLED' => true,
+        'WP_HTTP_BLOCK_EXTERNAL' => true,
         'dump' => '', // @todo implement
     ];
 
@@ -196,7 +204,18 @@ class WPLoader extends Module
      */
     private array $loadRedirections = [];
     private Installation $installation;
-    private string|false $bootstrapOutput;
+    private string $bootstrapOutput = '';
+    private string $installationOutput = '';
+
+    public function _getBootstrapOutput(): string
+    {
+        return $this->bootstrapOutput;
+    }
+
+    public function _getInstallationOutput(): string
+    {
+        return $this->installationOutput;
+    }
 
     protected function validateConfig(): void
     {
@@ -298,7 +317,11 @@ class WPLoader extends Module
 
         if (!empty($this->config['loadOnly'])) {
             $this->checkInstallationToLoadOnly();
-            $this->loadWordPressBeforeSuite();
+            $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
+
+            Dispatcher::addListener(Events::SUITE_BEFORE, function () {
+                $this->loadWordPress(true);
+            }, -100);
 
             return;
         }
@@ -355,17 +378,25 @@ class WPLoader extends Module
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     * @throws ModuleConfigException|JsonException|InstallationException
+     * @param bool $loadOnly
+     *
+     * @throws InstallationException
+     * @throws JsonException
+     * @throws ModuleConfigException
+     * @throws ModuleException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
      */
     private function loadWordPress(bool $loadOnly = false): void
     {
         $this->loadConfigFiles();
 
         if ($loadOnly) {
-            Dispatcher::dispatch(self::ACTION_BEFORE_LOADONLY, $this);
+            Dispatcher::dispatch(self::EVENT_BEFORE_LOADONLY, $this);
             $loadSandbox = new LoadSandbox($this->installation->getWpRootDir(), $this->config['domain']);
             $loadSandbox->load();
-            Dispatcher::dispatch(self::ACTION_AFTER_LOADONLY, $this);
+            Dispatcher::dispatch(self::EVENT_AFTER_LOADONLY, $this);
         } else {
             $this->installAndBootstrapInstallation();
         }
@@ -428,45 +459,31 @@ class WPLoader extends Module
         return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
     }
 
-    private function filterActivePlugins(): void
-    {
-        if (empty($this->config['plugins'])) {
-            return;
-        }
-
-        $GLOBALS['wp_tests_options']['active_plugins'] = array_replace([], $this->config['plugins']);
-    }
-
-    private function filterTemplateStylesheet(): void
-    {
-        [$stylesheet, $template] = $this->getStylesheetTemplateFromConfig();
-
-        if ($template) {
-            $GLOBALS['wp_tests_options']['template'] = $template;
-            $GLOBALS['wp_tests_options']['stylesheet'] = $stylesheet;
-        }
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->debugSection('WPLoader', 'Template: ' . ($template ?: 'default'));
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->debugSection('WPLoader', 'Stylesheet: ' . ($stylesheet ?: 'default'));
-    }
-
     /**
      * Installs and bootstraps the WordPress installation.
      * @throws ModuleException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
      */
     private function installAndBootstrapInstallation(): void
     {
-        $this->filterActivePlugins();
-        $this->filterTemplateStylesheet();
+        $GLOBALS['wpLoaderConfig'] = $this->config;
 
-        $wpLoaderConfig = $this->config;
+        Dispatcher::dispatch(self::EVENT_BEFORE_INSTALL, $this);
 
-        Dispatcher::dispatch(self::ACTION_BEFORE_INSTALL, $this);
+        // When loading the plugins option for the first time, activate the required plugins and theme.
+        $filterActivePluginsOption = function () use (&$filterActivePluginsOption): array {
+            remove_filter('pre_option_active_plugins', $filterActivePluginsOption);
+            $this->activatePluginsInSeparateProcess();
+
+            return $this->config['plugins'];
+        };
+        PreloadFilters::addFilter('pre_option_active_plugins', $filterActivePluginsOption);
 
         $bootstrapSuccessful = false;
-        ob_start(static function ($buffer) use (&$bootstrapSuccessful) {
+        ob_start(function ($buffer) use (&$bootstrapSuccessful) {
+            $this->bootstrapOutput = $buffer;
             if ($bootstrapSuccessful === true) {
                 return;
             }
@@ -478,45 +495,55 @@ class WPLoader extends Module
         $bootstrapSuccessful = true;
         ob_end_clean();
 
-        Dispatcher::dispatch(self::ACTION_AFTER_INSTALL, $this);
+        Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);
 
-        $this->activatePluginsSwitchThemeInSeparateProcess();
+        $this->disableUpdates();
 
-        Dispatcher::dispatch(self::ACTION_AFTER_BOOTSTRAP, $this);
+        Dispatcher::dispatch(self::EVENT_AFTER_BOOTSTRAP, $this);
 
         $this->runBootstrapActions();
     }
 
-    private function activatePluginsSwitchThemeInSeparateProcess(): void
+    /**
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws ModuleException
+     * @throws ProcessException
+     */
+    private function activatePluginsInSeparateProcess(): void
     {
         $plugins = (array)($this->config['plugins'] ?: []);
-
-        if (empty($plugins)) {
-            return;
-        }
-
         $multisite = $this->config['multisite'] ?? false;
-
-        $closure = $this->getRequestClosureFactory();
+        $closuresFactory = $this->getClosuresFactory();
 
         $jobs = array_combine(
             array_map(static fn(string $plugin) => 'plugin::' . $plugin, $plugins),
-            array_map(static fn(string $plugin) => $closure->toActivatePlugin($plugin, $multisite), $plugins)
+            array_map(static fn(string $plugin) => $closuresFactory->toActivatePlugin($plugin, $multisite), $plugins)
         );
 
         [$stylesheet] = $this->getStylesheetTemplateFromConfig();
-        $jobs['stylesheet::' . $stylesheet] = $closure->toSwitchTheme($stylesheet, $multisite);
+        $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
 
         $loop = new Loop($jobs, 1, true);
+        $results = $loop->run()->getResults();
 
-        $loop->subscribeToWorkerExit($this->toDebugActivationResult());
-        $loop->run()->getResults();
+        foreach ($results as $key => $result) {
+            [$type, $name] = explode('::', $key, 2);
+            $returnValue = $result->getReturnValue();
 
-        if ($loop->failed()) {
-            $failMessage = Debug::isEnabled() ?
-                'Plugin activation failed; see output above.'
-                : 'Plugin activation failed; run again with --debug to know more.';
-            $this->fail($failMessage);
+            if ($returnValue instanceof Throwable) {
+                $this->debug($returnValue->getMessage());
+                $this->debug($returnValue->getTraceAsString());
+                // Not gift-wrapped in a ModuleException to make it easier to debug the issue.
+                throw $returnValue;
+            }
+
+            if ($result->getExitCode() !== 0) {
+                $message = $type === 'plugin' ?
+                    "Failed to activate plugin $name: {$result->getStdoutBuffer()}"
+                    : "Failed to switch theme $name: {$result->getStdoutBuffer()}";
+                throw new ModuleException(__CLASS__, $message);
+            }
         }
     }
 
@@ -663,52 +690,22 @@ class WPLoader extends Module
         return array($stylesheet, $template);
     }
 
-    private function toDebugActivationResult(): Closure
+    private function getClosuresFactory(): CodeExecutionFactory
     {
-        return function (Exited $exited): void {
-            $id = $exited->getId();
-            $exitCode = $exited->getExitCode();
+        $installationState = $this->installation->getState();
+        $wpConfigFilePath = $installationState instanceof Scaffolded ?
+            $installationState->getWpRootDir('/wp-config.php')
+            : $installationState->getWpConfigPath();
 
-            if (str_starts_with($id, 'plugin::')) {
-                $format = 'Activating Plugin %s: %s';
-                $name = substr($id, 8);
-            } else {
-                $format = 'Switching to theme %s: %s';
-                $name = substr($id, 12);
-            }
-
-            if ($exitCode === 0) {
-                $result = 'OK';
-            } else {
-                $stdout = $exited->getStdout();
-                $stderr = $exited->getStderr();
-                $result = "FAILED\n\tExit code: $exitCode\n\tSTDOUT: $stdout\n\tSTDERR: $stderr";
-                $returnValue = $exited->getReturnValue();
-                if ($returnValue instanceof Throwable) {
-                    $traceAsString = str_replace("\n", "\n\t\t", $returnValue->getTraceAsString());
-                    $errorClass = $returnValue instanceof SerializableThrowable ?
-                        $returnValue->getWrappedThrowableClass()
-                        : get_class($returnValue);
-                    $result .= "\n\tThrown $errorClass:\n\t\t{$returnValue->getMessage()}\n\t\t" . $traceAsString;
-                }
-            }
-            $message = sprintf($format, $name, $result);
-            $this->debugSection('WPLoader', $message);
-        };
-    }
-
-    private function getRequestClosureFactory(): FileRequestClosureFactory
-    {
-        $requestFactory = new FileRequestFactory(
+        return new CodeExecutionFactory(
             $this->getWpRootFolder(),
             $this->config['domain'] ?: 'localhost',
-            [ABSPATH . 'wp-config.php' => CorePHPUnit::path('/wp-tests-config.php')],
+            [$wpConfigFilePath => CorePHPUnit::path('/wp-tests-config.php')],
             [
                 'wpLoaderIncludeWpSettings' => true,
                 'wpLoaderConfig' => $this->config
             ]
         );
-        return new FileRequestClosureFactory($requestFactory);
     }
 
     public function getInstallation(): Installation
@@ -716,18 +713,8 @@ class WPLoader extends Module
         return $this->installation;
     }
 
-    private function loadWordPressBeforeSuite(): void
-    {
-        $this->debug('WPLoader module will load WordPress when all other modules initialized.');
-
-        Dispatcher::addListener(Events::SUITE_BEFORE, function () {
-            $this->loadWordPress(true);
-        }, -100);
-    }
-
     /**
      * @throws ModuleException
-     * @throws ModuleConfigException
      */
     private function checkInstallationToLoadOnly(): void
     {
@@ -740,5 +727,21 @@ class WPLoader extends Module
             );
         }
 
+    }
+
+    private function disableUpdates(): void
+    {
+        // Set Core, plugins and themes updates to right now to avoid external requests during tests.
+        $updateCheckTransient = (object)[
+            'last_checked' => time(),
+            'version_checked' => $this->installation->getVersion()?->getWpVersion(),
+        ];
+        set_site_transient('update_core', $updateCheckTransient);
+        set_site_transient('update_plugins', $updateCheckTransient);
+        set_site_transient('update_themes', $updateCheckTransient);
+        remove_action('admin_init', '_maybe_update_core');
+        remove_action('admin_init', '_maybe_update_plugins');
+        remove_action('admin_init', '_maybe_update_themes');
+        remove_action('admin_init', 'default_password_nag_handler');
     }
 }

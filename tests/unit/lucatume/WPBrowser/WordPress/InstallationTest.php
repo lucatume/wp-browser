@@ -3,12 +3,13 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 
-class InstallationTest extends \Codeception\Test\Unit
+class InstallationTest extends Unit
 {
     use UopzFunctions;
 
@@ -84,7 +85,7 @@ class InstallationTest extends \Codeception\Test\Unit
      */
     public function should_read_version_from_files(): void
     {
-        $wpRoot = FS::tmpDir();
+        $wpRoot = FS::tmpDir('installation_');
 
         Installation::scaffold($wpRoot, '4.9.8');
 
@@ -110,7 +111,7 @@ class InstallationTest extends \Codeception\Test\Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $wpRoot = FS::tmpDir();
+        $wpRoot = FS::tmpDir('installation_');
 
         $installation = Installation::scaffold($wpRoot, '4.9.8', true, false);
 
@@ -141,7 +142,7 @@ class InstallationTest extends \Codeception\Test\Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $wpRoot = FS::tmpDir();
+        $wpRoot = FS::tmpDir('installation_');
 
         $installation = Installation::scaffold($wpRoot, '4.9.8', true, false);
 
@@ -155,5 +156,58 @@ class InstallationTest extends \Codeception\Test\Unit
         $installation = new Installation($wpRoot);
 
         $this->assertEquals('test_', $installation->getDb()->getTablePrefix());
+    }
+
+    /**
+     * It should allow getting the wp-config.php file path
+     *
+     * @test
+     */
+    public function should_allow_getting_the_wp_config_php_file_path(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $wpRoot = FS::tmpDir('installation_');
+
+        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+            ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost));
+
+        $this->assertEquals($wpRoot . '/wp-config.php', $installation->getWpConfigFilePath());
+    }
+
+    /**
+     * It should allow getting the wp-config.php file path when placed out of root
+     *
+     * @test
+     */
+    public function should_allow_getting_the_wp_config_php_file_path_when_placed_out_of_root(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $dir = FS::tmpDir('installation_', ['public' => []]);
+        $wpRoot = $dir . '/public';
+
+        $setupInstallation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+            ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost));
+        if (!rename($wpRoot . '/wp-config.php', $dir . '/wp-config.php')) {
+            throw new \RuntimeException('Could not move wp-config.php up.');
+        }
+
+        // Update the ABSPATH to point to the /public directory.
+        $wpConfigFileContents = file_get_contents($dir . '/wp-config.php');
+        $updatedWPConfigFileContents = preg_replace(
+            '/define\\s*?\\(\\s*?["\']ABSPATH.*?$/um',
+            "define('ABSPATH', dirname(__FILE__). '/public/');",
+            $wpConfigFileContents
+        );
+        file_put_contents($dir . '/wp-config.php', $updatedWPConfigFileContents);
+
+        $installation = new Installation($wpRoot);
+
+        $this->assertEquals($dir . '/wp-config.php', $installation->getWpConfigFilePath());
     }
 }

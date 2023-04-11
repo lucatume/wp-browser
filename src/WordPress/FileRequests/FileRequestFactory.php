@@ -15,23 +15,23 @@ class FileRequestFactory
     /**
      * @var array<string,mixed>
      */
-    private array $presetLocalVars;
+    private array $presetGlobalVars;
 
     public function __construct(
         string $wpRootDir,
         string $domain,
         array $redirectFiles = [],
-        array $presetLocalVars = []
+        array $presetGlobalVars = [],
     ) {
         $this->wpRootDir = $wpRootDir;
         $this->domain = $domain;
         $this->redirectFiles = $redirectFiles;
-        $this->presetLocalVars = $presetLocalVars;
+        $this->presetGlobalVars = $presetGlobalVars;
     }
 
-    public function buildGetRequest(string $requestUri, array $queryArgs, int $userId): FileGetRequest
+    public function buildGetRequest(string $requestUri = '/', array $queryArgs = []): FileGetRequest
     {
-        return $this->buildRequest('GET', $requestUri, $queryArgs, $userId);
+        return $this->buildRequest('GET', $requestUri, $queryArgs);
     }
 
     /**
@@ -48,33 +48,20 @@ class FileRequestFactory
         return $resolved;
     }
 
-    public function buildPostRequest(string $requestUri, array $queryArgs, int $userId): FilePostRequest
+    public function buildPostRequest(string $requestUri, array $queryArgs): FilePostRequest
     {
-        return $this->buildRequest('POST', $requestUri, $queryArgs, $userId);
+        return $this->buildRequest('POST', $requestUri, $queryArgs);
     }
 
     protected function buildRequest(
         string $method,
         string $requestUri,
         array $queryArgs,
-        int $userId
     ): FileGetRequest|FilePostRequest {
         $targetFile = rtrim($this->wpRootDir, '\\/') . '/' . ltrim($requestUri, '\\/');
         $cookies = [];
 
-        if ($userId > 0) {
-            $previousUserId = get_current_user_id();
-            wp_set_current_user($userId);
-            $cookies = [
-                AUTH_COOKIE => wp_generate_auth_cookie($userId, time() + 86400)
-            ];
-
-            $queryArgs = $this->resolveQueryArgs($queryArgs);
-
-            wp_set_current_user($previousUserId);
-        } else {
-            $queryArgs = $this->resolveQueryArgs($queryArgs);
-        }
+        $queryArgs = $this->resolveQueryArgs($queryArgs);
 
         switch ($method) {
             default:
@@ -86,7 +73,7 @@ class FileRequestFactory
                     $queryArgs,
                     $cookies,
                     $this->redirectFiles,
-                    $this->presetLocalVars
+                    $this->presetGlobalVars
                 );
                 break;
             case 'POST':
@@ -97,7 +84,7 @@ class FileRequestFactory
                     $queryArgs,
                     $cookies,
                     $this->redirectFiles,
-                    $this->presetLocalVars
+                    $this->presetGlobalVars
                 );
                 break;
         }

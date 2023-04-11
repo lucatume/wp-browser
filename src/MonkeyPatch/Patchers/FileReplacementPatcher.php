@@ -13,6 +13,9 @@ class FileReplacementPatcher implements PatcherInterface
         $this->replacementFile = $replacementFile;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function patch(string $fileContents, string $pathname): array
     {
         $replacementFileContents = file_get_contents($this->replacementFile);
@@ -22,5 +25,10 @@ class FileReplacementPatcher implements PatcherInterface
         }
 
         return [$replacementFileContents, $this->replacementFile];
+    }
+
+    public function stat(string $pathname): array|false
+    {
+        return stat($this->replacementFile);
     }
 }

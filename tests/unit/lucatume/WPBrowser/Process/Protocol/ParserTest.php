@@ -142,9 +142,9 @@ class ParserTest extends Unit
     /**
      * @dataProvider decodeDataProvider
      */
-    public function testDecodeEncode(string $input, array $expected, int $offset = null, int $count = null): void
+    public function testDecodeEncode(string $input, array $expected): void
     {
-        $parsed = Parser::decode($input, $offset, $count);
+        $parsed = Parser::decode($input);
         $this->assertEquals($expected, $parsed);
 
         $this->assertEquals($input, Parser::encode($expected));

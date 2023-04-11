@@ -92,6 +92,8 @@ class ScaffoldedTest extends \Codeception\Test\Unit
         $state = new Scaffolded($wpRootDir);
 
         $this->assertEquals($wpRootDir . '/', $state->getWpRootDir());
+        $this->assertEquals($wpRootDir . '/wp-config.php', $state->getWpRootDir('wp-config.php'));
+        $this->assertEquals($wpRootDir . '/wp-config.php', $state->getWpRootDir('/wp-config.php'));
         $this->assertEquals('6.1.1', $state->getVersion()->getWpVersion());
     }
 
@@ -487,19 +489,36 @@ PHP;
     }
 
     /**
-     * It should return plugin directory
+     * It should return plugins directory
      *
      * @test
      */
-    public function should_return_plugin_directory(): void
+    public function should_return_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
         Installation::scaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->assertEquals($wpRootDir . '/wp-content/plugins/', $scaffolded->getPluginDir());
-        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php', $scaffolded->getPluginDir('plugin-1.php'));
-        $this->assertEquals($wpRootDir . '/wp-content/plugins/test-plugin', $scaffolded->getPluginDir('test-plugin'));
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/', $scaffolded->getPluginsDir());
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php', $scaffolded->getPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/test-plugin', $scaffolded->getPluginsDir('test-plugin'));
+    }
+
+    /**
+     * It should return themes directory
+     *
+     * @test
+     */
+    public function should_return_themes_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->assertEquals($wpRootDir . '/wp-content/themes/', $scaffolded->getThemesDir());
+        $this->assertEquals($wpRootDir . '/wp-content/themes/theme-1.php', $scaffolded->getThemesDir('theme-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/themes/test-theme', $scaffolded->getThemesDir('test-theme'));
     }
 }

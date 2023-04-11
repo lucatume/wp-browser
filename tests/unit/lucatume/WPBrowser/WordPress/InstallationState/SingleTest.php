@@ -370,11 +370,11 @@ class SingleTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should allow getting information abou the installation
+     * It should allow getting information about the installation
      *
      * @test
      */
-    public function should_allow_getting_information_abou_the_installation(): void
+    public function should_allow_getting_information_about_the_installation(): void
     {
         $wpRootDir = FS::tmpDir('single_j');
         $dbName = Random::dbName();
@@ -394,6 +394,8 @@ class SingleTest extends \Codeception\Test\Unit
 
         $this->assertFalse($single->isMultisite());
         $this->assertEquals($wpRootDir . '/', $single->getWpRootDir());
+        $this->assertEquals($wpRootDir . '/wp-config.php', $single->getWpRootDir('wp-config.php'));
+        $this->assertEquals($wpRootDir . '/wp-config.php', $single->getWpRootDir('/wp-config.php'));
         $this->assertEquals($wpRootDir . '/wp-config.php', $single->getWpConfigPath());
         $this->assertTrue(strlen($single->getAuthKey()) === 64 && $single->getAuthKey() !== $single->getSecureAuthKey());
         $this->assertTrue(strlen($single->getSecureAuthKey()) === 64 && $single->getSecureAuthKey() !== $single->getLoggedInKey());
@@ -525,11 +527,11 @@ class SingleTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should return plugin directory
+     * It should return plugins directory
      *
      * @test
      */
-    public function should_return_plugin_directory(): void
+    public function should_return_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('single_');
         $dbName = Random::dbName();
@@ -548,15 +550,15 @@ class SingleTest extends \Codeception\Test\Unit
 
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
-        $this->assertEquals($wpRootDir . '/wp-content/plugins', $single->getPluginDir());
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $single->getPluginsDir());
     }
 
     /**
-     * It should return plugin directory built from WP_CONTENT_DIR if set
+     * It should return plugins directory built from WP_CONTENT_DIR if set
      *
      * @test
      */
-    public function should_return_plugin_directory_built_from_wp_content_dir_if_set(): void
+    public function should_return_plugins_directory_built_from_wp_content_dir_if_set(): void
     {
         $wpRootDir = FS::tmpDir('single_');
         $dbName = Random::dbName();
@@ -577,15 +579,15 @@ class SingleTest extends \Codeception\Test\Unit
 
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
-        $this->assertEquals($wpRootDir . '/site-content/plugins', $single->getPluginDir());
+        $this->assertEquals($wpRootDir . '/site-content/plugins', $single->getPluginsDir());
     }
 
     /**
-     * It should return plugin directory built from WP_PLUGIN_DIR if set
+     * It should return plugins directory built from WP_PLUGIN_DIR if set
      *
      * @test
      */
-    public function should_return_plugin_directory_built_from_wp_plugin_dir_if_set(): void
+    public function should_return_plugins_directory_built_from_wp_plugin_dir_if_set(): void
     {
         $wpRootDir = FS::tmpDir('single_');
         $dbName = Random::dbName();
@@ -606,8 +608,69 @@ class SingleTest extends \Codeception\Test\Unit
 
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
 
-        $this->assertEquals($wpRootDir . '/site-plugins', $single->getPluginDir());
-        $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $single->getPluginDir('plugin-1.php'));
-        $this->assertEquals($wpRootDir . '/site-plugins/test-plugin', $single->getPluginDir('test-plugin'));
+        $this->assertEquals($wpRootDir . '/site-plugins', $single->getPluginsDir());
+        $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $single->getPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/site-plugins/test-plugin', $single->getPluginsDir('test-plugin'));
+    }
+
+    /**
+     * It should return the themes directory
+     *
+     * @test
+     */
+    public function should_return_the_themes_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/wp-content/themes', $single->getThemesDir());
+        $this->assertEquals($wpRootDir . '/wp-content/themes/some-file.php', $single->getThemesDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/themes/some-theme', $single->getThemesDir('some-theme'));
+    }
+
+    /**
+     * It should return the themes directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_the_themes_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-content/themes', $single->getThemesDir());
+        $this->assertEquals($wpRootDir . '/site-content/themes/some-file.php', $single->getThemesDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $single->getThemesDir('some-theme'));
     }
 }

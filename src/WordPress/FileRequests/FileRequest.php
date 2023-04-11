@@ -2,12 +2,12 @@
 
 namespace lucatume\WPBrowser\WordPress\FileRequests;
 
+use __PHP_Incomplete_Class;
 use Closure;
+use ErrorException;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
-use ParagonIE\Sodium\File;
 use Serializable;
-use function _PHPStan_9a6ded56a\RingCentral\Psr7\parse_query;
 
 abstract class FileRequest implements Serializable
 {
@@ -59,6 +59,7 @@ abstract class FileRequest implements Serializable
         array $requestVars = [],
         array $cookieJar = [],
         array $redirectFiles = [],
+        array $presetGlobalVars = [],
         array $presetLocalVars = [],
         array $constants = []
     ) {
@@ -68,17 +69,23 @@ abstract class FileRequest implements Serializable
         $this->requestVars = $requestVars;
         $this->cookieJar = $cookieJar;
         $this->redirectFiles = $redirectFiles;
+        $this->presetGlobalVars = $presetGlobalVars;
         $this->presetLocalVars = $presetLocalVars;
         $this->constants = $constants;
     }
 
     abstract protected function getMethod(): string;
 
-    public function execute(): mixed
+    /**
+     * @throws ErrorException
+     * @throws FileRequestException
+     */
+    public function execute(): array
     {
         if (count($this->presetGlobalVars) > 0) {
-            foreach ($this->presetGlobalVars as $global) {
-                global $$global;
+            foreach ($this->presetGlobalVars as $key => $value) {
+                global $$key;
+                $$key = $value;
             }
         }
 
@@ -145,9 +152,10 @@ abstract class FileRequest implements Serializable
             defined($constant) || define($constant, $value);
         }
 
-        // Preset these to avoid issues with WP expecting them being defined already.
-        global /** @noinspection PhpUnusedLocalVariableInspection */
-        $status, $page;
+        // Cast all errors to exceptions.
+        set_error_handler(static function ($errno, $errstr, $errfile, $errline) {
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+        }, E_ALL);
 
         require $this->targetFile;
 
@@ -241,7 +249,7 @@ abstract class FileRequest implements Serializable
                 continue;
             }
 
-            if ($datum instanceof \__PHP_Incomplete_Class) {
+            if ($datum instanceof __PHP_Incomplete_Class) {
                 $serialized = serialize($datum);
                 $class = preg_match('/^O:\d+:"([^"]+)"/', $serialized, $matches) ? $matches[1] : null;
                 $carry[] = $class;
@@ -320,4 +328,17 @@ abstract class FileRequest implements Serializable
         return $this;
     }
 
+    public function setRedirectFiles(array $redirectFiles):FileRequest
+    {
+        $this->redirectFiles = $redirectFiles;
+
+        return $this;
+    }
+
+    public function addPresetGlobalVars(array $presetGlobalVars): FileRequest
+    {
+        $this->presetGlobalVars = array_replace($this->presetGlobalVars, $presetGlobalVars);
+
+        return $this;
+    }
 }

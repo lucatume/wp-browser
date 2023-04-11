@@ -437,6 +437,8 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/', $configured->getWpRootDir());
+        $this->assertEquals($wpRootDir . '/wp-config.php', $configured->getWpRootDir('wp-config.php'));
+        $this->assertEquals($wpRootDir . '/wp-config.php', $configured->getWpRootDir('/wp-config.php'));
         $this->assertEquals($wpRootDir . '/wp-config.php', $configured->getWpConfigPath());
         $this->assertTrue(strlen($configured->getAuthKey()) === 64 && $configured->getAuthKey() !== $configured->getSecureAuthKey());
         $this->assertTrue(strlen($configured->getSecureAuthKey()) === 64 && $configured->getSecureAuthKey() !== $configured->getLoggedInKey());
@@ -557,11 +559,11 @@ class ConfiguredTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should return plugin directory
+     * It should return plugins directory
      *
      * @test
      */
-    public function should_return_plugin_directory(): void
+    public function should_return_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('configured_');
         $dbName = Random::dbName();
@@ -572,15 +574,15 @@ class ConfiguredTest extends \Codeception\Test\Unit
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
-        $this->assertEquals($wpRootDir . '/wp-content/plugins', $configured->getPluginDir());
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $configured->getPluginsDir());
     }
 
     /**
-     * It should return plugin directory built from WP_CONTENT_DIR if set
+     * It should return plugins directory built from WP_CONTENT_DIR if set
      *
      * @test
      */
-    public function should_return_plugin_directory_built_from_wp_content_dir_if_set(): void
+    public function should_return_plugins_directory_built_from_wp_content_dir_if_set(): void
     {
         $wpRootDir = FS::tmpDir('configured_');
         $dbName = Random::dbName();
@@ -593,16 +595,16 @@ class ConfiguredTest extends \Codeception\Test\Unit
             (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
-        $this->assertEquals($wpRootDir . '/site-content/plugins', $configured->getPluginDir());
+        $this->assertEquals($wpRootDir . '/site-content/plugins', $configured->getPluginsDir());
 
     }
 
     /**
-     * It should return plugin directory built from WP_PLUGIN_DIR if set
+     * It should return plugins directory built from WP_PLUGIN_DIR if set
      *
      * @test
      */
-    public function should_return_plugin_directory_built_from_wp_plugin_dir_if_set(): void
+    public function should_return_plugins_directory_built_from_wp_plugins_dir_if_set(): void
     {
         $wpRootDir = FS::tmpDir('configured_');
         $dbName = Random::dbName();
@@ -615,6 +617,48 @@ class ConfiguredTest extends \Codeception\Test\Unit
             (new ConfigurationData())->setConst('WP_PLUGIN_DIR', $wpRootDir . '/plugins'));
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
-        $this->assertEquals($wpRootDir . '/plugins', $configured->getPluginDir());
+        $this->assertEquals($wpRootDir . '/plugins', $configured->getPluginsDir());
+    }
+
+    /**
+     * It should return themes directory
+     *
+     * @test
+     */
+    public function should_return_themes_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/wp-content/themes', $configured->getThemesDir());
+        $this->assertEquals($wpRootDir . '/wp-content/themes/some-theme', $configured->getThemesDir('some-theme'));
+    }
+
+    /**
+     * It should return themes directory build from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_themes_directory_build_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/site-content/themes', $configured->getThemesDir());
+        $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $configured->getThemesDir('some-theme'));
     }
 }

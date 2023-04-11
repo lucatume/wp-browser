@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 
 use CompileError;
 use Exception;
+use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use Opis\Closure\SerializableClosure;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,16 @@ class ResponseTest extends TestCase
         $response = new Response($exception);
 
         $this->assertInstanceOf(Throwable::class, $response->getReturnValue());
+        $this->assertEquals(1, $response->getExitValue());
+    }
+
+    public function testContstrucortAndGettersSerializableThrowable(): void
+    {
+        $exception = new Exception("Error");
+        $serializableThrowable = new SerializableThrowable($exception);
+        $response = new Response($serializableThrowable);
+
+        $this->assertInstanceOf(SerializableThrowable::class, $response->getReturnValue());
         $this->assertEquals(1, $response->getExitValue());
     }
 
@@ -84,5 +95,19 @@ class ResponseTest extends TestCase
         $response = Response::fromStderr($stderrBufferString);
 
         $this->assertEquals(strlen("Error message"), $response->getStderrLength());
+    }
+
+    public function testFromStderrWithNoiseAfterPayload():void{
+        $returnValue = new SerializableClosure(static fn() => "success");
+        $telemetry = ["memoryPeakUsage" => 123456];
+        $payload = Parser::encode([$returnValue, $telemetry]);
+        $separator = Response::$stderrValueSeparator;
+        $stderrBufferString = "{$separator}{$payload}some noise";
+
+        $response = Response::fromStderr($stderrBufferString);
+
+        $this->assertEquals('success', $response->getReturnValue());
+        $this->assertEquals(0, $response->getExitValue());
+        $this->assertEquals($telemetry, $response->getTelemetry());
     }
 }

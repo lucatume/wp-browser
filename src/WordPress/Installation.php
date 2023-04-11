@@ -4,9 +4,6 @@ namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
@@ -16,27 +13,7 @@ class Installation
     use WordPressChecks;
 
     private ?Db $db = null;
-    private FileRequestFactory $fileRequestFactory;
-    private FileRequestClosureFactory $requestClosuresFactory;
-    private string $adminEmail;
-    private string $adminPassword;
-    private string $adminUser;
-    private string $authKey;
-    private string $authSalt;
-    private string $loggedInKey;
-    private string $loggedInSalt;
-    private string $nonceKey;
-    private string $nonceSalt;
-    private string $secureAuthKey;
-    private string $secureAuthSalt;
-    private string $title;
-    private ?Version $version = null;
     private string $wpRootDir;
-    private ?string $wpConfigFilePath = null;
-    private ?bool $isMultisite = null;
-    private CodeExecutionFactory $codeExecutionFactory;
-    private string $url;
-    private ?WPConfigFile $wpConfigFileReader = null;
     private InstallationState\InstallationStateInterface $installationState;
 
     /**
@@ -232,13 +209,23 @@ class Installation
         return $checksMap;
     }
 
-    public function getPluginDir(string $path = ''): string
+    public function getPluginsDir(string $path = ''): string
     {
-        return $this->installationState->getPluginDir($path);
+        return $this->installationState->getPluginsDir($path);
     }
 
     public function updateOption(string $option, array $value): int
     {
         return $this->installationState->updateOption($option, $value);
+    }
+
+    public function getThemesDir(string $path = ''): string
+    {
+        return $this->installationState->getThemesDir($path);
+    }
+
+    public function getWpConfigFilePath(): string
+    {
+        return $this->installationState->getWpConfigPath();
     }
 }

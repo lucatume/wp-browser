@@ -277,7 +277,7 @@ add_action('wp_loaded', function () {
 });
 PHP;
 
-        file_put_contents($installation->getPluginDir('test-plugin.php'), $throwingPluginCode);
+        file_put_contents($installation->getPluginsDir('test-plugin.php'), $throwingPluginCode);
         $installation->getDb()->updateOption('active_plugins', ['test-plugin.php']);
 
         $this->expectException(Exception::class);

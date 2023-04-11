@@ -8,4 +8,6 @@ interface PatcherInterface
      * @return array{string, string}
      */
     public function patch(string $fileContents, string $pathname): array;
+
+    public function stat(string $pathname): array|false;
 }

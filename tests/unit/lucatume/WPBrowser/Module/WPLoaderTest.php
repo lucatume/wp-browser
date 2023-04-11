@@ -8,6 +8,8 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
+use Exception;
+use Generator;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
@@ -20,9 +22,12 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use PHPUnit\Framework\Assert;
+use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
 use lucatume\WPBrowser\WordPress\Assert as WPAssert;
+use const ABSPATH;
+use const WP_DEBUG;
 
 class WPLoaderTest extends Unit
 {
@@ -487,7 +492,7 @@ class WPLoaderTest extends Unit
             $captured = false;
             try {
                 $wpLoader->_initialize();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Assert::assertInstanceOf(ModuleConfigException::class, $e);
                 $captured = true;
             }
@@ -680,20 +685,20 @@ class WPLoaderTest extends Unit
             Assert::assertFalse(defined('ABSPATH'));
 
             $actions = [];
-            Dispatcher::addListener(WPLoader::ACTION_BEFORE_LOADONLY, static function () use (&$actions) {
-                $actions[] = WPLoader::ACTION_BEFORE_LOADONLY;
+            Dispatcher::addListener(WPLoader::EVENT_BEFORE_LOADONLY, static function () use (&$actions) {
+                $actions[] = WPLoader::EVENT_BEFORE_LOADONLY;
             });
-            Dispatcher::addListener(WPLoader::ACTION_AFTER_LOADONLY, static function () use (&$actions) {
-                $actions[] = WPLoader::ACTION_AFTER_LOADONLY;
+            Dispatcher::addListener(WPLoader::EVENT_AFTER_LOADONLY, static function () use (&$actions) {
+                $actions[] = WPLoader::EVENT_AFTER_LOADONLY;
             });
 
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertEquals($wpRootDir . '/', ABSPATH);
             Assert::assertEquals([
-                WPLoader::ACTION_BEFORE_LOADONLY,
-                WPLoader::ACTION_AFTER_LOADONLY,
+                WPLoader::EVENT_BEFORE_LOADONLY,
+                WPLoader::EVENT_AFTER_LOADONLY,
             ], $actions);
             Assert::assertInstanceOf(FactoryStore::class, $wpLoader->factory());
         });
@@ -727,7 +732,7 @@ class WPLoaderTest extends Unit
         });
     }
 
-    public function dbModuleCompatDataProvider(): \Generator
+    public function dbModuleCompatDataProvider(): Generator
     {
         yield 'Db' => ['Db', Db::class];
         yield 'WPDb' => ['WPDb', WPDb::class];
@@ -779,7 +784,7 @@ class WPLoaderTest extends Unit
 
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
-            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertEquals($wpRootDir . '/', ABSPATH);
         });
     }
 
@@ -881,9 +886,9 @@ class WPLoaderTest extends Unit
 
             Assert::assertEquals('test_file_001.php', getenv('LOADED'));
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertEquals($wpRootDir . '/', ABSPATH);
             Assert::assertTrue(defined('WP_DEBUG'));
-            Assert::assertTrue(\WP_DEBUG);
+            Assert::assertTrue(WP_DEBUG);
         });
     }
 
@@ -942,29 +947,46 @@ class WPLoaderTest extends Unit
                 codecept_data_dir('files/test_file_002.php'),
             ],
             'plugins' => [
-                'hello-dolly/hello.php',
                 'akismet/akismet.php',
+                'hello-dolly/hello.php',
                 'woocommerce/woocommerce.php',
             ],
             'theme' => 'twentytwenty',
         ];
-        Installation::scaffold($wpRootDir, 'latest');
+        $installation = Installation::scaffold($wpRootDir, 'latest');
+        // Copy over plugins from the main installation.
+        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        foreach ([
+                     'hello-dolly',
+                     'akismet',
+                     'woocommerce',
+                 ] as $plugin) {
+            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
+                $installation->getPluginsDir($plugin))) {
+                throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
+            }
+        }
+        // Copy over theme from the main installation.
+        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
+            $installation->getThemesDir('twentytwenty'))) {
+            throw new RuntimeException('Could not copy theme twentytwenty');
+        }
 
         $wpLoader = $this->module();
-        $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+        $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $actions = [];
-            Dispatcher::addListener(WPLoader::ACTION_BEFORE_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
                 $actions[] = 'before_install';
             });
-            Dispatcher::addListener(WPLoader::ACTION_AFTER_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
                 $actions[] = 'after_install';
             });
 
             $wpLoader->_initialize();
 
             Assert::assertEquals([
-                'hello-dolly/hello.php',
                 'akismet/akismet.php',
+                'hello-dolly/hello.php',
                 'woocommerce/woocommerce.php',
             ], get_option('active_plugins'));
             Assert::assertEquals([
@@ -975,12 +997,20 @@ class WPLoaderTest extends Unit
             Assert::assertEquals('twentytwenty', get_option('stylesheet'));
             Assert::assertEquals('test_file_001.php', getenv('LOADED'));
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', \ABSPATH);
+            Assert::assertEquals($wpRootDir . '/', ABSPATH);
             Assert::assertTrue(defined('WP_DEBUG'));
-            Assert::assertTrue(\WP_DEBUG);
+            Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
+
+            return [
+                'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
+                'installationOutput' => $wpLoader->_getInstallationOutput(),
+            ];
         });
+
+        codecept_debug($installationOutput);
+        $this->assertEquals([], $installationOutput);
     }
 }

@@ -28,7 +28,8 @@ class FileStreamWrapper
 
     public static function setPatcherForFile(string $file, PatcherInterface $patcher): void
     {
-        self::$fileToPatcherMap[FS::realpath($file)] = $patcher;
+        $fromFilePath = FS::realpath($file) ?: $file;
+        self::$fileToPatcherMap[$fromFilePath] = $patcher;
         self::register();
     }
 
@@ -40,12 +41,6 @@ class FileStreamWrapper
         }
 
         return static::$isRegistered;
-    }
-
-    private static function noop(): Closure
-    {
-        return static function () {
-        };
     }
 
     public static function unregister(): bool
@@ -77,14 +72,12 @@ class FileStreamWrapper
         self::unregister();
 
         $absPath = FS::realpath($path);
-        $absPathResolved = !empty($absPath) && is_string($absPath);
-        $openedPath = $absPathResolved ? $absPath : $path;
+        $openedPath = !empty($absPath) && is_string($absPath) ? $absPath : $path;
         $useIncludePath = (bool)(STREAM_USE_PATH & $options);
 
-        // The stream wrapper will only patch existing files.
-        if ($absPathResolved && isset(self::$fileToPatcherMap[$absPath])) {
-            $openedPath = $this->patchFile($absPath);
-            unset(self::$fileToPatcherMap[$absPath]);
+        if (isset(self::$fileToPatcherMap[$openedPath])) {
+            $openedPath = $this->patchFile($openedPath);
+            unset(self::$fileToPatcherMap[$openedPath]);
 
             if (empty(self::$fileToPatcherMap)) {
                 self::unregister();
@@ -262,7 +255,7 @@ class FileStreamWrapper
         return ftruncate($this->fileResource, $newSize);
     }
 
-    public function dir_readdir(): string
+    public function dir_readdir(): string|false
     {
         return readdir($this->fileResource);
     }
@@ -289,15 +282,48 @@ class FileStreamWrapper
         return $result;
     }
 
-    public function url_stat(string $path, int $flags): array
+    public function url_stat(string $path, int $flags): array|false
     {
         static::unregister();
 
-        set_error_handler(self::noop());
+        if (!(file_exists($path))) {
+            if (isset(self::$fileToPatcherMap[$path])) {
+                // Ask the patcher to provide stats.
+                $stat = self::$fileToPatcherMap[$path]->stat($path);
+            } else {
+                $stat = false;
+            }
+            static::register();
+
+            return $stat;
+        }
+
+        if (!($flags & STREAM_URL_STAT_LINK) && is_link($path)) {
+            // Provide information about the linked file, not the link.
+            $path = readlink($path);
+        }
+
+        if ($path === false) {
+            static::register();
+            return false;
+        }
+
+        set_error_handler(static function (
+            int $errno,
+            string $errstr,
+            ?string $errfile = null,
+            ?int $errline = null,
+        ) {
+            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        });
         try {
             $result = stat($path);
         } catch (Exception $e) {
-            $result = null;
+            if (!($flags & STREAM_URL_STAT_QUIET)) {
+                trigger_error($e->getMessage(), E_USER_WARNING);
+            }
+            static::register();
+            return false;
         }
         restore_error_handler();
 
@@ -309,7 +335,7 @@ class FileStreamWrapper
             $result[9]++;
         }
 
-        return (array)$result;
+        return $result;
     }
 
     public function dir_closedir(): bool
@@ -334,11 +360,15 @@ class FileStreamWrapper
         return $this->fileResource !== null;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     private function patchFile(bool|string $absPath): string
     {
         $patcher = self::$fileToPatcherMap[$absPath];
         self::unregister();
-        $fileContents = file_get_contents($absPath);
+        // Do not use `is_file` here as it will use the cached stats: this check should be real.
+        $fileContents = file_exists($absPath) ? file_get_contents($absPath) : '';
         self::register();
 
         if ($fileContents === false) {

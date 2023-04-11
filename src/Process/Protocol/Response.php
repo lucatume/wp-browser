@@ -18,7 +18,9 @@ class Response
     public function __construct(mixed $returnValue, ?int $exitValue = null, array $telemetry = [])
     {
         if ($exitValue === null) {
-            $this->exitValue = $returnValue instanceof Throwable ? 1 : 0;
+            $this->exitValue = $returnValue instanceof Throwable || $returnValue instanceof SerializableThrowable ?
+                1
+                : 0;
         } else {
             $this->exitValue = $exitValue;
         }
@@ -45,11 +47,17 @@ class Response
         }
 
         $afterSeparatorBuffer = substr($stderrBufferString, $separatorPos + strlen(self::$stderrValueSeparator));
+        // Find the last CRLF in the buffer.
+        $lastCrlfPos = strrpos($afterSeparatorBuffer, "\r\n");
+        if ($lastCrlfPos !== false) {
+            // Cut the string at the last CRLF.
+            $afterSeparatorBuffer = substr($afterSeparatorBuffer, 0, $lastCrlfPos + 2);
+        }
 
         [$returnValueClosure, $telemetry] = Parser::decode($afterSeparatorBuffer);
 
         $returnValue = $returnValueClosure();
-        if($returnValue instanceof SerializableThrowable){
+        if ($returnValue instanceof SerializableThrowable) {
             $returnValue = $returnValue->getThrowable();
         }
         $exitValue = $returnValue instanceof Throwable ? 1 : 0;

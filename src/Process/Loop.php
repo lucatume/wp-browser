@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Process;
 
 use Closure;
+use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Process\Worker\Exited;
 use lucatume\WPBrowser\Process\Worker\Running;
 use lucatume\WPBrowser\Process\Worker\Worker;
@@ -14,6 +15,8 @@ use Throwable;
 class Loop
 {
     use MemoryUsage;
+
+    public const EVENT_AFTER_WORKER_EXIT = 'loop.worker.exit.after';
 
     private int $peakParallelism = 0;
     private bool $fastFailure;
@@ -419,26 +422,6 @@ class Loop
         return null;
     }
 
-    public function getDebuggerCallback(): ?callable
-    {
-        return $this->debuggerCallback;
-    }
-
-    public function setDebuggerCallback(?callable $debuggerCallback): void
-    {
-        $this->debuggerCallback = $debuggerCallback;
-    }
-
-    public function isDebugMode(): bool
-    {
-        return $this->debugMode;
-    }
-
-    public function setDebugMode(bool $debugMode): void
-    {
-        $this->debugMode = $debugMode;
-    }
-
     public function failed(): bool
     {
         return $this->fastFailure && $this->fastFailureFlagRaised;
@@ -460,30 +443,11 @@ class Loop
 
     private function debugLine(string $line): void
     {
-        if ($this->debuggerCallback === null) {
-            return;
-        }
-        ($this->debuggerCallback)($line);
-    }
-
-    public function subscribeToWorkerExit(callable $debug): Closure
-    {
-        $this->onWorkerExit[] = $debug;
-        $index = count($this->onWorkerExit) - 1;
-
-        return function () {
-            unset($this->onWorkerExit[$index]);
-            $this->onWorkerExit = array_values($this->onWorkerExit);
-        };
+        codecept_debug("Loop: $line");
     }
 
     private function dispatchOnWorkerExit(Exited $exitedWorker): void
     {
-        if (empty($this->onWorkerExit)) {
-            return;
-        }
-        foreach ($this->onWorkerExit as $subscriber) {
-            $subscriber($exitedWorker);
-        }
+        Dispatcher::dispatch(self::EVENT_AFTER_WORKER_EXIT, $exitedWorker);
     }
 }

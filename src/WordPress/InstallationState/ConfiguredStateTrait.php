@@ -7,6 +7,7 @@ use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
+use lucatume\WPBrowser\WordPress\WpConfigFileException;
 
 trait ConfiguredStateTrait
 {
@@ -60,9 +61,9 @@ trait ConfiguredStateTrait
     }
 
 
-    public function getWpRootDir(): string
+    public function getWpRootDir(string $path = ''): string
     {
-        return $this->wpRootDir;
+        return $path ? $this->wpRootDir . ltrim($path, '\\/') : $this->wpRootDir;
     }
 
     public function getWpConfigPath(): string
@@ -71,9 +72,7 @@ trait ConfiguredStateTrait
     }
 
     /**
-     * @throws InstallationException
-     * @throws ProcessException
-     * @throws DbException
+     * @throws InstallationException|ProcessException|DbException|WpConfigFileException
      */
     private function buildConfigured(string $wpRootDir, string $wpConfigFilePath): void
     {
@@ -149,7 +148,7 @@ trait ConfiguredStateTrait
         return $this->wpConfigFile->getVariables();
     }
 
-    public function getPluginDir(string $path = ''): string
+    public function getPluginsDir(string $path = ''): string
     {
         $pluginsDir = rtrim($this->wpRootDir, '\\/') . '/wp-content/plugins';
 
@@ -164,5 +163,22 @@ trait ConfiguredStateTrait
         $pluginsDir = rtrim($pluginsDir, '\\/');
 
         return $path ? $pluginsDir . '/' . ltrim($path, '\\/') : $pluginsDir;
+    }
+
+    public function getThemesDir(string $path = ''): string
+    {
+        $themesDir = rtrim($this->wpRootDir, '\\/') . '/wp-content/themes';
+
+        if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
+            $themesDir = $wpContentDirConst . '/themes';
+        }
+
+        if ($wpThemeDirConst = $this->getConstant('WP_THEME_DIR')) {
+            $themesDir = $wpThemeDirConst;
+        }
+
+        $themesDir = rtrim($themesDir, '\\/');
+
+        return $path ? $themesDir . '/' . ltrim($path, '\\/') : $themesDir;
     }
 }

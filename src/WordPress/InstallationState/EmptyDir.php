@@ -30,7 +30,7 @@ class EmptyDir implements InstallationStateInterface
         }
     }
 
-    public function getWpRootDir(): string
+    public function getWpRootDir(string $path = ''): string
     {
         return $this->wpRootDir;
     }
@@ -299,7 +299,7 @@ class EmptyDir implements InstallationStateInterface
     /**
      * @throws InstallationException
      */
-    public function getPluginDir(string $path = ''): string
+    public function getPluginsDir(string $path = ''): string
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
@@ -311,6 +311,17 @@ class EmptyDir implements InstallationStateInterface
      * @throws InstallationException
      */
     public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getThemesDir(string $path = ''): string
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
