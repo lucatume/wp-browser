@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 
 class CodeExecutionFactory
@@ -32,59 +33,72 @@ class CodeExecutionFactory
             ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
             ->addPresetGlobalVars($this->presetGlobalVars)
-            ->addAfterLoadClosure(static function () use ($multisite) {
-                return is_blog_installed() && (!$multisite || is_multisite());
-            });
+            ->addAfterLoadClosure(fn() => $this->isBlogInstalled($multisite));
 
         return static function () use ($request): mixed {
             return $request->execute();
         };
     }
 
-    public function toActivatePlugin(mixed $plugin, mixed $multisite): Closure
+    public function toActivatePlugin(mixed $plugin, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
             ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
             ->addPresetGlobalVars($this->presetGlobalVars)
-            ->addAfterLoadClosure(static function () use ($plugin, $multisite) {
-                require_once ABSPATH . 'wp-admin/includes/plugin.php';
-                $activated = \activate_plugin($plugin, '', $multisite, false);
-                if ($activated instanceof \WP_Error) {
-                    throw new \RuntimeException($activated->get_error_message());
-                }
-            });
+            ->defineConstant('MULTISITE', $multisite)
+            ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite));
 
         return static function () use ($request): mixed {
             return $request->execute();
         };
     }
 
-    public function toSwitchTheme(mixed $stylesheet): Closure
+    public function toSwitchTheme(mixed $stylesheet, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
             ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
             ->addPresetGlobalVars($this->presetGlobalVars)
-            ->addAfterLoadClosure(static function () use ($stylesheet) {
-                \switch_theme($stylesheet);
-            });
+            ->defineConstant('MULTISITE', $multisite)
+            ->addAfterLoadClosure(fn() => $this->switchTheme($stylesheet, $multisite));
 
         return static function () use ($request): mixed {
             return $request->execute();
         };
     }
 
-    public function getAdminUserId(): int
+    private function activatePlugin(mixed $plugin, bool $multisite): void
     {
-        return $this->adminUserId;
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        $activated = \activate_plugin($plugin, '', $multisite);
+        $activatedString = $multisite ? 'network activated' : 'activated';
+        $message = "Plugin {$plugin} could not be $activatedString.";
+
+        if ($activated instanceof \WP_Error) {
+            $message = $activatedString . ' ' . $activated->get_error_message();
+            throw new RuntimeException($message);
+        }
+
+        $isActive = $multisite ? is_plugin_active_for_network($plugin) : is_plugin_active($plugin);
+
+        if (!$isActive) {
+            throw new RuntimeException($message);
+        }
     }
 
-    public function setAdminUserId(int $adminUserId): self
+    private function isBlogInstalled(bool $multisite): bool
     {
-        $this->adminUserId = $adminUserId;
-        return $this;
+        return is_blog_installed() && (!$multisite || is_multisite());
+    }
+
+    private function switchTheme(mixed $stylesheet, bool $multisite): void
+    {
+        if ($multisite) {
+            \WP_Theme::network_enable_theme($stylesheet);
+        }
+        \switch_theme($stylesheet);
     }
 }

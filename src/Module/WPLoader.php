@@ -155,7 +155,7 @@ class WPLoader extends Module
         'configFile' => '',
         'contentFolder' => '',
         'pluginsFolder' => '',
-        'plugins' => '',
+        'plugins' => [],
         'bootstrapActions' => '',
         'theme' => '',
         'AUTH_KEY' => '',
@@ -472,14 +472,34 @@ class WPLoader extends Module
 
         Dispatcher::dispatch(self::EVENT_BEFORE_INSTALL, $this);
 
-        // When loading the plugins option for the first time, activate the required plugins and theme.
-        $filterActivePluginsOption = function () use (&$filterActivePluginsOption): array {
-            remove_filter('pre_option_active_plugins', $filterActivePluginsOption);
-            $this->activatePluginsInSeparateProcess();
+        $isMultisite = $this->config['multisite'];
+        $plugins = (array)$this->config['plugins'];
 
-            return $this->config['plugins'];
-        };
-        PreloadFilters::addFilter('pre_option_active_plugins', $filterActivePluginsOption);
+        /*
+         * The bootstrap file will load the `wp-settings.php` one that will load plugins and the theme.
+         * Hook on the option to get the the active plugins to run the plugins' and theme activation
+         * in a separate process.
+         */
+        if ($isMultisite) {
+            // Activate plugins and enable theme network-wide.
+            $activate = function () use (&$activate, $plugins): array {
+                remove_filter('pre_site_option_active_sitewide_plugins', $activate);
+                $this->activatePluginsSwitchThemeInSeparateProcess();
+
+                // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
+                return array_combine($plugins, array_fill(0, count($plugins), time()));
+            };
+            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
+        } else {
+            // Activate plugins and theme.
+            $activate = function () use (&$activate, $plugins): array {
+                remove_filter('pre_option_active_plugins', $activate);
+                $this->activatePluginsSwitchThemeInSeparateProcess();
+
+                return $plugins;
+            };
+            PreloadFilters::addFilter('pre_option_active_plugins', $activate);
+        }
 
         $bootstrapSuccessful = false;
         ob_start(function ($buffer) use (&$bootstrapSuccessful) {
@@ -510,7 +530,7 @@ class WPLoader extends Module
      * @throws ModuleException
      * @throws ProcessException
      */
-    private function activatePluginsInSeparateProcess(): void
+    private function activatePluginsSwitchThemeInSeparateProcess(): void
     {
         $plugins = (array)($this->config['plugins'] ?: []);
         $multisite = $this->config['multisite'] ?? false;

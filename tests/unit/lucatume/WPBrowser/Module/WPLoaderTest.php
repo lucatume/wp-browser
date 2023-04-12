@@ -954,23 +954,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty',
         ];
         $installation = Installation::scaffold($wpRootDir, 'latest');
-        // Copy over plugins from the main installation.
-        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        foreach ([
-                     'hello-dolly',
-                     'akismet',
-                     'woocommerce',
-                 ] as $plugin) {
-            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
-                $installation->getPluginsDir($plugin))) {
-                throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
-            }
-        }
-        // Copy over theme from the main installation.
-        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
-            $installation->getThemesDir('twentytwenty'))) {
-            throw new RuntimeException('Could not copy theme twentytwenty');
-        }
+        $this->copyOverContentFromTheMainInstallation($installation);
 
         $wpLoader = $this->module();
         $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
@@ -1001,6 +985,7 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(defined('WP_DEBUG'));
             Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
+            Assert::assertFalse(is_multisite());
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
 
@@ -1011,6 +996,103 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-        $this->assertEquals([], $installationOutput);
+        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
+    }
+
+    /**
+     * It should install and bootstrap multisite installation
+     *
+     * @test
+     */
+    public function should_install_and_bootstrap_multisite_installation(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'akismet/akismet.php',
+                'hello-dolly/hello.php',
+                'woocommerce/woocommerce.php',
+            ],
+            'theme' => 'twentytwenty',
+            'multisite' => true,
+        ];
+        $installation = Installation::scaffold($wpRootDir, 'latest');
+        $this->copyOverContentFromTheMainInstallation($installation);
+
+        $wpLoader = $this->module();
+        $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $actions = [];
+            Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
+                $actions[] = 'before_install';
+            });
+            Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
+                $actions[] = 'after_install';
+            });
+
+            $wpLoader->_initialize();
+
+            Assert::assertEquals([
+                'akismet/akismet.php',
+                'hello-dolly/hello.php',
+                'woocommerce/woocommerce.php',
+            ], array_keys(get_site_option('active_sitewide_plugins')));
+            Assert::assertEquals([
+                'before_install',
+                'after_install',
+            ], $actions);
+            Assert::assertEquals('twentytwenty', get_option('template'));
+            Assert::assertEquals('twentytwenty', get_option('stylesheet'));
+            Assert::assertEquals(['twentytwenty' => true], \WP_Theme::get_allowed());
+            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+            Assert::assertEquals($wpRootDir . '/', ABSPATH);
+            Assert::assertTrue(defined('WP_DEBUG'));
+            Assert::assertTrue(WP_DEBUG);
+            Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
+            Assert::assertTrue(is_multisite());
+            WPAssert::assertTableExists('posts');
+            WPAssert::assertTableExists('woocommerce_order_items');
+
+            return [
+                'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
+                'installationOutput' => $wpLoader->_getInstallationOutput(),
+            ];
+        });
+
+        codecept_debug($installationOutput);
+        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
+    }
+
+    private function copyOverContentFromTheMainInstallation(Installation $installation): void
+    {
+        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        foreach ([
+                     'hello-dolly',
+                     'akismet',
+                     'woocommerce',
+                 ] as $plugin) {
+            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
+                $installation->getPluginsDir($plugin))) {
+                throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
+            }
+        }
+        // Copy over theme from the main installation.
+        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
+            $installation->getThemesDir('twentytwenty'))) {
+            throw new RuntimeException('Could not copy theme twentytwenty');
+        }
     }
 }
