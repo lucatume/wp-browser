@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\Utils;
 
+use lucatume\WPBrowser\Exceptions\RuntimeException;
+
 class Download
 {
 
@@ -42,7 +44,7 @@ class Download
         }
 
         if (!(curl_exec($curlHandle))) {
-            throw new \RuntimeException("File $sourceUrl download failed: " . curl_error($curlHandle));
+            throw new RuntimeException("File $sourceUrl download failed: " . curl_error($curlHandle));
         }
 
         // This will fclose as well.

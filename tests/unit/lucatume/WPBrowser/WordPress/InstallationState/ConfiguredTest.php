@@ -661,4 +661,48 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $this->assertEquals($wpRootDir . '/site-content/themes', $configured->getThemesDir());
         $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $configured->getThemesDir('some-theme'));
     }
+
+    /**
+     * It should return content directory
+     *
+     * @test
+     */
+    public function should_return_content_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/wp-content', $configured->getContentDir());
+        $this->assertEquals($wpRootDir . '/wp-content/some/path', $configured->getContentDir('/some/path'));
+        $this->assertEquals($wpRootDir . '/wp-content/some/file.php', $configured->getContentDir('/some/file.php'));
+    }
+
+    /**
+     * It should return content directory build from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_content_directory_build_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/site-content', $configured->getContentDir());
+        $this->assertEquals($wpRootDir . '/site-content/some/path', $configured->getContentDir('/some/path'));
+        $this->assertEquals($wpRootDir . '/site-content/some/file.php', $configured->getContentDir('/some/file.php'));
+    }
 }

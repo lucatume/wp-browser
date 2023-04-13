@@ -673,4 +673,65 @@ class SingleTest extends \Codeception\Test\Unit
         $this->assertEquals($wpRootDir . '/site-content/themes/some-file.php', $single->getThemesDir('some-file.php'));
         $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $single->getThemesDir('some-theme'));
     }
+
+    /**
+     * It should return content directory
+     *
+     * @test
+     */
+    public function should_return_content_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/wp-content', $single->getContentDir());
+        $this->assertEquals($wpRootDir . '/wp-content/some-file.php', $single->getContentDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/some/path', $single->getContentDir('/some/path'));
+    }
+
+    /**
+     * It should return content directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_content_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-content', $single->getContentDir());
+        $this->assertEquals($wpRootDir . '/site-content/some-file.php', $single->getContentDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/site-content/some/path', $single->getContentDir('/some/path'));
+    }
 }

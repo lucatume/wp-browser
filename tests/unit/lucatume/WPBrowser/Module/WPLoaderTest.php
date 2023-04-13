@@ -421,8 +421,6 @@ class WPLoaderTest extends Unit
         });
     }
 
-    // @todo test compat with *Db module.
-
     /**
      * It should load config files if set
      *
@@ -825,6 +823,45 @@ class WPLoaderTest extends Unit
     }
 
     /**
+     * It should not throw if using db module and loadOnly true
+     *
+     * @test
+     * @dataProvider dbModuleCompatDataProvider
+     */
+    public function should_not_throw_if_using_db_module_and_load_only_true(
+        string $dbModuleName,
+        string $dbModuleClass
+    ): void {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'loadOnly' => true,
+        ];
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
+
+        $wpLoader = $this->module();
+        $mockDbModule = $this->createStub($dbModuleClass);
+        $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
+
+        $ok = $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            return true;
+        });
+
+        $this->assertTrue($ok);
+    }
+
+    /**
      * It should throw if configFile not found
      *
      * @test
@@ -986,8 +1023,17 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
             Assert::assertFalse(is_multisite());
+            Assert::assertEquals($wpRootDir . '/wp-content', $wpLoader->getContentFolder());
+            Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
+            Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
+                $wpLoader->getContentFolder('some/path/some-file.php'));
+            Assert::assertEquals($wpRootDir . '/wp-content/plugins/some-file.php',
+                $wpLoader->getPluginsFolder('/some-file.php'));
+            Assert::assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
+                $wpLoader->getThemesFolder('/some-file.php'));
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
+            WPAssert::assertUpdatesDisabled();
 
             return [
                 'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
@@ -1063,8 +1109,17 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
             Assert::assertTrue(is_multisite());
+            Assert::assertEquals($wpRootDir . '/wp-content', $wpLoader->getContentFolder());
+            Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
+            Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
+                $wpLoader->getContentFolder('some/path/some-file.php'));
+            Assert::assertEquals($wpRootDir . '/wp-content/plugins/some-file.php',
+                $wpLoader->getPluginsFolder('/some-file.php'));
+            Assert::assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
+                $wpLoader->getThemesFolder('/some-file.php'));
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
+            WPAssert::assertUpdatesDisabled();
 
             return [
                 'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
@@ -1094,5 +1149,221 @@ class WPLoaderTest extends Unit
             $installation->getThemesDir('twentytwenty'))) {
             throw new RuntimeException('Could not copy theme twentytwenty');
         }
+    }
+
+    public function singleSiteAndMultisite(): array
+    {
+        return [
+            'single site' => [false],
+            'multisite' => [true],
+        ];
+    }
+
+    /**
+     * It should throw if there is an error while activating a plugin
+     *
+     * @test
+     */
+    public function should_throw_if_there_is_an_error_while_activating_a_plugin(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'some-plugin/some-plugin.php',
+            ]
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be activated. Plugin file does not exist.');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should throw if there is an error while activating a plugin in multisite
+     *
+     * @test
+     */
+    public function should_throw_if_there_is_an_error_while_activating_a_plugin_in_multisite(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'some-plugin/some-plugin.php',
+            ],
+            'multisite' => true,
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be network activated. Plugin file does not exist.');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should throw if there is an error while switching theme
+     *
+     * @test
+     */
+    public function should_throw_if_there_is_an_error_while_switching_theme(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'theme' => 'some-theme',
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Theme some-theme does not exist.');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should throw if there is an error while switching theme in multisite
+     *
+     * @test
+     */
+    public function should_throw_if_there_is_an_error_while_switching_theme_in_multisite(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'theme' => 'some-theme',
+            'multisite' => true,
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Theme some-theme does not exist.');
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should correctly activate child theme in single installation
+     *
+     * @test
+     * @skip
+     */
+    public function should_correctly_activate_child_theme_in_single_installation(): void
+    {
+    }
+
+    /**
+     * It should correctly activate child theme in multisite installation
+     *
+     * @test
+     */
+    public function should_correctly_activate_child_theme_in_multisite_installation(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'akismet/akismet.php',
+                'hello-dolly/hello.php',
+                'woocommerce/woocommerce.php',
+            ],
+            'theme' => ['twentytwenty', 'twentytwenty-child'],
+            'multisite' => true,
+        ];
+        $installation = Installation::scaffold($wpRootDir, 'latest');
+        $this->copyOverContentFromTheMainInstallation($installation);
+        // Create a twentytwenty-child theme.
+        $installation->cli(['scaffold', 'child-theme', 'twentytwenty-child', '--parent_theme=twentytwenty']);
+
+        $wpLoader = $this->module();
+        $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+
+            Assert::assertEquals('twentytwenty', get_option('template'));
+            Assert::assertEquals('twentytwenty-child', get_option('stylesheet'));
+
+            return [
+                'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
+                'installationOutput' => $wpLoader->_getInstallationOutput(),
+            ];
+        });
+
+        codecept_debug($installationOutput);
+        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 }

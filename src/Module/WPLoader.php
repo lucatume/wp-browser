@@ -137,10 +137,8 @@ class WPLoader extends Module
      * skipPluggables - bool, def. `false`, if set to `true` will skip the
      * definition of pluggable functions.
      *
-     *
      * @var array<string,mixed>
      */
-    // @todo review for unused/deprecated
     protected array $config = [
         'loadOnly' => false,
         'multisite' => false,
@@ -168,7 +166,7 @@ class WPLoader extends Module
         'NONCE_SALT' => '',
         'AUTOMATIC_UPDATER_DISABLED' => true,
         'WP_HTTP_BLOCK_EXTERNAL' => true,
-        'dump' => '', // @todo implement
+        'dump' => '',
     ];
 
     /**
@@ -351,6 +349,10 @@ class WPLoader extends Module
      */
     private function ensureDbModuleCompat(): void
     {
+        if ($this->config['loadOnly']) {
+            return;
+        }
+
         foreach (['Db', 'WPDb', WPDb::class] as $moduleName) {
             if (!$this->moduleContainer->hasModule($moduleName)) {
                 continue;
@@ -371,8 +373,6 @@ class WPLoader extends Module
 
             throw new ModuleConfigException($this, $message);
         }
-
-        // @todo add dump support
     }
 
     /**
@@ -425,38 +425,29 @@ class WPLoader extends Module
      *
      * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
      *                is provided.
-     *
-     * @throws ModuleConfigException If the path to the plugins folder does not exist.
      */
     public function getPluginsFolder(string $path = ''): string
     {
-        if (!empty($this->pluginDir)) {
-            return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
-        }
+        return $this->installation->getPluginsDir($path);
+    }
 
-        if (defined('WP_PLUGIN_DIR')) {
-            $candidate = WP_PLUGIN_DIR;
-        } elseif (!empty($this->config['pluginsFolder'])) {
-            $candidate = $this->config['pluginsFolder'];
-        } else {
-            $candidate = $this->getContentFolder('plugins');
-        }
-
-        try {
-            $resolved = FS::resolvePath($candidate, $this->getWpRootFolder());
-            if ($resolved === false) {
-                throw new RuntimeException('Could not resolve path.');
-            }
-        } catch (Exception) {
-            throw new ModuleConfigException(
-                __CLASS__,
-                "The path to the plugins directory ('{$candidate}') doesn't exist."
-            );
-        }
-
-        $this->pluginDir = FS::untrailslashit($resolved);
-
-        return empty($path) ? $this->pluginDir : $this->pluginDir . '/' . ltrim($path, '\\/');
+    /**
+     * Returns the absolute path to the themes directory.
+     *
+     * @example
+     * ```php
+     * $themes = $this->getThemesFolder();
+     * $twentytwenty = $this->getThemesFolder('/twentytwenty');
+     * ```
+     *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
+     */
+    public function getThemesFolder(string $path = ''): string
+    {
+        return $this->installation->getThemesDir($path);
     }
 
     /**
@@ -582,33 +573,6 @@ class WPLoader extends Module
     }
 
     /**
-     * Loads the plugins required by the test.
-     *
-     *
-     * @throws ModuleConfigException If there's an issue with the configuration.
-     */
-    public function _loadPlugins(): void
-    {
-        if (empty($this->config['plugins']) || !defined('WP_PLUGIN_DIR')) {
-            return;
-        }
-        $pluginsPath = $this->getPluginsFolder() . DIRECTORY_SEPARATOR;
-        $plugins = $this->config['plugins'];
-        foreach ($plugins as $plugin) {
-            $path = $pluginsPath . $plugin;
-            if (!is_file($path)) {
-                throw new ModuleConfigException(
-                    __CLASS__,
-                    "The '{$plugin}' plugin file was not found in the {$pluginsPath} directory; "
-                    . 'this might be due to a wrong configuration of the `wpRootFolder` setting or a missing inclusion '
-                    . 'of one ore more additional config files using the `configFile` setting.'
-                );
-            }
-            require_once $path;
-        }
-    }
-
-    /**
      * Accessor method to get the object storing the factories for things.
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
@@ -668,38 +632,10 @@ class WPLoader extends Module
      * @param string $path An optional path to append to the content directory absolute path.
      *
      * @return string The content directory absolute path, or a path in it.
-     *
-     * @throws ModuleConfigException If the path to the content directory cannot be resolved.
      */
     public function getContentFolder(string $path = ''): string
     {
-        if (!empty($this->contentDir)) {
-            return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
-        }
-
-        if (defined('WP_CONTENT_DIR')) {
-            $candidate = WP_CONTENT_DIR;
-        } elseif (!empty($this->config['contentFolder'])) {
-            $candidate = $this->config['contentFolder'];
-        } else {
-            $candidate = $this->getWpRootFolder('wp-content');
-        }
-
-        try {
-            $resolved = FS::resolvePath($candidate, $this->getWpRootFolder());
-            if ($resolved === false) {
-                throw new RuntimeException('Could not resolve path.');
-            }
-        } catch (Exception) {
-            throw new ModuleConfigException(
-                __CLASS__,
-                "The path to the content directory ('{$candidate}') doesn't exist or is not accessible."
-            );
-        }
-
-        $this->contentDir = FS::untrailslashit($resolved);
-
-        return empty($path) ? $this->contentDir : $this->contentDir . '/' . ltrim($path, '\\/');
+        return $this->installation->getContentDir($path);
     }
 
     private function getStylesheetTemplateFromConfig(): array

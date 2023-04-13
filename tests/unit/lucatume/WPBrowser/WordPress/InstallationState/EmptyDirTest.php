@@ -386,4 +386,21 @@ class EmptyDirTest extends \Codeception\Test\Unit
 
         $emptyDir->getThemesDir();
     }
+
+    /**
+     * It should throw if trying to get content dir
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_get_content_dir(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->getContentDir();
+    }
 }

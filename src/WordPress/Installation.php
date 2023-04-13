@@ -2,11 +2,14 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use Symfony\Component\Process\Process;
 
 class Installation
 {
@@ -227,5 +230,36 @@ class Installation
     public function getWpConfigFilePath(): string
     {
         return $this->installationState->getWpConfigPath();
+    }
+
+    public function getContentDir(string $path = ''): string
+    {
+        return $this->installationState->getContentDir($path);
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    public function cli(array $command): Process
+    {
+        $binDir = codecept_output_dir('bin');
+        FS::mkdirp($binDir, [], 0755);
+        // Download the wp-cli.phar if it doesn't exist in the bin directory from curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar using PHP Curl
+        $wpCliPhar = $binDir . '/wp-cli.phar';
+        if (!is_file($wpCliPhar)) {
+            Download::fileFromUrl(
+                'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
+                $wpCliPhar);
+        }
+
+        // @todo handle the case where the wp-config.php file does not exist.
+
+        array_unshift($command, PHP_BINARY, $wpCliPhar, '--path=' . $this->getRootDir());
+        $process = new Process($command);
+        $process->run();
+        codecept_debug($process->getOutput());
+        codecept_debug($process->getErrorOutput());
+
+        return $process;
     }
 }

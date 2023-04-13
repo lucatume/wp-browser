@@ -521,4 +521,21 @@ PHP;
         $this->assertEquals($wpRootDir . '/wp-content/themes/theme-1.php', $scaffolded->getThemesDir('theme-1.php'));
         $this->assertEquals($wpRootDir . '/wp-content/themes/test-theme', $scaffolded->getThemesDir('test-theme'));
     }
+
+    /**
+     * It should allow getting the content dir path
+     *
+     * @test
+     */
+    public function should_allow_getting_the_content_dir_path(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->assertEquals($wpRootDir . '/wp-content/', $scaffolded->getContentDir());
+        $this->assertEquals($wpRootDir . '/wp-content/some/path', $scaffolded->getContentDir('/some/path'));
+        $this->assertEquals($wpRootDir . '/wp-content/some/file.php', $scaffolded->getContentDir('some/file.php'));
+    }
 }

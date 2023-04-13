@@ -287,9 +287,19 @@ class Scaffolded implements InstallationStateInterface
         return ['table_prefix' => 'wp_'];
     }
 
+    public function getContentDir(string $path = ''): string
+    {
+        return $this->wpRootDir . 'wp-content/' . ltrim($path, '\\/');
+    }
+
     public function getPluginsDir(string $path = ''): string
     {
-        return $this->wpRootDir . 'wp-content/plugins/' . $path;
+        return $this->getContentDir('plugins/' . ltrim($path, '\\/'));
+    }
+
+    public function getThemesDir(string $path = ''): string
+    {
+        return $this->getContentDir('themes/' . ltrim($path, '\\/'));
     }
 
     /**
@@ -301,10 +311,5 @@ class Scaffolded implements InstallationStateInterface
             'The WordPress installation has not been configured yet.',
             InstallationException::STATE_SCAFFOLDED
         );
-    }
-
-    public function getThemesDir(string $path = ''): string
-    {
-        return $this->wpRootDir . 'wp-content/themes/' . $path;
     }
 }

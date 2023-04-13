@@ -473,4 +473,65 @@ class MultisiteTest extends \Codeception\Test\Unit
             $multisite->getThemesDir('some-file.php'));
         $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $multisite->getThemesDir('some-theme'));
     }
+
+    /**
+     * It should return content dir
+     *
+     * @test
+     */
+    public function should_return_content_dir(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData());
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/wp-content', $multisite->getContentDir());
+        $this->assertEquals($wpRootDir . '/wp-content/some-file.php',
+            $multisite->getContentDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/some/path', $multisite->getContentDir('some/path'));
+    }
+
+    /**
+     * It should return content directory build from the WP_CONTENT if set
+     *
+     * @test
+     */
+    public function should_return_content_directory_build_from_the_wp_content_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData())
+            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData)->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+
+        $this->assertEquals($wpRootDir . '/site-content', $multisite->getContentDir());
+        $this->assertEquals($wpRootDir . '/site-content/some-file.php',
+            $multisite->getContentDir('some-file.php'));
+        $this->assertEquals($wpRootDir . '/site-content/some/path', $multisite->getContentDir('some/path'));
+    }
 }

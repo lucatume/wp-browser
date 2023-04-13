@@ -78,7 +78,7 @@ class CodeExecutionFactory
         $message = "Plugin {$plugin} could not be $activatedString.";
 
         if ($activated instanceof \WP_Error) {
-            $message = $activatedString . ' ' . $activated->get_error_message();
+            $message .= ' ' . $activated->get_error_message();
             throw new RuntimeException($message);
         }
 
@@ -96,9 +96,16 @@ class CodeExecutionFactory
 
     private function switchTheme(mixed $stylesheet, bool $multisite): void
     {
+        // The `switch_theme` function will not complain about a missing theme: check it now.
+        $theme = \wp_get_theme($stylesheet);
+        if (!($theme instanceof \WP_Theme && $theme->exists())) {
+            throw new RuntimeException("Theme $stylesheet does not exist.");
+        }
+
         if ($multisite) {
             \WP_Theme::network_enable_theme($stylesheet);
         }
+
         \switch_theme($stylesheet);
     }
 }

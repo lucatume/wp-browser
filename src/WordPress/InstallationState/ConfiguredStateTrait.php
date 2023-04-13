@@ -148,13 +148,22 @@ trait ConfiguredStateTrait
         return $this->wpConfigFile->getVariables();
     }
 
-    public function getPluginsDir(string $path = ''): string
+    public function getContentDir(string $path = ''): string
     {
-        $pluginsDir = rtrim($this->wpRootDir, '\\/') . '/wp-content/plugins';
+        $contentDir = rtrim($this->wpRootDir, '\\/') . '/wp-content';
 
         if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
-            $pluginsDir = $wpContentDirConst . '/plugins';
+            $contentDir = $wpContentDirConst;
         }
+
+        $contentDir = rtrim($contentDir, '\\/');
+
+        return $path ? $contentDir . '/' . ltrim($path, '\\/') : $contentDir;
+    }
+
+    public function getPluginsDir(string $path = ''): string
+    {
+        $pluginsDir = $this->getContentDir('plugins');
 
         if ($wpPluginDirConst = $this->getConstant('WP_PLUGIN_DIR')) {
             $pluginsDir = $wpPluginDirConst;
@@ -167,14 +176,10 @@ trait ConfiguredStateTrait
 
     public function getThemesDir(string $path = ''): string
     {
-        $themesDir = rtrim($this->wpRootDir, '\\/') . '/wp-content/themes';
+        $themesDir = $this->getContentDir('themes');
 
         if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
             $themesDir = $wpContentDirConst . '/themes';
-        }
-
-        if ($wpThemeDirConst = $this->getConstant('WP_THEME_DIR')) {
-            $themesDir = $wpThemeDirConst;
         }
 
         $themesDir = rtrim($themesDir, '\\/');
