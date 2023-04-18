@@ -144,10 +144,6 @@ abstract class FileRequest implements Serializable
             $_COOKIE[$key] = $value;
         }
 
-        foreach ($this->preloadClosures as $preLoadClosure) {
-            $preLoadClosure($this->targetFile);
-        }
-
         foreach ($this->constants as $constant => $value) {
             defined($constant) || define($constant, $value);
         }
@@ -156,6 +152,10 @@ abstract class FileRequest implements Serializable
         set_error_handler(static function ($errno, $errstr, $errfile, $errline) {
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         }, E_ALL);
+
+        foreach ($this->preloadClosures as $preLoadClosure) {
+            $preLoadClosure($this->targetFile);
+        }
 
         require $this->targetFile;
 

@@ -12,7 +12,6 @@ class CodeExecutionFactory
     private FileRequestFactory $requestFactory;
     private array $redirectFiles;
     private array $presetGlobalVars;
-    private int $adminUserId = 1;
 
     public function __construct(
         string $wpRootDir,
@@ -30,82 +29,59 @@ class CodeExecutionFactory
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
-            ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
-            ->addPresetGlobalVars($this->presetGlobalVars)
-            ->addAfterLoadClosure(fn() => $this->isBlogInstalled($multisite));
+            ->addPresetGlobalVars($this->presetGlobalVars);
 
-        return static function () use ($request): mixed {
-            return $request->execute();
-        };
+        return (new CheckWordPressInstalledAction($request, $this->wpRootDir, $multisite))
+            ->getClosure();
     }
 
     public function toActivatePlugin(mixed $plugin, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
-            ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
-            ->addPresetGlobalVars($this->presetGlobalVars)
-            ->defineConstant('MULTISITE', $multisite)
-            ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite));
+            ->addPresetGlobalVars($this->presetGlobalVars);
 
-        return static function () use ($request): mixed {
-            return $request->execute();
-        };
+        return (new ActivatePluginAction($request, $this->wpRootDir, $plugin, $multisite))
+            ->getClosure();
     }
 
     public function toSwitchTheme(mixed $stylesheet, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
-            ->setTargetFile($this->wpRootDir . '/wp-load.php')
             ->setRedirectFiles($this->redirectFiles)
-            ->addPresetGlobalVars($this->presetGlobalVars)
-            ->defineConstant('MULTISITE', $multisite)
-            ->addAfterLoadClosure(fn() => $this->switchTheme($stylesheet, $multisite));
+            ->addPresetGlobalVars($this->presetGlobalVars);
 
-        return static function () use ($request): mixed {
-            return $request->execute();
-        };
+        return (new ThemeSwitchAction($request, $this->wpRootDir, $stylesheet, $multisite))
+            ->getClosure();
     }
 
-    private function activatePlugin(mixed $plugin, bool $multisite): void
+    public function toInstallWordPressNetwork(string $adminEmail, string $title, bool $subdomain): Closure
     {
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        $activated = \activate_plugin($plugin, '', $multisite);
-        $activatedString = $multisite ? 'network activated' : 'activated';
-        $message = "Plugin {$plugin} could not be $activatedString.";
+        $request = $this->requestFactory->buildGetRequest()
+            ->blockHttpRequests()
+            ->setRedirectFiles($this->redirectFiles)
+            ->addPresetGlobalVars($this->presetGlobalVars);
 
-        if ($activated instanceof \WP_Error) {
-            $message .= ' ' . $activated->get_error_message();
-            throw new RuntimeException($message);
-        }
-
-        $isActive = $multisite ? is_plugin_active_for_network($plugin) : is_plugin_active($plugin);
-
-        if (!$isActive) {
-            throw new RuntimeException($message);
-        }
+        return (new InstallNetworkAction($request, $this->wpRootDir, $adminEmail, $title, $subdomain))
+            ->getClosure();
     }
 
-    private function isBlogInstalled(bool $multisite): bool
-    {
-        return is_blog_installed() && (!$multisite || is_multisite());
-    }
+    public function toInstallWordPress(
+        string $title,
+        string $adminUser,
+        string $adminPassword,
+        string $adminEmail,
+        string $url
+    ): Closure {
+        $request = $this->requestFactory->buildGetRequest()
+            ->blockHttpRequests()
+            ->setRedirectFiles($this->redirectFiles)
+            ->addPresetGlobalVars($this->presetGlobalVars);
 
-    private function switchTheme(mixed $stylesheet, bool $multisite): void
-    {
-        // The `switch_theme` function will not complain about a missing theme: check it now.
-        $theme = \wp_get_theme($stylesheet);
-        if (!($theme instanceof \WP_Theme && $theme->exists())) {
-            throw new RuntimeException("Theme $stylesheet does not exist.");
-        }
-
-        if ($multisite) {
-            \WP_Theme::network_enable_theme($stylesheet);
-        }
-
-        \switch_theme($stylesheet);
+        return (new InstallAction($request, $this->wpRootDir, $title, $adminUser, $adminPassword, $adminEmail, $url))
+            ->getClosure();
     }
 }

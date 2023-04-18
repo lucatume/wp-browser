@@ -4,11 +4,10 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
@@ -60,31 +59,39 @@ class Configured implements InstallationStateInterface
         try {
             $this->db->create();
             $domain = parse_url($url, PHP_URL_HOST);
-            $requestClosuresFactory = new FileRequestClosureFactory(new FileRequestFactory($this->wpRootDir, $domain));
-            $request = $requestClosuresFactory->toInstall(
-                $title,
+            $closuresFactory = new CodeExecutionFactory($this->wpRootDir, $domain);
+            $toInstallWordPress = $closuresFactory->toInstallWordPress($title,
                 $adminUser,
                 $adminPassword,
                 $adminEmail,
-                $url,
-            );
-            $result = Loop::executeClosure($request);
-            if ($result->getExitCode() !== 0) {
-                $returnValue = $result->getReturnValue();
+                $url);
+            $jobs = [$toInstallWordPress];
 
-                if ($returnValue instanceof \Throwable) {
-                    throw $returnValue;
+            if ($this->isMultisite()) {
+                $jobs[] = $closuresFactory->toInstallWordPressNetwork($adminEmail,
+                    $title,
+                    $this->isSubdomainMultisite());
+            }
+
+            foreach ((new Loop($jobs, 1, true))->run()->getResults() as $result) {
+                if ($result->getExitCode() !== 0) {
+                    $returnValue = $result->getReturnValue();
+
+                    if ($returnValue instanceof \Throwable) {
+                        throw $returnValue;
+                    }
+
+                    $reason = $result->getStderrBuffer()
+                        ?: $result->getStdoutBuffer()
+                            ?: 'unknown reason, use debug mode to see more.';
+                    throw new InstallationException($reason, InstallationException::INSTALLATION_FAIL);
                 }
-
-                $reason = $result->getStderrBuffer()
-                    ?: $result->getStdoutBuffer()
-                        ?: 'unknown reason, use debug mode to see more.';
-                throw new InstallationException($reason, InstallationException::INSTALLATION_FAIL);
             }
         } catch (\Throwable $e) {
             throw new InstallationException(
                 'Could not install WordPress: ' . $e->getMessage(),
-                InstallationException::INSTALLATION_FAIL, $e
+                InstallationException::INSTALLATION_FAIL,
+                $e
             );
         }
 

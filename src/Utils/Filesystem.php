@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Utils;
 
 use InvalidArgumentException;
-use RuntimeException;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 
 /**
  * Class Filesystem.
@@ -317,8 +317,7 @@ class Filesystem
         array $contents = [],
         int $mode = 0777,
         string $tmpRootDir = null
-    ): string
-    {
+    ): string {
         if ($tmpRootDir === null) {
             $tmpRootDir = Env::get('TEST_TMP_ROOT_DIR', null) ?? codecept_output_dir('tmp');
             if (!is_dir($tmpRootDir)) {

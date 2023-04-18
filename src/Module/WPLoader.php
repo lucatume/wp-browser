@@ -7,47 +7,33 @@
 
 namespace lucatume\WPBrowser\Module;
 
-use Closure;
 use Codeception\Command\Shared\ConfigTrait;
 use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Exception\ModuleConflictException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Util\Debug;
-use ErrorException;
-use Exception;
 use JsonException;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\Process\Worker\Exited;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestClosureFactory;
-use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use lucatume\WPBrowser\WordPress\LoadSandbox;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
-use ReflectionClass;
-use ReflectionException;
-use RuntimeException;
-use stdClass;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
@@ -226,6 +212,13 @@ class WPLoader extends Module
         $this->config['dbCollate'] = $this->config['DB_COLLATE'] ?? $this->config['dbCollate'] ?? '';
         $this->config['multisite'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? '';
         $this->config['theme'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['theme'] ?? '';
+        if (is_array($this->config['theme'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                "The `theme` configuration parameter must be a string.\n" .
+                "For child themes, use the child theme slug."
+            );
+        }
         $this->config['loadOnly'] = !empty($this->config['loadOnly']);
 
         if ($this->config['loadOnly'] && empty($this->config['domain'])) {
@@ -254,11 +247,7 @@ class WPLoader extends Module
      * the module in an test helper class will hence trigger WordPress loading,
      * no explicit method calling on the user side is needed.
      *
-     * @throws DbException
-     * @throws JsonException
-     * @throws ModuleConfigException
-     * @throws ModuleException
-     * @throws InstallationException
+     * @throws Throwable
      */
     public function _initialize(): void
     {
@@ -307,7 +296,7 @@ class WPLoader extends Module
             throw new ModuleConfigException($this, $e->getMessage(), $e);
         }
 
-        $this->wpBootstrapFile = CorePHPUnit::path('/includes/bootstrap.php');
+        $this->wpBootstrapFile = CorePHPUnit::bootstrapFile();
 
         // The `bootstrap.php` file will seek this tests configuration file before loading the test suite.
         defined('WP_TESTS_CONFIG_FILE_PATH')
@@ -380,13 +369,7 @@ class WPLoader extends Module
      *
      * @param bool $loadOnly
      *
-     * @throws InstallationException
-     * @throws JsonException
-     * @throws ModuleConfigException
-     * @throws ModuleException
-     * @throws ProcessException
      * @throws Throwable
-     * @throws WorkerException
      */
     private function loadWordPress(bool $loadOnly = false): void
     {
@@ -473,23 +456,38 @@ class WPLoader extends Module
          */
         if ($isMultisite) {
             // Activate plugins and enable theme network-wide.
-            $activate = function () use (&$activate, $plugins): array {
-                remove_filter('pre_site_option_active_sitewide_plugins', $activate);
+            $activatePlugins = function () use (&$activatePlugins, $plugins): array {
+                remove_filter('pre_site_option_active_sitewide_plugins', $activatePlugins);
                 $this->activatePluginsSwitchThemeInSeparateProcess();
+
+                if ($this->config['theme']) {
+                    // Refresh the theme related options.
+                    update_site_option('allowedthemes', [$this->config['theme'] => true]);
+                    $db = $this->installation->getDb();
+                    update_option('template', $db->getOption('template'));
+                    update_option('stylesheet', $db->getOption('stylesheet'));
+                }
 
                 // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
                 return array_combine($plugins, array_fill(0, count($plugins), time()));
             };
-            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
+            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activatePlugins);
         } else {
             // Activate plugins and theme.
-            $activate = function () use (&$activate, $plugins): array {
-                remove_filter('pre_option_active_plugins', $activate);
+            $activatePlugins = function () use (&$activatePlugins, $plugins): array {
+                remove_filter('pre_option_active_plugins', $activatePlugins);
                 $this->activatePluginsSwitchThemeInSeparateProcess();
+
+                if ($this->config['theme']) {
+                    // Refresh the theme related options.
+                    $db = $this->installation->getDb();
+                    update_option('template', $db->getOption('template'));
+                    update_option('stylesheet', $db->getOption('stylesheet'));
+                }
 
                 return $plugins;
             };
-            PreloadFilters::addFilter('pre_option_active_plugins', $activate);
+            PreloadFilters::addFilter('pre_option_active_plugins', $activatePlugins);
         }
 
         $bootstrapSuccessful = false;
@@ -532,11 +530,12 @@ class WPLoader extends Module
             array_map(static fn(string $plugin) => $closuresFactory->toActivatePlugin($plugin, $multisite), $plugins)
         );
 
-        [$stylesheet] = $this->getStylesheetTemplateFromConfig();
-        $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
+        $stylesheet = $this->config['theme'];
+        if ($stylesheet) {
+            $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
+        }
 
-        $loop = new Loop($jobs, 1, true);
-        $results = $loop->run()->getResults();
+        $results = (new Loop($jobs, 1, true))->run()->getResults();
 
         foreach ($results as $key => $result) {
             [$type, $name] = explode('::', $key, 2);

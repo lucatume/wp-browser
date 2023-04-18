@@ -281,6 +281,31 @@ class ConfiguredTest extends \Codeception\Test\Unit
     }
 
     /**
+     * It should allow installing multisite installation
+     *
+     * @test
+     */
+    public function should_allow_installing_multisite_installation(): void
+    {
+        $wpRootDir = Fs::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,InstallationStateInterface::MULTISITE_SUBFOLDER);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $installed = $configured->install('https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'WP Local Installation');
+
+        $this->assertInstanceOf(Multisite::class, $installed);
+    }
+
+    /**
      * It should throw if installation request fails with output
      *
      * @test

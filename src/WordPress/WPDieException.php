@@ -33,7 +33,7 @@ class WPDieException extends Exception
             return $item['function'] === 'wp_die';
         }, $trace);
         $serializableClosurePos = Arr::searchWithCallback(static function (array $item) {
-            return isset($item['file']) && str_starts_with($item['file'], 'closure://');
+            return isset($item['file']) && \str_starts_with($item['file'], 'closure://');
         }, $trace);
 
         if ($wpDieCallPos !== false) {

@@ -2,13 +2,14 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Traits\WithWpCli;
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class Installation
@@ -58,7 +59,6 @@ class Installation
 
         return $this;
     }
-
 
     public function getAuthKey(): string
     {
@@ -117,7 +117,7 @@ class Installation
 
     public function getDb(): ?Db
     {
-        return $this->installationState->getDb();
+        return $this->db ?? $this->installationState->getDb();
     }
 
     public function getWpRootDir(?string $path = null): string
@@ -238,28 +238,10 @@ class Installation
     }
 
     /**
-     * @throws RuntimeException
+     * @throws ProcessFailedException
      */
-    public function cli(array $command): Process
+    public function runWpCliCommandOrThrow(array $command): Process
     {
-        $binDir = codecept_output_dir('bin');
-        FS::mkdirp($binDir, [], 0755);
-        // Download the wp-cli.phar if it doesn't exist in the bin directory from curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar using PHP Curl
-        $wpCliPhar = $binDir . '/wp-cli.phar';
-        if (!is_file($wpCliPhar)) {
-            Download::fileFromUrl(
-                'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
-                $wpCliPhar);
-        }
-
-        // @todo handle the case where the wp-config.php file does not exist.
-
-        array_unshift($command, PHP_BINARY, $wpCliPhar, '--path=' . $this->getRootDir());
-        $process = new Process($command);
-        $process->run();
-        codecept_debug($process->getOutput());
-        codecept_debug($process->getErrorOutput());
-
-        return $process;
+        return (new CliProcess($command, $this->getRootDir()))->mustRun();
     }
 }

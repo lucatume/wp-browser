@@ -20,6 +20,7 @@ use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use PHPUnit\Framework\Assert;
 use RuntimeException;
@@ -1306,13 +1307,103 @@ class WPLoaderTest extends Unit
     }
 
     /**
+     * It should throw if theme is an array
+     *
+     * @test
+     */
+    public function should_throw_if_theme_is_an_array(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'theme' => ['some-template', 'some-stylesheet'],
+        ];
+        Installation::scaffold($wpRootDir, 'latest');
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpLoader = $this->module();
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
      * It should correctly activate child theme in single installation
      *
      * @test
-     * @skip
      */
     public function should_correctly_activate_child_theme_in_single_installation(): void
     {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'configFile' => [
+                codecept_data_dir('files/test_file_001.php'),
+                codecept_data_dir('files/test_file_002.php'),
+            ],
+            'plugins' => [
+                'akismet/akismet.php',
+                'hello-dolly/hello.php',
+                'woocommerce/woocommerce.php',
+            ],
+            'theme' => 'twentytwenty-child'
+        ];
+        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $installation = Installation::scaffold($wpRootDir, 'latest')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        $this->copyOverContentFromTheMainInstallation($installation);
+        // Create a twentytwenty-child theme.
+        $installation->runWpCliCommandOrThrow([
+            'scaffold',
+            'child-theme',
+            'twentytwenty-child',
+            '--parent_theme=twentytwenty',
+            '--theme_name=twentytwenty-child'
+        ]);
+
+        $wpLoader = $this->module();
+        $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
+            $wpLoader->_initialize();
+
+            Assert::assertEquals('twentytwenty', get_option('template'));
+            Assert::assertEquals('twentytwenty-child', get_option('stylesheet'));
+
+            return [
+                'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
+                'installationOutput' => $wpLoader->_getInstallationOutput(),
+            ];
+        });
+
+        codecept_debug($installationOutput);
+        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 
     /**
@@ -1342,13 +1433,28 @@ class WPLoaderTest extends Unit
                 'hello-dolly/hello.php',
                 'woocommerce/woocommerce.php',
             ],
-            'theme' => ['twentytwenty', 'twentytwenty-child'],
+            'theme' => 'twentytwenty-child',
             'multisite' => true,
         ];
-        $installation = Installation::scaffold($wpRootDir, 'latest');
+        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $installation = Installation::scaffold($wpRootDir, 'latest')
+            ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
         $this->copyOverContentFromTheMainInstallation($installation);
         // Create a twentytwenty-child theme.
-        $installation->cli(['scaffold', 'child-theme', 'twentytwenty-child', '--parent_theme=twentytwenty']);
+        $installation->runWpCliCommandOrThrow([
+            'scaffold',
+            'child-theme',
+            'twentytwenty-child',
+            '--parent_theme=twentytwenty',
+            '--theme_name=twentytwenty-child'
+        ]);
 
         $wpLoader = $this->module();
         $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {

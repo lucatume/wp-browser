@@ -1,0 +1,75 @@
+<?php
+
+namespace lucatume\WPBrowser\WordPress\CodeExecution;
+
+use Closure;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+
+class InstallNetworkAction implements CodeExecutionActionInterface
+{
+    private FileGetRequest $request;
+
+    public function __construct(
+        FileGetRequest $request,
+        string $wpRootDir,
+        string $adminEmail,
+        string $title,
+        bool $subdomain
+    ) {
+        $request
+            ->setTargetFile($wpRootDir . '/wp-admin/admin.php')
+            ->defineConstant('MULTISITE', false)
+            ->defineConstant('WP_INSTALLING_NETWORK', true)
+            ->addPreloadClosure(function () {
+                // The `MULTISITE` const might be already defined in the `wp-config.php` file.
+                // If that is the case, silence the error.
+                set_error_handler(static function ($errno, $errstr) {
+                    if (str_contains($errstr, 'MULTISITE already defined')) {
+                        return true;
+                    }
+                    return false;
+                });
+
+                // Plug the `auth_redirect` function to avoid the redirect to the login page.
+                if (!function_exists('auth_redirect')) {
+                    function auth_redirect()
+                    {
+                    }
+                }
+            })
+            ->addAfterLoadClosure(fn() => $this->installWordPressNetwork($adminEmail, $title, $subdomain));
+
+        $this->request = $request;
+    }
+
+    public function getClosure(): Closure
+    {
+        $request = $this->request;
+
+        return static function () use ($request): mixed {
+            return $request->execute();
+        };
+    }
+
+    /**
+     * @throw RuntimeException If the network could not be installed.
+     */
+    private function installWordPressNetwork(string $email, string $sitename, bool $subdomain): void
+    {
+        // Set the current user to the admin user.
+        wp_set_current_user(1);
+        require_once ABSPATH . '/wp-admin/includes/network.php';
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        \install_network();
+        $result = populate_network(1,
+            get_clean_basedomain(),
+            sanitize_email($email),
+            wp_unslash($sitename),
+            '/',
+            $subdomain);
+        if ($result instanceof \WP_Error) {
+            throw new RuntimeException('Could not install WordPress network: ' . $result->get_error_message());
+        }
+    }
+}

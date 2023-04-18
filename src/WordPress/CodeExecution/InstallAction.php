@@ -1,0 +1,83 @@
+<?php
+
+namespace lucatume\WPBrowser\WordPress\CodeExecution;
+
+use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+
+class InstallAction implements CodeExecutionActionInterface
+{
+    private FileGetRequest $request;
+
+    public function __construct(
+        FileGetRequest $request,
+        string $wpRootDir,
+        string $title,
+        string $adminUser,
+        string $adminPassword,
+        string $adminEmail,
+        string $url
+    ) {
+
+        $request
+            ->setTargetFile($wpRootDir . '/wp-load.php')
+            ->defineConstant('WP_INSTALLING', true)
+            ->defineConstant('MULTISITE', false)
+            ->addPreloadClosure(function () use ($url) {
+                // The `MULTISITE` const might be already defined in the `wp-config.php` file.
+                // If that is the case, silence the error.
+                set_error_handler(static function ($errno, $errstr) {
+                    if (str_contains($errstr, 'MULTISITE already defined')) {
+                        return true;
+                    }
+                    return false;
+                });
+
+                // Plug the `auth_redirect` function to avoid the redirect to the login page.
+                if (!function_exists('auth_redirect')) {
+                    function auth_redirect()
+                    {
+                        return true;
+                    }
+                }
+
+                // Plug the `wp_mail` function to avoid the sending of emails.
+                if (!function_exists('wp_mail')) {
+                    function wp_mail()
+                    {
+                        return true;
+                    }
+                }
+
+                if (!defined('WP_SITEURL')) {
+                    define('WP_SITEURL', $url);
+                }
+            })
+            ->addAfterLoadClosure(fn() => $this->installWordPress($title, $adminUser, $adminPassword, $adminEmail));
+        $this->request = $request;
+    }
+
+    private function installWordPress(
+        string $title,
+        string $adminUser,
+        string $adminPassword,
+        string $adminEmail,
+    ): void {
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+        require_once ABSPATH . WPINC . '/class-wpdb.php';
+        $result = wp_install($title, $adminUser, $adminEmail, true, '', \wp_slash($adminPassword));
+        if (!(is_array($result) && isset($result['url'], $result['user_id'], $result['password']))) {
+            throw new RuntimeException('Could not install WordPress.');
+        }
+    }
+
+    public function getClosure(): \Closure
+    {
+        $request = $this->request;
+
+        return static function () use ($request): mixed {
+            return $request->execute();
+        };
+    }
+}

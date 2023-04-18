@@ -8,6 +8,7 @@ use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 
 class InstallationTest extends Unit
 {
@@ -209,5 +210,116 @@ class InstallationTest extends Unit
         $installation = new Installation($wpRoot);
 
         $this->assertEquals($dir . '/wp-config.php', $installation->getWpConfigFilePath());
+    }
+
+    /**
+     * It should throw if trying to run wp-cli command on empty installation
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_run_wp_cli_command_on_empty_installation(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+
+        $installation = new Installation($wpRoot);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $installation->runWpCliCommandOrThrow(['core', 'version']);
+    }
+
+    /**
+     * It should throw if trying to run wp-cli command on scaffolded installation
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_run_wp_cli_command_on_scaffolded_installation(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+
+        Installation::scaffold($wpRoot, '4.9.8');
+
+        $installation = new Installation($wpRoot);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+
+        $installation->runWpCliCommandOrThrow(['core', 'version']);
+    }
+
+    /**
+     * It should allow running wp-cli command on configured installation
+     *
+     * @test
+     */
+    public function should_allow_running_wp_cli_command_on_configured_installation(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $wpRoot = FS::tmpDir('installation_');
+
+        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+            ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost));
+
+        $this->assertEquals(
+            '4.9.8',
+            trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput())
+        );
+        $this->assertFileExists(codecept_output_dir('bin/wp-cli.phar'));
+    }
+
+    /**
+     * It should allow running wp-cli command on single installation
+     *
+     * @test
+     */
+    public function should_allow_running_wp_cli_command_on_single_installation(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $wpRoot = FS::tmpDir('installation_');
+
+        $installation = Installation::scaffold($wpRoot, '6.0.1')
+            ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost))
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        $this->assertEquals('6.0.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
+    }
+
+    /**
+     * It should allow running wp-cli command on multisite installation
+     *
+     * @test
+     */
+    public function should_allow_running_wp_cli_command_on_multisite_installation(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $wpRoot = FS::tmpDir('installation_');
+
+        $installation = Installation::scaffold($wpRoot, '6.0.1')
+            ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost), InstallationStateInterface::MULTISITE_SUBFOLDER)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        $this->assertEquals('6.0.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
     }
 }
