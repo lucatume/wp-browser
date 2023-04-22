@@ -63,7 +63,7 @@ services:
       retries: 5
   chrome:
     container_name: wpbrowser_php_${PHP_VERSION:-8.0}_chrome
-    image: selenium/standalone-chrome:3.141.59-20210105
+    image: ${DOCKER_CHROME_IMAGE:-selenium/standalone-chrome:3.141.59-20210105}
     networks:
       - test
     depends_on:

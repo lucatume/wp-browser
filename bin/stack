@@ -33,7 +33,7 @@ function print_help() {
 }
 
 # Parse the arguments using getopts
-while getopts "p:c:hdrt" opt; do
+while getopts "p:c:hdr" opt; do
   case $opt in
   p)
     PHP_VERSION=$OPTARG
@@ -50,9 +50,6 @@ while getopts "p:c:hdrt" opt; do
   h)
     print_help
     exit 0
-    ;;
-  t)
-    THOROUGH_CLEAN=1
     ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
@@ -95,6 +92,13 @@ export USER_UID=$(id -u)
 export USER_GID=$(id -g)
 export USER_NAME=$(id -un)
 export PWD="$(pwd)"
+
+# If the current architecture is arm64, use the arm64v8 images.
+if [ "$(arch)" = "arm64" ]; then
+  export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:112.0-20230422"
+else
+  export DOCKER_CHROME_IMAGE="selenium/standalone-chrome:3.141.59-20210105"
+fi
 
 function ensure_twentytwenty_theme() {
   if [ -d "${PWD}/var/wordpress/wp-content/themes/twentytwenty" ]; then
