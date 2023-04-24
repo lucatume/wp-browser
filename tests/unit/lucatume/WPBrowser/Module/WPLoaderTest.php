@@ -1024,7 +1024,7 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
             Assert::assertFalse(is_multisite());
-            Assert::assertEquals($wpRootDir . '/wp-content', $wpLoader->getContentFolder());
+            Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
             Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
             Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
                 $wpLoader->getContentFolder('some/path/some-file.php'));
@@ -1110,7 +1110,7 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(WP_DEBUG);
             Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
             Assert::assertTrue(is_multisite());
-            Assert::assertEquals($wpRootDir . '/wp-content', $wpLoader->getContentFolder());
+            Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
             Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
             Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
                 $wpLoader->getContentFolder('some/path/some-file.php'));
@@ -1438,8 +1438,8 @@ class WPLoaderTest extends Unit
         ];
         $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
-            ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER)
-            ->install(
+            ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
+            $installation->install(
                 'https://wp.local',
                 'admin',
                 'password',

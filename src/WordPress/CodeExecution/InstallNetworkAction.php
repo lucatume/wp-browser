@@ -57,6 +57,10 @@ class InstallNetworkAction implements CodeExecutionActionInterface
      */
     private function installWordPressNetwork(string $email, string $sitename, bool $subdomain): void
     {
+        global $wpdb;
+        foreach ($wpdb->tables('ms_global') as $table => $prefixed_table) {
+            $wpdb->$table = $prefixed_table;
+        }
         // Set the current user to the admin user.
         wp_set_current_user(1);
         require_once ABSPATH . '/wp-admin/includes/network.php';
@@ -68,8 +72,16 @@ class InstallNetworkAction implements CodeExecutionActionInterface
             wp_unslash($sitename),
             '/',
             $subdomain);
+
         if ($result instanceof \WP_Error) {
             throw new RuntimeException('Could not install WordPress network: ' . $result->get_error_message());
+        }
+
+        $tables = $wpdb->get_col('SHOW TABLES');
+        $missingTables = array_diff($wpdb->tables('ms_global'), $tables);
+        if (count($missingTables)) {
+            throw new RuntimeException('Could not install WordPress network: ' . implode(', ',
+                    $missingTables) . ' table(s) not found.');
         }
     }
 }
