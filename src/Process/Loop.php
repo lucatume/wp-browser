@@ -259,8 +259,8 @@ class Loop
             $this->results[$id] = new Result(
                 $id,
                 $runningWorker->getExitCode(),
-                $runningWorker->getStderrBuffer(),
                 $runningWorker->getStdoutBuffer(),
+                $runningWorker->getStderrBuffer(),
                 $runningWorker->getReturnValue(),
                 $runningWorker->getMemoryUsage()
             );
