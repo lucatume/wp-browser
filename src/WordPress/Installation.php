@@ -3,8 +3,6 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\Traits\WithWpCli;
-use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
