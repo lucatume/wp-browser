@@ -3,6 +3,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use _PHPStan_9a6ded56a\Symfony\Component\Process\Exception\ProcessFailedException;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -223,8 +224,7 @@ class InstallationTest extends Unit
 
         $installation = new Installation($wpRoot);
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+        $this->expectException(ProcessFailedException::class);
 
         $installation->runWpCliCommandOrThrow(['core', 'version']);
     }
@@ -242,8 +242,7 @@ class InstallationTest extends Unit
 
         $installation = new Installation($wpRoot);
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+        $this->expectException(ProcessFailedException::class);
 
         $installation->runWpCliCommandOrThrow(['core', 'version']);
     }

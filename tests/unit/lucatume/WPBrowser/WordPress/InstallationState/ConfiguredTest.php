@@ -5,18 +5,25 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\Worker\Result;
+use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
+use lucatume\WPBrowser\WordPress\CodeExecution\ExitAction;
+use lucatume\WPBrowser\WordPress\CodeExecution\InstallAction;
+use lucatume\WPBrowser\WordPress\CodeExecution\ThrowAction;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
 class ConfiguredTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;
+    use ClassStubs;
 
     /**
      * It should throw when building on non existing root directory
@@ -293,7 +300,7 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir)->configure($db,InstallationStateInterface::MULTISITE_SUBFOLDER);
+        Installation::scaffold($wpRootDir)->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
         $installed = $configured->install('https://wp.local',
@@ -322,38 +329,13 @@ class ConfiguredTest extends \Codeception\Test\Unit
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $mockResult = new Result('installation', 1, 'lorem dolor', 'errors occurred', null);
-        $this->uopzSetStaticMethodReturn(Loop::class, 'executeClosure', $mockResult);
+        $this->uopzSetStaticMethodReturn(CodeExecutionFactory::class,
+            'toInstallWordPress',
+            (new ExitAction(1, 'errors occurred'))->getClosure());
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
         $this->expectExceptionMessageMatches('/errors occurred/');
-
-        $configured->install('https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'WP Local Installation');
-
-        $mockResult = new Result('installation', 1, 'lorem dolor', '', null);
-        $this->uopzSetStaticMethodReturn(Loop::class, 'executeClosure', $mockResult);
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
-        $this->expectExceptionMessageMatches('/lorem dolor/');
-
-        $configured->install('https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'WP Local Installation');
-
-        $mockResult = new Result('installation', 1, '', '', null);
-        $this->uopzSetStaticMethodReturn(Loop::class, 'executeClosure', $mockResult);
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
-        $this->expectExceptionMessageMatches('/unknown reason/');
 
         $configured->install('https://wp.local',
             'admin',
@@ -377,15 +359,11 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
-
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $mockResult = new Result('installation',
-            1,
-            'lorem dolor',
-            'errors occurred',
-            new \Exception('Something is amiss'));
-        $this->uopzSetStaticMethodReturn(Loop::class, 'executeClosure', $mockResult);
+        $this->uopzSetStaticMethodReturn(CodeExecutionFactory::class,
+            'toInstallWordPress',
+            (new ThrowAction(new \Exception('Something is amiss')))->getClosure());
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
@@ -395,7 +373,7 @@ class ConfiguredTest extends \Codeception\Test\Unit
             'admin',
             'password',
             'admin@wp.local',
-            'WP Local Installation');
+            'test');
     }
 
     /**
