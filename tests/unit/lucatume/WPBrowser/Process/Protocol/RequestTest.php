@@ -3,6 +3,7 @@
 
 namespace Unit\lucatume\WPBrowser\Process\Protocol;
 
+use lucatume\WPBrowser\Process\Protocol\Control;
 use lucatume\WPBrowser\Process\Protocol\Parser;
 use lucatume\WPBrowser\Process\Protocol\Request;
 use Opis\Closure\SerializableClosure;
@@ -64,7 +65,7 @@ class RequestTest extends \Codeception\Test\Unit
      */
     public function test_getPayload_fromPayload(array $control, SerializableClosure $serializableClosure): void
     {
-        $encoded = Parser::encode([$control, $serializableClosure]);
+        $encoded = Parser::encode([(new Control($control))->toArray(), $serializableClosure]);
 
         $request = new Request($control, $serializableClosure);
 

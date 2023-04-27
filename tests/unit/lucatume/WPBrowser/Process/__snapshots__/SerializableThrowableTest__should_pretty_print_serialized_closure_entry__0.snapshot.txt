@@ -2,7 +2,7 @@
    1|            $set = 'foo';
    2|            $bar = 'bar';
    3|
- > 4|            self::throwingMethod();
+[35m > 4|            self::throwingMethod();[0m
    5|        }(4): lucatume\WPBrowser\Process\SerializableThrowableTest::throwingMethod()
 #1 [internal function]: lucatume\WPBrowser\Process\SerializableThrowableTest::{closure}()
 #2 /vendor/opis/closure/src/SerializableClosure.php(109): call_user_func_array()

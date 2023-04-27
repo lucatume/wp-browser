@@ -36,4 +36,32 @@ class PreloadFilters
             'function' => $callback
         ];
     }
+
+    public static function spoofDnsWildcardCheck(): void
+    {
+        $callback = static function (bool $preempt, array $parsedArgs, string $url) {
+            if (($parsedArgs['method'] ?? 'GET') !== 'GET') {
+                return $preempt;
+            }
+
+            $siteurl = get_option('siteurl');
+            $requestHost = parse_url($url, PHP_URL_HOST);
+            $siteHost = parse_url($siteurl, PHP_URL_HOST);
+
+            if (!str_ends_with($requestHost, $siteHost)) {
+                return $preempt;
+            }
+
+            // Return a mock response to avoid the request to the real site.
+            return [
+                'response' => [
+                    'code' => 200,
+                    'message' => 'OK',
+                ],
+                'body' => '',
+            ];
+
+        };
+        self::addFilter('pre_http_request', $callback, 0, 3);
+    }
 }

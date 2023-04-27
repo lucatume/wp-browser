@@ -5,7 +5,7 @@ array (
    1|            $set = \'foo\';
    2|            $bar = \'bar\';
    3|
- > 4|            self::throwingMethod();
+[35m > 4|            self::throwingMethod();[0m
    5|        }',
     'line' => 4,
     'function' => 'throwingMethod',

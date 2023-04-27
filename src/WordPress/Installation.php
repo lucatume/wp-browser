@@ -14,6 +14,7 @@ class Installation
 {
     use WordPressChecks;
 
+    private static array $scaffoldedInstallations = [];
     private ?Db $db = null;
     private string $wpRootDir;
     private InstallationState\InstallationStateInterface $installationState;
@@ -38,7 +39,14 @@ class Installation
         $emptyDir = new EmptyDir($wpRootDir);
         $emptyDir->scaffold($version);
 
+        self::$scaffoldedInstallations[] = $wpRootDir;
+
         return new self($wpRootDir);
+    }
+
+    public static function getScaffoldedInstallations():array
+    {
+        return self::$scaffoldedInstallations;
     }
 
     public function configure(

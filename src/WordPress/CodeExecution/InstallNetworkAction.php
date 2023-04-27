@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+use lucatume\WPBrowser\WordPress\PreloadFilters;
 
 class InstallNetworkAction implements CodeExecutionActionInterface
 {
@@ -21,7 +22,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
             ->setTargetFile($wpRootDir . '/wp-admin/admin.php')
             ->defineConstant('MULTISITE', false)
             ->defineConstant('WP_INSTALLING_NETWORK', true)
-            ->addPreloadClosure(function () {
+            ->addPreloadClosure(function () use ($subdomain) {
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
                 set_error_handler(static function ($errno, $errstr) {
@@ -36,6 +37,10 @@ class InstallNetworkAction implements CodeExecutionActionInterface
                     function auth_redirect()
                     {
                     }
+                }
+
+                if ($subdomain) {
+                    PreloadFilters::spoofDnsWildcardCheck();
                 }
             })
             ->addAfterLoadClosure(fn() => $this->installWordPressNetwork($adminEmail, $title, $subdomain));

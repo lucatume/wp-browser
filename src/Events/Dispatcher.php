@@ -48,7 +48,7 @@ class Dispatcher
 
                 self::$codeceptInstance = $codeceptInstance;
                 return self::$codeceptInstance;
-            } catch (ReflectionException $e) {
+            } catch (ReflectionException) {
             }
         }
 

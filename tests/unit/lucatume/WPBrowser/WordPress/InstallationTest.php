@@ -3,13 +3,13 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use _PHPStan_9a6ded56a\Symfony\Component\Process\Exception\ProcessFailedException;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class InstallationTest extends Unit
 {
@@ -214,35 +214,31 @@ class InstallationTest extends Unit
     }
 
     /**
-     * It should throw if trying to run wp-cli command on empty installation
+     * It should allow runing wp-cli command on empty installation
      *
      * @test
      */
-    public function should_throw_if_trying_to_run_wp_cli_command_on_empty_installation(): void
+    public function should_allow_runing_wp_cli_command_on_empty_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
 
         $installation = new Installation($wpRoot);
 
-        $this->expectException(ProcessFailedException::class);
-
-        $installation->runWpCliCommandOrThrow(['core', 'version']);
+        $installation->runWpCliCommandOrThrow(['cli', 'info']);
     }
 
     /**
-     * It should throw if trying to run wp-cli command on scaffolded installation
+     * It should allow running wp-cli command on scaffolded installation
      *
      * @test
      */
-    public function should_throw_if_trying_to_run_wp_cli_command_on_scaffolded_installation(): void
+    public function should_allow_running_wp_cli_command_on_scaffolded_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
 
         Installation::scaffold($wpRoot, '4.9.8');
 
         $installation = new Installation($wpRoot);
-
-        $this->expectException(ProcessFailedException::class);
 
         $installation->runWpCliCommandOrThrow(['core', 'version']);
     }
@@ -283,7 +279,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '6.0.1')
+        $installation = Installation::scaffold($wpRoot, '6.1')
             ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost))
             ->install(
                 'https://wp.local',
@@ -293,7 +289,7 @@ class InstallationTest extends Unit
                 'Test'
             );
 
-        $this->assertEquals('6.0.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
+        $this->assertEquals('6.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
     }
 
     /**
@@ -309,7 +305,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '6.0.1')
+        $installation = Installation::scaffold($wpRoot, '6.1')
             ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost), InstallationStateInterface::MULTISITE_SUBFOLDER)
             ->install(
                 'https://wp.local',
@@ -319,6 +315,6 @@ class InstallationTest extends Unit
                 'Test'
             );
 
-        $this->assertEquals('6.0.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
+        $this->assertEquals('6.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
     }
 }

@@ -89,9 +89,8 @@ class Configured implements InstallationStateInterface
             }
         } catch (\Throwable $e) {
             throw new InstallationException(
-                'Could not install WordPress: ' . $e->getMessage(),
-                InstallationException::INSTALLATION_FAIL,
-                $e
+                'WordPress installation failed. ' . $e->getMessage(),
+                InstallationException::INSTALLATION_FAIL
             );
         }
 
