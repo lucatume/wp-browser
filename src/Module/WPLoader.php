@@ -13,7 +13,6 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Util\Debug;
-use JsonException;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
