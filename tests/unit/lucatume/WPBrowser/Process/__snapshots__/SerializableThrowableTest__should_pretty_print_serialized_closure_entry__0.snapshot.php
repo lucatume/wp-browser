@@ -99,12 +99,20 @@ array (
   12 => 
   array (
     'file' => '/vendor/codeception/codeception/src/Codeception/Command/Run.php',
-    'line' => 435,
+    'line' => 646,
     'function' => 'run',
     'class' => 'Codeception\\Codecept',
     'type' => '->',
   ),
   13 => 
+  array (
+    'file' => '/vendor/codeception/codeception/src/Codeception/Command/Run.php',
+    'line' => 467,
+    'function' => 'runSuites',
+    'class' => 'Codeception\\Command\\Run',
+    'type' => '->',
+  ),
+  14 => 
   array (
     'file' => '/vendor/symfony/console/Command/Command.php',
     'line' => 298,
@@ -112,7 +120,7 @@ array (
     'class' => 'Codeception\\Command\\Run',
     'type' => '->',
   ),
-  14 => 
+  15 => 
   array (
     'file' => '/vendor/symfony/console/Application.php',
     'line' => 1040,
@@ -120,7 +128,7 @@ array (
     'class' => 'Symfony\\Component\\Console\\Command\\Command',
     'type' => '->',
   ),
-  15 => 
+  16 => 
   array (
     'file' => '/vendor/symfony/console/Application.php',
     'line' => 301,
@@ -128,7 +136,7 @@ array (
     'class' => 'Symfony\\Component\\Console\\Application',
     'type' => '->',
   ),
-  16 => 
+  17 => 
   array (
     'file' => '/vendor/symfony/console/Application.php',
     'line' => 171,
@@ -136,7 +144,7 @@ array (
     'class' => 'Symfony\\Component\\Console\\Application',
     'type' => '->',
   ),
-  17 => 
+  18 => 
   array (
     'file' => '/vendor/codeception/codeception/src/Codeception/Application.php',
     'line' => 112,
@@ -144,7 +152,7 @@ array (
     'class' => 'Symfony\\Component\\Console\\Application',
     'type' => '->',
   ),
-  18 => 
+  19 => 
   array (
     'file' => '/vendor/codeception/codeception/app.php',
     'line' => 45,
@@ -152,23 +160,23 @@ array (
     'class' => 'Codeception\\Application',
     'type' => '->',
   ),
-  19 => 
+  20 => 
   array (
     'function' => '{closure}',
   ),
-  20 => 
+  21 => 
   array (
     'file' => '/vendor/codeception/codeception/app.php',
     'line' => 46,
     'function' => 'call_user_func',
   ),
-  21 => 
+  22 => 
   array (
     'file' => '/vendor/codeception/codeception/codecept',
     'line' => 7,
     'function' => 'require',
   ),
-  22 => 
+  23 => 
   array (
     'file' => '/vendor/bin/codecept',
     'line' => 120,
