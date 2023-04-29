@@ -14,8 +14,8 @@ jobs:
       - name: Build WordPress image
         uses: docker/build-push-action@v4
         with:
-          context: containers/php
-          file: containers/php/Dockerfile
+          context: config/containers/php
+          file: config/containers/php/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
           cache-from: type=gha,scope=${{ matrix.php_version }}
@@ -26,8 +26,8 @@ jobs:
       - name: Build Codeception image
         uses: docker/build-push-action@v4
         with:
-          context: containers/php
-          file: containers/php/Dockerfile
+          context: config/containers/php
+          file: config/containers/php/Dockerfile
           push: false
           tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
           cache-from: type=gha,scope=${{ matrix.php_version }}
