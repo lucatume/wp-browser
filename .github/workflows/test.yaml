@@ -36,7 +36,7 @@ jobs:
             PHP_VERSION=${{ matrix.php_version }}
             TARGET=codeception
       - name: Build
-        run: bin/stack -p${{ matrix.php_version }} build
+        run: bin/stack -p${{ matrix.php_version }} -s build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:

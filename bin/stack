@@ -2,6 +2,7 @@
 
 SUPPORTED_PHP_VERSIONS=(8.0 8.1 8.2)
 SUPPORTED_CODECEPTION_VERSIONS=(5)
+SKIP_BUILD=0
 
 function print_help() {
   echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-drh] [--] [COMMAND]"
@@ -9,6 +10,7 @@ function print_help() {
   echo "  -c<CODECEPTION_VERSION> The Codeception version to use. Default: 5"
   echo "  -d                      Enable debug mode."
   echo "  -r                      Access container as root."
+  echo "  -s                      Skip building images in build command."
   echo "  -h                      Display this help message."
   echo "Supported COMMANDs"
   echo "  build                 Build the images for the specified PHP version."
@@ -50,6 +52,9 @@ while getopts "p:c:hdr" opt; do
   h)
     print_help
     exit 0
+    ;;
+  s)
+    SKIP_BUILD=1
     ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
@@ -203,15 +208,18 @@ function ensure_test_plugins() {
   run_wp_cli_command plugin install woocommerce akismet hello-dolly || exit 1
 }
 
-function ensure_externals_blocked(){
+function ensure_externals_blocked() {
   run_wp_cli_command config set WP_HTTP_BLOCK_EXTERNAL true || exit 1
 }
 
 function build() {
   [ ! -d "${PWD}/var/cache/composer" ] && mkdir -p "${PWD}/var/cache/composer"
   docker compose pull --ignore-buildable || exit 1
-  docker compose build wordpress || exit 1
-  docker compose build codecept || exit 1
+  # Skip building the images if SKIP_BUILD is 1.
+  if [ "${SKIP_BUILD}" = "0" ]; then
+    docker compose build wordpress || exit 1
+    docker compose build codecept || exit 1
+  fi
   docker compose up -d --force-recreate --wait database || exit 1
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
