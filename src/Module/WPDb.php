@@ -4149,9 +4149,9 @@ class WPDb extends Db
         }
 
         if (!empty($createIfNotExist)) {
-            foreach ($createIfNotExist as $dsn => list($user, $pass)) {
+            foreach ($createIfNotExist as $dsn => [$user, $pass]) {
                 $dsnMap = DbUtils::dbDsnToMap((string)$dsn);
-                $dbname = $dsnMap('dbname', '');
+                $dbname = $dsnMap['dbname'] ?? '';
 
                 if (empty($dbname)) {
                     throw new ModuleException(
