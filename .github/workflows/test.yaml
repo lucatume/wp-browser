@@ -4,8 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        # php_version: [ '8.0', '8.1', '8.2' ]
-        php_version: [ '8.0' ]
+        php_version: [ '8.0', '8.1', '8.2' ]
     name: PHP ${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
