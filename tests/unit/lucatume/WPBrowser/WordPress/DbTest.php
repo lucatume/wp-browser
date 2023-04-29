@@ -3,6 +3,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -12,6 +13,8 @@ use PDO;
 
 class DbTest extends \Codeception\Test\Unit
 {
+    use UopzFunctions;
+
     /**
      * It should throw when building with invalid db name
      *
@@ -132,5 +135,100 @@ class DbTest extends \Codeception\Test\Unit
             $this->assertEquals(1, $db->updateOption($name, $value));
             $this->assertEquals($value, $db->getOption($name));
         }
+    }
+
+    /**
+     * It should throw if dump file does not exist
+     *
+     * @test
+     */
+    public function should_throw_if_dump_file_does_not_exist(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wptests_');
+
+        $this->expectException(DbException::class);
+        $this->expectExceptionCode(DbException::DUMP_FILE_NOT_EXIST);
+
+        $db->import('non-existent-file.sql');
+    }
+
+    /**
+     * It should throw if dump cannot be opened to import
+     *
+     * @test
+     */
+    public function should_throw_if_dump_cannot_be_opened_to_import(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wptests_');
+
+        $this->expectException(DbException::class);
+        $this->expectExceptionCode(DbException::DUMP_FILE_NOT_READABLE);
+
+        $this->uopzSetFunctionReturn('fopen', false);
+
+        $db->import(codecept_data_dir('files/test-dump-001.sql'));
+    }
+
+    /**
+     * It should import database dumps correctly
+     *
+     * @test
+     */
+    public function should_import_database_dumps_correctly(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wptests_');
+
+        $db->import(codecept_data_dir('files/test-dump-001.sql'));
+
+        $this->assertEquals('value_1', $db->getOption('option_1'));
+    }
+
+    /**
+     * It should throw if dump line execution fails
+     *
+     * @test
+     */
+    public function should_throw_if_dump_line_execution_fails(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wptests_');
+
+        $this->expectException(DbException::class);
+        $this->expectExceptionCode(DbException::FAILED_QUERY);
+
+        $db->import(codecept_data_dir('files/bad-dump.sql'));
+    }
+
+    /**
+     * It should correctly handle import files using transactions
+     *
+     * @test
+     */
+    public function should_correctly_handle_import_files_using_transactions(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wptests_');
+
+        $db->import(codecept_data_dir('files/test-dump-w-transaction.sql'));
+
+        $this->assertEquals('test_value_1', $db->getOption('test_option_1'));
     }
 }

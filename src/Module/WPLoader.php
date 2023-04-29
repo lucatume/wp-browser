@@ -234,6 +234,15 @@ class WPLoader extends Module
         $this->config['bootstrapActions'] = array_values(array_filter((array)($this->config['bootstrapActions'] ?? [])));
         $this->config['configFile'] = array_values(array_filter((array)($this->config['configFile'] ?? [])));
 
+        $this->config['dump'] = array_filter((array)$this->config['dump']);
+        foreach ($this->config['dump'] as $dumpFile) {
+            if (!file_exists($dumpFile)) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "The dump file `$dumpFile` does not exist."
+                );
+            }
+        }
 
         parent::validateConfig();
     }
@@ -507,6 +516,8 @@ class WPLoader extends Module
 
         $this->disableUpdates();
 
+        $this->importDumps();
+
         Dispatcher::dispatch(self::EVENT_AFTER_BOOTSTRAP, $this);
 
         $this->runBootstrapActions();
@@ -697,5 +708,30 @@ class WPLoader extends Module
         remove_action('admin_init', '_maybe_update_plugins');
         remove_action('admin_init', '_maybe_update_themes');
         remove_action('admin_init', 'default_password_nag_handler');
+    }
+
+    /**
+     * @throws ModuleException
+     */
+    private function importDumps(): void
+    {
+        $db = $this->installation->getDb();
+
+        if (!$db instanceof Db) {
+            throw new ModuleException(
+                __CLASS__,
+                'The WPLoader module is configured to import dumps, but the database is not configured.'
+            );
+        }
+
+        try {
+            foreach ($this->config['dump'] as $dumpFilePath) {
+                $modified = $db->import($dumpFilePath);
+                $this->debug("Imported dump file `$dumpFilePath`: $modified rows modified.");
+            }
+        } catch (\Exception $e) {
+            $message = "Could not import dump file `$dumpFilePath`: " . lcfirst($e->getMessage());
+            throw new ModuleException(__CLASS__, $message);
+        }
     }
 }

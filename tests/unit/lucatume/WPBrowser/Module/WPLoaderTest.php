@@ -1439,13 +1439,13 @@ class WPLoaderTest extends Unit
         $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
-            $installation->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test'
-            );
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
         $this->copyOverContentFromTheMainInstallation($installation);
         // Create a twentytwenty-child theme.
         $installation->runWpCliCommandOrThrow([
@@ -1471,5 +1471,169 @@ class WPLoaderTest extends Unit
 
         codecept_debug($installationOutput);
         $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
+    }
+
+    /**
+     * It should throw if specified dump file does not exist
+     *
+     * @test
+     */
+    public function should_throw_if_specified_dump_file_does_not_exist(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'dump' => 'not-really-existing.sql'
+        ];
+        Installation::scaffold($wpRootDir);
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize();
+    }
+
+    /**
+     * It should throw if any dump file specified does not exist
+     *
+     * @test
+     */
+    public function should_throw_if_any_dump_file_specified_does_not_exist(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'dump' => [
+                codecept_data_dir('files/test-dump-001.sql'),
+                codecept_data_dir('files/test-dump-002.sql'),
+                'not-really-existing.sql',
+            ]
+        ];
+        Installation::scaffold($wpRootDir);
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpLoader = $this->module();
+        $wpLoader->_initialize();
+    }
+
+    /**
+     * It should rethrow on failure to load a dump file
+     *
+     * @test
+     */
+    public function should_rethrow_on_failure_to_load_a_dump_file(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'dump' => [
+                codecept_data_dir('files/test-dump-001.sql'),
+                codecept_data_dir('files/test-dump-002.sql'),
+            ]
+        ];
+        Installation::scaffold($wpRootDir);
+
+        $wpLoader = $this->module();
+
+        $this->expectException(ModuleException::class);
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            uopz_set_return('fopen', false);
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should allow loading a database dump before tests
+     *
+     * @test
+     */
+    public function should_allow_loading_a_database_dump_before_tests(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'dump' => codecept_data_dir('files/test-dump-001.sql')
+        ];
+        Installation::scaffold($wpRootDir);
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            Assert::assertEquals('value_1', get_option('option_1'));
+        });
+    }
+
+    /**
+     * It should allow loading multiple database dumps before the tests
+     *
+     * @test
+     */
+    public function should_allow_loading_multiple_database_dumps_before_the_tests(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $dumpFilePath = codecept_data_dir('files/test-dump-001.sql');
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbName' => $dbName,
+            'dbHost' => $dbHost,
+            'dbUser' => $dbUser,
+            'dbPassword' => $dbPassword,
+            'dump' => [
+                codecept_data_dir('files/test-dump-001.sql'),
+                codecept_data_dir('files/test-dump-002.sql'),
+                codecept_data_dir('files/test-dump-003.sql'),
+            ]
+        ];
+        Installation::scaffold($wpRootDir);
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            Assert::assertEquals('value_1', get_option('option_1'));
+            Assert::assertEquals('value_2', get_option('option_2'));
+            Assert::assertEquals('value_3', get_option('option_3'));
+        });
     }
 }

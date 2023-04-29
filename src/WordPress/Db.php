@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Codeception\Exception\ModuleException;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
 use PDO;
@@ -227,5 +229,71 @@ class Db
         }
         $value = $statement->fetchColumn();
         return $value === false ? $default : Serializer::maybeUnserialize($value);
+    }
+
+    /**
+     * @throws DbException
+     */
+    public function import(string $dumpFilePath): int
+    {
+        if (!is_file($dumpFilePath)) {
+            throw new DbException("Dump file $dumpFilePath not exist.", DbException::DUMP_FILE_NOT_EXIST);
+        }
+
+        $dumpFileHandle = fopen($dumpFilePath, 'rb');
+
+        if (!is_resource($dumpFileHandle)) {
+            throw new DbException("Failed to open file $dumpFilePath.", DbException::DUMP_FILE_NOT_READABLE);
+        }
+
+        $modifiedByQuery = 0;
+        $line = '';
+        $ingestingMultilineComment = false;
+        $pdo = $this->getPDO();
+        if (!$this->exists()) {
+            $this->create();
+        }
+
+        while (!feof($dumpFileHandle)) {
+            $read = fgets($dumpFileHandle);
+
+            if ($read === false) {
+                break;
+            }
+
+            // Remove trailing new line.
+            $read = rtrim($read, "\n\r");
+
+            if ($ingestingMultilineComment && !str_ends_with($read, '*/')) {
+                continue;
+            }
+
+            // MySQL `-- ` comment.
+            if (str_starts_with($read, '-- ')) {
+                continue;
+            }
+
+            // MySQL multi-line comment.
+            if (str_starts_with($read, '/*')) {
+                $ingestingMultilineComment = true;
+                continue;
+            }
+
+            $line .= $read;
+            if (str_ends_with($line, ';')) {
+                try {
+                    $modified = $pdo->exec($line);
+                } catch (\Exception $e) {
+                    fclose($dumpFileHandle);
+                    throw new DbException("Failed to execute query: " . $e->getMessage(), DbException::FAILED_QUERY);
+                }
+                $modifiedByQuery += (int)$modified;
+                $line = '';
+            }
+        }
+
+        fclose($dumpFileHandle);
+
+        return $modifiedByQuery;
     }
 }
