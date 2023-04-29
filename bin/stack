@@ -35,7 +35,7 @@ function print_help() {
 }
 
 # Parse the arguments using getopts
-while getopts "p:c:hdr" opt; do
+while getopts "p:c:hdrs" opt; do
   case $opt in
   p)
     PHP_VERSION=$OPTARG
