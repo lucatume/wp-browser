@@ -2,16 +2,16 @@ actor: WebDriverTester
 modules:
   enabled:
     - \Helper\WebDriver
-    - WPWebDriver
-    - WPDb
-    - WPFilesystem
+    - lucatume\WPBrowser\Module\WPWebDriver
+    - lucatume\WPBrowser\Module\WPDb
+    - lucatume\WPBrowser\Module\WPFilesystem
   config:
     WPWebDriver:
       url: '%WORDPRESS_URL%'
       adminUsername: '%WORDPRESS_ADMIN_USER%'
       adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
       adminPath: '/wp-admin'
-      browser: chr`ome
+      browser: chrome
       host: '%CHROMEDRIVER_HOST%'
       port: '%CHROMEDRIVER_PORT%'
       window_size: false
