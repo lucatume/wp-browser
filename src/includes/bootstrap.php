@@ -116,6 +116,14 @@ if(empty($skipWordPressInstall)){
 			'tablesHandling' => $installationConfiguration->get('tablesHandling','empty'),
 		];
 
+        // Add custom constants as defined in the configuration
+        $configConstants = $installationConfiguration->get('definedConstants', []);
+        foreach ($configConstants as $configConstant) {
+            if (defined($configConstant)) {
+                $environment['constants'][$configConstant] = constant($configConstant);
+            }
+        }
+
 		$dirConstants = [
 			'WP_PLUGIN_DIR',
 			'WP_CONTENT_DIR',
