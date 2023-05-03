@@ -12,6 +12,7 @@ namespace lucatume\WPBrowser\Utils;
 
 use Closure;
 use InvalidArgumentException;
+use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PDO;
 use PDOException;
@@ -147,7 +148,7 @@ class Db
             'memory' => false,
         ];
         if (self::isDsnString($dbHost)) {
-            return \array_replace($defaults,self::dbDsnToMap($dbHost));
+            return \array_replace($defaults, self::dbDsnToMap($dbHost));
         }
 
         $map = [];
@@ -297,14 +298,14 @@ class Db
 
             if (isset($dbDsnMap['unix_socket'])) {
                 $dsn .= $forDbHost ?
-                    ($dbDsnMap['host']?? 'localhost') . ':' . ($dbDsnMap['unix_socket'] ?? null)
+                    ($dbDsnMap['host'] ?? 'localhost') . ':' . ($dbDsnMap['unix_socket'] ?? null)
                     : 'unix_socket=' . ($dbDsnMap['unix_socket'] ?? null);
 
                 return $dbname && !$forDbHost ? $dsn . ';dbname=' . $dbname : $dsn;
             }
 
             $dsn .= $forDbHost ?
-                $dbDsnMap['host'] ??  'localhost'
+                $dbDsnMap['host'] ?? 'localhost'
                 : 'host=' . ($dbDsnMap['host'] ?? 'localhost');
 
             $port = $dbDsnMap['port'] ?? null;
@@ -383,5 +384,22 @@ class Db
                 'host' => 'localhost'
             ],
             $map);
+    }
+
+    public static function parseDbUrl(mixed $dbUrl): array
+    {
+        $parsed = parse_url($dbUrl);
+        $name = $parsed['path'] ?? '';
+        $host = $parsed['host'] ?? '';
+        $name = $name ? trim($name, '/') : '';
+        return [
+            'type' => $parsed['scheme'] ?? '',
+            'user' => $parsed['user'] ?? '',
+            'password' => $parsed['pass'] ?? '',
+            'host' => $host,
+            'port' => $parsed['port'] ?? '',
+            'name' => $name,
+            'dsn' => $host ? DbUtils::dbDsnString(array_merge(['dbname' => $name], $parsed)) : ''
+        ];
     }
 }

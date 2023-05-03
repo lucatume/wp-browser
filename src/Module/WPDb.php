@@ -112,7 +112,19 @@ class WPDb extends Db
      *
      * @var array<string>
      */
-    protected array $requiredFields = ['url'];
+    protected array $requiredFields = ['dsn', 'user', 'password', 'url'];
+
+    protected function validateConfig(): void
+    {
+        if(isset($this->config['dbUrl'])){
+            $parsedDbUrl = DbUtils::parseDbUrl($this->config['dbUrl'] ?? '');
+            $this->config['user'] = $parsedDbUrl['user'];
+            $this->config['password'] = $parsedDbUrl['password'];
+            $this->config['dsn'] = $parsedDbUrl['dsn'];
+        }
+
+        parent::validateConfig();
+    }
 
     /**
      * The module optional configuration parameters.

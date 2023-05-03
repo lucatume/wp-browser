@@ -1611,7 +1611,6 @@ class WPLoaderTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $dumpFilePath = codecept_data_dir('files/test-dump-001.sql');
         $this->config = [
             'wpRootFolder' => $wpRootDir,
             'dbName' => $dbName,
@@ -1635,5 +1634,46 @@ class WPLoaderTest extends Unit
             Assert::assertEquals('value_2', get_option('option_2'));
             Assert::assertEquals('value_3', get_option('option_3'));
         });
+    }
+
+    /**
+     * It should support using dbUrl to set up module
+     *
+     * @test
+     */
+    public function should_support_using_db_url_to_set_up_module(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'mysql://User:secret!@127.0.0.1:2389/test_db',
+        ];
+
+        $wploader = $this->module();
+
+        $this->assertEquals('test_db', $wploader->_getConfig('dbName'));
+        $this->assertEquals('127.0.0.1:2389', $wploader->_getConfig('dbHost'));
+        $this->assertEquals('User', $wploader->_getConfig('dbUser'));
+        $this->assertEquals('secret!', $wploader->_getConfig('dbPassword'));
+    }
+
+    /**
+     * It should throw if dbUrl not set and db credentials are not provided
+     *
+     * @test
+     */
+    public function should_throw_if_db_url_not_set_and_db_credentials_are_not_provided(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $this->config = ['wpRootFolder' => $wpRootDir];
+
+        $this->expectException(ModuleConfigException::class);
+        $message = "The `dbUrl` configuration parameter must be set or the `dbPassword`, `dbHost`, `dbName` and " .
+            "`dbUser` parameters must be set.";
+        $this->expectExceptionMessage($message);
+
+        $this->module();
     }
 }

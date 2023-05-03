@@ -68,9 +68,9 @@ class Wpbrowser extends Bootstrap
             return;
         }
 
+        $this->createEnvFile();
         $this->createIntegrationSuite($project);
         $this->createEndToEndSuite($project);
-        $this->createEnvFile();
 
         $this->say('');
         $this->saySuccess('All done, time to test!');
@@ -137,10 +137,7 @@ modules:
     config:
         lucatume\WPBrowser\Module\WPLoader:
            wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
-           dbName: '%WORDPRESS_DB_NAME%'
-           dbHost: '%WORDPRESS_DB_HOST%'
-           dbUser: '%WORDPRESS_DB_USER%'
-           dbPassword: '%WORDPRESS_DB_PASSWORD%'
+           dbUrl: '%WORDPRESS_DB_URL%'
            wpDebug: true
            tablePrefix: '%TEST_TABLE_PREFIX%'
            domain: '%WORDPRESS_DOMAIN%'
@@ -165,7 +162,7 @@ WORDPRESS_ROOT_DIR=vendor/wordpress/wordpress
 # Tests will require a MySQL database to run.
 # The database will be created if it does not exist.
 # Do not use a database that contains important data!
-WORDPRESS_DB_URL=mysql://user:password@localhost:3306/test
+WORDPRESS_DB_URL=mysql://User:secret!@127.0.0.1:3306/test
 
 # The Integration suite will use this table prefix for the WordPress tables.
 TEST_TABLE_PREFIX=test_
@@ -188,6 +185,8 @@ ENV;
 
         file_put_contents('tests/.env', $envFileContents);
         $this->say('Created <info>tests/.env</info> file.');
+        putenv('WORDPRESS_DB_URL=mysql://User:secret!@127.0.0.1:3306/test');
+        $_ENV['WORDPRESS_DB_URL'] = 'mysql://User:secret!@127.0.0.1:3306/test';
     }
 
     private function createEndToEndSuite(ProjectInterface $project): void
@@ -218,9 +217,7 @@ modules:
                 chromeOptions:
                     args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
         lucatume\WPBrowser\Module\WPDb:
-            dsn: '%WORDPRESS_DB_DSN%'
-            user: '%WORDPRESS_DB_USER%'
-            password: '%WORDPRESS_DB_PASSWORD%'
+            dbUrl: '%WORDPRESS_DB_URL%'
             dump: 'tests/_data/dump.sql'
             populate: true
             cleanup: true
@@ -229,10 +226,6 @@ modules:
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
         lucatume\WPBrowser\Module\WPFilesystem:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            themes: '/wp-content/themes'
-            plugins: '/wp-content/plugins'
-            mu-plugins: '/wp-content/mu-plugins'
-            uploads: '/wp-content/uploads'
 EOF;
         $this->createSuite('EndToEnd', 'EndToEnd', $suiteConfig);
 

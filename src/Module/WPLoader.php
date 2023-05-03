@@ -22,6 +22,7 @@ use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
 use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
+use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
@@ -203,10 +204,9 @@ class WPLoader extends Module
     protected function validateConfig(): void
     {
         $this->config['wpRootFolder'] = $this->config['ABSPATH'] ?? $this->config['wpRootFolder'] ?? '';
-        $this->config['dbName'] = $this->config['DB_NAME'] ?? $this->config['dbName'] ?? '';
-        $this->config['dbHost'] = $this->config['DB_HOST'] ?? $this->config['dbHost'] ?? '';
-        $this->config['dbUser'] = $this->config['DB_USER'] ?? $this->config['dbUser'] ?? '';
-        $this->config['dbPassword'] = $this->config['DB_PASSWORD'] ?? $this->config['dbPassword'] ?? '';
+
+        $this->parseDbCredentials();
+
         $this->config['dbCharset'] = $this->config['DB_CHARSET'] ?? $this->config['dbCharset'] ?? '';
         $this->config['dbCollate'] = $this->config['DB_COLLATE'] ?? $this->config['dbCollate'] ?? '';
         $this->config['multisite'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? '';
@@ -647,14 +647,6 @@ class WPLoader extends Module
         return $this->installation->getContentDir($path);
     }
 
-    private function getStylesheetTemplateFromConfig(): array
-    {
-        [$template, $stylesheet] = array_replace([null, null], (array)$this->config['theme']);
-        $template = $template ?: $this->config['theme'];
-        $stylesheet = $stylesheet ?: $this->config['theme'];
-        return array($stylesheet, $template);
-    }
-
     private function getClosuresFactory(): CodeExecutionFactory
     {
         $installationState = $this->installation->getState();
@@ -733,5 +725,36 @@ class WPLoader extends Module
             $message = "Could not import dump file `$dumpFilePath`: " . lcfirst($e->getMessage());
             throw new ModuleException(__CLASS__, $message);
         }
+    }
+
+    private function parseDbCredentials(): void
+    {
+        if (isset($this->config['dbUrl'])) {
+            $parsedUrl = DbUtils::parseDbUrl($this->config['dbUrl']);
+            $this->config['dbHost'] = $parsedUrl['host'] . ($parsedUrl['port'] ? ':' . $parsedUrl['port'] : '');
+            $this->config['dbUser'] = $parsedUrl['user'];
+            $this->config['dbPassword'] = $parsedUrl['password'];
+            $this->config['dbName'] = $parsedUrl['name'];
+
+            return;
+        }
+
+        $dbPassword = $this->config['DB_PASSWORD'] ?? $this->config['dbPassword'] ?? null;
+        $dbHost = $this->config['DB_HOST'] ?? $this->config['dbHost'] ?? null;
+        $dbName = $this->config['DB_NAME'] ?? $this->config['dbName'] ?? null;
+        $dbUser = $this->config['DB_USER'] ?? $this->config['dbUser'] ?? null;
+
+        if (count(array_filter([$dbPassword, $dbHost, $dbName, $dbUser], 'is_null')) !== 0) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                "The `dbUrl` configuration parameter must be set or the `dbPassword`, `dbHost`, `dbName`" .
+                " and `dbUser` parameters must be set."
+            );
+        }
+
+        $this->config['dbHost'] = $dbHost;
+        $this->config['dbUser'] = $dbUser;
+        $this->config['dbPassword'] = $dbPassword;
+        $this->config['dbName'] = $dbName;
     }
 }

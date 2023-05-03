@@ -409,4 +409,54 @@ class dbTest extends \Codeception\Test\Unit
 
         Db::dbDsnToMap($input);
     }
+
+    public function parseDbUrlDataProvider(): array
+    {
+        return [
+            'mysql on localhost' => [
+                'mysql://user:pass@localhost/dbname',
+                [
+                    'type' => 'mysql',
+                    'user' => 'user',
+                    'password' => 'pass',
+                    'host' => 'localhost',
+                    'port' => '',
+                    'name' => 'dbname',
+                    'dsn' => 'mysql:host=localhost;dbname=dbname'
+                ]
+            ],
+            'mysql on localhost w/ port' => [
+                'mysql://user:pass@localhost:2389/dbname',
+                [
+                    'type' => 'mysql',
+                    'user' => 'user',
+                    'password' => 'pass',
+                    'host' => 'localhost',
+                    'port' => 2389,
+                    'name' => 'dbname',
+                    'dsn' => 'mysql:host=localhost;port=2389;dbname=dbname'
+                ]
+            ],
+            'mysql on IP address' => [
+                'mysql://User:p@ass@127.0.0.1:2389/test',
+                [
+                    'type' => 'mysql',
+                    'user' => 'User',
+                    'password' => 'p@ass',
+                    'host' => '127.0.0.1',
+                    'port' => 2389,
+                    'name' => 'test',
+                    'dsn' => 'mysql:host=127.0.0.1;port=2389;dbname=test'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider parseDbUrlDataProvider
+     */
+    public function test_parseDbUrl(string $input, array $expected): void
+    {
+        $this->assertEquals($expected, Db::parseDbUrl($input));
+    }
 }

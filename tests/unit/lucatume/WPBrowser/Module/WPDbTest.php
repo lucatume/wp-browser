@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
@@ -58,7 +59,7 @@ class WPDbTest extends Unit
     /**
      * @return WPDb
      */
-    private function makeInstance(): WPDb
+    private function module(): WPDb
     {
         $this->config = array_merge([
             'dsn' => 'mysql:host=' . Env::get('WORDPRESS_DB_HOST') . ';dbname=wpdb_module_test_db',
@@ -94,7 +95,7 @@ SQL;
         $root = FS::tmpDir('wpdb_', ['dump.sql' => $sql]);
         $path = $root . '/dump.sql';
 
-        $wpdb = $this->makeInstance();
+        $wpdb = $this->module();
         $wpdb->_initialize();
         $wpdb->importSqlDumpFile($path);
 
@@ -115,7 +116,7 @@ SQL;
 
         $this->expectException(InvalidArgumentException::class);
 
-        $sut = $this->makeInstance();
+        $sut = $this->module();
         $sut->_initialize();
 
         $sut->importSqlDumpFile($path);
@@ -136,7 +137,7 @@ SQL;
 
         $this->expectException(InvalidArgumentException::class);
 
-        $sut = $this->makeInstance();
+        $sut = $this->module();
         $sut->_initialize();
 
         $sut->importSqlDumpFile($filepath);
@@ -188,7 +189,7 @@ SQL;
             'populate' => true,
         ];
 
-        $sut = $this->makeInstance();
+        $sut = $this->module();
         $sut->_initialize();
         $sut->_beforeSuite();
 
@@ -205,5 +206,40 @@ SQL;
         $this->assertEquals('https://localhost:8080',
             self::$pdo->query("SELECT url FROM test_urls WHERE id = 3")->fetchColumn()
         );
+    }
+
+    /**
+     * It should support using DB url to set up module
+     *
+     * @test
+     */
+    public function should_support_using_db_url_to_set_up_module(): void
+    {
+        $config = [
+            'url' => 'https://some-wp.dev',
+            'dbUrl' => 'mysql://User:secret!@localhost:3306/wordpress_test',
+        ];
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+
+        $this->assertEquals('mysql:host=localhost;port=3306;dbname=wordpress_test', $wpdb->_getConfig('dsn'));
+        $this->assertEquals('User', $wpdb->_getConfig('user'));
+        $this->assertEquals('secret!', $wpdb->_getConfig('password'));
+    }
+
+    /**
+     * It should throw throw if dbUrl not set and credentials are missing
+     *
+     * @test
+     */
+    public function should_throw_throw_if_db_url_not_set_and_credentials_are_missing(): void
+    {
+        $config = [
+            'dbUrl' => 'mysql://User:secret!@localhost:3306/wordpress_test',
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+
     }
 }
