@@ -30,6 +30,8 @@ class WpbrowserTest extends \Codeception\Test\Unit
 
         $process->mustRun();
 
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
         $this->assertMatchesDirectorySnapshot($projectDir);
     }
 
@@ -55,6 +57,8 @@ class WpbrowserTest extends \Codeception\Test\Unit
 
         $process->mustRun();
 
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
         $this->assertMatchesDirectorySnapshot($projectDir);
     }
 
@@ -69,7 +73,7 @@ class WpbrowserTest extends \Codeception\Test\Unit
             codecept_root_dir("vendor/bin/codecept"),
             'init',
             'wpbrowser',
-            '--path=' . Fs::relativePath(codecept_root_dir(), $projectDir . '/site_23'),
+            '--path=' . Fs::relativePath(codecept_root_dir(), $projectDir . '/site_2389'),
         ];
         $process = new Process($command);
 
@@ -78,6 +82,8 @@ class WpbrowserTest extends \Codeception\Test\Unit
 
         $process->mustRun();
 
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/site_2389/tests/Support/_generated');
         $this->assertMatchesDirectorySnapshot($projectDir);
     }
 }

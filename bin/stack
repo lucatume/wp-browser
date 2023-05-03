@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
 SUPPORTED_PHP_VERSIONS=(8.0 8.1 8.2)
-SUPPORTED_CODECEPTION_VERSIONS=(5)
 SKIP_BUILD=0
 
 function print_help() {
-  echo "Usage: $0 [-p PHP_VERSION] [-c CODECEPTION_VERSION] [-drh] [--] [COMMAND]"
+  echo "Usage: $0 [-p PHP_VERSION] [-drh] [--] [COMMAND]"
   echo "  -p<PHP_VERSION>         The PHP version to use. Default: 8.0"
-  echo "  -c<CODECEPTION_VERSION> The Codeception version to use. Default: 5"
   echo "  -d                      Enable debug mode."
   echo "  -r                      Access container as root."
   echo "  -s                      Skip building images in build command."
@@ -34,14 +32,10 @@ function print_help() {
   echo "  xdebug-on             Activates XDebug in the WordPress and Codeception service."
 }
 
-# Parse the arguments using getopts
-while getopts "p:c:hdrs" opt; do
+while getopts "p:hdrs" opt; do
   case $opt in
   p)
     PHP_VERSION=$OPTARG
-    ;;
-  c)
-    CODECEPTION_VERSION=$OPTARG
     ;;
   r)
     ROOT=1
@@ -81,18 +75,9 @@ if [[ ! " ${SUPPORTED_PHP_VERSIONS[@]} " =~ " ${PHP_VERSION} " ]]; then
   exit 1
 fi
 
-CODECEPTION_VERSION=${CODECEPTION_VERSION:-5}
-# If the Codeception version is not supported, exit with an error.
-if [[ ! " ${SUPPORTED_CODECEPTION_VERSIONS[@]} " =~ " ${CODECEPTION_VERSION} " ]]; then
-  echo "Codeception version ${CODECEPTION_VERSION} is not supported."
-  echo "Supported Codeception versions: ${SUPPORTED_CODECEPTION_VERSIONS[@]}"
-  exit 1
-fi
-
 TEST_DATABASES=(wordpress test_subdir test_subdomain test_empty)
 
 export PHP_VERSION=${PHP_VERSION:-8.0}
-export CODECEPTION_VERSION=${CODECEPTION_VERSION:-5}
 export USER_UID=$(id -u)
 export USER_GID=$(id -g)
 export USER_NAME=$(id -un)
@@ -261,7 +246,7 @@ function composer_update() {
     -u "$(id -u):$(id -g)" \
     -w "$(pwd)" \
     codecept \
-    bash -c "composer update --with codeception/codeception:^${CODECEPTION_VERSION}.0"
+    bash -c "composer update -o -a"
 }
 
 function run_tests() {

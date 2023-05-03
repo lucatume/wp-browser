@@ -3,7 +3,7 @@
 namespace lucatume\WPBrowser\Generators;
 
 use DoctrineTest\InstantiatorTestAsset\PharAsset;
-use Hautelook\Phpass\PasswordHash;
+use PasswordHash;
 
 class WpPassword
 {

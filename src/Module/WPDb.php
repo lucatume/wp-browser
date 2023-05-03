@@ -19,6 +19,7 @@ use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;
 use lucatume\WPBrowser\Utils\Strings;
+use lucatume\WPBrowser\Utils\WP;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -28,7 +29,6 @@ use lucatume\WPBrowser\Generators\Links;
 use lucatume\WPBrowser\Generators\Post;
 use lucatume\WPBrowser\Generators\Tables;
 use lucatume\WPBrowser\Generators\User;
-use lucatume\WPBrowser\Generators\WpPassword;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 
 //phpcs:disable
@@ -526,7 +526,7 @@ class WPDb extends Db
             $userPass = $criteria['user_pass'];
             unset($criteria['user_pass']);
             $hashedPass = $this->grabFromDatabase($tableName, 'user_pass', $criteria);
-            $passwordOk = WpPassword::instance()->check($userPass, $hashedPass);
+            $passwordOk = WP::checkHashedPassword($userPass, $hashedPass);
             $this->assertTrue(
                 $passwordOk,
                 'No matching records found for criteria ' . json_encode($allCriteria) . ' in table ' . $tableName
@@ -557,7 +557,7 @@ class WPDb extends Db
             $userPass = $criteria['user_pass'];
             unset($criteria['user_pass']);
             $hashedPass = $this->grabFromDatabase($tableName, 'user_pass', [$criteria]);
-            $passwordOk = WpPassword::instance()->check($userPass, $hashedPass);
+            $passwordOk = WP::checkHashedPassword($userPass, $hashedPass);
         }
 
         $count = $this->countInDatabase($tableName, $criteria);

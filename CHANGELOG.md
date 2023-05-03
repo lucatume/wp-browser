@@ -23,6 +23,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
 - Removed the `isolatedInstall` parameter from the `WPLoader` configuration: installation will always happen in isolation.
 - Removed the `mikey179/vfsStream` development dependency.
+- Removed the `vria/nodiacritic` dependency.
+- Removed the `wp-cli/wp-cli` dependency.
+- Removed the `antecedent/patchwork` dependency.
+- Removed the `dg/mysql-dump` dependency.
+- Removed the `mikehaertl/php-shellcommand` dependency.
+- Removed the `bordoni/phpass` dependency, internalized the `Hautelook\Phpass` portable password hashing library.
+- Removed the `mikemclin/laravel-wp-password` dependency.
 - Removed the `WordPress` module and related support classes.
 - Removed the `mode` configuration parameter from the `Symlinker` extension.
 - Removed the `StubProphecy` and `FunctionProphecy` classes.
@@ -33,8 +40,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - `skipPluggables` - no more required.
   - `wpDebug` - the `WP_DEBUG` constant is always set to `true` during tests.
   - `activatePlugins` - plugins specified in the `plugins` configuration key will be always activated.
-- Added the following configuraiton keys to the `WPLoader` module:
+- Added the following configuration keys to the `WPLoader` module:
   - `dump` - allows specifying one or more dump files to be loaded after the installation and before the first test runs.
+  - `dbUrl` - allows providing the db name, user, password and host using a single URL, e.g. `mysql://user:password@host:port/db_name`.
   - `AUTH_KEY` - `SECURE_AUTH_KEY` - `LOGGED_IN_KEY` - `NONCE_KEY` - `AUTH_SALT` - `SECURE_AUTH_SALT` - `LOGGED_IN_SALT` - `NONCE_SALT` - allows specifying the WordPress salts.
   - Support configuring the module using the WordPress constant name directly according to the following map (keys are aliased):
     - `ABSPATH` or `wpRootFolder`
@@ -49,6 +57,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - `WP_TESTS_DOMAIN` or `domain`
     - `WP_TESTS_EMAIL` or `adminEmail`
     - `WP_TESTS_TITLE` or `title`
+  - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
 ## [3.1.6] 2022-04-28;
 
 ### Changed

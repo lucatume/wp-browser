@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Generators;
 
 use lucatume\WPBrowser\Utils\Strings;
+use lucatume\WPBrowser\Utils\WP;
 
 /**
  * Generates user entries to be inserted in a WordPress database.
@@ -23,7 +24,7 @@ class User
         $login = Strings::sanitizeUsername($user_login, true);
         $usersTableDefaults = [
             'user_login' => $login,
-            'user_pass' => WpPassword::instance()->make($user_login),
+            'user_pass' => WP::passwordHash($user_login),
             'user_nicename' => $user_login,
             'user_email' => $login . "@example.com",
             'user_url' => "http://{$login}.example.com",
@@ -33,7 +34,7 @@ class User
             'display_name' => $user_login
         ];
         if (!empty($userData['user_pass'])) {
-            $userData['user_pass'] = WpPassword::instance()->make($userData['user_pass']);
+            $userData['user_pass'] = WP::passwordHash($userData['user_pass']);
         }
 
         return array_merge($usersTableDefaults, array_intersect_key($userData, $usersTableDefaults));

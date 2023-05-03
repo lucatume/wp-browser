@@ -7,18 +7,18 @@
     "wordpress",
     "codeception"
   ],
-  "homepage": "http://github.com/lucatume/wp-browser",
+  "homepage": "https://github.com/lucatume/wp-browser",
   "license": "MIT",
   "authors": [
     {
       "name": "theAverageDev (Luca Tumedei)",
       "email": "luca@theaveragedev.com",
-      "homepage": "http://theaveragedev.com",
+      "homepage": "https://theaveragedev.com",
       "role": "Developer"
     }
   ],
   "minimum-stability": "dev",
-  "prefer-stable" : true,
+  "prefer-stable": true,
   "require": {
     "php": "^8.0",
     "ext-pdo": "*",
@@ -27,37 +27,30 @@
     "ext-curl": "*",
     "composer-runtime-api": "^2.2",
     "codeception/codeception": "^5.0",
-    "codeception/module-asserts":"^2.0 || ^3.0",
-    "codeception/module-phpbrowser":"^2.0 || ^3.0",
-    "codeception/module-webdriver":"^2.0 || ^3.0",
-    "codeception/module-db":"^2.0 || ^3.0",
-    "codeception/module-filesystem":"^2.0 || ^3.0",
-    "codeception/module-cli":"^2.0 || ^3.0",
+    "codeception/module-asserts": "^2.0 || ^3.0",
+    "codeception/module-phpbrowser": "^2.0 || ^3.0",
+    "codeception/module-webdriver": "^2.0 || ^3.0",
+    "codeception/module-db": "^2.0 || ^3.0",
+    "codeception/module-filesystem": "^2.0 || ^3.0",
+    "codeception/module-cli": "^2.0 || ^3.0",
     "opis/closure": "^3.5",
     "symfony/process": ">=4.4.24 <7.0",
-    "vria/nodiacritic": "^0.1.2",
-    "wp-cli/wp-cli": ">=2.0 <3.0.0",
-    "antecedent/patchwork": "^2.0",
-    "dg/mysql-dump": "^1.3",
-    "mikehaertl/php-shellcommand": "^1.6",
-    "bordoni/phpass": "^0.3",
-    "mikemclin/laravel-wp-password": "~2.0.0"
+    "vlucas/phpdotenv": "^5.0"
   },
   "require-dev": {
     "ext-sockets": "*",
     "ext-pcntl": "*",
     "ext-mysqli": "*",
-    "erusev/parsedown": "^1.7",
     "lucatume/codeception-snapshot-assertions": "v1.0.0.x-dev",
-    "victorjonsson/markdowndocs": "dev-master",
-    "gumlet/php-image-resize": "^1.6",
-    "vlucas/phpdotenv": "^5.0",
-    "wp-cli/wp-cli-bundle": "*",
-    "rector/rector": "^0.13.9"
+    "gumlet/php-image-resize": "^1.6"
   },
   "autoload": {
     "psr-4": {
-      "lucatume\\WPBrowser\\": ["src/", "src/Deprecated"]
+      "lucatume\\WPBrowser\\": [
+        "src/",
+        "src/Deprecated"
+      ],
+      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass"
     },
     "files": [
       "src/version-4-aliases.php",
@@ -75,8 +68,5 @@
   },
   "extra": {
     "_hash": "484f861f69198089cab0e642f27e5653"
-  },
-  "suggest": {
-    "vlucas/phpdotenv:^4.0": "To manage more complex environment file based configuration of the suites."
   }
 }

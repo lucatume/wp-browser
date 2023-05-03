@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Hautelook\Phpass\PasswordHash;
 use RuntimeException;
 use wpdb;
 
@@ -85,5 +86,15 @@ class WP
         }
 
         return $emptiedTables;
+    }
+
+    public static function passwordHash(string $user_pass):string
+    {
+        return (new PasswordHash(8, true))->HashPassword($user_pass);
+    }
+
+    public static function checkHashedPassword(mixed $userPass, mixed $hashedPass): bool
+    {
+        return (new PasswordHash(8, true))->CheckPassword($userPass, $hashedPass);
     }
 }

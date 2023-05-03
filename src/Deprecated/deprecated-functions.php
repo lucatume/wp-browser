@@ -367,11 +367,11 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use `VRia\Utils\NoDiacritic::filter` instead.
+     * @deprecated Use `lucatume\WPBrowser\Utils\Strings::removeAccents` instead.
      */
     function remove_accents(string $string): string
     {
-        return NoDiacritic::filter($string);
+        return Strings::removeAccents($string);
     }
 
     /**
