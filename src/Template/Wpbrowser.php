@@ -3,36 +3,31 @@
 namespace lucatume\WPBrowser\Template;
 
 use Codeception\Extension\RunFailed;
-use Codeception\Module\Asserts;
-use Codeception\Module\PhpBrowser;
 use Codeception\Template\Bootstrap;
+use lucatume\WPBrowser\Command\GenerateWPAjax;
+use lucatume\WPBrowser\Command\GenerateWPCanonical;
+use lucatume\WPBrowser\Command\GenerateWPRestApi;
+use lucatume\WPBrowser\Command\GenerateWPRestController;
+use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
+use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
+use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Project\PluginProject;
 use lucatume\WPBrowser\Project\ProjectFactory;
 use lucatume\WPBrowser\Project\ProjectInterface;
 use lucatume\WPBrowser\Project\ThemeProject;
-use lucatume\WPBrowser\Utils\Env;
 use Symfony\Component\Yaml\Yaml;
-use lucatume\WPBrowser\Command\RunAll;
-use lucatume\WPBrowser\Command\GenerateWPUnit;
-use lucatume\WPBrowser\Command\GenerateWPRestApi;
-use lucatume\WPBrowser\Command\GenerateWPRestController;
-use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
-use lucatume\WPBrowser\Command\GenerateWPAjax;
-use lucatume\WPBrowser\Command\GenerateWPCanonical;
-use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 
 class Wpbrowser extends Bootstrap
 {
     public function setup(): void
     {
-        $this->checkInstalled($this->workDir);
-
         $this->say('Set up <info>wp-browser</info> to test your WordPress project.');
         $this->say('See Codeception documentation at <info>https://codeception.com/docs/Introduction</info>.');
         $this->say('See wp-browser documentation at <info>https://wpbrowser.wptestkit.dev.</info>');
         $this->say('You can quit this process at any time with <info>CTRL+C</info>.');
         $this->say('');
-        $project = ProjectFactory::fromDir($this->workDir);
+        $project = ProjectFactory::fromDir(getcwd());
         $detectedProjectTypeCorrect = $this->ask(
             "This looks like <info>a WordPress {$project->getType()}</info>: is this correct?",
             true
@@ -44,7 +39,7 @@ class Wpbrowser extends Bootstrap
                 'theme',
                 'site',
             ]);
-            $project = ProjectFactory::make($projectType, $this->workDir);
+            $project = ProjectFactory::make($projectType, getcwd());
         }
 
         $input = $this->input;

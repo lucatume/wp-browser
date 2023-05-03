@@ -1,15 +1,15 @@
 <?php
 
-
 namespace Unit\lucatume\WPBrowser;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Project\PluginProject;
 use lucatume\WPBrowser\Project\ProjectFactory;
 use lucatume\WPBrowser\Project\SiteProject;
 use lucatume\WPBrowser\Project\ThemeProject;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class ProjectFactoryTest extends \Codeception\Test\Unit
+class ProjectFactoryTest extends Unit
 {
     /**
      * It should make plugin project when a plugin file is found
