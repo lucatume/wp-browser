@@ -7,758 +7,825 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use PHPUnit\Framework\Assert;
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\CliProcess;
+use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Installation;
+use PHPUnit\Framework\AssertionFailedError;
+use Symfony\Component\Process\PhpProcess;
 use Symfony\Component\Process\Process;
-use UnitTester;
+use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class WPCLITest extends Unit
 {
-    use UopzFunctions;
+    use SnapshotAssertions;
 
     protected $backupGlobals = false;
-    /**
-     * @var UnitTester
-     */
-    protected UnitTester $tester;
+    private static ?Installation $installation = null;
 
-    /**
-     * @var array
-     */
-    protected array $config = [
-        'path' => __DIR__,
-        'throw' => true
-    ];
-
-    private function assertProcCallArgsAndReturn(array $expectedArgs, string $runCommand = 'exit 0'): void
+    public function _before(): void
     {
-        $this->uopzSetStaticMethodReturn(
-            Process::class,
-            'fromShellCommandLine',
-            static function () use ($expectedArgs, $runCommand) {
-                $cwd = getcwd();
-                $callArgs = func_get_args();
-                foreach ($callArgs as &$callArg) {
-                    $callArg = is_string($callArg) ? str_replace($cwd, '', $callArg) : $callArg;
-                }
-                unset($callArg);
-                Assert::assertEquals($expectedArgs, $callArgs);
+        if (self::$installation instanceof Installation) {
+            return;
+        }
 
-                return Process::fromShellCommandline($runCommand);
-            },
-            true);
+        // Scaffold, configure and install a test WordPress installation.
+        $wpRootDir = FS::tmpDir('wpcli_test_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        self::$installation = Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'http://wp.local',
+                'admin',
+                'secret',
+                'admin@admin',
+                'WPCLI Module Test Site'
+            );
+        Installation::forgetScaffoldedInstallation(rtrim(self::$installation->getWpRootDir(), '\\/'));
     }
 
-    private function module(): WPCLI
+    private function module(array $config): WPCLI
     {
         $moduleContainer = new ModuleContainer(new Di(), []);
-        return new WPCLI($moduleContainer, $this->config);
+        return new WPCLI($moduleContainer, $config);
     }
 
     /**
+     * It should throw if path does not exist
+     *
      * @test
-     * it should be instantiatable
      */
-    public function it_should_be_instantiatable(): void
+    public function should_throw_if_path_does_not_exist(): void
     {
-        $cli = $this->module();
+        $this->expectException(ModuleConfigException::class);
+        $this->module(['path' => '/some/path/to/null']);
+    }
 
-        $this->assertInstanceOf(WPCLI::class, $cli);
+    public function notPositiveIntegerTimeoutValues(): array
+    {
+        return [
+            'negative' => [-1],
+            'array' => [[1]],
+            'object' => [new \stdClass()],
+        ];
     }
 
     /**
+     * It should throw if timeout value is not positive integer
+     *
      * @test
-     * it should throw if path is not folder at run time
+     * @dataProvider notPositiveIntegerTimeoutValues
      */
-    public function it_should_throw_if_path_is_not_folder_at_run_time(): void
+    public function should_throw_if_timeout_value_is_not_positive_integer($timeoutValue): void
     {
-        $this->config = ['path' => '/some/path/to/null'];
-
         $this->expectException(ModuleConfigException::class);
 
-        $this->module()->cli(['core', 'version']);
+        $this->module([
+            'timeout' => $timeoutValue,
+            'path' => self::$installation->getWpRootDir()
+        ]);
     }
 
     /**
+     * It should allow running wp-cli array commands
+     *
      * @test
-     * it should call the proces with proper parameters
      */
-    public function it_should_call_the_process_with_proper_parameters(): void
+    public function should_allow_running_wp_cli_array_commands(): void
     {
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ]
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
 
-        $cliStatus = $this->module()->cli('core version');
-
-        $this->assertEquals(0, $cliStatus);
-    }
-
-    public function optionalOptionsWithArguments(): array
-    {
-        return [
-            ['ssh', 'some-ssh'],
-            ['http', 'some-http'],
-            ['url', 'some-url'],
-            ['user', 'some-user'],
-            ['skip-plugins', 'some-plugin, another-plugin'],
-            ['skip-themes', 'some-theme, another-theme'],
-            ['skip-packages', 'some-package, another-package'],
-            ['require', 'some-file']
-        ];
+        $this->assertEquals(0, $wpcli->cli(['core', 'is-installed']));
+        $this->assertEquals(null, $wpcli->grabLastShellOutput());
+        $this->assertEquals(null, $wpcli->grabLastShellErrorOutput());
+        $wpcli->seeResultCodeIs(0);
+        $wpcli->seeResultCodeIsNot(1);
     }
 
     /**
+     * It should throw if trying to grab last shell output before running command
+     *
      * @test
-     * it should allow setting additional wp-cli options in the config file
-     * @dataProvider optionalOptionsWithArguments
      */
-    public function it_should_allow_setting_additional_wp_cli_options_in_the_config_file($option, $optionValue): void
+    public function should_throw_if_trying_to_grab_last_shell_output_before_running_command(): void
     {
-        $this->config[$option] = $optionValue;
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --$option=$optionValue core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ]
-        );
-
-        $this->module()->cli('core version');
-    }
-
-    public function skippedOptions(): array
-    {
-        return [
-            ['debug'],
-            ['color'],
-            ['prompt'],
-            ['quiet']
-        ];
-    }
-
-    /**
-     * @test
-     * it should skip some options by default
-     * @dataProvider skippedOptions
-     */
-    public function it_should_skip_some_options_by_default($option): void
-    {
-        $this->config[$option] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ]
-        );
-
-        $this->module()->cli('core version');
-    }
-
-    /**
-     * @test
-     * it should allow overriding options with inline command
-     * @dataProvider optionalOptionsWithArguments
-     */
-    public function it_should_allow_overriding_options_with_inline_command($option, $optionValue): void
-    {
-        $this->config[$option] = $optionValue;
-        $overrideValue = 'another-' . $option . '-value';
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version --$option='$overrideValue'",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ]
-        );
-
-        $this->module()->cli("core version --{$option}='{$overrideValue}'");
-    }
-
-    /**
-     * @test
-     * it should cast wp-cli errors to exceptions if specified in config
-     */
-    public function it_should_cast_wp_cli_errors_to_exceptions_if_specified_in_config(): void
-    {
-        $this->config['throw'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'echo "for reasons" 1>&2; exit 1'
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
 
         $this->expectException(ModuleException::class);
 
-        $pattern = '/for reasons/';
-        $this->expectExceptionMessageMatches($pattern);
-
-        $this->module()->cli('core version');
+        $wpcli->grabLastShellOutput();
     }
 
     /**
+     * It should throw if trying to grab last shell error output before running command
+     *
      * @test
-     * it should not throw any exception if specified in config
      */
-    public function it_should_not_throw_any_exception_if_specified_in_config(): void
+    public function should_throw_if_trying_to_grab_last_shell_error_output_before_running_command(): void
     {
-        $this->config['throw'] = false;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'echo "for reasons" 1>&2; exit 1'
-        );
-
-        $this->module()->cli('core version');
-    }
-
-    public function cliReturnValues(): array
-    {
-        return [
-            ['1 2 3 4 5', [1, 2, 3, 4, 5]],
-            ['', []],
-            ["Post 1\nPost 2\nPost 3", ['Post 1', 'Post 2', 'Post 3']],
-            ["Post 1\n Post 2\n Post 3", ['Post 1', 'Post 2', 'Post 3']],
-            ["Post 1 \n Post 2 \n Post 3", ['Post 1', 'Post 2', 'Post 3']],
-            ["Post 1 \nPost 2 \nPost 3", ['Post 1', 'Post 2', 'Post 3']],
-        ];
-    }
-
-    /**
-     * @test
-     * it should not cast output to any format
-     * @dataProvider cliReturnValues
-     */
-    public function it_should_not_cast_output_to_any_format($raw, $expected): void
-    {
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n '$raw'"
-        );
-
-        $ids = $this->module()->cliToArray('post list --format=ids');
-
-        $this->assertEquals($expected, $ids);
-    }
-
-    /**
-     * @test
-     * it should allow defining a split callback function
-     */
-    public function it_should_allow_defining_a_split_callback_function(): void
-    {
-        $expected = [1, 2, 3];
-        $splitCallback = static function () use ($expected) {
-            return $expected;
-        };
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n '23 12'"
-        );
-
-        $ids = $this->module()->cliToArray('post list --format=ids', $splitCallback);
-
-        $this->assertEquals($expected, $ids);
-    }
-
-    /**
-     * @test
-     * it should throw if split callback function does not return an array
-     */
-    public function it_should_throw_if_split_callback_function_does_not_return_an_array(): void
-    {
-        $splitCallback = static function () {
-            return 'foo';
-        };
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n '23 12'"
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
 
         $this->expectException(ModuleException::class);
 
-        $this->module()->cliToArray('post list --format=ids', $splitCallback);
+        $wpcli->grabLastShellErrorOutput();
     }
 
     /**
-     * @test
-     * it should handle the case where the command output is an empty array
-     */
-    public function it_should_handle_the_case_where_the_command_output_is_an_empty_array(): void
-    {
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo ''"
-        );
-
-        $this->assertEquals([], $this->module()->cliToArray('post list --format=ids'));
-    }
-
-    /**
-     * @test
-     * it should handle the case where the command output is null
-     */
-    public function it_should_handle_the_case_where_the_command_output_is_null(): void
-    {
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "exit 0"
-        );
-
-        $this->assertEquals([], $this->module()->cliToArray('post list --format=ids'));
-    }
-
-    /**
-     * It should allow setting a timeout in the configuration
+     * It should throw if trying to seeResultCodeIs before any command ran
      *
      * @test
      */
-    public function should_allow_setting_a_timeout_in_the_configuration(): void
+    public function should_throw_if_trying_to_see_result_code_is_before_any_command_ran(): void
     {
-        $this->config['timeout'] = 23;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                23
-            ],
-            "exit 0"
-        );
-
-        $this->module()->cliToArray('post list --format=ids');
-    }
-
-    /**
-     * It should set the process timeout to null if set to nullable value
-     *
-     * @test
-     * @dataProvider nullTimeoutValues
-     */
-    public function should_set_the_process_timeout_to_null_if_set_to_nullable_value($timeoutValue): void
-    {
-        $this->config['timeout'] = $timeoutValue;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module post list --format=ids",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                $timeoutValue
-            ],
-            "exit 0"
-        );
-
-        $this->module()->cliToArray('post list --format=ids');
-    }
-
-    /**
-     * It should throw if timeout value is not valid
-     *
-     * @test
-     */
-    public function should_throw_if_timeout_value_is_not_valid(): void
-    {
-        $this->config['timeout'] = 'foo-bar';
-
-        $this->expectException(ModuleConfigException::class);
-
-        $this->module();
-    }
-
-    public function nullTimeoutValues(): array
-    {
-        return [
-            'null' => [null],
-            'false' => [false],
-            'zero' => [0],
-            'zero_point_zero' => [0.0],
-        ];
-    }
-
-    protected function _before()
-    {
-    }
-
-    /**
-     * It should support and allow-root configuration parameter
-     *
-     * @test
-     */
-    public function should_support_and_allow_root_configuration_parameter(): void
-    {
-        $this->config['allow-root'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --allow-root core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "exit 0"
-        );
-
-        $this->module()->cli('core version');
-    }
-
-    /**
-     * It should forward options from the configuration to the wp-cli command
-     *
-     * @test
-     */
-    public function should_forward_options_from_the_configuration_to_the_wp_cli_command(): void
-    {
-        $this->config['some-option'] = 'some-value';
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module --some-option=some-value core version",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "exit 0"
-        );
-
-        $this->module()->cli(['core', 'version']);
-    }
-
-    /**
-     * It should allow getting a command output as a string
-     *
-     * @test
-     */
-    public function should_allow_getting_a_command_output_as_a_string(): void
-    {
-        $adminEmail = 'luca@theaveragedev.com';
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module option get admin_email",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n $adminEmail"
-        );
-
-        $this->assertEquals($adminEmail, $this->module()->cliToString(['option', 'get', 'admin_email']));
-    }
-
-    /**
-     * It should handle exceptions thrown by the process by throwing
-     *
-     * @test
-     */
-    public function should_handle_exceptions_thrown_by_the_process_by_throwing(): void
-    {
-        $this->config['throw'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module invalid",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'echo -n "error!" 1>&2; exit 1'
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
 
         $this->expectException(ModuleException::class);
 
-        $this->module()->cliToString(['invalid']);
+        $wpcli->seeResultCodeIs(0);
     }
 
     /**
-     * It should handle exceptions thrown by the process
+     * It should throw if trying to seeResultCodeIsNot before any command ran
      *
      * @test
      */
-    public function should_handle_exceptions_thrown_by_the_process(): void
+    public function should_throw_if_trying_to_see_result_code_is_not_before_any_command_ran(): void
     {
-        $this->config['throw'] = false;
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
 
-        $this->assertProcCallArgsAndReturn(
-            [
-                "/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module invalid",
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'echo -n "error!" 1>&2; exit 1'
-        );
+        $this->expectException(ModuleException::class);
 
-        $this->assertEquals('error!', $this->module()->cliToString(['invalid']));
+        $wpcli->seeResultCodeIsNot(1);
     }
 
     /**
-     * It should support the WP_CLI_STRICT_ARGS_MODE env argument
+     * It should throw if throw configuration parameter is true and command fails
      *
      * @test
      */
-    public function should_support_the_wp_cli_strict_args_mode_env_argument(): void
+    public function should_throw_if_throw_configuration_parameter_is_true_and_command_fails(): void
     {
-        $this->config['env']['strict-args'] = true;
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'throw' => true
+        ]);
 
-        $output = 'Success: Added widget to sidebar.';
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module widget add rss sidebar --title=My feedx --url="https://wordpress.org/news/feed/"',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                ['WP_CLI_STRICT_ARGS_MODE' =>  '1'],
-                null,
-                60
-            ],
-            "echo -n '$output'"
-        );
+        $wpcli->cli(['core', 'version']);
 
-        $this->assertEquals($output,
-            $this->module()->cliToString([
-                'widget',
-                'add',
-                'rss',
-                'sidebar',
-                '--title=My feedx',
-                '--url="https://wordpress.org/news/feed/"'
+        $this->expectException(ModuleException::class);
+
+        $wpcli->cli(['core', 'foo-bar']);
+    }
+
+    /**
+     * It should not throw and return exit code if throw configuration parameter is false and command fails
+     *
+     * @test
+     */
+    public function should_not_throw_and_return_exit_code_if_throw_configuration_parameter_is_false_and_command_fails(
+    ): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'throw' => false
+        ]);
+
+        $wpcli->cli(['core', 'foo-bar']);
+
+        $wpcli->seeResultCodeIs(1);
+    }
+
+    /**
+     * It should throw if command goes over timeout
+     *
+     * @test
+     */
+    public function should_throw_if_command_goes_over_timeout(): void
+    {
+        // The is-installed check is a slow one that should go over time.
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'timeout' => 0.01
+        ]);
+
+        $this->expectException(ModuleException::class);
+
+        $wpcli->cli(['core', 'is-installed']);
+
+        $wpcli->seeResultCodeIs(1);
+    }
+
+    /**
+     * It should allow running commands with debug or not
+     *
+     * @test
+     */
+    public function should_allow_running_commands_with_debug_or_not(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'debug' => true
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $this->assertEquals("6.1.1\n", $wpcli->grabLastShellOutput());
+
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'debug' => false
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $this->assertMatchesStringSnapshot($wpcli->grabLastShellOutput());
+    }
+
+    /**
+     * It should throw if trying to grab last wp-cli process before any ran
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_grab_last_wp_cli_process_before_any_ran(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir()
+        ]);
+
+        $this->expectException(ModuleException::class);
+
+        $wpcli->grabLastCliProcess();
+    }
+
+    /**
+     * It should allow configuring wp-cli env vars using configuration parameters
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_env_vars_using_configuration_parameters(): void
+    {
+        $tmpDir = FS::tmpDir('wp-cli', [
+            'cache' => [],
+            'wp-cli-config.yml' => 'color: true'
+        ]);
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'cache-dir' => $tmpDir . '/cache',
+            'config-path' => $tmpDir . '/wp-cli-config.yml',
+            'custom-shell' => '/bin/sh',
+            'packages-dir' => __DIR__,
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $processEnv = $wpcli->grabLastCliProcess()->getEnv();
+
+        foreach ([
+                     'WP_CLI_CACHE_DIR' => $tmpDir . '/cache',
+                     'WP_CLI_CONFIG_PATH' => $tmpDir . '/wp-cli-config.yml',
+                     'WP_CLI_CUSTOM_SHELL' => '/bin/sh',
+                     'WP_CLI_PACKAGES_DIR' => __DIR__,
+                 ] as $envVar => $expectedValue) {
+            $this->assertEquals($expectedValue, $processEnv[$envVar]);
+        }
+    }
+
+    /**
+     * It should allow configuring wp-cli to use a specific user
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_use_a_specific_user(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'user' => 23
+        ]);
+
+        $this->expectException(ModuleException::class);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--user=23',
+                'core',
+                'version'
             ]));
-    }
-
-    public function envParametersDataProvider(): array
-    {
-        return [
-            'cache-dir' => ['cache-dir', '/tmp/wp-cli-cache', 'WP_CLI_CACHE_DIR', '/tmp/wp-cli-cache'],
-            'config-path' => ['config-path', '/app/public', 'WP_CLI_CONFIG_PATH', '/app/public'],
-            'custom-shell' => ['custom-shell', '/bin/zsh', 'WP_CLI_CUSTOM_SHELL', '/bin/zsh'],
-            'disable-auto-update' => ['disable-auto-check-update', true, 'WP_CLI_DISABLE_AUTO_CHECK_UPDATE', '1'],
-            'packages-dir' => ['packages-dir', '/wp-cli/packages', 'WP_CLI_PACKAGES_DIR', '/wp-cli/packages'],
-            'php' => ['php', '/usr/local/bin/php/7.2/php', 'WP_CLI_PHP', '/usr/local/bin/php/7.2/php'],
-            'php-args' => ['php-args', 'foo=bar some=23', 'WP_CLI_PHP_ARGS', 'foo=bar some=23'],
-        ];
+        $this->assertEquals($expected, $commandLine);
     }
 
     /**
-     * It should correctly parse other env parameters
-     *
-     * @test
-     * @dataProvider envParametersDataProvider
-     */
-    public function should_correctly_parse_other_env_parameters($envKey, $envValue, $expectedEnvName, $expectedEnvValue): void
-    {
-        $this->config['env'][$envKey] = $envValue;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module core version',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [$expectedEnvName =>  $expectedEnvValue],
-                null,
-                60
-            ],
-            "echo -n '5.2.2'"
-        );
-
-        $this->assertEquals('5.2.2', $this->module()->cliToString(['core', 'version']));
-    }
-
-    /**
-     * It should not throw on 0 exit status code
+     * It should allow overriding configuration for user with inline option
      *
      * @test
      */
-    public function should_not_throw_on_0_exit_status_code(): void
+    public function should_allow_overriding_configuration_for_user_with_inline_option(): void
     {
-        $this->config['throw'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n 'stdout'"
-        );
-
-        $this->assertEquals('stdout', $this->module()->cliToString(['test']));
-    }
-
-    /**
-     * It should output stderr on 0 exit status code and wrong stdout
-     *
-     * @test
-     */
-    public function should_output_stderr_on_0_exit_status_code_and_wrong_stdout(): void
-    {
-        $this->config['throw'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'echo -n "stderr" 1>&2; exit 0'
-        );
-
-        $this->assertEquals('stderr', $this->module()->cliToString(['test']));
-    }
-
-    /**
-     * It should throw if exit code not 0 and stderr empty
-     *
-     * @test
-     */
-    public function should_throw_if_exit_code_not_0_and_stderr_empty(): void
-    {
-        $this->config['throw'] = true;
-
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'exit 1'
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'user' => 23
+        ]);
 
         $this->expectException(ModuleException::class);
 
-        $this->module()->cliToString(['test']);
+        $wpcli->cli(['--user=89', 'core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--user=89',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
     }
 
     /**
-     * It should throw if trying to grab output from last command when no command ever ran
+     * It should allow configuring wp-cli to skip plugins
      *
      * @test
      */
-    public function should_throw_if_trying_to_grab_output_from_last_command_when_no_command_ever_ran(): void
+    public function should_allow_configuring_wp_cli_to_skip_plugins(): void
     {
-        $this->expectException(ModuleException::class);
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'skip-plugins' => true
+        ]);
 
-        $this->module()->grabLastShellOutput();
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--skip-plugins',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
     }
 
     /**
-     * It should return empty string when grabbing output of last command that produced no output
+     * It should allow configuring wp-cli to skip themes
      *
      * @test
      */
-    public function should_return_empty_string_when_grabbing_output_of_last_command_that_produced_no_output(): void
+    public function should_allow_configuring_wp_cli_to_skip_themes(): void
     {
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            'exit 0'
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'skip-themes' => true
+        ]);
 
-        $cli = $this->module();
-        $cli->cli(['test']);
-        $lastOutput = $cli->grabLastShellOutput();
+        $wpcli->cli(['core', 'version']);
 
-        $this->assertEquals('', $lastOutput);
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--skip-themes',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
     }
 
     /**
-     * It should allow grabbing the output of the last ran command
+     * It should allow configuring wp-cli to skip packages
      *
      * @test
      */
-    public function should_allow_grabbing_the_output_of_the_last_ran_command(): void
+    public function should_allow_configuring_wp_cli_to_skip_packages(): void
     {
-        $this->assertProcCallArgsAndReturn(
-            [
-                '/usr/local/bin/php /vendor/wp-cli/wp-cli/php/boot-fs.php --path=/tests/unit/lucatume/WPBrowser/Module test',
-                '/tests/unit/lucatume/WPBrowser/Module',
-                [],
-                null,
-                60
-            ],
-            "echo -n 'some output from the command'"
-        );
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'skip-packages' => true
+        ]);
 
-        $cli = $this->module();
-        $cli->cli(['test']);
-        $lastOutput = $cli->grabLastShellOutput();
+        $wpcli->cli(['core', 'version']);
 
-        $this->assertEquals('some output from the command', $lastOutput);
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--skip-packages',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
     }
 
+    /**
+     * It should allow configuring wp-cli to require one PHP file before execution
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_require_one_php_file_before_execution(): void
+    {
+        $tmpDir = FS::tmpDir('wp-cli', [
+            'php-file-1.php' => '<?php echo "Hello World!";',
+        ]);
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'require' => $tmpDir . '/php-file-1.php'
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--require=' . $tmpDir . '/php-file-1.php',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli to require multiple PHP files before execution
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_require_multiple_php_files_before_execution(): void
+    {
+        $tmpDir = FS::tmpDir('wp-cli', [
+            'php-file-1.php' => '<?php echo "Hello World!";',
+            'php-file-2.php' => '<?php echo "Hello there!";',
+        ]);
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'require' => [
+                $tmpDir . '/php-file-1.php',
+                $tmpDir . '/php-file-2.php',
+            ]
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--require=' . $tmpDir . '/php-file-1.php',
+                '--require=' . $tmpDir . '/php-file-2.php',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli to execute PHP code before execution
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_execute_php_code_before_execution(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'exec' => 'echo "Hello World!";'
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--exec=echo "Hello World!";',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli to execute multiple PHP code snippets before execution
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_execute_multiple_php_code_snippets_before_execution(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'exec' => [
+                'echo "Hello World!";',
+                'echo "Hello there!";',
+            ]
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--exec=echo "Hello World!";',
+                '--exec=echo "Hello there!";',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli context, debug and quiet options
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_context_debug_and_quiet_options(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'context' => 'development',
+            'debug' => true,
+            'quiet' => true,
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--debug',
+                '--quiet',
+                '--context=development',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should inherit env from current session when env not specified
+     *
+     * @test
+     */
+    public function should_inherit_env_from_current_session_when_env_not_specified(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress']);
+
+        $this->assertEquals($_ENV['HOME'], $wpcli->grabLastShellOutput());
+    }
+
+    /**
+     * It should allow configuring wp-cli env to augment and override current env
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_env_to_augment_and_override_current_env(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'env' => [
+                'HOME' => '/home/username',
+                'WP_CLI_CONFIG_PATH' => '/home/username/.wp-cli/config.yml',
+            ]
+        ]);
+
+        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress']);
+
+        $this->assertEquals('/home/username', $wpcli->grabLastShellOutput());
+
+        $wpcli->cli(['eval', 'print_r($_ENV[\'WP_CLI_CONFIG_PATH\']);', '--skip-wordpress']);
+
+        $this->assertEquals('/home/username/.wp-cli/config.yml', $wpcli->grabLastShellOutput());
+    }
+
+    /**
+     * It should support overriding config env with runtime env
+     *
+     * @test
+     */
+    public function should_support_overriding_config_env_with_runtime_env(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'env' => [
+                'HOME' => '/home/username',
+            ]
+        ]);
+
+        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress'], [
+            'HOME' => '/home/anotheruser'
+        ]);
+
+        $this->assertEquals('/home/anotheruser', $wpcli->grabLastShellOutput());
+    }
+
+    /**
+     * It should allow getting command output in array format with default split callback
+     *
+     * @test
+     */
+    public function should_allow_getting_command_output_in_array_format_with_default_split_callback(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $output = $wpcli->cliToArray(['eval', 'echo "Hello\nWorld";', '--skip-wordpress']);
+
+        $this->assertEquals(['Hello', 'World'], $output);
+    }
+
+    /**
+     * It should allow getting command output in array format with user-defined split callback
+     *
+     * @test
+     */
+    public function should_allow_getting_command_output_in_array_format_with_user_defined_split_callback(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $output = $wpcli->cliToArray(['eval', 'echo "Hello###World";', '--skip-wordpress'], function ($output) {
+            return explode("###", $output);
+        });
+
+        $this->assertEquals(['Hello', 'World'], $output);
+    }
+
+    /**
+     * It should allow getting command output in string format
+     *
+     * @test
+     */
+    public function should_allow_getting_command_output_in_string_format(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $output = $wpcli->cliToString(['eval', 'echo "Hello\nWorld";', '--skip-wordpress']);
+
+        $this->assertEquals("Hello\nWorld", $output);
+    }
+
+    /**
+     * It should throw if trying to see in shell output and string not there
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_see_in_shell_output_and_string_not_there(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $wpcli->cli(['eval', 'echo "Hello World";', '--skip-wordpress']);
+
+        $wpcli->seeInShellOutput('Hello there');
+    }
+
+    /**
+     * It should throw if trying to see string not in output and string is in output
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_see_string_not_in_output_and_string_is_in_output(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $wpcli->cli(['eval', 'echo "Hello World";', '--skip-wordpress']);
+
+        $wpcli->dontSeeInShellOutput('Hello');
+    }
+
+    /**
+     * It should allow asserting on shell output
+     *
+     * @test
+     */
+    public function should_allow_asserting_on_shell_output(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $wpcli->cli(['eval', 'echo "Hello\nWorld";', '--skip-wordpress']);
+
+        $wpcli->seeInShellOutput('Hello');
+        $wpcli->seeInShellOutput('World');
+        $wpcli->dontSeeInShellOutput('Hello World');
+    }
+
+    /**
+     * It should throw if trying to assert shell output matches pattern and does not match
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_assert_shell_output_matches_pattern_and_does_not_match(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $wpcli->cli(['eval', 'echo "Hello\nWorld";', '--skip-wordpress']);
+
+        $wpcli->seeShellOutputMatches('/^Hello World$/');
+    }
+
+    /**
+     * It should throw if trying to assert shell output does not match pattern and it matches
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_assert_shell_output_does_not_match_pattern_and_it_matches(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $this->expectException(AssertionFailedError::class);
+
+        $wpcli->cli(['eval', 'echo "Hello There";', '--skip-wordpress']);
+
+        $wpcli->dontSeeShellOutputMatches('/^Hello There$/');
+    }
+
+    /**
+     * It should allow asserting shell ouptut matches regex pattern
+     *
+     * @test
+     */
+    public function should_allow_asserting_shell_ouptut_matches_regex_pattern(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+        ]);
+
+        $wpcli->cli(['eval', 'echo "Hello\nWorld";', '--skip-wordpress']);
+
+        $wpcli->seeShellOutputMatches('/^Hello/');
+        $wpcli->seeShellOutputMatches('/World$/');
+        $wpcli->dontSeeShellOutputMatches('/^Hello World$/');
+        $wpcli->dontSeeShellOutputMatches('/There/');
+    }
 }

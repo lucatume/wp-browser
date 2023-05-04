@@ -443,6 +443,10 @@ class Loop
 
     private function debugLine(string $line): void
     {
+        if (!$this->debugMode) {
+            return;
+        }
+
         codecept_debug("Loop: $line");
     }
 

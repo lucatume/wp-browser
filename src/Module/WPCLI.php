@@ -9,13 +9,10 @@ namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
-use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
-use Codeception\PHPUnit\TestCase;
-use JsonException;
-use lucatume\WPBrowser\Exceptions\WpCliException;
-use lucatume\WPBrowser\Traits\WithWpCli;
-use PHPUnit\Framework\Assert;
+use lucatume\WPBrowser\Utils\Filesystem;
+use lucatume\WPBrowser\WordPress\CliProcess;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 /**
  * Class WPCLI
@@ -24,26 +21,7 @@ use PHPUnit\Framework\Assert;
  */
 class WPCLI extends Module
 {
-    use WithWpCli;
-
     public const DEFAULT_TIMEOUT = 60;
-
-    /**
-     * An array of keys that will not be passed from the configuration to the wp-cli command.
-     *
-     * @var array<string,mixed>
-     */
-    protected static array $blockedKeys = [
-        'throw' => true,
-        'timeout' => true,
-        'debug' => true,
-        'color' => true,
-        'prompt' => true,
-        'quiet' => true,
-        'env' => [
-            'strict-args' => false
-        ]
-    ];
 
     /**
      * A list of the module required fields.
@@ -51,29 +29,6 @@ class WPCLI extends Module
      * @var array<string>
      */
     protected array $requiredFields = ['path'];
-
-    /**
-     * The module pretty name in debug.
-     *
-     * @var string
-     */
-    protected string $prettyName = 'WPCLI';
-
-    /**
-     * The default wp-cli options.
-     *
-     * @var array<string>
-     */
-    protected array $options = [
-        'ssh',
-        'http',
-        'url',
-        'user',
-        'skip-plugins',
-        'skip-themes',
-        'skip-packages',
-        'require'
-    ];
 
     /**
      * An array of configuration variables and their default values.
@@ -85,35 +40,7 @@ class WPCLI extends Module
         'timeout' => 60,
     ];
 
-    /**
-     * The process timeout.
-     *
-     * @var int|null
-     */
-    protected ?int $timeout = null;
-    /**
-     * @var string|null
-     */
-    protected ?string $lastOutput = null;
-    /**
-     * @var int|null
-     */
-    protected ?int $lastResultCode = null;
-
-    /**
-     * WPCLI constructor.
-     *
-     * @param ModuleContainer $moduleContainer The module container containing this module.
-     * @param array<string,mixed>|null $config The module configuration.
-     *
-     * @throws WpCliException If there's an issue setting up the module using the current configuration.
-     */
-    public function __construct(ModuleContainer $moduleContainer, ?array $config = null)
-    {
-        parent::__construct($moduleContainer, $config);
-        $wpRootFolder = $config['path'];
-        $this->setUpWpCli($wpRootFolder);
-    }
+    private ?CliProcess $lastCliProcess = null;
 
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
@@ -125,185 +52,77 @@ class WPCLI extends Module
      * // Change a user password.
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                                          minus `wp`.
-     *                                          For back-compatibility purposes you can still pass the commandline as a
-     *                                          string, but the array format is the preferred and supported method.
+     * @param array<string> $command               The command to execute.
+     * @param array|null    $env                   An array of environment variables to pass to the command.
+     * @param mixed|null    $input                 The input to pass to the command, a stream resource or a \Traversable
+     *                                             instance.
      *
-     * @return int|string The command exit value; `0` usually means success.
+     * @return int The command exit value; `0` usually means success.
      *
-     *
-     * @throws ModuleConfigException If a required wp-cli file cannot be found or the WordPress path does not exist
-     *                               at runtime.
-     *
-     * @throws ModuleException|JsonException If the status evaluates to non-zero and the `throw` configuration
-     *                                                parameter is set to `true`.
+     * @throws ModuleException If the command execution fails and the `throw` configuration option is set to `true`.
      */
-    public function cli(array|string $userCommand = 'core version'): int|string
+    public function cli(array $command = ['core', 'version'], ?array $env = null, mixed $input = null): int
     {
-        $return = $this->run($userCommand);
+        $env = array_replace($this->getDefaultEnv(), (array)($this->config['env'] ?? []), (array)$env);
+        $command = $this->addStrictOptionsFromConfig($command);
 
-        return $return[1];
-    }
+        $cliProcess = new CliProcess($command, $this->config['path'], $env, $input, $this->config['timeout']);
 
-    /**
-     * Runs a wp-cli command and returns its output and status.
-     *
-     * @param string|array<string> $userCommand The user command, in the format supported by the Symfony Process class.
-     *
-     * @return array<string|int> The command process output and status.
-     *
-     * @throws ModuleConfigException If the wp-cli path is wrong.
-     * @throws ModuleException If there's an issue while running the command or encoding the output.
-     * @throws JsonException If there's an issue encoding the output.
-     */
-    protected function run(array|string $userCommand): array
-    {
-        $this->validatePath();
-
-        /**
-         * Set an environment variable to let client code know the request is coming from the host machine.
-         * Set the value to a string to make it so that the process will pick it up while populating the env.
-         */
-        putenv('WPBROWSER_HOST_REQUEST="1"');
-        $_ENV['WPBROWSER_HOST_REQUEST'] = '1';
-
-        $this->debugSection('command', is_string($userCommand) ? $userCommand : implode(' ', $userCommand));
-
-        $command = array_merge($this->getConfigOptions($userCommand), (array)$userCommand);
-        $env = $this->buildProcessEnv();
-
-        $this->debugSection('command with configuration options', $command);
-        $this->debugSection('command with environment', $env);
+        $this->debugSection('command', $cliProcess->getCommandLine());
 
         try {
-            $process = $this->executeWpCliCommand($command, $this->timeout, $env);
-        } catch (WpCliException $e) {
-            if (!empty($this->config['throw'])) {
-                throw new ModuleException($this, $e->getMessage());
-            }
-
-            $this->debugSection('command exception', $e->getMessage());
-
-            $this->lastOutput = '';
-            $this->lastResultCode = 1;
-
-            return ['', 1];
-        }
-
-        $output = $process->getOutput() ?: $process->getErrorOutput();
-        $status = $process->getExitCode();
-
-        // If the process returns `null`, then it's not terminated.
-        if ($status === null) {
+            $cliProcess->run();
+        } catch (ProcessTimedOutException) {
             throw new ModuleException(
-                $this,
-                'Command process did not terminate; commandline: ' . (string)$process->getExecCommand()
-            );
-        }
-
-        $this->debugSection('output', $output);
-        $this->debugSection(' status', $status);
-
-        $this->evaluateStatus($output, $status);
-
-        $this->lastOutput = $output;
-        $this->lastResultCode = $status;
-
-        return [$output, $status];
-    }
-
-    /**
-     * Validates the configuration path to make sure it's a directory.
-     *
-     *
-     * @throws ModuleConfigException If the configuration path is not a directory.
-     */
-    protected function validatePath(): void
-    {
-        if (!is_dir($this->config['path'])) {
-            throw new ModuleConfigException(
                 __CLASS__,
-                'Specified path [' . $this->config['path'] . '] is not a directory.'
+                sprintf(
+                    'The command "%s" timed out after %d seconds.',
+                    $cliProcess->getCommandLine(),
+                    $this->config['timeout']
+                )
             );
         }
 
-        $this->wpCliWpRootDir = realpath($this->config['path']) ?: $this->config['path'];
+        $this->lastCliProcess = $cliProcess;
+
+        $this->debugSection('STDOUT', $cliProcess->getOutput());
+        $this->debugSection('STDERR', $cliProcess->getErrorOutput());
+
+        $exitCode = $cliProcess->getExitCode();
+
+        $this->debugSection('exit code', print_r($exitCode, true));
+
+        if ($this->config['throw'] && $exitCode !== 0) {
+            throw new ModuleException(
+                __CLASS__,
+                sprintf(
+                    'The command "%s" failed with exit code %d.',
+                    $cliProcess->getCommandLine(),
+                    $exitCode
+                )
+            );
+        }
+
+        return $exitCode;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param string $title The section title.
-     * @param string|array<string>|mixed $message The message to debug.
-     *
-     *
-     * @throws JsonException If there's an issue while encoding the message.
-     */
     protected function debugSection(string $title, mixed $message): void
     {
-        parent::debugSection($this->prettyName . ' ' . $title, $message);
+        parent::debugSection("WPCLI $title", $message);
     }
 
     /**
-     * Returns an associative array of wp-cli options parsed from the config array.
-     *
-     * Users can set additional options that will be passed to the wp-cli command; here is where they are parsed.
-     *
-     * @param string|array<string>|null $userCommand The user command to parse for inline options.
-     *
-     * @return array<string,mixed> An associative array of options, parsed from the current config.
+     * @throws ModuleException
      */
-    protected function getConfigOptions(array|string $userCommand = null): array
+    public function grabLastCliProcess(): CliProcess
     {
-        $inlineOptions = $this->parseWpCliInlineOptions((array)$userCommand);
-        $configOptions = array_diff_key($this->config, static::$blockedKeys, $inlineOptions);
-        unset($configOptions['path']);
-
-        if (empty($configOptions)) {
-            return [];
+        if (!$this->lastCliProcess instanceof CliProcess) {
+            throw new ModuleException(
+                __CLASS__,
+                'No command has run yet; cannot grab last cli process.'
+            );
         }
-
-        return $this->wpCliOptions($configOptions);
-    }
-
-    /**
-     * Builds the process environment from the configuration options.
-     *
-     * @return array{WP_CLI_CACHE_DIR?: mixed, WP_CLI_CONFIG_PATH?: mixed, WP_CLI_CUSTOM_SHELL?: mixed, WP_CLI_DISABLE_AUTO_CHECK_UPDATE?: string, WP_CLI_PACKAGES_DIR?: mixed, WP_CLI_PHP?: mixed, WP_CLI_PHP_ARGS?: mixed, WP_CLI_STRICT_ARGS_MODE?: string} An associative array of environment variables..
-     */
-    protected function buildProcessEnv(): array
-    {
-        return array_filter([
-            'WP_CLI_CACHE_DIR' => $this->config['env']['cache-dir'] ?? false,
-            'WP_CLI_CONFIG_PATH' => $this->config['env']['config-path'] ?? false,
-            'WP_CLI_CUSTOM_SHELL' => $this->config['env']['custom-shell'] ?? false,
-            'WP_CLI_DISABLE_AUTO_CHECK_UPDATE' => empty($this->config['env']['disable-auto-check-update']) ? '0' : '1',
-            'WP_CLI_PACKAGES_DIR' => $this->config['env']['packages-dir'] ?? false,
-            'WP_CLI_PHP' => $this->config['env']['php'] ?? false,
-            'WP_CLI_PHP_ARGS' => $this->config['env']['php-args'] ?? false,
-            'WP_CLI_STRICT_ARGS_MODE' => !empty($this->config['env']['strict-args']) ? '1' : false,
-        ]);
-    }
-
-    /**
-     * Evaluates the exit status of the command.
-     *
-     * @param string $output The process output.
-     * @param int $status The process status code.
-     *
-     *
-     * @throws ModuleException If the exit status is lt 0 and the module configuration is set to throw.
-     */
-    protected function evaluateStatus(string $output, int $status): void
-    {
-        if ((int)$status !== 0 && !empty($this->config['throw'])) {
-            $message = "wp-cli terminated with status [{$status}] and output [{$output}]\n\nWPCLI module is configured "
-                . 'to throw an exception when wp-cli terminates with an error status; '
-                . 'set the `throw` parameter to `false` to avoid this.';
-
-            throw new ModuleException(__CLASS__, $message);
-        }
+        return $this->lastCliProcess;
     }
 
     /**
@@ -315,12 +134,35 @@ class WPCLI extends Module
      */
     public function grabLastShellOutput(): ?string
     {
-        if (!isset($this->lastOutput)) {
-            throw new ModuleException($this, 'No output is set yet. Did you forget to run a command?');
+        if (!$this->lastCliProcess instanceof CliProcess) {
+            throw new ModuleException(
+                __CLASS__,
+                'No command has run yet; cannot grab output.'
+            );
         }
 
-        return $this->lastOutput;
+        return $this->lastCliProcess->getOutput() ?: null;
     }
+
+    /**
+     * Returns the shell error output of the last command.
+     *
+     * @return string|null The error output produced by the last shell command, if any.
+     *
+     * @throws ModuleException If no prior command ran.
+     */
+    public function grabLastShellErrorOutput(): ?string
+    {
+        if (!$this->lastCliProcess instanceof CliProcess) {
+            throw new ModuleException(
+                __CLASS__,
+                'No command has run yet; cannot grab error output.'
+            );
+        }
+
+        return $this->lastCliProcess->getErrorOutput() ?: null;
+    }
+
 
     /**
      * Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
@@ -336,50 +178,33 @@ class WPCLI extends Module
      *      });
      * });
      * ```
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
-     *                                            minus `wp`. For back-compatibility purposes you can still pass the
-     *                                            commandline as a string, but the array format is the preferred and
-     *                                            supported method.
-     * @param callable|null $splitCallback An optional callback function to split the results array.
+     * @param array<string> $command               The string of command and parameters as it would be passed to wp-cli
+     *                                             minus `wp`. For back-compatibility purposes you can still pass the
+     *                                             commandline as a string, but the array format is the preferred and
+     *                                             supported method.
+     * @param callable|null $splitCallback         An optional callback function to split the results array.
+     * @param array|null    $env                   An array of environment variables to pass to the command.
+     * @param mixed         $input                 The input to pass to the command, a stream resource or a \Traversable
+     *                                             instance.
      *
      * @return array<string> An array containing the output of wp-cli split into single elements.
      *
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
-     * @throws ModuleException If the $splitCallback function does not return an array.
+     * @throws ModuleException
      */
-    public function cliToArray(array|string $userCommand = 'post list --format=ids', callable $splitCallback = null): array
-    {
-        $output = (string)$this->cliToString($userCommand);
+    public function cliToArray(
+        array $command,
+        callable $splitCallback = null,
+        ?array $env = null,
+        mixed $input = null
+    ): array {
+        $this->cli($command, $env, $input);
+        $output = $this->lastCliProcess->getOutput();
 
-        if (empty($output)) {
-            return [];
+        if ($splitCallback) {
+            return $splitCallback($output);
         }
 
-        $hasSplitCallback = null !== $splitCallback && is_callable($splitCallback);
-        $originalOutput = $output;
-
-        if (is_callable($splitCallback)) {
-            $output = $splitCallback($output, $userCommand, $this);
-        } else {
-            $output = !preg_match('/\n+/', $output) ?
-                preg_split('/\\s+/', $output)
-                : preg_split('/\\s*\\n+\\s*/', $output);
-        }
-
-        if (!is_array($output) && $hasSplitCallback) {
-            throw new ModuleException(
-                __CLASS__,
-                "Split callback must return an array, it returned: \n" . print_r(
-                    $output,
-                    true
-                ) . "\nfor original output:\n" . print_r(
-                    $originalOutput,
-                    true
-                )
-            );
-        }
-
-        return empty($output) ? [] : array_map('trim', array_filter($output));
+        return explode(PHP_EOL, $output);
     }
 
     /**
@@ -393,22 +218,21 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
-     * @param string|array<string> $userCommand The string of command and parameters as it would be passed to wp-cli
+     * @param array<string> $command            The string of command and parameters as it would be passed to wp-cli
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
+     * @param array|null    $env                An array of environment variables to pass to the command.
+     * @param mixed         $input              The input to pass to the command, a stream resource or a \Traversable
      *
-     * @return int|string The command output, if any.
+     * @return string The output of the command.
      *
-     * @throws ModuleException If there's an exception while running the command and the module is configured to throw.
-     *
-     * @throws ModuleConfigException If the path to the WordPress installation does not exist.
+     * @throws ModuleException
      */
-    public function cliToString(array|string $userCommand): int|string
+    public function cliToString(array $command, ?array $env = null, mixed $input = null): string
     {
-        $return = $this->run($userCommand);
-
-        return $return[0];
+        $this->cli($command, $env, $input);
+        return $this->lastCliProcess->getOutput();
     }
 
     /**
@@ -422,10 +246,12 @@ class WPCLI extends Module
      * ```
      *
      * @param string $text The text to assert is in the output.
+     *
+     * @throws ModuleException
      */
     public function seeInShellOutput(string $text): void
     {
-        TestCase::assertStringContainsString($text, $this->lastOutput);
+        $this->assertStringContainsString($text, $this->grabLastShellOutput());
     }
 
     /**
@@ -442,7 +268,7 @@ class WPCLI extends Module
      */
     public function dontSeeInShellOutput(string $text): void
     {
-        Assert::assertStringNotContainsString($text, (string)$this->lastOutput);
+        $this->assertStringNotContainsString($text, $this->grabLastShellOutput());
     }
 
     /**
@@ -459,7 +285,26 @@ class WPCLI extends Module
      */
     public function seeShellOutputMatches(string $regex): void
     {
-        \PHPUnit\Framework\Assert::assertRegExp($regex, (string)$this->lastOutput);
+        $this->assertRegExp($regex, $this->grabLastShellOutput());
+    }
+
+    /**
+     * Checks that output from the last command doesn't match a given regular expression.
+     *
+     * @example
+     * ```php
+     * // Return the current site administrator email, using string command format.
+     * $I->cli('option get siteurl');
+     * $I->dontSeeShellOutputMatches('/^http/');
+     * ```
+     *
+     * @param string $regex The regex pattern, including delimiters, to assert the output doesn't match against.
+     *
+     * @throws ModuleException
+     */
+    public function dontSeeShellOutputMatches(string $regex): void
+    {
+        $this->assertNotRegExp($regex, $this->grabLastShellOutput());
     }
 
     /**
@@ -473,10 +318,28 @@ class WPCLI extends Module
      * ```
      *
      * @param int $code The desired result code.
+     *
+     * @throws ModuleException
      */
     public function seeResultCodeIs(int $code): void
     {
-        $this->assertEquals($this->lastResultCode, $code, "result code is $code");
+        if (!$this->lastCliProcess instanceof CliProcess) {
+            throw new ModuleException(
+                __CLASS__,
+                'No command has run yet: cannot check its exit code.'
+            );
+        }
+
+        $actual = $this->lastCliProcess->getExitCode();
+        $this->assertEquals(
+            $code,
+            $actual,
+            sprintf(
+                'The command exited with code %d, expected code %d.',
+                $actual,
+                $code
+            )
+        );
     }
 
     /**
@@ -490,39 +353,159 @@ class WPCLI extends Module
      * ```
      *
      * @param int $code The result code the command should not have exited with.
+     *
+     * @throws ModuleException If no command has run yet.
      */
     public function seeResultCodeIsNot(int $code): void
     {
-        $this->assertNotEquals($this->lastResultCode, $code, "result code is $code");
+        if (!$this->lastCliProcess instanceof CliProcess) {
+            throw new ModuleException(
+                __CLASS__,
+                'No command has run yet: cannot check its exit code.'
+            );
+        }
+
+        $actual = $this->lastCliProcess->getExitCode();
+        $this->assertNotEquals(
+            $code,
+            $actual,
+            sprintf(
+                'The command exited with code %d, but it should not have.',
+                $actual
+            )
+        );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function validateConfig():void
+    protected function validateConfig(): void
     {
         parent::validateConfig();
         $this->validateTimeout();
+        $this->validatePath();
     }
 
     /**
-     * Validates the configuration timeout.
-     *
-     *
-     * @throws ModuleConfigException If the configuration timeout is not valid.
+     * @throws ModuleConfigException
      */
-    protected function validateTimeout(): void
+    private function validateTimeout(): void
     {
-        $timeout = static::DEFAULT_TIMEOUT;
+        $timeout = $this->config['timeout'] ?? static::DEFAULT_TIMEOUT;
 
-        if (array_key_exists('timeout', $this->config)) {
-            $timeout = empty($this->config['timeout']) ? null : $this->config['timeout'];
+        if (!(is_numeric($timeout) && $timeout > 0)) {
+            throw new ModuleConfigException($this, message: 'Timeout [' . print_r($timeout, true) . '] is not valid.');
         }
 
-        if (!($timeout === null || is_numeric($timeout))) {
-            throw new ModuleConfigException($this, "Timeout [{$this->config['timeout']}] is not valid.");
+        $this->config['timeout'] = (float)$timeout;
+    }
+
+    /**
+     * @throws ModuleConfigException
+     */
+    private function validatePath(): void
+    {
+        if (!(
+            $this->config['path']
+            && is_dir($this->config['path'])
+            && is_file($this->config['path'] . '/wp-load.php')
+            && is_file($this->config['path'] . '/wp-settings.php')
+            && is_file($this->config['path'] . '/wp-includes/version.php')
+        )) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'Specified path [' . $this->config['path']
+                . '] is not a directory containing a WordPress installation.'
+            );
         }
 
-        $this->timeout = (int)$timeout;
+        $this->config['path'] = Filesystem::realpath($this->config['path']);
+    }
+
+    private function getDefaultEnv(): array
+    {
+        $env = [];
+
+        $cacheDir = $this->config['cache-dir'] ?? codecept_output_dir('wp-cli-cache');
+        $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
+
+        foreach ([
+                     'config-path' => 'WP_CLI_CONFIG_PATH',
+                     'custom-shell' => 'WP_CLI_CUSTOM_SHELL',
+                     'packages-dir' => 'WP_CLI_PACKAGES_DIR',
+                 ] as $configKey => $envVar) {
+            if (!empty($this->config[$configKey])) {
+                $env[$envVar] = $this->config[$configKey];
+            }
+        }
+
+        // Disable update checks by default.
+        $env['WP_CLI_DISABLE_AUTO_CHECK_UPDATE'] = true;
+
+        // Args should be treated as strict by default.
+        $env['WP_CLI_STRICT_ARGS_MODE'] = '1';
+
+        return $env;
+    }
+
+    private function getOptionsFromConfig(): array
+    {
+        $options = [];
+
+        foreach ([
+                     'skip-plugins',
+                     'skip-themes',
+                     'skip-packages',
+                     'debug',
+                     'quiet',
+                 ] as $configOption) {
+            if (!empty($this->config[$configOption])) {
+                $options[] = '--' . $configOption;
+            }
+        }
+
+        if (isset($this->config['context'])) {
+            $options[] = '--context=' . $this->config['context'];
+        }
+
+        if (isset($this->config['require'])) {
+            foreach ((array)$this->config['require'] as $requireFile) {
+                $options[] = '--require=' . $requireFile;
+            }
+        }
+
+        if (isset($this->config['exec'])) {
+            foreach ((array)$this->config['exec'] as $execCode) {
+                $options[] = '--exec=' . $execCode;
+            }
+        }
+
+        if (isset($this->config['user'])) {
+            $options['--user'] = $this->config['user'];
+        }
+
+        if (isset($this->config['color'])) {
+            if ($this->config['color']) {
+                $options[] = '--color';
+            } else {
+                $options[] = '--no-color';
+            }
+        }
+
+        return $options;
+    }
+
+    private function addStrictOptionsFromConfig(array $command): array
+    {
+        $prepend = [];
+        foreach ($this->getOptionsFromConfig() as $cliOptionFromConfig) {
+            if (!in_array($cliOptionFromConfig, $command, true)) {
+                $prepend[] = $cliOptionFromConfig;
+            }
+        }
+        if (count($prepend)) {
+            array_unshift($command, ...$prepend);
+        }
+        return $command;
     }
 }

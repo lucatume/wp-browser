@@ -58,6 +58,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - `WP_TESTS_EMAIL` or `adminEmail`
     - `WP_TESTS_TITLE` or `title`
   - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
+  - Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
+  - Added the `WPCLI::dontSeeShellOutputMatches` method
+
 ## [3.1.6] 2022-04-28;
 
 ### Changed
