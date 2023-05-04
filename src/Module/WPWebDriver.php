@@ -13,12 +13,7 @@ use Codeception\Module\WebDriver;
 use Codeception\Module\WPBrowserMethods;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use JsonException;
-use lucatume\WPBrowser\Utils\Codeception;
 use Symfony\Component\BrowserKit\Cookie;
-
-//phpcs:disable
-Codeception::checkModuleRequirements('WPWebDriver', [ 'WebDriver' ]);
-//phpcs:enable
 
 /**
  * Class WPWebDriver

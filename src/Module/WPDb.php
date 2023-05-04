@@ -14,8 +14,14 @@ use Gumlet\ImageResizeException;
 use InvalidArgumentException;
 use JsonException;
 use lucatume\WPBrowser\Events\Dispatcher;
+use lucatume\WPBrowser\Generators\Blog;
+use lucatume\WPBrowser\Generators\Comment;
+use lucatume\WPBrowser\Generators\Links;
+use lucatume\WPBrowser\Generators\Post;
+use lucatume\WPBrowser\Generators\Tables;
+use lucatume\WPBrowser\Generators\User;
 use lucatume\WPBrowser\Module\Support\DbDump;
-use lucatume\WPBrowser\Utils\Codeception;
+use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;
 use lucatume\WPBrowser\Utils\Strings;
@@ -23,17 +29,6 @@ use lucatume\WPBrowser\Utils\WP;
 use PDO;
 use PDOException;
 use RuntimeException;
-use lucatume\WPBrowser\Generators\Blog;
-use lucatume\WPBrowser\Generators\Comment;
-use lucatume\WPBrowser\Generators\Links;
-use lucatume\WPBrowser\Generators\Post;
-use lucatume\WPBrowser\Generators\Tables;
-use lucatume\WPBrowser\Generators\User;
-use lucatume\WPBrowser\Utils\Db as DbUtils;
-
-//phpcs:disable
-Codeception::checkModuleRequirements('WPDb', [ 'Db' ]);
-//phpcs:enable
 
 /**
  * An extension of Codeception Db class to add WordPress database specific

@@ -15,14 +15,9 @@ use DateTime;
 use DateTimeImmutable;
 use Exception;
 use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Dates;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
-
-//phpcs:disable
-Codeception::checkModuleRequirements('WPFilesystem', [ 'Filesystem' ]);
-//phpcs:enable
 
 /**
  * Class WPFilesystem

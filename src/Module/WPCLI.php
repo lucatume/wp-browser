@@ -16,12 +16,6 @@ use JsonException;
 use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Exceptions\WpCliException;
 use lucatume\WPBrowser\Traits\WithWpCli;
-use lucatume\WPBrowser\Utils\Codeception;
-use Symfony\Component\Process\Process;
-
-//phpcs:disable
-Codeception::checkModuleRequirements('WPCLI', ['Cli']);
-//phpcs:enable
 
 /**
  * Class WPCLI

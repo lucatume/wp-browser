@@ -343,22 +343,6 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use `lucatume\WPBrowser\Utils\Codeception::checkModuleRequirements` instead.
-     */
-    function requireCodeceptionModules(string $module, array $requiredModules = []): void
-    {
-        Codeception::checkModuleRequirements($module, $requiredModules);
-    }
-
-    /**
-     * @deprecated Use `lucatume\WPBrowser\Utils\Codeception::identifySuite` instead.
-     */
-    function identifySuiteFromTrace(): string
-    {
-        return Codeception::identifySuite();
-    }
-
-    /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::stripTags` instead.
      */
     function strip_all_tags($string, $removeBreaks = false): string
