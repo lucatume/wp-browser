@@ -14,10 +14,9 @@ use Codeception\TestInterface;
 use DateTime;
 use DateTimeImmutable;
 use Exception;
-use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Utils\Dates;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use PHPUnit\Framework\Assert as PHPUnitAssert;
+use PHPUnit\Framework\Assert;
 
 /**
  * Class WPFilesystem
@@ -261,7 +260,7 @@ class WPFilesystem extends Filesystem
     public function seeUploadedFileFound(string $filename, int|string $date = null): void
     {
         $path = $this->getUploadsPath($filename, $date);
-        PHPUnitAssert::assertFileExists($path);
+        Assert::assertFileExists($path);
     }
 
     /**
@@ -355,7 +354,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeInUploadedFile(string $file, string $contents, int|string $date = null): void
     {
-        PHPUnitAssert::assertStringEqualsFile(
+        Assert::assertStringEqualsFile(
             $this->getUploadsPath(
                 $file,
                 $date
@@ -382,7 +381,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeInUploadedFile(string $file, string $contents, int|string $date = null): void
     {
-        PHPUnitAssert::assertStringNotEqualsFile(
+        Assert::assertStringNotEqualsFile(
             $this->getUploadsPath(
                 $file,
                 $date
@@ -658,7 +657,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeInPluginFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringEqualsFile(
+        Assert::assertStringEqualsFile(
             $this->config['plugins'] . FS::unleadslashit($file),
             $contents
         );
@@ -677,7 +676,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeInPluginFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringNotEqualsFile(
+        Assert::assertStringNotEqualsFile(
             $this->config['plugins'] . FS::unleadslashit($file),
             $contents
         );
@@ -811,7 +810,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeInThemeFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringEqualsFile(
+        Assert::assertStringEqualsFile(
             $this->config['themes'] . FS::unleadslashit($file),
             $contents
         );
@@ -830,7 +829,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeInThemeFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringNotEqualsFile(
+        Assert::assertStringNotEqualsFile(
             $this->config['themes'] . FS::unleadslashit($file),
             $contents
         );
@@ -962,7 +961,7 @@ class WPFilesystem extends Filesystem
      */
     public function seeInMuPluginFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringEqualsFile(
+        Assert::assertStringEqualsFile(
             $this->config['mu-plugins'] . FS::unleadslashit($file),
             $contents
         );
@@ -981,7 +980,7 @@ class WPFilesystem extends Filesystem
      */
     public function dontSeeInMuPluginFile(string $file, string $contents): void
     {
-        PHPUnitAssert::assertStringNotEqualsFile(
+        Assert::assertStringNotEqualsFile(
             $this->config['mu-plugins'] . FS::unleadslashit($file),
             $contents
         );
@@ -1334,6 +1333,6 @@ CSS;
      */
     public function assertDirectoryExists(string $directory, string $message = ''): void
     {
-        PHPUnitAssert::assertDirectoryExists($directory, $message);
+        Assert::assertDirectoryExists($directory, $message);
     }
 }

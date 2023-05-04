@@ -13,9 +13,9 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
 use Codeception\PHPUnit\TestCase;
 use JsonException;
-use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
 use lucatume\WPBrowser\Exceptions\WpCliException;
 use lucatume\WPBrowser\Traits\WithWpCli;
+use PHPUnit\Framework\Assert;
 
 /**
  * Class WPCLI

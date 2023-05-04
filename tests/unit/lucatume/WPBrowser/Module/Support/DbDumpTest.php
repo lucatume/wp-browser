@@ -3,8 +3,7 @@
 namespace lucatume\WPBrowser\Module\Support;
 
 use Codeception\Util\Debug;
-use lucatume\WPBrowser\Adapters\PHPUnit\Framework\Assert;
-use lucatume\WPBrowser\Module\Support\DbDump;
+use PHPUnit\Framework\Assert;
 
 class DbDumpTest extends \Codeception\Test\Unit
 {
@@ -17,7 +16,7 @@ class DbDumpTest extends \Codeception\Test\Unit
      * @test
      * it should not replace the site domain if site domain is same
      */
-    public function it_should_not_replace_the_site_domain_if_site_domain_is_same()
+    public function it_should_not_replace_the_site_domain_if_site_domain_is_same(): void
     {
         $this->url = 'http://original.dev';
         $sut       = $this->make_instance();
@@ -39,7 +38,7 @@ SQL;
      * @test
      * it should replace the site domain in dump
      */
-    public function it_should_replace_the_site_domain_in_dump()
+    public function it_should_replace_the_site_domain_in_dump(): void
     {
         $sut = $this->make_instance();
 
@@ -60,7 +59,7 @@ SQL;
      * @test
      * it should replace https scheam with http
      */
-    public function it_should_replace_https_schema_with_http()
+    public function it_should_replace_https_schema_with_http(): void
     {
         $this->url = 'http://some-wp.dev';
         $sut = $this->make_instance();
@@ -83,7 +82,7 @@ SQL;
      * @test
      * it should replace http schema with https
      */
-    public function it_should_replace_http_schema_with_https()
+    public function it_should_replace_http_schema_with_https(): void
     {
         $this->url = 'https://some-wp.dev';
         $sut       = $this->make_instance();
@@ -106,7 +105,7 @@ SQL;
      * @test
      * it should not replace domain in sites and blogs table if domain is same
      */
-    public function it_should_not_replace_domain_in_sites_and_blogs_table_if_domain_is_same()
+    public function it_should_not_replace_domain_in_sites_and_blogs_table_if_domain_is_same(): void
     {
         $this->url = 'https://original.dev/wp';
         $sut       = $this->make_instance();
@@ -139,7 +138,7 @@ SQL;
      * @test
      * it should replace domain in sites and blogs table if domain is not same
      */
-    public function it_should_replace_domain_in_sites_and_blogs_table_if_domain_is_not_same()
+    public function it_should_replace_domain_in_sites_and_blogs_table_if_domain_is_not_same(): void
     {
         $this->url = 'https://some-wp.dev';
         $sut       = $this->make_instance();
@@ -174,7 +173,7 @@ SQL;
      *
      * @test
      */
-    public function it_should_replace_the_site_domain_in_an_array_sql_dump()
+    public function it_should_replace_the_site_domain_in_an_array_sql_dump(): void
     {
         $sql = [
             'LOCK TABLES `wp_options` WRITE;',
@@ -201,7 +200,7 @@ SQL;
      *
      * @test
      */
-    public function it_should_return_an_empty_array_if_trying_to_replace_site_domain_in_empty_sql()
+    public function it_should_return_an_empty_array_if_trying_to_replace_site_domain_in_empty_sql(): void
     {
         $sut = $this->make_instance();
         $this->assertEquals([], $sut->replaceSiteDomainInSqlArray([]));
@@ -212,7 +211,7 @@ SQL;
      *
      * @test
      */
-    public function it_should_replace_the_site_domain_in_a_multisite_array_sql_dump()
+    public function it_should_replace_the_site_domain_in_a_multisite_array_sql_dump(): void
     {
         $sql = [
             "LOCK TABLES `wp_blogs` WRITE;",
@@ -262,7 +261,7 @@ SQL;
      *
      * @test
      */
-    public function it_should_return_an_empty_array_if_trying_to_replace_site_domain_in_empty_multisite_sql()
+    public function it_should_return_an_empty_array_if_trying_to_replace_site_domain_in_empty_multisite_sql(): void
     {
         $sut = $this->make_instance();
         $this->assertEquals([], $sut->replaceSiteDomainInMultisiteSqlArray([]));
@@ -271,7 +270,7 @@ SQL;
     /**
      * @return DbDump
      */
-    protected function make_instance()
+    protected function make_instance(): DbDump
     {
         $dbOperations = new DbDump($this->url, 'wp_');
         return $dbOperations;
@@ -282,7 +281,7 @@ SQL;
      *
      * @test
      */
-    public function should_correctly_replace_subdomain_urls_in_multisite_installations()
+    public function should_correctly_replace_subdomain_urls_in_multisite_installations(): void
     {
         $inputFile = codecept_data_dir('dump-test/mu-01-input.sql');
         $inputFileHandle = fopen($inputFile, 'rb');
@@ -325,7 +324,7 @@ SQL;
      *
      * @test
      */
-    public function should_correctly_replace_localhost_host_address_with_pretty_url()
+    public function should_correctly_replace_localhost_host_address_with_pretty_url(): void
     {
         $inputFile = codecept_data_dir('dump-test/url-replacement-test-01.sql');
         $sql         = file_get_contents($inputFile);
@@ -340,7 +339,7 @@ SQL;
         $this->assertEquals('http://some-nice-host-name', $dbDump->getOriginalUrlFromSqlString($replacedSql));
     }
 
-    public function replacementUrlsDataProvider()
+    public function replacementUrlsDataProvider(): array
     {
         return [
             'IP Address to URL' => ['http://1.2.3.4', 'http://wordpress.local'],
@@ -363,7 +362,7 @@ SQL;
      * @test
      * @dataProvider replacementUrlsDataProvider
      */
-    public function should_correctly_replace_local_url_with_ip_address($startUrl, $destUrl)
+    public function should_correctly_replace_local_url_with_ip_address($startUrl, $destUrl): void
     {
         $inputFile = codecept_data_dir('dump-test/url-replacement-test.sql.handlebars');
         $sql         = str_replace('{{ siteurl }}', $startUrl, file_get_contents($inputFile));
