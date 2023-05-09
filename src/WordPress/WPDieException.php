@@ -6,10 +6,18 @@ use Exception;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
+use ReflectionException;
 use WP_Error;
+use function str_starts_with;
 
 class WPDieException extends Exception
 {
+    /**
+     * @param string|WP_Error                $message
+     * @param string|int                     $title
+     * @param string|array<string,mixed>|int $args
+     * @throws ReflectionException
+     */
     public function __construct(string|WP_Error $message = '', string|int $title = '', string|array|int $args = [])
     {
         if ($message instanceof WP_Error) {
@@ -32,7 +40,7 @@ class WPDieException extends Exception
             return $item['function'] === 'wp_die';
         }, $trace);
         $serializableClosurePos = Arr::searchWithCallback(static function (array $item) {
-            return isset($item['file']) && \str_starts_with($item['file'], 'closure://');
+            return isset($item['file']) && str_starts_with($item['file'], 'closure://');
         }, $trace);
 
         if ($wpDieCallPos !== false) {
