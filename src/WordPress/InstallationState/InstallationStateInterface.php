@@ -75,4 +75,6 @@ interface InstallationStateInterface
     public function getThemesDir(string $path = ''): string;
 
     public function getContentDir(string $path = ''): string;
+
+    public function updateOption(string $option, mixed $value): int;
 }

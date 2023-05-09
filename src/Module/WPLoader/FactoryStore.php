@@ -39,42 +39,42 @@ class FactoryStore
 {
 
     /**
-     * @var WP_UnitTest_Factory_For_Post|null
+     * @var ?WP_UnitTest_Factory_For_Post
      */
     protected ?WP_UnitTest_Factory_For_Post $post = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Bookmark|null
+     * @var ?WP_UnitTest_Factory_For_Bookmark
      */
     protected ?WP_UnitTest_Factory_For_Bookmark $bookmark = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Attachment|null
+     * @var ?WP_UnitTest_Factory_For_Attachment
      */
     protected ?WP_UnitTest_Factory_For_Attachment $attachment = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_User|null
+     * @var ?WP_UnitTest_Factory_For_User
      */
     protected ?WP_UnitTest_Factory_For_User $user = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Comment|null
+     * @var ?WP_UnitTest_Factory_For_Comment
      */
     protected ?WP_UnitTest_Factory_For_Comment $comment = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Blog|null
+     * @var ?WP_UnitTest_Factory_For_Blog
      */
     protected ?WP_UnitTest_Factory_For_Blog $blog = null;
 
     /**
-     * @var WP_UnitTest_Factory_For_Network|null
+     * @var ?WP_UnitTest_Factory_For_Network
      */
     protected ?WP_UnitTest_Factory_For_Network $network = null;
 
     /**
-     * @var ?WP_UnitTest_Factory_For_Term|null
+     * @var ?WP_UnitTest_Factory_For_Term
      */
     protected ?WP_UnitTest_Factory_For_Term $term = null;
 

@@ -734,4 +734,32 @@ class SingleTest extends \Codeception\Test\Unit
         $this->assertEquals($wpRootDir . '/site-content/some-file.php', $single->getContentDir('some-file.php'));
         $this->assertEquals($wpRootDir . '/site-content/some/path', $single->getContentDir('/some/path'));
     }
+
+    /**
+     * It should allow working with options
+     *
+     * @test
+     */
+    public function should_allow_working_with_options(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals(1, $single->updateOption('foo', 'bar'));
+        $this->assertEquals('bar', $db->getOption('foo'));
+    }
 }

@@ -567,4 +567,31 @@ class MultisiteTest extends \Codeception\Test\Unit
             $multisite->getContentDir('some-file.php'));
         $this->assertEquals($wpRootDir . '/site-content/some/path', $multisite->getContentDir('some/path'));
     }
+
+    /**
+     * It should allow working with options
+     *
+     * @test
+     */
+    public function should_allow_working_with_options(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER)
+            ->install('https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals(1, $multisite->updateOption('foo', 'bar'));
+        $this->assertEquals('bar', $db->getOption('foo'));
+    }
 }

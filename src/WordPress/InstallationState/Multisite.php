@@ -19,6 +19,7 @@ class Multisite implements InstallationStateInterface
     use ScaffoldedStateTrait;
     use ConfiguredStateTrait;
     use InstalledTrait;
+    use InstallationChecks;
 
     /**
      * @throws DbException

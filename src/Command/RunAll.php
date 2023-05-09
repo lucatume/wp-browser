@@ -36,8 +36,12 @@ class RunAll extends Command implements CustomCommandInterface
     {
         global $argv;
         $codeceptBin = $argv[0];
-        $commandString = $input->__toString();
-        $runOptions = array_slice(explode(' ', $commandString), 1);
+
+        if (method_exists($input, '__toString')) {
+            $runOptions = array_slice(explode(' ', $input->__toString()), 1);
+        } else {
+            $runOptions = [];
+        }
 
         foreach ($this->getSuites() as $suite) {
             try {

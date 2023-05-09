@@ -18,6 +18,7 @@ class Single implements InstallationStateInterface
     use ConfiguredStateTrait;
     use ScaffoldedStateTrait;
     use InstalledTrait;
+    use InstallationChecks;
 
     /**
      * @throws DbException

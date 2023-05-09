@@ -538,4 +538,22 @@ PHP;
         $this->assertEquals($wpRootDir . '/wp-content/some/path', $scaffolded->getContentDir('/some/path'));
         $this->assertEquals($wpRootDir . '/wp-content/some/file.php', $scaffolded->getContentDir('some/file.php'));
     }
+
+    /**
+     * It should throw if trying to update option
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_update_option(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        $wpConfigPath = Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+
+        $scaffolded->updateOption('test', 'value');
+    }
 }

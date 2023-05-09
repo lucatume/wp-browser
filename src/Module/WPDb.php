@@ -4006,7 +4006,7 @@ class WPDb extends Db
             $sql = $this->dbDump->replaceSiteDomainInSqlArray($sql);
             $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlArray($sql);
         } else {
-            $sql = $this->dbDump->replaceSiteDomainInSqlString($sql, true);
+            $sql = $this->dbDump->replaceSiteDomainInSqlString($sql);
             $sql = $this->dbDump->replaceSiteDomainInMultisiteSqlString($sql, true);
         }
 

@@ -40,5 +40,4 @@ trait WordPressChecks
 
         return is_file($wpConfigFile) ? $wpConfigFile : false;
     }
-
 }

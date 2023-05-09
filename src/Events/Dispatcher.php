@@ -8,8 +8,8 @@ use ReflectionException;
 use Symfony\Component\Console\Command\Command;
 use Codeception\Codecept;
 use lucatume\WPBrowser\Utils\Property;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Dispatcher

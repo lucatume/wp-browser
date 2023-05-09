@@ -708,4 +708,27 @@ class ConfiguredTest extends \Codeception\Test\Unit
         $this->assertEquals($wpRootDir . '/site-content/some/path', $configured->getContentDir('/some/path'));
         $this->assertEquals($wpRootDir . '/site-content/some/file.php', $configured->getContentDir('/some/file.php'));
     }
+
+    /**
+     * It should throw if trying to update option
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_update_option(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot update option "foo" because WordPress is not configured yet');
+
+        $configured->updateOption('foo', 'bar');
+    }
 }

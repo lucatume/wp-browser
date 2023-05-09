@@ -3,13 +3,12 @@
 namespace lucatume\WPBrowser\Process\Worker;
 
 use Codeception\Configuration;
-use Composer\Config;
 use lucatume\WPBrowser\Utils\Composer;
 
 class Worker implements WorkerInterface
 {
     /**
-     * @var $callable
+     * @var callable
      */
     private $callable;
     private string $id;
@@ -66,11 +65,11 @@ class Worker implements WorkerInterface
             'requireFiles' => [],
             'cwd' => getcwd(),
             'codeceptionRootDir' => codecept_root_dir(),
-            'codeceptionConfig' =>Configuration::config(),
+            'codeceptionConfig' => Configuration::config(),
         ];
     }
 
-    public function setRequireFiles(array $requireFiles):self
+    public function setRequireFiles(array $requireFiles): self
     {
         $this->control['requireFiles'] = $requireFiles;
         return $this;

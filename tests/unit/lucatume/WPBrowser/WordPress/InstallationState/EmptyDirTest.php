@@ -403,4 +403,21 @@ class EmptyDirTest extends \Codeception\Test\Unit
 
         $emptyDir->getContentDir();
     }
+
+    /**
+     * It should throw if trying ot update option
+     *
+     * @test
+     */
+    public function should_throw_if_trying_ot_update_option(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->updateOption('foo', 'bar');
+    }
 }

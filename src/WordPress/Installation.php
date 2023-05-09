@@ -3,19 +3,23 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationChecks;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class Installation
 {
     use WordPressChecks;
+    use InstallationChecks;
 
     private static array $scaffoldedInstallations = [];
-    private ?Db $db = null;
+    private ?Db $db;
     private string $wpRootDir;
     private InstallationState\InstallationStateInterface $installationState;
 
@@ -145,6 +149,9 @@ class Installation
      * @throws DbException
      * @throws InstallationException
      * @throws ProcessException
+     * @throws WpConfigFileException
+     * @throws Throwable
+     * @throws WorkerException
      */
     private function setInstallationState(): InstallationState\InstallationStateInterface
     {
@@ -158,12 +165,10 @@ class Installation
             return new InstallationState\Scaffolded($this->wpRootDir);
         }
 
-        $db = $this->db ?? Db::fromWpConfigFile(new WPConfigFile($this->wpRootDir, $wpConfigFilePath));
-
         $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath);
         $multisite = $installationState->isMultisite();
 
-        if ($this->db === null || !$this->installationState->isInstalled($multisite)) {
+        if ($this->db === null || !$this->isInstalled($multisite)) {
             return $installationState;
         }
 
