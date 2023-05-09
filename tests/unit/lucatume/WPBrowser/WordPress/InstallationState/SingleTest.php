@@ -32,7 +32,7 @@ class SingleTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::ROOT_DIR_NOT_FOUND);
 
-        new Single('/non-existing-dir', '/non-existing-dir/wp-config.php', $db);
+        new Single('/non-existing-dir', '/non-existing-dir/wp-config.php');
     }
 
     /**
@@ -62,7 +62,7 @@ class SingleTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::WP_CONFIG_FILE_NOT_FOUND);
 
-        new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -92,7 +92,7 @@ class SingleTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
 
-        new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -113,7 +113,7 @@ class SingleTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_CONFIGURED);
 
-        new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -143,7 +143,7 @@ class SingleTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
 
-        new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -167,7 +167,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SINGLE);
@@ -202,7 +202,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SINGLE);
@@ -231,7 +231,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->uopzSetFunctionReturn('file_get_contents', false);
 
@@ -264,7 +264,7 @@ class SingleTest extends \Codeception\Test\Unit
         );
         $wpConfigFilePath = $wpRootDir . '/wp-config.php';
 
-        $single = new Single($wpRootDir, $wpConfigFilePath, $db);
+        $single = new Single($wpRootDir, $wpConfigFilePath);
 
 
         $this->uopzSetFunctionReturn('file_get_contents', function (string $file) use ($wpConfigFilePath) {
@@ -302,7 +302,7 @@ class SingleTest extends \Codeception\Test\Unit
         );
         $wpConfigFilePath = $wpRootDir . '/wp-config.php';
 
-        $single = new Single($wpRootDir, $wpConfigFilePath, $db);
+        $single = new Single($wpRootDir, $wpConfigFilePath);
 
 
         $this->uopzSetFunctionReturn('file_put_contents', false);
@@ -334,7 +334,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $multisite = $single->convertToMultisite(false);
 
@@ -362,7 +362,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $multisite = $single->convertToMultisite(true);
 
@@ -390,7 +390,7 @@ class SingleTest extends \Codeception\Test\Unit
             'Test'
         );
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertFalse($single->isMultisite());
         $this->assertEquals($wpRootDir . '/', $single->getWpRootDir());
@@ -439,7 +439,7 @@ class SingleTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($dbName, $single->getDb()->getDbName());
         $this->assertEquals($dbHost, $single->getDb()->getDbHost());
@@ -467,7 +467,7 @@ class SingleTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
         $constants = $single->getConstants();
 
         $expected = [
@@ -514,7 +514,7 @@ class SingleTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
         $globals = $single->getGlobals();
 
         $expected = [
@@ -548,7 +548,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content/plugins', $single->getPluginsDir());
     }
@@ -577,7 +577,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content/plugins', $single->getPluginsDir());
     }
@@ -606,7 +606,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-plugins', $single->getPluginsDir());
         $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $single->getPluginsDir('plugin-1.php'));
@@ -636,7 +636,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content/themes', $single->getThemesDir());
         $this->assertEquals($wpRootDir . '/wp-content/themes/some-file.php', $single->getThemesDir('some-file.php'));
@@ -667,7 +667,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content/themes', $single->getThemesDir());
         $this->assertEquals($wpRootDir . '/site-content/themes/some-file.php', $single->getThemesDir('some-file.php'));
@@ -697,7 +697,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content', $single->getContentDir());
         $this->assertEquals($wpRootDir . '/wp-content/some-file.php', $single->getContentDir('some-file.php'));
@@ -728,7 +728,7 @@ class SingleTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content', $single->getContentDir());
         $this->assertEquals($wpRootDir . '/site-content/some-file.php', $single->getContentDir('some-file.php'));

@@ -32,7 +32,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::ROOT_DIR_NOT_FOUND);
 
-        new Multisite('/non-existing-dir', '/non-existing-dir/wp-config.php', $db);
+        new Multisite('/non-existing-dir', '/non-existing-dir/wp-config.php');
     }
 
     /**
@@ -52,7 +52,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
 
-        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -83,7 +83,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::WP_CONFIG_FILE_NOT_FOUND);
 
-        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -112,7 +112,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SINGLE);
 
-        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -145,7 +145,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::NOT_INSTALLED);
 
-        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
     }
 
     /**
@@ -172,7 +172,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             )
             ->convertToMultisite();
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
@@ -222,7 +222,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'Test'
         )->convertToMultisite();
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertTrue($multisite->isMultisite());
         $this->assertEquals($wpRootDir . '/', $multisite->getWpRootDir());
@@ -271,7 +271,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($dbName, $multisite->getDb()->getDbName());
         $this->assertEquals($dbHost, $multisite->getDb()->getDbHost());
@@ -299,7 +299,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $constants = $multisite->getConstants();
 
         $expected = [
@@ -353,7 +353,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $globals = $multisite->getGlobals();
 
         $expected = [
@@ -385,7 +385,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content/plugins', $multisite->getPluginsDir());
     }
@@ -413,7 +413,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content/plugins', $multisite->getPluginsDir());
     }
@@ -441,7 +441,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-plugins', $multisite->getPluginsDir());
         $this->assertEquals($wpRootDir . '/site-plugins/plugin-1.php', $multisite->getPluginsDir('plugin-1.php'));
@@ -468,7 +468,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content/themes', $multisite->getThemesDir());
         $this->assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
@@ -499,7 +499,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content/themes', $multisite->getThemesDir());
         $this->assertEquals($wpRootDir . '/site-content/themes/some-file.php',
@@ -529,7 +529,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content', $multisite->getContentDir());
         $this->assertEquals($wpRootDir . '/wp-content/some-file.php',
@@ -560,7 +560,7 @@ class MultisiteTest extends \Codeception\Test\Unit
             'admin@wp.local',
             'Test');
 
-        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content', $multisite->getContentDir());
         $this->assertEquals($wpRootDir . '/site-content/some-file.php',

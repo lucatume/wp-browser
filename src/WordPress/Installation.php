@@ -160,7 +160,7 @@ class Installation
 
         $db = $this->db ?? Db::fromWpConfigFile(new WPConfigFile($this->wpRootDir, $wpConfigFilePath));
 
-        $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath, $db);
+        $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath);
         $multisite = $installationState->isMultisite();
 
         if ($this->db === null || !$this->installationState->isInstalled($multisite)) {
@@ -168,8 +168,8 @@ class Installation
         }
 
         return $multisite ?
-            new InstallationState\Multisite($this->wpRootDir, $wpConfigFilePath, $this->db)
-            : new InstallationState\Single($this->wpRootDir, $wpConfigFilePath, $this->db);
+            new InstallationState\Multisite($this->wpRootDir, $wpConfigFilePath)
+            : new InstallationState\Single($this->wpRootDir, $wpConfigFilePath);
     }
 
     public function isEmpty(): bool

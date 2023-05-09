@@ -60,7 +60,6 @@ class Running implements WorkerInterface
         $proc,
         array $pipes,
         float $startTime,
-        array $control,
         array $requiredResourcesIds = []
     ) {
         [$this->stdin, $this->stdout, $this->stderr] = $pipes;
@@ -125,7 +124,6 @@ class Running implements WorkerInterface
             $workerProc,
             $pipes,
             $startTime,
-            $control,
             $worker->getRequiredResourcesIds()
         );
     }

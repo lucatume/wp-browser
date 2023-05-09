@@ -119,7 +119,7 @@ class DbTest extends \Codeception\Test\Unit
                 'admin@wp.local',
                 'Test');
 
-        new Single($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals('lorem', $db->getOption('non-existent-option', 'lorem'));
         foreach ([

@@ -144,8 +144,8 @@ class Configured implements InstallationStateInterface
         }
 
         return $this->isMultisite() ?
-            new Multisite($this->wpRootDir, $this->wpConfigFile->getFilePath(), $this->db) :
-            new Single($this->wpRootDir, $this->wpConfigFile->getFilePath(), $this->db);
+            new Multisite($this->wpRootDir, $this->wpConfigFile->getFilePath()) :
+            new Single($this->wpRootDir, $this->wpConfigFile->getFilePath());
     }
 
     /**

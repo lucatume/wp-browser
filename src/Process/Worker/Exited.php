@@ -23,6 +23,9 @@ class Exited implements WorkerInterface
         $this->stderr = $stderr;
     }
 
+    /**
+     * @throws WorkerException
+     */
     public static function fromRunningWorker(Running $runningWorker): Exited
     {
         if ($runningWorker->isRunning()) {

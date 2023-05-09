@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
@@ -10,6 +11,7 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
+use Throwable;
 
 class Multisite implements InstallationStateInterface
 {
@@ -19,9 +21,14 @@ class Multisite implements InstallationStateInterface
     use InstalledTrait;
 
     /**
-     * @throws InstallationException|ProcessException|DbException|WpConfigFileException
+     * @throws DbException
+     * @throws InstallationException
+     * @throws ProcessException
+     * @throws WpConfigFileException
+     * @throws Throwable
+     * @throws WorkerException
      */
-    public function __construct(string $wpRootDir, string $wpConfigFilePath, Db $db)
+    public function __construct(string $wpRootDir, string $wpConfigFilePath)
     {
         $this->buildConfigured($wpRootDir, $wpConfigFilePath);
 

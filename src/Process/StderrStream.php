@@ -133,8 +133,13 @@ class StderrStream
                     $currentError['exceptionClass'] = $uncaughtExceptionMatches['exceptionClass'];
                 }
 
-                $currentError['file'] = $typeEndMatches['file'];
-                $currentError['line'] = $typeEndMatches['line'];
+                if (!isset($typeEndMatches['file'], $typeEndMatches['line'])) {
+                    $currentError['file'] = 'n/a';
+                    $currentError['line'] = 'n/a';
+                } else {
+                    $currentError['file'] = $typeEndMatches['file'];
+                    $currentError['line'] = $typeEndMatches['line'];
+                }
 
                 $currentError = $this->applyOptions($currentError, $options);
 
