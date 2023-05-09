@@ -2,15 +2,14 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
-use lucatume\WPBrowser\Exceptions\RuntimeException;
-use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
 class InstallAction implements CodeExecutionActionInterface
 {
-    private FileGetRequest $request;
+    private FileRequest $request;
 
     public function __construct(
-        FileGetRequest $request,
+        FileRequest $request,
         string $wpRootDir,
         string $title,
         string $adminUser,

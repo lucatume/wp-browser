@@ -265,8 +265,9 @@ abstract class FileRequest implements Serializable
     private function unserializeData(string $data): mixed
     {
         $unserializationErorr = '';
-        set_error_handler(static function ($errno, $errstr) use (&$unserializationErorr) {
+        set_error_handler(static function (int $errno, string $errstr) use (&$unserializationErorr): bool {
             $unserializationErorr = $errstr;
+            return true;
         }, E_WARNING);
         $unserializedData = unserialize($data, ['allowed_classes' => true]);
         restore_error_handler();

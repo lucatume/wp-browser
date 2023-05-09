@@ -225,7 +225,7 @@ class Loop
         $streamSelectRuntime = microtime(true) - $streamSelectStartTime;
         if ($streamSelectRuntime < .01) {
             // Avoid CPU hogging on Mac.
-            usleep(10 ** 4 - $streamSelectRuntime);
+            usleep((int)(10 ** 4 - $streamSelectRuntime));
         }
 
         if ($updates === false) {

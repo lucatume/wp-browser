@@ -3,14 +3,14 @@
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
 class ThemeSwitchAction implements CodeExecutionActionInterface
 {
-    private FileGetRequest $request;
+    private FileRequest $request;
 
     public function __construct(
-        FileGetRequest $request,
+        FileRequest $request,
         string $wpRootDir,
         mixed $stylesheet,
         bool $multisite

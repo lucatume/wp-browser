@@ -26,9 +26,9 @@ class PluginProject implements ProjectInterface
     private function findPluginFile(): string
     {
         $pluginFile = null;
-        foreach (glob($this->workDir . '/*.php', false) as $file) {
+        foreach (glob($this->workDir . '/*.php', GLOB_NOSORT) as $file) {
             $content = file_get_contents($file);
-            if (preg_match('/\s*Plugin Name:\s*(.*)\s*/', $content, $matches)) {
+            if (preg_match('/\s*Plugin Name:\s*(.*)\s*/', $content)) {
                 $pluginFile = $file;
             }
         }

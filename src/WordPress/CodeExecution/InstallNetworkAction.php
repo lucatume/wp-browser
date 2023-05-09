@@ -4,15 +4,15 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
+use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
 
 class InstallNetworkAction implements CodeExecutionActionInterface
 {
-    private FileGetRequest $request;
+    private FileRequest $request;
 
     public function __construct(
-        FileGetRequest $request,
+        FileRequest $request,
         string $wpRootDir,
         string $adminEmail,
         string $title,
