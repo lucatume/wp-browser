@@ -156,7 +156,7 @@ class FileStreamWrapper
 
     public function stream_seek(int $offset, int $whence = SEEK_SET): bool
     {
-        return fseek($this->fileResource, $offset, $whence);
+        return fseek($this->fileResource, $offset, $whence) === 0;
     }
 
     public function rename(string $from, string $to): bool

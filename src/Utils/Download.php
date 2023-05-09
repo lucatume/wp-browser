@@ -7,6 +7,9 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 class Download
 {
 
+    /**
+     * @throws RuntimeException
+     */
     public static function fileFromUrl(
         string $sourceUrl,
         string $destinationPath,
@@ -17,7 +20,9 @@ class Download
         $file = fopen($destinationPath, 'wb');
 
         if (!is_resource($file)) {
-            return false;
+            throw new RuntimeException(
+                "File $sourceUrl download failed: could not open destination file to write."
+            );
         }
 
         $curlHandle = curl_init();
@@ -25,7 +30,7 @@ class Download
         if ($curlHandle === false) {
             fclose($file);
 
-            throw new \RuntimeException("File $sourceUrl download failed: could not initialize cURL.");
+            throw new RuntimeException("File $sourceUrl download failed: could not initialize cURL.");
         }
 
         curl_setopt($curlHandle, CURLOPT_URL, $sourceUrl);

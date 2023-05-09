@@ -240,7 +240,7 @@ abstract class FileRequest implements Serializable
     private function collectIncompleteClasses(mixed $unserializedData, array &$carry = []): array
     {
         if (!is_array($unserializedData)) {
-            return $unserializedData;
+            return [];
         }
 
         foreach ($unserializedData as $datum) {

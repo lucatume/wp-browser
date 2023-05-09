@@ -336,12 +336,12 @@ class Loop
 
     private function terminateAllRunningWorkers(): Loop
     {
-        foreach ($this->running as $key => $runningWorker) {
+        foreach ($this->running as $runningWorker) {
             $this->exited[$runningWorker->getId()] = $runningWorker->terminate();
             $this->debugLine("Worker {$runningWorker->getId()} terminated.");
         }
 
-        $this->running = array_values(array_diff_key($this->running, $this->exited));
+        $this->running = array_diff_key($this->running, $this->exited);
 
         return $this;
     }

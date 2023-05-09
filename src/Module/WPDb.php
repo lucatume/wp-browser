@@ -1361,7 +1361,10 @@ class WPDb extends Db
             return [];
         }
 
-        return array_column($meta, 'meta_value');
+        return array_combine(
+            array_column($meta, 'meta_key'),
+            array_column($meta, 'meta_value')
+        );
     }
 
     /**
