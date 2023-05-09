@@ -1,6 +1,8 @@
 <?php
 
-abstract class WP_Test_REST_TestCase extends WP_UnitTestCase {
+namespace lucatume\WPBrowser\TestCase;
+
+abstract class WPRestApiTestCase extends WPTestCase {
 	protected function assertErrorResponse( $code, $response, $status = null ) {
 
 		if ( is_a( $response, 'WP_REST_Response' ) ) {

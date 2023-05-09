@@ -2,17 +2,11 @@
 
 namespace lucatume\WPBrowser\Command;
 
-use Codeception\Command\Shared\ConfigTrait;
-use Codeception\Command\Shared\FileSystemTrait;
-use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase;
 
-class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomCommandInterface
+class GenerateWPRestPostTypeController extends GenerateWPUnit
 {
-    use FileSystemTrait;
-    use ConfigTrait;
-
     /**
      * Returns the command description.
      *
@@ -30,7 +24,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit implements CustomC
      * @param array $config The generator configuration.
      * @param string $class The class to generate the template for.
      *
-     * @return \lucatume\WPBrowser\Lib\Generator\WPUnit The generator instance.
+     * @return WPUnit The generator instance.
      */
     protected function getGenerator(array $config, string $class): WPUnit
     {

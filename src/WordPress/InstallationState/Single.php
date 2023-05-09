@@ -8,6 +8,7 @@ use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use lucatume\WPBrowser\WordPress\WpConfigFileException;
 
 class Single implements InstallationStateInterface
 {
@@ -18,10 +19,11 @@ class Single implements InstallationStateInterface
 
     /**
      * @throws InstallationException|ProcessException|DbException
+     * @throws WpConfigFileException
      */
-    public function __construct(string $wpRootDir, string $wpConfigFilePath, Db $db)
+    public function __construct(string $wpRootDir, string $wpConfigFilePath)
     {
-        $this->buildConfigured($wpRootDir, $wpConfigFilePath, $db);
+        $this->buildConfigured($wpRootDir, $wpConfigFilePath);
 
         if ($this->wpConfigFile->getConstant('MULTISITE')) {
             throw new InstallationException(

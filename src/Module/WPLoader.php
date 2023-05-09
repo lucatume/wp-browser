@@ -14,13 +14,10 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Util\Debug;
 use lucatume\WPBrowser\Events\Dispatcher;
-use lucatume\WPBrowser\Module\Traits\DebugWrapping;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
-use lucatume\WPBrowser\Traits\WithCodeceptionModuleConfig;
-use lucatume\WPBrowser\Traits\WithWordPressFilters;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -51,9 +48,7 @@ use Throwable;
  */
 class WPLoader extends Module
 {
-    use WithWordPressFilters;
     use ConfigTrait;
-    use WithCodeceptionModuleConfig;
 
     public const EVENT_BEFORE_INSTALL = 'wploader.before_install';
     public const EVENT_BEFORE_LOADONLY = 'wploader.before_loadonly';

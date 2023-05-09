@@ -34,20 +34,10 @@ class InstallAction implements CodeExecutionActionInterface
                 });
 
                 // Plug the `auth_redirect` function to avoid the redirect to the login page.
-                if (!function_exists('auth_redirect')) {
-                    function auth_redirect()
-                    {
-                        return true;
-                    }
-                }
+                require_once dirname(__DIR__, 3) . '/includes/pluggables/function-auth-redirect.php';
 
                 // Plug the `wp_mail` function to avoid the sending of emails.
-                if (!function_exists('wp_mail')) {
-                    function wp_mail()
-                    {
-                        return true;
-                    }
-                }
+                require_once dirname(__DIR__, 3) . '/includes/pluggables/function-wp-mail.php';
 
                 if (!defined('WP_SITEURL')) {
                     define('WP_SITEURL', $url);

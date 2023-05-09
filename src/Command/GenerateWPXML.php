@@ -5,7 +5,7 @@ namespace lucatume\WPBrowser\Command;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\TestCase\WPXMLRPCTestCase;
 
-class GenerateWPXMLRPC extends GenerateWPUnit
+class GenerateWPXML extends GenerateWPUnit
 {
     /**
      * Returns the command name.
@@ -24,7 +24,7 @@ class GenerateWPXMLRPC extends GenerateWPUnit
      */
     public function getDescription(): string
     {
-        return 'Generates a WPXMLRPCTestCase: a WP_XMLRPC_UnitTestCase with Codeception super-powers.';
+        return 'Generates a WPXMLTestCase: a WP_XML_UnitTestCase with Codeception super-powers.';
     }
 
     /**

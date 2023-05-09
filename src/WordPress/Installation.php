@@ -163,7 +163,7 @@ class Installation
         $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath, $db);
         $multisite = $installationState->isMultisite();
 
-        if ($this->db === null || !$this->isInstalled($multisite)) {
+        if ($this->db === null || !$this->installationState->isInstalled($multisite)) {
             return $installationState;
         }
 

@@ -38,7 +38,6 @@ class DbDump
         $joined = implode($delimiter, $sql);
         $replaced = $this->replaceSiteDomainInSqlString($joined);
 
-        // @phpstan-ignore-next-line
         return explode($delimiter, $replaced);
     }
 
@@ -59,7 +58,6 @@ class DbDump
         $joined = implode($delimiter, $sql);
         $replaced = $this->replaceSiteDomainInMultisiteSqlString($joined);
 
-        // @phpstan-ignore-next-line
         return explode($delimiter, $replaced);
     }
 
@@ -138,7 +136,7 @@ class DbDump
         if ($pregLastError !== 0) {
             throw new DumpException(
                 'There was an error while trying to replace the URL in the dump file: ' .
-                pregErrorMessage($pregLastError) .
+                preg_last_error_msg() .
                 "\n\n" .
                 'Either manually replace it and set the "urlReplacement" module parameter to "false" or check the ' .
                 'dump file integrity.'

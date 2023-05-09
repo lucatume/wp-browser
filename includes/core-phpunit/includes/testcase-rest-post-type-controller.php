@@ -1,6 +1,8 @@
 <?php
 
-abstract class WP_Test_REST_Post_Type_Controller_Testcase extends WP_Test_REST_Controller_Testcase {
+namespace lucatume\WPBrowser\TestCase;
+
+abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase {
 
 	protected function check_post_data( $post, $data, $context, $links ) {
 		$post_type_obj = get_post_type_object( $post->post_type );

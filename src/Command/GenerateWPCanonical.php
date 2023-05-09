@@ -2,10 +2,10 @@
 
 namespace lucatume\WPBrowser\Command;
 
-use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
+use lucatume\WPBrowser\TestCase\WPCanonicalTestCase;
 
-class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterface
+class GenerateWPCanonical extends GenerateWPUnit
 {
 
     /**
@@ -15,7 +15,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      */
     public function getDescription(): string
     {
-        return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase extension with Codeception super-powers.';
+        return 'Generates a WPCanonicalTestCase: a WP_Canonical_UnitTestCase with Codeception super-powers.';
     }
 
     /**
@@ -28,7 +28,7 @@ class GenerateWPCanonical extends GenerateWPUnit implements CustomCommandInterfa
      */
     protected function getGenerator(array $config, string $class): \lucatume\WPBrowser\Lib\Generator\WPUnit
     {
-        return new WPUnit($config, $class, '\\lucatume\\WPBrowser\\TestCase\\WPCanonicalTestCase');
+        return new WPUnit($config, $class, WPCanonicalTestCase::class);
     }
 
     /**

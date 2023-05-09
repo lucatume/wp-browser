@@ -10,6 +10,7 @@ use lucatume\WPBrowser\Command\GenerateWPRestApi;
 use lucatume\WPBrowser\Command\GenerateWPRestController;
 use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Command\GenerateWPXML;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Project\PluginProject;
@@ -95,6 +96,7 @@ class Wpbrowser extends Bootstrap
                     GenerateWPRestPostTypeController::class,
                     GenerateWPAjax::class,
                     GenerateWPCanonical::class,
+                    GenerateWPXML::class,
                     GenerateWPXMLRPC::class,
                 ]
             ]

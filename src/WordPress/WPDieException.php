@@ -7,7 +7,6 @@ use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\ErrorHandling;
 use lucatume\WPBrowser\Utils\Property;
 use WP_Error;
-use function lucatume\WPBrowser\Exceptions\str_starts_with;
 
 class WPDieException extends Exception
 {

@@ -1,19 +1,6 @@
-includes:
-  - vendor/szepeviktor/phpstan-wordpress/extension.neon
 parameters:
   level: 0
   paths:
     - src/
   scanDirectories:
     - includes/
-    # Patchwork bootstrap and autoloading.
-    - vendor/antecedent/patchwork/
-    # Codeception bootstrap and autoloading.
-    - vendor/codeception/codeception/
-    # WP-CLI bootstrap and autoloading.
-    - vendor/wp-cli/wp-cli/php/
-  bootstrapFiles:
-    # AbstractBrowser aliases.
-    - vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
-    # WP_CLI_Command class definition.
-    - vendor/wp-cli/wp-cli/php/class-wp-cli-command.php

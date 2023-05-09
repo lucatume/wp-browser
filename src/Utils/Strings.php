@@ -20,7 +20,6 @@ class Strings
     public static function isRegex(string $string): bool
     {
         try {
-            // @phpstan-ignore-next-line
             return @preg_match($string, '') !== false;
         } catch (\Exception) {
             return false;

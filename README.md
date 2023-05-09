@@ -72,23 +72,24 @@ This is just a bite though, find out more in [the documentation][1].
 
 My sincere thanks to my sponsors: you make maintaining this project easier.
 
-* [@borkweb](https://github.com/borkweb)
-* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
-* [@jchristopher](https://github.com/jchristopher)
-* [@dingo-d](https://github.com/dingo-d)
-* [@cliffordp](https://github.com/cliffordp)
-* [@Luc45](https://github.com/Luc45)
-* [@pods-framework](https://github.com/pods-framework)
-* [@bordoni](https://github.com/bordoni)
-* [@francescamarano](https://github.com/francescamarano)
-* [@zackkatz](https://github.com/zackkatz)
 * [@Borlabs-Ben](https://github.com/Borlabs-Ben)
 * [@DrewAPicture](https://github.com/DrewAPicture)
+* [@Luc45](https://github.com/Luc45)
+* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
+* [@bordoni](https://github.com/bordoni)
+* [@borkweb](https://github.com/borkweb)
+* [@cliffordp](https://github.com/cliffordp)
+* [@dingo-d](https://github.com/dingo-d)
+* [@francescamarano](https://github.com/francescamarano)
+* [@jchristopher](https://github.com/jchristopher)
 * [@jerclarke](https://github.com/jerclarke)
+* [@johnbillion](https://github.com/johnbillion)
 * [@joppuyo](https://github.com/joppuyo)
+* [@moraleida](https://github.com/johnbillion/moreleida)
+* [@pods-framework](https://github.com/pods-framework)
 * [@roborourke](https://github.com/roborourke)
 * [@ryanshoover](https://github.com/ryanshoover)
-* [@johnbillion](https://github.com/johnbillion)
+* [@zackkatz](https://github.com/zackkatz)
 
 [1]: https://wpbrowser.wptestkit.dev/
 [2]: https://wpbrowser.wptestkit.dev/levels-of-testing

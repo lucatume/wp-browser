@@ -99,7 +99,7 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
         $wpRootDir = FS::tmpDir('multisite_');
-        Installation::scaffold($wpRootDir, '6.1.1')
+        $installation = Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
                 'https://wp.local',
@@ -116,11 +116,44 @@ class MultisiteTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should throw if trying to scaffold, install, configure and convert to multisitej
+     * It should throw if building on not installed multisite
      *
      * @test
      */
-    public function should_throw_if_trying_to_scaffold_install_configure_and_convert_to_multisitej(): void
+    public function should_throw_if_building_on_not_installed_multisite(): void
+    {
+        $dbName = Random::dbName(10);
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('multisite_');
+
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        // Remove the blogs table from the database.
+        $db->query("DROP TABLE {$db->getTablePrefix()}blogs");
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::NOT_INSTALLED);
+
+        new Multisite($wpRootDir, $wpRootDir . '/wp-config.php', $db);
+    }
+
+    /**
+     * It should throw if trying to scaffold, install, configure and convert to multisite
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_scaffold_install_configure_and_convert_to_multisite(): void
     {
         $dbName = Random::dbName(10);
         $dbHost = Env::get('WORDPRESS_DB_HOST');

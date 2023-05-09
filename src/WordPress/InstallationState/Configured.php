@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
@@ -40,6 +41,54 @@ class Configured implements InstallationStateInterface
             'The WordPress installation is already configured and installed.',
             InstallationException::STATE_CONFIGURED
         );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    private function validateInstallationParameters(
+        string $url,
+        string $adminUser,
+        string $adminPassword,
+        string $adminEmail,
+        string $title
+    ): void {
+        /** @noinspection BypassedUrlValidationInspection */
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new InstallationException(
+                "The URL $url is not a valid URL.",
+                InstallationException::INVALID_URL
+            );
+        }
+
+        $safeAdminUser = Strings::slug($adminUser);
+        if ($adminUser === '' || $safeAdminUser !== $adminUser) {
+            throw new InstallationException(
+                "The admin user $adminUser is not a valid user name.",
+                InstallationException::INVALID_ADMIN_USERNAME
+            );
+        }
+
+        if (empty($adminPassword)) {
+            throw new InstallationException(
+                "The admin password is empty.",
+                InstallationException::INVALID_ADMIN_PASSWORD
+            );
+        }
+
+        if (!filter_var($adminEmail, FILTER_SANITIZE_EMAIL)) {
+            throw new InstallationException(
+                "The admin email $adminEmail is not a valid email address.",
+                InstallationException::INVALID_ADMIN_EMAIL
+            );
+        }
+
+        if (empty($title)) {
+            throw new InstallationException(
+                "The site title is empty.",
+                InstallationException::INVALID_TITLE
+            );
+        }
     }
 
     /**

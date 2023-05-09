@@ -9,6 +9,7 @@ use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
+use lucatume\WPBrowser\WordPress\WpConfigFileException;
 
 class Multisite implements InstallationStateInterface
 {
@@ -18,11 +19,11 @@ class Multisite implements InstallationStateInterface
     use InstalledTrait;
 
     /**
-     * @throws InstallationException|ProcessException|DbException
+     * @throws InstallationException|ProcessException|DbException|WpConfigFileException
      */
     public function __construct(string $wpRootDir, string $wpConfigFilePath, Db $db)
     {
-        $this->buildConfigured($wpRootDir, $wpConfigFilePath, $db);
+        $this->buildConfigured($wpRootDir, $wpConfigFilePath);
 
         if (!is_file($wpRootDir . '/wp-load.php')) {
             throw new InstallationException(
@@ -36,6 +37,14 @@ class Multisite implements InstallationStateInterface
                 InstallationException::STATE_SINGLE
             );
         }
+
+        if($this->isInstalled(true)){
+            throw new InstallationException(
+                "The WordPress multi-site installation is not installed.",
+                InstallationException::NOT_INSTALLED
+            );
+        }
+
         $this->version = new Version($this->wpRootDir);
     }
 

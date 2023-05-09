@@ -1,6 +1,8 @@
 <?php
 
-abstract class WP_Test_REST_Controller_Testcase extends WP_Test_REST_TestCase {
+namespace lucatume\WPBrowser\TestCase;
+
+abstract class WPRestControllerTestCase extends WPTestCase {
 
 	protected $server;
 

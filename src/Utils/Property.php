@@ -48,7 +48,6 @@ class Property
      */
     public static function setPropertiesForClass(?object $object, string $class, array $props): object
     {
-        // @phpstan-ignore-next-line
         $reflectedEntity = new ReflectionClass($class);
 
         if (!$object) {

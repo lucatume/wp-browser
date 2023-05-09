@@ -1,0 +1,14 @@
+diff --git a/includes/core-phpunit/includes/testcase-canonical.php b/includes/core-phpunit/includes/testcase-canonical.php
+index 26916fac..3991bd44 100644
+--- a/includes/core-phpunit/includes/testcase-canonical.php
++++ b/includes/core-phpunit/includes/testcase-canonical.php
+@@ -1,6 +1,8 @@
+ <?php
+ 
+-abstract class WP_Canonical_UnitTestCase extends WP_UnitTestCase {
++namespace lucatume\WPBrowser\TestCase;
++
++abstract class WPCanonicalTestCase extends WPTestCase {
+ 	public static $old_current_user;
+ 	public static $author_id;
+ 	public static $post_ids    = array();

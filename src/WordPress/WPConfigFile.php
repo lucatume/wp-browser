@@ -19,7 +19,7 @@ class WPConfigFile
     private array $variables = [];
 
     /**
-     * @throws InstallationException|ProcessException
+     * @throws InstallationException|ProcessException|Throwable
      */
     public function __construct(string $wpRootDir, string $wpConfigFilePath)
     {
@@ -72,7 +72,7 @@ class WPConfigFile
     }
 
     /**
-     * @throws ProcessException
+     * @throws ProcessException|Throwable
      */
     private function includeFile(): void
     {

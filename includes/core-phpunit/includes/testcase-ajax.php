@@ -1,4 +1,7 @@
 <?php
+
+namespace lucatume\WPBrowser\TestCase;
+
 /**
  * Ajax test case class
  *
@@ -6,7 +9,7 @@
  * @subpackage UnitTests
  * @since      3.4.0
  */
-abstract class WP_Ajax_UnitTestCase extends WP_UnitTestCase {
+abstract class WPAjaxTestCase extends WPTestCase {
 
 	/**
 	 * Last Ajax response. This is set via echo -or- wp_die.

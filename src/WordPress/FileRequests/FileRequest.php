@@ -307,12 +307,7 @@ abstract class FileRequest implements Serializable
     {
         // Do not send mails.
         $this->addPreloadClosure(static function () {
-            if (!function_exists('wp_mail')) {
-                function wp_mail()
-                {
-                    return true;
-                }
-            }
+            require_once dirname(__DIR__, 3) . '/includes/pluggables/function-wp-mail.php';
         });
 
         // Do not trigger external and internal requests.

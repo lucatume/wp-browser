@@ -24,9 +24,10 @@ class SerializableThrowable
         $this->message = $throwable->getMessage();
         $this->code = $throwable->getCode();
         $trace = $throwable->getTrace();
-        foreach ($trace as $traceEntry) {
-            unset($trace['args']);
+        foreach ($trace as &$traceEntry) {
+            unset($traceEntry['args']);
         }
+        unset($traceEntry);
         $this->trace = $trace;
         $this->file = $throwable->getFile();
         $this->line = $throwable->getLine();

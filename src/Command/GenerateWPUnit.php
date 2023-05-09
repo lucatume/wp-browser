@@ -3,8 +3,6 @@
 namespace lucatume\WPBrowser\Command;
 
 use Codeception\Command\GenerateTest;
-use Codeception\Command\Shared\ConfigTrait;
-use Codeception\Command\Shared\FileSystemTrait;
 use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\Lib\Generator\WPUnit as WPUnitGenerator;
@@ -24,9 +22,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 {
-    use FileSystemTrait;
-    use ConfigTrait;
-
     /**
      * Returns the name of the command.
      *
@@ -44,13 +39,13 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      */
     public function getDescription(): string
     {
-        return 'Generates a WPTestCase: a WP_UnitTestCase extension with Codeception super-powers.';
+        return 'Generates a WPTestCase: a WP_UnitTestCase with Codeception super-powers.';
     }
 
     /**
      * Executes the command.
      *
-     * @param InputInterface $input The inputl
+     * @param InputInterface  $input  The inputl
      * @param OutputInterface $output The output.
      *
      * @return int Either the command return value or `null`.
@@ -80,7 +75,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Returns the built path.
      *
-     * @param string $path The root path.
+     * @param string $path  The root path.
      * @param string $class The class to build the path for.
      *
      * @return string The built path.
@@ -99,7 +94,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      * Returns the configured generator.
      *
      * @param array<string,mixed> $config The generator configuration.
-     * @param string $class The class to generate the test case for.
+     * @param string              $class  The class to generate the test case for.
      *
      * @return WPUnitGenerator An instance of the test case code generator.
      */

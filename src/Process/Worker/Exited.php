@@ -29,7 +29,7 @@ class Exited implements WorkerInterface
             throw new WorkerException('Worker is still running.');
         }
 
-        return new static(
+        return new self(
             $runningWorker->getExitCode(),
             $runningWorker->getId(),
             $runningWorker->getReturnValue(),

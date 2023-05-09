@@ -1,9 +1,12 @@
 <?php
+
+namespace lucatume\WPBrowser\TestCase;
+
 require_once ABSPATH . 'wp-admin/includes/admin.php';
 require_once ABSPATH . WPINC . '/class-IXR.php';
 require_once ABSPATH . WPINC . '/class-wp-xmlrpc-server.php';
 
-abstract class WP_XMLRPC_UnitTestCase extends WP_UnitTestCase {
+abstract class WPXMLRPCTestCase extends WPTestCase {
 	/**
 	 * @var wp_xmlrpc_server
 	 */

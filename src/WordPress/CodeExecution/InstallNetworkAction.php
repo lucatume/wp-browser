@@ -33,11 +33,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
                 });
 
                 // Plug the `auth_redirect` function to avoid the redirect to the login page.
-                if (!function_exists('auth_redirect')) {
-                    function auth_redirect()
-                    {
-                    }
-                }
+                require_once dirname(__DIR__, 3) . '/includes/pluggables/function-auth-redirect.php';
 
                 if ($subdomain) {
                     PreloadFilters::spoofDnsWildcardCheck();

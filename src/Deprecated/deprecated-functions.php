@@ -6,22 +6,18 @@ namespace tad\WPBrowser {
     use DateTimeImmutable;
     use DateTimeInterface;
     use lucatume\WPBrowser\Events\Dispatcher;
-    use lucatume\WPBrowser\Utils\Codeception;
     use lucatume\WPBrowser\Utils\Composer;
     use lucatume\WPBrowser\Utils\CorePHPUnit;
     use lucatume\WPBrowser\Utils\Dates;
     use lucatume\WPBrowser\Utils\Db;
     use lucatume\WPBrowser\Utils\Env;
     use lucatume\WPBrowser\Utils\Filesystem;
-    use lucatume\WPBrowser\Deprecated\Map;
-    use lucatume\WPBrowser\Utils\Process;
     use lucatume\WPBrowser\Utils\Property;
     use lucatume\WPBrowser\Utils\Strings;
     use lucatume\WPBrowser\Utils\Url;
     use lucatume\WPBrowser\Utils\WP;
     use PHPUnit\Framework\Assert;
     use PHPUnit\Runner\Version;
-    use VRia\Utils\NoDiacritic;
     use wpdb;
 
     /**
@@ -56,7 +52,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnMap instead.
      */
-    function dbDsnMap(string $dbHost): Map
+    function dbDsnMap(string $dbHost): array
     {
         return Db::dbDsnToMap($dbHost);
     }
@@ -64,7 +60,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbCredentials instead.
      */
-    function dbCredentials(Map $dsn, string $dbuser, string $dbpass, string $dbname = null): Map
+    function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
     {
         return Db::dbCredentials($dsn, $dbuser, $dbpass, $dbname);
     }
@@ -72,7 +68,7 @@ namespace tad\WPBrowser {
     /*
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnString instead.
      */
-    function dbDsnString(Map $dbDsnMap, bool $forDbHost = false): string
+    function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {
         return Db::dbDsnString($dbDsnMap, $forDbHost);
     }
@@ -88,7 +84,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnToMap instead.
      */
-    function dbDsnToMap(string $dsnString): Map
+    function dbDsnToMap(string $dsnString): array
     {
         return Db::dbDsnToMap($dsnString);
     }
@@ -96,7 +92,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Env::envFile instead.
      */
-    function envFile($file): Map
+    function envFile($file): array
     {
         return Env::envFile($file);
     }
@@ -112,7 +108,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Env::loadEnvMap instead.
      */
-    function loadEnvMap(Map $map, $overwrite = true): void
+    function loadEnvMap(array $map, $overwrite = true): void
     {
         Env::loadEnvMap($map, $overwrite);
     }
@@ -388,11 +384,6 @@ namespace tad\WPBrowser {
     function phpunitVersion(): string
     {
         return Version::id();
-    }
-
-    function pregpregErrorMessage(int $pregLastError)
-    {
-
     }
 }
 

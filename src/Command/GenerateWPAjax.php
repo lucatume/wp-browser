@@ -2,10 +2,10 @@
 
 namespace lucatume\WPBrowser\Command;
 
-use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
+use lucatume\WPBrowser\TestCase\WPAjaxTestCase;
 
-class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
+class GenerateWPAjax extends GenerateWPUnit
 {
     /**
      * Returns the command description.
@@ -14,7 +14,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      */
     public function getDescription(): string
     {
-        return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase extension with Codeception super-powers.';
+        return 'Generates a WPAjaxTestCase: a WP_Ajax_UnitTestCase with Codeception super-powers.';
     }
 
     /**
@@ -27,7 +27,7 @@ class GenerateWPAjax extends GenerateWPUnit implements CustomCommandInterface
      */
     protected function getGenerator(array $config, string $class): \lucatume\WPBrowser\Lib\Generator\WPUnit
     {
-        return new WPUnit($config, $class, '\\lucatume\\WPBrowser\\TestCase\\WPAjaxTestCase');
+        return new WPUnit($config, $class, WPAjaxTestCase::class);
     }
 
     /**

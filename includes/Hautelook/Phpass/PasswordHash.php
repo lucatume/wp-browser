@@ -1,6 +1,7 @@
 <?php
 /**
  * This is the internalized version of the original phpass library.
+ *
  * All credit goes to the original author: Solar Designer <solar at openwall.com>.
  */
 

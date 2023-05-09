@@ -2,17 +2,11 @@
 
 namespace lucatume\WPBrowser\Command;
 
-use Codeception\Command\Shared\ConfigTrait;
-use Codeception\Command\Shared\FileSystemTrait;
-use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\TestCase\WPRestApiTestCase;
 
-class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
+class GenerateWPRestApi extends GenerateWPUnit
 {
-    use FileSystemTrait;
-    use ConfigTrait;
-
     /**
      * Returns the command description.
      *
@@ -20,7 +14,7 @@ class GenerateWPRestApi extends GenerateWPUnit implements CustomCommandInterface
      */
     public function getDescription(): string
     {
-        return 'Generates a WPRestApiTestCase: a WP_Test_REST_TestCase extension with Codeception super-powers.';
+        return 'Generates a WPRestApiTestCase: a WP_Test_REST_TestCase with Codeception super-powers.';
     }
 
     /**

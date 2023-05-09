@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\TestCase;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
+use ReflectionException;
 use ReflectionMethod;
 use WP_UnitTestCase;
 
@@ -97,6 +98,9 @@ class WPTestCase extends Unit
         unset(self::$coreTestCaseMap[static::class]);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public static function __callStatic(string $name, array $arguments)
     {
         $coreTestCase = self::getCoreTestCase();
@@ -105,6 +109,9 @@ class WPTestCase extends Unit
         return $reflectionMethod->invokeArgs(null, $arguments);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function __call(string $name, array $arguments)
     {
         $coreTestCase = self::getCoreTestCase();
