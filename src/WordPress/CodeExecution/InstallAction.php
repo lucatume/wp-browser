@@ -56,10 +56,7 @@ class InstallAction implements CodeExecutionActionInterface
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         require_once ABSPATH . '/wp-includes/class-wpdb.php';
-        $result = wp_install($title, $adminUser, $adminEmail, true, '', \wp_slash($adminPassword));
-        if (!(is_array($result) && isset($result['url'], $result['user_id'], $result['password']))) {
-            throw new RuntimeException('Could not install WordPress.');
-        }
+        wp_install($title, $adminUser, $adminEmail, true, '', \wp_slash($adminPassword));
     }
 
     public function getClosure(): \Closure

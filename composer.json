@@ -61,7 +61,6 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "tad\\Test\\": "tests/_support/lib",
       "lucatume\\WPBrowser\\Tests\\": "tests/_support"
     },
     "files": [

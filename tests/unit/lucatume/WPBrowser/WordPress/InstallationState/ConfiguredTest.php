@@ -3,8 +3,8 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
-use lucatume\WPBrowser\Process\Loop;
-use lucatume\WPBrowser\Process\Worker\Result;
+use Codeception\Test\Unit;
+use Exception;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -12,15 +12,14 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\CodeExecution\ExitAction;
-use lucatume\WPBrowser\WordPress\CodeExecution\InstallAction;
 use lucatume\WPBrowser\WordPress\CodeExecution\ThrowAction;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
-use lucatume\WPBrowser\WordPress\FileRequests\FileGetRequest;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
+use RuntimeException;
 
-class ConfiguredTest extends \Codeception\Test\Unit
+class ConfiguredTest extends Unit
 {
     use UopzFunctions;
     use ClassStubs;
@@ -363,7 +362,7 @@ class ConfiguredTest extends \Codeception\Test\Unit
 
         $this->uopzSetStaticMethodReturn(CodeExecutionFactory::class,
             'toInstallWordPress',
-            (new ThrowAction(new \Exception('Something is amiss')))->getClosure());
+            (new ThrowAction(new Exception('Something is amiss')))->getClosure());
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
@@ -726,7 +725,7 @@ class ConfiguredTest extends \Codeception\Test\Unit
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot update option "foo" because WordPress is not configured yet');
 
         $configured->updateOption('foo', 'bar');

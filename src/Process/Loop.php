@@ -43,16 +43,8 @@ class Loop
      * @var array<string,Worker>
      */
     private array $workers = [];
-    /**
-     * @var callable|null
-     */
-    private $debuggerCallback;
     private bool $debugMode = false;
 
-    /**
-     * @var array<callable>
-     */
-    private array $onWorkerExit = [];
     private bool $fastFailureFlagRaised = false;
 
     public function __construct(

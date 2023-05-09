@@ -45,14 +45,7 @@ class Dates
             return (new DateTimeImmutable($input))->setTimezone(new DateTimezone(date_default_timezone_get()));
         }
 
-        if ($date instanceof DateTime) {
-            return DateTimeImmutable::createFromMutable($date);
-        }
-
-        if ($date instanceof DateTimeInterface) {
-            return new DateTimeImmutable($date->format('Y-m-d H:i:s.u'), $date->getTimezone());
-        }
-
-        throw new InvalidArgumentException('Date must be a DateTimeInterface, DateTimeImmutable, DateTime, string or numeric timestamp');
+        // The `DateTimeInterface` cannot be implemented by user-land classes, so we can safely assume it's a DateTime.
+        return DateTimeImmutable::createFromMutable($date);
     }
 }

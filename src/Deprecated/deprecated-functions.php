@@ -285,7 +285,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::andList` instead.
      */
-    function andList(array $elements): string|false
+    function andList(array $elements): string
     {
         return Strings::andList($elements);
     }

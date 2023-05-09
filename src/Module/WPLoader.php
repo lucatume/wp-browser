@@ -150,41 +150,12 @@ class WPLoader extends Module
         'dump' => '',
     ];
 
-    /**
-     * The path to the modified tests bootstrap file.
-     *
-     * @var string
-     */
-    protected string $wpBootstrapFile;
-
-    /**
-     * The absolute path to the plugins directory.
-     *
-     * @var string
-     */
-    protected string $pluginDir;
-
-    /**
-     * The absolute path to the content directory.
-     *
-     * @var string
-     */
-    protected string $contentDir;
-
-    /**
-     * @var FactoryStore
-     */
-    protected FactoryStore $factoryStore;
-
-    /**
-     * A list of redirections triggered by WordPress during load in the shape location to status codes.
-     *
-     * @var array<string,int>
-     */
-    private array $loadRedirections = [];
+    private string $wpBootstrapFile;
+    private FactoryStore $factoryStore;
     private Installation $installation;
     private string $bootstrapOutput = '';
     private string $installationOutput = '';
+    private bool $bootstrapSuccessful = false;
 
     public function _getBootstrapOutput(): string
     {
@@ -493,10 +464,9 @@ class WPLoader extends Module
             PreloadFilters::addFilter('pre_option_active_plugins', $activatePlugins);
         }
 
-        $bootstrapSuccessful = false;
-        ob_start(function ($buffer) use (&$bootstrapSuccessful) {
+        ob_start(function ($buffer) {
             $this->bootstrapOutput = $buffer;
-            if ($bootstrapSuccessful === true) {
+            if ($this->bootstrapSuccessful === true) {
                 return;
             }
 
@@ -504,7 +474,7 @@ class WPLoader extends Module
             throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . $buffer);
         });
         require $this->wpBootstrapFile;
-        $bootstrapSuccessful = true;
+        $this->bootstrapSuccessful = true;
         ob_end_clean();
 
         Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);

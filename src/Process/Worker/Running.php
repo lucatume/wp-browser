@@ -15,14 +15,9 @@ class Running implements WorkerInterface
     use MemoryUsage;
 
     /**
-     * @var array<string,mixed>
-     */
-    private array $telemetry = [];
-    /**
      * @var array<string>
      */
     private array $requiredResourcesIds;
-    private string $returnValueSeparator;
     /**
      * @var mixed|null
      */

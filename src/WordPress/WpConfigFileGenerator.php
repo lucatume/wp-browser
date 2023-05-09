@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 
 class WpConfigFileGenerator
@@ -78,6 +79,7 @@ class WpConfigFileGenerator
                     'SECURE_AUTH_SALT' => $configurationData->getSecureAuthSalt(),
                     'LOGGED_IN_SALT' => $configurationData->getLoggedInSalt(),
                     'NONCE_SALT' => $configurationData->getNonceSalt(),
+                    default => throw new RuntimeException("Unknown constant {$matches['const']}.")
                 };
                 return str_replace('put your unique phrase here', $value, $matches[0]);
             },

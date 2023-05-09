@@ -28,7 +28,7 @@ class ProjectFactory
         return match ($projectType) {
             'plugin' => new PluginProject($workDir),
             'theme' => new ThemeProject($workDir),
-            'site' => new SiteProject($workDir),
+            'site' => new SiteProject(),
             default => throw new \InvalidArgumentException("Unknown project type $projectType."),
         };
     }

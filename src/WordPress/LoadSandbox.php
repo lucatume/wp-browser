@@ -11,7 +11,6 @@ class LoadSandbox
     private string $domain;
     private array $redirects = [];
     private string $bufferedOutput = '';
-    private ?Closure $onThrow = null;
 
     public function __construct(string $wpRootDir, string $domain)
     {
