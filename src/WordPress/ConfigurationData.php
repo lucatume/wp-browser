@@ -15,8 +15,14 @@ class ConfigurationData
     private ?string $loggedInSalt = null;
     private ?string $nonceSalt = null;
     private ?string $extraPHP = null;
+    /**
+     * @var array<string,mixed>
+     */
     private array $extraConstants = [];
 
+    /**
+     * @param array<string,mixed> $array
+     */
     public static function fromArray(array $array): ConfigurationData
     {
         $instance = new self;
@@ -146,6 +152,10 @@ class ConfigurationData
         return $this->nonceSalt;
     }
 
+    /**
+     * @return array{authKey: string, secureAuthKey: string, loggedInKey: string, nonceKey: string, authSalt: string,
+     *                        secureAuthSalt: string, loggedInSalt: string, nonceSalt: string}
+     */
     public function getSalts(): array
     {
         return [

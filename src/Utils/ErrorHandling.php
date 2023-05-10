@@ -4,6 +4,9 @@ namespace lucatume\WPBrowser\Utils;
 
 class ErrorHandling
 {
+    /**
+     * @param array<array<string,mixed>> $trace
+     */
     public static function traceAsString(array $trace): string
     {
         $lines = [];
@@ -20,6 +23,10 @@ class ErrorHandling
         return implode("\n", $lines);
     }
 
+    /**
+     * @param array<array<string,mixed>> $serializableTrace
+     * @return array<array<string,mixed>>
+     */
     public static function makeTraceSerializable(array $serializableTrace): array
     {
         foreach ($serializableTrace as &$frame) {
@@ -28,7 +35,7 @@ class ErrorHandling
             }
             foreach ($frame['args'] as &$arg) {
                 if (is_object($arg) && !method_exists($arg, '__serialize')) {
-                    $arg = get_class($arg);
+                    $arg = $arg::class;
                 } elseif (is_resource($arg)) {
                     $arg = 'resource';
                 }

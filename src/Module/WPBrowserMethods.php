@@ -114,9 +114,9 @@ trait WPBrowserMethods
 
         $this->configBackCompat();
 
-        $adminPath         = $this->config['adminPath'];
-        $this->loginUrl    = str_replace('wp-admin', 'wp-login.php', $adminPath);
-        $this->adminPath   = rtrim($adminPath, '/');
+        $adminPath = $this->config['adminPath'];
+        $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
+        $this->adminPath = rtrim($adminPath, '/');
         $this->pluginsPath = $this->adminPath . '/plugins.php';
     }
 
@@ -418,9 +418,9 @@ trait WPBrowserMethods
      * $I->amOnCronPage('/?some-query-var=some-value');
      * ```
      *
-     * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
+     * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the Cron path.
      */
-    public function amOnCronPage(string|array $queryVars = null) : void
+    public function amOnCronPage(string|array $queryVars = null): void
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {
@@ -455,7 +455,7 @@ trait WPBrowserMethods
      */
     protected function configBackCompat(): void
     {
-        if (isset($this->config['adminUrl']) && ! isset($this->config['adminPath'])) {
+        if (isset($this->config['adminUrl']) && !isset($this->config['adminPath'])) {
             $this->config['adminPath'] = $this->config['adminUrl'];
         }
     }

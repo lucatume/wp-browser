@@ -12,7 +12,7 @@ class CheckWordPressInstalledAction implements CodeExecutionActionInterface
     public function __construct(FileRequest $request, string $wpRootDir, bool $multisite)
     {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
-            ->addAfterLoadClosure(fn() => $this->isBlogInstalled($multisite));
+            ->addAfterLoadClosure(fn(): bool => $this->isBlogInstalled($multisite));
         $this->request = $request;
     }
 

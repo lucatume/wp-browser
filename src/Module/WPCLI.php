@@ -52,9 +52,9 @@ class WPCLI extends Module
      * // Change a user password.
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
-     * @param array<string> $command               The command to execute.
-     * @param array|null    $env                   An array of environment variables to pass to the command.
-     * @param mixed|null    $input                 The input to pass to the command, a stream resource or a \Traversable
+     * @param array<string> $command The command to execute.
+     * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
+     * @param mixed|null $input The input to pass to the command, a stream resource or a \Traversable
      *                                             instance.
      *
      * @return int The command exit value; `0` usually means success.
@@ -178,13 +178,13 @@ class WPCLI extends Module
      *      });
      * });
      * ```
-     * @param array<string> $command               The string of command and parameters as it would be passed to wp-cli
+     * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
      *                                             minus `wp`. For back-compatibility purposes you can still pass the
      *                                             commandline as a string, but the array format is the preferred and
      *                                             supported method.
-     * @param callable|null $splitCallback         An optional callback function to split the results array.
-     * @param array|null    $env                   An array of environment variables to pass to the command.
-     * @param mixed         $input                 The input to pass to the command, a stream resource or a \Traversable
+     * @param callable|null $splitCallback An optional callback function to split the results array.
+     * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
+     * @param mixed $input The input to pass to the command, a stream resource or a \Traversable
      *                                             instance.
      *
      * @return array<string> An array containing the output of wp-cli split into single elements.
@@ -218,12 +218,12 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
-     * @param array<string> $command            The string of command and parameters as it would be passed to wp-cli
+     * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
      *                                          string, but the array format is the preferred and supported method.
-     * @param array|null    $env                An array of environment variables to pass to the command.
-     * @param mixed         $input              The input to pass to the command, a stream resource or a \Traversable
+     * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
+     * @param mixed $input The input to pass to the command, a stream resource or a \Traversable
      *
      * @return string The output of the command.
      *
@@ -422,6 +422,9 @@ class WPCLI extends Module
         $this->config['path'] = Filesystem::realpath($this->config['path']);
     }
 
+    /**
+     * @return array<string,string|false>
+     */
     private function getDefaultEnv(): array
     {
         $env = [];
@@ -448,6 +451,9 @@ class WPCLI extends Module
         return $env;
     }
 
+    /**
+     * @return array<string>
+     */
     private function getOptionsFromConfig(): array
     {
         $options = [];
@@ -495,6 +501,11 @@ class WPCLI extends Module
         return $options;
     }
 
+    /**
+     * @param array<string> $command
+     *
+     * @return array<string>
+     */
     private function addStrictOptionsFromConfig(array $command): array
     {
         $prepend = [];

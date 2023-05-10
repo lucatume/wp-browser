@@ -10,7 +10,6 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module\WebDriver;
-use Codeception\Module\WPBrowserMethods;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use JsonException;
 use Symfony\Component\BrowserKit\Cookie;
@@ -52,7 +51,6 @@ class WPWebDriver extends WebDriver
      * @param int $timeout The max time, in seconds, to try to login.
      * @param int $maxAttempts The max number of attempts to try to login.
      *
-     * @return void
      *
      * @throws ModuleException If all the attempts of obtaining the cookie fail.
      */
@@ -81,7 +79,6 @@ class WPWebDriver extends WebDriver
      * @param int $timeout The max time, in seconds, to try to login.
      * @param int $maxAttempts The max number of attempts to try to login.
      *
-     * @return void
      *@throws ModuleException If all the attempts of obtaining the cookie fail.
      *
      */
@@ -221,7 +218,6 @@ class WPWebDriver extends WebDriver
      *
      * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      *
-     * @return void
      *
      * @throws JsonException If there's an issue encoding the debug message.
      */
@@ -256,7 +252,6 @@ class WPWebDriver extends WebDriver
      *
      * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
      *
-     * @return void
      *
      * @throws JsonException If there's an issue encoding the debug message.
      */

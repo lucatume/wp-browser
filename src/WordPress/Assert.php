@@ -7,7 +7,7 @@ use PHPUnit\Framework\Assert as PHPUnitAssert;
 class Assert
 {
 
-    public static function assertTableExists(string $tableName)
+    public static function assertTableExists(string $tableName): void
     {
         global $wpdb;
         $table = $wpdb->prefix . $tableName;

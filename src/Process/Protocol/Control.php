@@ -7,8 +7,15 @@ use Codeception\Exception\ConfigurationException;
 
 class Control
 {
+    /**
+     * @var array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     */
     private array $control;
 
+    /**
+     * @param array{autoloadFile: ?string, requireFiles: string[]|null, cwd: string|false|null, codeceptionRootDir: ?string ,codeceptionConfig: ?array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null} $controlArray
+     * @throws ConfigurationException
+     */
     public function __construct(array $controlArray)
     {
         $config = class_exists(Configuration::class) ? Configuration::config() : [];
@@ -98,6 +105,9 @@ class Control
         }
     }
 
+    /**
+     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     */
     public function toArray(): array
     {
         return $this->control;

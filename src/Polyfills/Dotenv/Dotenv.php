@@ -61,7 +61,7 @@ class Dotenv
      *
      * @return string The absolute path to the environment file to load.
      */
-    protected function getEnvFilePath($rootDir, $envFile)
+    protected function getEnvFilePath($rootDir, $envFile): string
     {
         return rtrim($rootDir, '\\/') . '/' . trim($envFile, '\\/');
     }

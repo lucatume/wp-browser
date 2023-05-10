@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\MonkeyPatch;
 
 use Closure;
+use ErrorException;
 use Exception;
 use lucatume\WPBrowser\MonkeyPatch\Patchers\PatcherInterface;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -105,7 +106,7 @@ class FileStreamWrapper
     }
 
     /**
-     * return resource
+     * @return resource
      */
     public function stream_cast()
     {
@@ -188,6 +189,9 @@ class FileStreamWrapper
         return $result;
     }
 
+    /**
+     * @return array{dev: int, ino: int, mode: int, nlink: int, uid: int, gid: int, rdev: int, size: int, atime: int, mtime: int, ctime: int, blksize: int, blocks: int}
+     */
     public function stream_stat(): array
     {
         $stat = fstat($this->fileResource);
@@ -198,7 +202,11 @@ class FileStreamWrapper
         return $stat;
     }
 
-    public function stream_metadata(string $path, int $option, $value): bool
+    /**
+     * @param string|int|array<int,int>|null $value
+     * @throws MonkeyPatchingException
+     */
+    public function stream_metadata(string $path, int $option, string|int|array|null $value): bool
     {
         static::unregister();
 
@@ -282,6 +290,10 @@ class FileStreamWrapper
         return $result;
     }
 
+    /**
+     * @return array{dev: int, ino: int, mode: int, nlink: int, uid: int, gid: int, rdev: int, size: int, atime: int, mtime: int, ctime: int, blksize: int, blocks: int}|false
+     * @throws ErrorException
+     */
     public function url_stat(string $path, int $flags): array|false
     {
         static::unregister();
@@ -313,8 +325,8 @@ class FileStreamWrapper
             string $errstr,
             ?string $errfile = null,
             ?int $errline = null,
-        ) {
-            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        ): void {
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         });
         try {
             $result = stat($path);

@@ -26,12 +26,11 @@ class Db
      * Imports a dump file using the `mysql` binary.
      *
      * @param string $dumpFile The path to the SQL dump file to import.
-     * @param string $dbName   The name of the database to import the SQL dump file to.
-     * @param string $dbUser   The database user to use to import the dump.
-     * @param string $dbPass   The database password to use to import the dump.
-     * @param string $dbHost   The database host to use to import the dump.
+     * @param string $dbName The name of the database to import the SQL dump file to.
+     * @param string $dbUser The database user to use to import the dump.
+     * @param string $dbPass The database password to use to import the dump.
+     * @param string $dbHost The database host to use to import the dump.
      *
-     * @return void
      * @throws RuntimeException If there's an error while importing the database.
      *
      */
@@ -88,9 +87,9 @@ class Db
     /**
      * Open a database connection and returns a callable to run queries on it.
      *
-     * @param string      $dsn    The database DSN string.
-     * @param string      $user   The database user.
-     * @param string      $pass   The database password.
+     * @param string $dsn The database DSN string.
+     * @param string $user The database user.
+     * @param string $pass The database password.
      * @param string|null $dbName The optional name of the database to use.
      *
      * @return Closure A callable to run queries on the database; the function will return the query result
@@ -109,7 +108,7 @@ class Db
         $pdo = new PDO($dsn, $user, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        return static function ($query) use ($pdo, $dsn, $user, $pass) {
+        return static function ($query) use ($pdo, $dsn, $user, $pass): \PDOStatement {
             $result = $pdo->query($query);
             if (!$result instanceof PDOStatement) {
                 throw new RuntimeException('Query failed: ' . json_encode([
@@ -134,7 +133,7 @@ class Db
      *                       before
      *                       hand, it would be better to use `dbDsnToMap` function.
      *
-     * @return array The database DSN connection `host`, `port` and `socket` map.
+     * @return array{type: string|null, host: string|null, port: string|null, unix_socket: string|null, version: string|null, file: string|null, memory: bool }
      */
     public static function dbDsnMap(string $dbHost): array
     {
@@ -246,12 +245,13 @@ class Db
     /**
      * Builds a map of the dsn, user and password credentials to connect to a database.
      *
-     * @param array       $dsn    The dsn map.
-     * @param string      $dbuser The database user.
-     * @param string      $dbpass The database password for the user.
+     * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string, memory: bool} $dsn The database DSN map.
+     * @param string $dbuser The database user.
+     * @param string $dbpass The database password for the user.
      * @param string|null $dbname The optional database name.
      *
-     * @return array The database credentials map: dsn string, user and password.
+     * @return array{dsn: string, user: string, password: string} The database credentials map: dsn string, user and
+     *                    password.
      */
     public static function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
     {
@@ -280,8 +280,9 @@ class Db
     /**
      * Builds the database DSN string from a database DSN map.
      *
-     * @param array $dbDsnMap  The database DSN map.
-     * @param bool  $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
+     * @param array{type: string, host?: string, port?: string, unix_socket?: string, dbname?: string, version?: string,
+     *     file?: string, memory?: bool} $dbDsnMap The database DSN map.
+     * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
      *
      * @return string The database DSN string in the format required.
      *
@@ -319,7 +320,7 @@ class Db
 
         if ($type === 'sqlite' && isset($dbDsnMap['file'])) {
             $dsn = $forDbHost && isset($dbDsnMap['version']) ?
-                $dbDsnMap['version'] . ':' . $dbDsnMap('file')
+                $dbDsnMap['version'] . ':' . $dbDsnMap['file']
                 : $dbDsnMap['file'];
         }
 
@@ -343,7 +344,7 @@ class Db
      *
      * @param string $dsnString The DSN string to process and break down.
      *
-     * @return array The Map built from the DSN string.
+     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool} The DSN map.
      *
      * @throws InvalidArgumentException If the input string is not a valid DSN string.
      */
@@ -386,6 +387,9 @@ class Db
             $map);
     }
 
+    /**
+     * @return array{type: string, user: string, password: string, host: string, port: int|string, name: string, dsn: string}
+     */
     public static function parseDbUrl(mixed $dbUrl): array
     {
         $parsed = parse_url($dbUrl);

@@ -13,11 +13,6 @@ use RuntimeException;
 class Running implements WorkerInterface
 {
     use MemoryUsage;
-
-    /**
-     * @var array<string>
-     */
-    private array $requiredResourcesIds;
     /**
      * @var mixed|null
      */
@@ -30,8 +25,6 @@ class Running implements WorkerInterface
      * @var null|array<string,string|int|bool>
      */
     private ?array $cachedStatus = null;
-
-    private string $id;
     /**
      * @var resource
      */
@@ -44,18 +37,22 @@ class Running implements WorkerInterface
      * @var resource
      */
     private $stderr;
-    private float $startTime;
 
     private string $stdoutBuffer = '';
     private string $stderrBuffer = '';
     private bool $didExtractReturnValueFromStderr = false;
 
+    /**
+     * @param resource $proc
+     * @param array<int,resource> $pipes
+     * @param string[] $requiredResourcesIds
+     */
     public function __construct(
-        string $id,
+        private string $id,
         $proc,
         array $pipes,
-        float $startTime,
-        array $requiredResourcesIds = []
+        private float $startTime,
+        private array $requiredResourcesIds = []
     ) {
         [$this->stdin, $this->stdout, $this->stderr] = $pipes;
 
@@ -74,11 +71,7 @@ class Running implements WorkerInterface
         if (!is_resource($this->stderr)) {
             throw new BadMethodCallException('stderr must be a resource');
         }
-
-        $this->id = $id;
         $this->proc = $proc;
-        $this->startTime = $startTime;
-        $this->requiredResourcesIds = $requiredResourcesIds;
     }
 
     public static function fromWorker(Worker $worker): Running
@@ -123,6 +116,9 @@ class Running implements WorkerInterface
         );
     }
 
+    /**
+     * @return ?array{command: string, pid: int, running: bool, signaled: bool, stopped: bool, exitcode: int, termsig: int, stopsig: int}
+     */
     public function getStatus(): ?array
     {
         $liveStatus = is_resource($this->proc) ?
@@ -185,6 +181,9 @@ class Running implements WorkerInterface
         return $this->id;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getRequiredResourcesIds(): array
     {
         return $this->requiredResourcesIds;

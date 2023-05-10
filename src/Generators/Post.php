@@ -37,7 +37,7 @@ class Post
      * @param int    $id  The post ID to use.
      * @param string $url The site URL.
      *
-     * @return mixed[] A map of the post creation default values.
+     * @return array{post_author: int, post_date: string|false, post_date_gmt: string|false, post_content: string, post_title: string, post_excerpt: string, post_status: string, comment_status: string, ping_status: string, post_password: string, post_name: string, to_ping: string, pinged: string, post_modified: string|false, post_modified_gmt: string|false, post_content_filtered: string, post_parent: int, guid: string, menu_order: int, post_type: string} A map of the post creation default values.
      */
     protected static function getDefaults($id, $url): array
     {
@@ -112,7 +112,7 @@ class Post
      *
      * @return string      The database guid entry.
      */
-    protected static function generatePageGuid($id, $url)
+    protected static function generatePageGuid($id, $url): string
     {
         $guid = rtrim($url, '/') . '/?page_id=' . $id;
 
@@ -127,7 +127,7 @@ class Post
      *
      * @return string      The database guid entry.
      */
-    protected static function generatePostGuid($id, $url)
+    protected static function generatePostGuid($id, $url): string
     {
         $guid = rtrim($url, '/') . '/?p=' . $id;
 

@@ -24,7 +24,7 @@ class RunAll extends Command implements CustomCommandInterface
         return 'Runs all the test suites, each in a separate process.';
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $codeceptionRunCommandDefinition = (new CodeceptionRunCommand)->getDefinition();
         $this->setName(self::getCommandName())

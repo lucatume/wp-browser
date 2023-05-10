@@ -99,9 +99,10 @@ class WPTestCase extends Unit
     }
 
     /**
+     * @param array<string,mixed> $arguments
      * @throws ReflectionException
      */
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
@@ -110,9 +111,10 @@ class WPTestCase extends Unit
     }
 
     /**
+     * @param array<string,mixed> $arguments
      * @throws ReflectionException
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);

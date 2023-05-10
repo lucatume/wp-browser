@@ -18,6 +18,7 @@ namespace tad\WPBrowser {
     use lucatume\WPBrowser\Utils\WP;
     use PHPUnit\Framework\Assert;
     use PHPUnit\Runner\Version;
+    use ReflectionException;
     use wpdb;
 
     /**
@@ -50,6 +51,7 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool}
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnMap instead.
      */
     function dbDsnMap(string $dbHost): array
@@ -58,6 +60,8 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string, memory: bool} $dsn The database DSN map.
+     * @return array{dsn: string, user: string, password: string}
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbCredentials instead.
      */
     function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
@@ -65,8 +69,9 @@ namespace tad\WPBrowser {
         return Db::dbCredentials($dsn, $dbuser, $dbpass, $dbname);
     }
 
-    /*
+    /**
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnString instead.
+     * @param array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool} $dbDsnMap
      */
     function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {
@@ -82,6 +87,7 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool}
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnToMap instead.
      */
     function dbDsnToMap(string $dsnString): array
@@ -90,9 +96,10 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @return array<string,string|false>
      * @deprecated Use \lucatume\WPBrowser\Utils\Env::envFile instead.
      */
-    function envFile($file): array
+    function envFile(string $file): array
     {
         return Env::envFile($file);
     }
@@ -106,9 +113,10 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string,string> $map
      * @deprecated Use \lucatume\WPBrowser\Utils\Env::loadEnvMap instead.
      */
-    function loadEnvMap(array $map, $overwrite = true): void
+    function loadEnvMap(array $map, bool $overwrite = true): void
     {
         Env::loadEnvMap($map, $overwrite);
     }
@@ -185,8 +193,9 @@ namespace tad\WPBrowser {
         return Filesystem::realpath($path);
     }
 
-    /*
+    /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::mkdirp` instead.
+     * @param array<string,string|array<string,mixed>>|string $contents
      */
     function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): void
     {
@@ -210,6 +219,7 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string, mixed> $context
      * @deprecated Use `lucatume\WPBrowser\Events\Dispatcher::dispatch` instead.
      */
     function dispatch(string $eventName, mixed $origin = null, ?array $context = []): void
@@ -219,6 +229,8 @@ namespace tad\WPBrowser {
 
 
     /**
+     * @param array<string, mixed> $props
+     * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::setPropertiesForClass` instead.
      */
     function setPropertiesForClass(object $object, string $class, array $props): object
@@ -227,6 +239,8 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string, mixed> $props
+     * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::setPrivateProperties` instead.
      */
     function setPrivateProperties(object|string $object, array $props): void
@@ -235,6 +249,7 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::readPrivate` instead.
      */
     function readPrivateProperty(object|string $object, string $prop): mixed
@@ -245,7 +260,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::normalizeNewLine` instead.
      */
-    function normalizeNewLine($str): string
+    function normalizeNewLine(string $str): string
     {
         return Strings::normalizeNewLine($str);
     }
@@ -253,20 +268,23 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::slug` instead.
      */
-    function slug($string, $sep = '-', $let = false): string
+    function slug(string $string, string $sep = '-', bool $let = false): string
     {
         return Strings::slug($string, $sep, $let);
     }
 
     /**
+     * @param array<string, mixed> $data
+     * @param array<string, callable> $fnArgs
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::renderString` instead.
      */
-    function renderString($template, array $data = [], array $fnArgs = []): string
+    function renderString(string $template, array $data = [], array $fnArgs = []): string
     {
         return Strings::renderString($template, $data, $fnArgs);
     }
 
     /**
+     * @return array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
      * @deprecated Use `lucatume\WPBrowser\Utils\Url::parseUrl` instead.
      */
     function parseUrl(string $url): array
@@ -283,6 +301,7 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string|int> $elements
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::andList` instead.
      */
     function andList(array $elements): string
@@ -293,7 +312,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Url::getDomain` instead.
      */
-    function urlDomain($fullUrl): string
+    function urlDomain(string $fullUrl): string
     {
         return Url::getDomain($fullUrl);
     }
@@ -301,7 +320,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `Codeception\Util\Debug::isEnabled` instead.
      */
-    function isDebug($activate = null): bool
+    function isDebug(bool $activate = null): bool
     {
         return Debug::isEnabled();
     }
@@ -309,7 +328,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `codecept_debug` instead.
      */
-    function debug($message): void
+    function debug(mixed $message): void
     {
         codecept_debug($message);
     }
@@ -317,9 +336,9 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `PHPUnit\Framework\Assert:assertTrue` instead.
      */
-    function ensure($condition, $message): void
+    function ensure(mixed $condition, string $message): void
     {
-        Assert::assertTrue((bool)$condition);
+        Assert::assertTrue((bool)$condition, $message);
     }
 
     /**
@@ -341,7 +360,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Strings::stripTags` instead.
      */
-    function strip_all_tags($string, $removeBreaks = false): string
+    function strip_all_tags(string $string, bool $removeBreaks = false): string
     {
         return Strings::stripTags($string, $removeBreaks);
     }
@@ -363,6 +382,8 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string>|null $tables
+     * @return array<string>
      * @deprecated Use `lucatume\WPBrowser\Utils\WP::dropWpTables` instead.
      */
     function dropWpTables(wpdb $wpdb, array $tables = null): array
@@ -371,6 +392,8 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array<string>|null $tables
+     * @return array<string>
      * @deprecated Use `lucatume\WPBrowser\Utils\WP::emptyWpTables` instead.
      */
     function emptyWpTables(wpdb $wpdb, array $tables = null): array

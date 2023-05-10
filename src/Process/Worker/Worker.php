@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Process\Worker;
 
 use Codeception\Configuration;
+use Codeception\Exception\ConfigurationException;
 use lucatume\WPBrowser\Utils\Composer;
 
 class Worker implements WorkerInterface
@@ -11,21 +12,23 @@ class Worker implements WorkerInterface
      * @var callable
      */
     private $callable;
-    private string $id;
     /**
-     * @var array<string>
-     */
-    private array $requiredResourcesIds;
-    /**
-     * @var array<string,string>
+     * @var array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
      */
     private array $control;
 
-    public function __construct(string $id, callable $callable, array $requiredResourcesIds = [], array $control = [])
-    {
-        $this->id = $id;
+    /**
+     * @param string[] $requiredResourcesIds
+     * @param array<string,mixed> $control
+     * @throws ConfigurationException
+     */
+    public function __construct(
+        private string $id,
+        callable $callable,
+        private array $requiredResourcesIds = [],
+        array $control = []
+    ) {
         $this->callable = $callable;
-        $this->requiredResourcesIds = $requiredResourcesIds;
         $this->control = array_replace($this->getDefaultControl(), $control);
     }
 
@@ -48,7 +51,7 @@ class Worker implements WorkerInterface
     }
 
     /**
-     * @return array<string,string>
+     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
      */
     public function getControl(): array
     {
@@ -56,7 +59,8 @@ class Worker implements WorkerInterface
     }
 
     /**
-     * @return array<string,string>
+     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     * @throws ConfigurationException
      */
     private function getDefaultControl(): array
     {
@@ -66,9 +70,14 @@ class Worker implements WorkerInterface
             'cwd' => getcwd(),
             'codeceptionRootDir' => codecept_root_dir(),
             'codeceptionConfig' => Configuration::config(),
+            'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
+            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
         ];
     }
 
+    /**
+     * @param array<string> $requireFiles
+     */
     public function setRequireFiles(array $requireFiles): self
     {
         $this->control['requireFiles'] = $requireFiles;

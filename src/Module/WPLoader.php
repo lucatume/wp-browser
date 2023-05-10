@@ -280,7 +280,7 @@ class WPLoader extends Module
             $this->checkInstallationToLoadOnly();
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
-            Dispatcher::addListener(Events::SUITE_BEFORE, function () {
+            Dispatcher::addListener(Events::SUITE_BEFORE, function (): void {
                 $this->loadWordPress(true);
             }, -100);
 
@@ -341,7 +341,6 @@ class WPLoader extends Module
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     * @param bool $loadOnly
      *
      * @throws Throwable
      */
@@ -464,7 +463,7 @@ class WPLoader extends Module
             PreloadFilters::addFilter('pre_option_active_plugins', $activatePlugins);
         }
 
-        ob_start(function ($buffer) {
+        ob_start(function ($buffer): void {
             $this->bootstrapOutput = $buffer;
             if ($this->bootstrapSuccessful === true) {
                 return;
@@ -501,8 +500,8 @@ class WPLoader extends Module
         $closuresFactory = $this->getClosuresFactory();
 
         $jobs = array_combine(
-            array_map(static fn(string $plugin) => 'plugin::' . $plugin, $plugins),
-            array_map(static fn(string $plugin) => $closuresFactory->toActivatePlugin($plugin, $multisite), $plugins)
+            array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
+            array_map(static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite), $plugins)
         );
 
         $stylesheet = $this->config['theme'];

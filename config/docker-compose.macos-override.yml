@@ -1,7 +1,0 @@
-version: "3.9"
-services:
-  codecept:
-    volumes:
-      - "${PWD}:${PWD}"
-      - "/Volumes/WP-Browser-Ram-Disk:${PWD}/var/tmp"
-    tmpfs: []

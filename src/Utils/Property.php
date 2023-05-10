@@ -89,7 +89,6 @@ class Property
      * @param object|string       $object $object The object to set the properties of.
      * @param array<string,mixed> $props  A map of the names and values of the properties to set.
      *
-     * @return void
      * @throws ReflectionException
      */
     public static function setPrivateProperties(object|string $object, array $props): void

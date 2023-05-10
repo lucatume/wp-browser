@@ -9,11 +9,8 @@ use Throwable;
 class ThrowAction implements CodeExecutionActionInterface
 {
 
-    private Throwable $exception;
-
-    public function __construct(Throwable $exception)
+    public function __construct(private Throwable $exception)
     {
-        $this->exception = $exception;
     }
 
     public function getClosure(): Closure

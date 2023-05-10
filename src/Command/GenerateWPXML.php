@@ -30,8 +30,8 @@ class GenerateWPXML extends GenerateWPUnit
     /**
      * Returns the generator for the test case.
      *
-     * @param array  $config The current generator configuration.
-     * @param string $class  The class to generate the test case for.
+     * @param array<string,mixed> $config The current generator configuration.
+     * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The generator.
      */

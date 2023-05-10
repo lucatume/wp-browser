@@ -5,6 +5,9 @@ namespace lucatume\WPBrowser\Events;
 
 class Event extends \Symfony\Contracts\EventDispatcher\Event
 {
+    /**
+     * @param array<string|int,mixed> $context
+     */
     public function __construct(private string $name, private array $context, private mixed $origin = null)
     {
     }

@@ -31,7 +31,7 @@ class System
      *
      * @return string|false The last line of the command output on success, and `false` on failure.
      */
-    public function system($command, &$returnVar = null): string|false
+    public function system($command, ?int &$returnVar = null): string|false
     {
         ob_start();
         $output = system($command, $returnVar);

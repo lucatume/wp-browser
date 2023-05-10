@@ -19,7 +19,7 @@ class Links
      *
      * @return array{link_url: string, link_name: string, link_image: string, link_target: string, link_description: string, link_visible: string, link_owner: int, link_rating: int, link_updated: string|false, link_rel: string, link_notes: string, link_rss: string} The generated data.
      */
-    public static function getDefaults()
+    public static function getDefaults(): array
     {
         return [
             'link_url'         => 'http://wordpress.org',

@@ -13,8 +13,6 @@ use function str_starts_with;
 class WPDieException extends Exception
 {
     /**
-     * @param string|WP_Error                $message
-     * @param string|int                     $title
      * @param string|array<string,mixed>|int $args
      * @throws ReflectionException
      */
@@ -36,10 +34,10 @@ class WPDieException extends Exception
 
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-        $wpDieCallPos = Arr::searchWithCallback(static function (array $item) {
+        $wpDieCallPos = Arr::searchWithCallback(static function (array $item): bool {
             return $item['function'] === 'wp_die';
         }, $trace);
-        $serializableClosurePos = Arr::searchWithCallback(static function (array $item) {
+        $serializableClosurePos = Arr::searchWithCallback(static function (array $item): bool {
             return isset($item['file']) && str_starts_with($item['file'], 'closure://');
         }, $trace);
 

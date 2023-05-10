@@ -20,7 +20,7 @@ class Env
      *
      * @param string $file The name of the environment file to load.
      *
-     * @return array The map of the read environment variables.
+     * @return array<string,string|false> The map of the read environment variables.
      *
      * @throws RuntimeException If the env file does not exist or is not readable.
      */
@@ -45,7 +45,7 @@ class Env
 
         $vars = array_reduce(
             array_filter(explode("\n", $envFileContents)),
-            static function (array $lines, $line) use ($pattern) {
+            static function (array $lines, $line) use ($pattern): array {
                 if (str_starts_with($line, '#')) {
                     return $lines;
                 }
@@ -79,7 +79,7 @@ class Env
      *                'Solaris`,
      *                `BSD` or`Unknown`.
      */
-    public static function os()
+    public static function os(): string
     {
         $constant = defined(PHP_OS_FAMILY) ? 'PHP_OS_FAMILY' : 'PHP_OS';
         $osSlug = strtolower(substr(constant($constant), 0, 3));
@@ -98,8 +98,8 @@ class Env
     /**
      * Loads a Map of environment variables into `getenv()`, `$_ENV` and `$_SERVER`.
      *
-     * @param array $map The map of environment variables to load.
-     * @param bool  $overwrite Whether to overwrite the existing env vars or not.
+     * @param array<string,string|false> $map       The map of environment variables to load.
+     * @param bool                       $overwrite Whether to overwrite the existing env vars or not.
      *
      * @see envFile() For the function to load to generate a Map from an environment file.
      *
@@ -117,7 +117,7 @@ class Env
         $load = $map;
 
         if (!$overwrite) {
-            $load = array_filter($map, static function ($key) {
+            $load = array_filter($map, static function ($key): bool {
                 return !isset($_ENV[$key]);
             }, ARRAY_FILTER_USE_KEY);
         }
@@ -129,7 +129,7 @@ class Env
         }
     }
 
-    public static function get($key, $default = null): array|string|false|null
+    public static function get(string $key, string $default = null): string|false|null
     {
         return $_ENV[$key] ?? $_SERVER[$key] ?? (getenv($key) ?: $default);
     }

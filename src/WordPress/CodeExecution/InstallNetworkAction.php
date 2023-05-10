@@ -22,10 +22,10 @@ class InstallNetworkAction implements CodeExecutionActionInterface
             ->setTargetFile($wpRootDir . '/wp-admin/admin.php')
             ->defineConstant('MULTISITE', false)
             ->defineConstant('WP_INSTALLING_NETWORK', true)
-            ->addPreloadClosure(function () use ($subdomain) {
+            ->addPreloadClosure(function () use ($subdomain): void {
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
-                set_error_handler(static function ($errno, $errstr) {
+                set_error_handler(static function ($errno, $errstr): bool {
                     if (str_contains($errstr, 'MULTISITE already defined')) {
                         return true;
                     }

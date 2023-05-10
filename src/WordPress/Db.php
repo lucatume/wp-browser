@@ -2,8 +2,6 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-use Codeception\Exception\ModuleException;
-use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
 use PDO;
@@ -11,12 +9,8 @@ use PDO;
 class Db
 {
     private ?PDO $pdo = null;
-    private string $dbHost;
     private string $dbName;
-    private string $dbPassword;
-    private string $dbUser;
     private string $dsn;
-    private string $tablePrefix;
     private string $dbUrl;
 
     /**
@@ -24,10 +18,10 @@ class Db
      */
     public function __construct(
         string $dbName,
-        string $dbUser,
-        string $dbPassword,
-        string $dbHost,
-        string $tablePrefix = 'wp_'
+        private string $dbUser,
+        private string $dbPassword,
+        private string $dbHost,
+        private string $tablePrefix = 'wp_'
     ) {
         if (!preg_match('/^[a-zA-Z][\w_]{0,23}$/', $dbName) || str_starts_with('ii', $dbName)) {
             throw new DbException(
@@ -37,10 +31,6 @@ class Db
         }
 
         $this->dbName = $dbName;
-        $this->dbUser = $dbUser;
-        $this->dbPassword = $dbPassword;
-        $this->dbHost = $dbHost;
-        $this->tablePrefix = $tablePrefix;
         $this->dsn = DbUtil::dbDsnString(DbUtil::dbDsnMap($dbHost));
         $this->dbUrl = sprintf('mysql://%s:%s@%s/%s',
             $dbUser,
@@ -166,6 +156,7 @@ class Db
     }
 
     /**
+     * @param array<string, mixed> $params
      * @throws DbException
      */
     public function query(string $query, array $params = []): int
@@ -215,6 +206,7 @@ class Db
     }
 
     /**
+     * @param array<string, mixed> $parameters
      * @throws DbException
      */
     private function fetchFirst(string $query, array $parameters = [], mixed $default = null): mixed

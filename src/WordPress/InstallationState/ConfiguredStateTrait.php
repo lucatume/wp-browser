@@ -107,6 +107,10 @@ trait ConfiguredStateTrait
     }
 
 
+    /**
+     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
+     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     */
     public function getSalts(): array
     {
         return [
@@ -138,11 +142,17 @@ trait ConfiguredStateTrait
         return $this->wpConfigFile->getConstant($constant);
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getConstants(): array
     {
         return $this->wpConfigFile->getConstants();
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getGlobals(): array
     {
         return $this->wpConfigFile->getVariables();

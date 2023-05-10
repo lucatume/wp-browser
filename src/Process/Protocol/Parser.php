@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 class Parser
 {
     /**
+     * @return array<mixed>
      * @throws ProtocolException
      */
     public static function decode(string $input, int $offset = 0, ?int $count = null): array
@@ -79,6 +80,9 @@ class Parser
         return $chunks;
     }
 
+    /**
+     * @param array<mixed> $input
+     */
     public static function encode(array $input): string
     {
         $output = '$';

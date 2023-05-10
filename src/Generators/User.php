@@ -68,7 +68,7 @@ class User
      *                            list of user roles in the previously specified formats.
      * @param string $tablePrefix The table and blog prefix for the user capabilities.
      *
-     * @return array<string,array> An array of meta keys to insert to correctly represent the desired user capabilities.
+     * @return array<string,array<string>> An array of meta keys to insert to correctly represent the desired user capabilities.
      */
     public static function buildCapabilities(mixed $role, string $tablePrefix = 'wp_'): array
     {

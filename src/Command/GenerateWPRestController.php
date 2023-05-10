@@ -15,13 +15,13 @@ class GenerateWPRestController extends GenerateWPUnit
     public function getDescription(): string
     {
         return 'Generates a WPRestApiTestCase: a WP_Test_REST_Controller_Testcase '
-               . 'with Codeception super-powers.';
+            . 'with Codeception super-powers.';
     }
 
     /**
      * Returns the test case generator.
      *
-     * @param array $config The generator configuration.
+     * @param array<string,mixed> $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The generator instance.

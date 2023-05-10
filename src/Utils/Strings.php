@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-use VRia\Utils\NoDiacritic;
-
 class Strings
 {
+    /**
+     * @param array<mixed> $elements
+     */
     public static function andList(array $elements): string
     {
         return match (count($elements)) {
@@ -26,7 +27,7 @@ class Strings
         }
     }
 
-    public static function slug(string $string, $sep = '-', $let = false): string
+    public static function slug(string $string, string $sep = '-', bool $let = false): string
     {
         $unquotedSeps = $let ? ['-', '_', $sep] : [$sep];
         $seps = implode('',
@@ -78,6 +79,10 @@ class Strings
         return strtolower((string)preg_replace('~[' . $seps . ']{2,}~', $sep, $step5));
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @param array<mixed>        $fnArgs
+     */
     public static function renderString(string $template, array $data = [], array $fnArgs = []): string
     {
         $fnArgs = array_values($fnArgs);
@@ -87,7 +92,7 @@ class Strings
             $data
         );
 
-        $search = array_map(static fn($k) => '{{' . $k . '}}', array_keys($data));
+        $search = array_map(static fn($k): string => '{{' . $k . '}}', array_keys($data));
 
         return str_replace($search, $replace, $template);
     }

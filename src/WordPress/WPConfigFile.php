@@ -15,7 +15,13 @@ class WPConfigFile
 
     private string $wpConfigFilePath;
     private string $wpSettingsFilePath;
+    /**
+     * @var array<string,mixed>
+     */
     private array $constants = [];
+    /**
+     * @var array<string,mixed>
+     */
     private array $variables = [];
 
     /**
@@ -62,6 +68,9 @@ class WPConfigFile
         return $this->constants[$constant] ?? null;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getConstants():array{
         return $this->constants;
     }
@@ -127,6 +136,9 @@ class WPConfigFile
         return $this->variables[$varName] ?? null;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getVariables(): array
     {
         return $this->variables;
@@ -140,7 +152,7 @@ class WPConfigFile
     /**
      * @throws WpConfigFileException
      */
-    public function getConstantOrThrow(string $string)
+    public function getConstantOrThrow(string $string): mixed
     {
         if (!isset($this->constants[$string])) {
             throw new WpConfigFileException("Constant {$string} not defined.",
@@ -153,7 +165,7 @@ class WPConfigFile
     /**
      * @throws WpConfigFileException
      */
-    public function getVariableOrThrow(string $string)
+    public function getVariableOrThrow(string $string): mixed
     {
         if (!isset($this->variables[$string])) {
             throw new WpConfigFileException("Variable {$string} not defined.",

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-use InvalidArgumentException;
-
 class Url
 {
+    /**
+     * @var array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
+     */
     private static array $parserUrlDefaults = [
         'scheme' => '',
         'host' => '',
@@ -19,6 +20,9 @@ class Url
         'fragment' => ''
     ];
 
+    /**
+     * @return array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
+     */
     public static function parseUrl(string $url): array
     {
         $parsed = \parse_url($url);

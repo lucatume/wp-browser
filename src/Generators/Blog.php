@@ -20,7 +20,7 @@ class Blog
      *
      * @return array{site_id: int, domain: string, path: string, registered: string|false, last_updated: string|false, public: int, archived: int, mature: int, spam: int, deleted: int, lang_id: int} The blog data.
      */
-    public static function makeDefaults()
+    public static function makeDefaults(): array
     {
         return [
             'site_id'      => 1,

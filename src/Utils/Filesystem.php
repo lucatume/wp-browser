@@ -275,7 +275,7 @@ class Filesystem
      *
      * @param string                            $pathname The path to the root directory, if not existing, it will be
      *                                                    recursively created.
-     * @param string|array<string,array|string> $contents Either a directory structure to produce or the contents of a
+     * @param string|array<string,string|array<mixed>> $contents Either a directory structure to produce or the contents of a
      *                                                    file to create.
      * @param int                               $mode     The filemode that will be used to create each directory in
      *                                                    the
@@ -312,6 +312,9 @@ class Filesystem
         return $pathname;
     }
 
+    /**
+     * @param array<string,string|array<mixed>> $contents
+     */
     public static function tmpDir(
         string $prefix = '',
         array $contents = [],
@@ -332,7 +335,7 @@ class Filesystem
         );
     }
 
-    public static function relativePath(string $from, string $to, $separator = DIRECTORY_SEPARATOR): string
+    public static function relativePath(string $from, string $to, string $separator = DIRECTORY_SEPARATOR): string
     {
         if ($from === '') {
             return $to;
@@ -357,6 +360,9 @@ class Filesystem
         return str_repeat('..' . $separator, count($fromParts)) . implode($separator, $toParts);
     }
 
+    /**
+     * @param array<string,string|array<mixed>> $contents
+     */
     public static function getTmpSubDir(string $dirname, array $contents = [], int $mode = 0777): string
     {
         $pathname = codecept_output_dir('tmp/' . $dirname);

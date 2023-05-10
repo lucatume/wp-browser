@@ -82,6 +82,9 @@
     ],
     "rector-dry-run": [
       "rector process --ansi --config config/rector.php --autoload-file vendor/autoload.php --dry-run"
+    ],
+    "rector": [
+      "rector process --ansi --config config/rector.php --autoload-file vendor/autoload.php"
     ]
   }
 }

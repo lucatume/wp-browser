@@ -58,6 +58,10 @@ interface InstallationStateInterface
 
     public function isConfigured(): bool;
 
+    /**
+     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
+     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     */
     public function getSalts(): array;
 
     public function getVersion(): Version;
@@ -66,8 +70,14 @@ interface InstallationStateInterface
 
     public function getDb(): Db;
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getConstants(): array;
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getGlobals(): array;
 
     public function getPluginsDir(string $path = ''): string;

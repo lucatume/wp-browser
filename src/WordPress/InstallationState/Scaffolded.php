@@ -232,6 +232,8 @@ class Scaffolded implements InstallationStateInterface
     }
 
     /**
+     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
+     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
      * @throws InstallationException
      */
     public function getSalts(): array
@@ -275,6 +277,9 @@ class Scaffolded implements InstallationStateInterface
         );
     }
 
+    /**
+     * @return array{ABSPATH: string}
+     */
     public function getConstants(): array
     {
         return [
@@ -282,6 +287,9 @@ class Scaffolded implements InstallationStateInterface
         ];
     }
 
+    /**
+     * @return array{table_prefix: string}
+     */
     public function getGlobals(): array
     {
         return ['table_prefix' => 'wp_'];

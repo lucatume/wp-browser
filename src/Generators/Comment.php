@@ -36,7 +36,7 @@ class Comment
      *
      * @param int $comment_post_ID The if of the post the comment refers to.
      *
-     * @return mixed[] An associative array of column/default values.
+     * @return array{comment_post_ID: int, comment_author: string, comment_author_email: string, comment_author_url: string, comment_author_IP: string, comment_date: string|false, comment_date_gmt: string|false, comment_content: string, comment_karma: string, comment_approved: string, comment_agent: string, comment_type: string, comment_parent: int, user_id: int} An associative array of column/default values.
      */
     protected static function generateDefaultsFor($comment_post_ID): array
     {

@@ -40,7 +40,7 @@ class Date
      *
      * @return int The current time.
      */
-    public static function _time()
+    public static function _time(): int
     {
         $time = self::$time ? self::$time : time();
 

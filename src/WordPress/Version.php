@@ -83,6 +83,9 @@ class Version
         return $this->requiredMySqlVersion;
     }
 
+    /**
+     * @return array{wpVersion: string, wpDbVersion: string, tinymceVersion: string, requiredPhpVersion: string, requiredMySqlVersion: string}
+     */
     public function toArray(): array
     {
         return [

@@ -2,17 +2,20 @@
 
 namespace lucatume\WPBrowser\Process\Protocol;
 
+use Codeception\Exception\ConfigurationException;
 use Opis\Closure\SerializableClosure;
 
 class Request
 {
     private Control $control;
-    private SerializableClosure $serializableClosure;
 
-    public function __construct(array $controlArray, SerializableClosure $serializableClosure)
+    /**
+     * @param array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null} $controlArray
+     * @throws ConfigurationException
+     */
+    public function __construct(array $controlArray, private SerializableClosure $serializableClosure)
     {
         $this->control = new Control($controlArray);
-        $this->serializableClosure = $serializableClosure;
     }
 
     public function getPayload(): string

@@ -40,13 +40,10 @@ class WPBrowser extends PhpBrowser
      * ```
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array|null An array of cookies matching the pattern.
+     * @return array<Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
-        /**
-         * @var array<FacebookWebdriverCookie|Cookie>
-         */
         $cookies = $this->client->getCookieJar()->all();
 
         if (!$cookies) {

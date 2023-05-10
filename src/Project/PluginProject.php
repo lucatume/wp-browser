@@ -4,12 +4,10 @@ namespace lucatume\WPBrowser\Project;
 
 class PluginProject implements ProjectInterface
 {
-    private string $workDir;
     private string $pluginFile;
 
-    public function __construct(string $workDir)
+    public function __construct(private string $workDir)
     {
-        $this->workDir = $workDir;
         $this->pluginFile = $this->findPluginFile();
     }
 

@@ -13,6 +13,10 @@ use Throwable;
 class StderrStream
 {
     public const RELATIVE_PATHNAMES = 1;
+
+    /**
+     * @var array<int,mixed>
+     */
     private array $parsed = [];
 
     public function __construct(string $streamContents, int $options = 0)
@@ -20,6 +24,10 @@ class StderrStream
         $this->parse($streamContents, $options);
     }
 
+    /**
+     * @param array<string,mixed> $traceItem
+     * @return array<string,mixed>
+     */
     private function applyOptions(array $traceItem, int $options): array
     {
         if ($options & self::RELATIVE_PATHNAMES) {
@@ -33,6 +41,10 @@ class StderrStream
         return $traceItem;
     }
 
+    /**
+     * @param array{date: string, time: string, timezone: string, type: string, message: string, file: string, line: int, trace: array<int,array<string,mixed>>} $currentError
+     * @return array{date: string, time: string, timezone: string, type: string, message: string, file: string, line: int, trace: array<int,array<string,mixed>>}
+     */
     private function formatInvertedTraceError(array $currentError, bool $isNumericStackTrace): array
     {
         if ($isNumericStackTrace) {
@@ -260,6 +272,9 @@ class StderrStream
         return $throwable;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function getParsed(): array
     {
         return $this->parsed;

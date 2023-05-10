@@ -22,10 +22,10 @@ class InstallAction implements CodeExecutionActionInterface
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->defineConstant('WP_INSTALLING', true)
             ->defineConstant('MULTISITE', false)
-            ->addPreloadClosure(function () use ($url) {
+            ->addPreloadClosure(function () use ($url): void {
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
-                set_error_handler(static function ($errno, $errstr) {
+                set_error_handler(static function ($errno, $errstr): bool {
                     if (str_contains($errstr, 'MULTISITE already defined')) {
                         return true;
                     }

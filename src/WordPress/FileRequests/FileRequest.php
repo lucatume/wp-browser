@@ -12,26 +12,6 @@ use Serializable;
 abstract class FileRequest implements Serializable
 {
     /**
-     * @var array<string,int|string|float|bool>
-     */
-    private array $requestVars;
-    private string $targetFile;
-    private string $domain;
-    private string $requestUri;
-    private array $cookieJar;
-    /**
-     * @var array<string>
-     */
-    private array $presetGlobalVars;
-    /**
-     * @var array<string,string>
-     */
-    private array $redirectFiles;
-    /**
-     * @var array<string,mixed>
-     */
-    private array $presetLocalVars;
-    /**
      * @var array<string,mixed>
      */
     private array $serverVars = [];
@@ -39,10 +19,6 @@ abstract class FileRequest implements Serializable
      * @var array<Closure>
      */
     private array $preloadClosures = [];
-    /**
-     * @var array<string,bool|int|string|float>
-     */
-    private array $constants;
     /**
      * @var array<array{string, callable, int, int}>
      */
@@ -52,33 +28,33 @@ abstract class FileRequest implements Serializable
      */
     private array $afterLoadClosures = [];
 
+    /**
+     * @param int[]|string[]|float[]|bool[] $requestVars
+     * @param array<string,string>          $cookieJar
+     * @param string[]                      $presetGlobalVars
+     * @param array<string, string>         $redirectFiles
+     * @param array<string, mixed>          $presetLocalVars
+     * @param bool[]|int[]|string[]|float[] $constants
+     */
     public function __construct(
-        string $domain,
-        string $requestUri,
-        string $targetFile,
-        array $requestVars = [],
-        array $cookieJar = [],
-        array $redirectFiles = [],
-        array $presetGlobalVars = [],
-        array $presetLocalVars = [],
-        array $constants = []
+        private string $domain,
+        private string $requestUri,
+        private string $targetFile,
+        private array $requestVars = [],
+        private array $cookieJar = [],
+        private array $redirectFiles = [],
+        private array $presetGlobalVars = [],
+        private array $presetLocalVars = [],
+        private array $constants = []
     ) {
-        $this->domain = $domain;
-        $this->requestUri = $requestUri;
-        $this->targetFile = $targetFile;
-        $this->requestVars = $requestVars;
-        $this->cookieJar = $cookieJar;
-        $this->redirectFiles = $redirectFiles;
-        $this->presetGlobalVars = $presetGlobalVars;
-        $this->presetLocalVars = $presetLocalVars;
-        $this->constants = $constants;
     }
 
     abstract protected function getMethod(): string;
 
     /**
-     * @throws ErrorException
+     * @return array<int,mixed>
      * @throws FileRequestException
+     * @throws ErrorException
      */
     public function execute(): array
     {
@@ -167,7 +143,7 @@ abstract class FileRequest implements Serializable
         return $returnValues;
     }
 
-    public function serialize()
+    public function serialize(): ?string
     {
         return serialize([
             'requestVars' => $this->requestVars ?? [],
@@ -237,6 +213,10 @@ abstract class FileRequest implements Serializable
         return $this;
     }
 
+    /**
+     * @param array<class-string> $carry
+     * @return array<class-string>
+     */
     private function collectIncompleteClasses(mixed $unserializedData, array &$carry = []): array
     {
         if (!is_array($unserializedData)) {
@@ -318,19 +298,25 @@ abstract class FileRequest implements Serializable
         return $this;
     }
 
-    public function setTargetFile(string $targetFile):FileRequest
+    public function setTargetFile(string $targetFile): FileRequest
     {
         $this->targetFile = $targetFile;
         return $this;
     }
 
-    public function setRedirectFiles(array $redirectFiles):FileRequest
+    /**
+     * @param array<string, string> $redirectFiles
+     */
+    public function setRedirectFiles(array $redirectFiles): FileRequest
     {
         $this->redirectFiles = $redirectFiles;
 
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $presetGlobalVars
+     */
     public function addPresetGlobalVars(array $presetGlobalVars): FileRequest
     {
         $this->presetGlobalVars = array_replace($this->presetGlobalVars, $presetGlobalVars);

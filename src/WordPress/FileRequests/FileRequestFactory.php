@@ -3,38 +3,32 @@
 namespace lucatume\WPBrowser\WordPress\FileRequests;
 
 use Closure;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 
 class FileRequestFactory
 {
-    private string $domain;
-    private string $wpRootDir;
     /**
-     * @var array<string,string>
+     * @param array<string, string> $redirectFiles
+     * @param array<string, mixed>  $presetGlobalVars
      */
-    private array $redirectFiles;
-    /**
-     * @var array<string,mixed>
-     */
-    private array $presetGlobalVars;
-
     public function __construct(
-        string $wpRootDir,
-        string $domain,
-        array $redirectFiles = [],
-        array $presetGlobalVars = [],
+        private string $wpRootDir,
+        private string $domain,
+        private array $redirectFiles = [],
+        private array $presetGlobalVars = []
     ) {
-        $this->wpRootDir = $wpRootDir;
-        $this->domain = $domain;
-        $this->redirectFiles = $redirectFiles;
-        $this->presetGlobalVars = $presetGlobalVars;
     }
 
+    /**
+     * @param array<string,mixed> $queryArgs
+     */
     public function buildGetRequest(string $requestUri = '/', array $queryArgs = []): FileGetRequest
     {
         return $this->buildRequest('GET', $requestUri, $queryArgs);
     }
 
     /**
+     * @param array<string,mixed> $queryArgs
      * @return array<string,mixed>
      */
     protected function resolveQueryArgs(array $queryArgs): array
@@ -48,11 +42,17 @@ class FileRequestFactory
         return $resolved;
     }
 
+    /**
+     * @param array<string,mixed> $queryArgs
+     */
     public function buildPostRequest(string $requestUri, array $queryArgs): FilePostRequest
     {
         return $this->buildRequest('POST', $requestUri, $queryArgs);
     }
 
+    /**
+     * @param array<string,mixed> $queryArgs
+     */
     protected function buildRequest(
         string $method,
         string $requestUri,
@@ -63,31 +63,27 @@ class FileRequestFactory
 
         $queryArgs = $this->resolveQueryArgs($queryArgs);
 
-        switch ($method) {
-            default:
-            case 'GET':
-                $request = new FileGetRequest(
-                    $this->domain,
-                    $requestUri,
-                    $targetFile,
-                    $queryArgs,
-                    $cookies,
-                    $this->redirectFiles,
-                    $this->presetGlobalVars
-                );
-                break;
-            case 'POST':
-                $request = new FilePostRequest(
-                    $this->domain,
-                    $requestUri,
-                    $targetFile,
-                    $queryArgs,
-                    $cookies,
-                    $this->redirectFiles,
-                    $this->presetGlobalVars
-                );
-                break;
-        }
+        $request = match ($method) {
+            'GET' => new FileGetRequest(
+                $this->domain,
+                $requestUri,
+                $targetFile,
+                $queryArgs,
+                $cookies,
+                $this->redirectFiles,
+                $this->presetGlobalVars
+            ),
+            'POST' => new FilePostRequest(
+                $this->domain,
+                $requestUri,
+                $targetFile,
+                $queryArgs,
+                $cookies,
+                $this->redirectFiles,
+                $this->presetGlobalVars
+            ),
+            default => throw new  RuntimeException("Unsupported request method: {$method}")
+        };
 
         return $request;
     }

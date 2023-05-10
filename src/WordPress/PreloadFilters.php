@@ -12,12 +12,15 @@ class PreloadFilters
             string|WP_Error $message,
             string|int $title = '',
             array $args = []
-        ) {
+        ): void {
             throw new WPDieException($message, $title, $args);
         };
-        self::addFilter('wp_die_handler', static fn() => $throwWPDieException, PHP_INT_MAX);
+        self::addFilter('wp_die_handler', static fn(): \Closure => $throwWPDieException, PHP_INT_MAX);
     }
 
+    /**
+     * @param callable|string|array{class-string|object, string} $callback
+     */
     public static function addFilter(
         string $hookName,
         callable|string|array $callback,
@@ -39,7 +42,7 @@ class PreloadFilters
 
     public static function spoofDnsWildcardCheck(): void
     {
-        $callback = static function (bool $preempt, array $parsedArgs, string $url) {
+        $callback = static function (bool $preempt, array $parsedArgs, string $url): bool|array {
             if (($parsedArgs['method'] ?? 'GET') !== 'GET') {
                 return $preempt;
             }

@@ -248,6 +248,10 @@ class Symlinker extends Extension
         $this->output = $output;
     }
 
+    /**
+     * @param array<string,mixed> $settings
+     * @param array<string,string> $dirDefinition
+     */
     private function getDirPathFromArrayDefinition(array $settings, array $dirDefinition): string
     {
         $currentEnvs = $this->getCurrentEnvsFromSettings($settings);

@@ -11,12 +11,17 @@ class Response
 {
     private mixed $returnValue;
     private int $exitValue;
-    private array $telemetry;
     public static string $stderrValueSeparator = "\r\n\r\n#|worker-stderr-output|#\r\n\r\n";
     private int $stderrLength = 0;
 
-    public function __construct(mixed $returnValue, ?int $exitValue = null, array $telemetry = [])
-    {
+    /**
+     * @param array{memoryPeakUsage: int} $telemetry
+     */
+    public function __construct(
+        mixed $returnValue,
+        ?int $exitValue = null,
+        private array $telemetry = ['memoryPeakUsage' => 0]
+    ) {
         if ($exitValue === null) {
             $this->exitValue = $returnValue instanceof Throwable || $returnValue instanceof SerializableThrowable ?
                 1
@@ -25,7 +30,6 @@ class Response
             $this->exitValue = $exitValue;
         }
         $this->returnValue = $returnValue;
-        $this->telemetry = $telemetry;
     }
 
     public static function fromStderr(string $stderrBufferString): self
@@ -38,12 +42,12 @@ class Response
             // No separator found: the worker script did not fail gracefully.
             if ($payloadLength === 0) {
                 // No information to build from: it's a failure.
-                return new self(null, 1, []);
+                return new self(null, 1, ['memoryPeakUsage' => 0]);
             }
 
             // Got something on STDERR: try and build a useful Exception from it.
             $exception = (new StderrStream($stderrBufferString))->getThrowable();
-            return new self($exception, 1, []);
+            return new self($exception, 1, ['memoryPeakUsage' => 0]);
         }
 
         $afterSeparatorBuffer = substr($stderrBufferString, $separatorPos + strlen(self::$stderrValueSeparator));
@@ -89,6 +93,9 @@ class Response
         return $this->returnValue;
     }
 
+    /**
+     * @return array{memoryPeakUsage: int}
+     */
     public function getTelemetry(): array
     {
         return $this->telemetry;

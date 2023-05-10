@@ -1,9 +1,13 @@
 <?php
+
 namespace lucatume\WPBrowser\Utils;
 
 class Arr
 {
 
+    /**
+     * @param array<int|string,mixed> $haystack
+     */
     public static function searchWithCallback(callable $isNeedle, array $haystack): int|string|false
     {
         $index = false;

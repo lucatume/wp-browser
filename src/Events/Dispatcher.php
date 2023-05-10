@@ -96,7 +96,7 @@ class Dispatcher
     {
         self::getCodeceptionEventDispatcher()->addListener($eventName, $listener, $priority);
 
-        return static function () use ($eventName, $listener) {
+        return static function () use ($eventName, $listener): void {
             self::getCodeceptionEventDispatcher()->removeListener($eventName, $listener);
         };
     }

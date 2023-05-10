@@ -78,7 +78,7 @@ class Filters
      *
      * @return array{remove: mixed[][], add: mixed[][]} The formatted list of filters.
      */
-    public static function format(array $filters)
+    public static function format(array $filters): array
     {
         $instance = new self($filters);
 
@@ -90,7 +90,7 @@ class Filters
      *
      * @return array{remove: mixed[][], add: mixed[][]} A map of the filters to remove and to add.j:w
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'remove' => $this->toRemove,
@@ -147,7 +147,7 @@ class Filters
      *
      * @throws ModuleException If the filters information is not complete or not coherent.
      */
-    protected function normalizeFilter(array $filter)
+    protected function normalizeFilter(array $filter): array
     {
         if (count($filter) < 2) {
             throw new ModuleException(

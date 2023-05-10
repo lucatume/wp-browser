@@ -12,6 +12,9 @@ class SerializableThrowable
     public const RELATIVE_PAHTNAMES = 1;
 
     private Throwable $throwable;
+    /**
+     * @var array<int,array<string,mixed>>
+     */
     private array $trace;
     private string $file;
     private int $line;
@@ -33,6 +36,9 @@ class SerializableThrowable
         $this->line = $throwable->getLine();
     }
 
+    /**
+     * @return array{throwable: Throwable, message: string, code: int, file: string, line: int, trace: array<int,array<string,mixed>>}
+     */
     public function __serialize(): array
     {
         return [
@@ -45,6 +51,10 @@ class SerializableThrowable
         ];
     }
 
+    /**
+     * @param array{throwable: Throwable, message: string, code: int, file: string, line: int, trace: array<int,array<string,mixed>>} $data
+     * @throws ReflectionException
+     */
     public function __unserialize(array $data): void
     {
         $this->throwable = $data['throwable'];
@@ -66,6 +76,10 @@ class SerializableThrowable
         return $this->throwable;
     }
 
+    /**
+     * @param array<int,array<string,mixed>> $trace
+     * @return array<int,array<string,mixed>>
+     */
     private function prettyPrintTrace(array $trace): array
     {
         $updatedTrace = [];

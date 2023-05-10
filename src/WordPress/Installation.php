@@ -18,6 +18,9 @@ class Installation
     use WordPressChecks;
     use InstallationChecks;
 
+    /**
+     * @var array<string>
+     */
     private static array $scaffoldedInstallations = [];
     private ?Db $db;
     private string $wpRootDir;
@@ -48,7 +51,10 @@ class Installation
         return new self($wpRootDir);
     }
 
-    public static function getScaffoldedInstallations():array
+    /**
+     * @return array<string>
+     */
+    public static function getScaffoldedInstallations(): array
     {
         return self::$scaffoldedInstallations;
     }
@@ -73,7 +79,7 @@ class Installation
         return $this;
     }
 
-    public function convertToMultisite($subdomainInstall = false): self
+    public function convertToMultisite(bool $subdomainInstall = false): self
     {
         $this->installationState = $this->installationState->convertToMultisite($subdomainInstall);
 
@@ -210,18 +216,25 @@ class Installation
         return $this->installationState->isConfigured();
     }
 
+    /**
+     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed, SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     */
     public function getSalts(): array
     {
         return $this->installationState->getSalts();
     }
 
+    /**
+     * @param ?array<string> $checkKeys
+     * @return array<string, mixed>
+     */
     public function report(array $checkKeys = null): array
     {
         $map = [
-            'rootDir' => fn() => $this->installationState->getWpRootDir(),
-            'version' => fn() => $this->installationState->getVersion()->toArray(),
-            'constants' => fn() => $this->installationState->getConstants(),
-            'globals' => fn() => $this->installationState->getGlobals()
+            'rootDir' => fn(): string => $this->installationState->getWpRootDir(),
+            'version' => fn(): array => $this->installationState->getVersion()->toArray(),
+            'constants' => fn(): array => $this->installationState->getConstants(),
+            'globals' => fn(): array => $this->installationState->getGlobals()
         ];
 
         $checksMap = $checkKeys === null ? $map : array_intersect_key($map, array_flip($checkKeys));
@@ -238,7 +251,7 @@ class Installation
         return $this->installationState->getPluginsDir($path);
     }
 
-    public function updateOption(string $option, array $value): int
+    public function updateOption(string $option, mixed $value): int
     {
         return $this->installationState->updateOption($option, $value);
     }
@@ -259,6 +272,7 @@ class Installation
     }
 
     /**
+     * @param string[] $command
      * @throws ProcessFailedException
      */
     public function runWpCliCommandOrThrow(array $command): Process

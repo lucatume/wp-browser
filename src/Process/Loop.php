@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Process;
 
 use Closure;
+use Codeception\Exception\ConfigurationException;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Process\Worker\Exited;
 use lucatume\WPBrowser\Process\Worker\Running;
@@ -19,9 +20,6 @@ class Loop
     public const EVENT_AFTER_WORKER_EXIT = 'loop.worker.exit.after';
 
     private int $peakParallelism = 0;
-    private bool $fastFailure;
-    private float $timeout;
-    private int $parallelism;
     /**
      * @var array<string,Result>
      */
@@ -47,25 +45,23 @@ class Loop
 
     private bool $fastFailureFlagRaised = false;
 
+    /**
+     * @param array<int|string,Worker|callable> $workers
+     * @param array{requireFiles: array<string>, cwd: string} $options
+     */
     public function __construct(
         array $workers = [],
-        int $parallelism = 1,
-        bool $fastFailure = false,
-        float $timeout = 30,
-        array $options = []
+        private int $parallelism = 1,
+        private bool $fastFailure = false,
+        private float $timeout = 30,
+        array $options = ['requireFiles' => [], 'cwd' => '']
     ) {
         $this->addWorkers($workers, $options);
-        $this->parallelism = $parallelism;
-        $this->fastFailure = $fastFailure;
-        $this->timeout = $timeout;
     }
 
     /**
-     * @param Closure             $closure
-     * @param int                 $timeout
      * @param array<string,mixed> $options
      *
-     * @return Result
      * @throws ProcessException
      * @throws Throwable
      * @throws WorkerException
@@ -93,7 +89,7 @@ class Loop
     }
 
     /**
-     * @param array<callable>                                 $workers
+     * @param array<callable> $workers
      * @param array{requireFiles: array<string>, cwd: string} $options
      */
     public function addWorkers(array $workers, array $options): Loop
@@ -141,7 +137,7 @@ class Loop
         }
 
         $busyResourcesIds = array_merge(
-            ...array_map(static function (Running $rw) {
+            ...array_map(static function (Running $rw): array {
                 return $rw->getRequiredResourcesIds();
             }, array_values($this->running))
         );
@@ -202,7 +198,7 @@ class Loop
 
         $read = array_reduce(
             $this->running,
-            function (array $streams, Running $w) use (&$readIndexToWorkerMap) {
+            function (array $streams, Running $w) use (&$readIndexToWorkerMap): array {
                 $this->debugLine("Collecting output of worker {$w->getId()}.");
                 $streams[] = $w->getStdoutStream();
                 $streams[] = $w->getStdErrStream();
@@ -342,7 +338,7 @@ class Loop
     {
         assert(count($this->started) >= 1);
         assert(count($this->started) === count($this->exited));
-        $uncollectedWorkerOutput = array_map(static function (Running $w) {
+        $uncollectedWorkerOutput = array_map(static function (Running $w): array {
             return ['stdout' => $w->readStdoutStream(), 'stderr' => $w->readStderrStream()];
         }, array_values($this->started));
         assert(array_sum(array_merge(...$uncollectedWorkerOutput)) === 0, print_r($uncollectedWorkerOutput, true));
@@ -419,7 +415,10 @@ class Loop
         return $this->fastFailure && $this->fastFailureFlagRaised;
     }
 
-    private function ensureWorker(string $id, $worker): Worker
+    /**
+     * @throws ConfigurationException
+     */
+    private function ensureWorker(string $id, callable|Worker $worker): Worker
     {
         if ($worker instanceof Worker) {
             return $worker;
@@ -428,6 +427,9 @@ class Loop
         return $this->buildWorker($id, $worker);
     }
 
+    /**
+     * @throws ConfigurationException
+     */
     private function buildWorker(string $id, callable $worker): Worker
     {
         return new Worker($id, $worker, [], []);

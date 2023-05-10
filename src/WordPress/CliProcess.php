@@ -10,6 +10,8 @@ use Symfony\Component\Process\Process;
 class CliProcess extends Process
 {
     /**
+     * @param array<string>            $command
+     * @param array<string,mixed>|null $env
      * @throws RuntimeException
      */
     public function __construct(
@@ -24,6 +26,9 @@ class CliProcess extends Process
         parent::__construct($command, $cwd, $env, $input, $timeout);
     }
 
+    /**
+     * @param array<string,mixed>|null $env
+     */
     public static function fromShellCommandline(
         string $command,
         string $cwd = null,

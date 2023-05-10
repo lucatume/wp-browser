@@ -10,19 +10,21 @@ class CodeExecutionFactory
 {
     private string $wpRootDir;
     private FileRequestFactory $requestFactory;
-    private array $redirectFiles;
-    private array $presetGlobalVars;
 
     public function __construct(
         string $wpRootDir,
         string $domain,
-        array $redirectFiles = [],
-        array $presetGlobalVars = []
+        /**
+         * @var array<string,string>
+         */
+        private array $redirectFiles = [],
+        /**
+         * @var array<string,mixed>
+         */
+        private array $presetGlobalVars = []
     ) {
         $this->wpRootDir = rtrim($wpRootDir, '\\/');
         $this->requestFactory = new FileRequestFactory($wpRootDir, $domain);
-        $this->redirectFiles = $redirectFiles;
-        $this->presetGlobalVars = $presetGlobalVars;
     }
 
     public function toCheckIfWpIsInstalled(bool $multisite): Closure
