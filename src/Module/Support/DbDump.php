@@ -128,7 +128,7 @@ class DbDump
                 . ($matches['path'] ?? '');
         };
 
-        $sql = preg_replace_callback($urlPattern, $replaceCallback, $sql);
+        $sql = (string)preg_replace_callback($urlPattern, $replaceCallback, $sql);
 
         preg_match($urlPattern, $sql);
 

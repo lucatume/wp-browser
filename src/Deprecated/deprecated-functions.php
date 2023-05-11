@@ -236,7 +236,7 @@ namespace tad\WPBrowser {
      */
     function dispatch(string $eventName, mixed $origin = null, ?array $context = []): void
     {
-        Dispatcher::dispatch($eventName, $origin, $context);
+        Dispatcher::dispatch($eventName, $origin, $context ?? []);
     }
 
 

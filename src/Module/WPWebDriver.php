@@ -132,6 +132,10 @@ class WPWebDriver extends WebDriver
      */
     public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
+        if ($this->webDriver === null) {
+            return null;
+        }
+
         /** @var array<FacebookWebdriverCookie|Cookie> $cookies */
         $cookies = $this->webDriver->manage()->getCookies();
 

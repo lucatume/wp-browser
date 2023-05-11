@@ -206,9 +206,9 @@ class StderrStream
 
             if (preg_match($numberTraceInlinePattern, $line, $numberTraceInlineMatches)) {
                 $traceItem = [
-                    'date' => $currentError['date'],
-                    'time' => $currentError['time'],
-                    'timezone' => $currentError['timezone']
+                    'date' => $currentError['date'] ?? '',
+                    'time' => $currentError['time'] ?? '',
+                    'timezone' => $currentError['timezone'] ?? ''
                 ];
                 foreach (['call', 'args', 'file', 'line'] as $key) {
                     $traceItem[$key] = $numberTraceInlineMatches[$key];
@@ -221,9 +221,9 @@ class StderrStream
 
             if (preg_match($closureTracePattern, $line, $closureTraceMatches)) {
                 $traceItem = [
-                    'date' => $currentError['date'],
-                    'time' => $currentError['time'],
-                    'timezone' => $currentError['timezone'],
+                    'date' => $currentError['date'] ?? '',
+                    'time' => $currentError['time'] ?? '',
+                    'timezone' => $currentError['timezone'] ?? '',
                     'file' => 'n/a',
                     'line' => 'n/a',
                     'call' => 'n/a',

@@ -6,7 +6,7 @@ use lucatume\WPBrowser\WordPress\Version;
 
 trait ScaffoldedStateTrait
 {
-    private ?Version $version = null;
+    private Version $version;
 
     public function getVersion(): Version
     {

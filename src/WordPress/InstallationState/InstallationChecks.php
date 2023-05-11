@@ -7,6 +7,7 @@ use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
+use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
 use Throwable;
 
@@ -20,11 +21,17 @@ trait InstallationChecks
      */
     protected function isInstalled(bool $multisite): bool
     {
-        if (!($this->wpRootDir && $this->db->exists())) {
+        $db = $this->db;
+
+        if (!$db instanceof Db) {
             return false;
         }
 
-        $siteurl = $this->db->getOption('siteurl');
+        if (!($this->wpRootDir && $db->exists())) {
+            return false;
+        }
+
+        $siteurl = $db->getOption('siteurl');
 
         if (!(is_string($siteurl) && $siteurl !== '')) {
             return false;

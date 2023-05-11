@@ -44,6 +44,10 @@ class WPBrowser extends PhpBrowser
      */
     public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
+        if ($this->client === null) {
+            return null;
+        }
+
         $cookies = $this->client->getCookieJar()->all();
 
         if (!$cookies) {

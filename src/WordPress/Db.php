@@ -107,9 +107,10 @@ class Db
      */
     public function create(): self
     {
-        if ($this->getPDO()->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
+        $pdo = $this->getPDO();
+        if ($pdo->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
             throw new DbException(
-                'Could not create database ' . $this->dbName . ':' . json_encode($this->pdo->errorInfo()),
+                'Could not create database ' . $this->dbName . ':' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
             );
         }
@@ -123,9 +124,10 @@ class Db
      */
     public function drop(): self
     {
-        if ($this->getPDO()->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
+        $pdo = $this->getPDO();
+        if ($pdo->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
             throw new DbException(
-                'Could not drop database ' . $this->dbName . ': ' . json_encode($this->pdo->errorInfo()),
+                'Could not drop database ' . $this->dbName . ': ' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
             );
         }
@@ -150,9 +152,10 @@ class Db
      */
     public function useDb(string $dbName): self
     {
-        if ($this->pdo->query('USE ' . $dbName) === false) {
+        $pdo = $this->getPDO();
+        if ($pdo->query('USE ' . $dbName) === false) {
             throw new DbException(
-                'Could not use database ' . $this->dbName . ': ' . json_encode($this->pdo->errorInfo()),
+                'Could not use database ' . $this->dbName . ': ' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
             );
         }

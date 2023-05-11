@@ -88,6 +88,7 @@ class WPCLI extends Module
         $this->debugSection('STDOUT', $cliProcess->getOutput());
         $this->debugSection('STDERR', $cliProcess->getErrorOutput());
 
+        /** @var int $exitCode The process terminated at this stage. */
         $exitCode = $cliProcess->getExitCode();
 
         $this->debugSection('exit code', print_r($exitCode, true));
@@ -128,11 +129,11 @@ class WPCLI extends Module
     /**
      * Returns the shell output of the last command.
      *
-     * @return string|null The output produced by the last shell command, if any.
+     * @return string The output produced by the last shell command.
      *
      * @throws ModuleException If no prior command ran.
      */
-    public function grabLastShellOutput(): ?string
+    public function grabLastShellOutput(): string
     {
         if (!$this->lastCliProcess instanceof CliProcess) {
             throw new ModuleException(
@@ -141,17 +142,17 @@ class WPCLI extends Module
             );
         }
 
-        return $this->lastCliProcess->getOutput() ?: null;
+        return $this->lastCliProcess->getOutput();
     }
 
     /**
      * Returns the shell error output of the last command.
      *
-     * @return string|null The error output produced by the last shell command, if any.
+     * @return string The error output produced by the last shell command, if any.
      *
      * @throws ModuleException If no prior command ran.
      */
-    public function grabLastShellErrorOutput(): ?string
+    public function grabLastShellErrorOutput(): string
     {
         if (!$this->lastCliProcess instanceof CliProcess) {
             throw new ModuleException(
@@ -160,7 +161,7 @@ class WPCLI extends Module
             );
         }
 
-        return $this->lastCliProcess->getErrorOutput() ?: null;
+        return $this->lastCliProcess->getErrorOutput();
     }
 
 
@@ -198,7 +199,11 @@ class WPCLI extends Module
         mixed $input = null
     ): array {
         $this->cli($command, $env, $input);
-        $output = $this->lastCliProcess->getOutput();
+
+        /** @var CliProcess $cliProcess Set by the previous method. */
+        $cliProcess = $this->lastCliProcess;
+
+        $output = $cliProcess->getOutput();
 
         if ($splitCallback) {
             return $splitCallback($output);
@@ -232,7 +237,11 @@ class WPCLI extends Module
     public function cliToString(array $command, ?array $env = null, mixed $input = null): string
     {
         $this->cli($command, $env, $input);
-        return $this->lastCliProcess->getOutput();
+
+        /** @var CliProcess $cliProcess Set by the previous method. */
+        $cliProcess = $this->lastCliProcess;
+
+        return $cliProcess->getOutput();
     }
 
     /**
@@ -265,6 +274,7 @@ class WPCLI extends Module
      * ```
      *
      * @param string $text The text to assert is not in the output.
+     * @throws ModuleException
      */
     public function dontSeeInShellOutput(string $text): void
     {
@@ -282,6 +292,7 @@ class WPCLI extends Module
      * ```
      *
      * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     * @throws ModuleException
      */
     public function seeShellOutputMatches(string $regex): void
     {

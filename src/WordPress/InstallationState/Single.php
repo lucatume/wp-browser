@@ -9,6 +9,7 @@ use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
 use Throwable;
 
@@ -45,6 +46,9 @@ class Single implements InstallationStateInterface
                 InstallationException::STATE_CONFIGURED
             );
         }
+
+
+        $this->version = new Version($this->wpRootDir);
     }
 
     public function isMultisite(): bool

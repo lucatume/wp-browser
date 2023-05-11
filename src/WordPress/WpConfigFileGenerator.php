@@ -55,7 +55,7 @@ class WpConfigFileGenerator
         );
 
         $tablePrefix = $db->getTablePrefix();
-        $this->wpConfigFileContents = preg_replace(
+        $this->wpConfigFileContents = (string)preg_replace(
             '/\$table_prefix\s*=\s*\'wp_\';/',
             "\$table_prefix = '$tablePrefix';",
             $this->wpConfigFileContents,
@@ -67,7 +67,7 @@ class WpConfigFileGenerator
 
     private function setSalts(ConfigurationData $configurationData): self
     {
-        $this->wpConfigFileContents = preg_replace_callback(
+        $this->wpConfigFileContents = (string)preg_replace_callback(
             "/define\( '(?<const>(?:AUTH|SECURE_AUTH|LOGGED_IN|NONCE)_(?:KEY|SALT))',\\s*'put your unique phrase here' \);/u",
             static function (array $matches) use ($configurationData): string {
                 $value = match ($matches['const']) {
@@ -145,14 +145,14 @@ PHP;
 
 
         $placeholderPattern = '/^\\/\\*\\s*?That\'s all, stop editing!.*?$/um';
-        if (!\preg_match($placeholderPattern, $this->wpConfigFileContents,$placeholderMatches)) {
+        if (!\preg_match($placeholderPattern, $this->wpConfigFileContents, $placeholderMatches)) {
             throw new InstallationException(
                 "Could not find the placeholder string in the wp-config.php file contents.",
                 InstallationException::WP_CONFIG_FILE_MISSING_PLACEHOLDER
             );
         }
 
-        $this->wpConfigFileContents = preg_replace(
+        $this->wpConfigFileContents = (string)preg_replace(
             $placeholderPattern,
             $extraPHP . PHP_EOL . $placeholderMatches[0],
             $this->wpConfigFileContents
@@ -164,9 +164,9 @@ PHP;
     private function removeExcessBlankLines(): self
     {
         // Normalize line endings.
-        $this->wpConfigFileContents = str_replace("\r\n", "\n", $this->wpConfigFileContents);
+        $this->wpConfigFileContents = (string)str_replace("\r\n", "\n", $this->wpConfigFileContents);
         // Replace 2 ore more blank lines with 1 blank line.
-        $this->wpConfigFileContents = preg_replace("/\n{2,}/", "\n\n", $this->wpConfigFileContents);
+        $this->wpConfigFileContents = (string)preg_replace("/\n{2,}/", "\n\n", $this->wpConfigFileContents);
 
         return $this;
     }

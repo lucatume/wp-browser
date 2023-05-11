@@ -401,15 +401,24 @@ class FileStreamWrapper
         return true;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function dir_opendir(string $path, int $options): bool
     {
         static::unregister();
 
         if (isset($this->context)) {
-            $this->fileResource = opendir($path, $this->context) ?: null;
+            $handle = opendir($path, $this->context) ?: null;
         } else {
-            $this->fileResource = opendir($path) ?: null;
+            $handle = opendir($path) ?: null;
         }
+
+        if(!is_resource($handle)){
+            throw new MonkeyPatchingException("Could not open directory $path");
+        }
+
+        $this->fileResource = $handle;
 
         static::register();
 
@@ -450,6 +459,9 @@ class FileStreamWrapper
         return $openedPath;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     private function openFile(string $absPath, string $mode, bool $useIncludePath): void
     {
         if (isset($this->context)) {
@@ -457,6 +469,11 @@ class FileStreamWrapper
         } else {
             $handle = fopen($absPath, $mode, $useIncludePath);
         }
-        $this->fileResource = is_resource($handle) ? $handle : null;
+
+        if (!is_resource($handle)) {
+            throw new MonkeyPatchingException("Could not open file $absPath.");
+        }
+
+        $this->fileResource = $handle;
     }
 }

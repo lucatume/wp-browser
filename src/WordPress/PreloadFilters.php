@@ -51,7 +51,7 @@ class PreloadFilters
             $requestHost = parse_url($url, PHP_URL_HOST);
             $siteHost = parse_url($siteurl, PHP_URL_HOST);
 
-            if ($requestHost === false || $siteHost === false) {
+            if (empty($requestHost) || empty($siteHost)) {
                 return $preempt;
             }
 

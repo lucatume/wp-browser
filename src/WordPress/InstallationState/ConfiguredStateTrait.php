@@ -8,6 +8,7 @@ use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
+use Throwable;
 
 trait ConfiguredStateTrait
 {
@@ -72,7 +73,7 @@ trait ConfiguredStateTrait
     }
 
     /**
-     * @throws InstallationException|ProcessException|DbException|WpConfigFileException
+     * @throws InstallationException|ProcessException|DbException|WpConfigFileException|Throwable
      */
     private function buildConfigured(string $wpRootDir, string $wpConfigFilePath): void
     {

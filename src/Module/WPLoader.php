@@ -437,6 +437,14 @@ class WPLoader extends Module
                     // Refresh the theme related options.
                     update_site_option('allowedthemes', [$this->config['theme'] => true]);
                     $db = $this->installation->getDb();
+
+                    if ($db === null) {
+                        throw new ModuleException(
+                            __CLASS__,
+                            'Could not get database instance from installation.'
+                        );
+                    }
+
                     update_option('template', $db->getOption('template'));
                     update_option('stylesheet', $db->getOption('stylesheet'));
                 }
@@ -454,6 +462,14 @@ class WPLoader extends Module
                 if ($this->config['theme']) {
                     // Refresh the theme related options.
                     $db = $this->installation->getDb();
+
+                    if ($db === null) {
+                        throw new ModuleException(
+                            __CLASS__,
+                            'Could not get database instance from installation.'
+                        );
+                    }
+
                     update_option('template', $db->getOption('template'));
                     update_option('stylesheet', $db->getOption('stylesheet'));
                 }

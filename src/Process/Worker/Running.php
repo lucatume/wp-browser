@@ -136,9 +136,9 @@ class Running implements WorkerInterface
      *     exitcode: int,
      *     termsig: int,
      *     stopsig: int
-     * }|null
+     * }
      */
-    public function getStatus(): ?array
+    public function getStatus(): array
     {
         $liveStatus = is_resource($this->proc) ?
             proc_get_status($this->proc) :

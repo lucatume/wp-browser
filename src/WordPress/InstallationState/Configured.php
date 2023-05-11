@@ -23,8 +23,7 @@ class Configured implements InstallationStateInterface
     use ScaffoldedStateTrait;
 
     /**
-     * @throws InstallationException|ProcessException
-     * @throws DbException
+     * @throws InstallationException|ProcessException|DbException|WpConfigFileException|Throwable
      */
     public function __construct(string $wpRootDir, string $wpConfigFilePath)
     {
@@ -117,7 +116,7 @@ class Configured implements InstallationStateInterface
             $this->db->create();
             $domain = parse_url($url, PHP_URL_HOST);
 
-            if ($domain === false) {
+            if (empty($domain)) {
                 throw new InstallationException(
                     "The URL $url is not a valid URL.",
                     InstallationException::INVALID_URL
