@@ -9,7 +9,7 @@ class FileRequestFactory
 {
     /**
      * @param array<string, string> $redirectFiles
-     * @param array<string, mixed>  $presetGlobalVars
+     * @param array<string, mixed> $presetGlobalVars
      */
     public function __construct(
         private string $wpRootDir,
@@ -24,7 +24,20 @@ class FileRequestFactory
      */
     public function buildGetRequest(string $requestUri = '/', array $queryArgs = []): FileGetRequest
     {
-        return $this->buildRequest('GET', $requestUri, $queryArgs);
+        $targetFile = rtrim($this->wpRootDir, '\\/') . '/' . ltrim($requestUri, '\\/');
+        $cookies = [];
+
+        $queryArgs = $this->resolveQueryArgs($queryArgs);
+
+        return new FileGetRequest(
+            $this->domain,
+            $requestUri,
+            $targetFile,
+            $queryArgs,
+            $cookies,
+            $this->redirectFiles,
+            $this->presetGlobalVars
+        );
     }
 
     /**
@@ -47,44 +60,19 @@ class FileRequestFactory
      */
     public function buildPostRequest(string $requestUri, array $queryArgs): FilePostRequest
     {
-        return $this->buildRequest('POST', $requestUri, $queryArgs);
-    }
-
-    /**
-     * @param array<string,mixed> $queryArgs
-     */
-    protected function buildRequest(
-        string $method,
-        string $requestUri,
-        array $queryArgs,
-    ): FileGetRequest|FilePostRequest {
         $targetFile = rtrim($this->wpRootDir, '\\/') . '/' . ltrim($requestUri, '\\/');
         $cookies = [];
 
         $queryArgs = $this->resolveQueryArgs($queryArgs);
 
-        $request = match ($method) {
-            'GET' => new FileGetRequest(
-                $this->domain,
-                $requestUri,
-                $targetFile,
-                $queryArgs,
-                $cookies,
-                $this->redirectFiles,
-                $this->presetGlobalVars
-            ),
-            'POST' => new FilePostRequest(
-                $this->domain,
-                $requestUri,
-                $targetFile,
-                $queryArgs,
-                $cookies,
-                $this->redirectFiles,
-                $this->presetGlobalVars
-            ),
-            default => throw new  RuntimeException("Unsupported request method: {$method}")
-        };
-
-        return $request;
+        return new FilePostRequest(
+            $this->domain,
+            $requestUri,
+            $targetFile,
+            $queryArgs,
+            $cookies,
+            $this->redirectFiles,
+            $this->presetGlobalVars
+        );
     }
 }

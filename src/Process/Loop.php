@@ -47,20 +47,26 @@ class Loop
 
     /**
      * @param array<int|string,Worker|callable> $workers
-     * @param array{requireFiles: array<string>, cwd: string} $options
+     * @param array{
+     *     requireFiles?: array<string>,
+     *     cwd?: string
+     * } $options
      */
     public function __construct(
         array $workers = [],
         private int $parallelism = 1,
         private bool $fastFailure = false,
         private float $timeout = 30,
-        array $options = ['requireFiles' => [], 'cwd' => '']
+        array $options = []
     ) {
         $this->addWorkers($workers, $options);
     }
 
     /**
-     * @param array<string,mixed> $options
+     * @param array{
+     *     requireFiles?: array<string>,
+     *     cwd?: string,
+     * } $options
      *
      * @throws ProcessException
      * @throws Throwable
@@ -70,7 +76,7 @@ class Loop
     {
         $loop = (new self([$closure], 1, true, $timeout, $options))->run();
         $results = $loop->getResults();
-        $result = reset($results);
+        $result = $results[0];
         $returnValue = $result->getReturnValue();
 
         if (!empty($options['rethrow']) && $returnValue instanceof Throwable) {
@@ -89,8 +95,11 @@ class Loop
     }
 
     /**
-     * @param array<callable> $workers
-     * @param array{requireFiles: array<string>, cwd: string} $options
+     * @param array<int|string,Worker|callable> $workers
+     * @param array{
+     *     requireFiles?: array<string>,
+     *     cwd?: string
+     * } $options
      */
     public function addWorkers(array $workers, array $options): Loop
     {
@@ -120,7 +129,7 @@ class Loop
         $runningWorkersIds = array_keys($this->started);
 
         if (count($exitedWorkersIds) === 0 && count($runningWorkersIds) === 0) {
-            return reset($this->workers);
+            return reset($this->workers) ?: null;
         }
 
         $notStartedWorkers = array_filter(
@@ -294,7 +303,7 @@ class Loop
                 if ($isOverTime) {
                     $exitedWorker = $w->terminate();
                     $this->dispatchOnWorkerExit($exitedWorker);
-                    $this->exited[$w->getId()] = $w;
+                    $this->exited[$w->getId()] = $exitedWorker;
                     unset($this->running[$w->getId()]);
                     $this->debugLine("Worker {$w->getId()} took too long, terminated.");
                     $this->startWorker();

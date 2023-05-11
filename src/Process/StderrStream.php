@@ -31,19 +31,38 @@ class StderrStream
     private function applyOptions(array $traceItem, int $options): array
     {
         if ($options & self::RELATIVE_PATHNAMES) {
+            $cwd = (getcwd() ?: codecept_root_dir());
             foreach (['file', 'args'] as $key) {
                 if (!isset($traceItem[$key])) {
                     continue;
                 }
-                $traceItem[$key] = str_replace(getcwd(), '', $traceItem[$key]);
+                $traceItem[$key] = str_replace($cwd, '', $traceItem[$key]);
             }
         }
         return $traceItem;
     }
 
     /**
-     * @param array{date: string, time: string, timezone: string, type: string, message: string, file: string, line: int, trace: array<int,array<string,mixed>>} $currentError
-     * @return array{date: string, time: string, timezone: string, type: string, message: string, file: string, line: int, trace: array<int,array<string,mixed>>}
+     * @param array{
+     *     date: string,
+     *     time: string,
+     *     timezone: string,
+     *     type: string,
+     *     message: string,
+     *     file: string,
+     *     line: int,
+     *     trace: array<int,array<string,mixed>>
+     * }[] $currentError
+     * @return array{
+     *     date: string,
+     *     time: string,
+     *     timezone: string,
+     *     type: string,
+     *     message: string,
+     *     file: string,
+     *     line: int,
+     *     trace: array<int,array<string,mixed>>
+     * }[]
      */
     private function formatInvertedTraceError(array $currentError, bool $isNumericStackTrace): array
     {
@@ -104,9 +123,13 @@ class StderrStream
                     'exceptionClass' => null,
                 ];
                 $isNumericStackTrace = false;
-                foreach (['date', 'time', 'timezone', 'type', 'message', 'file', 'line'] as $key) {
-                    $currentError[$key] = $typeMatches[$key];
-                }
+                $currentError['date'] = $typeMatches['date'];
+                $currentError['time'] = $typeMatches['time'];
+                $currentError['timezone'] = $typeMatches['timezone'];
+                $currentError['type'] = $typeMatches['type'];
+                $currentError['message'] = $typeMatches['message'];
+                $currentError['file'] = $typeMatches['file'];
+                $currentError['line'] = (int)$typeMatches['line'];
 
                 if (preg_match($uncaughtExceptionPattern, $currentError['message'], $uncaughtExceptionMatches)) {
                     $currentError['isException'] = true;
@@ -129,11 +152,14 @@ class StderrStream
                 $currentError = [
                     'isException' => false,
                     'exceptionClass' => null,
+                    'message' => '',
                 ];
                 $isNumericStackTrace = false;
-                foreach (['date', 'time', 'timezone', 'type', 'message'] as $key) {
-                    $currentError[$key] = $typeStartMatches[$key];
-                }
+                $currentError['date'] = $typeStartMatches['date'];
+                $currentError['time'] = $typeStartMatches['time'];
+                $currentError['timezone'] = $typeStartMatches['timezone'];
+                $currentError['type'] = $typeStartMatches['type'];
+                $currentError['message'] = $typeStartMatches['message'];
 
                 // Keep ingesting until the line matches with $typeEndPattern
                 while (isset($lines[$i]) && !preg_match($typeEndPattern, $lines[$i], $typeEndMatches)) {
@@ -259,6 +285,7 @@ class StderrStream
                 $sourceError['line']);
         }
 
+        /** @var Throwable $throwable */
         $throwable = (new ReflectionClass($throwableClass))->newInstanceWithoutConstructor();
 
         Property::setPrivateProperties($throwable, [

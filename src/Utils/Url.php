@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use lucatume\WPBrowser\Generators\User;
+
 class Url
 {
     /**
@@ -21,7 +23,16 @@ class Url
     ];
 
     /**
-     * @return array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
+     * @return array{
+     *     fragment: string,
+     *     host: string,
+     *     pass: string,
+     *     path: string,
+     *     port: int,
+     *     query: string,
+     *     scheme: string,
+     *     user: string
+     * }
      */
     public static function parseUrl(string $url): array
     {
@@ -31,7 +42,17 @@ class Url
             return self::$parserUrlDefaults;
         }
 
-        return array_replace(self::$parserUrlDefaults, $parsed);
+        $defaults = self::$parserUrlDefaults;
+        return [
+            'scheme' => (string)($parsed['scheme'] ?? $defaults['scheme']),
+            'host' => (string)($parsed['host'] ?? $defaults['host']),
+            'port' => (int)($parsed['port'] ?? $defaults['port']),
+            'user' => (string)($parsed['user'] ?? $defaults['user']),
+            'pass' => (string)($parsed['pass'] ?? $defaults['pass']),
+            'path' => (string)($parsed['path'] ?? $defaults['path']),
+            'query' => (string)($parsed['query'] ?? $defaults['query']),
+            'fragment' => (string)($parsed['fragment'] ?? $defaults['fragment']),
+        ];
     }
 
     public static function getDomain(string $url): string

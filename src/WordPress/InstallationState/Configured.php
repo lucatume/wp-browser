@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
@@ -12,6 +13,8 @@ use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
+use lucatume\WPBrowser\WordPress\WpConfigFileException;
+use Throwable;
 
 class Configured implements InstallationStateInterface
 {
@@ -92,7 +95,12 @@ class Configured implements InstallationStateInterface
     }
 
     /**
-     * @throws InstallationException|ProcessException|DbException
+     * @throws DbException
+     * @throws InstallationException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws WpConfigFileException
      */
     public function install(
         string $url,
@@ -108,6 +116,14 @@ class Configured implements InstallationStateInterface
         try {
             $this->db->create();
             $domain = parse_url($url, PHP_URL_HOST);
+
+            if ($domain === false) {
+                throw new InstallationException(
+                    "The URL $url is not a valid URL.",
+                    InstallationException::INVALID_URL
+                );
+            }
+
             $closuresFactory = new CodeExecutionFactory($this->wpRootDir, $domain);
             $toInstallWordPress = $closuresFactory->toInstallWordPress($title,
                 $adminUser,
@@ -126,7 +142,7 @@ class Configured implements InstallationStateInterface
                 if ($result->getExitCode() !== 0) {
                     $returnValue = $result->getReturnValue();
 
-                    if ($returnValue instanceof \Throwable) {
+                    if ($returnValue instanceof Throwable) {
                         throw $returnValue;
                     }
 
@@ -136,7 +152,7 @@ class Configured implements InstallationStateInterface
                     throw new InstallationException($reason, InstallationException::INSTALLATION_FAIL);
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new InstallationException(
                 'WordPress installation failed. ' . $e->getMessage(),
                 InstallationException::INSTALLATION_FAIL

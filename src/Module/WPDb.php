@@ -265,10 +265,16 @@ class WPDb extends Db
     {
         if ($dumpFile !== null) {
             if (!is_file($dumpFile) || !is_readable($dumpFile)) {
-                throw new InvalidArgumentException("Dump file [{$dumpFile}] does not exist or is not readable.");
+                throw new ModuleException($this, "Dump file [{$dumpFile}] does not exist or is not readable.");
             }
 
-            $this->_getDriver()->load(file($dumpFile));
+            $sql = file($dumpFile);
+
+            if ($sql === false) {
+                throw new ModuleException($this, "Failed to read dump file [{$dumpFile}].");
+            }
+
+            $this->_getDriver()->load($sql);
 
             return;
         }
@@ -720,12 +726,11 @@ class WPDb extends Db
      */
     public function grabLatestEntryByFromDatabase(string $tableName, string $idColumn = 'ID'): int
     {
-        $dbh = $this->_getDbh();
-        $sth = $dbh->prepare("SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1");
+        $sth = $this->_getDbh()->prepare("SELECT {$idColumn} FROM {$tableName} ORDER BY {$idColumn} DESC LIMIT 1");
         $this->debugSection('Query', $sth->queryString);
         $sth->execute();
 
-        return $sth->fetchColumn();
+        return (int)$sth->fetchColumn();
     }
 
     /**
@@ -1779,8 +1784,8 @@ class WPDb extends Db
      *
      * @param array<string,mixed> $overrides {
      *                                       An array of values to override the defaults.
-     *                                       The `{{n}}` placeholder can be used to have the post count inserted in its place;
-     *                                       e.g. `Post Title - {{n}}` will be set to `Post Title - 0` for the first post,
+     *                                       The `{{n}}` placeholder can be used to have the post count inserted in its
+     *     place; e.g. `Post Title - {{n}}` will be set to `Post Title - 0` for the first post,
      *                                       `Post Title - 1` for the second one and so on.
      *                                       The same applies to meta values as well.
      *
@@ -1826,7 +1831,7 @@ class WPDb extends Db
      * @param string|array<string|array<string,mixed>> $input The entry, or entries, to replace the placeholder in.
      * @param int $i The value to replace the placeholder with.
      *
-     * @return array<string> The input array with any `{{n}}` placeholder replaced with a number.
+     * @return array<string,mixed> The input array with any `{{n}}` placeholder replaced with a number.
      */
     protected function replaceNumbersInArray(string|array $input, int $i): array
     {
@@ -2540,8 +2545,8 @@ class WPDb extends Db
      * ```
      *
      * @param int $userId The ID of the user to set the level for.
-     * @param array<array<string>|bool|string>|string $role Either a role string (e.g. `administrator`) or an array of blog
-     *                                                IDs/roles for a multisite installation
+     * @param array<array<string>|bool|string>|string $role Either a role string (e.g. `administrator`) or an array of
+     *     blog IDs/roles for a multisite installation
      *                                                (e.g. `[1 => 'administrator`, 2 => 'subscriber']`).
      *
      *
@@ -2900,7 +2905,7 @@ class WPDb extends Db
             $blogOverrides = $this->replaceNumbersInArray($overrides, $i);
             $domainOrPath = 'blog-' . $i;
 
-            if (isset($blogOverrides['slug'])) {
+            if (isset($blogOverrides['slug']) && is_string($blogOverrides['slug'])) {
                 $domainOrPath = (string)$blogOverrides['slug'];
                 unset($blogOverrides['slug']);
             }
@@ -3348,8 +3353,8 @@ class WPDb extends Db
      *                                                  timestamp that should be used to build the "year/time" uploads
      *                                                  sub-folder structure.
      * @param array<string,mixed> $overrides An associative array of values overriding the default ones.
-     * @param array<string,array<int>>|null $imageSizes An associative array in the format [ <size> => [<width>,<height>]] to
-     *                                                  override the image sizes created by default.
+     * @param array<string,array<int>>|null $imageSizes An associative array in the format [ <size> =>
+     *     [<width>,<height>]] to override the image sizes created by default.
      *
      * @param string $file The absolute path to the attachment file.
      * @return int The post ID of the inserted attachment.
@@ -4348,7 +4353,7 @@ class WPDb extends Db
      *
      * @param string|array<string,mixed> $criteriaOrName Either the ready to use array criteria or the site option name.
      * @param mixed|null $value The site option value, only used if the first parameter is not an array.
-     * @return array{option_name: string, option_value?: mixed} An array of criteria to search for the site option.
+     * @return array{option_name?: string, ...} An array of criteria to search for the site option.
      */
     protected function buildSiteOptionCriteria(string|array $criteriaOrName, mixed $value = null): array
     {
@@ -4366,7 +4371,7 @@ class WPDb extends Db
      * @param array<string,mixed>|string $criteriaOrName The option name or the criteria to check the option by.
      * @param mixed|null $value The option value to check; ignored if the first parameter is an array.
      *
-     * @return array{option_name: \array|string, option_value?: mixed} An array of option criteria, normalized.
+     * @return array{option_name?: string, option_value?: mixed, ...} An array of option criteria, normalized.
      */
     protected function normalizeOptionCriteria(array|string $criteriaOrName, mixed $value = null): array
     {

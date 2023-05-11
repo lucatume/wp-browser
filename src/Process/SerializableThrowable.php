@@ -123,12 +123,13 @@ class SerializableThrowable
     protected function makeTraceFilesRelative(): void
     {
         $relativePathnameTrace = [];
+        $cwd = getcwd() ?: '';
         foreach ($this->throwable->getTrace() as $k => $traceEntry) {
             if (!isset($traceEntry['file']) || str_contains($traceEntry['file'], 'closure://')) {
                 $relativePathnameTrace[$k] = $traceEntry;
                 continue;
             }
-            $traceEntry['file'] = str_replace(getcwd(), '', $traceEntry['file']);
+            $traceEntry['file'] = str_replace($cwd, '', $traceEntry['file']);
             $relativePathnameTrace[$k] = $traceEntry;
         }
         Property::setPrivateProperties($this->throwable, [

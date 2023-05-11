@@ -13,6 +13,7 @@ use RuntimeException;
 class Running implements WorkerInterface
 {
     use MemoryUsage;
+
     /**
      * @var mixed|null
      */
@@ -22,7 +23,16 @@ class Running implements WorkerInterface
      */
     private $stdin;
     /**
-     * @var null|array<string,string|int|bool>
+     * @var array{
+     *     command: string,
+     *     pid: int,
+     *     running: bool,
+     *     signaled: bool,
+     *     stopped: bool,
+     *     exitcode: int,
+     *     termsig: int,
+     *     stopsig: int
+     * }|null
      */
     private ?array $cachedStatus = null;
     /**
@@ -117,13 +127,31 @@ class Running implements WorkerInterface
     }
 
     /**
-     * @return ?array{command: string, pid: int, running: bool, signaled: bool, stopped: bool, exitcode: int, termsig: int, stopsig: int}
+     * @return array{
+     *     command: string,
+     *     pid: int,
+     *     running: bool,
+     *     signaled: bool,
+     *     stopped: bool,
+     *     exitcode: int,
+     *     termsig: int,
+     *     stopsig: int
+     * }|null
      */
     public function getStatus(): ?array
     {
         $liveStatus = is_resource($this->proc) ?
             proc_get_status($this->proc) :
-            ['exitcode' => -1];
+            [
+                'command' => '',
+                'pid' => -1,
+                'running' => false,
+                'signaled' => false,
+                'stopped' => false,
+                'exitcode' => -1,
+                'termsig' => -1,
+                'stopsig' => -1,
+            ];
 
         if ($this->cachedStatus !== null && $liveStatus['exitcode'] === -1) {
             return $this->cachedStatus;
@@ -144,9 +172,11 @@ class Running implements WorkerInterface
     public function terminate(): Exited
     {
         $status = $this->getStatus();
-        $pid = (int)$status['pid'];
 
-        $this->kill($pid);
+        if (isset($status['pid'])) {
+            $pid = (int)$status['pid'];
+            $this->kill($pid);
+        }
 
         foreach (
             [
@@ -161,10 +191,20 @@ class Running implements WorkerInterface
         }
 
         // Kill signal.
+        $status = $this->getStatus();
         $procClose = proc_close($this->proc);
-        if ($procClose !== -1) {
-            // Do not update the cached status if the process had already terminated.
-            $this->cachedStatus['exitcode'] = $procClose;
+        if ($procClose >= 0) {
+            // Update the cached status if the process had not already terminated.
+            $this->cachedStatus = [
+                'command' => $status['command'],
+                'pid' => $status['pid'],
+                'running' => false,
+                'signaled' => true,
+                'stopped' => false,
+                'exitcode' => $procClose,
+                'termsig' => $status['termsig'],
+                'stopsig' => $status['stopsig'],
+            ];
         }
 
         return Exited::fromRunningWorker($this);

@@ -51,7 +51,7 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool}
+     * @return array<string,string|true>
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnMap instead.
      */
     function dbDsnMap(string $dbHost): array
@@ -60,8 +60,20 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string, memory: bool} $dsn The database DSN map.
-     * @return array{dsn: string, user: string, password: string}
+     * @param array{
+     *     type: string,
+     *     host: string,
+     *     port: string,
+     *     unix_socket: string,
+     *     version: string,
+     *     file: string,
+     *     memory: bool
+     * } $dsn The database DSN map.
+     * @return array{
+     *     dsn: string,
+     *     user: string,
+     *     password: string
+     * }
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbCredentials instead.
      */
     function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
@@ -87,7 +99,7 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool}
+     * @return array<string,string|true>
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnToMap instead.
      */
     function dbDsnToMap(string $dsnString): array
@@ -284,7 +296,16 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @return array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
+     * @return array{
+     *     fragment: string,
+     *     host: string,
+     *     pass: string,
+     *     path: string,
+     *     port: int,
+     *     query: string,
+     *     scheme: string,
+     *     user: string
+     * }
      * @deprecated Use `lucatume\WPBrowser\Utils\Url::parseUrl` instead.
      */
     function parseUrl(string $url): array

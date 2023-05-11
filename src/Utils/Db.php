@@ -130,10 +130,9 @@ class Db
      *
      * @param string $dbHost The database host string to build the DSN map from, e.g. `localhost` or
      *                       `unix_socket=/var/mysock.sql`. This input can be a DSN string too, but, knowing that
-     *                       before
-     *                       hand, it would be better to use `dbDsnToMap` function.
+     *                       beforehand, it would be better to use `dbDsnToMap` function.
      *
-     * @return array{type: string|null, host: string|null, port: string|null, unix_socket: string|null, version: string|null, file: string|null, memory: bool }
+     * @return array<string,string|bool|null>
      */
     public static function dbDsnMap(string $dbHost): array
     {
@@ -280,8 +279,7 @@ class Db
     /**
      * Builds the database DSN string from a database DSN map.
      *
-     * @param array{type: string, host?: string, port?: string, unix_socket?: string, dbname?: string, version?: string,
-     *     file?: string, memory?: bool} $dbDsnMap The database DSN map.
+     * @param array<string,bool|int|string|null> $dbDsnMap The database DSN map.
      * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
      *
      * @return string The database DSN string in the format required.
@@ -324,7 +322,7 @@ class Db
                 : $dbDsnMap['file'];
         }
 
-        return $dsn;
+        return (string)$dsn;
     }
 
     /**
@@ -344,7 +342,7 @@ class Db
      *
      * @param string $dsnString The DSN string to process and break down.
      *
-     * @return array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool} The DSN map.
+     * @return array<string,string|true> The DSN map.
      *
      * @throws InvalidArgumentException If the input string is not a valid DSN string.
      */
@@ -393,6 +391,11 @@ class Db
     public static function parseDbUrl(mixed $dbUrl): array
     {
         $parsed = parse_url($dbUrl);
+
+        if ($parsed === false) {
+            throw new InvalidArgumentException("The string '{$dbUrl}' is not a valid DSN string.");
+        }
+
         $name = $parsed['path'] ?? '';
         $host = $parsed['host'] ?? '';
         $name = $name ? trim($name, '/') : '';

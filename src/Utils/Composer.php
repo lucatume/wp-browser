@@ -15,7 +15,7 @@ class Composer
     public static function autoloadPath(): string
     {
         global $_composer_autoload_path;
-        return realpath($_composer_autoload_path);
+        return realpath($_composer_autoload_path) ?: $_composer_autoload_path;
     }
 
     public static function binDir(?string $path = null): string

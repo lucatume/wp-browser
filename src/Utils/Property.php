@@ -19,6 +19,12 @@ class Property
         $reflectionObject = is_object($object) ? $object : null;
         $class = $originalClass;
 
+        if(!class_exists($class)) {
+            throw new InvalidArgumentException(
+                sprintf('Class "%s" does not exists', $class)
+            );
+        }
+
         do {
             $reflectionClass = new ReflectionClass($class);
             if ($reflectionClass->hasProperty($property)) {
@@ -38,16 +44,23 @@ class Property
     /**
      * Sets private and protected properties for an object of a class.
      *
-     * @param object|null         $object $object The object to set the properties of, `null` if using a class.
-     * @param string              $class  The object class to set the properties for.
-     * @param array<string,mixed> $props  A map of the names and values of the properties to set.
+     * @param object|null $object $object The object to set the properties of, `null` if using a class.
+     * @param string $class The object class to set the properties for.
+     * @param array<string,mixed> $props A map of the names and values of the properties to set.
      *
      * @return object The updated object.
      *
      * @throws ReflectionException If there's an issue reflecting on the object or its properties.
+     * @throws InvalidArgumentException If the class does not exists or the constructor parameters are missing.
      */
     public static function setPropertiesForClass(?object $object, string $class, array $props): object
     {
+        if(!class_exists($class)) {
+            throw new InvalidArgumentException(
+                sprintf('Class "%s" does not exists', $class)
+            );
+        }
+
         $reflectedEntity = new ReflectionClass($class);
 
         if (!$object) {
@@ -86,8 +99,8 @@ class Property
      * This is a polyfill of the `Codeception\Utils\ReflectionPropertyAccessor::setPrivateProperties` method.
      * All credits to the Codeception team.
      *
-     * @param object|string       $object $object The object to set the properties of.
-     * @param array<string,mixed> $props  A map of the names and values of the properties to set.
+     * @param object|string $object $object The object to set the properties of.
+     * @param array<string,mixed> $props A map of the names and values of the properties to set.
      *
      * @throws ReflectionException
      */

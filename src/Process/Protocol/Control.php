@@ -8,29 +8,72 @@ use Codeception\Exception\ConfigurationException;
 class Control
 {
     /**
-     * @var array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     * @var array{
+     *     autoloadFile: ?string,
+     *     requireFiles: string[],
+     *     cwd: string,
+     *     codeceptionRootDir: string ,
+     *     codeceptionConfig: array<string, mixed>,
+     *     composerAutoloadPath: ?string,
+     *     composerBinDir: ?string
+     * }
      */
     private array $control;
 
     /**
-     * @param array{autoloadFile: ?string, requireFiles: string[]|null, cwd: string|false|null, codeceptionRootDir: ?string ,codeceptionConfig: ?array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null} $controlArray
+     * @param array{
+     *     autoloadFile?: ?string,
+     *     requireFiles?: string[],
+     *     cwd?: string|false,
+     *     codeceptionRootDir?: string,
+     *     codeceptionConfig?: array<string, mixed>,
+     *     composerAutoloadPath?: ?string,
+     *     composerBinDir?: ?string
+     * } $controlArray
      * @throws ConfigurationException
      */
     public function __construct(array $controlArray)
     {
         $config = class_exists(Configuration::class) ? Configuration::config() : [];
-        $this->control = array_replace(
-            [
-                'autoloadFile' => $GLOBALS['_composer_autoload_path'] ?? null,
-                'requireFiles' => [],
-                'cwd' => getcwd(),
-                'codeceptionRootDir' => null,
-                'codeceptionConfig' => $config,
-                'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
-                'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
-            ],
-            $controlArray
-        );
+        if (!empty($controlArray['cwd'])) {
+            $cwd = $controlArray['cwd'];
+        } else {
+            $cwd = getcwd() ?: codecept_root_dir();
+        }
+        $this->control = [
+            'autoloadFile' => $controlArray['autoloadFile'] ?? $GLOBALS['_composer_autoload_path'] ?? null,
+            'requireFiles' => $controlArray['requireFiles'] ?? [],
+            'cwd' => $cwd,
+            'codeceptionRootDir' => (string)($controlArray['codeceptionRootDir'] ?? codecept_root_dir()),
+            'codeceptionConfig' => $config,
+            'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath'] ?? $GLOBALS['_composer_autoload_path'] ?? null),
+            'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null)
+        ];
+    }
+
+    /**
+     * @return array{
+     *     autoloadFile: ?string,
+     *     requireFiles: string[],
+     *     cwd: string,
+     *     codeceptionRootDir: string ,
+     *     codeceptionConfig: array<string, mixed>,
+     *     composerAutoloadPath: ?string,
+     *     composerBinDir: ?string
+     * }
+     * @throws ConfigurationException
+     */
+    public static function getDefault(): array
+    {
+        return [
+            'autoloadFile' => $GLOBALS['_composer_autoload_path'] ?? null,
+            'requireFiles' => [],
+            'cwd' => getcwd() ?: codecept_root_dir(),
+            'codeceptionRootDir' => codecept_root_dir(),
+            'codeceptionConfig' => Configuration::config(),
+            'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
+            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null
+        ];
     }
 
     /**
@@ -41,7 +84,7 @@ class Control
     {
         $control = $this->control;
 
-        if (isset($control['composerAutoloadPath'])) {
+        if (!empty($control['composerAutoloadPath'])) {
             if (!is_file($control['composerAutoloadPath'])) {
                 $message = 'Composer autoload file not found: ' . $control['composerAutoloadPath'];
                 throw new ProtocolException($message, ProtocolException::COMPOSER_AUTOLOAD_FILE_NOT_FOUND);
@@ -50,7 +93,7 @@ class Control
             $GLOBALS['_composer_autoload_path'] = $control['composerAutoloadPath'];
         }
 
-        if (isset($control['composerBinDir'])) {
+        if (!empty($control['composerBinDir'])) {
             if (!is_dir($control['composerBinDir'])) {
                 $message = 'Composer bin dir not found: ' . $control['composerBinDir'];
                 throw new ProtocolException($message, ProtocolException::COMPOSER_BIN_DIR_NOT_FOUND);
@@ -91,12 +134,12 @@ class Control
             Configuration::config();
             Configuration::append($control['codeceptionConfig']);
 
-            if (isset($cwd)) {
+            if (!empty($cwd)) {
                 chdir($cwd);
             }
         }
 
-        if (isset($control['cwd'])) {
+        if (!empty($control['cwd'])) {
             if (!is_dir($control['cwd'])) {
                 $message = 'CWD not found: ' . $control['cwd'];
                 throw new ProtocolException($message, ProtocolException::CWD_NOT_FOUND);
@@ -106,7 +149,15 @@ class Control
     }
 
     /**
-     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     * @return array{
+     *     autoloadFile: ?string,
+     *     requireFiles: string[],
+     *     cwd: string,
+     *     codeceptionRootDir: string ,
+     *     codeceptionConfig: array<string, mixed>,
+     *     composerAutoloadPath: ?string,
+     *     composerBinDir: ?string
+     * }
      */
     public function toArray(): array
     {

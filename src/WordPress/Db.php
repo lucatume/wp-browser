@@ -136,6 +136,11 @@ class Db
     public function exists(): bool
     {
         $result = $this->getPDO()->query("SHOW DATABASES LIKE '$this->dbName'", PDO::FETCH_COLUMN, 0);
+
+        if ($result === false) {
+            return false;
+        }
+
         $matches = iterator_to_array($result, false);
         return !empty($matches);
     }

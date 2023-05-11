@@ -20,7 +20,7 @@ abstract class FileRequest implements Serializable
      */
     private array $preloadClosures = [];
     /**
-     * @var array<array{string, callable, int, int}>
+     * @var array<array{string, (callable(): mixed)|string, int, int}>
      */
     private array $preloadFilters = [];
     /**
@@ -30,10 +30,10 @@ abstract class FileRequest implements Serializable
 
     /**
      * @param int[]|string[]|float[]|bool[] $requestVars
-     * @param array<string,string>          $cookieJar
-     * @param string[]                      $presetGlobalVars
-     * @param array<string, string>         $redirectFiles
-     * @param array<string, mixed>          $presetLocalVars
+     * @param array<string,string> $cookieJar
+     * @param string[] $presetGlobalVars
+     * @param array<string, string> $redirectFiles
+     * @param array<string, mixed> $presetLocalVars
      * @param bool[]|int[]|string[]|float[] $constants
      */
     public function __construct(
@@ -71,6 +71,12 @@ abstract class FileRequest implements Serializable
             $this->requestUri .= '?' . http_build_query($this->requestVars);
         } else {
             $query = parse_url($this->requestUri, PHP_URL_QUERY);
+
+            if ($query === false) {
+                throw new FileRequestException(sprintf('Unable to parse query string from request URI: %s',
+                    $this->requestUri));
+            }
+
             parse_str($query, $queryArgs);
             foreach ($queryArgs as $key => $value) {
                 $_GET[$key] = $value;

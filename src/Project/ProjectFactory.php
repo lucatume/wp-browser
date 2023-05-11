@@ -11,12 +11,8 @@ class ProjectFactory
             return self::make('theme', $workDir);
         }
 
-        // Iterate on each PHP file in the work directory and check if it contains a plugin header.
-        foreach (glob($workDir . '/*.php', GLOB_NOSORT) as $file) {
-            $content = file_get_contents($file);
-            if (preg_match('/\s*Plugin Name:\s*(.*)\s*/', $content)) {
-                return self::make('plugin', $workDir);
-            }
+        if (PluginProject::findPluginFile($workDir)) {
+            return self::make('plugin', $workDir);
         }
 
         // Assume it's a site.

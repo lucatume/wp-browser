@@ -10,7 +10,15 @@ class Request
     private Control $control;
 
     /**
-     * @param array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null} $controlArray
+     * @param array{
+     *     autoloadFile?: ?string,
+     *     requireFiles?: string[],
+     *     cwd?: string|false,
+     *     codeceptionRootDir?: string,
+     *     codeceptionConfig?: array<string, mixed>,
+     *     composerAutoloadPath?: ?string,
+     *     composerBinDir?: ?string
+     * } $controlArray
      * @throws ConfigurationException
      */
     public function __construct(array $controlArray, private SerializableClosure $serializableClosure)

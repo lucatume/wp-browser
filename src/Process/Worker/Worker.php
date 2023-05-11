@@ -2,9 +2,8 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
-use Codeception\Configuration;
 use Codeception\Exception\ConfigurationException;
-use lucatume\WPBrowser\Utils\Composer;
+use lucatume\WPBrowser\Process\Protocol\Control;
 
 class Worker implements WorkerInterface
 {
@@ -13,13 +12,29 @@ class Worker implements WorkerInterface
      */
     private $callable;
     /**
-     * @var array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     * @var array{
+     *     autoloadFile: ?string,
+     *     requireFiles: string[],
+     *     cwd: string,
+     *     codeceptionRootDir: string ,
+     *     codeceptionConfig: array<string, mixed>,
+     *     composerAutoloadPath: ?string,
+     *     composerBinDir: ?string
+     * }
      */
     private array $control;
 
     /**
      * @param string[] $requiredResourcesIds
-     * @param array<string,mixed> $control
+     * @param array{
+     *     autoloadFile?: ?string,
+     *     requireFiles?: string[]|null,
+     *     cwd?: string|false|null,
+     *     codeceptionRootDir?: ?string,
+     *     codeceptionConfig?: array<string, mixed>|null,
+     *     composerAutoloadPath?: ?string,
+     *     composerBinDir?: ?string,
+     * } $control
      * @throws ConfigurationException
      */
     public function __construct(
@@ -29,7 +44,21 @@ class Worker implements WorkerInterface
         array $control = []
     ) {
         $this->callable = $callable;
-        $this->control = array_replace($this->getDefaultControl(), $control);
+        $defaultControl = Control::getDefault();
+        if (!empty($control['cwd'])) {
+            $cwd = $control['cwd'];
+        } else {
+            $cwd = getcwd() ?: codecept_root_dir();
+        }
+        $this->control = [
+            'autoloadFile' => $control['autoloadFile'] ?? $defaultControl['autoloadFile'],
+            'requireFiles' => $control['requireFiles'] ?? $defaultControl['requireFiles'],
+            'cwd' => $cwd,
+            'codeceptionRootDir' => $control['codeceptionRootDir'] ?? $defaultControl['codeceptionRootDir'],
+            'codeceptionConfig' => $control['codeceptionConfig'] ?? $defaultControl['codeceptionConfig'],
+            'composerAutoloadPath' => $control['composerAutoloadPath'] ?? $defaultControl['composerAutoloadPath'],
+            'composerBinDir' => $control['composerBinDir'] ?? $defaultControl['composerBinDir'],
+        ];
     }
 
     public function getCallable(): callable
@@ -51,28 +80,19 @@ class Worker implements WorkerInterface
     }
 
     /**
-     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
+     * @return array{
+     *     autoloadFile: ?string,
+     *     requireFiles: string[],
+     *     cwd: string,
+     *     codeceptionRootDir: string ,
+     *     codeceptionConfig: array<string, mixed>,
+     *     composerAutoloadPath: ?string,
+     *     composerBinDir: ?string
+     * }
      */
     public function getControl(): array
     {
         return $this->control;
-    }
-
-    /**
-     * @return array{autoloadFile: string, requireFiles: string[], cwd: string|false, codeceptionRootDir: string ,codeceptionConfig: array<string, mixed>, composerAutoloadPath: string|null, composerBinDir: string|null}
-     * @throws ConfigurationException
-     */
-    private function getDefaultControl(): array
-    {
-        return [
-            'autoloadFile' => Composer::autoloadPath(),
-            'requireFiles' => [],
-            'cwd' => getcwd(),
-            'codeceptionRootDir' => codecept_root_dir(),
-            'codeceptionConfig' => Configuration::config(),
-            'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
-            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
-        ];
     }
 
     /**

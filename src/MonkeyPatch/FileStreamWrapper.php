@@ -100,8 +100,15 @@ class FileStreamWrapper
         return is_resource($this->fileResource) && fflush($this->fileResource);
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function stream_read(int $count): string|false
     {
+        if ($count < 0) {
+            throw new MonkeyPatchingException('Cannot read a negative number of bytes.');
+        }
+
         return is_resource($this->fileResource) ? fread($this->fileResource, $count) : false;
     }
 
@@ -135,14 +142,32 @@ class FileStreamWrapper
         return true;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function stream_write(string $data): int
     {
-        return fwrite($this->fileResource, $data);
+        $written = fwrite($this->fileResource, $data);
+
+        if ($written === false) {
+            throw new MonkeyPatchingException('Could not write to the file.');
+        }
+
+        return $written;
     }
 
+    /**
+     * @throws MonkeyPatchingException
+     */
     public function stream_tell(): int
     {
-        return ftell($this->fileResource);
+        $pos = ftell($this->fileResource);
+
+        if ($pos === false) {
+            throw new MonkeyPatchingException('Could not get the position of the file pointer.');
+        }
+
+        return $pos;
     }
 
     public function stream_close(): bool
@@ -190,14 +215,31 @@ class FileStreamWrapper
     }
 
     /**
-     * @return array{dev: int, ino: int, mode: int, nlink: int, uid: int, gid: int, rdev: int, size: int, atime: int, mtime: int, ctime: int, blksize: int, blocks: int}
+     * @return array{
+     *     dev: int,
+     *     ino: int,
+     *     mode: int,
+     *     nlink: int,
+     *     uid: int,
+     *     gid: int,
+     *     rdev: int,
+     *     size: int,
+     *     atime: int,
+     *     mtime: int,
+     *     ctime: int,
+     *     blksize: int,
+     *     blocks: int
+     * }|false
      */
-    public function stream_stat(): array
+    public function stream_stat(): array|false
     {
         $stat = fstat($this->fileResource);
-        if ($stat) {
-            $stat['mtime'] = ($stat['mtime'] ?? 0) + 1;
+
+        if ($stat === false) {
+            return false;
         }
+
+        $stat['mtime'] = ($stat['mtime'] ?? 0) + 1;
 
         return $stat;
     }
@@ -213,26 +255,28 @@ class FileStreamWrapper
         switch ($option) {
             case STREAM_META_TOUCH:
                 [$mtime, $atime] = array_replace([null, null], (array)$value);
+                $mtime = $mtime !== null ? (int)$mtime : $mtime;
+                $atime = $atime !== null ? (int)$atime : $atime;
                 /** @noinspection PotentialMalwareInspection */
                 $result = touch($path, $mtime, $atime);
                 break;
             case STREAM_META_OWNER_NAME:
             case STREAM_META_OWNER:
-                if ($value === null) {
-                    throw new MonkeyPatchingException('chown user/group not provided');
+                if ($value === null || is_array($value)) {
+                    throw new MonkeyPatchingException('chown user/group not provided or invalid.');
                 }
                 $result = chown($path, $value);
                 break;
             case STREAM_META_GROUP_NAME:
             case STREAM_META_GROUP:
-                if ($value === null) {
-                    throw new MonkeyPatchingException('chgrp user/group not provided');
+                if ($value === null || is_array($value)) {
+                    throw new MonkeyPatchingException('chgrp user/group not provided or invalid.');
                 }
                 $result = chgrp($path, $value);
                 break;
             case STREAM_META_ACCESS:
                 if ($value === null) {
-                    throw new MonkeyPatchingException('chmod mode not provided');
+                    throw new MonkeyPatchingException('chmod mode not provided.');
                 }
                 $result = chmod($path, (int)$value);
                 break;
@@ -260,7 +304,7 @@ class FileStreamWrapper
 
     public function stream_truncate(int $newSize): bool
     {
-        return ftruncate($this->fileResource, $newSize);
+        return ftruncate($this->fileResource, max(0, $newSize));
     }
 
     public function dir_readdir(): string|false
@@ -375,7 +419,7 @@ class FileStreamWrapper
     /**
      * @throws MonkeyPatchingException
      */
-    private function patchFile(bool|string $absPath): string
+    private function patchFile(string $absPath): string
     {
         $patcher = self::$fileToPatcherMap[$absPath];
         self::unregister();
@@ -389,11 +433,13 @@ class FileStreamWrapper
 
         [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
 
-        $this->fileResource = fopen('php://temp', 'rb+', false, $this->context);
+        $fileResource = fopen('php://temp', 'rb+', false, $this->context);
 
-        if ($this->fileResource === false) {
+        if ($fileResource === false) {
             throw new MonkeyPatchingException("Could not open temporary file for writing.");
         }
+
+        $this->fileResource = $fileResource;
 
         if (fwrite($this->fileResource, $fileContents) === false) {
             throw new MonkeyPatchingException("Could not write to temporary file.");
@@ -404,7 +450,7 @@ class FileStreamWrapper
         return $openedPath;
     }
 
-    private function openFile(bool|string $absPath, string $mode, bool $useIncludePath): void
+    private function openFile(string $absPath, string $mode, bool $useIncludePath): void
     {
         if (isset($this->context)) {
             $handle = fopen($absPath, $mode, $useIncludePath, $this->context);

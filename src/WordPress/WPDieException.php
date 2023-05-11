@@ -41,8 +41,8 @@ class WPDieException extends Exception
             return isset($item['file']) && str_starts_with($item['file'], 'closure://');
         }, $trace);
 
-        if ($wpDieCallPos !== false) {
-            if ($serializableClosurePos !== false) {
+        if (is_int($wpDieCallPos)) {
+            if (is_int($serializableClosurePos)) {
                 $trace = array_slice($trace, $wpDieCallPos, $serializableClosurePos - $wpDieCallPos);
             } else {
                 $trace = array_slice($trace, $wpDieCallPos);

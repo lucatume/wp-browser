@@ -95,7 +95,7 @@ class Filesystem
     /**
      * Resolves a path from a specified root to an absolute path.
      *
-     * @param string      $path The path to resolve from the root.
+     * @param string $path The path to resolve from the root.
      * @param string|null $root Either the absolute path to resolve the path from, or `null` to use the current working
      *                          directory.
      *
@@ -161,7 +161,7 @@ class Filesystem
     /**
      * Recursively copies a source to a destination.
      *
-     * @param string $source      The absolute path to the source.
+     * @param string $source The absolute path to the source.
      * @param string $destination The absolute path to the destination.
      *
      * @return bool Whether the recurse directory of file copy was successful or not.
@@ -173,7 +173,17 @@ class Filesystem
         }
 
         $resolvedSource = self::resolvePath($source);
+
+        if($resolvedSource === false){
+            return false;
+        }
+
         $resolvedDestination = self::resolvePath($destination);
+
+        if($resolvedDestination === false){
+            return false;
+        }
+
         $escapedSource = escapeshellarg($resolvedSource);
         $escapedDestination = escapeshellarg($resolvedDestination);
         if (DIRECTORY_SEPARATOR === '\\') {
@@ -196,8 +206,8 @@ class Filesystem
         }
 
         if ($exitCode !== 0) {
-            codecept_debug("Recursive copy failed with exit code $exitCode and message: " . implode(PHP_EOL,
-                    $output));
+            codecept_debug("Recursive copy failed with exit code $exitCode and message: " .
+                (is_string($output) ? $output : implode(PHP_EOL, $output)));
             return false;
         }
 
@@ -273,11 +283,11 @@ class Filesystem
     /**
      * Recursively Create a directory structure with files and sub-directories starting at a root path.
      *
-     * @param string                            $pathname The path to the root directory, if not existing, it will be
+     * @param string $pathname The path to the root directory, if not existing, it will be
      *                                                    recursively created.
      * @param string|array<string,string|array<mixed>> $contents Either a directory structure to produce or the contents of a
      *                                                    file to create.
-     * @param int                               $mode     The filemode that will be used to create each directory in
+     * @param int $mode The filemode that will be used to create each directory in
      *                                                    the
      *                                                    directory tree.
      *
@@ -343,6 +353,10 @@ class Filesystem
 
         if ($to === '') {
             return '';
+        }
+
+        if ($separator === '') {
+            $separator = DIRECTORY_SEPARATOR;
         }
 
         $fromRealPath = self::realpath($from) ?: $from;
