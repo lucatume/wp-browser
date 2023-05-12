@@ -93,7 +93,7 @@ class WP
         return (new PasswordHash(8, true))->HashPassword($user_pass);
     }
 
-    public static function checkHashedPassword(mixed $userPass, mixed $hashedPass): bool
+    public static function checkHashedPassword(string $userPass, string $hashedPass): bool
     {
         return (new PasswordHash(8, true))->CheckPassword($userPass, $hashedPass);
     }

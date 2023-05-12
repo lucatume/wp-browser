@@ -19,7 +19,7 @@ abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
      *
      * @var array<string>
      */
-    protected $needles = [];
+    protected array $needles = [];
 
     /**
      * Check whether the current element of the iterator is acceptable
@@ -28,9 +28,9 @@ abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
      *
      * @return bool true if the current element is acceptable, otherwise false.
      */
-    #[\ReturnTypeWillChange]
     public function accept(): bool
     {
+        /** @var array{0: string, 1: int, 2: string} $query */
         $query = $this->getInnerIterator()->current();
         foreach ($this->needles as $needle) {
             if (str_contains($query[2], $needle)) {

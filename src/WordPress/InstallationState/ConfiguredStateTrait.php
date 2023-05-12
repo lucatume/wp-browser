@@ -1,5 +1,6 @@
 <?php
 
+
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
@@ -56,9 +57,21 @@ trait ConfiguredStateTrait
         return (string)$this->wpConfigFile->getConstant('NONCE_SALT');
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getTablePrefix(): string
     {
-        return $this->wpConfigFile->getVar('table_prefix');
+        $tablePrefix = $this->wpConfigFile->getVar('table_prefix');
+
+        if (!is_string($tablePrefix)) {
+            throw new InstallationException(
+                "The table prefix is not a string.",
+                InstallationException::TABLE_PREFIX_NOT_STRING
+            );
+        }
+
+        return $tablePrefix;
     }
 
 
@@ -138,13 +151,13 @@ trait ConfiguredStateTrait
             && $this->wpConfigFile->getConstant('SUBDOMAIN_INSTALL');
     }
 
-    public function getConstant(string $constant): mixed
+    public function getConstant(string $constant): int|float|string|bool|null
     {
         return $this->wpConfigFile->getConstant($constant);
     }
 
     /**
-     * @return array<string,mixed>
+     * @return array<string,int|float|string|bool|null>
      */
     public function getConstants(): array
     {
@@ -167,7 +180,7 @@ trait ConfiguredStateTrait
             $contentDir = $wpContentDirConst;
         }
 
-        $contentDir = rtrim($contentDir, '\\/');
+        $contentDir = rtrim((string)$contentDir, '\\/');
 
         return $path ? $contentDir . '/' . ltrim($path, '\\/') : $contentDir;
     }
@@ -180,7 +193,7 @@ trait ConfiguredStateTrait
             $pluginsDir = $wpPluginDirConst;
         }
 
-        $pluginsDir = rtrim($pluginsDir, '\\/');
+        $pluginsDir = rtrim((string)$pluginsDir, '\\/');
 
         return $path ? $pluginsDir . '/' . ltrim($path, '\\/') : $pluginsDir;
     }

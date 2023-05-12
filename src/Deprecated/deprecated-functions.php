@@ -3,12 +3,9 @@
 namespace tad\WPBrowser {
 
     use Codeception\Util\Debug;
-    use DateTimeImmutable;
-    use DateTimeInterface;
     use lucatume\WPBrowser\Events\Dispatcher;
     use lucatume\WPBrowser\Utils\Composer;
     use lucatume\WPBrowser\Utils\CorePHPUnit;
-    use lucatume\WPBrowser\Utils\Dates;
     use lucatume\WPBrowser\Utils\Db;
     use lucatume\WPBrowser\Utils\Env;
     use lucatume\WPBrowser\Utils\Filesystem;
@@ -212,14 +209,6 @@ namespace tad\WPBrowser {
     function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): void
     {
         Filesystem::mkdirp($pathname, $contents, $mode);
-    }
-
-    /**
-     * @deprecated Use `lucatume\WPBrowser\Utils\Dates::immutable` instead.
-     */
-    function buildDate(DateTimeInterface|int|string $date): DateTimeImmutable
-    {
-        return Dates::immutable($date);
     }
 
     /**

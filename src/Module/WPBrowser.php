@@ -120,17 +120,4 @@ class WPBrowser extends PhpBrowser
         $this->selectOption('action', 'deactivate-selected');
         $this->click('#doaction');
     }
-
-    /**
-     * Validates the module configuration.
-     *
-     *
-     * @throws ModuleConfigException|ModuleException If there's any issue.
-     */
-    protected function validateConfig(): void
-    {
-        $this->configBackCompat();
-
-        parent::validateConfig();
-    }
 }

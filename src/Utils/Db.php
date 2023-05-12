@@ -244,7 +244,8 @@ class Db
     /**
      * Builds a map of the dsn, user and password credentials to connect to a database.
      *
-     * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string, memory: bool} $dsn The database DSN map.
+     * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string,
+     *     memory: bool} $dsn The database DSN map.
      * @param string $dbuser The database user.
      * @param string $dbpass The database password for the user.
      * @param string|null $dbname The optional database name.
@@ -386,9 +387,17 @@ class Db
     }
 
     /**
-     * @return array{type: string, user: string, password: string, host: string, port: int|string, name: string, dsn: string}
+     * @return array{
+     *     type: string,
+     *     user: string,
+     *     password: string,
+     *     host: string,
+     *     port: int|string,
+     *     name: string,
+     *     dsn: string
+     * }
      */
-    public static function parseDbUrl(mixed $dbUrl): array
+    public static function parseDbUrl(string $dbUrl): array
     {
         $parsed = parse_url($dbUrl);
 

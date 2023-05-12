@@ -17,12 +17,12 @@ class Date
     /**
      * The date format used in WordPress databases.
      */
-    const DATE_FORMAT = 'Y-m-d H:i:s';
+    public const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @var int An injectable time value, used in tests.
      */
-    protected static $time;
+    protected static int $time;
 
     /**
      * Returns the current time in WordPress specific format.
@@ -42,9 +42,7 @@ class Date
      */
     public static function _time(): int
     {
-        $time = self::$time ? self::$time : time();
-
-        return $time;
+        return self::$time ?: time();
     }
 
     /**

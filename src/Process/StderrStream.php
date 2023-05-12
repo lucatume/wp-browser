@@ -4,6 +4,8 @@ namespace lucatume\WPBrowser\Process;
 
 use CompileError;
 use ErrorException;
+use lucatume\WPBrowser\Process\StderrStream\Error;
+use lucatume\WPBrowser\Process\StderrStream\TraceEntry;
 use lucatume\WPBrowser\Utils\Property;
 use ParseError;
 use ReflectionClass;
@@ -15,7 +17,7 @@ class StderrStream
     public const RELATIVE_PATHNAMES = 1;
 
     /**
-     * @var array<int,mixed>
+     * @var array<Error>
      */
     private array $parsed = [];
 
@@ -24,64 +26,54 @@ class StderrStream
         $this->parse($streamContents, $options);
     }
 
-    /**
-     * @param array<string,mixed> $traceItem
-     * @return array<string,mixed>
-     */
-    private function applyOptions(array $traceItem, int $options): array
+    private function applyItemOptions(Error|TraceEntry $traceItem, int $options): TraceEntry|Error
     {
         if ($options & self::RELATIVE_PATHNAMES) {
             $cwd = (getcwd() ?: codecept_root_dir());
             foreach (['file', 'args'] as $key) {
-                if (!isset($traceItem[$key])) {
+                if (!(isset($traceItem->$key) && is_string($traceItem->$key))) {
                     continue;
                 }
-                $traceItem[$key] = str_replace($cwd, '', $traceItem[$key]);
+                $traceItem->$key = str_replace($cwd, '', $traceItem->$key);
             }
         }
         return $traceItem;
     }
 
-    /**
-     * @param array{
-     *     date: string,
-     *     time: string,
-     *     timezone: string,
-     *     type: string,
-     *     message: string,
-     *     file: string,
-     *     line: int,
-     *     trace: array<int,array<string,mixed>>
-     * }[] $currentError
-     * @return array{
-     *     date: string,
-     *     time: string,
-     *     timezone: string,
-     *     type: string,
-     *     message: string,
-     *     file: string,
-     *     line: int,
-     *     trace: array<int,array<string,mixed>>
-     * }[]
-     */
-    private function formatInvertedTraceError(array $currentError, bool $isNumericStackTrace): array
+    private function applyErrorOptions(Error $item, int $options): Error
     {
-        if ($isNumericStackTrace) {
-            // Reverse the trace to match the order of the date trace.
-            $currentError['trace'] = array_reverse($currentError['trace']);
-            // Add a trace entry for the error itself.
-            $currentError['trace'][] = [
-                'date' => $currentError['date'],
-                'time' => $currentError['time'],
-                'timezone' => $currentError['timezone'],
-                'call' => 'n/a',
-                'args' => 'n/a',
-                'file' => $currentError['file'],
-                'line' => $currentError['line'],
-            ];
+        /** @var Error $updated */
+        $updated = $this->applyItemOptions($item, $options);
+        return $updated;
+    }
+
+    private function applyTraceEntryOptions(TraceEntry $item, int $options): TraceEntry
+    {
+        /** @var TraceEntry $updated */
+        $updated = $this->applyItemOptions($item, $options);
+        return $updated;
+    }
+
+    private function formatInvertedTraceError(Error $error, bool $isNumericStackTrace): Error
+    {
+        if (!$isNumericStackTrace) {
+            return $error;
         }
 
-        return $currentError;
+        // Reverse the trace to match the order of the date trace.
+        $error->trace = array_reverse($error->trace);
+        // Add a trace entry for the error itself.
+        $errorTrace = new TraceEntry();
+        $errorTrace->date = $error->date;
+        $errorTrace->time = $error->time;
+        $errorTrace->timezone = $error->timezone;
+        $errorTrace->call = 'n/a';
+        $errorTrace->args = 'n/a';
+        $errorTrace->file = $error->file;
+        $errorTrace->line = $error->line;
+        $error->trace[] = $errorTrace;
+
+        return $error;
     }
 
     public function parse(string $stderrStreamContents, int $options = 0): void
@@ -117,28 +109,24 @@ class StderrStream
                     $parsed[] = $this->formatInvertedTraceError($currentError, $isNumericStackTrace);
                 }
 
-                // Start a new error
-                $currentError = [
-                    'isException' => false,
-                    'exceptionClass' => null,
-                ];
+                $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError['date'] = $typeMatches['date'];
-                $currentError['time'] = $typeMatches['time'];
-                $currentError['timezone'] = $typeMatches['timezone'];
-                $currentError['type'] = $typeMatches['type'];
-                $currentError['message'] = $typeMatches['message'];
-                $currentError['file'] = $typeMatches['file'];
-                $currentError['line'] = (int)$typeMatches['line'];
+                $currentError->date = $typeMatches['date'];
+                $currentError->time = $typeMatches['time'];
+                $currentError->timezone = $typeMatches['timezone'];
+                $currentError->type = $typeMatches['type'];
+                $currentError->message = $typeMatches['message'];
+                $currentError->file = $typeMatches['file'];
+                $currentError->line = (int)$typeMatches['line'];
 
-                if (preg_match($uncaughtExceptionPattern, $currentError['message'], $uncaughtExceptionMatches)) {
-                    $currentError['isException'] = true;
-                    $currentError['exceptionClass'] = $uncaughtExceptionMatches['exceptionClass'];
+                if (preg_match($uncaughtExceptionPattern, $currentError->message, $uncaughtExceptionMatches)) {
+                    $currentError->isException = true;
+                    $currentError->exceptionClass = $uncaughtExceptionMatches['exceptionClass'];
                 }
 
-                $currentError = $this->applyOptions($currentError, $options);
+                $currentError = $this->applyErrorOptions($currentError, $options);
 
-                $currentError['trace'] = [];
+                $currentError->trace = [];
 
                 continue;
             }
@@ -148,53 +136,49 @@ class StderrStream
                     $parsed[] = $this->formatInvertedTraceError($currentError, $isNumericStackTrace);
                 }
 
-                // Start a new error
-                $currentError = [
-                    'isException' => false,
-                    'exceptionClass' => null,
-                    'message' => '',
-                ];
+                $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError['date'] = $typeStartMatches['date'];
-                $currentError['time'] = $typeStartMatches['time'];
-                $currentError['timezone'] = $typeStartMatches['timezone'];
-                $currentError['type'] = $typeStartMatches['type'];
-                $currentError['message'] = $typeStartMatches['message'];
+                $currentError->date = $typeStartMatches['date'];
+                $currentError->time = $typeStartMatches['time'];
+                $currentError->timezone = $typeStartMatches['timezone'];
+                $currentError->type = $typeStartMatches['type'];
+                $currentError->message = $typeStartMatches['message'];
 
                 // Keep ingesting until the line matches with $typeEndPattern
                 while (isset($lines[$i]) && !preg_match($typeEndPattern, $lines[$i], $typeEndMatches)) {
-                    $currentError['message'] .= PHP_EOL . $lines[$i++];
+                    $currentError->message .= PHP_EOL . $lines[$i++];
                 }
 
-                if (preg_match($uncaughtExceptionPattern, $currentError['message'], $uncaughtExceptionMatches)) {
-                    $currentError['isException'] = true;
-                    $currentError['exceptionClass'] = $uncaughtExceptionMatches['exceptionClass'];
+                if (preg_match($uncaughtExceptionPattern, $currentError->message, $uncaughtExceptionMatches)) {
+                    $currentError->isException = true;
+                    $currentError->exceptionClass = $uncaughtExceptionMatches['exceptionClass'];
                 }
 
                 if (!isset($typeEndMatches['file'], $typeEndMatches['line'])) {
-                    $currentError['file'] = 'n/a';
-                    $currentError['line'] = 'n/a';
+                    $currentError->file = 'n/a';
+                    $currentError->line = 0;
                 } else {
-                    $currentError['file'] = $typeEndMatches['file'];
-                    $currentError['line'] = $typeEndMatches['line'];
+                    $currentError->file = $typeEndMatches['file'];
+                    $currentError->line = (int)$typeEndMatches['line'];
                 }
 
-                $currentError = $this->applyOptions($currentError, $options);
+                $currentError = $this->applyErrorOptions($currentError, $options);
 
-                $currentError['trace'] = [];
+                $currentError->trace = [];
 
                 continue;
             }
 
-            if (preg_match($dateTracePattern, $line, $dateTraceMatches)) {
-                $traceItem = [];
+            if ($currentError !== null && preg_match($dateTracePattern, $line, $dateTraceMatches)) {
+                $traceEntry = new TraceEntry();
                 foreach (['date', 'time', 'timezone', 'call', 'args', 'file', 'line'] as $key) {
-                    $traceItem[$key] = $dateTraceMatches[$key];
+                    $value = $dateTraceMatches[$key];
+                    $traceEntry->$key = $key === 'line' ? (int)$value : $value;
                 }
 
-                $traceItem = $this->applyOptions($traceItem, $options);
+                $traceEntry = $this->applyTraceEntryOptions($traceEntry, $options);
 
-                $currentError['trace'][] = $traceItem;
+                $currentError->trace[] = $traceEntry;
                 continue;
             }
 
@@ -204,31 +188,30 @@ class StderrStream
 
             $isNumericStackTrace = true;
 
-            if (preg_match($numberTraceInlinePattern, $line, $numberTraceInlineMatches)) {
-                $traceItem = [
-                    'date' => $currentError['date'] ?? '',
-                    'time' => $currentError['time'] ?? '',
-                    'timezone' => $currentError['timezone'] ?? ''
-                ];
+            if ($currentError !== null && preg_match($numberTraceInlinePattern, $line, $numberTraceInlineMatches)) {
+                $traceEntry = new TraceEntry();
+                $traceEntry->date = $currentError->date ?? '';
+                $traceEntry->time = $currentError->time ?? '';
+                $traceEntry->timezone = $currentError->timezone ?? '';
                 foreach (['call', 'args', 'file', 'line'] as $key) {
-                    $traceItem[$key] = $numberTraceInlineMatches[$key];
+                    $value = $numberTraceInlineMatches[$key];
+                    $traceEntry->$key = $key === 'line' ? (int)$value : $value;
                 }
 
-                $traceItem = $this->applyOptions($traceItem, $options);
-                $currentError['trace'][] = $traceItem;
+                $traceEntry = $this->applyTraceEntryOptions($traceEntry, $options);
+                $currentError->trace[] = $traceEntry;
                 continue;
             }
 
-            if (preg_match($closureTracePattern, $line, $closureTraceMatches)) {
-                $traceItem = [
-                    'date' => $currentError['date'] ?? '',
-                    'time' => $currentError['time'] ?? '',
-                    'timezone' => $currentError['timezone'] ?? '',
-                    'file' => 'n/a',
-                    'line' => 'n/a',
-                    'call' => 'n/a',
-                    'args' => 'n/a',
-                ];
+            if ($currentError !== null && preg_match($closureTracePattern, $line, $closureTraceMatches)) {
+                $traceEntry = new TraceEntry();
+                $traceEntry->date = $currentError->date ?? '';
+                $traceEntry->time = $currentError->time ?? '';
+                $traceEntry->timezone = $currentError->timezone ?? '';
+                $traceEntry->file = 'n/a';
+                $traceEntry->line = 0;
+                $traceEntry->call = 'n/a';
+                $traceEntry->args = 'n/a';
                 $closureLines = $closureTraceMatches['closure'];
                 while (
                     isset($lines[$i + 1]) &&
@@ -242,12 +225,12 @@ class StderrStream
                     continue;
                 }
 
-                $traceItem['file'] = $closureLines . PHP_EOL . $lines[$i];
-                $traceItem['line'] = $closureFinalLineMatches['line'];
-                $traceItem['call'] = $closureFinalLineMatches['call'];
-                $traceItem['args'] = $closureFinalLineMatches['args'];
+                $traceEntry->file = $closureLines . PHP_EOL . $lines[$i];
+                $traceEntry->line = (int)$closureFinalLineMatches['line'];
+                $traceEntry->call = $closureFinalLineMatches['call'];
+                $traceEntry->args = $closureFinalLineMatches['args'];
 
-                $currentError['trace'][] = $traceItem;
+                $currentError->trace[] = $traceEntry;
             }
         }
 
@@ -270,29 +253,33 @@ class StderrStream
 
         $sourceError = $this->parsed[0];
 
-        if ($sourceError['isException']) {
-            $throwableClass = $sourceError['exceptionClass'];
+        if (!empty($sourceError['isException']) && !empty($sourceError->exceptionClass)) {
+            $throwableClass = $sourceError->exceptionClass;
         } else {
-            $throwableClass = $this->mapTypeToThrowableClass($sourceError['type']);
+            $throwableClass = $this->mapTypeToThrowableClass($sourceError->type);
         }
 
         if ($throwableClass === ErrorException::class) {
             return new $throwableClass(
-                $sourceError['message'],
+                $sourceError->message,
                 0,
-                $this->mapTypeToSeverity($sourceError['type']),
-                $sourceError['file'],
-                $sourceError['line']);
+                $this->mapTypeToSeverity($sourceError->type),
+                $sourceError->file,
+                $sourceError->line);
+        }
+
+        if (!class_exists($throwableClass)) {
+            return null;
         }
 
         /** @var Throwable $throwable */
         $throwable = (new ReflectionClass($throwableClass))->newInstanceWithoutConstructor();
 
         Property::setPrivateProperties($throwable, [
-            'message' => $sourceError['message'],
-            'file' => $sourceError['file'],
-            'line' => $sourceError['line'],
-            'trace' => $sourceError['trace'],
+            'message' => $sourceError->message,
+            'file' => $sourceError->file,
+            'line' => $sourceError->line,
+            'trace' => $sourceError->trace,
             'code' => 0, // The code is not available in the error log.
         ]);
 

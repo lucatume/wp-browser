@@ -56,9 +56,9 @@ class Symlinker extends Extension
      *
      * @param SuiteEvent $event The event the method is running on.
      *
+     * @return bool Whether the symlink operation was required or not.
      * @throws ExtensionException If there are issues with the source or destination folders.
      *
-     * @return bool Whether the symlink operation was required or not.
      */
     public function symlink(SuiteEvent $event): bool
     {
@@ -90,6 +90,8 @@ class Symlinker extends Extension
      * @param array<string,mixed> $settings The current settings.
      *
      * @return string The root folder path.
+     *
+     * @throws ExtensionException If the root folder is not a string or an array of strings.
      */
     protected function getRootFolder(array $settings = []): string
     {
@@ -97,6 +99,9 @@ class Symlinker extends Extension
 
         if (is_array($rootFolder)) {
             $rootFolder = $this->getDirPathFromArrayDefinition($settings, $rootFolder);
+        } elseif (!is_string($rootFolder)) {
+            throw new ExtensionException($this,
+                'The "rootFolder" configuration option must be a string or an array of strings.');
         }
 
         return $rootFolder;
@@ -109,6 +114,7 @@ class Symlinker extends Extension
      * @param array<string,mixed> $settings The current extension settings.
      *
      * @return string The destination path or an array of destination paths.
+     * @throws ExtensionException If the destination is not a string or an array of strings.
      */
     protected function getDestination(string $rootFolder, array $settings = []): string
     {
@@ -116,6 +122,9 @@ class Symlinker extends Extension
 
         if (is_array($destination)) {
             $destination = $this->getDirPathFromArrayDefinition($settings, $destination);
+        } elseif (!is_string($destination)) {
+            throw new ExtensionException($this,
+                'The "destination" configuration option must be a string or an array of strings.');
         }
 
         return rtrim($destination, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);
@@ -193,7 +202,7 @@ class Symlinker extends Extension
      *
      * @param string $destination The path to the destination folder.
      *
-     *@throws ExtensionException If the destination folder does not exist or is not writable.
+     * @throws ExtensionException If the destination folder does not exist or is not writable.
      *
      */
     protected function checkDestination(string $destination): void
@@ -211,7 +220,7 @@ class Symlinker extends Extension
      *
      * @param string $rootFolder The path to the root folder.
      *
-     *@throws ExtensionException If the root folder does not exist or is not readable.
+     * @throws ExtensionException If the root folder does not exist or is not readable.
      *
      */
     protected function checkRootFolder(string $rootFolder): void
@@ -229,13 +238,22 @@ class Symlinker extends Extension
      *
      * @param array<string,mixed> $settings The settings array.
      *
-     * @return array<int,string>|false. The environment(s) found in the settings, or `default` if none was found.
+     * @return array<int,string>|string The environment(s) found in the settings, or `default` if none was found.
+     *
+     * @throws ExtensionException If the environments are not a string or an array of strings.
      */
-    protected function getCurrentEnvsFromSettings(array $settings): array|false
+    protected function getCurrentEnvsFromSettings(array $settings): array|string
     {
         $rawCurrentEnvs = empty($settings['current_environment']) ? 'default' : $settings['current_environment'];
 
-        return preg_split('/\\s*,\\s*/', $rawCurrentEnvs);
+        if (!(is_array($rawCurrentEnvs) || is_string($rawCurrentEnvs))) {
+            throw new ExtensionException(
+                __CLASS__,
+                'The "current_environment" configuration option must be a string or an array of strings.'
+            );
+        }
+
+        return is_array($rawCurrentEnvs) ? array_filter($rawCurrentEnvs) : str_getcsv($rawCurrentEnvs);
     }
 
     /**

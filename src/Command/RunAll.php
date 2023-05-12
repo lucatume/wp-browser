@@ -49,6 +49,7 @@ class RunAll extends Command implements CustomCommandInterface
                 $process->setTimeout(null);
                 $process->start();
 
+                /** @var string $data */
                 foreach ($process as $data) {
                     $output->write($data);
                 }

@@ -16,7 +16,7 @@ class WPConfigFile
     private string $wpConfigFilePath;
     private string $wpSettingsFilePath;
     /**
-     * @var array<string,mixed>
+     * @var array<string,int|float|string|bool|null>
      */
     private array $constants = [];
     /**
@@ -63,15 +63,16 @@ class WPConfigFile
         return isset($this->variables[$varName]);
     }
 
-    public function getConstant(string $constant): mixed
+    public function getConstant(string $constant): int|float|string|bool|null
     {
         return $this->constants[$constant] ?? null;
     }
 
     /**
-     * @return array<string,mixed>
+     * @return array<string,int|float|string|bool|null>
      */
-    public function getConstants():array{
+    public function getConstants(): array
+    {
         return $this->constants;
     }
 
@@ -95,7 +96,7 @@ class WPConfigFile
                 $definedConstantsBefore = get_defined_constants(true)['user'] ?? [];
                 include $wpConfigFile;
 
-                $constants= array_diff_key(get_defined_constants(true)['user'] ?? [], $definedConstantsBefore);
+                $constants = array_diff_key(get_defined_constants(true)['user'] ?? [], $definedConstantsBefore);
                 $variables = get_defined_vars();
                 unset(
                     $variables['constants'],
@@ -111,7 +112,7 @@ class WPConfigFile
 
             if ($result->getExitCode() !== 0) {
                 $previous = $returnValue instanceof Throwable ? $returnValue : null;
-                throw new ProcessException($result->getStderrBuffer(), $result->getExitCode(),$previous);
+                throw new ProcessException($result->getStderrBuffer(), $result->getExitCode(), $previous);
             }
 
             $values = $returnValue;
@@ -152,7 +153,7 @@ class WPConfigFile
     /**
      * @throws WpConfigFileException
      */
-    public function getConstantOrThrow(string $string): mixed
+    public function getConstantOrThrow(string $string): int|float|string|bool|null
     {
         if (!isset($this->constants[$string])) {
             throw new WpConfigFileException("Constant {$string} not defined.",

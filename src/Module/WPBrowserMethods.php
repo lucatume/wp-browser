@@ -2,7 +2,9 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
+use Codeception\Module\PhpBrowser;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use JsonException;
 use Symfony\Component\BrowserKit\Cookie;
@@ -72,10 +74,13 @@ trait WPBrowserMethods
      * $I->amOnAdminPage('/');
      * $I->see('Dashboard');
      * ```
+     * @throws ModuleException
      */
     public function loginAsAdmin(): void
     {
-        $this->loginAs($this->config['adminUsername'], $this->config['adminPassword']);
+        /** @var array{adminUsername: string, adminPassword: string} $config */
+        $config = $this->config;
+        $this->loginAs($config['adminUsername'], $config['adminPassword']);
     }
 
     /**
@@ -92,6 +97,7 @@ trait WPBrowserMethods
      *
      * @param string $username The user login name.
      * @param string $password The user password in plain text.
+     * @throws JsonException
      */
     public function loginAs(string $username, string $password): void
     {
@@ -112,9 +118,9 @@ trait WPBrowserMethods
     {
         parent::_initialize();
 
-        $this->configBackCompat();
-
-        $adminPath = $this->config['adminPath'];
+        /** @var array{adminPath: string} $config */
+        $config = $this->config;
+        $adminPath = $config['adminPath'];
         $this->loginUrl = str_replace('wp-admin', 'wp-login.php', $adminPath);
         $this->adminPath = rtrim($adminPath, '/');
         $this->pluginsPath = $this->adminPath . '/plugins.php';
@@ -347,6 +353,7 @@ trait WPBrowserMethods
 
     /**
      * Returns WordPress default test cookie object if present.
+     *
      * @example
      * ```php
      * // Grab the default WordPress test cookie.
@@ -354,7 +361,6 @@ trait WPBrowserMethods
      * // Grab a customized version of the test cookie.
      * $myTestCookie = $I->grabWordPressTestCookie('my_test_cookie');
      * ```
-     *
      *
      * @param string|null $name Optional, overrides the default cookie name.
      *
@@ -364,7 +370,13 @@ trait WPBrowserMethods
     {
         $name = $name ?: 'wordpress_test_cookie';
 
-        return $this->grabCookie($name);
+        $matching = $this->grabCookiesWithPattern('/^' . preg_quote($name, '/') . '$/');
+
+        if ($matching && is_array($matching)) {
+            return $matching[0];
+        }
+
+        return null;
     }
 
     /**
@@ -498,5 +510,23 @@ trait WPBrowserMethods
     private function getLoginUrl(): string
     {
         return $this->loginUrl;
+    }
+
+    /**
+     * Validates the module configuration.
+     *
+     * @throws ModuleConfigException|ModuleException If there's any issue.
+     */
+    protected function validateConfig(): void
+    {
+        $this->configBackCompat();
+
+        foreach (['adminUsername', 'adminPassword', 'adminPath'] as $param) {
+            if (!is_string($this->config[$param])) {
+                throw new ModuleConfigException($this, "Configuration parameter $param must be a string.");
+            }
+        }
+
+        parent::validateConfig();
     }
 }

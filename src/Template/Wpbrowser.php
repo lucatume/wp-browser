@@ -13,6 +13,7 @@ use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXML;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Command\RunAll;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Project\PluginProject;
 use lucatume\WPBrowser\Project\ProjectFactory;
 use lucatume\WPBrowser\Project\ProjectInterface;
@@ -21,6 +22,9 @@ use Symfony\Component\Yaml\Yaml;
 
 class Wpbrowser extends Bootstrap
 {
+    /**
+     * @throws RuntimeException
+     */
     public function setup(): void
     {
         $this->say('Set up <info>wp-browser</info> to test your WordPress project.');
@@ -35,21 +39,24 @@ class Wpbrowser extends Bootstrap
         );
 
         if (!$detectedProjectTypeCorrect) {
+            /** @var string $projectType */
             $projectType = $this->ask("What type of WordPress project is this?", [
                 'plugin',
                 'theme',
                 'site',
             ]);
-            $project = ProjectFactory::make((string)$projectType, $this->workDir);
+            $project = ProjectFactory::make($projectType, $this->workDir);
         }
 
         $input = $this->input;
-        if ($input->getOption('namespace')) {
-            $this->namespace = trim($input->getOption('namespace'), '\\');
+        $namespace = $input->hasOption('namespace') ? $input->getOption('namespace') : null;
+        if ($namespace && is_string($namespace)) {
+            $this->namespace = trim($namespace, '\\');
         }
 
-        if ($input->hasOption('actor') && $input->getOption('actor')) {
-            $this->actorSuffix = $input->getOption('actor');
+        $actor = $input->hasOption('actor') ? $input->getOption('actor') : null;
+        if ($actor && is_string($actor)) {
+            $this->actorSuffix = $actor;
         }
 
         $this->say("Bootstrapping <info>Codeception</info> and <info>wp-browser</info> for a <info>{$project->getType()}</info> project ...");

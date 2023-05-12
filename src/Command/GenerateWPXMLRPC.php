@@ -30,7 +30,7 @@ class GenerateWPXMLRPC extends GenerateWPUnit
     /**
      * Returns the generator for the test case.
      *
-     * @param array<string,mixed> $config The current generator configuration.
+     * @param array{namespace: string, actor: string} $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The generator.

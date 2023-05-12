@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Exception;
+use InvalidArgumentException;
+
 class Strings
 {
     /**
@@ -11,9 +14,14 @@ class Strings
      */
     public static function andList(array $elements): string
     {
+        if (!Arr::containsOnly($elements, static fn($v) => is_scalar($v))) {
+            throw new InvalidArgumentException('The elements of the list must be scalars.');
+        }
+
+        /** @var array<string|int|float|bool> $elements */
         return match (count($elements)) {
             0 => '',
-            1 => reset($elements),
+            1 => (string)reset($elements),
             default => implode(', ', array_slice($elements, 0, -1)) . ' and ' . end($elements)
         };
     }
@@ -22,7 +30,7 @@ class Strings
     {
         try {
             return @preg_match($string, '') !== false;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -39,14 +47,14 @@ class Strings
         $step1 = preg_replace('/(?<![A-Z' . $seps . '])([A-Z])/u', $sep . '$1', trim($string));
 
         if ($step1 === null) {
-            throw new \InvalidArgumentException('Failed to slugify string');
+            throw new InvalidArgumentException('Failed to slugify string');
         }
 
         // Replace non letter or digits with the separator.
         $step2 = preg_replace('~[^\pL\d' . $seps . ']+~u', $sep, $step1);
 
         if ($step2 === null) {
-            throw new \InvalidArgumentException('Failed to slugify string');
+            throw new InvalidArgumentException('Failed to slugify string');
         }
 
         // Transliterate.
@@ -62,14 +70,14 @@ class Strings
         }
 
         if (!is_string($step3)) {
-            throw new \InvalidArgumentException('Failed to slugify string');
+            throw new InvalidArgumentException('Failed to slugify string');
         }
 
         // Remove anything that is not a word or a number or the separator(s).
         $step4 = preg_replace('~[^' . $seps . '\w]+~', '', $step3);
 
         if ($step4 === null) {
-            throw new \InvalidArgumentException('Failed to slugify string');
+            throw new InvalidArgumentException('Failed to slugify string');
         }
 
         // Trim excess separator chars.
@@ -81,7 +89,7 @@ class Strings
 
     /**
      * @param array<string,mixed> $data
-     * @param array<mixed>        $fnArgs
+     * @param array<mixed> $fnArgs
      */
     public static function renderString(string $template, array $data = [], array $fnArgs = []): string
     {

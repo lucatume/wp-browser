@@ -12,7 +12,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
     public function __construct(
         FileRequest $request,
         string $wpRootDir,
-        mixed $plugin,
+        string $plugin,
         bool $multisite
     ) {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
@@ -21,7 +21,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         $this->request = $request;
     }
 
-    private function activatePlugin(mixed $plugin, bool $multisite): void
+    private function activatePlugin(string $plugin, bool $multisite): void
     {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
         $activated = \activate_plugin($plugin, '', $multisite);

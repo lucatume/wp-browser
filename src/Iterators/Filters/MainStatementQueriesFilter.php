@@ -35,9 +35,9 @@ class MainStatementQueriesFilter extends \FilterIterator
      *
      * @return bool true if the current element is acceptable, otherwise false.
      */
-    #[\ReturnTypeWillChange]
     public function accept(): bool
     {
+        /** @var array{0: string, 1: int, 2: string} $query */
         $query = $this->getInnerIterator()->current();
         $pattern = Strings::isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
         /** @noinspection NotOptimalRegularExpressionsInspection */

@@ -33,6 +33,7 @@ class InstallationException extends Exception
     public const MULTISITE_SUBDOMAIN_NOT_INSTALLED = 26;
     public const MULTISITE_SUBFOLDER_NOT_INSTALLED = 27;
     public const ERROR_DURING_LOADING = 28;
+    public const TABLE_PREFIX_NOT_STRING = 29;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {

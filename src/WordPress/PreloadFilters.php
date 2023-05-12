@@ -48,6 +48,11 @@ class PreloadFilters
             }
 
             $siteurl = get_option('siteurl');
+
+            if (!is_string($siteurl)) {
+                return $preempt;
+            }
+
             $requestHost = parse_url($url, PHP_URL_HOST);
             $siteHost = parse_url($siteurl, PHP_URL_HOST);
 

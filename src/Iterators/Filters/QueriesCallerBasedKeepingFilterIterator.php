@@ -20,7 +20,7 @@ class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
      *
      * @var array<string>
      */
-    protected $needles = [];
+    protected array $needles = [];
 
     /**
      * Check whether the current element of the iterator is acceptable.
@@ -29,12 +29,12 @@ class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
      *
      * @return bool True if the current element is acceptable, otherwise false.
      */
-    #[\ReturnTypeWillChange]
     public function accept(): bool
     {
+        /** @var array{0: string, 1: int, 2: string} $query */
         $query = $this->getInnerIterator()->current();
         foreach ($this->needles as $needle) {
-            if (preg_match("/(?<!\\(')" . preg_quote($needle) . "(?!'\\))/", $query[2])) {
+            if (preg_match("/(?<!\\(')" . preg_quote($needle, '/') . "(?!'\\))/", $query[2])) {
                 return true;
             }
         }

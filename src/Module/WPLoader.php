@@ -86,39 +86,37 @@ class WPLoader extends Module
      * Most of the fields have a corresponding in the standard
      * `wp-tests-config.php` file found in [WordPress automated testing
      * suite.](http://make.wordpress.org/core/handbook/automated-testing/)
-     * loadOnly - just load WordPress, skip the installation.
-     * wpDebug - bool, def. `true`, the WP_DEBUG
-     * global value.
-     * multisite - bool, def.
-     * `false`, if set to `true` will create a multisite installation, the
-     * WP_TESTS_MULTISITE global value. dbCharset - string, def. `utf8`, the
-     * DB_CHARSET global value. dbCollate - string, def. ``, the DB_COLLATE
-     * global value. tablePrefix - string, def. `wptests_`, the
-     * WP_TESTS_TABLE_PREFIX value. domain - string, def. `example.org`, the
-     * root URL of the site, the WP_TESTS_DOMAIN global value. adminEmail -
-     * string, def. `admin@example.org`, the admin email, the WP_TEST_EMAIL
-     * global value. title - string, def. `Test Blog`, the blog title, the
-     * WP_TESTS_TITLE global value. phpBinary - string, def. `php`, the php bin
-     * command, the WP_PHP_BINARY global value. language - string, def. ``, the
-     * installation language, the WPLANG global value. configFile - string or
-     * array, def. ``, the path, or an array of paths, to custom config file(s)
-     * relative to the `wpRootFolder` folder, no leading slash needed; this is
-     * the place where custom `wp_tests_options` could be set. pluginsFolder -
-     * string, def. ``, the relative path to the plugins folder in respect to
-     * the WP root folder plugins - array, def. `[]`, a list of plugins that
-     * should be loaded before any test case runs and after mu-plugins have
-     * been loaded; these should be defined in the
-     * `folder/plugin-file.php` format.
-     * activatePlugins - array, def. `[]`, a list of plugins that should be
-     * activated calling the `activate_{$plugin}` before any test case runs and
-     * after mu-plugins have been loaded; these should be defined in the
-     * `folder/plugin-file.php` format.
-     * bootstrapActions - array, def. `[]`, a list of actions that should be
-     * called before any test case runs.
-     * skipPluggables - bool, def. `false`, if set to `true` will skip the
-     * definition of pluggable functions.
      *
-     * @var array<string,mixed>
+     * @var array{
+     *     loadOnly: bool,
+     *     multisite: bool,
+     *     dbCharset: string,
+     *     dbCollate: string,
+     *     tablePrefix: string,
+     *     domain: string,
+     *     adminEmail: string,
+     *     title: string,
+     *     phpBinary: string,
+     *     language: string,
+     *     configFile: string|string[],
+     *     contentFolder: string,
+     *     pluginsFolder: string,
+     *     plugins: string[],
+     *     bootstrapActions: string|string[],
+     *     theme: string,
+     *     AUTH_KEY: string,
+     *     SECURE_AUTH_KEY: string,
+     *     LOGGED_IN_KEY: string,
+     *     NONCE_KEY: string,
+     *     AUTH_SALT: string,
+     *     SECURE_AUTH_SALT: string,
+     *     LOGGED_IN_SALT: string,
+     *     NONCE_SALT: string,
+     *     AUTOMATIC_UPDATER_DISABLED: bool,
+     *     WP_HTTP_BLOCK_EXTERNAL: bool,
+     *     dump: string|string[],
+     *     dbUrl?: string
+     * }
      */
     protected array $config = [
         'loadOnly' => false,
@@ -169,21 +167,24 @@ class WPLoader extends Module
 
     protected function validateConfig(): void
     {
+        // Coming from required fields, the values are now defined.
         $this->config['wpRootFolder'] = $this->config['ABSPATH'] ?? $this->config['wpRootFolder'] ?? '';
 
         $this->parseDbCredentials();
 
         $this->config['dbCharset'] = $this->config['DB_CHARSET'] ?? $this->config['dbCharset'] ?? '';
         $this->config['dbCollate'] = $this->config['DB_COLLATE'] ?? $this->config['dbCollate'] ?? '';
-        $this->config['multisite'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? '';
+        $this->config['multisite'] = (bool)($this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? false);
         $this->config['theme'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['theme'] ?? '';
-        if (is_array($this->config['theme'])) {
+
+        if (!is_string($this->config['theme'])) {
             throw new ModuleConfigException(
                 __CLASS__,
                 "The `theme` configuration parameter must be a string.\n" .
                 "For child themes, use the child theme slug."
             );
         }
+
         $this->config['loadOnly'] = !empty($this->config['loadOnly']);
 
         if ($this->config['loadOnly'] && empty($this->config['domain'])) {
@@ -202,10 +203,10 @@ class WPLoader extends Module
 
         $this->config['dump'] = array_filter((array)$this->config['dump']);
         foreach ($this->config['dump'] as $dumpFile) {
-            if (!file_exists($dumpFile)) {
+            if (!(is_string($dumpFile) && file_exists($dumpFile))) {
                 throw new ModuleConfigException(
                     __CLASS__,
-                    "The dump file `$dumpFile` does not exist."
+                    'Each `dump` configuration parameter entry must be a valid file path.'
                 );
             }
         }
@@ -225,18 +226,59 @@ class WPLoader extends Module
      */
     public function _initialize(): void
     {
+
+        /**
+         * The config is now validated and the values are defined.
+         * @var array{
+         *     loadOnly: bool,
+         *     multisite: bool,
+         *     dbCharset: string,
+         *     dbCollate: string,
+         *     tablePrefix: string,
+         *     domain: string,
+         *     adminEmail: string,
+         *     title: string,
+         *     phpBinary: string,
+         *     language: string,
+         *     configFile: string|string[],
+         *     contentFolder: string,
+         *     pluginsFolder: string,
+         *     plugins: string[],
+         *     bootstrapActions: string|string[],
+         *     theme: string,
+         *     AUTH_KEY: string,
+         *     SECURE_AUTH_KEY: string,
+         *     LOGGED_IN_KEY: string,
+         *     NONCE_KEY: string,
+         *     AUTH_SALT: string,
+         *     SECURE_AUTH_SALT: string,
+         *     LOGGED_IN_SALT: string,
+         *     NONCE_SALT: string,
+         *     AUTOMATIC_UPDATER_DISABLED: bool,
+         *     WP_HTTP_BLOCK_EXTERNAL: bool,
+         *     dump: string|string[],
+         *     wpRootFolder: string,
+         *     ABSPATH: string,
+         *     dbHost: string,
+         *     dbUser: string,
+         *     dbPassword: string,
+         *     dbName: string,
+         *     tablePrefix: string,
+         * } $config
+         */
+        $config = $this->config;
         try {
             $db = new Db(
-                $this->config['dbName'],
-                $this->config['dbUser'],
-                $this->config['dbPassword'],
-                $this->config['dbHost'],
-                $this->config['tablePrefix']
+                $config['dbName'],
+                $config['dbUser'],
+                $config['dbPassword'],
+                $config['dbHost'],
+                $config['tablePrefix']
             );
             // Try and initialize the database connection now.
             $db->create();
 
-            $this->installation = new Installation($this->config['wpRootFolder'], $db);
+            $this->installation = new Installation($config['wpRootFolder'], $db);
             $installationState = $this->installation->getState();
 
             // The WordPress root directory should be at least scaffolded, it cannot be empty.
@@ -246,7 +288,7 @@ class WPLoader extends Module
                 $this->installation = new Installation($wpRootDir, $db);
             }
 
-            $this->config['wpRootFolder'] = $this->installation->getWpRootDir();
+            $config['wpRootFolder'] = $this->installation->getWpRootDir();
 
             $configurationSalts = $this->installation->isConfigured() ?
                 $this->installation->getSalts()
@@ -262,8 +304,8 @@ class WPLoader extends Module
                          'LOGGED_IN_SALT',
                          'NONCE_SALT',
                      ] as $salt) {
-                if (empty($this->config[$salt])) {
-                    $this->config[$salt] = $configurationSalts[$salt] ?? Random::salt();
+                if (empty($config[$salt])) {
+                    $config[$salt] = $configurationSalts[$salt] ?? Random::salt();
                 }
             }
         } catch (DbException|InstallationException $e) {
@@ -276,7 +318,7 @@ class WPLoader extends Module
         defined('WP_TESTS_CONFIG_FILE_PATH')
         || define('WP_TESTS_CONFIG_FILE_PATH', CorePHPUnit::path('/wp-tests-config.php'));
 
-        if (!empty($this->config['loadOnly'])) {
+        if (!empty($config['loadOnly'])) {
             $this->checkInstallationToLoadOnly();
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
@@ -511,15 +553,18 @@ class WPLoader extends Module
      */
     private function activatePluginsSwitchThemeInSeparateProcess(): void
     {
+        /** @var array<string> $plugins */
         $plugins = (array)($this->config['plugins'] ?: []);
-        $multisite = $this->config['multisite'] ?? false;
+        $multisite = (bool)($this->config['multisite'] ?? false);
         $closuresFactory = $this->getClosuresFactory();
 
         $jobs = array_combine(
             array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
-            array_map(static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite), $plugins)
+            array_map(static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
+                $plugins)
         );
 
+        /** @var string $stylesheet */
         $stylesheet = $this->config['theme'];
         if ($stylesheet) {
             $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
@@ -552,7 +597,14 @@ class WPLoader extends Module
      */
     private function runBootstrapActions(): void
     {
-        foreach ($this->config['bootstrapActions'] as $action) {
+        /**
+         * Coming from the validation.
+         * @var array{
+         *     bootstrapActions: array<callable|string>,
+         * } $config
+         */
+        $config = $this->config;
+        foreach ($config['bootstrapActions'] as $action) {
             if (!is_callable($action)) {
                 do_action($action);
             } else {
@@ -697,7 +749,14 @@ class WPLoader extends Module
         }
 
         try {
-            foreach ($this->config['dump'] as $dumpFilePath) {
+            /**
+             * Coming from the validation.
+             * @var array{
+             *     dump: array<string>,
+             * } $config
+             */
+            $config = $this->config;
+            foreach ($config['dump'] as $dumpFilePath) {
                 $modified = $db->import($dumpFilePath);
                 $this->debug("Imported dump file `$dumpFilePath`: $modified rows modified.");
             }
@@ -707,9 +766,18 @@ class WPLoader extends Module
         }
     }
 
+    /**
+     * @throws ModuleConfigException
+     */
     private function parseDbCredentials(): void
     {
         if (isset($this->config['dbUrl'])) {
+            if (!is_string($this->config['dbUrl'])) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    'The `dbUrl` configuration parameter must be a string.'
+                );
+            }
             $parsedUrl = DbUtils::parseDbUrl($this->config['dbUrl']);
             $this->config['dbHost'] = $parsedUrl['host'] . ($parsedUrl['port'] ? ':' . $parsedUrl['port'] : '');
             $this->config['dbUser'] = $parsedUrl['user'];

@@ -20,7 +20,7 @@ class GenerateWPRestApi extends GenerateWPUnit
     /**
      * Builds and returns the test case generator.
      *
-     * @param array<string,mixed> $config The generator configuration.
+     * @param array{namespace: string, actor: string} $config The generator configuration.
      * @param string $class The class to generate the test case for.
      *
      * @return WPUnit The built generator.

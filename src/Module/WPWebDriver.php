@@ -36,6 +36,7 @@ class WPWebDriver extends WebDriver
      * @var int
      */
     protected int $loginAttempt = 0;
+
     /**
      * Login as the administrator user using the credentials specified in the module configuration.
      *
@@ -79,7 +80,7 @@ class WPWebDriver extends WebDriver
      * @param int $timeout The max time, in seconds, to try to login.
      * @param int $maxAttempts The max number of attempts to try to login.
      *
-     *@throws ModuleException If all the attempts of obtaining the cookie fail.
+     * @throws ModuleException If all the attempts of obtaining the cookie fail.
      *
      */
     public function loginAs(string $username, string $password, int $timeout = 10, int $maxAttempts = 5): void
@@ -128,7 +129,7 @@ class WPWebDriver extends WebDriver
      *
      * @param string $cookiePattern The regular expression pattern to use for the matching.
      *
-     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
+     * @return array<Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern(string $cookiePattern): ?array
     {
@@ -136,7 +137,7 @@ class WPWebDriver extends WebDriver
             return null;
         }
 
-        /** @var array<FacebookWebdriverCookie|Cookie> $cookies */
+        /** @var array<Cookie> $cookies */
         $cookies = $this->webDriver->manage()->getCookies();
 
         if (!$cookies) {
@@ -182,25 +183,17 @@ class WPWebDriver extends WebDriver
      * ```
      *
      * @return string The full page URL.
+     * @throws ModuleException
      */
     public function grabFullUrl(): string
     {
-        return $this->executeJS('return location.href');
-    }
+        $executeJS = $this->executeJS('return location.href');
 
-    /**
-     * Validates the module configuration..
-     *
-     * @internal
-     *
-     * @return void
-     * @throws ModuleConfigException|ModuleException If there's an issue with the configuration.
-     */
-    protected function validateConfig(): void
-    {
-        $this->configBackCompat();
+        if (!is_string($executeJS)) {
+            throw new ModuleException($this, 'Could not grab the full URL.');
+        }
 
-        parent::validateConfig();
+        return $executeJS;
     }
 
     /**

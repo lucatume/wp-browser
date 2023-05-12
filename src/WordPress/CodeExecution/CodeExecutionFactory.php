@@ -38,7 +38,7 @@ class CodeExecutionFactory
             ->getClosure();
     }
 
-    public function toActivatePlugin(mixed $plugin, bool $multisite): Closure
+    public function toActivatePlugin(string $plugin, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
@@ -49,7 +49,7 @@ class CodeExecutionFactory
             ->getClosure();
     }
 
-    public function toSwitchTheme(mixed $stylesheet, bool $multisite): Closure
+    public function toSwitchTheme(string $stylesheet, bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()

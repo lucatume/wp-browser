@@ -4,23 +4,23 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Events;
 
 use Closure;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use ReflectionException;
 use Symfony\Component\Console\Command\Command;
 use Codeception\Codecept;
 use lucatume\WPBrowser\Utils\Property;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Dispatcher
 {
-    private static ?Codecept $codeceptInstance = null;
-    private static ?EventDispatcherInterface $codeceptionEventDispatcherInstance = null;
+    private static ?Codecept $codecept = null;
+    private static ?EventDispatcherInterface $codeceptDispatcher = null;
 
     private static function getCodecept(): ?Codecept
     {
-        if (self::$codeceptInstance !== null) {
-            return self::$codeceptInstance;
+        if (self::$codecept !== null) {
+            return self::$codecept;
         }
 
         $reverseBacktraceHead = array_reverse(
@@ -46,37 +46,42 @@ class Dispatcher
                     continue;
                 }
 
-                self::$codeceptInstance = $codeceptInstance;
-                return self::$codeceptInstance;
+                self::$codecept = $codeceptInstance;
+                return self::$codecept;
             } catch (ReflectionException) {
             }
         }
 
-        return self::$codeceptInstance;
+        return self::$codecept;
     }
 
     private static function getCodeceptionEventDispatcher(): EventDispatcherInterface
     {
-        if (self::$codeceptionEventDispatcherInstance !== null) {
-            return self::$codeceptionEventDispatcherInstance;
+        if (self::$codeceptDispatcher !== null) {
+            return self::$codeceptDispatcher;
         }
 
         $codeceptInstance = self::getCodecept();
 
         if ($codeceptInstance === null) {
             // Create a one local to the Dispatcher.
-            self::$codeceptionEventDispatcherInstance = new EventDispatcher();
-            return self::$codeceptionEventDispatcherInstance;
+            self::$codeceptDispatcher = new EventDispatcher();
+            return self::$codeceptDispatcher;
         }
 
         try {
-            self::$codeceptionEventDispatcherInstance = Property::readPrivate($codeceptInstance, 'dispatcher');
+            $dispatcher = Property::readPrivate($codeceptInstance, 'dispatcher');
+            if (!$dispatcher instanceof EventDispatcherInterface) {
+                $message = 'The Codeception dispatcher is not an instance of ' . EventDispatcherInterface::class . '.';
+                throw new RuntimeException($message);
+            }
+            self::$codeceptDispatcher = $dispatcher;
         } catch (ReflectionException) {
             // Create a one local to the Dispatcher.
-            self::$codeceptionEventDispatcherInstance = new EventDispatcher();
+            self::$codeceptDispatcher = new EventDispatcher();
         }
 
-        return self::$codeceptionEventDispatcherInstance;
+        return self::$codeceptDispatcher;
     }
 
     /**
@@ -84,9 +89,9 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `add_action` function as it works pretty much the same.
      *
-     * @param string   $eventName The event to run the callback on.
-     * @param callable $listener  The callback to run on the event.
-     * @param int      $priority  The priority that will be assigned to the callback in the context of the event.
+     * @param string $eventName The event to run the callback on.
+     * @param callable $listener The callback to run on the event.
+     * @param int $priority The priority that will be assigned to the callback in the context of the event.
      *
      * @return Closure The callback to remove the listener from the event.
      *
@@ -106,9 +111,9 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `do_action` function as it works pretty much the same.
      *
-     * @param string              $name      The name of the event to dispatch.
-     * @param mixed|null          $origin    The event origin: an object, a string or null.
-     * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
+     * @param string $name The name of the event to dispatch.
+     * @param mixed|null $origin The event origin: an object, a string or null.
+     * @param array<string,mixed> $context A map of the event context that will set as context of the dispatched
      *                                       event.
      *
      * @return object The dispatched event.

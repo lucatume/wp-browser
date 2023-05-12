@@ -12,7 +12,7 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
     public function __construct(
         FileRequest $request,
         string $wpRootDir,
-        mixed $stylesheet,
+        string $stylesheet,
         bool $multisite
     ) {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
@@ -21,7 +21,7 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
         $this->request = $request;
     }
 
-    private function switchTheme(mixed $stylesheet, bool $multisite): void
+    private function switchTheme(string $stylesheet, bool $multisite): void
     {
         // The `switch_theme` function will not complain about a missing theme: check it now.
         $theme = \wp_get_theme($stylesheet);

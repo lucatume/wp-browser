@@ -45,11 +45,18 @@ class Db
      */
     public static function fromWpConfigFile(WPConfigFile $wpConfigFile): self
     {
-        $dbName = $wpConfigFile->getConstantOrThrow('DB_NAME');
-        $dbUser = $wpConfigFile->getConstantOrThrow('DB_USER');
-        $dbPassword = $wpConfigFile->getConstantOrThrow('DB_PASSWORD');
-        $dbHost = $wpConfigFile->getConstantOrThrow('DB_HOST');
+        $dbName = (string)$wpConfigFile->getConstantOrThrow('DB_NAME');
+        $dbUser = (string)$wpConfigFile->getConstantOrThrow('DB_USER');
+        $dbPassword = (string)$wpConfigFile->getConstantOrThrow('DB_PASSWORD');
+        $dbHost = (string)$wpConfigFile->getConstantOrThrow('DB_HOST');
         $tablePrefix = $wpConfigFile->getVariableOrThrow('table_prefix');
+
+        if (!is_string($tablePrefix)) {
+            throw new WpConfigFileException(
+                'The table prefix is not a string.',
+                WpConfigFileException::TABLE_PREFIX_NOT_STRING
+            );
+        }
 
         return new self($dbName, $dbUser, $dbPassword, $dbHost, $tablePrefix);
     }

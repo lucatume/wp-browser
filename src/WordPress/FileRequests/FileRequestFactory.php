@@ -9,7 +9,7 @@ class FileRequestFactory
 {
     /**
      * @param array<string, string> $redirectFiles
-     * @param array<string, mixed> $presetGlobalVars
+     * @param array<string> $presetGlobalVars
      */
     public function __construct(
         private string $wpRootDir,
@@ -42,12 +42,19 @@ class FileRequestFactory
 
     /**
      * @param array<string,mixed> $queryArgs
-     * @return array<string,mixed>
+     * @return array<string,int|string|float|bool>
+     * @throws RuntimeException
      */
     protected function resolveQueryArgs(array $queryArgs): array
     {
-        $resolved = [];
+        foreach ($queryArgs as $key => $value) {
+            if (!(is_numeric($value) || is_string($value) || is_bool($value))) {
+                throw new RuntimeException('Key ' . $key . ' has invalid value in query args: only numeric,' .
+                    ' string, and boolean values are allowed.');
+            }
+        }
 
+        $resolved = [];
         foreach ($queryArgs as $key => $value) {
             $resolved[$key] = $value instanceof Closure ? $value() : $value;
         }

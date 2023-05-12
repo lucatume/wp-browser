@@ -33,7 +33,20 @@ class WPCLI extends Module
     /**
      * An array of configuration variables and their default values.
      *
-     * @var array<string,mixed>
+     * @var array{
+     *    throw: bool,
+     *    timeout: float,
+     *    cache-dir?: string,
+     *    config-path?: string,
+     *    custom-shell?: string,
+     *    packages-dir?: string,
+     *    skip-plugins?: bool,
+     *    skip-themes?: bool,
+     *    skip-packages?: bool,
+     *    debug?: bool,
+     *    quiet?: bool,
+     *    context?: string
+     * }
      */
     protected array $config = [
         'throw' => true,
@@ -52,6 +65,7 @@ class WPCLI extends Module
      * // Change a user password.
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
+     *
      * @param array<string> $command The command to execute.
      * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
      * @param mixed|null $input The input to pass to the command, a stream resource or a \Traversable
@@ -63,10 +77,30 @@ class WPCLI extends Module
      */
     public function cli(array $command = ['core', 'version'], ?array $env = null, mixed $input = null): int
     {
-        $env = array_replace($this->getDefaultEnv(), (array)($this->config['env'] ?? []), (array)$env);
+        /**
+         * The config is now validated and the values are defined.
+         *
+         * @var array{
+         *    path: string,
+         *    throw: bool,
+         *    timeout: float,
+         *    cache-dir?: string,
+         *    config-path?: string,
+         *    custom-shell?: string,
+         *    packages-dir?: string,
+         *    skip-plugins?: bool,
+         *    skip-themes?: bool,
+         *    skip-packages?: bool,
+         *    debug?: bool,
+         *    quiet?: bool,
+         *    context?: string
+         * } $config
+         */
+        $config = $this->config;
+        $env = array_replace($this->getDefaultEnv(), (array)($config['env'] ?? []), (array)$env);
         $command = $this->addStrictOptionsFromConfig($command);
 
-        $cliProcess = new CliProcess($command, $this->config['path'], $env, $input, $this->config['timeout']);
+        $cliProcess = new CliProcess($command, $config['path'], $env, $input, $config['timeout']);
 
         $this->debugSection('command', $cliProcess->getCommandLine());
 
@@ -78,7 +112,7 @@ class WPCLI extends Module
                 sprintf(
                     'The command "%s" timed out after %d seconds.',
                     $cliProcess->getCommandLine(),
-                    $this->config['timeout']
+                    $config['timeout']
                 )
             );
         }
@@ -93,7 +127,7 @@ class WPCLI extends Module
 
         $this->debugSection('exit code', print_r($exitCode, true));
 
-        if ($this->config['throw'] && $exitCode !== 0) {
+        if ($config['throw'] && $exitCode !== 0) {
             throw new ModuleException(
                 __CLASS__,
                 sprintf(
@@ -179,6 +213,7 @@ class WPCLI extends Module
      *      });
      * });
      * ```
+     *
      * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
      *                                             minus `wp`. For back-compatibility purposes you can still pass the
      *                                             commandline as a string, but the array format is the preferred and
@@ -223,6 +258,7 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
+     *
      * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
      *                                          minus `wp`.
      *                                          For back-compatibility purposes you can still pass the commandline as a
@@ -274,6 +310,7 @@ class WPCLI extends Module
      * ```
      *
      * @param string $text The text to assert is not in the output.
+     *
      * @throws ModuleException
      */
     public function dontSeeInShellOutput(string $text): void
@@ -292,6 +329,7 @@ class WPCLI extends Module
      * ```
      *
      * @param string $regex The regex pattern, including delimiters, to assert the output matches against.
+     *
      * @throws ModuleException
      */
     public function seeShellOutputMatches(string $regex): void
@@ -392,8 +430,26 @@ class WPCLI extends Module
      */
     protected function validateConfig(): void
     {
-        parent::validateConfig();
+        $this->config['throw'] = (bool)$this->config['throw'];
         $this->validateTimeout();
+
+        foreach (['cache-dir', 'config-path', 'custom-shell', 'packages-dir'] as $stringKey) {
+            if (empty($this->config[$stringKey]) || !is_string($this->config[$stringKey])) {
+                unset($this->config[$stringKey]);
+            }
+        }
+
+        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet'] as $boolKey) {
+            if (empty($this->config[$boolKey])) {
+                unset($this->config[$boolKey]);
+            }
+        }
+
+        if (empty($this->config['context']) || !is_string($this->config['context'])) {
+            unset($this->config['context']);
+        }
+
+        parent::validateConfig();
         $this->validatePath();
     }
 
@@ -416,48 +472,71 @@ class WPCLI extends Module
      */
     private function validatePath(): void
     {
+        /**
+         * The path config parameter is set at this point.
+         *
+         * @var array{path: string} $config
+         */
+        $config = $this->config;
         if (!(
-            $this->config['path']
-            && is_dir($this->config['path'])
-            && is_file($this->config['path'] . '/wp-load.php')
-            && is_file($this->config['path'] . '/wp-settings.php')
-            && is_file($this->config['path'] . '/wp-includes/version.php')
+            $config['path']
+            && is_dir($config['path'])
+            && is_file($config['path'] . '/wp-load.php')
+            && is_file($config['path'] . '/wp-settings.php')
+            && is_file($config['path'] . '/wp-includes/version.php')
         )) {
             throw new ModuleConfigException(
                 __CLASS__,
-                'Specified path [' . $this->config['path']
+                'Specified path [' . $config['path']
                 . '] is not a directory containing a WordPress installation.'
             );
         }
 
-        $this->config['path'] = Filesystem::realpath($this->config['path']);
+        $this->config['path'] = Filesystem::realpath($config['path']);
     }
 
     /**
-     * @return array<string,string|false>
+     * @return array{
+     *     WP_CLI_CACHE_DIR: string,
+     *     WP_CLI_CONFIG_PATH?: string,
+     *     WP_CLI_CUSTOM_SHELL?: string,
+     *     WP_CLI_PACKAGES_DIR?: string,
+     *     WP_CLI_DISABLE_AUTO_CHECK_UPDATE: true,
+     *     WP_CLI_STRICT_ARGS_MODE: true
+     * }
      */
     private function getDefaultEnv(): array
     {
         $env = [];
 
-        $cacheDir = $this->config['cache-dir'] ?? codecept_output_dir('wp-cli-cache');
+        /** @var array{
+         *     cache-dir?: non-empty-string,
+         *     config-path?: non-empty-string,
+         *     custom-shell?: non-empty-string,
+         *     packages-dir?: non-empty-string
+         * } $config Validated config.
+         */
+        $config = $this->config;
+        $cacheDir = $config['cache-dir'] ?? codecept_output_dir('wp-cli-cache');
         $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
 
-        foreach ([
-                     'config-path' => 'WP_CLI_CONFIG_PATH',
-                     'custom-shell' => 'WP_CLI_CUSTOM_SHELL',
-                     'packages-dir' => 'WP_CLI_PACKAGES_DIR',
-                 ] as $configKey => $envVar) {
-            if (!empty($this->config[$configKey])) {
-                $env[$envVar] = $this->config[$configKey];
-            }
+        if (isset($config['config-path'])) {
+            $env['WP_CLI_CONFIG_PATH'] = $config['config-path'];
+        }
+
+        if (isset($config['custom-shell'])) {
+            $env['WP_CLI_CUSTOM_SHELL'] = $config['custom-shell'];
+        }
+
+        if (isset($config['packages-dir'])) {
+            $env['WP_CLI_PACKAGES_DIR'] = $config['packages-dir'];
         }
 
         // Disable update checks by default.
         $env['WP_CLI_DISABLE_AUTO_CHECK_UPDATE'] = true;
 
         // Args should be treated as strict by default.
-        $env['WP_CLI_STRICT_ARGS_MODE'] = '1';
+        $env['WP_CLI_STRICT_ARGS_MODE'] = true;
 
         return $env;
     }
@@ -498,7 +577,7 @@ class WPCLI extends Module
         }
 
         if (isset($this->config['user'])) {
-            $options['--user'] = $this->config['user'];
+            $options[] = '--user=' . $this->config['user'];
         }
 
         if (isset($this->config['color'])) {

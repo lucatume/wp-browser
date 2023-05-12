@@ -174,13 +174,13 @@ class Filesystem
 
         $resolvedSource = self::resolvePath($source);
 
-        if($resolvedSource === false){
+        if ($resolvedSource === false) {
             return false;
         }
 
         $resolvedDestination = self::resolvePath($destination);
 
-        if($resolvedDestination === false){
+        if ($resolvedDestination === false) {
             return false;
         }
 
@@ -285,8 +285,8 @@ class Filesystem
      *
      * @param string $pathname The path to the root directory, if not existing, it will be
      *                                                    recursively created.
-     * @param string|array<string,string|array<mixed>> $contents Either a directory structure to produce or the contents of a
-     *                                                    file to create.
+     * @param string|array<string,string|array<string,mixed>> $contents Either a directory structure to produce or the
+     *     contents of a file to create.
      * @param int $mode The filemode that will be used to create each directory in
      *                                                    the
      *                                                    directory tree.
@@ -302,6 +302,10 @@ class Filesystem
                 throw new RuntimeException("Could not create directory {$pathname}");
             }
             foreach ($contents as $subPath => $subContents) {
+                if (!(is_array($subContents) || is_string($subContents))) {
+                    throw new RuntimeException("Invalid contents for path {$subPath}");
+                }
+                /** @var array<string, array<string, mixed>|string>|string $subContents */
                 self::mkdirp(
                     rtrim($pathname, '\\/') . '/' . ltrim((string)$subPath, '\\/'),
                     $subContents,

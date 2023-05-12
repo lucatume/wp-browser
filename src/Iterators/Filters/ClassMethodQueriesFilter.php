@@ -7,6 +7,8 @@
 
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use Iterator;
+
 /**
  * Class ClassMethodQueriesFilter
  *
@@ -16,11 +18,11 @@ class ClassMethodQueriesFilter extends QueriesCallerBasedKeepingFilterIterator
 {
     /**
      * ClassMethodQueriesFilter constructor.
-     * @param \Iterator<string> $iterator The iterator to filter.
+     * @param Iterator<string> $iterator The iterator to filter.
      * @param string $class The class to filter queries by.
      * @param string $method The class method to filter queries by.
      */
-    public function __construct(\Iterator $iterator, $class, $method)
+    public function __construct(Iterator $iterator, $class, $method)
     {
         parent::__construct($iterator);
 

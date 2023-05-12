@@ -21,7 +21,7 @@ class GenerateWPRestPostTypeController extends GenerateWPUnit
     /**
      * Returns the command generator.
      *
-     * @param array<string,mixed> $config The generator configuration.
+     * @param array{namespace: string, actor: string} $config The generator configuration.
      * @param string $class The class to generate the template for.
      *
      * @return WPUnit The generator instance.

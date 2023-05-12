@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Command;
 
 use Codeception\Command\GenerateTest;
 use Codeception\CustomCommandInterface;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\Lib\Generator\WPUnit as WPUnitGenerator;
 use lucatume\WPBrowser\TestCase\WPTestCase;
@@ -45,17 +46,24 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Executes the command.
      *
-     * @param InputInterface  $input  The inputl
+     * @param InputInterface $input The input.
      * @param OutputInterface $output The output.
      *
      * @return int Either the command return value or `null`.
+     * @throws InvalidArgumentException If the suite argument is not a string.
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $suite = $input->getArgument('suite');
+
+        if (!is_string($suite)) {
+            throw new InvalidArgumentException('Suite argument must be a string.');
+        }
+
         /** @var string $class */
         $class = $input->getArgument('class');
 
+        /** @var array{namespace: string, actor: string, path: string} $config */
         $config = $this->getSuiteConfig($suite);
 
         $filename = $this->buildPath($config['path'], $class);
@@ -75,7 +83,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Returns the built path.
      *
-     * @param string $path  The root path.
+     * @param string $path The root path.
      * @param string $class The class to build the path for.
      *
      * @return string The built path.
@@ -93,8 +101,8 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Returns the configured generator.
      *
-     * @param array<string,mixed> $config The generator configuration.
-     * @param string              $class  The class to generate the test case for.
+     * @param array{namespace: string, actor: string} $config The generator configuration.
+     * @param string $class The class to generate the test case for.
      *
      * @return WPUnitGenerator An instance of the test case code generator.
      */

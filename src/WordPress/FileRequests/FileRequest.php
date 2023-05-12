@@ -29,12 +29,12 @@ abstract class FileRequest implements Serializable
     private array $afterLoadClosures = [];
 
     /**
-     * @param int[]|string[]|float[]|bool[] $requestVars
+     * @param array<int|string|float|bool> $requestVars
      * @param array<string,string> $cookieJar
-     * @param string[] $presetGlobalVars
+     * @param array<string,mixed> $presetGlobalVars
      * @param array<string, string> $redirectFiles
      * @param array<string, mixed> $presetLocalVars
-     * @param bool[]|int[]|string[]|float[] $constants
+     * @param array<bool|int|string|float> $constants
      */
     public function __construct(
         private string $domain,
@@ -174,14 +174,18 @@ abstract class FileRequest implements Serializable
     {
         $unserializedData = $this->unserializeData($data);
 
-        $this->presetGlobalVars = $unserializedData['presetGlobalVars'] ?? false;
+        if (!is_array($unserializedData)) {
+            throw new FileRequestException('Unserialized data is not an array');
+        }
+
+        $this->presetGlobalVars = $unserializedData['presetGlobalVars'] ?? [];
         $this->presetLocalVars = $unserializedData['presetLocalVars'] ?? [];
         $this->redirectFiles = $unserializedData['redirectFiles'] ?? [];
         $this->domain = $unserializedData['domain'] ?? 'localhost';
         $this->requestUri = $unserializedData['requestUri'];
         $this->requestVars = $unserializedData['requestVars'] ?? [];
         $this->targetFile = $unserializedData['targetFile'] ?? false;
-        $this->cookieJar = $unserializedData['cookieJar'] ?? false;
+        $this->cookieJar = $unserializedData['cookieJar'] ?? [];
         $this->constants = $unserializedData['constants'] ?? [];
         $this->preloadClosures = $unserializedData['preloadClosures'] ?? [];
         $this->preloadFilters = $unserializedData['preloadFilters'] ?? [];

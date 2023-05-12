@@ -25,7 +25,7 @@ class WPUnit extends AbstractGenerator
     use Namespaces;
 
     /**
-     * @var array<string,mixed>
+     * @var array{namespace: string, actor: string}
      */
     protected array $settings;
 
@@ -70,7 +70,7 @@ EOF;
     /**
      * WPUnit constructor.
      *
-     * @param array<string,mixed> $settings The template settings.
+     * @param array{namespace: string, actor: string} $settings The template settings.
      * @param string $name The template name.
      * @param string $baseClass The base class.
      */
@@ -109,6 +109,7 @@ EOF;
         }
 
         try {
+            /** @var array{actor_suffix: string} $config */
             $config = Configuration::config();
             $propertyName = isset($config['actor_suffix']) ?
                 lcfirst($config['actor_suffix'])

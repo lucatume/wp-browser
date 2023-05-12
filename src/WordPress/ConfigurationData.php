@@ -16,7 +16,7 @@ class ConfigurationData
     private ?string $nonceSalt = null;
     private ?string $extraPHP = null;
     /**
-     * @var array<string,mixed>
+     * @var array<string,int|float|string|bool|null>
      */
     private array $extraConstants = [];
 

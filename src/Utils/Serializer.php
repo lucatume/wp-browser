@@ -22,7 +22,7 @@ class Serializer
 {
     public static function maybeUnserialize(mixed $value): mixed
     {
-        if (!self::isSerialized($value)) {
+        if (!(is_string($value) && self::isSerialized($value))) {
             return $value;
         }
 
@@ -54,6 +54,11 @@ class Serializer
     public static function makeThrowableSerializable(Throwable $throwable): Throwable
     {
         $trace = Property::readPrivate($throwable, 'trace');
+
+        if (!is_array($trace)) {
+            return $throwable;
+        }
+
         foreach ($trace as &$traceEntry) {
             unset($traceEntry['args']);
         }

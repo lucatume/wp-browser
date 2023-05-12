@@ -139,7 +139,10 @@ class WPQueries extends Module
             $this->filteredQueries = [];
         } else {
             $filteredQueriesIterator = $this->_getFilteredQueriesIterator();
-            $this->filteredQueries = iterator_to_array($filteredQueriesIterator, false);
+            $this->filteredQueries = array_filter(
+                iterator_to_array($filteredQueriesIterator, false),
+                'is_string'
+            );
         }
     }
 
@@ -1043,7 +1046,10 @@ class WPQueries extends Module
      */
     public function getQueries(wpdb $wpdb = null): array
     {
-        return iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
+        return array_filter(
+            iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false),
+            'is_string'
+        );
     }
 
     public function _getWpdb(): wpdb

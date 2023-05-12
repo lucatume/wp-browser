@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Process\StderrStream;
+use lucatume\WPBrowser\Utils\Arr;
 use Opis\Closure\SerializableClosure;
 use Throwable;
 
@@ -60,12 +61,20 @@ class Response
 
         [$returnValueClosure, $telemetry] = Parser::decode($afterSeparatorBuffer);
 
-        $returnValue = $returnValueClosure();
+        $returnValue = is_callable($returnValueClosure) ? $returnValueClosure() : null;
+
         if ($returnValue instanceof SerializableThrowable) {
             $returnValue = $returnValue->getThrowable();
         }
+
         $exitValue = $returnValue instanceof Throwable ? 1 : 0;
-        $response = new self($returnValue, $exitValue, $telemetry ?? []);
+
+        if (!(is_array($telemetry) && Arr::hasShape($telemetry, ['memoryPeakUsage' => 'int']))) {
+            $telemetry = ['memoryPeakUsage' => 0];
+        }
+
+        /** @var array{memoryPeakUsage: int} $telemetry */
+        $response = new self($returnValue, $exitValue, $telemetry);
         $response->stderrLength = $separatorPos;
 
         return $response;

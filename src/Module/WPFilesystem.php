@@ -13,8 +13,8 @@ use Codeception\Module\Filesystem;
 use Codeception\TestInterface;
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Exception;
-use lucatume\WPBrowser\Utils\Dates;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert;
 
@@ -35,7 +35,12 @@ class WPFilesystem extends Filesystem
     /**
      * The default module configuration.
      *
-     * @var array<string,string>
+     * @var array{
+     *     themes: string,
+     *     plugins: string,
+     *     mu-plugins: string,
+     *     uploads: string,
+     * }
      */
     protected array $config = [
         'themes' => '/wp-content/themes',
@@ -49,14 +54,14 @@ class WPFilesystem extends Filesystem
      *
      * @var array<string>
      */
-    protected array $toClean = [];
+    private array $toClean = [];
 
     /**
      * The current count of generated test plugins.
      *
      * @var int
      */
-    protected int $testPluginCount = 0;
+    private int $testPluginCount = 0;
 
     /**
      * Runs before each test.
@@ -72,6 +77,23 @@ class WPFilesystem extends Filesystem
     }
 
     /**
+     * @throws ModuleConfigException
+     * @throws ModuleException
+     */
+    protected function validateConfig(): void
+    {
+        parent::validateConfig();
+        foreach (['wpRootFolder', 'themes', 'plugins', 'mu-plugins', 'uploads'] as $path) {
+            if (!is_string($this->config[$path])) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "The {$path} path must be a string."
+                );
+            }
+        }
+    }
+
+    /**
      * Sets and checks that the optional paths, if set, are actually valid.
      *
      * @param bool $check Whether to check the paths for existence or not.
@@ -79,7 +101,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleConfigException If one of the paths does not exist.
      */
-    protected function ensureOptionalPaths(bool $check = true): void
+    private function ensureOptionalPaths(bool $check = true): void
     {
         $optionalPaths = [
             'themes' => [
@@ -99,12 +121,21 @@ class WPFilesystem extends Filesystem
                 'default' => '/wp-content/uploads',
             ],
         ];
-        $wpRoot = FS::untrailslashit($this->config['wpRootFolder']);
+        /** @var array{
+         *     wpRootFolder: string,
+         *     themes: string,
+         *     plugins: string,
+         *     mu-plugins: string,
+         *     uploads: string
+         * } $config
+         */
+        $config = $this->config;
+        $wpRoot = FS::untrailslashit($config['wpRootFolder']);
         foreach ($optionalPaths as $configKey => $info) {
-            if (empty($this->config[$configKey])) {
+            if (empty($config[$configKey])) {
                 $path = $info['default'];
             } else {
-                $path = $this->config[$configKey];
+                $path = $config[$configKey];
             }
             if (!is_dir($path) || ($configKey === 'mu-plugins' && !is_dir(dirname($path)))) {
                 $path = FS::unleadslashit(str_replace($wpRoot, '', $path));
@@ -147,16 +178,18 @@ class WPFilesystem extends Filesystem
      *                                                      or is not a valid WordPress root folder.
      *
      */
-    protected function ensureWpRootFolder(): void
+    private function ensureWpRootFolder(): void
     {
-        $wpRoot = $this->config['wpRootFolder'];
+        /** @var array{wpRootFolder: string} $config */
+        $config = $this->config;
+        $wpRoot = $config['wpRootFolder'];
 
         if (!is_dir($wpRoot)) {
             $wpRoot = codecept_root_dir(FS::unleadslashit($wpRoot));
         }
 
         $message = "[{$wpRoot}] is not a valid WordPress root folder.\n\nThe WordPress root folder is the one that "
-                   . "contains the 'wp-load.php' file.";
+            . "contains the 'wp-load.php' file.";
 
         if (!(is_dir($wpRoot) && is_readable($wpRoot) && is_writable($wpRoot))) {
             throw new ModuleConfigException(__CLASS__, $message);
@@ -227,15 +260,7 @@ class WPFilesystem extends Filesystem
                 $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path);
             } else {
                 // time based?
-                $date = Dates::immutable($path);
-                $path = implode(
-                    DIRECTORY_SEPARATOR,
-                    [
-                        $this->config['uploads'],
-                        $date->format('Y'),
-                        $date->format('m'),
-                    ]
-                );
+                $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . $this->buildDateFrag($path);
             }
         }
         $this->amInPath($path);
@@ -275,9 +300,11 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param string $file The file path, relative to the uploads folder.
-     * @param mixed|null $date A string compatible with `strtotime`, a Unix timestamp or a Date object.
+     * @param DateTimeInterface|string|int|null $date A string compatible with `strtotime`, a Unix timestamp or a Date
+     *     object.
      *
      * @return string The absolute path to an uploaded file.
+     * @throws ModuleException
      */
     public function getUploadsPath(string $file = '', mixed $date = null): string
     {
@@ -288,11 +315,12 @@ class WPFilesystem extends Filesystem
         $uploads = FS::untrailslashit($this->config['uploads']);
         $path = $file;
         if (!str_contains($file, $uploads)) {
-            $path = implode(DIRECTORY_SEPARATOR, array_filter([
-                $uploads,
-                $dateFrag,
-                FS::unleadslashit($file),
-            ]));
+            $path = implode(DIRECTORY_SEPARATOR,
+                array_filter([
+                    $uploads,
+                    $dateFrag,
+                    FS::unleadslashit($file),
+                ]));
         }
 
         return $path;
@@ -301,16 +329,22 @@ class WPFilesystem extends Filesystem
     /**
      * Builds the additional path fragment depending on the date.
      *
-     * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date object.
+     * @param string|int|DateTimeInterface $date
      *
      * @return string The relative path with the date path appended, if needed.
+     * @throws ModuleException
      */
-    protected function buildDateFrag(mixed $date): string
+    private function buildDateFrag(string|int|DateTimeInterface $date): string
     {
-        try {
-            $date = Dates::immutable($date);
-        } catch (Exception) {
-            return $date;
+        if (!$date instanceof DateTimeInterface) {
+            $date = is_string($date) ? strtotime($date) : (int)$date;
+        }
+
+        if (!$date instanceof DateTimeInterface) {
+            throw new ModuleException(
+                $this,
+                'The date argument must be a string, a Unix timestamp or a DateTimeInterface object.'
+            );
         }
 
         return $date->format('Y') . DIRECTORY_SEPARATOR . $date->format('m');
@@ -402,9 +436,9 @@ class WPFilesystem extends Filesystem
      * $I->deleteUploadedDir('folder', 'today');
      * ```
      *
-     *@param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
+     * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param  string               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @param string $dir The path to the directory to delete, relative to the uploads folder.
      *
      * @throws ModuleException If the destination folder could not be removed.
      */
@@ -450,9 +484,9 @@ class WPFilesystem extends Filesystem
      * $I->cleanUploadsDir('some/folder', 'today');
      * ```
      *
-     *@param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
+     * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param  string|null               $dir  The path to the directory to delete, relative to the uploads folder.
+     * @param string|null $dir The path to the directory to delete, relative to the uploads folder.
      */
     public function cleanUploadsDir(string $dir = null, DateTime|int|string $date = null): void
     {
@@ -475,8 +509,8 @@ class WPFilesystem extends Filesystem
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');
      * ```
      *
-     *@param string $dst The path to the destination file, relative to the current uploads folder.
-     * @param  DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
+     * @param string $dst The path to the destination file, relative to the current uploads folder.
+     * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
      * @param string $src The path to the source file, relative to the current uploads folder.
      */
@@ -497,10 +531,10 @@ class WPFilesystem extends Filesystem
      * $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
      * ```
      *
-     *@param string $data The data to write to the file.
+     * @param string $data The data to write to the file.
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param  string $filename The path to the destination file, relative to the current uploads folder.
+     * @param string $filename The path to the destination file, relative to the current uploads folder.
      * @return string The absolute path to the destination file.
      *
      * @throws ModuleException If the destination folder could not be created or the destination
@@ -536,7 +570,7 @@ class WPFilesystem extends Filesystem
      * $I->openUploadedFile('some-file.txt');
      * $I->openUploadedFile('some-file.txt', 'time');
      * ```
-     *@param  DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
+     * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
      * @param string $filename The path to the file, relative to the current uploads folder.
      */
@@ -1018,7 +1052,7 @@ class WPFilesystem extends Filesystem
      * @param string $path The path to the file to create, relative to the plugins folder.
      * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
-     *@throws ModuleException If the plugin folder and/or files could not be created.
+     * @throws ModuleException If the plugin folder and/or files could not be created.
      *
      */
     public function havePlugin(string $path, string $code): void
@@ -1084,9 +1118,9 @@ PHP;
      * ```
      *
      * @param string $filename The path to the file to create, relative to the plugins root folder.
-     * @param string $code     The content of the plugin file with or without the opening PHP tag.
+     * @param string $code The content of the plugin file with or without the opening PHP tag.
      *
-     *@throws ModuleException If the mu-plugin folder and/or files could not be created.
+     * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      *
      */
     public function haveMuPlugin(string $filename, string $code): void
@@ -1221,7 +1255,9 @@ CSS;
      */
     public function getWpRootFolder(): string
     {
-        return FS::untrailslashit($this->config['wpRootFolder']);
+        /** @var array{wpRootFolder: string} $config */
+        $config = $this->config;
+        return FS::untrailslashit($config['wpRootFolder']);
     }
 
     /**
@@ -1247,8 +1283,11 @@ CSS;
      *
      * @throws Exception If the date is not a valid format.
      */
-    public function getBlogUploadsPath(int $blogId, string $file = '', DateTimeImmutable|DateTime|string $date = null): string
-    {
+    public function getBlogUploadsPath(
+        int $blogId,
+        string $file = '',
+        DateTimeImmutable|DateTime|string $date = null
+    ): string {
         $dateFrag = $date !== null ?
             $this->buildDateFrag($date)
             : '';
@@ -1257,11 +1296,12 @@ CSS;
         $path = $file;
 
         if (!str_contains($file, $uploads)) {
-            $path = implode(DIRECTORY_SEPARATOR, array_filter([
-                $uploads,
-                $dateFrag,
-                FS::unleadslashit($file),
-            ]));
+            $path = implode(DIRECTORY_SEPARATOR,
+                array_filter([
+                    $uploads,
+                    $dateFrag,
+                    FS::unleadslashit($file),
+                ]));
         }
 
         return $path;
@@ -1319,7 +1359,7 @@ CSS;
      *
      * @return string The code without the opening PHP tag.
      */
-    protected function removeOpeningPhpTag(string $code): string
+    private function removeOpeningPhpTag(string $code): string
     {
         // Remove the opening PHP tag if present.
         $code = preg_replace('/^\<\?php\\s*/', '', $code) ?: '';

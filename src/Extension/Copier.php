@@ -16,6 +16,9 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
  * Class Copier
  *
  * @package lucatume\WPBrowser\Extension
+ * @property array{
+ *    files: array<string,string>
+ * } $config
  */
 class Copier extends Extension
 {
@@ -33,10 +36,15 @@ class Copier extends Extension
      *
      * @param array<string,mixed> $config The extension configuration.
      * @param array<string,mixed> $options The extension options.
+     *
+     * @throws ExtensionException
      */
     public function __construct(array $config, array $options)
     {
         if (!empty($config['files'])) {
+            if(!is_array($config['files'])){
+                throw new ExtensionException($this, 'The "files" configuration option must be an array.');
+            }
             $sources = array_keys($config['files']);
             array_walk($sources, [$this, 'ensureSource']);
             array_walk($config['files'], [$this, 'ensureDestination']);

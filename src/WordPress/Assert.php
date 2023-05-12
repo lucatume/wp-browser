@@ -17,9 +17,15 @@ class Assert
 
     public static function assertUpdatesDisabled(): void
     {
-        PHPUnitAssert::assertEqualsWithDelta(time(), \get_site_transient('update_core')->last_checked, 10);
-        PHPUnitAssert::assertEqualsWithDelta(time(), \get_site_transient('update_plugins')->last_checked, 10);
-        PHPUnitAssert::assertEqualsWithDelta(time(), \get_site_transient('update_themes')->last_checked, 10);
+        $updateCore = \get_site_transient('update_core');
+        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updateCore);
+        PHPUnitAssert::assertEqualsWithDelta(time(), $updateCore->last_checked, 10);
+        $updatePlugins = \get_site_transient('update_plugins');
+        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updatePlugins);
+        PHPUnitAssert::assertEqualsWithDelta(time(), $updatePlugins->last_checked, 10);
+        $updateThemes = \get_site_transient('update_themes');
+        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updateThemes);
+        PHPUnitAssert::assertEqualsWithDelta(time(), $updateThemes->last_checked, 10);
         foreach ([
                      ['admin_init', '_maybe_update_core'],
                      ['admin_init', '_maybe_update_plugins'],

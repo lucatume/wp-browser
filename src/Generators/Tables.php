@@ -95,7 +95,7 @@ class Tables
      */
     protected function renderQuery(string $table, array $data): string
     {
-        if (! in_array($table, $this->tables(), true)) {
+        if (!in_array($table, $this->tables(), true)) {
             throw new \InvalidArgumentException('Table ' . $table . ' is not a valid table name');
         }
 
@@ -157,7 +157,7 @@ class Tables
 
         $queryTemplate = file_get_contents($templateFile);
 
-        if (false ===$queryTemplate) {
+        if (false === $queryTemplate) {
             throw new \RuntimeException("Template file {$templateFile} could not be read.");
         }
 
@@ -202,9 +202,9 @@ class Tables
 
         $data['siteurl'] = $data['siteurl'] ?? sprintf(
             '%s://%s%s%s',
-            $data['scheme'] ?? 'http',
+            isset($data['scheme']) && is_string($data['scheme']) ? $data['scheme'] : 'http',
             $data['subdomain'] ? $data['subdomain'] . '.' : '',
-            $data['domain'],
+            isset($data['domain']) && is_string($data['domain']) ? $data['domain'] : '',
             $data['subfolder'] ? '/' . $data['subfolder'] : ''
         );
         $data['home'] = $data['home'] ?? $data['siteurl'];
