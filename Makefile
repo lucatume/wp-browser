@@ -8,9 +8,9 @@ build:
 .PHONY: build
 
 test:
-	#todo Run static analysis here
 	for php_version in $(PHP_VERSIONS); do \
 		bin/stack -p$$php_version composer_update &&\
+		bin/stack -p$$php_version phpstan || exit 1; \
 		bin/stack -p$$php_version test || exit 1; \
 	done
 .PHONY: test

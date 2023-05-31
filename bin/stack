@@ -22,6 +22,7 @@ function print_help() {
   echo "  exec                  Execute a command in a service for the specified PHP version."
   echo "  logs                  Show the logs of the containers for the specified PHP version."
   echo "  mysql                 Open a MySQL shell for the database service for the specified PHP version."
+  echo "  phpstan               Run PHPStan for the specified PHP version."
   echo "  ps                    Show the status of the containers for the specified PHP version."
   echo "  ssh                   SSH into a service for the specified PHP version."
   echo "  up                    Starts the containers for the specified PHP version."
@@ -311,6 +312,9 @@ logs)
   ;;
 mysql)
   docker compose exec database mysql -u root -ppassword
+  ;;
+phpstan)
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash -c "composer run stan"
   ;;
 ps)
   docker compose ps
