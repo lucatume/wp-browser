@@ -29,7 +29,8 @@ class Dispatcher
                     debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
                 ),
                 0,
-                20)
+                20
+            )
         );
 
         foreach ($reverseBacktraceHead as $backtraceEntry) {

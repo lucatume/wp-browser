@@ -69,9 +69,11 @@ class Scaffolded implements InstallationStateInterface
         $wpConfigFilePath = $this->wpRootDir . 'wp-config.php';
         $configurationData = $configurationData ?? new ConfigurationData();
         codecept_debug("Creating the {$wpConfigFilePath} file ...");
-        $wpConfigFileContents = (new WpConfigFileGenerator($this->wpRootDir))->produce($db,
+        $wpConfigFileContents = (new WpConfigFileGenerator($this->wpRootDir))->produce(
+            $db,
             $configurationData,
-            $multisite);
+            $multisite
+        );
         if (!file_put_contents($wpConfigFilePath, $wpConfigFileContents, LOCK_EX)) {
             throw new InstallationException("Could not write to $wpConfigFilePath.");
         }

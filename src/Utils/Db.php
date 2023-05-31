@@ -383,7 +383,8 @@ class Db
                 'type' => 'mysql',
                 'host' => 'localhost'
             ],
-            $map);
+            $map
+        );
     }
 
     /**

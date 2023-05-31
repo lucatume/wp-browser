@@ -100,8 +100,10 @@ class Symlinker extends Extension
         if (is_array($rootFolder)) {
             $rootFolder = $this->getDirPathFromArrayDefinition($settings, $rootFolder);
         } elseif (!is_string($rootFolder)) {
-            throw new ExtensionException($this,
-                'The "rootFolder" configuration option must be a string or an array of strings.');
+            throw new ExtensionException(
+                $this,
+                'The "rootFolder" configuration option must be a string or an array of strings.'
+            );
         }
 
         return $rootFolder;
@@ -123,8 +125,10 @@ class Symlinker extends Extension
         if (is_array($destination)) {
             $destination = $this->getDirPathFromArrayDefinition($settings, $destination);
         } elseif (!is_string($destination)) {
-            throw new ExtensionException($this,
-                'The "destination" configuration option must be a string or an array of strings.');
+            throw new ExtensionException(
+                $this,
+                'The "destination" configuration option must be a string or an array of strings.'
+            );
         }
 
         return rtrim($destination, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($rootFolder);

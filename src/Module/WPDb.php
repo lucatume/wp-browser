@@ -3239,8 +3239,7 @@ class WPDb extends Db
         foreach (array_column($blogIds, 'blog_id') as $blogId) {
             if (empty($blogId)) {
                 $this->debug(message: 'No blog found matching criteria ' .
-                    json_encode($criteria, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
-                );
+                    json_encode($criteria, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
                 return;
             }
 

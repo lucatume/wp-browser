@@ -178,7 +178,8 @@ class ConfigurationData
 
     public function getExtraPHP(): ?string
     {
-        $extraConstants = implode(PHP_EOL,
+        $extraConstants = implode(
+            PHP_EOL,
             array_map(
                 static function ($const, string|int|float|bool|null $value) {
                     if (is_bool($value)) {
@@ -192,7 +193,8 @@ class ConfigurationData
                 },
                 array_keys($this->extraConstants),
                 $this->extraConstants
-            ));
+            )
+        );
         return $extraConstants . PHP_EOL . $this->extraPHP;
     }
 

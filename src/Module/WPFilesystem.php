@@ -315,12 +315,14 @@ class WPFilesystem extends Filesystem
         $uploads = FS::untrailslashit($this->config['uploads']);
         $path = $file;
         if (!str_contains($file, $uploads)) {
-            $path = implode(DIRECTORY_SEPARATOR,
+            $path = implode(
+                DIRECTORY_SEPARATOR,
                 array_filter([
                     $uploads,
                     $dateFrag,
                     FS::unleadslashit($file),
-                ]));
+                ])
+            );
         }
 
         return $path;
@@ -1296,12 +1298,14 @@ CSS;
         $path = $file;
 
         if (!str_contains($file, $uploads)) {
-            $path = implode(DIRECTORY_SEPARATOR,
+            $path = implode(
+                DIRECTORY_SEPARATOR,
                 array_filter([
                     $uploads,
                     $dateFrag,
                     FS::unleadslashit($file),
-                ]));
+                ])
+            );
         }
 
         return $path;

@@ -16,7 +16,7 @@ try {
     $serializableClosure = $request->getSerializableClosure();
     $returnValue = $serializableClosure();
 } catch (\Throwable $throwable) {
-   $returnValue = new SerializableThrowable($throwable);
+    $returnValue = new SerializableThrowable($throwable);
 }
 
 $response = new Response($returnValue);
@@ -25,4 +25,3 @@ $responsePayload = Response::$stderrValueSeparator . $response->getPayload();
 fwrite(STDERR, $responsePayload, strlen($responsePayload));
 
 exit($response->getExitValue());
-

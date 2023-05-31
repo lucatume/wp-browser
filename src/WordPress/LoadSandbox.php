@@ -69,8 +69,7 @@ class LoadSandbox
             return true;
         }
 
-        if (
-            count($this->redirects) > 0
+        if (count($this->redirects) > 0
             && $this->redirects[0][1] === 302
             && parse_url($this->redirects[0][0], PHP_URL_PATH) === '/wp-admin/install.php'
         ) {
@@ -78,8 +77,7 @@ class LoadSandbox
             throw InstallationException::becauseWordPressIsNotInstalled();
         }
 
-        if (
-            function_exists('is_multisite')
+        if (function_exists('is_multisite')
             && function_exists('is_subdomain_install')
             && function_exists('ms_load_current_site_and_network')
             && is_multisite()

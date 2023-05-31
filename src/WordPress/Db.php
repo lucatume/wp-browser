@@ -32,7 +32,8 @@ class Db
 
         $this->dbName = $dbName;
         $this->dsn = DbUtil::dbDsnString(DbUtil::dbDsnMap($dbHost));
-        $this->dbUrl = sprintf('mysql://%s:%s@%s/%s',
+        $this->dbUrl = sprintf(
+            'mysql://%s:%s@%s/%s',
             $dbUser,
             $dbPassword,
             $dbHost,

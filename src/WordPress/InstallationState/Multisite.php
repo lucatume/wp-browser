@@ -46,7 +46,7 @@ class Multisite implements InstallationStateInterface
             );
         }
 
-        if($this->isInstalled(true)){
+        if ($this->isInstalled(true)) {
             throw new InstallationException(
                 "The WordPress multi-site installation is not installed.",
                 InstallationException::NOT_INSTALLED

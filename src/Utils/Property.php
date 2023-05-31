@@ -19,7 +19,7 @@ class Property
         $reflectionObject = is_object($object) ? $object : null;
         $class = $originalClass;
 
-        if(!class_exists($class)) {
+        if (!class_exists($class)) {
             throw new InvalidArgumentException(
                 sprintf('Class "%s" does not exists', $class)
             );
@@ -55,7 +55,7 @@ class Property
      */
     public static function setPropertiesForClass(?object $object, string $class, array $props): object
     {
-        if(!class_exists($class)) {
+        if (!class_exists($class)) {
             throw new InvalidArgumentException(
                 sprintf('Class "%s" does not exists', $class)
             );

@@ -124,17 +124,21 @@ class Configured implements InstallationStateInterface
             }
 
             $closuresFactory = new CodeExecutionFactory($this->wpRootDir, $domain);
-            $toInstallWordPress = $closuresFactory->toInstallWordPress($title,
+            $toInstallWordPress = $closuresFactory->toInstallWordPress(
+                $title,
                 $adminUser,
                 $adminPassword,
                 $adminEmail,
-                $url);
+                $url
+            );
             $jobs = [$toInstallWordPress];
 
             if ($this->isMultisite()) {
-                $jobs[] = $closuresFactory->toInstallWordPressNetwork($adminEmail,
+                $jobs[] = $closuresFactory->toInstallWordPressNetwork(
+                    $adminEmail,
                     $title,
-                    $this->isSubdomainMultisite());
+                    $this->isSubdomainMultisite()
+                );
             }
 
             foreach ((new Loop($jobs, 1, true))->run()->getResults() as $result) {

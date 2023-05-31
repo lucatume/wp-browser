@@ -617,9 +617,11 @@ class WPQueries extends Module
             new ArrayIterator($this->filteredQueries),
             $function
         ), $statement);
-        Assert::assertCount(expectedCount: $n,
+        Assert::assertCount(
+            expectedCount: $n,
             haystack: iterator_to_array($statementIterator, false),
-            message: $message);
+            message: $message
+        );
     }
 
     /**

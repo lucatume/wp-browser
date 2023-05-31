@@ -67,12 +67,14 @@ class InstallNetworkAction implements CodeExecutionActionInterface
         require_once ABSPATH . '/wp-admin/includes/network.php';
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         \install_network();
-        $result = populate_network(1,
+        $result = populate_network(
+            1,
             get_clean_basedomain(),
             sanitize_email($email),
             wp_unslash($sitename),
             '/',
-            $subdomain);
+            $subdomain
+        );
 
         if ($result instanceof \WP_Error) {
             throw new RuntimeException('Could not install WordPress network: ' . $result->get_error_message());
@@ -81,8 +83,10 @@ class InstallNetworkAction implements CodeExecutionActionInterface
         $tables = $wpdb->get_col('SHOW TABLES');
         $missingTables = array_diff($wpdb->tables('ms_global'), $tables);
         if (count($missingTables)) {
-            throw new RuntimeException('Could not install WordPress network: ' . implode(', ',
-                    $missingTables) . ' table(s) not found.');
+            throw new RuntimeException('Could not install WordPress network: ' . implode(
+                ', ',
+                $missingTables
+            ) . ' table(s) not found.');
         }
     }
 }

@@ -11,7 +11,7 @@ namespace lucatume\WPBrowser\Utils;
  */
 class System
 {
-    static private ?bool $isArm;
+    private static ?bool $isArm;
 
     public static function isArm(): bool
     {

@@ -178,8 +178,7 @@ class Running implements WorkerInterface
             $this->kill($pid);
         }
 
-        foreach (
-            [
+        foreach ([
                 'STDIN' => $this->stdin,
                 'STDOUT' => $this->stdout,
                 'STDERR' => $this->stderr,

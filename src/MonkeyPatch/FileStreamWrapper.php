@@ -134,7 +134,7 @@ class FileStreamWrapper
                 return stream_set_blocking($this->fileResource, (bool)$arg1);
             case STREAM_OPTION_READ_TIMEOUT:
                 return stream_set_timeout($this->fileResource, $arg1, $arg2);
-            case  STREAM_OPTION_WRITE_BUFFER:
+            case STREAM_OPTION_WRITE_BUFFER:
                 $bufferSize = STREAM_BUFFER_NONE === $arg1 ? 0 : $arg2;
                 return (bool)stream_set_write_buffer($this->fileResource, $bufferSize);
         }
@@ -414,7 +414,7 @@ class FileStreamWrapper
             $handle = opendir($path) ?: null;
         }
 
-        if(!is_resource($handle)){
+        if (!is_resource($handle)) {
             throw new MonkeyPatchingException("Could not open directory $path");
         }
 

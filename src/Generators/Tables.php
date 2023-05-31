@@ -7,7 +7,6 @@
 
 namespace lucatume\WPBrowser\Generators;
 
-
 use lucatume\WPBrowser\Utils\Strings;
 
 /**

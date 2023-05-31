@@ -213,8 +213,7 @@ class StderrStream
                 $traceEntry->call = 'n/a';
                 $traceEntry->args = 'n/a';
                 $closureLines = $closureTraceMatches['closure'];
-                while (
-                    isset($lines[$i + 1]) &&
+                while (isset($lines[$i + 1]) &&
                     !preg_match($closureFinalLinePattern, $lines[$i + 1], $closureFinalLineMatches)
                 ) {
                     $closureLines .= PHP_EOL . $lines[$i + 1];
@@ -265,7 +264,8 @@ class StderrStream
                 0,
                 $this->mapTypeToSeverity($sourceError->type),
                 $sourceError->file,
-                $sourceError->line);
+                $sourceError->line
+            );
         }
 
         if (!class_exists($throwableClass)) {

@@ -23,8 +23,7 @@ class WpConfigFileGenerator
 
         $wpConfigSampleFile = rtrim($wpRootDir, '\\/') . '/wp-config-sample.php';
 
-        if (
-            !is_file($wpConfigSampleFile)
+        if (!is_file($wpConfigSampleFile)
             || ($wpConfigSampleFileContents = file_get_contents($wpConfigSampleFile)) === false
         ) {
             throw new InstallationException(
@@ -83,7 +82,8 @@ class WpConfigFileGenerator
                 };
                 return str_replace('put your unique phrase here', $value, $matches[0]);
             },
-            $this->wpConfigFileContents);
+            $this->wpConfigFileContents
+        );
 
         return $this;
     }

@@ -72,7 +72,6 @@ class PreloadFilters
                 ],
                 'body' => '',
             ];
-
         };
         self::addFilter('pre_http_request', $callback, 0, 3);
     }

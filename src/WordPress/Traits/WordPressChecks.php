@@ -16,13 +16,18 @@ trait WordPressChecks
         try {
             $wpRootDir = FS::untrailslashit((string)FS::resolvePath($wpRootDir)) . '/';
         } catch (Exception $e) {
-            throw new InstallationException("{$wpRootDir} does not exist.",
-                InstallationException::ROOT_DIR_NOT_FOUND, $e);
+            throw new InstallationException(
+                "{$wpRootDir} does not exist.",
+                InstallationException::ROOT_DIR_NOT_FOUND,
+                $e
+            );
         }
 
         if (!(is_dir($wpRootDir) && is_readable($wpRootDir) && is_writable($wpRootDir))) {
-            throw new InstallationException("{$wpRootDir} is not a readable and writable directory.",
-                InstallationException::ROOT_DIR_NOT_RW);
+            throw new InstallationException(
+                "{$wpRootDir} is not a readable and writable directory.",
+                InstallationException::ROOT_DIR_NOT_RW
+            );
         }
 
         return $wpRootDir;

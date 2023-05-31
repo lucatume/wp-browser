@@ -42,7 +42,7 @@ class Copier extends Extension
     public function __construct(array $config, array $options)
     {
         if (!empty($config['files'])) {
-            if(!is_array($config['files'])){
+            if (!is_array($config['files'])) {
                 throw new ExtensionException($this, 'The "files" configuration option must be an array.');
             }
             $sources = array_keys($config['files']);

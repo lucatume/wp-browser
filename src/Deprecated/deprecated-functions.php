@@ -419,4 +419,3 @@ namespace tad\WPBrowser {
         return Version::id();
     }
 }
-

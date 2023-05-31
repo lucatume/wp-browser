@@ -156,8 +156,10 @@ class WPConfigFile
     public function getConstantOrThrow(string $string): int|float|string|bool|null
     {
         if (!isset($this->constants[$string])) {
-            throw new WpConfigFileException("Constant {$string} not defined.",
-                WpConfigFileException::CONSTANT_UNDEFINED);
+            throw new WpConfigFileException(
+                "Constant {$string} not defined.",
+                WpConfigFileException::CONSTANT_UNDEFINED
+            );
         }
 
         return $this->constants[$string];
@@ -169,8 +171,10 @@ class WPConfigFile
     public function getVariableOrThrow(string $string): mixed
     {
         if (!isset($this->variables[$string])) {
-            throw new WpConfigFileException("Variable {$string} not defined.",
-                WpConfigFileException::VARIABLE_UNDEFINED);
+            throw new WpConfigFileException(
+                "Variable {$string} not defined.",
+                WpConfigFileException::VARIABLE_UNDEFINED
+            );
         }
 
         return $this->variables[$string];

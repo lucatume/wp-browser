@@ -38,10 +38,15 @@ class Strings
     public static function slug(string $string, string $sep = '-', bool $let = false): string
     {
         $unquotedSeps = $let ? ['-', '_', $sep] : [$sep];
-        $seps = implode('',
-            array_map(static function ($s): string {
-                return preg_quote($s, '~');
-            }, array_unique($unquotedSeps)));
+        $seps = implode(
+            '',
+            array_map(
+                static function ($s): string {
+                    return preg_quote($s, '~');
+                },
+                array_unique($unquotedSeps)
+            )
+        );
 
         // Prepend the separator to the first uppercase letter and trim the string.
         $step1 = preg_replace('/(?<![A-Z' . $seps . '])([A-Z])/u', $sep . '$1', trim($string));

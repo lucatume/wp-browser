@@ -402,8 +402,10 @@ class WPLoader extends Module
         $this->factoryStore = new FactoryStore();
 
         if (Debug::isEnabled()) {
-            codecept_debug('WordPress status: ' . json_encode($this->installation->report(),
-                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            codecept_debug('WordPress status: ' . json_encode(
+                $this->installation->report(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            ));
         }
     }
 
@@ -560,8 +562,10 @@ class WPLoader extends Module
 
         $jobs = array_combine(
             array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
-            array_map(static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
-                $plugins)
+            array_map(
+                static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
+                $plugins
+            )
         );
 
         /** @var string $stylesheet */
@@ -715,7 +719,6 @@ class WPLoader extends Module
                 " but the WordPress installation at {$dir} is not configured."
             );
         }
-
     }
 
     private function disableUpdates(): void

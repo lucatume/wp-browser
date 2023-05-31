@@ -54,8 +54,10 @@ class InstallationException extends Exception
     public static function becauseWordPressMultsiteIsNotInstalled(bool $isSubdomainInstall): self
     {
         if ($isSubdomainInstall) {
-            return new self('WordPress multisite (sub-domain) is not installed.',
-                self::MULTISITE_SUBDOMAIN_NOT_INSTALLED);
+            return new self(
+                'WordPress multisite (sub-domain) is not installed.',
+                self::MULTISITE_SUBDOMAIN_NOT_INSTALLED
+            );
         }
 
         return new self('WordPress multisite (sub-folder) is not installed.', self::MULTISITE_SUBFOLDER_NOT_INSTALLED);
