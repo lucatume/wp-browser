@@ -59,7 +59,8 @@ class Wpbrowser extends Bootstrap
             $this->actorSuffix = $actor;
         }
 
-        $this->say("Bootstrapping <info>Codeception</info> and <info>wp-browser</info> for a <info>{$project->getType()}</info> project ...");
+        $this->say("Bootstrapping <info>Codeception</info> and <info>wp-browser</info> " .
+            "for a <info>{$project->getType()}</info> project ...");
 
         $this->createGlobalConfig();
         $this->say('Created Codeception configuration file <info>codeception.yml</info>.');

@@ -84,7 +84,13 @@ class Version
     }
 
     /**
-     * @return array{wpVersion: string, wpDbVersion: string, tinymceVersion: string, requiredPhpVersion: string, requiredMySqlVersion: string}
+     * @return array{
+     *     wpVersion: string,
+     *     wpDbVersion: string,
+     *     tinymceVersion: string,
+     *     requiredPhpVersion: string,
+     *     requiredMySqlVersion: string
+     * }
      */
     public function toArray(): array
     {

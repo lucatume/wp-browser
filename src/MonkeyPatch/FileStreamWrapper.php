@@ -246,6 +246,7 @@ class FileStreamWrapper
 
     /**
      * @param string|int|array<int,int>|null $value
+     *
      * @throws MonkeyPatchingException
      */
     public function stream_metadata(string $path, int $option, string|int|array|null $value): bool
@@ -335,7 +336,22 @@ class FileStreamWrapper
     }
 
     /**
-     * @return array{dev: int, ino: int, mode: int, nlink: int, uid: int, gid: int, rdev: int, size: int, atime: int, mtime: int, ctime: int, blksize: int, blocks: int}|false
+     * @return array{
+     *     dev: int,
+     *     ino: int,
+     *     mode: int,
+     *     nlink: int,
+     *     uid: int,
+     *     gid: int,
+     *     rdev: int,
+     *     size: int,
+     *     atime: int,
+     *     mtime: int,
+     *     ctime: int,
+     *     blksize: int,
+     *     blocks: int
+     * }|false
+     *
      * @throws ErrorException
      */
     public function url_stat(string $path, int $flags): array|false

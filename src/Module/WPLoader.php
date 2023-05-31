@@ -196,9 +196,12 @@ class WPLoader extends Module
         }
 
         $this->config['domain'] = $this->config['WP_TESTS_DOMAIN'] ?? $this->config['domain'] ?? 'example.org';
-        $this->config['adminEmail'] = $this->config['WP_TESTS_EMAIL'] ?? $this->config['adminEmail'] ?? 'admin@example.org';
+        $this->config['adminEmail'] = $this->config['WP_TESTS_EMAIL']
+            ?? $this->config['adminEmail'] ?? 'admin@example.org';
         $this->config['title'] = $this->config['WP_TESTS_TITLE'] ?? $this->config['title'] ?? 'Test Blog';
-        $this->config['bootstrapActions'] = array_values(array_filter((array)($this->config['bootstrapActions'] ?? [])));
+        $this->config['bootstrapActions'] = array_values(
+            array_filter((array)($this->config['bootstrapActions'] ?? []))
+        );
         $this->config['configFile'] = array_values(array_filter((array)($this->config['configFile'] ?? [])));
 
         $this->config['dump'] = array_filter((array)$this->config['dump']);
@@ -364,15 +367,16 @@ class WPLoader extends Module
             }
 
             $message = sprintf(
-                'The WPLoader module is not being used to only load WordPress, but to also install it.' . PHP_EOL .
+                'The WPLoader module is not being used to only load WordPress, but to also install it.'
+                . PHP_EOL .
                 'The %1$s module is enabled in the suite, and will try to manage the database state interfering with ' .
                 'the WPLoader module.' . PHP_EOL .
                 'Either:' . PHP_EOL .
                 ' - remove or disable the %1$s module from the suite configuration;' . PHP_EOL .
-                ' - or, configure the WPLoader module to only load WordPress, by setting the `loadOnly` configuration ' .
-                'key to `true`;' . PHP_EOL .
-                'If you are using the %1$s module to load a SQL dump file, you can use the `dump` configuration key of ' .
-                'the WPLoader module to load one or more SQL dump files.',
+                ' - or, configure the WPLoader module to only load WordPress, by setting the `loadOnly` ' .
+                'configuration key to `true`;' . PHP_EOL .
+                'If you are using the %1$s module to load a SQL dump file, you can use the `dump` configuration key ' .
+                'of the WPLoader module to load one or more SQL dump files.',
                 $moduleName
             );
 

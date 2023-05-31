@@ -25,7 +25,21 @@ class FileReplacementPatcher implements PatcherInterface
     }
 
     /**
-     * @return array{dev: int, ino: int, mode: int, nlink: int, uid: int, gid: int, rdev: int, size: int, atime: int, mtime: int, ctime: int, blksize: int, blocks: int}|false
+     * @return array{
+     *     dev: int,
+     *     ino: int,
+     *     mode: int,
+     *     nlink: int,
+     *     uid: int,
+     *     gid: int,
+     *     rdev: int,
+     *     size: int,
+     *     atime: int,
+     *     mtime: int,
+     *     ctime: int,
+     *     blksize: int,
+     *     blocks: int
+     * }|false
      */
     public function stat(string $pathname): array|false
     {

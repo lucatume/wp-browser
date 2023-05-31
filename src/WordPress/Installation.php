@@ -217,7 +217,16 @@ class Installation
     }
 
     /**
-     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed, SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     * @return array{
+     *     AUTH_KEY: mixed,
+     *     SECURE_AUTH_KEY: mixed,
+     *     LOGGED_IN_KEY: mixed,
+     *     NONCE_KEY: mixed,
+     *     AUTH_SALT: mixed,
+     *     SECURE_AUTH_SALT: mixed,
+     *     LOGGED_IN_SALT: mixed,
+     *     NONCE_SALT: mixed
+     * }
      */
     public function getSalts(): array
     {

@@ -6,7 +6,8 @@ namespace lucatume\WPBrowser\Utils;
 
 class Random
 {
-    private static string $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
+    private static string $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
+    '!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
     private static int $saltCharsCount = 92;
     private static string $alphaChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     private static int $alphaCharsCount = 52;

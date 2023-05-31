@@ -91,10 +91,13 @@ class StderrStream
         $currentError = null;
         $isNumericStackTrace = false;
 
-        $typePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*) in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
-        $typeStartPattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*)$/';
+        $typePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+            'PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*) in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
+        $typeStartPattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+            'PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*)$/';
         $typeEndPattern = '/ in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
-        $dateTracePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] PHP\\s+\\d+\\. (?<call>.+?)\\((?<args>.*?)\\) (?<file>.+?):(?<line>\\d+)$/';
+        $dateTracePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+            'PHP\\s+\\d+\\. (?<call>.+?)\\((?<args>.*?)\\) (?<file>.+?):(?<line>\\d+)$/';
         $numberTracePattern = '/^#\\d+ /';
         $numberTraceInlinePattern = '/^#\\d+ (?<file>.+?)\\((?<line>\\d+)\\): (?<call>.+?)\\((?<args>.*?)\\)$/';
         $closureTracePattern = '/^#\\d+ (?<closure>closure:\\/\\/.*)$/';

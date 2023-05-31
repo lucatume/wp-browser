@@ -370,7 +370,7 @@ class WPDb extends Db
      *
      * @throws JsonException If there's an issue debugging the failure.
      */
-    public function dontSeeOptionInDatabase(array|string $criteriaOrName, $value = null): void
+    public function dontSeeOptionInDatabase(array|string $criteriaOrName, mixed $value = null): void
     {
         $criteria = $this->normalizeOptionCriteria($criteriaOrName, $value);
         $tableName = $this->grabPrefixedTableNameFor('options');
@@ -2026,7 +2026,7 @@ class WPDb extends Db
      *
      * @throws Exception If there's an issue removing the rows.
      */
-    public function dontHaveTermInDatabase(array $criteria, $purgeMeta = true): void
+    public function dontHaveTermInDatabase(array $criteria, bool $purgeMeta = true): void
     {
         try {
             $termRelationshipsKeys = ['term_taxonomy_id'];
@@ -4102,7 +4102,7 @@ class WPDb extends Db
      *
      * @throws JsonException If there's any issue debugging the query.
      */
-    public function dontSeeTableInDatabase($table): void
+    public function dontSeeTableInDatabase(string $table): void
     {
         $count = $this->_seeTableInDatabase($table);
         $this->assertEmpty($count, "Found {$count} matches for the {$table} table in database; expected none.");

@@ -30,6 +30,7 @@ class Control
      *     composerAutoloadPath?: ?string,
      *     composerBinDir?: ?string
      * } $controlArray
+     *
      * @throws ConfigurationException
      */
     public function __construct(array $controlArray)
@@ -46,7 +47,8 @@ class Control
             'cwd' => $cwd,
             'codeceptionRootDir' => (string)($controlArray['codeceptionRootDir'] ?? codecept_root_dir()),
             'codeceptionConfig' => $config,
-            'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath'] ?? $GLOBALS['_composer_autoload_path'] ?? null),
+            'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath']
+                ?? $GLOBALS['_composer_autoload_path'] ?? null),
             'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null)
         ];
     }

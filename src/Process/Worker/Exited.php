@@ -8,8 +8,13 @@ use lucatume\WPBrowser\Process\WorkerException;
 
 class Exited implements WorkerInterface
 {
-    public function __construct(private int $exitCode, private string $id, private mixed $returnValue, private string $stdout, private string $stderr)
-    {
+    public function __construct(
+        private int $exitCode,
+        private string $id,
+        private mixed $returnValue,
+        private string $stdout,
+        private string $stderr
+    ) {
     }
 
     /**

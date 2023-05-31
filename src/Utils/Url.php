@@ -9,7 +9,16 @@ use lucatume\WPBrowser\Generators\User;
 class Url
 {
     /**
-     * @var array{scheme: string, host: string, port: int, user: string, pass: string, path: string, query: string, fragment: string}
+     * @var array{
+     *     scheme: string,
+     *     host: string,
+     *     port: int,
+     *     user: string,
+     *     pass: string,
+     *     path: string,
+     *     query: string,
+     *     fragment: string
+     * }
      */
     private static array $parserUrlDefaults = [
         'scheme' => '',

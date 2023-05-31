@@ -58,7 +58,8 @@ class WPQueries extends Module
         if ($wpdbInstance === null) {
             throw new ModuleException(
                 __CLASS__,
-                'The wpdb instance is not available: either provide it or make sure to load WordPress before using this module.'
+                'The wpdb instance is not available: either provide it or make sure to load WordPress ' .
+                'before using this module.'
             );
         }
         $this->wpdb = $wpdbInstance;
@@ -231,7 +232,8 @@ class WPQueries extends Module
     public function assertQueriesByStatement(string $statement, string $message = ''): void
     {
         $this->readQueries();
-        $message = $message ?: ('Failed asserting that queries beginning with statement [' . $statement . '] were made.');
+        $message = $message ?:
+            ('Failed asserting that queries beginning with statement [' . $statement . '] were made.');
         $statementIterator = new MainStatementQueriesFilter(new ArrayIterator($this->filteredQueries), $statement);
         Assert::assertNotEmpty(iterator_to_array($statementIterator, false), $message);
     }

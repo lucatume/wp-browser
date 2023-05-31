@@ -118,7 +118,9 @@ class WPConfigFile
             $values = $returnValue;
 
             if (!(is_array($values) && isset($values['constants'], $values['variables']))) {
-                throw new ProcessException("Inclusion of wp-config file {$this->wpConfigFilePath} did not return expected values.");
+                throw new ProcessException(
+                    "Inclusion of wp-config file {$this->wpConfigFilePath} did not return expected values."
+                );
             }
 
             $this->constants = $values['constants'];

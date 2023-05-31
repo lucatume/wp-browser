@@ -70,7 +70,7 @@ class Date
      *
      * @param int $now The mock "now" timestamp.
      */
-    public static function _injectNow($now): void
+    public static function _injectNow(int $now): void
     {
         self::$time = $now;
     }
@@ -84,7 +84,7 @@ class Date
      *
      * @return string A date in WordPress database format, 'Y-m-d H:i:s'
      */
-    public static function fromString($strtotime): string
+    public static function fromString(string $strtotime): string
     {
         $timestamp = strtotime($strtotime);
 

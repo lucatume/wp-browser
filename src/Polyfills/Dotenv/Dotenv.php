@@ -41,7 +41,7 @@ class Dotenv
      * @param string $rootDir The absolute path to the directory to load the env file from.
      * @param string $envFile The basename of the env file to load.
      */
-    public function __construct($rootDir, $envFile = '.env')
+    public function __construct(string $rootDir, string $envFile = '.env')
     {
         $this->envFilePath = $this->getEnvFilePath($rootDir, $envFile);
 
@@ -61,7 +61,7 @@ class Dotenv
      *
      * @return string The absolute path to the environment file to load.
      */
-    protected function getEnvFilePath($rootDir, $envFile): string
+    protected function getEnvFilePath(string $rootDir, string $envFile): string
     {
         return rtrim($rootDir, '\\/') . '/' . trim($envFile, '\\/');
     }

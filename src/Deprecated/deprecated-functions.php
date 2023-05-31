@@ -79,8 +79,18 @@ namespace tad\WPBrowser {
     }
 
     /**
+     * @param array{
+     *     type: string,
+     *     host: string,
+     *     port: string,
+     *     unix_socket: string,
+     *     dbname: string,
+     *     file: string,
+     *     version: string,
+     *     memory: bool
+     * } $dbDsnMap
+     *
      * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnString instead.
-     * @param array{type: string, host: string, port: string, unix_socket: string, dbname: string, file: string, version: string, memory: bool} $dbDsnMap
      */
     function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {

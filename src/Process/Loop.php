@@ -405,7 +405,13 @@ class Loop
     public function removeWorker(string $workerId): ?WorkerInterface
     {
         if ($worker = $this->getWorkerById($workerId)) {
-            unset($this->started[$workerId], $this->running[$workerId], $this->exited[$workerId], $this->results[$workerId], $this->workers[$workerId]);
+            unset(
+                $this->started[$workerId],
+                $this->running[$workerId],
+                $this->exited[$workerId],
+                $this->results[$workerId],
+                $this->workers[$workerId]
+            );
 
             if ($worker instanceof Running) {
                 return $worker->terminate();

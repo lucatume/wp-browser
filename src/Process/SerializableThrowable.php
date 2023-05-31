@@ -37,7 +37,14 @@ class SerializableThrowable
     }
 
     /**
-     * @return array{throwable: Throwable, message: string, code: int, file: string, line: int, trace: array<int,array<string,mixed>>}
+     * @return array{
+     *     throwable: Throwable,
+     *     message: string,
+     *     code: int,
+     *     file: string,
+     *     line: int,
+     *     trace: array<int,array<string,mixed>>
+     * }
      */
     public function __serialize(): array
     {
@@ -52,7 +59,14 @@ class SerializableThrowable
     }
 
     /**
-     * @param array{throwable: Throwable, message: string, code: int, file: string, line: int, trace: array<int,array<string,mixed>>} $data
+     * @param array{
+     *     throwable: Throwable,
+     *     message: string,
+     *     code: int,
+     *     file: string,
+     *     line: int,
+     *     trace: array<int,array<string,mixed>>
+     * } $data
      * @throws ReflectionException
      */
     public function __unserialize(array $data): void

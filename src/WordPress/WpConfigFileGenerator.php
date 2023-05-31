@@ -66,8 +66,10 @@ class WpConfigFileGenerator
 
     private function setSalts(ConfigurationData $configurationData): self
     {
+        $saltDefinitionPattern = "/define\( '(?<const>(?:AUTH|SECURE_AUTH|LOGGED_IN|NONCE)_(?:KEY|SALT))'," .
+            "\\s*'put your unique phrase here' \);/u";
         $this->wpConfigFileContents = (string)preg_replace_callback(
-            "/define\( '(?<const>(?:AUTH|SECURE_AUTH|LOGGED_IN|NONCE)_(?:KEY|SALT))',\\s*'put your unique phrase here' \);/u",
+            $saltDefinitionPattern,
             static function (array $matches) use ($configurationData): string {
                 $value = match ($matches['const']) {
                     'AUTH_KEY' => $configurationData->getAuthKey(),

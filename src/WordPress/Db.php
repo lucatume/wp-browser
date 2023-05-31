@@ -173,6 +173,7 @@ class Db
 
     /**
      * @param array<string, mixed> $params
+     *
      * @throws DbException
      */
     public function query(string $query, array $params = []): int
@@ -205,7 +206,8 @@ class Db
     {
         $table = $this->getTablePrefix() . 'options';
         return $this->query(
-            "INSERT INTO $table (option_name, option_value) VALUES (:name, :value) ON DUPLICATE KEY UPDATE option_value = :value",
+            "INSERT INTO $table (option_name, option_value) VALUES (:name, :value) "
+            . 'ON DUPLICATE KEY UPDATE option_value = :value',
             ['value' => Serializer::maybeSerialize($value), 'name' => $name]
         );
     }
@@ -223,6 +225,7 @@ class Db
 
     /**
      * @param array<string, mixed> $parameters
+     *
      * @throws DbException
      */
     private function fetchFirst(string $query, array $parameters = [], mixed $default = null): mixed

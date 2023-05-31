@@ -24,6 +24,7 @@ class Copier extends Extension
 {
     /**
      * A map of the events and callbacks the extension hooks on.
+     *
      * @var array<string,string>
      */
     public static array $events = [
@@ -34,7 +35,7 @@ class Copier extends Extension
     /**
      * Copier constructor.
      *
-     * @param array<string,mixed> $config The extension configuration.
+     * @param array<string,mixed> $config  The extension configuration.
      * @param array<string,mixed> $options The extension options.
      *
      * @throws ExtensionException
@@ -112,11 +113,17 @@ class Copier extends Extension
         $destinationDir = dirname($destination);
 
         if (!(is_dir($destinationDir))) {
-            throw new ExtensionException($this, sprintf('Destination parent dir [%s] does not exist.', $destinationDir));
+            throw new ExtensionException(
+                $this,
+                sprintf('Destination parent dir [%s] does not exist.', $destinationDir)
+            );
         }
 
         if (!is_writable($destinationDir)) {
-            throw new ExtensionException($this, sprintf('Destination parent dir [%s] is not writable.', $destinationDir));
+            throw new ExtensionException(
+                $this,
+                sprintf('Destination parent dir [%s] is not writable.', $destinationDir)
+            );
         }
 
         if (file_exists($destination)) {
@@ -147,7 +154,7 @@ class Copier extends Extension
      * Copies one source to one destination.
      *
      * @param string $destination The absolute path to the destination.
-     * @param string $source The absolute path to the source.
+     * @param string $source      The absolute path to the source.
      *
      *
      * @throws ExtensionException If the copy from the source to the destination fails.
