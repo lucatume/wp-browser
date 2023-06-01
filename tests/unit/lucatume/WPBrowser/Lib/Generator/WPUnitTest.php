@@ -2,10 +2,11 @@
 
 namespace lucatume\WPBrowser\Lib\Generator;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\TestCase\WPTestCase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
-class WPUnitTest extends \Codeception\Test\Unit
+class WPUnitTest extends Unit
 {
 
     use SnapshotAssertions;

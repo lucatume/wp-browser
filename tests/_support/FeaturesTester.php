@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Codeception\Actor;
+
 
 /**
  * Inherited Methods
@@ -18,7 +20,7 @@ declare(strict_types=1);
  *
  * @SuppressWarnings(PHPMD)
 */
-class FeaturesTester extends \Codeception\Actor
+class FeaturesTester extends Actor
 {
     use _generated\FeaturesTesterActions;
 

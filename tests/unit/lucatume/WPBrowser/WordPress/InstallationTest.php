@@ -9,6 +9,7 @@ use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use RuntimeException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class InstallationTest extends Unit
@@ -196,7 +197,7 @@ class InstallationTest extends Unit
         $setupInstallation = Installation::scaffold($wpRoot, '4.9.8', true, false)
             ->configure(new Db($dbName, $dbUser, $dbPassword, $dbHost));
         if (!rename($wpRoot . '/wp-config.php', $dir . '/wp-config.php')) {
-            throw new \RuntimeException('Could not move wp-config.php up.');
+            throw new RuntimeException('Could not move wp-config.php up.');
         }
 
         // Update the ABSPATH to point to the /public directory.

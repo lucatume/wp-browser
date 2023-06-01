@@ -3,6 +3,7 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -12,7 +13,7 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
-class ScaffoldedTest extends \Codeception\Test\Unit
+class ScaffoldedTest extends Unit
 {
     use SnapshotAssertions;
 
@@ -547,7 +548,7 @@ PHP;
     public function should_throw_if_trying_to_update_option(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        $wpConfigPath = Installation::scaffold($wpRootDir, '6.1.1');
+        Installation::scaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -555,5 +556,25 @@ PHP;
         $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
 
         $scaffolded->updateOption('test', 'value');
+    }
+
+    /**
+     * It should throw if trying to execute Closure in WordPress
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_execute_closure_in_word_press(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+
+        $scaffolded->executeClosureInWordPress(function () {
+            return 'test';
+        });
     }
 }

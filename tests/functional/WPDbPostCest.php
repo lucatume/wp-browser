@@ -11,13 +11,13 @@ class WPDbPostCest
      */
     protected $now;
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
         $this->now = time();
         Date::_injectNow($this->now);
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -25,7 +25,7 @@ class WPDbPostCest
      * @test
      * it should return the post ID when inserting a post
      */
-    public function it_should_return_the_post_id_when_inserting_a_post(FunctionalTester $I)
+    public function it_should_return_the_post_id_when_inserting_a_post(FunctionalTester $I): void
     {
         $post_id = $I->havePostInDatabase();
 
@@ -36,20 +36,20 @@ class WPDbPostCest
      * @test
      * it should return different ids when inserting more posts
      */
-    public function it_should_return_different_ids_when_inserting_more_posts(FunctionalTester $I)
+    public function it_should_return_different_ids_when_inserting_more_posts(FunctionalTester $I): void
     {
         $ids = array_map(function () use ($I) {
             return $I->havePostInDatabase();
         }, range(0, 4));
 
-        $I->assertEquals(5, count(array_unique($ids)));
+        $I->assertCount(5, array_unique($ids));
     }
 
     /**
      * @test
      * it should allow inserting a plain post in the database
      */
-    public function it_should_allow_inserting_a_plain_post_in_the_database(FunctionalTester $I)
+    public function it_should_allow_inserting_a_plain_post_in_the_database(FunctionalTester $I): void
     {
         $post_id = $I->havePostInDatabase();
         $table = $I->grabPostsTableName();
@@ -89,7 +89,7 @@ class WPDbPostCest
      * @test
      * it should allow overriding default values
      */
-    public function it_should_allow_overriding_default_values(FunctionalTester $I)
+    public function it_should_allow_overriding_default_values(FunctionalTester $I): void
     {
         $table = $I->grabPostsTableName();
         Date::_injectNow(time() - 300);
@@ -129,13 +129,13 @@ class WPDbPostCest
      * @test
      * it should allow inserting many posts and return an array of ids
      */
-    public function it_should_allow_inserting_many_posts_and_return_an_array_of_ids(FunctionalTester $I)
+    public function it_should_allow_inserting_many_posts_and_return_an_array_of_ids(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(5);
 
-        $I->assertEquals(5, count(array_unique($ids)));
+        $I->assertCount(5, array_unique($ids));
         array_map(function ($id) use ($I) {
-            $I->assertTrue(is_int($id));
+            $I->assertIsInt($id);
         }, $ids);
     }
 
@@ -143,7 +143,7 @@ class WPDbPostCest
      * @test
      * it should allow overriding defaults when inserting many
      */
-    public function it_should_allow_overriding_defaults_when_inserting_many(FunctionalTester $I)
+    public function it_should_allow_overriding_defaults_when_inserting_many(FunctionalTester $I): void
     {
         $table = $I->grabPostsTableName();
         Date::_injectNow(time() - 300);
@@ -185,7 +185,7 @@ class WPDbPostCest
      * @test
      * it should allow overriding with n key when having many posts
      */
-    public function it_should_allow_overriding_with_n_key_when_having_many_posts(FunctionalTester $I)
+    public function it_should_allow_overriding_with_n_key_when_having_many_posts(FunctionalTester $I): void
     {
         $table = $I->grabPostsTableName();
         Date::_injectNow(time() - 300);
@@ -229,7 +229,7 @@ class WPDbPostCest
      * @test
      * it should allow inserting post meta when inserting a post
      */
-    public function it_should_allow_inserting_post_meta_when_inserting_a_post(FunctionalTester $I)
+    public function it_should_allow_inserting_post_meta_when_inserting_a_post(FunctionalTester $I): void
     {
         $meta = ['one' => 'meta one', 'two' => 'meta two'];
         $id = $I->havePostInDatabase(['meta' => $meta]);
@@ -247,7 +247,7 @@ class WPDbPostCest
      * @test
      * it should allow having meta in many posts
      */
-    public function it_should_allow_having_meta_in_many_posts(FunctionalTester $I)
+    public function it_should_allow_having_meta_in_many_posts(FunctionalTester $I): void
     {
         $meta = ['one' => 'meta one', 'two' => 'meta two'];
         $ids = $I->haveManyPostsInDatabase(3, ['meta' => $meta]);
@@ -268,7 +268,7 @@ class WPDbPostCest
      * @test
      * it should allow having numbered meta for many posts
      */
-    public function it_should_allow_having_numbered_meta_for_many_posts(FunctionalTester $I)
+    public function it_should_allow_having_numbered_meta_for_many_posts(FunctionalTester $I): void
     {
         $meta = ['one_{{n}}' => 'meta {{n}}', 'two_{{n}}' => '{{n}} meta {{n}}'];
         $ids = $I->haveManyPostsInDatabase(3, ['meta' => $meta]);
@@ -289,7 +289,7 @@ class WPDbPostCest
      * @test
      * it should serialize meta value when adding array post meta
      */
-    public function it_should_serialize_meta_value_when_adding_array_post_meta(FunctionalTester $I)
+    public function it_should_serialize_meta_value_when_adding_array_post_meta(FunctionalTester $I): void
     {
         $id = $I->havePostInDatabase();
 
@@ -307,7 +307,7 @@ class WPDbPostCest
      * @test
      * it should allow inserting post meta when inserting a post using meta input
      */
-    public function it_should_allow_inserting_post_meta_when_inserting_a_post_using_meta_input(FunctionalTester $I)
+    public function it_should_allow_inserting_post_meta_when_inserting_a_post_using_meta_input(FunctionalTester $I): void
     {
         $meta = ['one' => 'meta one', 'two' => 'meta two'];
         $id = $I->havePostInDatabase(['meta_input' => $meta]);
@@ -325,7 +325,7 @@ class WPDbPostCest
      * @test
      * it should allow having meta in many posts using meta input
      */
-    public function it_should_allow_having_meta_in_many_posts_using_meta_input(FunctionalTester $I)
+    public function it_should_allow_having_meta_in_many_posts_using_meta_input(FunctionalTester $I): void
     {
         $meta = ['one' => 'meta one', 'two' => 'meta two'];
         $ids = $I->haveManyPostsInDatabase(3, ['meta_input' => $meta]);
@@ -346,7 +346,7 @@ class WPDbPostCest
      * @test
      * it should allow having numbered meta for many posts using meta_input
      */
-    public function it_should_allow_having_numbered_meta_for_many_posts_using_meta_input(FunctionalTester $I)
+    public function it_should_allow_having_numbered_meta_for_many_posts_using_meta_input(FunctionalTester $I): void
     {
         $meta = ['one_{{n}}' => 'meta {{n}}', 'two_{{n}}' => '{{n}} meta {{n}}'];
         $ids = $I->haveManyPostsInDatabase(3, ['meta_input' => $meta]);
@@ -368,7 +368,7 @@ class WPDbPostCest
      *
      * @test
      */
-    public function should_allow_getting_a_post_meta_from_the_database(FunctionalTester $I)
+    public function should_allow_getting_a_post_meta_from_the_database(FunctionalTester $I): void
     {
         $id = $I->havePostInDatabase([
             'meta_input' => [

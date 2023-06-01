@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\Project;
 
+use InvalidArgumentException;
+
 class ProjectFactory
 {
     public static function fromDir(string $workDir): ProjectInterface
@@ -25,7 +27,7 @@ class ProjectFactory
             'plugin' => new PluginProject($workDir),
             'theme' => new ThemeProject($workDir),
             'site' => new SiteProject(),
-            default => throw new \InvalidArgumentException("Unknown project type $projectType."),
+            default => throw new InvalidArgumentException("Unknown project type $projectType."),
         };
     }
 }

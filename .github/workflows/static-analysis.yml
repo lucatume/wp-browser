@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-name: "Integrate"
+name: "Static Analysis"
 
 on:  # yamllint disable-line rule:truthy
     push:
@@ -41,8 +41,8 @@ jobs:
             name: "Check PSR-4 mapping"
             run: "composer dump-autoload --no-interaction --optimize --strict-psr"
         -
-            name: "Install WordPress extension for PHPStan"
-            run: "composer require --dev szepeviktor/phpstan-wordpress"
+            name: "Run PHPHStan"
+            run: "composer run stan"
         -
-            name: "Perform static analysis"
-            run: "composer exec -- phpstan"
+            name: "Run PHP Code Sniffer"
+            run: "composer run cs"

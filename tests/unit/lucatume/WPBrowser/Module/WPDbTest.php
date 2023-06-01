@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
@@ -114,7 +115,7 @@ SQL;
     {
         $path = __DIR__ . '/dump.sql';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ModuleConfigException::class);
 
         $sut = $this->module();
         $sut->_initialize();
@@ -135,7 +136,7 @@ SQL;
             return $file !== $filepath && is_readable($file);
         }, true);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ModuleConfigException::class);
 
         $sut = $this->module();
         $sut->_initialize();

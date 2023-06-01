@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Codeception\Actor;
+
 
 /**
  * Inherited Methods
@@ -18,7 +20,7 @@ declare(strict_types=1);
  *
  * @SuppressWarnings(PHPMD)
 */
-class ScenariosTester extends \Codeception\Actor
+class ScenariosTester extends Actor
 {
     use _generated\ScenariosTesterActions;
 

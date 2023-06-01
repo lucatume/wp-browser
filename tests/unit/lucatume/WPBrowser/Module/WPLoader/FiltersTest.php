@@ -3,9 +3,11 @@
 namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPLoader\Filters;
+use stdClass;
 
-class FiltersTest extends \Codeception\Test\Unit
+class FiltersTest extends Unit
 {
     /**
      * It should allow setting filters to remove
@@ -166,18 +168,18 @@ class FiltersTest extends \Codeception\Test\Unit
         ], $formatted);
     }
 
-    public function badFilters()
+    public function badFilters(): array
     {
         return [
-            [ [ 'foo', new \stdClass() ] ],
-            [ [ new \stdClass(), 'foo' ] ],
-            [ [ '', new \stdClass() ] ],
+            [ [ 'foo', new stdClass() ] ],
+            [ [ new stdClass(), 'foo' ] ],
+            [ [ '', new stdClass() ] ],
             [ [ '', '' ] ],
             [ [ '' ] ],
             [ [] ],
             [ [ 'foo', [ 'bar' ] ] ],
-            [ [ 'foo', [ 'bar', new \stdClass() ] ] ],
-            [ [ 'foo', [ new \stdClass(), 'bar' ] ] ],
+            [ [ 'foo', [ 'bar', new stdClass() ] ] ],
+            [ [ 'foo', [ new stdClass(), 'bar' ] ] ],
             [ [ 'foo', 'bar', 10, 12, 23 ] ],
         ];
     }

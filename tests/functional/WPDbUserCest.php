@@ -15,11 +15,11 @@ class WPDbUserCest
         '' => 0 // No role for the site.
     ];
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -27,16 +27,15 @@ class WPDbUserCest
      * @test
      * it should insert a user in the database
      */
-    public function it_should_insert_a_user_in_the_database(FunctionalTester $I)
+    public function it_should_insert_a_user_in_the_database(FunctionalTester $I): void
     {
-        $I->wantTo('insert a user in the database with generated defaults');
         $id = $I->haveUserInDatabase('Luca');
         $criteria = [
-            'user_login' => 'luca',
+            'user_login' => 'Luca',
             'user_pass' => 'Luca',
             'user_nicename' => 'Luca',
-            'user_email' => 'luca@example.com',
-            'user_url' => 'http://luca.example.com',
+            'user_email' => 'Luca@example.com',
+            'user_url' => 'https://Luca.example.com',
             'user_status' => 0,
             'user_activation_key' => '',
             'display_name' => 'Luca',
@@ -51,21 +50,22 @@ class WPDbUserCest
      * @test
      * it should insert a user in the database allowing for user defaults override
      */
-    public function it_should_insert_a_user_in_the_database_allowing_for_user_defaults_override(FunctionalTester $I)
+    public function it_should_insert_a_user_in_the_database_allowing_for_user_defaults_override(FunctionalTester $I): void
     {
-        $I->wantTo('insert a user in the database overriding defaults');
-        $table = $I->grabPrefixedTableNameFor('users');
         $overrides = [
             'user_pass' => 'luca12345678',
             'user_nicename' => 'lucatume',
             'user_email' => 'luca@theaveragedev.com',
             'user_url' => 'http://theaveragedev.com',
-            'user_status' => 1,
+            'user_status' => '1',
             'user_activation_key' => 'foo',
             'display_name' => 'theAverageDev',
         ];
         $I->haveUserInDatabase('Luca', 'subscriber', $overrides);
 
+        foreach ($overrides as $field => $value) {
+            $I->seeUserInDatabase(['user_login' => 'Luca', $field => $value]);
+        }
         $I->seeUserInDatabase($overrides);
     }
 
@@ -73,7 +73,7 @@ class WPDbUserCest
      * @test
      * it should set a user role to subscriber by default
      */
-    public function it_should_set_a_user_role_to_subscriber_by_default(FunctionalTester $I)
+    public function it_should_set_a_user_role_to_subscriber_by_default(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -89,7 +89,7 @@ class WPDbUserCest
      * @test
      * it should set the user level to 1 by default
      */
-    public function it_should_set_the_user_level_to_0_by_default(FunctionalTester $I)
+    public function it_should_set_the_user_level_to_0_by_default(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -101,7 +101,7 @@ class WPDbUserCest
         $I->seeUserMetaInDatabase($criteria);
     }
 
-    public function boolMetaKeys()
+    public function boolMetaKeys(): array
     {
         return [
             'rich_editing'         => [ 'key' => 'rich_editing', 'value' => 'true' ],
@@ -114,7 +114,7 @@ class WPDbUserCest
     /**
      * @dataProvider boolMetaKeys
      */
-    public function it_should_set_bool_meta_to_true_false_by_default(FunctionaLTester $I, Example $data)
+    public function it_should_set_bool_meta_to_true_false_by_default(FunctionaLTester $I, Example $data): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -130,7 +130,7 @@ class WPDbUserCest
      * @test
      * it should allow overriding the default user level and role
      */
-    public function it_should_allow_overriding_the_default_user_level_and_role(FunctionalTester $I)
+    public function it_should_allow_overriding_the_default_user_level_and_role(FunctionalTester $I): void
     {
         foreach ($this->rolesAndLevels as $role => $level) {
             $I->haveUserInDatabase('Luca' . $role, $role);
@@ -152,7 +152,7 @@ class WPDbUserCest
      * @test
      * it should allow setting the user role on a blog base
      */
-    public function it_should_allow_setting_the_user_role_on_a_blog_base(FunctionalTester $I)
+    public function it_should_allow_setting_the_user_role_on_a_blog_base(FunctionalTester $I): void
     {
         $blogIdsAndRoles = array_combine(
             range(1, count($this->rolesAndLevels)),
@@ -180,7 +180,7 @@ class WPDbUserCest
      * @test
      * it should allow setting a user meta value
      */
-    public function it_should_allow_setting_a_user_meta_value(FunctionalTester $I)
+    public function it_should_allow_setting_a_user_meta_value(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -193,7 +193,7 @@ class WPDbUserCest
      * @test
      * it should serialize object user meta in database
      */
-    public function it_should_serialize_object_user_meta_in_database(FunctionalTester $I)
+    public function it_should_serialize_object_user_meta_in_database(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -207,7 +207,7 @@ class WPDbUserCest
      * @test
      * it should allow seeing user in database
      */
-    public function it_should_allow_seeing_user_in_database(FunctionalTester $I)
+    public function it_should_allow_seeing_user_in_database(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $I->seeUserInDatabase(['user_login' => 'Luca']);
@@ -221,7 +221,7 @@ class WPDbUserCest
      * @test
      * it should allow seeing a user meta in the database
      */
-    public function it_should_allow_seeing_a_user_meta_in_the_database(FunctionalTester $I)
+    public function it_should_allow_seeing_a_user_meta_in_the_database(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -234,7 +234,7 @@ class WPDbUserCest
      * @test
      * it should remove a user from the database
      */
-    public function it_should_remove_a_user_from_the_database(FunctionalTester $I)
+    public function it_should_remove_a_user_from_the_database(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -258,7 +258,7 @@ class WPDbUserCest
      * @test
      * it should allow deleting a user by login
      */
-    public function it_should_allow_deleting_a_user_by_login(FunctionalTester $I)
+    public function it_should_allow_deleting_a_user_by_login(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -282,7 +282,7 @@ class WPDbUserCest
      * @test
      * it should allow deleting a user meta
      */
-    public function it_should_allow_deleting_a_user_meta(FunctionalTester $I)
+    public function it_should_allow_deleting_a_user_meta(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -298,7 +298,7 @@ class WPDbUserCest
      * @test
      * it should not throw if trying to delete non existing user
      */
-    public function it_should_not_throw_if_trying_to_delete_non_existing_user(FunctionalTester $I)
+    public function it_should_not_throw_if_trying_to_delete_non_existing_user(FunctionalTester $I): void
     {
         $I->dontHaveUserInDatabase(23);
         $I->dontHaveUserInDatabase('Foo');
@@ -308,7 +308,7 @@ class WPDbUserCest
      * @test
      * it should not throw if trying to delete non existing meta in database
      */
-    public function it_should_not_throw_if_trying_to_delete_non_existing_meta_in_database(FunctionalTester $I)
+    public function it_should_not_throw_if_trying_to_delete_non_existing_meta_in_database(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -320,7 +320,7 @@ class WPDbUserCest
      * @test
      * it should allow adding multiple user meta
      */
-    public function it_should_allow_adding_multiple_user_meta(FunctionalTester $I)
+    public function it_should_allow_adding_multiple_user_meta(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -331,7 +331,7 @@ class WPDbUserCest
 
         $meta = $I->grabUserMetaFromDatabase($userId, 'some_key');
 
-        $I->assertEquals(3, count($meta));
+        $I->assertCount(3, $meta);
         $I->assertEquals('one', $meta[0]);
         $I->assertEquals('two', $meta[1]);
         $I->assertEquals('three', $meta[2]);
@@ -341,7 +341,7 @@ class WPDbUserCest
      * @test
      * it should allow grabbing a user unique meta
      */
-    public function it_should_allow_grabbing_a_user_unique_meta(FunctionalTester $I)
+    public function it_should_allow_grabbing_a_user_unique_meta(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -349,7 +349,7 @@ class WPDbUserCest
 
         $meta = $I->grabUserMetaFromDatabase($userId, 'some_key');
 
-        $I->assertEquals(1, count($meta));
+        $I->assertCount(1, $meta);
         $I->assertEquals('some_value', $meta[0]);
     }
 
@@ -357,7 +357,7 @@ class WPDbUserCest
      * @test
      * it should remove all user meta
      */
-    public function it_should_remove_all_user_meta(FunctionalTester $I)
+    public function it_should_remove_all_user_meta(FunctionalTester $I): void
     {
         $I->haveUserInDatabase('Luca');
         $userId = $I->grabUserIdFromDatabase('Luca');
@@ -379,12 +379,12 @@ class WPDbUserCest
      * @test
      * it should allow having many users in the database
      */
-    public function it_should_allow_having_many_users_in_the_database(FunctionalTester $I)
+    public function it_should_allow_having_many_users_in_the_database(FunctionalTester $I): void
     {
         $ids = $I->haveManyUsersInDatabase(5, 'user');
 
         for ($i = 0; $i < 5; $i++) {
-            $I->assertTrue(is_int($ids[$i]));
+            $I->assertIsInt($ids[$i]);
             $I->seeUserInDatabase(['ID' => $ids[$i], 'user_login' => 'user_' . $i]);
         }
     }
@@ -393,12 +393,12 @@ class WPDbUserCest
      * @test
      * it should replace number placeholder when having many users
      */
-    public function it_should_replace_number_placeholder_when_having_many_users(FunctionalTester $I)
+    public function it_should_replace_number_placeholder_when_having_many_users(FunctionalTester $I): void
     {
         $ids = $I->haveManyUsersInDatabase(5, 'user_{{n}}_login');
 
         for ($i = 0; $i < 5; $i++) {
-            $I->assertTrue(is_int($ids[$i]));
+            $I->assertIsInt($ids[$i]);
             $I->seeUserInDatabase(['ID' => $ids[$i], 'user_login' => 'user_' . $i . '_login']);
         }
     }
@@ -407,7 +407,7 @@ class WPDbUserCest
      * @test
      * it should allow having user meta while having user
      */
-    public function it_should_allow_having_user_meta_while_having_user(FunctionalTester $I)
+    public function it_should_allow_having_user_meta_while_having_user(FunctionalTester $I): void
     {
         $userId = $I->haveUserInDatabase('Luca', 'editor', ['meta' => ['foo' => 'bar', 'one' => 2]]);
 
@@ -419,7 +419,7 @@ class WPDbUserCest
      * @test
      * it should allow having user meta while having many users
      */
-    public function it_should_allow_having_user_meta_while_having_many_users(FunctionalTester $I)
+    public function it_should_allow_having_user_meta_while_having_many_users(FunctionalTester $I): void
     {
         $userIds = $I->haveManyUsersInDatabase(5, 'Luca', 'editor', ['meta' => ['foo' => 'bar', 'one' => 2]]);
 
@@ -433,7 +433,7 @@ class WPDbUserCest
      * @test
      * it should allow having meta while having many users with number replaced
      */
-    public function it_should_allow_having_meta_while_having_many_users_with_number_replaced(FunctionalTester $I)
+    public function it_should_allow_having_meta_while_having_many_users_with_number_replaced(FunctionalTester $I): void
     {
         $userIds = $I->haveManyUsersInDatabase(5, 'Luca', 'editor', [
             'meta' => [
@@ -457,7 +457,7 @@ class WPDbUserCest
      *
      * @test
      */
-    public function should_allow_deleting_a_user_by_email(FunctionalTester $I)
+    public function should_allow_deleting_a_user_by_email(FunctionalTester $I): void
     {
         $I->haveManyUsersInDatabase(3, 'Luca', 'editor', ['user_email' => 'luca@theaveragedev.com']);
         $I->assertCount(3, $I->grabAllFromDatabase($I->grabUsersTableName(), 'ID', ['user_email' => 'luca@theaveragedev.com']));
@@ -472,7 +472,7 @@ class WPDbUserCest
      *
      * @test
      */
-    public function should_allow_assigning_a_user_multiple_roles_during_creation(FunctionalTester $I)
+    public function should_allow_assigning_a_user_multiple_roles_during_creation(FunctionalTester $I): void
     {
         $user_id = $I->haveUserInDatabase('test_user', ['author', 'editor']);
 
@@ -494,7 +494,7 @@ class WPDbUserCest
      *
      * @test
      */
-    public function should_allow_overriding_the_user_role_set_during_creation(FunctionalTester $I)
+    public function should_allow_overriding_the_user_role_set_during_creation(FunctionalTester $I): void
     {
         $user_id = $I->haveUserInDatabase('test_user', 'administrator');
 

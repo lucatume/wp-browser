@@ -2,8 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
+use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use WP_Error;
+use function activate_plugin;
 
 class ActivatePluginAction implements CodeExecutionActionInterface
 {
@@ -24,11 +27,11 @@ class ActivatePluginAction implements CodeExecutionActionInterface
     private function activatePlugin(string $plugin, bool $multisite): void
     {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        $activated = \activate_plugin($plugin, '', $multisite);
+        $activated = activate_plugin($plugin, '', $multisite);
         $activatedString = $multisite ? 'network activated' : 'activated';
         $message = "Plugin {$plugin} could not be $activatedString.";
 
-        if ($activated instanceof \WP_Error) {
+        if ($activated instanceof WP_Error) {
             $message .= ' ' . $activated->get_error_message();
             throw new RuntimeException($message);
         }
@@ -40,7 +43,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         }
     }
 
-    public function getClosure(): \Closure
+    public function getClosure(): Closure
     {
         $request = $this->request;
 

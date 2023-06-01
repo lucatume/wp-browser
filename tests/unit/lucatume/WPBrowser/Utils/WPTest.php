@@ -8,8 +8,6 @@ use PDO;
 use RuntimeException;
 use wpdb;
 
-require_once codecept_root_dir('tests/_support/lib/wpdb.php');
-
 class wpTest extends Unit
 {
     private function makeMockWpdbWithTables(array $tables): array

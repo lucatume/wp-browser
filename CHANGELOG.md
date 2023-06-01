@@ -60,7 +60,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
   - Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
   - Added the `WPCLI::dontSeeShellOutputMatches` method
-  - Removed the `WithWordPressFilters` trai
+  - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
+  - Removed the `WithWordPressFilters` trait
+  - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
 
 ## [3.1.6] 2022-04-28;
 

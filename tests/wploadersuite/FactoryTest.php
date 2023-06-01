@@ -2,11 +2,12 @@
 
 use Codeception\Exception\ModuleException;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class FactoryTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+class FactoryTest extends WPTestCase
 {
     /**
-     * @var \WploaderTester
+     * @var WploaderTester
      */
     protected $tester;
 
@@ -20,7 +21,7 @@ class FactoryTest extends \lucatume\WPBrowser\TestCase\WPTestCase
         $this->assertInstanceOf(FactoryStore::class, $this->tester->factory());
     }
 
-    public function factoryTypesAndClasses()
+    public function factoryTypesAndClasses(): array
     {
         return [
             'post'       => [ 'post', WP_UnitTest_Factory_For_Post::class ],

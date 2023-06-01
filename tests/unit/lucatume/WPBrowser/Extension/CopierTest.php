@@ -4,17 +4,19 @@ namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use UnitTester;
 
 
-class CopierTest extends \Codeception\Test\Unit
+class CopierTest extends Unit
 {
     use UopzFunctions;
 
     protected $backupGlobals = false;
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
 

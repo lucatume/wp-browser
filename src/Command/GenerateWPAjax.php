@@ -25,7 +25,7 @@ class GenerateWPAjax extends GenerateWPUnit
      *
      * @return WPUnit The built generator.
      */
-    protected function getGenerator(array $config, string $class): \lucatume\WPBrowser\Lib\Generator\WPUnit
+    protected function getGenerator(array $config, string $class): WPUnit
     {
         return new WPUnit($config, $class, WPAjaxTestCase::class);
     }

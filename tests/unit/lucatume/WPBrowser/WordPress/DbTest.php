@@ -3,6 +3,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -11,7 +12,7 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Single;
 use PDO;
 
-class DbTest extends \Codeception\Test\Unit
+class DbTest extends Unit
 {
     use UopzFunctions;
 

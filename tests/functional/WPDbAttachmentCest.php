@@ -7,17 +7,17 @@ class WPDbAttachmentCest
 
     protected $dirs = [];
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
         $this->removeDirs();
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
         $this->removeDirs();
     }
 
-    protected function removeDirs()
+    protected function removeDirs(): void
     {
         foreach ($this->dirs as $dir) {
             if (is_dir($dir)) {
@@ -31,7 +31,7 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_having_an_attachment_in_the_database(FunctionalTester $I)
+    public function should_allow_having_an_attachment_in_the_database(FunctionalTester $I): void
     {
         $file = codecept_data_dir('attachments/kitten.jpeg');
         $id   = $I->haveAttachmentInDatabase($file);
@@ -107,10 +107,10 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_overriding_an_attachment_date(FunctionalTester $I)
+    public function should_allow_overriding_an_attachment_date(FunctionalTester $I): void
     {
         $file = codecept_data_dir('attachments/kitten.jpeg');
-        $date = '2016-01-01';
+        $date = '2016-01-01 10:00:00';
         $id   = $I->haveAttachmentInDatabase($file, $date);
 
         $criteria = [
@@ -122,6 +122,7 @@ class WPDbAttachmentCest
             'guid'           => $I->grabSiteUrl("/wp-content/uploads/2016/01/kitten.jpeg"),
             'post_mime_type' => 'image/jpeg',
         ];
+        codecept_debug($I->grabFromDatabase('wp_posts', '*', ['ID' => $id]));
 
         foreach ($criteria as $key => $value) {
             $I->seePostInDatabase(['ID' => $id, $key => $value]);
@@ -181,10 +182,10 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_overriding_each_attachment_post_field(FunctionalTester $I)
+    public function should_allow_overriding_each_attachment_post_field(FunctionalTester $I): void
     {
         $file      = codecept_data_dir('attachments/kitten.jpeg');
-        $date      = '2016-01-01';
+        $date      = '2016-01-01 10:00:00';
         $overrides = [
             'post_type'      => 'not-an-attachment',
             'post_title'     => 'not-kitten',
@@ -254,10 +255,10 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_definining_the_image_sizes_to_create(FunctionalTester $I)
+    public function should_allow_definining_the_image_sizes_to_create(FunctionalTester $I): void
     {
         $file       = codecept_data_dir('attachments/kitten.jpeg');
-        $date       = '2016-01-01';
+        $date       = '2016-01-01 10:00:00';
         $imageSizes = [
             'thumbnail' => [200, 200],
             'normal'    => 500,
@@ -320,7 +321,7 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_not_create_any_additional_image_when_adding_non_image_attachments(FunctionalTester $I)
+    public function should_not_create_any_additional_image_when_adding_non_image_attachments(FunctionalTester $I): void
     {
         $file = codecept_data_dir('attachments/pdf-doc.pdf');
 
@@ -352,7 +353,7 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_removing_attachment_files_along_with_the_attachment(FunctionalTester $I)
+    public function should_allow_removing_attachment_files_along_with_the_attachment(FunctionalTester $I): void
     {
         $file = codecept_data_dir('attachments/kitten.jpeg');
         $id = $I->haveAttachmentInDatabase($file);
@@ -364,7 +365,7 @@ class WPDbAttachmentCest
         $I->dontHaveAttachmentInDatabase(['ID' => $id], true, true);
 
         $I->dontSeeUploadedFileFound($attachedFile);
-        foreach ($metadata['sizes'] as $size => $sizeData) {
+        foreach ($metadata['sizes'] as $sizeData) {
             $I->dontSeeUploadedFileFound($sizeData['file']);
         }
     }
@@ -374,7 +375,7 @@ class WPDbAttachmentCest
      *
      * @test
      */
-    public function should_allow_having_a_post_thumbnail_in_the_database(FunctionalTester $I)
+    public function should_allow_having_a_post_thumbnail_in_the_database(FunctionalTester $I): void
     {
         $postId      = $I->havePostInDatabase();
         $file        = codecept_data_dir('attachments/kitten.jpeg');

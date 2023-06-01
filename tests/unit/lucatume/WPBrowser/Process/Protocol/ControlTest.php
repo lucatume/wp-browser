@@ -46,7 +46,7 @@ class ControlTest extends Unit
             'autoloadFile' => $GLOBALS['_composer_autoload_path'],
             'requireFiles' => [],
             'cwd' => getcwd(),
-            'codeceptionRootDir' => null,
+            'codeceptionRootDir' => codecept_root_dir(),
             'codeceptionConfig' => Configuration::config(),
             'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'],
             'composerBinDir' => $GLOBALS['_composer_bin_dir'],

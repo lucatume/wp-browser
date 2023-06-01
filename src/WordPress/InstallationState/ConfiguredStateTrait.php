@@ -17,44 +17,125 @@ trait ConfiguredStateTrait
     private string $wpRootDir;
     private Db $db;
 
+    /**
+     * @throws InstallationException
+     */
     public function getAuthKey(): string
     {
-        return (string)$this->wpConfigFile->getConstant('AUTH_KEY');
+        $constant = $this->wpConfigFile->getConstant('AUTH_KEY');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected AUTH_KEY to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getSecureAuthKey(): string
     {
-        return (string)$this->wpConfigFile->getConstant('SECURE_AUTH_KEY');
+        $constant = $this->wpConfigFile->getConstant('SECURE_AUTH_KEY');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected SECURE_AUTH_KEY to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getLoggedInKey(): string
     {
-        return (string)$this->wpConfigFile->getConstant('LOGGED_IN_KEY');
+        $constant = $this->wpConfigFile->getConstant('LOGGED_IN_KEY');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected LOGGED_IN_KEY to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getNonceKey(): string
     {
-        return (string)$this->wpConfigFile->getConstant('NONCE_KEY');
+        $constant = $this->wpConfigFile->getConstant('NONCE_KEY');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected NONCE_KEY to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getAuthSalt(): string
     {
-        return (string)$this->wpConfigFile->getConstant('AUTH_SALT');
+        $constant = $this->wpConfigFile->getConstant('AUTH_SALT');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected AUTH_SALT to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getSecureAuthSalt(): string
     {
-        return (string)$this->wpConfigFile->getConstant('SECURE_AUTH_SALT');
+        $constant = $this->wpConfigFile->getConstant('SECURE_AUTH_SALT');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected SECURE_AUTH_SALT to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getLoggedInSalt(): string
     {
-        return (string)$this->wpConfigFile->getConstant('LOGGED_IN_SALT');
+        $constant = $this->wpConfigFile->getConstant('LOGGED_IN_SALT');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected LOGGED_IN_SALT to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+        return $constant;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getNonceSalt(): string
     {
-        return (string)$this->wpConfigFile->getConstant('NONCE_SALT');
+        $constant = $this->wpConfigFile->getConstant('NONCE_SALT');
+        if (!is_string($constant)) {
+            throw new InstallationException(
+                "Expected NONCE_SALT to be a string, got: " . gettype($constant),
+                InstallationException::CONST_NOT_STRING
+            );
+        }
+
+        return $constant;
     }
 
     /**
@@ -122,8 +203,17 @@ trait ConfiguredStateTrait
 
 
     /**
-     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
-     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     * @return array{
+     *     AUTH_KEY: string,
+     *     SECURE_AUTH_KEY: string,
+     *     LOGGED_IN_KEY: string,
+     *     NONCE_KEY: string,
+     *     AUTH_SALT: string,
+     *     SECURE_AUTH_SALT: string,
+     *     LOGGED_IN_SALT: string,
+     *     NONCE_SALT: string,
+     * }
+     * @throws InstallationException
      */
     public function getSalts(): array
     {
@@ -151,13 +241,16 @@ trait ConfiguredStateTrait
             && $this->wpConfigFile->getConstant('SUBDOMAIN_INSTALL');
     }
 
-    public function getConstant(string $constant): int|float|string|bool|null
+    /**
+     * @return int|float|string|bool|array<int|string,mixed>|null
+     */
+    public function getConstant(string $constant): int|float|string|bool|null|array
     {
         return $this->wpConfigFile->getConstant($constant);
     }
 
     /**
-     * @return array<string,int|float|string|bool|null>
+     * @return array<string,int|float|string|bool|array<int|string,mixed>|null>
      */
     public function getConstants(): array
     {
@@ -172,37 +265,64 @@ trait ConfiguredStateTrait
         return $this->wpConfigFile->getVariables();
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getContentDir(string $path = ''): string
     {
         $contentDir = rtrim($this->wpRootDir, '\\/') . '/wp-content';
 
         if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
+            if (!is_string($wpContentDirConst)) {
+                throw new InstallationException(
+                    "The WP_CONTENT_DIR constant is not a string.",
+                    InstallationException::CONST_NOT_STRING
+                );
+            }
             $contentDir = $wpContentDirConst;
         }
 
-        $contentDir = rtrim((string)$contentDir, '\\/');
+        $contentDir = rtrim($contentDir, '\\/');
 
         return $path ? $contentDir . '/' . ltrim($path, '\\/') : $contentDir;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getPluginsDir(string $path = ''): string
     {
         $pluginsDir = $this->getContentDir('plugins');
 
         if ($wpPluginDirConst = $this->getConstant('WP_PLUGIN_DIR')) {
+            if (!is_string($wpPluginDirConst)) {
+                throw new InstallationException(
+                    "The WP_PLUGIN_DIR constant is not a string.",
+                    InstallationException::CONST_NOT_STRING
+                );
+            }
             $pluginsDir = $wpPluginDirConst;
         }
 
-        $pluginsDir = rtrim((string)$pluginsDir, '\\/');
+        $pluginsDir = rtrim($pluginsDir, '\\/');
 
         return $path ? $pluginsDir . '/' . ltrim($path, '\\/') : $pluginsDir;
     }
 
+    /**
+     * @throws InstallationException
+     */
     public function getThemesDir(string $path = ''): string
     {
         $themesDir = $this->getContentDir('themes');
 
         if ($wpContentDirConst = $this->getConstant('WP_CONTENT_DIR')) {
+            if (!is_string($wpContentDirConst)) {
+                throw new InstallationException(
+                    "The WP_CONTENT_DIR constant is not a string.",
+                    InstallationException::CONST_NOT_STRING
+                );
+            }
             $themesDir = $wpContentDirConst . '/themes';
         }
 

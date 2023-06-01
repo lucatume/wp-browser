@@ -27,6 +27,7 @@ use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
 use lucatume\WPBrowser\WordPress\Assert as WPAssert;
+use WP_Theme;
 use const ABSPATH;
 use const WP_DEBUG;
 
@@ -99,20 +100,6 @@ class WPLoaderTest extends Unit
         }
     }
 
-    private function changeDir(string $dirname): void
-    {
-        $this->previousCwd = getcwd();
-        chdir($dirname);
-    }
-
-    private function changeHome(string $dir): void
-    {
-        $this->homeEnvBackup = getenv('HOME');
-        $this->homeServerBackup = $_SERVER['HOME'] ?? null;
-        putenv('HOME=' . $dir);
-        $_SERVER['HOME'] = $dir;
-    }
-
     /**
      * @return WPLoader
      */
@@ -173,7 +160,6 @@ class WPLoaderTest extends Unit
     {
         $rootDir = FS::tmpDir('wploader_', ['test' => ['wordpress' => []]], 0777);
         Installation::scaffold($rootDir . '/test/wordpress', '6.1.1');
-        $this->changeDir($rootDir);
         $dbName = Random::dbName();
         $this->config = [
             'wpRootFolder' => 'test/wordpress',
@@ -185,6 +171,7 @@ class WPLoaderTest extends Unit
 
         $wpLoader1 = $this->module();
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader1) {
+            chdir($rootDir) ;
             $wpLoader1->_initialize();
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->_getConfig('wpRootFolder'));
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
@@ -201,6 +188,7 @@ class WPLoaderTest extends Unit
         $wpLoader2 = $this->module();
 
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader2) {
+            chdir($rootDir) ;
             $wpLoader2->_initialize();
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->_getConfig('wpRootFolder'));
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
@@ -215,7 +203,6 @@ class WPLoaderTest extends Unit
     public function should_allow_specifying_the_wp_root_folder_including_the_home_symbol(): void
     {
         $homeDir = FS::tmpDir('home_', ['projects' => ['work' => ['acme' => ['wordpress' => []]]]]);
-        $this->changeHome($homeDir);
         $wpRootDir = $homeDir . '/projects/work/acme/wordpress';
         Installation::scaffold($wpRootDir, '6.1.1');
         $dbName = Random::dbName();
@@ -229,6 +216,8 @@ class WPLoaderTest extends Unit
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader, $homeDir) {
+            putenv('HOME=' . $homeDir);
+            $_SERVER['HOME'] = $homeDir;
             $wpLoader->_initialize();
 
             Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->_getConfig('wpRootFolder'));
@@ -1102,7 +1091,7 @@ class WPLoaderTest extends Unit
             ], $actions);
             Assert::assertEquals('twentytwenty', get_option('template'));
             Assert::assertEquals('twentytwenty', get_option('stylesheet'));
-            Assert::assertEquals(['twentytwenty' => true], \WP_Theme::get_allowed());
+            Assert::assertEquals(['twentytwenty' => true], WP_Theme::get_allowed());
             Assert::assertEquals('test_file_001.php', getenv('LOADED'));
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
             Assert::assertEquals($wpRootDir . '/', ABSPATH);

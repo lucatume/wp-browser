@@ -19,6 +19,7 @@ use PDOException;
 use PDOStatement;
 use RuntimeException;
 use Symfony\Component\Process\Process;
+use function array_replace;
 
 class Db
 {
@@ -108,7 +109,7 @@ class Db
         $pdo = new PDO($dsn, $user, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        return static function ($query) use ($pdo, $dsn, $user, $pass): \PDOStatement {
+        return static function ($query) use ($pdo, $dsn, $user, $pass): PDOStatement {
             $result = $pdo->query($query);
             if (!$result instanceof PDOStatement) {
                 throw new RuntimeException('Query failed: ' . json_encode([
@@ -146,7 +147,7 @@ class Db
             'memory' => false,
         ];
         if (self::isDsnString($dbHost)) {
-            return \array_replace($defaults, self::dbDsnToMap($dbHost));
+            return array_replace($defaults, self::dbDsnToMap($dbHost));
         }
 
         $map = [];
@@ -238,7 +239,7 @@ class Db
                 break;
         }
 
-        return \array_replace($defaults, $map);
+        return array_replace($defaults, $map);
     }
 
     /**

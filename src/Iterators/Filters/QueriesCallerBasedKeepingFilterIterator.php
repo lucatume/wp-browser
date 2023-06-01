@@ -7,12 +7,14 @@
 
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use FilterIterator;
+
 /**
  * Class QueriesCallerBasedKeepingFilterIterator
  *
  * @package lucatume\WPBrowser\Iterators\Filters
  */
-class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
+class QueriesCallerBasedKeepingFilterIterator extends FilterIterator
 {
 
     /**
@@ -31,7 +33,7 @@ class QueriesCallerBasedKeepingFilterIterator extends \FilterIterator
      */
     public function accept(): bool
     {
-        /** @var array{0: string, 1: int, 2: string} $query */
+        /** @var array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>} $query */
         $query = $this->getInnerIterator()->current();
         foreach ($this->needles as $needle) {
             if (preg_match("/(?<!\\(')" . preg_quote($needle, '/') . "(?!'\\))/", $query[2])) {

@@ -3,6 +3,8 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Codeception\Test\Unit;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
@@ -12,7 +14,7 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class MultisiteTest extends \Codeception\Test\Unit
+class MultisiteTest extends Unit
 {
     use UopzFunctions;
 
@@ -264,12 +266,16 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -292,12 +298,16 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $constants = $multisite->getConstants();
@@ -346,12 +356,16 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $globals = $multisite->getGlobals();
@@ -378,12 +392,16 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -405,13 +423,17 @@ class MultisiteTest extends \Codeception\Test\Unit
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = (new ConfigurationData())
             ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
             InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData)->install('https://wp.local',
+            $configurationData
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -433,13 +455,17 @@ class MultisiteTest extends \Codeception\Test\Unit
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = (new ConfigurationData())
             ->setConst('WP_PLUGIN_DIR', $wpRootDir . '/site-plugins');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
             InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData)->install('https://wp.local',
+            $configurationData
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -461,18 +487,24 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content/themes', $multisite->getThemesDir());
-        $this->assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
-            $multisite->getThemesDir('some-file.php'));
+        $this->assertEquals(
+            $wpRootDir . '/wp-content/themes/some-file.php',
+            $multisite->getThemesDir('some-file.php')
+        );
         $this->assertEquals($wpRootDir . '/wp-content/themes/some-theme', $multisite->getThemesDir('some-theme'));
     }
 
@@ -491,19 +523,25 @@ class MultisiteTest extends \Codeception\Test\Unit
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = (new ConfigurationData())
             ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
             InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData)->install('https://wp.local',
+            $configurationData
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content/themes', $multisite->getThemesDir());
-        $this->assertEquals($wpRootDir . '/site-content/themes/some-file.php',
-            $multisite->getThemesDir('some-file.php'));
+        $this->assertEquals(
+            $wpRootDir . '/site-content/themes/some-file.php',
+            $multisite->getThemesDir('some-file.php')
+        );
         $this->assertEquals($wpRootDir . '/site-content/themes/some-theme', $multisite->getThemesDir('some-theme'));
     }
 
@@ -521,19 +559,25 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = (new ConfigurationData());
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
             InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData)->install('https://wp.local',
+            $configurationData
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/wp-content', $multisite->getContentDir());
-        $this->assertEquals($wpRootDir . '/wp-content/some-file.php',
-            $multisite->getContentDir('some-file.php'));
+        $this->assertEquals(
+            $wpRootDir . '/wp-content/some-file.php',
+            $multisite->getContentDir('some-file.php')
+        );
         $this->assertEquals($wpRootDir . '/wp-content/some/path', $multisite->getContentDir('some/path'));
     }
 
@@ -552,19 +596,25 @@ class MultisiteTest extends \Codeception\Test\Unit
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = (new ConfigurationData())
             ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
             InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData)->install('https://wp.local',
+            $configurationData
+        )->install(
+            'https://wp.local',
             'admin',
             'password',
             'admin@wp.local',
-            'Test');
+            'Test'
+        );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals($wpRootDir . '/site-content', $multisite->getContentDir());
-        $this->assertEquals($wpRootDir . '/site-content/some-file.php',
-            $multisite->getContentDir('some-file.php'));
+        $this->assertEquals(
+            $wpRootDir . '/site-content/some-file.php',
+            $multisite->getContentDir('some-file.php')
+        );
         $this->assertEquals($wpRootDir . '/site-content/some/path', $multisite->getContentDir('some/path'));
     }
 
@@ -581,17 +631,87 @@ class MultisiteTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($wpRootDir, '6.1.1')->configure($db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER)
-            ->install('https://wp.local',
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )
+            ->install(
+                'https://wp.local',
                 'admin',
                 'password',
                 'admin@wp.local',
-                'Test');
+                'Test'
+            );
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals(1, $multisite->updateOption('foo', 'bar'));
         $this->assertEquals('bar', $db->getOption('foo'));
+    }
+
+    /**
+     * It should throw if trying to execute a non static Closure in WordPress
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_execute_a_non_static_closure_in_word_press(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->assertEquals('https://wp.local', $multisite->executeClosureInWordPress(function () {
+            return get_option('siteurl');
+        }));
+    }
+
+    /**
+     * It should allow executing a Closure in WordPress
+     *
+     * @test
+     */
+    public function should_allow_executing_a_closure_in_word_press(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals('https://wp.local', $multisite->executeClosureInWordPress(static function () {
+            return get_option('siteurl');
+        }));
     }
 }

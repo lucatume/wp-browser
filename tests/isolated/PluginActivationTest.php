@@ -1,6 +1,8 @@
 <?php
 
-class PluginActivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class PluginActivationTest extends WPTestCase
 {
     public function test_plugin_is_loaded()
     {

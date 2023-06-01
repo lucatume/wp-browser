@@ -18,6 +18,7 @@ use lucatume\WPBrowser\Iterators\Filters\FiltersQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\FunctionQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\MainStatementQueriesFilter;
 use lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter;
+use lucatume\WPBrowser\Utils\Arr;
 use PHPUnit\Framework\Assert;
 use wpdb;
 
@@ -32,36 +33,28 @@ class WPQueries extends Module
     /**
      * A list of the filtered queries.
      *
-     * @var array<string>
+     * @var array<array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}>
      */
     protected array $filteredQueries = [];
     /**
      * @var callable[]
      */
     protected array $assertions = [];
-    private wpdb $wpdb;
+    private ?wpdb $wpdb;
 
     /**
      * WPQueries constructor.
      *
-     * @param ModuleContainer          $moduleContainer The current module container.
-     * @param array<string,mixed>|null $config          The current module configuration.
-     * @param wpdb|null                $wpdbInstance    The current wpdb instance.
-     * @throws ModuleException
+     * @param ModuleContainer $moduleContainer The current module container.
+     * @param array<string,mixed>|null $config The current module configuration.
+     * @param wpdb|null $wpdbInstance          The current wpdb instance.
      */
     public function __construct(
         ModuleContainer $moduleContainer,
-        ?array $config,
-        ?wpdb $wpdbInstance
+        ?array $config = null,
+        ?wpdb $wpdbInstance = null
     ) {
         $wpdbInstance = $wpdbInstance ?? $GLOBALS['wpdb'] ?? null;
-        if ($wpdbInstance === null) {
-            throw new ModuleException(
-                __CLASS__,
-                'The wpdb instance is not available: either provide it or make sure to load WordPress ' .
-                'before using this module.'
-            );
-        }
         $this->wpdb = $wpdbInstance;
         parent::__construct($moduleContainer, $config);
     }
@@ -81,6 +74,16 @@ class WPQueries extends Module
             );
         }
 
+        $wpdbInstance = $this->wpdbInstance ?? $GLOBALS['wpdb'] ?? null;
+        if (!$wpdbInstance instanceof wpdb) {
+            throw new ModuleException(
+                __CLASS__,
+                'The wpdb instance is not available: either provide it or make sure to load WordPress ' .
+                'before using this module.'
+            );
+        }
+        $this->wpdb = $wpdbInstance;
+
         if (!defined('SAVEQUERIES')) {
             define('SAVEQUERIES', true);
         } elseif (!SAVEQUERIES) {
@@ -92,20 +95,12 @@ class WPQueries extends Module
 
     /**
      * Runs before each test method.
+     *
+     * @throws ModuleException
      */
     public function _cleanup(): void
     {
-        $this->getWpdbInstance()->queries = [];
-    }
-
-    /**
-     * Returns the current wpdb instance.
-     *
-     * @return wpdb The current wpdb instance.
-     */
-    private function getWpdbInstance(): wpdb
-    {
-        return $this->wpdb;
+        $this->_getWpdb()->queries = [];
     }
 
     /**
@@ -134,16 +129,12 @@ class WPQueries extends Module
      */
     private function readQueries(): void
     {
-        $wpdb = $this->getWpdbInstance();
+        $wpdb = $this->_getWpdb();
 
         if (empty($wpdb->queries)) {
             $this->filteredQueries = [];
         } else {
-            $filteredQueriesIterator = $this->_getFilteredQueriesIterator();
-            $this->filteredQueries = array_filter(
-                iterator_to_array($filteredQueriesIterator, false),
-                'is_string'
-            );
+            $this->filteredQueries = $this->getQueries();
         }
     }
 
@@ -155,12 +146,14 @@ class WPQueries extends Module
     public function _getFilteredQueriesIterator(wpdb $wpdb = null): SetupTearDownQueriesFilter
     {
         if (null === $wpdb) {
-            $wpdb = $this->getWpdbInstance();
+            $wpdb = $this->_getWpdb();
         }
 
         $queriesArrayIterator = new ArrayIterator($wpdb->queries);
 
-        return new SetupTearDownQueriesFilter(new FactoryQueriesFilter($queriesArrayIterator));
+        $iterator = new FactoryQueriesFilter($queriesArrayIterator);
+        $setupTearDownQueriesFilter = new SetupTearDownQueriesFilter($iterator);
+        return $setupTearDownQueriesFilter;
     }
 
     /**
@@ -203,7 +196,7 @@ class WPQueries extends Module
      * $I->assertCountQueries(2, 'A query should be made for each user missing cached posts.')
      * ```
      *
-     * @param int    $n       The expected number of queries.
+     * @param int $n          The expected number of queries.
      * @param string $message An optional message to override the default one.
      */
     public function assertCountQueries(int $n, string $message = ''): void
@@ -300,7 +293,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByStatement(1, 'INSERT', 'Deferred write should happen on __destruct');
      * ```
      *
-     * @param int    $n          The expected number of queries.
+     * @param int $n             The expected number of queries.
      * @param string $statement  A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $message    An optional message to override the default one.
@@ -350,7 +343,8 @@ class WPQueries extends Module
      * $repository->where('ID', 2389)->commit('title', 'The call of the wild');
      * $this->assertQueriesCountByMethod(3, 'Acme\BookRepository', 'commit');
      * ```
-     * @param int    $n       The expected number of queries.
+     *
+     * @param int $n          The expected number of queries.
      * @param string $class   The fully qualified name of the class to check.
      * @param string $method  The name of the method to check.
      * @param string $message An optional message to override the default one.
@@ -420,7 +414,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByFunction(3, 'Acme\delete_orphaned_posts');
      * ```
      *
-     * @param int    $n        The expected number of queries.
+     * @param int $n           The expected number of queries.
      * @param string $function The function to check the queries for.
      * @param string $message  An optional message to override the default one.
      */
@@ -507,7 +501,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByStatementAndMethod(3, 'INSERT', Acme\BookRepository::class, 'commit');
      * ```
      *
-     * @param int    $n          The expected number of queries.
+     * @param int $n             The expected number of queries.
      * @param string $statement  A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $class      The fully qualified name of the class to check.
@@ -600,7 +594,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByStatementAndFunction(3, 'INSERT', 'wp_insert_post');
      * ```
      *
-     * @param int    $n          The expected number of queries.
+     * @param int $n             The expected number of queries.
      * @param string $statement  A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $function   The fully-qualified function name.
@@ -693,7 +687,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByAction(3, 'edit_post');
      * ```
      *
-     * @param int    $n       The expected number of queries.
+     * @param int $n          The expected number of queries.
      * @param string $action  The action name, e.g. 'init'.
      * @param string $message An optional message to override the default one.
      */
@@ -782,7 +776,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByStatementAndAction(1, 'INSERT', 'edit_post');
      * ```
      *
-     * @param int    $n          The expected number of queries.
+     * @param int $n             The expected number of queries.
      * @param string $statement  A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $action     The action name, e.g. 'init'.
@@ -822,6 +816,7 @@ class WPQueries extends Module
      * $title = apply_filters('the_title', get_post($bookId)->post_title, $bookId);
      * $this->assertQueriesByFilter('the_title');
      * ```
+     *
      * @param string $filter  The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
@@ -852,6 +847,7 @@ class WPQueries extends Module
      * $title = apply_filters('the_title', get_post($notABookId)->post_title, $notABookId);
      * $this->assertNotQueriesByFilter('the_title');
      * ```
+     *
      * @param string $filter  The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
@@ -883,7 +879,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByFilter(2, 'the_title');
      * ```
      *
-     * @param int    $n       The expected number of queries.
+     * @param int $n          The expected number of queries.
      * @param string $filter  The filter name, e.g. 'posts_where'.
      * @param string $message An optional message to override the default one.
      *
@@ -988,7 +984,7 @@ class WPQueries extends Module
      * $this->assertQueriesCountByStatementAndFilter(1, 'SELECT', 'the_title');
      * ```
      *
-     * @param int    $n          The expected number of queries.
+     * @param int $n             The expected number of queries.
      * @param string $statement  A simple string the statement should start with or a valid regular expression.
      *                           Regular expressions must contain delimiters.
      * @param string $filter     The filter name, e.g. 'posts_where'.
@@ -1046,18 +1042,30 @@ class WPQueries extends Module
      *
      * @param wpdb|null $wpdb A specific instance of the `wpdb` class or `null` to use the global one.
      *
-     * @return array<string> An array of queries.
+     * @return array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}[] An array of queries.
      */
     public function getQueries(wpdb $wpdb = null): array
     {
+        /** @var array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}[] $logicQueries */
+        $logicQueries = iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
         return array_filter(
-            iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false),
-            'is_string'
+            $logicQueries,
+            static fn($query) => is_array($query) && Arr::hasShape($query, ['string', 'numeric', 'string', 'numeric'])
         );
     }
 
+    /**
+     * @throws ModuleException
+     */
     public function _getWpdb(): wpdb
     {
+        if (!$this->wpdb instanceof wpdb) {
+            throw new ModuleException(
+                __CLASS__,
+                'The wpdb object is not available. Too early?'
+            );
+        }
+
         return $this->wpdb;
     }
 }

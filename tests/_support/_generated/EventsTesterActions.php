@@ -5,14 +5,21 @@ namespace _generated;
 // You should not change it manually as it will be overwritten on next build
 // @codingStandardsIgnoreFile
 
+use Codeception\Scenario;
+use Codeception\Step\Action;
+use Codeception\Step\Assertion;
+use Codeception\Step\Condition;
+use Codeception\Step\ConditionalAssertion;
+use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
+
 trait EventsTesterActions
 {
     /**
-     * @return \Codeception\Scenario
+     * @return Scenario
      */
-    abstract protected function getScenario();
+    abstract protected function getScenario(): Scenario;
 
-    
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -33,10 +40,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::importSqlDumpFile()
      */
     public function importSqlDumpFile(?string $dumpFile = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('importSqlDumpFile', func_get_args()));
+        $this->getScenario()->runStep(new Action('importSqlDumpFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -61,7 +68,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeOptionInDatabase()
      */
     public function dontSeeOptionInDatabase(array|string $criteriaOrName, $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeOptionInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -88,10 +95,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeOptionInDatabase()
      */
     public function cantSeeOptionInDatabase(array|string $criteriaOrName, $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -116,10 +123,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabPrefixedTableNameFor()
      */
     public function grabPrefixedTableNameFor(string $tableName = ""): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPrefixedTableNameFor', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabPrefixedTableNameFor', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -138,7 +145,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostMetaInDatabase()
      */
     public function seePostMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePostMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seePostMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -159,10 +166,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostMetaInDatabase()
      */
     public function canSeePostMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -182,7 +189,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeLinkInDatabase()
      */
     public function seeLinkInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeLinkInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeLinkInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -204,10 +211,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeLinkInDatabase()
      */
     public function canSeeLinkInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeLinkInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -225,7 +232,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeLinkInDatabase()
      */
     public function dontSeeLinkInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeLinkInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeLinkInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -245,10 +252,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeLinkInDatabase()
      */
     public function cantSeeLinkInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeLinkInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -268,7 +275,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostMetaInDatabase()
      */
     public function dontSeePostMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePostMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeePostMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -290,10 +297,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostMetaInDatabase()
      */
     public function cantSeePostMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -323,7 +330,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostWithTermInDatabase()
      */
     public function seePostWithTermInDatabase(int $post_id, int $term_taxonomy_id, ?int $term_order = NULL, ?string $taxonomy = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePostWithTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seePostWithTermInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -355,10 +362,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostWithTermInDatabase()
      */
     public function canSeePostWithTermInDatabase(int $post_id, int $term_taxonomy_id, ?int $term_order = NULL, ?string $taxonomy = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostWithTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -380,7 +387,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeUserInDatabase()
      */
     public function seeUserInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeUserInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeUserInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -404,10 +411,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeUserInDatabase()
      */
     public function canSeeUserInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -425,7 +432,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeUserInDatabase()
      */
     public function dontSeeUserInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeUserInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeUserInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -445,10 +452,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeUserInDatabase()
      */
     public function cantSeeUserInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -472,10 +479,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::havePageInDatabase()
      */
     public function havePageInDatabase(array $overrides = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('havePageInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('havePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -507,10 +514,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::havePostInDatabase()
      */
     public function havePostInDatabase(array $data = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('havePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -529,10 +536,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostsTableName()
      */
     public function grabPostsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabPostsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -555,10 +562,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabLatestEntryByFromDatabase()
      */
     public function grabLatestEntryByFromDatabase(string $tableName, string $idColumn = "ID"): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLatestEntryByFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabLatestEntryByFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -583,10 +590,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::havePostmetaInDatabase()
      */
     public function havePostmetaInDatabase(int $postId, string $meta_key, mixed $meta_value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostmetaInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('havePostmetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -605,10 +612,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostmetaTableName()
      */
     public function grabPostmetaTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostmetaTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabPostmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -631,10 +638,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermIdFromDatabase()
      */
     public function grabTermIdFromDatabase(array $criteria): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermIdFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -653,10 +660,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermsTableName()
      */
     public function grabTermsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -683,10 +690,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveTermInDatabase()
      */
     public function haveTermInDatabase(string $name, string $taxonomy, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -705,10 +712,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermTaxonomyTableName()
      */
     public function grabTermTaxonomyTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermTaxonomyTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -734,10 +741,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveTermMetaInDatabase()
      */
     public function haveTermMetaInDatabase(int $term_id, string $meta_key, mixed $meta_value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermMetaInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -756,10 +763,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermMetaTableName()
      */
     public function grabTermMetaTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermMetaTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -781,10 +788,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermTaxonomyIdFromDatabase()
      */
     public function grabTermTaxonomyIdFromDatabase(array $criteria): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyIdFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermTaxonomyIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -805,10 +812,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveTermRelationshipInDatabase()
      */
     public function haveTermRelationshipInDatabase(int $object_id, int $term_taxonomy_id, int $term_order = 0): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermRelationshipInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('haveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -823,10 +830,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermRelationshipsTableName()
      */
     public function grabTermRelationshipsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermRelationshipsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTermRelationshipsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -844,7 +851,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePageInDatabase()
      */
     public function seePageInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePageInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seePageInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -864,10 +871,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePageInDatabase()
      */
     public function canSeePageInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePageInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -887,7 +894,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostInDatabase()
      */
     public function seePostInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seePostInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seePostInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -909,10 +916,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seePostInDatabase()
      */
     public function canSeePostInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seePostInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -930,7 +937,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePageInDatabase()
      */
     public function dontSeePageInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePageInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeePageInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -950,10 +957,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePageInDatabase()
      */
     public function cantSeePageInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePageInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeePageInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -973,7 +980,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostInDatabase()
      */
     public function dontSeePostInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePostInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeePostInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -995,10 +1002,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostInDatabase()
      */
     public function cantSeePostInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1017,7 +1024,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeCommentInDatabase()
      */
     public function seeCommentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeCommentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeCommentInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1038,10 +1045,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeCommentInDatabase()
      */
     public function canSeeCommentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1063,7 +1070,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeCommentInDatabase()
      */
     public function dontSeeCommentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeCommentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeCommentInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1087,10 +1094,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeCommentInDatabase()
      */
     public function cantSeeCommentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1111,7 +1118,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeCommentMetaInDatabase()
      */
     public function seeCommentMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeCommentMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeCommentMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1134,10 +1141,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeCommentMetaInDatabase()
      */
     public function canSeeCommentMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeCommentMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1159,7 +1166,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeCommentMetaInDatabase()
      */
     public function dontSeeCommentMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeCommentMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeCommentMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1183,10 +1190,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeCommentMetaInDatabase()
      */
     public function cantSeeCommentMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeCommentMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1203,7 +1210,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeUserMetaInDatabase()
      */
     public function seeUserMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeUserMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeUserMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1222,10 +1229,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeUserMetaInDatabase()
      */
     public function canSeeUserMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUserMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1245,7 +1252,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeUserMetaInDatabase()
      */
     public function dontSeeUserMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeUserMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeUserMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1267,10 +1274,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeUserMetaInDatabase()
      */
     public function cantSeeUserMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUserMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1285,10 +1292,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveLinkInDatabase()
      */
     public function dontHaveLinkInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveLinkInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1305,10 +1312,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveInDatabase()
      */
     public function dontHaveInDatabase(string $table, array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1326,10 +1333,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTermRelationshipInDatabase()
      */
     public function dontHaveTermRelationshipInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermRelationshipInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1347,10 +1354,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTermTaxonomyInDatabase()
      */
     public function dontHaveTermTaxonomyInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermTaxonomyInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1368,10 +1375,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveUserMetaInDatabase()
      */
     public function dontHaveUserMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1394,10 +1401,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabUserMetaFromDatabase()
      */
     public function grabUserMetaFromDatabase(int $userId, string $meta_key): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserMetaFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabUserMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1419,10 +1426,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabAllFromDatabase()
      */
     public function grabAllFromDatabase(string $table, string $column, array $criteria): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAllFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabAllFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1445,10 +1452,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveTransientInDatabase()
      */
     public function haveTransientInDatabase(string $transient, mixed $value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTransientInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1470,10 +1477,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveOptionInDatabase()
      */
     public function haveOptionInDatabase(string $option_name, mixed $option_value, string $autoload = "yes"): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveOptionInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1489,10 +1496,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTransientInDatabase()
      */
     public function dontHaveTransientInDatabase(string $transient): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTransientInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1511,10 +1518,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveOptionInDatabase()
      */
     public function dontHaveOptionInDatabase(string $key, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1534,10 +1541,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteOptionInDatabase()
      */
     public function haveSiteOptionInDatabase(string $key, mixed $value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteOptionInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1553,10 +1560,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::useMainBlog()
      */
     public function useMainBlog(): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('useMainBlog', func_get_args()));
+        $this->getScenario()->runStep(new Action('useMainBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1576,10 +1583,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::useBlog()
      */
     public function useBlog(int $blogId = 0): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
+        $this->getScenario()->runStep(new Action('useBlog', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1598,10 +1605,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveSiteOptionInDatabase()
      */
     public function dontHaveSiteOptionInDatabase(string $key, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1622,10 +1629,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteTransientInDatabase()
      */
     public function haveSiteTransientInDatabase(string $key, mixed $value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteTransientInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1640,10 +1647,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveSiteTransientInDatabase()
      */
     public function dontHaveSiteTransientInDatabase(string $key): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteTransientInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1660,10 +1667,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteOptionFromDatabase()
      */
     public function grabSiteOptionFromDatabase(string $key): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteOptionFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSiteOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1680,10 +1687,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabOptionFromDatabase()
      */
     public function grabOptionFromDatabase(string $option_name): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabOptionFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabOptionFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1701,10 +1708,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteTransientFromDatabase()
      */
     public function grabSiteTransientFromDatabase(string $key): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTransientFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSiteTransientFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1724,7 +1731,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteSiteTransientInDatabase()
      */
     public function seeSiteSiteTransientInDatabase(string $key, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteSiteTransientInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1746,10 +1753,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteSiteTransientInDatabase()
      */
     public function canSeeSiteSiteTransientInDatabase(string $key, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteSiteTransientInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1774,7 +1781,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeOptionInDatabase()
      */
     public function seeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeOptionInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1801,10 +1808,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeOptionInDatabase()
      */
     public function canSeeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1826,7 +1833,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteOptionInDatabase()
      */
     public function seeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeSiteOptionInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1850,10 +1857,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteOptionInDatabase()
      */
     public function canSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1881,10 +1888,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyPostsInDatabase()
      */
     public function haveManyPostsInDatabase(int $count, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyPostsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyPostsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1904,7 +1911,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermInDatabase()
      */
     public function seeTermInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeTermInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -1926,10 +1933,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermInDatabase()
      */
     public function canSeeTermInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1948,10 +1955,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTermInDatabase()
      */
     public function dontHaveTermInDatabase(array $criteria, $purgeMeta = true): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1969,10 +1976,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTermMetaInDatabase()
      */
     public function dontHaveTermMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTermMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -1994,7 +2001,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermInDatabase()
      */
     public function dontSeeTermInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeTermInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2018,10 +2025,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermInDatabase()
      */
     public function cantSeeTermInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2044,10 +2051,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyCommentsInDatabase()
      */
     public function haveManyCommentsInDatabase(int $count, int $comment_post_ID, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyCommentsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyCommentsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2065,10 +2072,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveCommentInDatabase()
      */
     public function haveCommentInDatabase(int $comment_post_ID, array $data = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2091,10 +2098,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveCommentMetaInDatabase()
      */
     public function haveCommentMetaInDatabase(int $comment_id, string $meta_key, mixed $meta_value): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentMetaInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2111,10 +2118,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabCommentmetaTableName()
      */
     public function grabCommentmetaTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentmetaTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabCommentmetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2136,10 +2143,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::countRowsInDatabase()
      */
     public function countRowsInDatabase(string $table, array $criteria = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('countRowsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('countRowsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2158,10 +2165,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveCommentInDatabase()
      */
     public function dontHaveCommentInDatabase(array $criteria, bool $purgeMeta = true): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveCommentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2180,10 +2187,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabCommentsTableName()
      */
     public function grabCommentsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabCommentsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabCommentsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2201,10 +2208,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveCommentMetaInDatabase()
      */
     public function dontHaveCommentMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveCommentMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveCommentMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2225,10 +2232,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyLinksInDatabase()
      */
     public function haveManyLinksInDatabase(int $count, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyLinksInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyLinksInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2245,10 +2252,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveLinkInDatabase()
      */
     public function haveLinkInDatabase(array $overrides = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveLinkInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveLinkInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2267,10 +2274,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabLinksTableName()
      */
     public function grabLinksTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabLinksTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabLinksTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2296,10 +2303,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyUsersInDatabase()
      */
     public function haveManyUsersInDatabase(int $count, string $user_login, string $role = "subscriber", array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyUsersInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyUsersInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2354,10 +2361,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserInDatabase()
      */
     public function haveUserInDatabase(string $user_login, array|string $role = "subscriber", array $overrides = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2377,10 +2384,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::getUsersTableName()
      */
     public function getUsersTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('getUsersTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('getUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2399,10 +2406,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabUsersTableName()
      */
     public function grabUsersTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsersTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabUsersTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2444,10 +2451,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserCapabilitiesInDatabase()
      */
     public function haveUserCapabilitiesInDatabase($userId, array|string $role): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserCapabilitiesInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveUserCapabilitiesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2468,10 +2475,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserMetaInDatabase()
      */
     public function haveUserMetaInDatabase(int $userId, string $meta_key, mixed $meta_value): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserMetaInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveUserMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2490,10 +2497,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabUsermetaTableName()
      */
     public function grabUsermetaTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUsermetaTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabUsermetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2516,10 +2523,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserLevelsInDatabase()
      */
     public function haveUserLevelsInDatabase(int $userId, array|string $role): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserLevelsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveUserLevelsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2541,10 +2548,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyTermsInDatabase()
      */
     public function haveManyTermsInDatabase(int $count, string $name, string $taxonomy, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyTermsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyTermsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2562,7 +2569,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermTaxonomyInDatabase()
      */
     public function seeTermTaxonomyInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTermTaxonomyInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeTermTaxonomyInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2582,10 +2589,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermTaxonomyInDatabase()
      */
     public function canSeeTermTaxonomyInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermTaxonomyInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2603,7 +2610,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermTaxonomyInDatabase()
      */
     public function dontSeeTermTaxonomyInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTermTaxonomyInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeTermTaxonomyInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2623,10 +2630,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermTaxonomyInDatabase()
      */
     public function cantSeeTermTaxonomyInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermTaxonomyInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeTermTaxonomyInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2645,7 +2652,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermMetaInDatabase()
      */
     public function seeTermMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTermMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeTermMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2666,10 +2673,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermMetaInDatabase()
      */
     public function canSeeTermMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2688,7 +2695,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermMetaInDatabase()
      */
     public function dontSeeTermMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTermMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeTermMetaInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2709,10 +2716,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTermMetaInDatabase()
      */
     public function cantSeeTermMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTermMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeTermMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2728,7 +2735,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTableInDatabase()
      */
     public function seeTableInDatabase(string $table): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTableInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeTableInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2746,10 +2753,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTableInDatabase()
      */
     public function canSeeTableInDatabase(string $table): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTableInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2768,10 +2775,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogVersionsTableName()
      */
     public function grabBlogVersionsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogVersionsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogVersionsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2790,10 +2797,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteMetaTableName()
      */
     public function grabSiteMetaTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteMetaTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSiteMetaTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2812,10 +2819,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSignupsTableName()
      */
     public function grabSignupsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSignupsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSignupsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2834,10 +2841,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabRegistrationLogTableName()
      */
     public function grabRegistrationLogTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabRegistrationLogTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabRegistrationLogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2856,10 +2863,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteTableName()
      */
     public function grabSiteTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSiteTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2879,7 +2886,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeBlogInDatabase()
      */
     public function seeBlogInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeBlogInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeBlogInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -2901,10 +2908,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeBlogInDatabase()
      */
     public function canSeeBlogInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeBlogInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2923,10 +2930,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogsTableName()
      */
     public function grabBlogsTableName(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogsTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogsTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2951,10 +2958,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveManyBlogsInDatabase()
      */
     public function haveManyBlogsInDatabase(int $count, array $overrides = [], bool $subdomain = true): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveManyBlogsInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveManyBlogsInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -2979,10 +2986,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveBlogInDatabase()
      */
     public function haveBlogInDatabase(string $domainOrPath, array $overrides = [], bool $subdomain = true): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveBlogInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3000,10 +3007,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::getSiteDomain()
      */
     public function getSiteDomain(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('getSiteDomain', func_get_args()));
+        return $this->getScenario()->runStep(new Action('getSiteDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3027,10 +3034,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveBlogInDatabase()
      */
     public function dontHaveBlogInDatabase(array $criteria, bool $removeTables = true, bool $removeUploads = true): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveBlogInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3054,10 +3061,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogTableNames()
      */
     public function grabBlogTableNames(int $blogId): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableNames', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogTableNames', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3077,10 +3084,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveTableInDatabase()
      */
     public function dontHaveTableInDatabase(string $fullTableName): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveTableInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3098,7 +3105,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeBlogInDatabase()
      */
     public function dontSeeBlogInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeBlogInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeBlogInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3118,10 +3125,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeBlogInDatabase()
      */
     public function cantSeeBlogInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeBlogInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeBlogInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3142,10 +3149,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::useTheme()
      */
     public function useTheme(string $stylesheet, ?string $template = NULL, ?string $themeName = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('useTheme', func_get_args()));
+        $this->getScenario()->runStep(new Action('useTheme', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3164,10 +3171,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveMenuInDatabase()
      */
     public function haveMenuInDatabase(string $slug, string $location, array $overrides = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveMenuInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3191,10 +3198,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveMenuItemInDatabase()
      */
     public function haveMenuItemInDatabase(string $menuSlug, string $title, ?int $menuOrder = NULL, array $meta = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveMenuItemInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveMenuItemInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3212,7 +3219,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermRelationshipInDatabase()
      */
     public function seeTermRelationshipInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTermRelationshipInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeTermRelationshipInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3232,10 +3239,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeTermRelationshipInDatabase()
      */
     public function canSeeTermRelationshipInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTermRelationshipInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeTermRelationshipInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3270,10 +3277,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::haveAttachmentInDatabase()
      */
     public function haveAttachmentInDatabase(string $file, string|int $date = "now", array $overrides = [], ?array $imageSizes = NULL): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveAttachmentInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3290,10 +3297,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteUrl()
      */
     public function grabSiteUrl(?string $path = NULL): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteUrl', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabSiteUrl', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3310,7 +3317,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeAttachmentInDatabase()
      */
     public function seeAttachmentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeAttachmentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeAttachmentInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3329,10 +3336,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::seeAttachmentInDatabase()
      */
     public function canSeeAttachmentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeAttachmentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3350,7 +3357,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeAttachmentInDatabase()
      */
     public function dontSeeAttachmentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeAttachmentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeAttachmentInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3370,10 +3377,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeAttachmentInDatabase()
      */
     public function cantSeeAttachmentInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeAttachmentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3404,10 +3411,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveAttachmentInDatabase()
      */
     public function dontHaveAttachmentInDatabase(array $criteria, bool $purgeMeta = true, bool $removeFiles = false): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveAttachmentInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3429,10 +3436,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveAttachmentFilesInDatabase()
      */
     public function dontHaveAttachmentFilesInDatabase(array|int $attachmentIds): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentFilesInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveAttachmentFilesInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3452,10 +3459,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabAttachmentAttachedFile()
      */
     public function grabAttachmentAttachedFile(int $attachmentPostId): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentAttachedFile', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabAttachmentAttachedFile', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3475,10 +3482,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabAttachmentMetadata()
      */
     public function grabAttachmentMetadata(int $attachmentPostId): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAttachmentMetadata', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabAttachmentMetadata', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3495,10 +3502,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHavePostInDatabase()
      */
     public function dontHavePostInDatabase(array $criteria, bool $purgeMeta = true): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHavePostInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3514,10 +3521,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHavePostMetaInDatabase()
      */
     public function dontHavePostMetaInDatabase(array $criteria): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostMetaInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHavePostMetaInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3538,10 +3545,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveUserInDatabaseWithEmail()
      */
     public function dontHaveUserInDatabaseWithEmail(string $userEmail, bool $purgeMeta = true): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabaseWithEmail', func_get_args()));
+        return $this->getScenario()->runStep(new Action('dontHaveUserInDatabaseWithEmail', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3560,10 +3567,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabTablePrefix()
      */
     public function grabTablePrefix(): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTablePrefix', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3584,10 +3591,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveUserInDatabase()
      */
     public function dontHaveUserInDatabase(string|int $userIdOrLogin, bool $purgeMeta = true): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHaveUserInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3604,10 +3611,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabUserIdFromDatabase()
      */
     public function grabUserIdFromDatabase(string $userLogin): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserIdFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabUserIdFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3626,10 +3633,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostMetaFromDatabase()
      */
     public function grabPostMetaFromDatabase(int $postId, string $metaKey, bool $single = false): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostMetaFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabPostMetaFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3650,10 +3657,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogTableName()
      */
     public function grabBlogTableName(int $blogId, string $table): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTableName', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogTableName', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3672,7 +3679,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTableInDatabase()
      */
     public function dontSeeTableInDatabase($table): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTableInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeTableInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3693,10 +3700,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTableInDatabase()
      */
     public function cantSeeTableInDatabase($table): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTableInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeTableInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3715,10 +3722,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogTablePrefix()
      */
     public function grabBlogTablePrefix(int $blogId): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogTablePrefix', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogTablePrefix', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3738,10 +3745,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogDomain()
      */
     public function grabBlogDomain(int $blogId): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogDomain', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogDomain', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3761,10 +3768,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::grabBlogPath()
      */
     public function grabBlogPath(int $blogId): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogPath', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabBlogPath', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3795,7 +3802,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostWithTermInDatabase()
      */
     public function dontSeePostWithTermInDatabase(int $post_id, int $term_taxonomy_id, ?int $term_order = NULL, ?string $taxonomy = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeePostWithTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeePostWithTermInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3828,10 +3835,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeePostWithTermInDatabase()
      */
     public function cantSeePostWithTermInDatabase(int $post_id, int $term_taxonomy_id, ?int $term_order = NULL, ?string $taxonomy = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeePostWithTermInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeePostWithTermInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3851,10 +3858,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::havePostThumbnailInDatabase()
      */
     public function havePostThumbnailInDatabase(int $postId, int $thumbnailId): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostThumbnailInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('havePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3876,10 +3883,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontHavePostThumbnailInDatabase()
      */
     public function dontHavePostThumbnailInDatabase(int $postId): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontHavePostThumbnailInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontHavePostThumbnailInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3902,10 +3909,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::importSql()
      */
     public function importSql(array $sql): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('importSql', func_get_args()));
+        $this->getScenario()->runStep(new Action('importSql', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3928,7 +3935,7 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteOptionInDatabase()
      */
     public function dontSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeSiteOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeSiteOptionInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -3953,10 +3960,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteOptionInDatabase()
      */
     public function cantSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -3974,10 +3981,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::amConnectedToDatabase()
      */
     public function amConnectedToDatabase(string $databaseKey): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Condition('amConnectedToDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Condition('amConnectedToDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4016,15 +4023,15 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::performInDatabase()
      */
     public function performInDatabase($databaseKey, $actions): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('performInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('performInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Inserts an SQL record into a database. This record will be erased after the test, 
-     * unless you've configured "skip_cleanup_if_failed", and the test fails. 
+     * Inserts an SQL record into a database. This record will be erased after the test,
+     * unless you've configured "skip_cleanup_if_failed", and the test fails.
      *
      * ```php
      * <?php
@@ -4033,10 +4040,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::haveInDatabase()
      */
     public function haveInDatabase(string $table, array $data): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('haveInDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('haveInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4061,7 +4068,7 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::seeInDatabase()
      */
     public function seeInDatabase(string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -4088,10 +4095,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::seeInDatabase()
      */
     public function canSeeInDatabase(string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4108,7 +4115,7 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::seeNumRecords()
      */
     public function seeNumRecords(int $expectedNumber, string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeNumRecords', func_get_args()));
+        $this->getScenario()->runStep(new Assertion('seeNumRecords', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -4127,10 +4134,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::seeNumRecords()
      */
     public function canSeeNumRecords(int $expectedNumber, string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeNumRecords', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('seeNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4157,7 +4164,7 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::dontSeeInDatabase()
      */
     public function dontSeeInDatabase(string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('dontSeeInDatabase', func_get_args()));
     }
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
@@ -4186,10 +4193,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::dontSeeInDatabase()
      */
     public function cantSeeInDatabase(string $table, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new ConditionalAssertion('dontSeeInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4203,10 +4210,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::grabColumnFromDatabase()
      */
     public function grabColumnFromDatabase(string $table, string $column, array $criteria = []): array {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabColumnFromDatabase', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabColumnFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4230,11 +4237,12 @@ trait EventsTesterActions
      * @return mixed Returns a single column value or false
      * @see \Codeception\Module\Db::grabFromDatabase()
      */
-    public function grabFromDatabase(string $table, string $column, array $criteria = []) {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFromDatabase', func_get_args()));
+    public function grabFromDatabase(string $table, string $column, array $criteria = []): mixed
+    {
+        return $this->getScenario()->runStep(new Action('grabFromDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4246,10 +4254,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::grabNumRecords()
      */
     public function grabNumRecords(string $table, array $criteria = []): int {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabNumRecords', func_get_args()));
+        return $this->getScenario()->runStep(new Action('grabNumRecords', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4262,10 +4270,10 @@ trait EventsTesterActions
      * @see \Codeception\Module\Db::updateInDatabase()
      */
     public function updateInDatabase(string $table, array $data, array $criteria = []): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('updateInDatabase', func_get_args()));
+        $this->getScenario()->runStep(new Action('updateInDatabase', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4289,10 +4297,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::getPluginsFolder()
      */
     public function getPluginsFolder(string $path = ""): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('getPluginsFolder', func_get_args()));
+        return $this->getScenario()->runStep(new Action('getPluginsFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4312,11 +4320,11 @@ trait EventsTesterActions
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      * @see \lucatume\WPBrowser\Module\WPLoader::factory()
      */
-    public function factory(): \lucatume\WPBrowser\Module\WPLoader\FactoryStore {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('factory', func_get_args()));
+    public function factory(): FactoryStore {
+        return $this->getScenario()->runStep(new Action('factory', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4337,10 +4345,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::getContentFolder()
      */
     public function getContentFolder(string $path = ""): string {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('getContentFolder', func_get_args()));
+        return $this->getScenario()->runStep(new Action('getContentFolder', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4365,11 +4373,12 @@ trait EventsTesterActions
      * @return void
      * @see \lucatume\WPBrowser\Module\WPLoader::startWpFiltersDebug()
      */
-    public function startWpFiltersDebug(?callable $format = NULL) {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('startWpFiltersDebug', func_get_args()));
+    public function startWpFiltersDebug(?callable $format = NULL): void
+    {
+        return $this->getScenario()->runStep(new Action('startWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4389,11 +4398,12 @@ trait EventsTesterActions
      * @return void
      * @see \lucatume\WPBrowser\Module\WPLoader::stopWpFiltersDebug()
      */
-    public function stopWpFiltersDebug() {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('stopWpFiltersDebug', func_get_args()));
+    public function stopWpFiltersDebug(): void
+    {
+        return $this->getScenario()->runStep(new Action('stopWpFiltersDebug', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4418,10 +4428,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::debugWpFilterInitial()
      */
     public function debugWpFilterInitial($args = null): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterInitial', func_get_args()));
+        return $this->getScenario()->runStep(new Action('debugWpFilterInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4446,10 +4456,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::debugWpFilterFinal()
      */
     public function debugWpFilterFinal($args = null): mixed {
-        return $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpFilterFinal', func_get_args()));
+        return $this->getScenario()->runStep(new Action('debugWpFilterFinal', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4472,10 +4482,10 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::debugWpActionInitial()
      */
     public function debugWpActionInitial($args = null): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionInitial', func_get_args()));
+        $this->getScenario()->runStep(new Action('debugWpActionInitial', func_get_args()));
     }
 
- 
+
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
@@ -4498,6 +4508,6 @@ trait EventsTesterActions
      * @see \lucatume\WPBrowser\Module\WPLoader::debugWpActionFinal()
      */
     public function debugWpActionFinal($args = null): void {
-        $this->getScenario()->runStep(new \Codeception\Step\Action('debugWpActionFinal', func_get_args()));
+        $this->getScenario()->runStep(new Action('debugWpActionFinal', func_get_args()));
     }
 }

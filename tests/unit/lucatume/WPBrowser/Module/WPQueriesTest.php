@@ -14,10 +14,6 @@ use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
 use wpdb;
 
-if (!class_exists(wpdb::class)) {
-    require_once codecept_root_dir('tests/_support/lib/wpdb.php');
-}
-
 class WPQueriesTest extends Unit
 {
     use UopzFunctions;
@@ -56,16 +52,17 @@ class WPQueriesTest extends Unit
     }
 
     /**
-     * It should throw if wpdb not provided and global would not be found
+     * It should throw if wpdb cannot be found at initialize time
      *
      * @test
      */
-    public function should_throw_if_wpdb_not_provided_and_global_would_not_be_found(): void
+    public function should_throw_if_wpdb_not_cannot_be_found_at_initialize_time(): void
     {
         $this->expectException(ModuleException::class);
 
         $this->wpdb = null;
-        $this->makeInstance();
+        unset($GLOBALS['wpdb']);
+        $this->makeInstance()->_initialize();
     }
 
     /**
@@ -75,7 +72,7 @@ class WPQueriesTest extends Unit
      */
     public function should_use_the_globally_available_instance_of_wpdb_if_none_provided(): void
     {
-        $globalWpdb = new wpdb;
+        $globalWpdb = $this->getWpdb();
         $GLOBALS['wpdb'] = $globalWpdb;
         $this->wpdb = null;
         $wpQueries = $this->makeInstance();
@@ -92,7 +89,7 @@ class WPQueriesTest extends Unit
         $this->uopzUndefineConstant('SAVEQUERIES');
         $this->assertFalse(defined('SAVEQUERIES'));
 
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $wpQueries = $this->makeInstance();
         $wpQueries->_initialize();
 
@@ -112,7 +109,7 @@ class WPQueriesTest extends Unit
 
         $this->expectException(ModuleException::class);
 
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $wpQueries = $this->makeInstance();
         $wpQueries->_initialize();
     }
@@ -123,42 +120,52 @@ class WPQueriesTest extends Unit
      */
     public function it_should_filter_set_up_and_tear_down_queries_by_default(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'query 1',
                 123, // ms timing.
-                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time(),
+                ['custom' => 'data']
             ],
             [
                 'query 2',
                 34, // ms timing.
-                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time(),
             ],
             [
                 'query 3',
                 14, // ms timing.
-                'trace calling Acme\MyPlugin->someMethod'
+                'trace calling Acme\MyPlugin->someMethod',
+                time(),
+                ['custom' => 'data']
             ],
             [
                 'query 4',
                 34, // ms timing.
-                'trace including WP_UnitTest_Factory_For_Thing->create'
+                'trace including WP_UnitTest_Factory_For_Thing->create',
+                time(),
             ],
             [
                 'query 5',
                 4, // ms timing.
-                'trace including WP_UnitTest_Factory_For_Thing->create'
+                'trace including WP_UnitTest_Factory_For_Thing->create',
+                time(),
             ],
             [
                 'query 6',
                 1343, // ms timing.
-                'trace calling Acme\MyPlugin->someMethod'
+                'trace calling Acme\MyPlugin->someMethod',
+                time(),
+                ['custom' => 'data']
             ],
             [
                 'query 7',
                 234, // ms timing.
-                'trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                'trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time(),
             ],
         ];
 
@@ -176,32 +183,37 @@ class WPQueriesTest extends Unit
      */
     public function it_should_return_false_if_asserting_queries_and_there_were_no_queries(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'first SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'second SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'fourth SQL statement',
-                'some ms timing',
-                'a stack trace including WP_UnitTest_Factory_For_Thing->create'
+                2,
+                'a stack trace including WP_UnitTest_Factory_For_Thing->create',
+                time()
             ],
             [
                 'fifth SQL statement',
-                'some ms timing',
-                'a stack trace including WP_UnitTest_Factory_For_Thing->create'
+                2,
+                'a stack trace including WP_UnitTest_Factory_For_Thing->create',
+                time()
             ],
             [
                 'seventh SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -217,22 +229,25 @@ class WPQueriesTest extends Unit
      */
     public function it_should_not_fail_if_asserting_queries_and_there_were_queries(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'first SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'second SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'seventh SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -246,22 +261,25 @@ class WPQueriesTest extends Unit
      */
     public function it_should_fail_if_asserting_no_queries_but_queries_were_made(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'first SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'second SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'seventh SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -277,17 +295,19 @@ class WPQueriesTest extends Unit
      */
     public function it_should_succeed_if_asserting_no_queries_and_no_queries_were_made(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'first SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'seventh SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -301,27 +321,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_counting_the_queries(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -335,27 +359,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_fail_if_asserting_wrong_queries_count(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->setUp',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SQL statement',
-                'some ms timing',
-                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
+                2,
+                'a stack trace including lucatume\WPBrowser\TestCase\WPTestCase->tearDown',
+                time()
             ],
         ];
 
@@ -371,27 +399,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
         ];
 
@@ -423,27 +455,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_class_method(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodOne'
+                2,
+                'a stack trace including Acme\MyPlugin->methodOne',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodTwo'
+                2,
+                'a stack trace including Acme\MyPlugin->methodTwo',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodTwo'
+                2,
+                'a stack trace including Acme\MyPlugin->methodTwo',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodThree'
+                2,
+                'a stack trace including Acme\MyPlugin->methodThree',
+                time()
             ],
         ];
 
@@ -473,27 +509,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_function(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                'a stack trace including functionOne'
+                2,
+                'a stack trace including functionOne',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including functionTwo'
+                2,
+                'a stack trace including functionTwo',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including functionTwo'
+                2,
+                'a stack trace including functionTwo',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including functionThree'
+                2,
+                'a stack trace including functionThree',
+                time()
             ],
         ];
 
@@ -522,27 +562,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_class_method_and_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodOne'
+                2,
+                'a stack trace including Acme\MyPlugin->methodOne',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodTwo'
+                2,
+                'a stack trace including Acme\MyPlugin->methodTwo',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodTwo'
+                2,
+                'a stack trace including Acme\MyPlugin->methodTwo',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->methodThree'
+                2,
+                'a stack trace including Acme\MyPlugin->methodThree',
+                time()
             ],
         ];
 
@@ -568,27 +612,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_function_and_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                'a stack trace including functionOne'
+                2,
+                'a stack trace including functionOne',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including functionTwo'
+                2,
+                'a stack trace including functionTwo',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including functionTwo'
+                2,
+                'a stack trace including functionTwo',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including functionThree'
+                2,
+                'a stack trace including functionThree',
+                time()
             ],
         ];
 
@@ -614,27 +662,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_action(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                "a stack trace including do_action('actionOne')"
+                2,
+                "a stack trace including do_action('actionOne')",
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                "a stack trace including do_action('actionTwo')"
+                2,
+                "a stack trace including do_action('actionTwo')",
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                "a stack trace including do_action('actionTwo')"
+                2,
+                "a stack trace including do_action('actionTwo')",
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                "a stack trace including do_action('actionThree')"
+                2,
+                "a stack trace including do_action('actionThree')",
+                time()
             ],
         ];
 
@@ -660,27 +712,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_action_and_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                "a stack trace including do_action('actionOne')"
+                2,
+                "a stack trace including do_action('actionOne')",
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                "a stack trace including do_action('actionTwo')"
+                2,
+                "a stack trace including do_action('actionTwo')",
+            time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                "a stack trace including do_action('actionTwo')"
+                2,
+                "a stack trace including do_action('actionTwo')",
+            time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                "a stack trace including do_action('actionThree')"
+                2,
+                "a stack trace including do_action('actionThree')",
+            time()
             ],
         ];
 
@@ -706,27 +762,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_filter(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                "a stack trace including apply_filters('filterOne')"
+                2,
+                "a stack trace including apply_filters('filterOne')",
+            time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                "a stack trace including apply_filters('filterTwo')"
+                2,
+                "a stack trace including apply_filters('filterTwo')",
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                "a stack trace including apply_filters('filterTwo')"
+                2,
+                "a stack trace including apply_filters('filterTwo')",
+            time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                "a stack trace including apply_filters('filterThree')"
+                2,
+                "a stack trace including apply_filters('filterThree')",
+                time()
             ],
         ];
 
@@ -752,27 +812,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_asserting_queries_by_filter_and_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 'INSERT INTO ... (SELECT * ...)',
-                'some ms timing',
-                "a stack trace including apply_filters('filterOne')"
+                2,
+                "a stack trace including apply_filters('filterOne')",
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                "a stack trace including apply_filters('filterTwo')"
+                2,
+                "a stack trace including apply_filters('filterTwo')",
+            time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                "a stack trace including apply_filters('filterTwo')"
+                2,
+                "a stack trace including apply_filters('filterTwo')",
+            time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                "a stack trace including apply_filters('filterThree')"
+                2,
+                "a stack trace including apply_filters('filterThree')",
+            time()
             ],
         ];
 
@@ -798,27 +862,31 @@ class WPQueriesTest extends Unit
      */
     public function it_should_allow_using_regexes_when_asserting_queries_by_statement(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
         ];
 
@@ -837,27 +905,31 @@ class WPQueriesTest extends Unit
      */
     public function should_allow_getting_the_count_of_the_queries(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+            time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
         ];
 
@@ -873,32 +945,53 @@ class WPQueriesTest extends Unit
      */
     public function should_allow_getting_the_queries(): void
     {
-        $this->wpdb = new wpdb;
+        $this->wpdb = $this->getWpdb();
         $this->wpdb->queries = [
             [
                 "SELECT * FROM wp_posts p JOIN wp_postmeta pm ON p.ID = pm.post_id WHERE p.post_type = 'some_type' AND pm.meta_key = 'some_key'",
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'SELECT ID FROM ... (SELECT...)',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+            time()
             ],
             [
                 'SELECT * FROM ... INSERT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
             [
                 'UPDATE some_table... (SELECT',
-                'some ms timing',
-                'a stack trace including Acme\MyPlugin->someMethod'
+                2,
+                'a stack trace including Acme\MyPlugin->someMethod',
+                time()
             ],
         ];
 
         $sut = $this->makeInstance();
 
         $this->assertEquals($this->wpdb->queries, $sut->getQueries());
+    }
+
+    /**
+     * ${CARET}
+     *
+     * @return wpdb
+     * @since TBD
+     *
+     */
+    protected function getWpdb(): wpdb
+    {
+        $user = Env::get('WORDPRESS_DB_USER');
+        $password = Env::get('WORDPRESS_DB_PASSWORD');
+        $name = Env::get('WORDPRESS_DB_NAME');
+        $host = Env::get('WORDPRESS_DB_HOST');
+        $wpdb = new wpdb($user, $password, $name, $host);
+        return $wpdb;
     }
 }

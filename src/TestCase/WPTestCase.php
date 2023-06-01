@@ -51,7 +51,6 @@ class WPTestCase extends Unit
         if (isset(self::$coreTestCaseMap[static::class])) {
             return self::$coreTestCaseMap[static::class];
         }
-
         $coreTestCase = new class extends WP_UnitTestCase {
         };
         $coreTestCase->setCalledClass(static::class);

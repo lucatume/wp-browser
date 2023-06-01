@@ -8,7 +8,7 @@
         "type": "Fatal error",
         "message": "Uncaught PHPUnit\\TextUI\\RuntimeException: For Reasons",
         "file": "\/includes\/core-phpunit\/includes\/bootstrap.php",
-        "line": "261",
+        "line": 261,
         "trace": [
             {
                 "date": "17-Mar-2023",
@@ -17,7 +17,7 @@
                 "call": "Opis\\Closure\\SerializableClosure->__invoke",
                 "args": "",
                 "file": "\/src\/Process\/Worker\/worker-script.php",
-                "line": "15"
+                "line": 15
             },
             {
                 "date": "17-Mar-2023",
@@ -26,16 +26,16 @@
                 "call": "call_user_func_array",
                 "args": "Object(Closure), Array",
                 "file": "\/vendor\/opis\/closure\/src\/SerializableClosure.php",
-                "line": "109"
+                "line": 109
             },
             {
                 "date": "17-Mar-2023",
                 "time": "16:54:06",
                 "timezone": "Europe\/Paris",
-                "file": "closure:\/\/static function () use ($rootDir, $wpLoader1) {\n            $wpLoader1->_initialize();\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->_getConfig('wpRootFolder'));\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->getWpRootFolder());\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->getWpRootFolder());",
-                "line": "3",
                 "call": "lucatume\\WPBrowser\\Module\\WPLoader->_initialize",
-                "args": ""
+                "args": "",
+                "file": "closure:\/\/static function () use ($rootDir, $wpLoader1) {\n            $wpLoader1->_initialize();\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->_getConfig('wpRootFolder'));\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->getWpRootFolder());\n            \\PHPUnit\\Framework\\Assert::assertEquals($rootDir . '\/test\/wordpress\/', $wpLoader1->getWpRootFolder());",
+                "line": 3
             },
             {
                 "date": "17-Mar-2023",
@@ -44,7 +44,7 @@
                 "call": "lucatume\\WPBrowser\\Module\\WPLoader->_loadWordpress",
                 "args": "",
                 "file": "\/src\/Module\/WPLoader.php",
-                "line": "368"
+                "line": 368
             },
             {
                 "date": "17-Mar-2023",
@@ -53,7 +53,7 @@
                 "call": "lucatume\\WPBrowser\\Module\\WPLoader->installAndBootstrapInstallation",
                 "args": "",
                 "file": "\/src\/Module\/WPLoader.php",
-                "line": "426"
+                "line": 426
             },
             {
                 "date": "17-Mar-2023",
@@ -62,7 +62,7 @@
                 "call": "require",
                 "args": "",
                 "file": "\/src\/Module\/WPLoader.php",
-                "line": "652"
+                "line": 652
             },
             {
                 "date": "17-Mar-2023",
@@ -71,7 +71,7 @@
                 "call": "n\/a",
                 "args": "n\/a",
                 "file": "\/includes\/core-phpunit\/includes\/bootstrap.php",
-                "line": "261"
+                "line": 261
             }
         ]
     }

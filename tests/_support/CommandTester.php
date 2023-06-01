@@ -1,5 +1,7 @@
 <?php
 
+use Codeception\Actor;
+
 
 /**
  * Inherited Methods
@@ -16,7 +18,7 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class CommandTester extends \Codeception\Actor
+class CommandTester extends Actor
 {
     use _generated\CommandTesterActions;
 

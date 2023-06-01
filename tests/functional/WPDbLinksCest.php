@@ -5,11 +5,11 @@ use lucatume\WPBrowser\Generators\Links;
 class WPDbLinksCest
 {
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -17,7 +17,7 @@ class WPDbLinksCest
      * @test
      * it should allow having a link in the database
      */
-    public function it_should_allow_having_a_link_in_the_database(FunctionalTester $I)
+    public function it_should_allow_having_a_link_in_the_database(FunctionalTester $I): void
     {
         $now = time();
         Date::_injectNow($now);
@@ -34,7 +34,7 @@ class WPDbLinksCest
      * @test
      * it should allow overriding default values
      */
-    public function it_should_allow_overriding_default_values(FunctionalTester $I)
+    public function it_should_allow_overriding_default_values(FunctionalTester $I): void
     {
 
         $overrides = [
@@ -63,12 +63,12 @@ class WPDbLinksCest
      * @test
      * it should allow having many links in database
      */
-    public function it_should_allow_having_many_links_in_database(FunctionalTester $I)
+    public function it_should_allow_having_many_links_in_database(FunctionalTester $I): void
     {
         $ids = $I->haveManyLinksInDatabase(5);
         $table = $I->grabLinksTableName();
         foreach ($ids as $id) {
-            $I->assertTrue(is_int($id));
+            $I->assertIsInt($id);
             $I->seeInDatabase($table, ['link_id' => $id]);
         }
     }
@@ -77,7 +77,7 @@ class WPDbLinksCest
      * @test
      * it should allow using number placeholder when inserting many
      */
-    public function it_should_allow_using_number_placeholder_when_inserting_many(FunctionalTester $I)
+    public function it_should_allow_using_number_placeholder_when_inserting_many(FunctionalTester $I): void
     {
         $overrides = [
             'link_url' => 'http://example.com/{{n}}',
@@ -98,7 +98,7 @@ class WPDbLinksCest
 
         $table = $I->grabLinksTableName();
         for ($i = 0; $i < count($ids); $i++) {
-            $I->assertTrue(is_int($ids[$i]));
+            $I->assertIsInt($ids[$i]);
             foreach ($overrides as $key => $value) {
                 $I->seeInDatabase($table, ['link_id' => $ids[$i], $key => str_replace('{{n}}', $i, $value)]);
             }
@@ -109,7 +109,7 @@ class WPDbLinksCest
      * @test
      * it should allow not having a link in the database
      */
-    public function it_should_allow_not_having_a_link_in_the_database(FunctionalTester $I)
+    public function it_should_allow_not_having_a_link_in_the_database(FunctionalTester $I): void
     {
         $id = $I->haveLinkInDatabase();
 

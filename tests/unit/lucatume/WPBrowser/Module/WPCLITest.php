@@ -14,6 +14,7 @@ use lucatume\WPBrowser\WordPress\CliProcess;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
+use stdClass;
 use Symfony\Component\Process\PhpProcess;
 use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -72,7 +73,7 @@ class WPCLITest extends Unit
         return [
             'negative' => [-1],
             'array' => [[1]],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
         ];
     }
 
@@ -89,6 +90,32 @@ class WPCLITest extends Unit
         $this->module([
             'timeout' => $timeoutValue,
             'path' => self::$installation->getWpRootDir()
+        ]);
+    }
+
+    public function stringConfigKeysProvider(): array
+    {
+        return [
+            'cache-dir' => ['cache-dir'],
+            'config-path' => ['config-path'],
+            'custom-shell' => ['custom-shell'],
+            'packages-dir' => ['packages-dir'],
+        ];
+    }
+
+    /**
+     * It should throw if expected string keys are not string keys
+     *
+     * @test
+     * @dataProvider stringConfigKeysProvider
+     */
+    public function should_throw_if_expected_string_keys_are_not_string_keys(string $configKey): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            $configKey => 23,
         ]);
     }
 
@@ -318,8 +345,6 @@ class WPCLITest extends Unit
             'user' => 23
         ]);
 
-        $this->expectException(ModuleException::class);
-
         $wpcli->cli(['core', 'version']);
 
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
@@ -336,21 +361,40 @@ class WPCLITest extends Unit
         $this->assertEquals($expected, $commandLine);
     }
 
+    public function strictArgsInlineValuesProvider():array{
+        return [
+            'url' => ['url', 'https://example.com', '--url=https://subdomain.example.com'],
+            'user' => ['user', 23, '--user=89'],
+            'skip-plugins' => ['skip-plugins', false, '--skip-plugins'],
+            'skip-themes' => ['skip-themes', false, '--skip-themes'],
+            'skip-packages' => ['skip-packages', false, '--skip-packages'],
+            'require' => ['require', [], '--require=foo.php'],
+            'require multiple' => ['require', [], '--require=foo.php', '--require=bar.php'],
+            'exec' => ['exec', false, '--exec="echo \'hi\';"'],
+            'exec multi' => ['exec', false, '--exec="echo \'hi\';"', '--exec="echo \'hello\';"'],
+            'context' => ['context', 'development', '--context=foo'],
+            'color overridden by --no-color' => ['color', true, '--no-color'],
+            'no-color overridden by --color' => ['no-color', false, '--color'],
+            'debug' => ['debug', false, '--debug'],
+            'quiet' => ['quiet', false, '--quiet'],
+        ];
+    }
+
     /**
-     * It should allow overriding configuration for user with inline option
+     * It should allow overriding strict args in command line
      *
      * @test
+     * @dataProvider strictArgsInlineValuesProvider
      */
-    public function should_allow_overriding_configuration_for_user_with_inline_option(): void
+    public function should_allow_overriding_strict_args_in_command_line(string $strictArg, mixed $configValue, string $inlineValue): void
     {
         $wpcli = $this->module([
+            'throw' => false,
             'path' => self::$installation->getWpRootDir(),
-            'user' => 23
+            $strictArg => $configValue
         ]);
 
-        $this->expectException(ModuleException::class);
-
-        $wpcli->cli(['--user=89', 'core', 'version']);
+        $wpcli->cli([$inlineValue, 'core', 'version']);
 
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
@@ -359,7 +403,7 @@ class WPCLITest extends Unit
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
-                '--user=89',
+                $inlineValue,
                 'core',
                 'version'
             ]));
@@ -448,6 +492,66 @@ class WPCLITest extends Unit
                 'version'
             ]));
         $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should throw if exec configuration parameter is not an array
+     *
+     * @test
+     */
+    public function should_throw_if_exec_configuration_parameter_is_not_an_array(): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'exec' => 23
+        ]);
+    }
+
+    /**
+     * It should throw if require configuration parameter is not an array
+     *
+     * @test
+     */
+    public function should_throw_if_require_configuration_parameter_is_not_an_array(): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'require' => 23
+        ]);
+    }
+
+    /**
+     * It should throw if exec configuration parameter is not an array of strings
+     *
+     * @test
+     */
+    public function should_throw_if_exec_configuration_parameter_is_not_an_array_of_strings(): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'exec' => ['echo "Hello World!"', 23]
+        ]);
+    }
+
+    /**
+     * It should throw if require configuration parameter is not an array of strings
+     *
+     * @test
+     */
+    public function should_throw_if_require_configuration_parameter_is_not_an_array_of_strings(): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'require' => ['php-file-1.php', 23]
+        ]);
     }
 
     /**
@@ -578,6 +682,21 @@ class WPCLITest extends Unit
     }
 
     /**
+     * It should throw if context configuration parameter is not a string
+     *
+     * @test
+     */
+    public function should_throw_if_context_configuration_parameter_is_not_a_string(): void
+    {
+        $this->expectException(ModuleConfigException::class);
+
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'context' => 2389,
+        ]);
+    }
+
+    /**
      * It should allow configuring wp-cli context, debug and quiet options
      *
      * @test
@@ -586,9 +705,8 @@ class WPCLITest extends Unit
     {
         $wpcli = $this->module([
             'path' => self::$installation->getWpRootDir(),
-            'context' => 'development',
             'debug' => true,
-            'quiet' => true,
+            'quiet' => true
         ]);
 
         $wpcli->cli(['core', 'version']);
@@ -602,7 +720,62 @@ class WPCLITest extends Unit
                 $wpCliPhar,
                 '--debug',
                 '--quiet',
-                '--context=development',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli to run with color
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_run_with_color(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'color' => true
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--color',
+                'core',
+                'version'
+            ]));
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
+     * It should allow configuring wp-cli to run without color
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_run_without_color(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'no-color' => true
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--no-color',
                 'core',
                 'version'
             ]));

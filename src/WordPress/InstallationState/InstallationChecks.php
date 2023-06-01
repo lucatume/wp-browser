@@ -9,6 +9,7 @@ use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
+use PDOException;
 use Throwable;
 
 trait InstallationChecks
@@ -31,7 +32,11 @@ trait InstallationChecks
             return false;
         }
 
-        $siteurl = $db->getOption('siteurl');
+        try {
+            $siteurl = $db->getOption('siteurl');
+        } catch (DbException|PDOException) {
+            return false;
+        }
 
         if (!(is_string($siteurl) && $siteurl !== '')) {
             return false;

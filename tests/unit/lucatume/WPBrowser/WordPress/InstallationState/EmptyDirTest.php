@@ -3,6 +3,7 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
@@ -10,7 +11,7 @@ use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class EmptyDirTest extends \Codeception\Test\Unit
+class EmptyDirTest extends Unit
 {
     use UopzFunctions;
 
@@ -419,5 +420,25 @@ class EmptyDirTest extends \Codeception\Test\Unit
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
 
         $emptyDir->updateOption('foo', 'bar');
+    }
+
+    /**
+     * It should throw if trying to execute Closure in WordPress
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_execute_closure_in_word_press(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+        $closure = function () {
+            return 'foo';
+        };
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->executeClosureInWordPress($closure);
     }
 }

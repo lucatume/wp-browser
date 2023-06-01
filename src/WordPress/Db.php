@@ -2,9 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Exception;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
 use PDO;
+use PDOException;
 
 class Db
 {
@@ -95,7 +97,7 @@ class Db
         if (!$this->pdo instanceof PDO) {
             try {
                 $this->pdo = new PDO($this->dsn, $this->dbUser, $this->dbPassword);
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 throw new DbException(
                     "Could not connect to the database: {$e->getMessage()}",
                     DbException::INVALID_CONNECTION_PARAMETERS
@@ -179,7 +181,10 @@ class Db
     public function query(string $query, array $params = []): int
     {
         $statement = $this->getPDO()->prepare($query);
-        $executed = $statement->execute($params);
+        foreach ($params as $key => $value) {
+            $statement->bindValue($key, $value);
+        }
+        $executed = $statement->execute();
         if ($executed === false) {
             throw new DbException(
                 'Could not execute query ' . $query . ': ' . json_encode($statement->errorInfo(), JSON_PRETTY_PRINT),
@@ -227,6 +232,7 @@ class Db
      * @param array<string, mixed> $parameters
      *
      * @throws DbException
+     * @throws PDOException
      */
     private function fetchFirst(string $query, array $parameters = [], mixed $default = null): mixed
     {
@@ -239,6 +245,7 @@ class Db
             );
         }
         $value = $statement->fetchColumn();
+
         return $value === false ? $default : Serializer::maybeUnserialize($value);
     }
 
@@ -294,7 +301,7 @@ class Db
             if (str_ends_with($line, ';')) {
                 try {
                     $modified = $pdo->exec($line);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     fclose($dumpFileHandle);
                     throw new DbException("Failed to execute query: " . $e->getMessage(), DbException::FAILED_QUERY);
                 }

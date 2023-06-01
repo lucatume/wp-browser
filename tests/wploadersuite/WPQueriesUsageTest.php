@@ -1,8 +1,9 @@
 <?php
 
 use lucatume\WPBrowser\Module\WPQueries;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class WPQueriesUsageTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+class WPQueriesUsageTest extends WPTestCase
 {
 
     /**

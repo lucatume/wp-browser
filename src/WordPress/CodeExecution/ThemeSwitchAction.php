@@ -2,8 +2,12 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
+use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use WP_Theme;
+use function switch_theme;
+use function wp_get_theme;
 
 class ThemeSwitchAction implements CodeExecutionActionInterface
 {
@@ -24,19 +28,19 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
     private function switchTheme(string $stylesheet, bool $multisite): void
     {
         // The `switch_theme` function will not complain about a missing theme: check it now.
-        $theme = \wp_get_theme($stylesheet);
-        if (!($theme instanceof \WP_Theme && $theme->exists())) {
+        $theme = wp_get_theme($stylesheet);
+        if (!($theme instanceof WP_Theme && $theme->exists())) {
             throw new RuntimeException("Theme $stylesheet does not exist.");
         }
 
         if ($multisite) {
-            \WP_Theme::network_enable_theme($stylesheet);
+            WP_Theme::network_enable_theme($stylesheet);
         }
 
-        \switch_theme($stylesheet);
+        switch_theme($stylesheet);
     }
 
-    public function getClosure(): \Closure
+    public function getClosure(): Closure
     {
         $request = $this->request;
 

@@ -8,7 +8,7 @@
         "type": "Fatal error",
         "message": "Uncaught PHPUnit\\Framework\\MockObject\\RuntimeException: Mocking did not work.",
         "file": "\/src\/Process\/Worker\/worker-script.php",
-        "line": "15",
+        "line": 15,
         "trace": [
             {
                 "date": "17-Mar-2023",
@@ -17,7 +17,7 @@
                 "call": "n\/a",
                 "args": "n\/a",
                 "file": "\/src\/Process\/Worker\/worker-script.php",
-                "line": "15"
+                "line": 15
             }
         ]
     }

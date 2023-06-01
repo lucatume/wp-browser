@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
+use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
 class CheckWordPressInstalledAction implements CodeExecutionActionInterface
@@ -21,7 +22,7 @@ class CheckWordPressInstalledAction implements CodeExecutionActionInterface
         return is_blog_installed() && (!$multisite || is_multisite());
     }
 
-    public function getClosure(): \Closure
+    public function getClosure(): Closure
     {
         $request = $this->request;
 

@@ -3,6 +3,8 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Codeception\Test\Unit;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
@@ -12,7 +14,7 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class SingleTest extends \Codeception\Test\Unit
+class SingleTest extends Unit
 {
     use UopzFunctions;
 
@@ -761,5 +763,153 @@ class SingleTest extends \Codeception\Test\Unit
 
         $this->assertEquals(1, $single->updateOption('foo', 'bar'));
         $this->assertEquals('bar', $db->getOption('foo'));
+    }
+
+    /**
+     * It should throw if siteurl cannot be fetched in constructor
+     *
+     * @test
+     */
+    public function should_throw_if_siteurl_cannot_be_fetched_in_constructor(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        // Delete the siteurl option.
+        $db->query("DELETE FROM {$db->getTablePrefix()}options WHERE option_name = 'siteurl'");
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_CONFIGURED);
+
+        new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+    }
+
+    /**
+     * It should throw if no admin user can be found while converting to multisite
+     *
+     * @test
+     */
+    public function should_throw_if_no_admin_user_can_be_found_while_converting_to_multisite(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        // Delete all users from the database.
+        $db->query('DELETE FROM wp_users');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::NO_ADMIN_USER_FOUND);
+        $single->convertToMultisite(false);
+    }
+
+    /**
+     * It should throw if siteurl cannot be found while converting to multisite
+     *
+     * @test
+     */
+    public function should_throw_if_siteurl_cannot_be_found_while_converting_to_multisite(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            )
+            ->convertToMultisite(false);
+    }
+
+    /**
+     * It should throw if trying to execute non static Closure in WordPress
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_execute_non_static_closure_in_word_press(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->assertEquals('https://wp.local', $single->executeClosureInWordPress(function () {
+            return get_option('siteurl');
+        }));
+    }
+
+    /**
+     * It should allow executing a Closure in WordPress
+     *
+     * @test
+     */
+    public function should_allow_executing_a_closure_in_word_press(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals('https://wp.local', $single->executeClosureInWordPress(static function () {
+            return get_option('siteurl');
+        }));
     }
 }

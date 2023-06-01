@@ -1,6 +1,8 @@
 <?php
 
-class IsolatedPluginTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class IsolatedPluginTest extends WPTestCase
 {
     /**
      * @runInSeparateProcess

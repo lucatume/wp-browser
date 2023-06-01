@@ -19,8 +19,5 @@ modules:
         WPLoader:
             loadOnly: true
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            dbName: %WORDPRESS_DB_NAME%
-            dbHost: %WORDPRESS_DB_HOST%
-            dbUser: %WORDPRESS_DB_USER%
-            dbPassword: %WORDPRESS_DB_PASSWORD%
+            dbUrl: '%WORDPRESS_DB_URL%'
             domain: %WORDPRESS_DOMAIN%

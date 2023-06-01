@@ -7,12 +7,14 @@
 
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use FilterIterator;
+
 /**
  * Class QueriesCallerBasedFilterIterator
  *
  * @package lucatume\WPBrowser\Iterators\Filters
  */
-abstract class QueriesCallerBasedFilterIterator extends \FilterIterator
+abstract class QueriesCallerBasedFilterIterator extends FilterIterator
 {
     /**
      * The list of callers to look for.

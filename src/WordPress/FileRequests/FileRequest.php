@@ -72,14 +72,14 @@ abstract class FileRequest implements Serializable
         } else {
             $query = parse_url($this->requestUri, PHP_URL_QUERY);
 
-            if (empty($query)) {
+            if ($query === false) {
                 throw new FileRequestException(sprintf(
                     'Unable to parse query string from request URI: %s',
                     $this->requestUri
                 ));
             }
 
-            parse_str($query, $queryArgs);
+            parse_str((string)$query, $queryArgs);
             foreach ($queryArgs as $key => $value) {
                 $_GET[$key] = $value;
             }

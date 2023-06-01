@@ -2,7 +2,9 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
+use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use function wp_slash;
 
 class InstallAction implements CodeExecutionActionInterface
 {
@@ -17,7 +19,6 @@ class InstallAction implements CodeExecutionActionInterface
         string $adminEmail,
         string $url
     ) {
-
         $request
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->defineConstant('WP_INSTALLING', true)
@@ -55,10 +56,10 @@ class InstallAction implements CodeExecutionActionInterface
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         require_once ABSPATH . '/wp-includes/class-wpdb.php';
-        wp_install($title, $adminUser, $adminEmail, true, '', \wp_slash($adminPassword));
+        wp_install($title, $adminUser, $adminEmail, true, '', wp_slash($adminPassword));
     }
 
-    public function getClosure(): \Closure
+    public function getClosure(): Closure
     {
         $request = $this->request;
 

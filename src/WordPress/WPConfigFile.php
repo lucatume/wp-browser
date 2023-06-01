@@ -63,13 +63,16 @@ class WPConfigFile
         return isset($this->variables[$varName]);
     }
 
-    public function getConstant(string $constant): int|float|string|bool|null
+    /**
+     * @return int|float|string|bool|array<int|string,mixed>|null
+     */
+    public function getConstant(string $constant): int|float|string|bool|array|null
     {
         return $this->constants[$constant] ?? null;
     }
 
     /**
-     * @return array<string,int|float|string|bool|null>
+     * @return array<string,int|float|string|bool|array<int|string,mixed>|null>
      */
     public function getConstants(): array
     {

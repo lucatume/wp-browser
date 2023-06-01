@@ -3,7 +3,6 @@
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
-use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 
 class CodeExecutionFactory
@@ -84,6 +83,17 @@ class CodeExecutionFactory
             ->addPresetGlobalVars($this->presetGlobalVars);
 
         return (new InstallAction($request, $this->wpRootDir, $title, $adminUser, $adminPassword, $adminEmail, $url))
+            ->getClosure();
+    }
+
+    public function wrapClosureToExecuteInWordPress(Closure $closure):Closure
+    {
+        $request = $this->requestFactory->buildGetRequest()
+            ->blockHttpRequests()
+            ->setRedirectFiles($this->redirectFiles)
+            ->addPresetGlobalVars($this->presetGlobalVars);
+
+        return (new ExecuteClosureAction($request, $this->wpRootDir, $closure))
             ->getClosure();
     }
 }

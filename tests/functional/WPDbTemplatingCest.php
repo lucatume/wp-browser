@@ -4,11 +4,11 @@
 class WPDbTemplatingCest
 {
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -16,7 +16,7 @@ class WPDbTemplatingCest
      * @test
      * it should allow passing number placeholder strings
      */
-    public function it_should_allow_passing_number_placeholder_strings(FunctionalTester $I)
+    public function it_should_allow_passing_number_placeholder_strings(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(5, ['post_content' => 'Content of post {{n}}']);
 
@@ -29,7 +29,7 @@ class WPDbTemplatingCest
      * @test
      * it should pass n in the many templates
      */
-    public function it_should_pass_n_in_the_many_templates(FunctionalTester $I)
+    public function it_should_pass_n_in_the_many_templates(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(
             2,
@@ -37,14 +37,14 @@ class WPDbTemplatingCest
         );
 
         $I->seePostInDatabase(['ID' => reset($ids), 'post_content' => "Test post 0"]);
-        $I->seePostInDatabase(['ID' => last($ids), 'post_content' => "Test post 1"]);
+        $I->seePostInDatabase(['ID' => end($ids), 'post_content' => "Test post 1"]);
     }
 
     /**
      * @test
      * it should allow passing template data with many templates
      */
-    public function it_should_allow_passing_template_data_with_many_templates(FunctionalTester $I)
+    public function it_should_allow_passing_template_data_with_many_templates(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(2, [
             'post_content' => 'Content of post {{n}}: {{content}}',
@@ -52,14 +52,14 @@ class WPDbTemplatingCest
         ]);
 
         $I->seePostInDatabase(['ID' => reset($ids), 'post_content' => "Content of post 0: lorem ipsum."]);
-        $I->seePostInDatabase(['ID' => last($ids), 'post_content' => "Content of post 1: lorem ipsum."]);
+        $I->seePostInDatabase(['ID' => end($ids), 'post_content' => "Content of post 1: lorem ipsum."]);
     }
 
     /**
      * @test
      * it should allow passing closure template data
      */
-    public function it_should_allow_passing_closure_template_data(FunctionalTester $I)
+    public function it_should_allow_passing_closure_template_data(FunctionalTester $I): void
     {
         $templateData = [
             'content' => function ($n) {

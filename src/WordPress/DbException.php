@@ -2,7 +2,9 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
-class DbException extends \Exception
+use Exception;
+
+class DbException extends Exception
 {
     public const INVALID_DB_NAME = 1;
     public const FAILED_QUERY = 2;

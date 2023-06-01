@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\Lib\Generator;
 
+use BadMethodCallException;
 use Codeception\Util\Template;
 
 abstract class AbstractGenerator
@@ -40,7 +41,7 @@ abstract class AbstractGenerator
 
         foreach (static::$requiredSettings as $requiredSetting) {
             if (!isset($this->settings[$requiredSetting])) {
-                throw new \BadMethodCallException('Required template setting [{' . $requiredSetting . '}] is missing.');
+                throw new BadMethodCallException('Required template setting [{' . $requiredSetting . '}] is missing.');
             }
         }
 
@@ -59,7 +60,7 @@ abstract class AbstractGenerator
         foreach (static::$requiredSettings as $requiredSetting) {
             if (!is_string($this->settings[$requiredSetting])) {
                 $message = 'Required template setting [{' . $requiredSetting . '}] is not a string.';
-                throw new \BadMethodCallException($message);
+                throw new BadMethodCallException($message);
             }
         }
 

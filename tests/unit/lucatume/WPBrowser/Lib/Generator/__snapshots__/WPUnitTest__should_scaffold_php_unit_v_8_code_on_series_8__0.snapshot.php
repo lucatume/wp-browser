@@ -1,9 +1,12 @@
 <?php
 namespace Acme;
 
-class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+use WP_Post;
+
+class SomeClassTest extends WPTestCase
 {
-    
+
     public function setUp() :void
     {
         // Before...
@@ -24,7 +27,7 @@ class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
     public function test_it_works()
     {
         $post = static::factory()->post->create_and_get();
-        
-        $this->assertInstanceOf(\WP_Post::class, $post);
+
+        $this->assertInstanceOf(WP_Post::class, $post);
     }
 }

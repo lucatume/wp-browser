@@ -521,12 +521,12 @@ trait WPBrowserMethods
     {
         $this->configBackCompat();
 
+        parent::validateConfig();
+
         foreach (['adminUsername', 'adminPassword', 'adminPath'] as $param) {
             if (!is_string($this->config[$param])) {
                 throw new ModuleConfigException($this, "Configuration parameter $param must be a string.");
             }
         }
-
-        parent::validateConfig();
     }
 }

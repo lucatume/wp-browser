@@ -2,8 +2,10 @@
 
 namespace Step\Cli;
 
+use CliTester;
 use lucatume\WPBrowser\Utils\Composer;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 use lucatume\WPBrowser\Command\GenerateWPAjax;
 use lucatume\WPBrowser\Command\GenerateWPCanonical;
@@ -13,7 +15,7 @@ use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 
-class CodeceptionCommand extends \CliTester
+class CodeceptionCommand extends CliTester
 {
 
     public function createSandbox(): void
@@ -22,7 +24,7 @@ class CodeceptionCommand extends \CliTester
             !mkdir($concurrentDirectory = $this->sandboxPath(), 0777, true) &&
             !is_dir($concurrentDirectory)
         ) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 
         $this->runCodecept('bootstrap', $this->sandboxPath());

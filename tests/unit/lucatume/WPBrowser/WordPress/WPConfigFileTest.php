@@ -2,10 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-class WPConfigFileTest extends \Codeception\Test\Unit
+class WPConfigFileTest extends Unit
 {
     /**
      * It should throw if building on non existing root directory

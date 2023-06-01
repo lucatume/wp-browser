@@ -2,13 +2,15 @@
 
 namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
+use Closure;
+
 class ExitAction implements CodeExecutionActionInterface
 {
     public function __construct(private int $exitCode, private string $stdout = '', private string $stderr = '')
     {
     }
 
-    public function getClosure(): \Closure
+    public function getClosure(): Closure
     {
         $exitCode = $this->exitCode;
         $stdout = $this->stdout;

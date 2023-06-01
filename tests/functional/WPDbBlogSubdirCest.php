@@ -9,12 +9,12 @@ class WPDbBlogSubdirCest
 
     protected $useSubdomain = false;
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
         $I->amConnectedToDatabase($this->targetDb);
     }
 
-    private function scaffoldBlogUploadsDir(FunctionalTester $tester, $blogId)
+    private function scaffoldBlogUploadsDir(FunctionalTester $tester, $blogId): void
     {
         $blogUploadsDir     = $tester->getBlogUploadsPath($blogId);
         $year               = date('Y');
@@ -40,7 +40,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_and_its_tables(FunctionalTester $I)
+    public function should_allow_removing_a_blog_and_its_tables(FunctionalTester $I): void
     {
         $blogs = $I->grabBlogsTableName();
         $blogId = $I->grabFromDatabase($blogs, 'blog_id', ['path' => '/subdir-one/']);
@@ -61,7 +61,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_but_not_its_tables(FunctionalTester $I)
+    public function should_allow_removing_a_blog_but_not_its_tables(FunctionalTester $I): void
     {
         $blogs = $I->grabBlogsTableName();
         $blogId = $I->grabFromDatabase($blogs, 'blog_id', ['path' => '/subdir-one/']);
@@ -82,7 +82,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_tables_and_uploads(FunctionalTester $I)
+    public function should_allow_removing_a_blog_tables_and_uploads(FunctionalTester $I): void
     {
         $blogId = $I->haveBlogInDatabase('/subdir-test/', [], false);
         codecept_debug('Blog ID: ' . $blogId);
@@ -105,7 +105,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_a_blog_and_its_uploads_but_not_the_tables(FunctionalTester $I)
+    public function should_allow_removing_a_blog_and_its_uploads_but_not_the_tables(FunctionalTester $I): void
     {
         $blogId = $I->haveBlogInDatabase('/subdir-test/', [], false);
         codecept_debug('Blog ID: ' . $blogId);
@@ -128,7 +128,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_multiple_blogs_tables(FunctionalTester $I)
+    public function should_allow_removing_multiple_blogs_tables(FunctionalTester $I): void
     {
         $blogIds = $I->haveManyBlogsInDatabase(3, [], false);
         codecept_debug('Blog IDs: ' . json_encode($blogIds, JSON_PRETTY_PRINT));
@@ -163,7 +163,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_removing_multiple_blogs_tables_and_uploads(FunctionalTester $I)
+    public function should_allow_removing_multiple_blogs_tables_and_uploads(FunctionalTester $I): void
     {
         $blogIds = $I->haveManyBlogsInDatabase(3, [], false);
         codecept_debug('Blog IDs: ' . json_encode($blogIds, JSON_PRETTY_PRINT));
@@ -200,7 +200,7 @@ class WPDbBlogSubdirCest
      *
      * @test
      */
-    public function should_allow_having_a_blog_in_the_database_with_tables_and_filesystem(FunctionalTester $I)
+    public function should_allow_having_a_blog_in_the_database_with_tables_and_filesystem(FunctionalTester $I): void
     {
         $blogId = $I->haveBlogInDatabase('test', [], $this->useSubdomain);
         codecept_debug('Blog ID: ' . $blogId);

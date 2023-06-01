@@ -6,35 +6,12 @@ use Codeception\Exception\ModuleException;
 class StrictArgsCest
 {
     /**
-     * It should not use strict arguments by default
+     * It should use strict arguments by default
      *
      * @test
      */
-    public function should_not_use_strict_arguments_by_default(Tester $I)
+    public function should_use_strict_arguments_by_default(Tester $I): void
     {
-        $title = 'RSS Feed ' . md5(time());
-
-        $I->expectThrowable(ModuleException::class, static function () use ($I, $title) {
-            $I->cliToString([
-                'widget',
-                'add',
-                'rss',
-                'sidebar-1',
-                '--title=' . $title,
-                '--url=https://wordpress.org/news/feed/',
-            ]);
-        });
-    }
-
-    /**
-     * It should use strict arguments if configured to do so
-     *
-     * @test
-     */
-    public function should_use_strict_arguments_if_configured_to_do_so(Tester $I)
-    {
-        $I->setCliEnv('strict-args', true);
-
         $title = 'RSS Feed ' . md5(time());
 
         $I->assertEquals(0, $I->cli([
@@ -42,7 +19,7 @@ class StrictArgsCest
             'add',
             'rss',
             'sidebar-1',
-            "--title='{$title}'",
+            "--title=$title",
             '--url=https://wordpress.org/news/feed/',
         ]));
 

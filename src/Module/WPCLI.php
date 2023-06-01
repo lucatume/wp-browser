@@ -10,6 +10,7 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
+use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\WordPress\CliProcess;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -17,11 +18,34 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 /**
  * Class WPCLI
  *
- * @package Codeception\Module
+ * @package Coteception\Module
  */
 class WPCLI extends Module
 {
     public const DEFAULT_TIMEOUT = 60;
+
+    /**
+     * @var array<string,bool>
+     */
+    private static array $globalArgs = [
+        // 'path' => false, // Already part of the required configuration.
+        'url' => false,
+        'user' => false,
+        'skip-plugins' => true,
+        'skip-themes' => true,
+        'skip-packages' => true,
+        'require' => false,
+        'exec' => false,
+        'context' => false,
+        'color' => true,
+        'no-color' => true,
+        'debug' => true,
+        'quiet' => true
+    ];
+    /**
+     * @var array<string>
+     */
+    private static array $arrayArgs = ['require', 'exec'];
 
     /**
      * A list of the module required fields.
@@ -34,18 +58,24 @@ class WPCLI extends Module
      * An array of configuration variables and their default values.
      *
      * @var array{
+     *    url?: string,
+     *    user?: string|int,
+     *    skip-plugins?: bool,
+     *    skip-themes?: bool,
+     *    skip-packages?: bool,
+     *    require?: string|string[],
+     *    exec?: string|string[],
+     *    context?: string,
+     *    color?: bool,
+     *    no-color?: bool,
+     *    debug?: bool,
+     *    quiet?: bool,
      *    throw: bool,
      *    timeout: float,
      *    cache-dir?: string,
      *    config-path?: string,
      *    custom-shell?: string,
-     *    packages-dir?: string,
-     *    skip-plugins?: bool,
-     *    skip-themes?: bool,
-     *    skip-packages?: bool,
-     *    debug?: bool,
-     *    quiet?: bool,
-     *    context?: string
+     *    packages-dir?: string
      * }
      */
     protected array $config = [
@@ -66,38 +96,49 @@ class WPCLI extends Module
      * $I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
      * ```
      *
-     * @param array<string> $command The command to execute.
+     * @param string|array<string> $command        The command to execute.
      * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
-     * @param mixed|null $input The input to pass to the command, a stream resource or a \Traversable
+     * @param mixed|null $input                    The input to pass to the command, a stream resource or a \Traversable
      *                                             instance.
      *
      * @return int The command exit value; `0` usually means success.
      *
      * @throws ModuleException If the command execution fails and the `throw` configuration option is set to `true`.
      */
-    public function cli(array $command = ['core', 'version'], ?array $env = null, mixed $input = null): int
+    public function cli(string|array $command = ['core', 'version'], ?array $env = null, mixed $input = null): int
     {
         /**
          * The config is now validated and the values are defined.
          *
          * @var array{
          *    path: string,
+         *    url?: string,
+         *    user?: string|int,
+         *    skip-plugins?: bool,
+         *    skip-themes?: bool,
+         *    skip-packages?: bool,
+         *    require?: string|string[],
+         *    exec?: string|string[],
+         *    context?: string,
+         *    color?: bool,
+         *    no-color?: bool,
+         *    debug?: bool,
+         *    quiet?: bool,
          *    throw: bool,
          *    timeout: float,
          *    cache-dir?: string,
          *    config-path?: string,
          *    custom-shell?: string,
-         *    packages-dir?: string,
-         *    skip-plugins?: bool,
-         *    skip-themes?: bool,
-         *    skip-packages?: bool,
-         *    debug?: bool,
-         *    quiet?: bool,
-         *    context?: string
+         *    packages-dir?: string
          * } $config
          */
         $config = $this->config;
         $env = array_replace($this->getDefaultEnv(), (array)($config['env'] ?? []), (array)$env);
+
+        if (is_string($command)) {
+            $command = explode(' ', $command);
+        }
+
         $command = $this->addStrictOptionsFromConfig($command);
 
         $cliProcess = new CliProcess($command, $config['path'], $env, $input, $config['timeout']);
@@ -214,13 +255,13 @@ class WPCLI extends Module
      * });
      * ```
      *
-     * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
+     * @param array<string> $command               The string of command and parameters as it would be passed to wp-cli
      *                                             minus `wp`. For back-compatibility purposes you can still pass the
      *                                             commandline as a string, but the array format is the preferred and
      *                                             supported method.
-     * @param callable|null $splitCallback An optional callback function to split the results array.
+     * @param callable|null $splitCallback         An optional callback function to split the results array.
      * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
-     * @param mixed $input The input to pass to the command, a stream resource or a \Traversable
+     * @param mixed $input                         The input to pass to the command, a stream resource or a \Traversable
      *                                             instance.
      *
      * @return array<string> An array containing the output of wp-cli split into single elements.
@@ -259,12 +300,14 @@ class WPCLI extends Module
      * $activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
      * ```
      *
-     * @param array<string> $command The string of command and parameters as it would be passed to wp-cli
-     *                                          minus `wp`.
-     *                                          For back-compatibility purposes you can still pass the commandline as a
-     *                                          string, but the array format is the preferred and supported method.
+     * @param array<string> $command               The string of command and parameters as it would be passed to wp-cli
+     *                                             minus `wp`.
+     *                                             For back-compatibility purposes you can still pass the commandline
+     *                                             as a string, but the array format is the preferred and supported
+     *                                             method.
      * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
-     * @param mixed $input The input to pass to the command, a stream resource or a \Traversable
+     * @param mixed $input                         The input to pass to the command, a stream resource or a
+     *                                             \Traversable
      *
      * @return string The output of the command.
      *
@@ -430,27 +473,45 @@ class WPCLI extends Module
      */
     protected function validateConfig(): void
     {
+        parent::validateConfig();
+        $this->validatePath();
+
         $this->config['throw'] = (bool)$this->config['throw'];
+        $this->config['debug'] = (bool)($this->config['debug'] ?? false);
         $this->validateTimeout();
 
         foreach (['cache-dir', 'config-path', 'custom-shell', 'packages-dir'] as $stringKey) {
-            if (empty($this->config[$stringKey]) || !is_string($this->config[$stringKey])) {
+            if (empty($this->config[$stringKey])) {
                 unset($this->config[$stringKey]);
+            } elseif (!is_string($this->config[$stringKey])) {
+                throw new ModuleConfigException($this, ucfirst($stringKey) . ' must be a string.');
             }
         }
 
-        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet'] as $boolKey) {
+        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet', 'color', 'no-color'] as $boolKey) {
             if (empty($this->config[$boolKey])) {
                 unset($this->config[$boolKey]);
+            } else {
+                $this->config[$boolKey] = (bool)$this->config[$boolKey];
             }
         }
 
-        if (empty($this->config['context']) || !is_string($this->config['context'])) {
+        if (empty($this->config['context'])) {
             unset($this->config['context']);
+        } elseif (!is_string($this->config['context'])) {
+            throw new ModuleConfigException($this, 'Context must be a string.');
         }
 
-        parent::validateConfig();
-        $this->validatePath();
+        foreach (['require', 'exec'] as $arrayKey) {
+            if (empty($this->config[$arrayKey])) {
+                unset($this->config[$arrayKey]);
+            } else {
+                $this->config[$arrayKey] = (array)$this->config[$arrayKey];
+                if (!Arr::containsOnly($this->config[$arrayKey], 'string')) {
+                    throw new ModuleConfigException($this, ucfirst($arrayKey) . ' must be an array.');
+                }
+            }
+        }
     }
 
     /**
@@ -542,56 +603,6 @@ class WPCLI extends Module
     }
 
     /**
-     * @return array<string>
-     */
-    private function getOptionsFromConfig(): array
-    {
-        $options = [];
-
-        foreach ([
-                     'skip-plugins',
-                     'skip-themes',
-                     'skip-packages',
-                     'debug',
-                     'quiet',
-                 ] as $configOption) {
-            if (!empty($this->config[$configOption])) {
-                $options[] = '--' . $configOption;
-            }
-        }
-
-        if (isset($this->config['context'])) {
-            $options[] = '--context=' . $this->config['context'];
-        }
-
-        if (isset($this->config['require'])) {
-            foreach ((array)$this->config['require'] as $requireFile) {
-                $options[] = '--require=' . $requireFile;
-            }
-        }
-
-        if (isset($this->config['exec'])) {
-            foreach ((array)$this->config['exec'] as $execCode) {
-                $options[] = '--exec=' . $execCode;
-            }
-        }
-
-        if (isset($this->config['user'])) {
-            $options[] = '--user=' . $this->config['user'];
-        }
-
-        if (isset($this->config['color'])) {
-            if ($this->config['color']) {
-                $options[] = '--color';
-            } else {
-                $options[] = '--no-color';
-            }
-        }
-
-        return $options;
-    }
-
-    /**
      * @param array<string> $command
      *
      * @return array<string>
@@ -599,14 +610,57 @@ class WPCLI extends Module
     private function addStrictOptionsFromConfig(array $command): array
     {
         $prepend = [];
-        foreach ($this->getOptionsFromConfig() as $cliOptionFromConfig) {
-            if (!in_array($cliOptionFromConfig, $command, true)) {
-                $prepend[] = $cliOptionFromConfig;
+        /** @var false|int $commandPos */
+        $commandPos = Arr::searchWithCallback(static function (string $arg): bool {
+            return !str_starts_with($arg, '--');
+        }, $command);
+        if ($commandPos !== false) {
+            $inlineStrictArgs = array_slice($command, 0, $commandPos);
+            $inlineStrictArgsStrings = implode(' ', $inlineStrictArgs);
+        } else {
+            $inlineStrictArgsStrings = implode(' ', $command);
+        }
+
+        $notOverriddenGlobalArgs = array_filter(
+            self::$globalArgs,
+            static function (string $globalArg) use (
+                $inlineStrictArgsStrings
+            ) {
+                if (str_starts_with($globalArg, 'no-')) {
+                    $globalArg = substr($globalArg, 3);
+                }
+                return empty(preg_match('/--(no-)*' . $globalArg . '(=|\\s+|$)/', $inlineStrictArgsStrings));
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        foreach ($notOverriddenGlobalArgs as $globalArg => $isFlag) {
+            if (str_contains($inlineStrictArgsStrings, '--' . $globalArg)) {
+                // Overridden by inline value.
+                continue;
+            }
+            if (empty($this->config[$globalArg])) {
+                continue;
+            }
+            if ($isFlag) {
+                $prepend[] = '--' . $globalArg;
+            } elseif (in_array($globalArg, self::$arrayArgs, true)) {
+                /** @var array<string|int> $globalArgValues */
+                $globalArgValues = $this->config[$globalArg];
+                foreach ($globalArgValues as $arg) {
+                    $prepend[] = '--' . $globalArg . '=' . $arg;
+                }
+            } else {
+                /** @var string|int $globalArgValue */
+                $globalArgValue = $this->config[$globalArg];
+                $prepend[] = '--' . $globalArg . '=' . $globalArgValue;
             }
         }
+
         if (count($prepend)) {
             array_unshift($command, ...$prepend);
         }
+
         return $command;
     }
 }

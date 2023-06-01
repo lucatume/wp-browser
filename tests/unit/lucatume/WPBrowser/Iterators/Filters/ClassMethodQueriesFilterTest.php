@@ -1,13 +1,16 @@
 <?php
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use ArrayIterator;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Iterators\Filters\ClassMethodQueriesFilter as Filter;
+use UnitTester;
 
-class ClassMethodQueriesFilterTest extends \Codeception\Test\Unit
+class ClassMethodQueriesFilterTest extends Unit
 {
     protected $backupGlobals = false;
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
 
@@ -35,12 +38,12 @@ class ClassMethodQueriesFilterTest extends \Codeception\Test\Unit
         $this->assertCount(0, $items);
     }
 
-    private function make_instance($class = '', $method = '')
+    private function make_instance($class = '', $method = ''): ClassMethodQueriesFilter
     {
-        return new Filter(new \ArrayIterator($this->array), $class, $method);
+        return new Filter(new ArrayIterator($this->array), $class, $method);
     }
 
-    public function queries()
+    public function queries(): array
     {
         return [
             [1,

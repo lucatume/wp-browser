@@ -27,6 +27,7 @@ function print_help() {
   echo "  phpstan               Run PHPStan for the specified PHP version."
   echo "  ps                    Show the status of the containers for the specified PHP version."
   echo "  ssh                   SSH into a service for the specified PHP version."
+  echo "  test                  Run all the tests for the specified PHP version."
   echo "  up                    Starts the containers for the specified PHP version."
   echo "  xdebug-off            Deactivates XDebug in the WordPress and Codeception service."
   echo "  xdebug-on             Activates XDebug in the WordPress and Codeception service."
@@ -85,9 +86,9 @@ export PWD="$(pwd)"
 
 # If the current architecture is arm64, use the arm64v8 images.
 if [ "$(arch)" = "arm64" ]; then
-  export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:112.0-20230422"
+  export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:113.0-20230508"
 else
-  export DOCKER_CHROME_IMAGE="selenium/standalone-chrome:3.141.59-20210105"
+  export DOCKER_CHROME_IMAGE="selenium/standalone-chrome:113.0-20230508"
 fi
 
 function ensure_twentytwenty_theme() {

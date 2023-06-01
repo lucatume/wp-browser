@@ -2,8 +2,10 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
@@ -12,6 +14,7 @@ use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
 use Throwable;
+use WP_User;
 
 class Single implements InstallationStateInterface
 {
@@ -47,8 +50,8 @@ class Single implements InstallationStateInterface
             );
         }
 
-
         $this->version = new Version($this->wpRootDir);
+        $this->codeExecutionFactory = new CodeExecutionFactory($wpRootDir, $this->getBlogDomain());
     }
 
     public function isMultisite(): bool
@@ -87,15 +90,31 @@ class Single implements InstallationStateInterface
     }
 
     /**
-     * @return InstallationStateInterface
      * @throws DbException
      * @throws InstallationException
      * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws WpConfigFileException
      */
     public function convertToMultisite(bool $subdomainInstall = false): InstallationStateInterface
     {
         $wpConfigFilePath = $this->wpConfigFile->getFilePath();
         $wpConfigFileContents = file_get_contents($wpConfigFilePath);
+
+        /** @var string $adminEmail */
+        $adminEmail = $this->executeClosureInWordPress(static function () {
+            $admins = get_users(['role' => 'administrator', 'limit' => 1]);
+
+            if (count($admins) === 0 || !$admins[0] instanceof WP_User) {
+                throw new InstallationException(
+                    "Could not find an administrator user.",
+                    InstallationException::NO_ADMIN_USER_FOUND
+                );
+            }
+
+            return $admins[0]->user_email;
+        });
 
         if ($wpConfigFileContents === false) {
             throw new InstallationException(
@@ -138,6 +157,14 @@ PHP;
                 InstallationException::WRITE_ERROR
             );
         }
+
+        Loop::executeClosureOrFail(
+            $this->codeExecutionFactory->toInstallWordPressNetwork(
+                $adminEmail,
+                $this->getBlogName(),
+                $subdomainInstall
+            )
+        );
 
         return new Multisite($this->wpRootDir, $wpConfigFilePath);
     }

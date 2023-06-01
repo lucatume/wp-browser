@@ -32,7 +32,13 @@ class Wpbrowser extends Bootstrap
         $this->say('See wp-browser documentation at <info>https://wpbrowser.wptestkit.dev.</info>');
         $this->say('You can quit this process at any time with <info>CTRL+C</info>.');
         $this->say('');
-        $project = ProjectFactory::fromDir($this->workDir);
+        $cwd = getcwd();
+
+        if ($cwd === false) {
+            throw new RuntimeException('Could not get the current working directory.');
+        }
+
+        $project = ProjectFactory::fromDir($cwd);
         $detectedProjectTypeCorrect = $this->ask(
             "This looks like <info>a WordPress {$project->getType()}</info>: is this correct?",
             true
@@ -45,7 +51,7 @@ class Wpbrowser extends Bootstrap
                 'theme',
                 'site',
             ]);
-            $project = ProjectFactory::make($projectType, $this->workDir);
+            $project = ProjectFactory::make($projectType, $cwd);
         }
 
         $input = $this->input;

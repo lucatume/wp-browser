@@ -24,6 +24,7 @@ class LoadSandbox
         $this->setUpServerVars();
         PreloadFilters::addFilter('wp_fatal_error_handler_enabled', [$this, 'returnFalse'], 100);
         PreloadFilters::addFilter('wp_redirect', [$this, 'logRedirection'], 100, 2);
+        PreloadFilters::addFilter('wp_die_handler', [$this, 'wpDieHandler']);
         // Setting the `chunk_size` to `0` means the function will only be called when the output buffer is closed.
         ob_start([$this, 'obCallback'], 0);
 
@@ -125,9 +126,15 @@ class LoadSandbox
         $bodyStart = strpos($buffer, '<body');
         $bodyEnd = strpos($buffer, '</body>');
         if (false === $bodyStart || false === $bodyEnd) {
-            return '';
+            $bodyStart = 0;
+            $bodyEnd = strlen($buffer);
         }
 
         return trim(strip_tags(substr($buffer, $bodyStart, $bodyEnd - $bodyStart)));
+    }
+
+    public function wpDieHandler(): callable
+    {
+        return [$this, 'obCallback'];
     }
 }

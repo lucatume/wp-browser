@@ -2,7 +2,9 @@
 
 namespace lucatume\WPBrowser\Process\Protocol;
 
-class ProtocolException extends \Exception
+use Exception;
+
+class ProtocolException extends Exception
 {
     public const EMPTY_INPUT = 0;
     public const MISSING_START_CHAR = 1;

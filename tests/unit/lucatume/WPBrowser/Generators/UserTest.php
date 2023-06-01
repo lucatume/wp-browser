@@ -1,8 +1,11 @@
 <?php namespace lucatume\WPBrowser\Generators;
 
-class UserTest extends \Codeception\Test\Unit
+use Codeception\Test\Unit;
+use Generator;
+
+class UserTest extends Unit
 {
-    public function usernamesDataSet()
+    public function usernamesDataSet(): array
     {
         return [
             'empty' => ['', ''],
@@ -27,7 +30,7 @@ class UserTest extends \Codeception\Test\Unit
         $this->assertEquals($expected, $userData['user_login']);
     }
 
-    public function buildCapabilitiesDataSet()
+    public function buildCapabilitiesDataSet(): Generator
     {
         yield 'empty' => ['',['wp_capabilities' => ['' => true]]];
         yield 'one_string_cap' => ['administrator', ['wp_capabilities' => ['administrator' => true]]];

@@ -5,6 +5,7 @@ namespace Unit\lucatume\WPBrowser\Command;
 
 use Codeception\Configuration;
 use Codeception\Test\Unit;
+use Exception;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
@@ -104,7 +105,7 @@ class RunAllTest extends Unit
     {
         $this->uopzSetMock(Process::class,
             $this->makeEmptyClass(Process::class, [
-                '__construct' => fn() => throw new \Exception('Failed to build process.')
+                '__construct' => fn() => throw new Exception('Failed to build process.')
             ]));
         $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
 

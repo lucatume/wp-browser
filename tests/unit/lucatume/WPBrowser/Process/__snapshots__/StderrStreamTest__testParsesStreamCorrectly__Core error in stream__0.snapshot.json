@@ -1,14 +1,14 @@
 [
     {
         "isException": false,
-        "exceptionClass": null,
+        "exceptionClass": "",
         "date": "17-Mar-2023",
         "time": "16:54:06",
         "timezone": "Europe\/Paris",
         "type": "Core error",
         "message": "Unknown: Cannot use output buffering in output buffering display handlers",
         "file": "\/src\/Process\/Worker\/worker-script.php ",
-        "line": "15",
+        "line": 15,
         "trace": []
     }
 ]

@@ -3,7 +3,9 @@
 namespace Unit\lucatume\WPBrowser\Utils;
 
 use Codeception\Test\Unit;
+use Generator;
 use lucatume\WPBrowser\Utils\Filesystem;
+use RuntimeException;
 
 class FilesystemTest extends Unit
 {
@@ -66,7 +68,7 @@ class FilesystemTest extends Unit
         $createDirStruct = static function ($key, $value) use (&$createDirStruct) {
             if (is_array($value)) {
                 if (! is_dir($key) && ! mkdir($key) && ! is_dir($key)) {
-                    throw new \RuntimeException("Could not create directory {$key}");
+                    throw new RuntimeException("Could not create directory {$key}");
                 }
                 foreach ($value as $subKey => $subValue) {
                     $createDirStruct($key . '/' . $subKey, $subValue);
@@ -76,7 +78,7 @@ class FilesystemTest extends Unit
             }
 
             if (! file_put_contents($key, $value)) {
-                throw new \RuntimeException("Could not put file contents in file {$key}");
+                throw new RuntimeException("Could not put file contents in file {$key}");
             }
         };
         Filesystem::mkdirp($root, [
@@ -151,7 +153,7 @@ class FilesystemTest extends Unit
         $this->assertDirectoryExists(codecept_output_dir('one/two/three/four'));
     }
 
-    public function relativePathDataSet(): \Generator
+    public function relativePathDataSet(): Generator
     {
 //        yield 'empty' => ['', '', '/', ''];
         yield 'empty from, absolute to' => ['', __DIR__, '/', __DIR__];

@@ -33,7 +33,7 @@ use function class_alias;
 
 /**
  * Calls to `class_alias` will immediately autoload the class in a eager fashion.
- * Using an autolaoder will load them lazily.
+ * Using an autoloader will load them lazily.
  */
 $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloader): void {
     $deprecated = [

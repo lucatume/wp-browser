@@ -255,7 +255,7 @@ class StderrStream
 
         $sourceError = $this->parsed[0];
 
-        if (!empty($sourceError['isException']) && !empty($sourceError->exceptionClass)) {
+        if (!empty($sourceError->isException) && !empty($sourceError->exceptionClass)) {
             $throwableClass = $sourceError->exceptionClass;
         } else {
             $throwableClass = $this->mapTypeToThrowableClass($sourceError->type);

@@ -2,16 +2,18 @@
 
 namespace cli\Test;
 
+use Step\Cli\CodeceptionCommand;
+
 class BaseCommandCest
 {
-    public function _before(\Step\Cli\CodeceptionCommand $I)
+    public function _before(CodeceptionCommand $I): void
     {
         $I->deleteSandbox();
         $I->createSandbox();
         $I->amInSandbox();
     }
 
-    public function _after(\Step\Cli\CodeceptionCommand $I)
+    public function _after(CodeceptionCommand $I): void
     {
         $I->deleteSandbox();
     }

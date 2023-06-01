@@ -1,8 +1,10 @@
 <?php namespace lucatume\WPBrowser\Polyfills\Dotenv;
 
+use Codeception\Test\Unit;
+use InvalidArgumentException;
 use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
-class DotenvTest extends \Codeception\Test\Unit
+class DotenvTest extends Unit
 {
     /**
      * It should allow loading an env file
@@ -36,7 +38,7 @@ class DotenvTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_the_root_dir_does_not_exist()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Dotenv(codecept_data_dir('foo/bar'));
     }
@@ -48,7 +50,7 @@ class DotenvTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_the_env_file_does_not_exist()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Dotenv(codecept_data_dir('envFiles'), '.foo.bar');
     }

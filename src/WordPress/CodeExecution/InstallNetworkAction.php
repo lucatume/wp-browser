@@ -6,6 +6,8 @@ use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
+use WP_Error;
+use function install_network;
 
 class InstallNetworkAction implements CodeExecutionActionInterface
 {
@@ -66,7 +68,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
         wp_set_current_user(1);
         require_once ABSPATH . '/wp-admin/includes/network.php';
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        \install_network();
+        install_network();
         $result = populate_network(
             1,
             get_clean_basedomain(),
@@ -76,7 +78,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
             $subdomain
         );
 
-        if ($result instanceof \WP_Error) {
+        if ($result instanceof WP_Error) {
             throw new RuntimeException('Could not install WordPress network: ' . $result->get_error_message());
         }
 

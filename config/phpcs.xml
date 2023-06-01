@@ -33,4 +33,6 @@
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>src/MonkeyPatch/FileStreamWrapper.php</exclude-pattern>
     </rule>
+
+    <exclude-pattern>./tests/*</exclude-pattern>
 </ruleset>

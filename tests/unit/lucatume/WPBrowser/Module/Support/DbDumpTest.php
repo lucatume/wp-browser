@@ -2,10 +2,11 @@
 
 namespace lucatume\WPBrowser\Module\Support;
 
+use Codeception\Test\Unit;
 use Codeception\Util\Debug;
 use PHPUnit\Framework\Assert;
 
-class DbDumpTest extends \Codeception\Test\Unit
+class DbDumpTest extends Unit
 {
     /**
      * @var string

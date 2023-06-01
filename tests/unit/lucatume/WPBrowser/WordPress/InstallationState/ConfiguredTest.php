@@ -725,9 +725,34 @@ class ConfiguredTest extends Unit
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Cannot update option "foo" because WordPress is not configured yet');
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_CONFIGURED);
 
         $configured->updateOption('foo', 'bar');
+    }
+
+    /**
+     * It should throw if trying to execute Closure in WordPress
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_execute_closure_in_word_press(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_CONFIGURED);
+
+        $configured->executeClosureInWordPress(function () {
+            return 'foo';
+        });
     }
 }

@@ -1,9 +1,10 @@
 <?php
 
+use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\Utils\Db;
 use PHPUnit\Framework\AssertionFailedError;
 
-class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+class TablePrefixTest extends WPTestCase
 {
 
     public static $otherInstallationPrefix = 'foo_';
@@ -44,7 +45,7 @@ class TablePrefixTest extends \lucatume\WPBrowser\TestCase\WPTestCase
         ];
 
         if (count(array_filter($creds)) < 3) {
-            throw new \RuntimeException('Could not fetch database credentials.');
+            throw new RuntimeException('Could not fetch database credentials.');
         }
 
         return $creds;

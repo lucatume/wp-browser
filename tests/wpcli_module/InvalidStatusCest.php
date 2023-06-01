@@ -9,7 +9,7 @@ class InvalidStatusCest
      *
      * @test
      */
-    public function should_handle_a_non_zero_exit_status_correctly(Tester $I)
+    public function should_handle_a_non_zero_exit_status_correctly(Tester $I): void
     {
         $exit_status = $I->cli('invalid');
 

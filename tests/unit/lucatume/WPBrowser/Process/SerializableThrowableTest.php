@@ -2,18 +2,23 @@
 
 namespace lucatume\WPBrowser\Process;
 
+use Codeception\Test\Unit;
+use Codeception\Util\StackTraceFilter;
+use Exception;
+use Generator;
 use lucatume\WPBrowser\Utils\Property;
 use Opis\Closure\SerializableClosure;
+use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use Throwable;
 
-class SerializableThrowableTest extends \Codeception\Test\Unit
+class SerializableThrowableTest extends Unit
 {
     use SnapshotAssertions;
 
-    public function throwableProvider(): \Generator
+    public function throwableProvider(): Generator
     {
-        yield 'Exception' => [new \Exception('test')];
+        yield 'Exception' => [new Exception('test')];
     }
 
     /**
@@ -37,7 +42,7 @@ class SerializableThrowableTest extends \Codeception\Test\Unit
 
     public static function throwingMethod(): void
     {
-        throw new \RuntimeException('test');
+        throw new RuntimeException('test');
     }
 
     /**
@@ -56,17 +61,15 @@ class SerializableThrowableTest extends \Codeception\Test\Unit
         $s = serialize(new SerializableClosure($throwing));
         try {
             unserialize($s)();
-        } catch (\RuntimeException $t) {
+        } catch (RuntimeException $t) {
             $throwable = $t;
         }
 
         $serializableThrowable = new SerializableThrowable($throwable);
         $serialized = serialize($serializableThrowable);
         $unserialized = unserialize($serialized)->getThrowable(SerializableThrowable::RELATIVE_PAHTNAMES);
-        $trace = $unserialized->getTrace();
-        codecept_debug($trace);
+        $trace = StackTraceFilter::getFilteredStackTrace($unserialized);
 
-        $this->assertMatchesStringSnapshot($unserialized->getTraceAsString());
-        $this->assertMatchesCodeSnapshot(var_export($unserialized->getTrace(), true));
+        $this->assertMatchesCodeSnapshot($trace);
     }
 }

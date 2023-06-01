@@ -7,7 +7,7 @@ class WPDbUserCest
      *
      * @test
      */
-    public function should_correctly_create_a_user_nickname_when_specified_in_meta(AcceptanceTester $I)
+    public function should_correctly_create_a_user_nickname_when_specified_in_meta(AcceptanceTester $I): void
     {
         $user = $I->haveUserInDatabase('test', 'subscriber', [ 'meta_input' => [ 'nickname' => 'test' ] ]);
 
@@ -20,7 +20,7 @@ class WPDbUserCest
      *
      * @test
      */
-    public function should_correctly_create_a_user_nickname_when_not_specified_in_meta(AcceptanceTester $I)
+    public function should_correctly_create_a_user_nickname_when_not_specified_in_meta(AcceptanceTester $I): void
     {
         $user = $I->haveUserInDatabase('test', 'subscriber');
 

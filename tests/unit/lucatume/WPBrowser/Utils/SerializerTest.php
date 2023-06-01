@@ -18,7 +18,7 @@ class TestSerializableObject implements Serializable
     public string $foo = 'bar';
     public int $number = 23;
 
-    public function serialize()
+    public function serialize(): ?string
     {
         return serialize(['foo' => 'bar', 'number' => 23]);
     }

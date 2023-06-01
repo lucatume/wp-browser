@@ -2,6 +2,9 @@
 
 namespace lucatume\WPBrowser\Utils;
 
+use Codeception\Test\Unit;
+use InvalidArgumentException;
+
 class PropertyAccessTestTarget
 {
     private int $private = 23;
@@ -25,7 +28,7 @@ class PropertyAccessTestTargetGrandchild extends PropertyAccessTestTargetChild
     public static int $publicStatic = 1731;
 }
 
-class PropertyTest extends \Codeception\Test\Unit
+class PropertyTest extends Unit
 {
     /**
      * It should allow reading all properties of an object
@@ -85,7 +88,7 @@ class PropertyTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_trying_to_read_undefined_object_property()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         Property::readPrivate(PropertyAccessTestTargetGrandchild::class, 'privateNot');
     }
 
@@ -95,7 +98,7 @@ class PropertyTest extends \Codeception\Test\Unit
      * @test
      */
     public function should_throw_if_trying_to_read_undefined_static_object_property(){
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         Property::readPrivate(PropertyAccessTestTargetGrandchild::class, 'privateStaticNot');
     }
 }

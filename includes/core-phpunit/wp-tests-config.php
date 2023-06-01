@@ -5,7 +5,10 @@
  * @var array<string,mixed> $wpLoaderConfig A map of configuration values hydrated by the WPLoader module.
  */
 
+use Codeception\Exception\ModuleConfigException;
+use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
+use lucatume\WPBrowser\Utils\Filesystem;
 
 $didReadConfigFromEnvVar = false;
 global $wpLoaderConfig, $wpLoaderIncludeWpSettings;

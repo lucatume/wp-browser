@@ -14,7 +14,9 @@ use Codeception\TestInterface;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimezone;
 use Exception;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert;
 
@@ -144,15 +146,14 @@ class WPFilesystem extends Filesystem
                 $absolutePath = $path;
             }
 
-            if ($check) {
-                if ($info['mustExist'] && !is_dir($absolutePath)) {
-                    if (!mkdir($absolutePath, 0777, true) && !is_dir($absolutePath)) {
-                        throw new ModuleConfigException(
-                            __CLASS__,
-                            "The {$configKey} config path [{$path}] does not exist."
-                        );
-                    }
-                }
+            if ($check
+                && $info['mustExist'] && !is_dir($absolutePath)
+                && !mkdir($absolutePath, 0777, true) && !is_dir($absolutePath)
+            ) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    "The {$configKey} config path [{$path}] does not exist."
+                );
             }
 
             $this->config[$configKey] = FS::untrailslashit($absolutePath) . DIRECTORY_SEPARATOR;
@@ -206,7 +207,7 @@ class WPFilesystem extends Filesystem
      * Runs after a test failure.
      *
      * @param TestInterface $test The test that just ran.
-     * @param Exception $fail The failure
+     * @param Exception $fail     The failure
      *
      * @return void;
      */
@@ -254,14 +255,11 @@ class WPFilesystem extends Filesystem
     {
         if (null === $path) {
             $path = $this->config['uploads'];
+        } elseif (is_dir($this->config['uploads'] . FS::unleadslashit($path))) {
+            $path = $this->config['uploads'] . FS::unleadslashit($path);
         } else {
-            $path = (string)$path;
-            if (is_dir($this->config['uploads'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path))) {
-                $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path);
-            } else {
-                // time based?
-                $path = $this->config['uploads'] . DIRECTORY_SEPARATOR . $this->buildDateFrag($path);
-            }
+            // time based?
+            $path = $this->config['uploads'] . $this->buildDateFrag($path);
         }
         $this->amInPath($path);
     }
@@ -279,8 +277,10 @@ class WPFilesystem extends Filesystem
      * ?>
      * ```
      *
-     * @param string $filename The file path, relative to the uploads folder or the current folder.
+     * @param string $filename      The file path, relative to the uploads folder or the current folder.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @throws ModuleException
      */
     public function seeUploadedFileFound(string $filename, int|string $date = null): void
     {
@@ -299,12 +299,13 @@ class WPFilesystem extends Filesystem
      * $lastWeek = $I->getUploadsPath('', '-1 week');
      * ```
      *
-     * @param string $file The file path, relative to the uploads folder.
+     * @param string $file                            The file path, relative to the uploads folder.
      * @param DateTimeInterface|string|int|null $date A string compatible with `strtotime`, a Unix timestamp or a Date
-     *     object.
+     *                                                object.
      *
      * @return string The absolute path to an uploaded file.
      * @throws ModuleException
+     * @throws Exception
      */
     public function getUploadsPath(string $file = '', mixed $date = null): string
     {
@@ -334,18 +335,20 @@ class WPFilesystem extends Filesystem
      * @param string|int|DateTimeInterface $date
      *
      * @return string The relative path with the date path appended, if needed.
-     * @throws ModuleException
+     *
+     * @throw InvalidArgumentException
+     * @throws Exception
      */
     private function buildDateFrag(string|int|DateTimeInterface $date): string
     {
         if (!$date instanceof DateTimeInterface) {
-            $date = is_string($date) ? strtotime($date) : (int)$date;
-        }
-
-        if (!$date instanceof DateTimeInterface) {
-            throw new ModuleException(
-                $this,
-                'The date argument must be a string, a Unix timestamp or a DateTimeInterface object.'
+            $timestamp = is_string($date) && !is_numeric($date) ? strtotime($date) : (int)$date;
+            if (empty($timestamp)) {
+                throw new InvalidArgumentException('The date provided is not valid');
+            }
+            $date = new DateTimeImmutable(
+                '@' . $timestamp,
+                new DateTimezone(date_default_timezone_get())
             );
         }
 
@@ -364,8 +367,10 @@ class WPFilesystem extends Filesystem
      * $I->dontSeeUploadedFileFound('some-file.txt','today');
      * ```
      *
-     * @param string $file The file path, relative to the uploads folder or the current folder.
+     * @param string $file          The file path, relative to the uploads folder or the current folder.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @throws ModuleException
      */
     public function dontSeeUploadedFileFound(string $file, int|string $date = null): void
     {
@@ -384,9 +389,11 @@ class WPFilesystem extends Filesystem
      * $I->seeInUploadedFile('some-file.txt','foo', 'today');
      * ```
      *
-     * @param string $file The file path, relative to the uploads folder or the current folder.
-     * @param string $contents The expected file contents or part of them.
+     * @param string $file          The file path, relative to the uploads folder or the current folder.
+     * @param string $contents      The expected file contents or part of them.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
+     *
+     * @throws ModuleException
      */
     public function seeInUploadedFile(string $file, string $contents, int|string $date = null): void
     {
@@ -411,8 +418,8 @@ class WPFilesystem extends Filesystem
      * $I->dontSeeInUploadedFile('some-file.txt','foo', 'today');
      * ```
      *
-     * @param string $file The file path, relative to the uploads folder or the current folder.
-     * @param string $contents The not expected file contents or part of them.
+     * @param string $file          The file path, relative to the uploads folder or the current folder.
+     * @param string $contents      The not expected file contents or part of them.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      */
     public function dontSeeInUploadedFile(string $file, string $contents, int|string $date = null): void
@@ -440,7 +447,7 @@ class WPFilesystem extends Filesystem
      *
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param string $dir The path to the directory to delete, relative to the uploads folder.
+     * @param string $dir                    The path to the directory to delete, relative to the uploads folder.
      *
      * @throws ModuleException If the destination folder could not be removed.
      */
@@ -465,7 +472,7 @@ class WPFilesystem extends Filesystem
      * $I->deleteUploadedFile('some-file.txt', 'today');
      * ```
      *
-     * @param string $file The file path, relative to the uploads folder or the current folder.
+     * @param string $file          The file path, relative to the uploads folder or the current folder.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      */
     public function deleteUploadedFile(string $file, int|string $date = null): void
@@ -488,7 +495,7 @@ class WPFilesystem extends Filesystem
      *
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param string|null $dir The path to the directory to delete, relative to the uploads folder.
+     * @param string|null $dir               The path to the directory to delete, relative to the uploads folder.
      */
     public function cleanUploadsDir(string $dir = null, DateTime|int|string $date = null): void
     {
@@ -511,10 +518,10 @@ class WPFilesystem extends Filesystem
      * $I->copyDirToUploads(codecept_data_dir('foo'), 'uploadsFoo', 'today');
      * ```
      *
-     * @param string $dst The path to the destination file, relative to the current uploads folder.
+     * @param string $dst                    The path to the destination file, relative to the current uploads folder.
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param string $src The path to the source file, relative to the current uploads folder.
+     * @param string $src                    The path to the source file, relative to the current uploads folder.
      */
     public function copyDirToUploads(string $src, string $dst, DateTime|int|string $date = null): void
     {
@@ -533,10 +540,11 @@ class WPFilesystem extends Filesystem
      * $I->writeToUploadedFile('some-file.txt', 'foo bar', 'today');
      * ```
      *
-     * @param string $data The data to write to the file.
+     * @param string $data                   The data to write to the file.
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param string $filename The path to the destination file, relative to the current uploads folder.
+     * @param string $filename               The path to the destination file, relative to the current uploads folder.
+     *
      * @return string The absolute path to the destination file.
      *
      * @throws ModuleException If the destination folder could not be created or the destination
@@ -572,9 +580,10 @@ class WPFilesystem extends Filesystem
      * $I->openUploadedFile('some-file.txt');
      * $I->openUploadedFile('some-file.txt', 'time');
      * ```
+     *
      * @param DateTime|int|string|null $date The date of the uploads to delete, will default to `now`.
      *
-     * @param string $filename The path to the file, relative to the current uploads folder.
+     * @param string $filename               The path to the file, relative to the current uploads folder.
      */
     public function openUploadedFile(string $filename, DateTime|int|string $date = null): void
     {
@@ -593,7 +602,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInPluginPath(string $path): void
     {
-        $this->amInPath($this->config['plugins'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
+        $this->amInPath($this->config['plugins'] . FS::unleadslashit($path));
     }
 
     /**
@@ -605,7 +614,7 @@ class WPFilesystem extends Filesystem
      * $I->copyDirToPlugin(codecept_data_dir('foo'), 'my-plugin/foo');
      * ```
      *
-     * @param string $src The path to the source directory to copy.
+     * @param string $src       The path to the source directory to copy.
      * @param string $pluginDst The destination path, relative to the plugins root folder.
      */
     public function copyDirToPlugin(string $src, string $pluginDst): void
@@ -688,7 +697,7 @@ class WPFilesystem extends Filesystem
      * $I->seeInPluginFile('my-plugin/some-file.txt', 'foo');
      * ```
      *
-     * @param string $file The path to the file, relative to the plugins root folder.
+     * @param string $file     The path to the file, relative to the plugins root folder.
      * @param string $contents The contents to check the file for.
      */
     public function seeInPluginFile(string $file, string $contents): void
@@ -707,7 +716,7 @@ class WPFilesystem extends Filesystem
      * $I->dontSeeInPluginFile('my-plugin/some-file.txt', 'foo');
      * ```
      *
-     * @param string $file The path to the file, relative to the plugins root folder.
+     * @param string $file     The path to the file, relative to the plugins root folder.
      * @param string $contents The contents to check the file for.
      */
     public function dontSeeInPluginFile(string $file, string $contents): void
@@ -745,7 +754,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInThemePath(string $path): void
     {
-        $this->amInPath($this->config['themes'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
+        $this->amInPath($this->config['themes'] . FS::unleadslashit($path));
     }
 
     /**
@@ -756,7 +765,7 @@ class WPFilesystem extends Filesystem
      * $I->copyDirToTheme(codecept_data_dir('foo'), 'my-theme');
      * ```
      *
-     * @param string $src The path to the source file.
+     * @param string $src      The path to the source file.
      * @param string $themeDst The path to the destination folder, relative to the themes root folder.
      */
     public function copyDirToTheme(string $src, string $themeDst): void
@@ -841,7 +850,7 @@ class WPFilesystem extends Filesystem
      * ?>
      * ```
      *
-     * @param string $file The path to the file, relative to the themes root folder.
+     * @param string $file     The path to the file, relative to the themes root folder.
      * @param string $contents The contents to check the file for.
      */
     public function seeInThemeFile(string $file, string $contents): void
@@ -860,7 +869,7 @@ class WPFilesystem extends Filesystem
      * $I->dontSeeInThemeFile('my-theme/some-file.txt', 'foo');
      * ```
      *
-     * @param string $file The path to the file, relative to the themes root folder.
+     * @param string $file     The path to the file, relative to the themes root folder.
      * @param string $contents The contents to check the file for.
      */
     public function dontSeeInThemeFile(string $file, string $contents): void
@@ -898,7 +907,7 @@ class WPFilesystem extends Filesystem
      */
     public function amInMuPluginPath(string $path): void
     {
-        $this->amInPath($this->config['mu-plugins'] . DIRECTORY_SEPARATOR . FS::unleadslashit($path));
+        $this->amInPath($this->config['mu-plugins'] . FS::unleadslashit($path));
     }
 
     /**
@@ -909,7 +918,7 @@ class WPFilesystem extends Filesystem
      * $I->copyDirToMuPlugin(codecept_data_dir('foo'), 'mu-plugin/foo');
      * ```
      *
-     * @param string $src The path to the source file to copy.
+     * @param string $src       The path to the source file to copy.
      * @param string $pluginDst The path to the destination folder, relative to the mu-plugins root folder.
      */
     public function copyDirToMuPlugin(string $src, string $pluginDst): void
@@ -992,7 +1001,7 @@ class WPFilesystem extends Filesystem
      * $I->seeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');
      * ```
      *
-     * @param string $file The path the file, relative to the mu-plugins root folder.
+     * @param string $file     The path the file, relative to the mu-plugins root folder.
      * @param string $contents The contents to check the file for.
      */
     public function seeInMuPluginFile(string $file, string $contents): void
@@ -1011,7 +1020,7 @@ class WPFilesystem extends Filesystem
      * $I->dontSeeInMuPluginFile('mu-plugin1/some-file.txt', 'foo');
      * ```
      *
-     * @param string $file The path to the file, relative to the mu-plugins root folder.
+     * @param string $file     The path to the file, relative to the mu-plugins root folder.
      * @param string $contents The contents to check the file for.
      */
     public function dontSeeInMuPluginFile(string $file, string $contents): void
@@ -1120,7 +1129,7 @@ PHP;
      * ```
      *
      * @param string $filename The path to the file to create, relative to the plugins root folder.
-     * @param string $code The content of the plugin file with or without the opening PHP tag.
+     * @param string $code     The content of the plugin file with or without the opening PHP tag.
      *
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
      *
@@ -1184,8 +1193,8 @@ PHP;
      * $I->haveTheme('foo', $indexCode, $functionsCode);
      * ```
      *
-     * @param string $folder The path to the theme to create, relative to the themes root folder.
-     * @param string $indexFileCode The content of the theme index.php file with or without the opening PHP tag.
+     * @param string $folder            The path to the theme to create, relative to the themes root folder.
+     * @param string $indexFileCode     The content of the theme index.php file with or without the opening PHP tag.
      * @param string $functionsFileCode The content of the theme functions.php file with or without the opening PHP tag.
      *
      * @throws ModuleException If the mu-plugin folder and/or files could not be created.
@@ -1225,9 +1234,8 @@ CSS;
 
         $index = '<?php ' . $indexFileCode;
 
-        $indexPut = file_put_contents($indexFile, $index);
 
-        if (!$indexPut) {
+        if (!(file_put_contents($indexFile, $index, LOCK_EX))) {
             throw new ModuleException(
                 __CLASS__,
                 "Could not create [{$indexFile}] theme file."
@@ -1272,14 +1280,14 @@ CSS;
      * $testLastMonthLogs = $I->getBlogUploadsPath($blogId, '/logs', '-1 month');
      * ```
      *
-     * @param string $file The path, relatitve to the blog uploads folder, to the
+     * @param string $file                                     The path, relatitve to the blog uploads folder, to the
      *                                                         file or folder.
-     * @param DateTimeImmutable|DateTime|string|null $date The date that should be used to build the uploads
+     * @param DateTimeImmutable|DateTime|string|null $date     The date that should be used to build the uploads
      *                                                         sub-folders in the year/month format; a UNIX timestamp or
      *                                                         a string supported by the `strtotime` function; defaults
      *                                                         to `now`.
      *
-     * @param int $blogId The blog ID to get the path for.
+     * @param int $blogId                                      The blog ID to get the path for.
      *
      * @return string The absolute path to a blog uploads folder or file.
      *
@@ -1373,7 +1381,7 @@ CSS;
 
     /**
      * @param string $directory The directory to check.
-     * @param string $message An optional message to display if the directory does not exist.
+     * @param string $message   An optional message to display if the directory does not exist.
      */
     public function assertDirectoryExists(string $directory, string $message = ''): void
     {

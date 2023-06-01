@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Random;
 
 class ConfigurationData
@@ -32,7 +33,7 @@ class ConfigurationData
             $method = 'set' . $key;
 
             if (!method_exists($instance, $method)) {
-                throw new \InvalidArgumentException("Invalid configuration key: {$key}");
+                throw new InvalidArgumentException("Invalid configuration key: {$key}");
             }
 
             $instance->{$method}($value);

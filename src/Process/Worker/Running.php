@@ -97,6 +97,7 @@ class Running implements WorkerInterface
         $workerScriptPathname = __DIR__ . '/worker-script.php';
         $control = $worker->getControl();
         $workerSerializableClosure = new SerializableClosure($workerClosure);
+
         $request = new Request($control, $workerSerializableClosure);
 
         $workerCommand = sprintf(

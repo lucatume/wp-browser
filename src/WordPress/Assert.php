@@ -3,6 +3,9 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use PHPUnit\Framework\Assert as PHPUnitAssert;
+use stdClass;
+use function get_site_transient;
+use function has_action;
 
 class Assert
 {
@@ -17,14 +20,14 @@ class Assert
 
     public static function assertUpdatesDisabled(): void
     {
-        $updateCore = \get_site_transient('update_core');
-        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updateCore);
+        $updateCore = get_site_transient('update_core');
+        PHPUnitAssert::assertInstanceOf(stdClass::class, $updateCore);
         PHPUnitAssert::assertEqualsWithDelta(time(), $updateCore->last_checked, 10);
-        $updatePlugins = \get_site_transient('update_plugins');
-        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updatePlugins);
+        $updatePlugins = get_site_transient('update_plugins');
+        PHPUnitAssert::assertInstanceOf(stdClass::class, $updatePlugins);
         PHPUnitAssert::assertEqualsWithDelta(time(), $updatePlugins->last_checked, 10);
-        $updateThemes = \get_site_transient('update_themes');
-        PHPUnitAssert::assertInstanceOf(\stdClass::class, $updateThemes);
+        $updateThemes = get_site_transient('update_themes');
+        PHPUnitAssert::assertInstanceOf(stdClass::class, $updateThemes);
         PHPUnitAssert::assertEqualsWithDelta(time(), $updateThemes->last_checked, 10);
         foreach ([
                      ['admin_init', '_maybe_update_core'],
@@ -32,7 +35,7 @@ class Assert
                      ['admin_init', '_maybe_update_themes'],
                      ['admin_init', 'default_password_nag_handler'],
                  ] as [$action, $callback]) {
-            PHPUnitAssert::assertFalse(\has_action($action, $callback));
+            PHPUnitAssert::assertFalse(has_action($action, $callback));
         }
     }
 }

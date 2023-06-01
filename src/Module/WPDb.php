@@ -124,7 +124,7 @@ class WPDb extends Db
      *     originalUrl: string|null,
      *     waitlock: int,
      *     dbUrl?: string,
-     *     createIfNotExists?: array<string,array{0: string, 1: string}>
+     *     createIfNotExists?: bool
      * }
      */
     protected array $config = [
@@ -137,7 +137,7 @@ class WPDb extends Db
         'urlReplacement' => true,
         'originalUrl' => null,
         'waitlock' => 10,
-        'createIfNotExists' => [],
+        'createIfNotExists' => false,
     ];
 
     /**
@@ -240,25 +240,7 @@ class WPDb extends Db
         $this->config['urlReplacement'] = (bool)$this->config['urlReplacement'];
         $this->config['originalUrl'] = (string)$this->config['originalUrl'];
         $this->config['waitlock'] = (int)$this->config['waitlock'];
-
-        if (!empty($this->config['createIfNotExists'])) {
-            if (!is_array($this->config['createIfNotExists'])) {
-                throw new ModuleConfigException(
-                    __CLASS__,
-                    message: "The 'createIfNotExists' configuration parameter must be an array."
-                );
-            }
-
-            foreach ($this->config['createIfNotExists'] as $createIfNotExist) {
-                if (!Arr::hasShape($createIfNotExist, ['string', 'string'])) {
-                    throw new ModuleConfigException(
-                        __CLASS__,
-                        "The 'createIfNotExists' configuration parameter must be an array of arrays each " .
-                        "containing two strings for username and password."
-                    );
-                }
-            }
-        }
+        $this->config['createIfNotExists'] = $this->config['createIfNotExists'] ?? false;
     }
 
     /**
@@ -313,13 +295,13 @@ class WPDb extends Db
     {
         if ($dumpFile !== null) {
             if (!is_file($dumpFile) || !is_readable($dumpFile)) {
-                throw new ModuleException($this, "Dump file [{$dumpFile}] does not exist or is not readable.");
+                throw new ModuleConfigException($this, "Dump file [{$dumpFile}] does not exist or is not readable.");
             }
 
             $sql = file($dumpFile);
 
             if ($sql === false) {
-                throw new ModuleException($this, "Failed to read dump file [{$dumpFile}].");
+                throw new ModuleConfigException($this, "Failed to read dump file [{$dumpFile}].");
             }
 
             $this->_getDriver()->load($sql);
@@ -588,13 +570,6 @@ class WPDb extends Db
 
             unset($criteria['user_pass']);
 
-            if (!is_string($criteria['user_pass'])) {
-                throw new ModuleException(
-                    $this,
-                    'The user_pass criteria must be a string'
-                );
-            }
-
             $hashedPass = $this->grabFromDatabase($tableName, 'user_pass', $criteria);
             $passwordOk = is_string($hashedPass) && WP::checkHashedPassword($userPass, $hashedPass);
             $this->assertTrue(
@@ -765,8 +740,20 @@ class WPDb extends Db
                             'taxonomy' => $taxonomy,
                         ]);
 
-                        $this->haveTermRelationshipInDatabase($postId, $termTaxonomyId);
-                        $this->increaseTermCountBy($termTaxonomyId, 1);
+                        $this->assertIsNumeric($termTaxonomyId, sprintf(
+                            'Term taxonomy ID for term "%s" in taxonomy "%s" is not numeric',
+                            $termName,
+                            $taxonomy
+                        ));
+
+                        $this->assertNotEmpty($termTaxonomyId, sprintf(
+                            'Term taxonomy ID for term "%s" in taxonomy "%s" is empty',
+                            $termName,
+                            $taxonomy
+                        ));
+
+                        $this->haveTermRelationshipInDatabase($postId, (int)$termTaxonomyId);
+                        $this->increaseTermCountBy((int)$termTaxonomyId, 1);
                     }
                 }
             }
@@ -889,12 +876,17 @@ class WPDb extends Db
      *
      * @param array<string,mixed> $criteria An array of search criteria.
      *
-     * @return int The matching term `term_id`
+     * @return int|false The matching term `term_id` or `false` if not found.
      */
-    public function grabTermIdFromDatabase(array $criteria): int
+    public function grabTermIdFromDatabase(array $criteria): int|false
     {
         $termId = $this->grabFromDatabase($this->grabTermsTableName(), 'term_id', $criteria);
-        $this->assertIsInt($termId, "Term ID not found for criteria: " . json_encode($criteria));
+
+        if (false === $termId) {
+            return false;
+        }
+
+        $this->assertIsNumeric($termId, "Term ID not found for criteria: " . json_encode($criteria));
 
         /** @var string|int $termId */
         return (int)$termId;
@@ -1063,12 +1055,17 @@ class WPDb extends Db
      *
      * @param array<string,mixed> $criteria An array of search criteria.
      *
-     * @return int The matching term `term_taxonomy_id`
+     * @return int|false The matching term `term_taxonomy_id` or `false` if not found.
      */
-    public function grabTermTaxonomyIdFromDatabase(array $criteria): int
+    public function grabTermTaxonomyIdFromDatabase(array $criteria): int|false
     {
         $termTaxId = $this->grabFromDatabase($this->grabTermTaxonomyTableName(), 'term_taxonomy_id', $criteria);
-        $this->assertIsInt($termTaxId, "Term taxonomy ID not found for criteria: " . json_encode($criteria));
+
+        if ($termTaxId === false) {
+            return false;
+        }
+
+        $this->assertIsNumeric($termTaxId, "Term taxonomy ID not found for criteria: " . json_encode($criteria));
 
         /** @var string|int $termTaxId */
         return (int)$termTaxId;
@@ -1465,22 +1462,29 @@ class WPDb extends Db
      * @param int $userId      The ID of th user to get the meta for.
      * @param string $meta_key The meta key to fetch the value for.
      *
-     * @return array<string,mixed> An associative array of meta key/values.
+     * @return array<int,mixed> An array of the different meta key values.
      *
      * @throws Exception If the search criteria is incoherent.
      */
     public function grabUserMetaFromDatabase(int $userId, string $meta_key): array
     {
         $table = $this->grabPrefixedTableNameFor('usermeta');
-        $meta = $this->grabAllFromDatabase($table, 'meta_value', ['user_id' => $userId, 'meta_key' => $meta_key]);
+        $meta = $this->grabAllFromDatabase(
+            $table,
+            'meta_key, meta_value',
+            ['user_id' => $userId, 'meta_key' => $meta_key]
+        );
         if (empty($meta)) {
             return [];
         }
 
-        return array_combine(
-            array_column($meta, 'meta_key'),
-            array_column($meta, 'meta_value')
-        );
+        $normalized = [];
+
+        foreach ($meta as $row) {
+            $normalized[] = Serializer::maybeUnserialize($row['meta_value']);
+        }
+
+        return $normalized;
     }
 
     /**
@@ -1496,7 +1500,7 @@ class WPDb extends Db
      * @param string $column                The column to fetch.
      * @param array<string,mixed> $criteria The search criteria.
      *
-     * @return array<string,mixed> An array of results.
+     * @return array<array<string,mixed>> An array of results.
      *
      * @throws Exception If the criteria is inconsistent.
      */
@@ -2042,8 +2046,12 @@ class WPDb extends Db
                 }
 
                 if (!empty($ids)) {
+                    $ids = array_column($ids, 'term_id');
                     foreach ($ids as $id) {
-                        $this->dontHaveTermMetaInDatabase(['term_id' => $id]);
+                        if (!is_numeric($id)) {
+                            continue;
+                        }
+                        $this->dontHaveTermMetaInDatabase(['term_id' => (int)$id]);
                     }
                 }
             }
@@ -2284,8 +2292,12 @@ class WPDb extends Db
         if ($purgeMeta) {
             $ids = $this->grabAllFromDatabase($table, 'comment_id', $criteria);
             if (!empty($ids)) {
+                $ids = array_column($ids, 'comment_id');
                 foreach ($ids as $id) {
-                    $this->dontHaveCommentMetaInDatabase(['comment_id' => $id]);
+                    if (!is_numeric($id)) {
+                        continue;
+                    }
+                    $this->dontHaveCommentMetaInDatabase(['comment_id' => (int)$id]);
                 }
             }
         }
@@ -3237,11 +3249,13 @@ class WPDb extends Db
         $blogIds = $this->grabAllFromDatabase($this->grabBlogsTableName(), 'blog_id', $criteria);
 
         foreach (array_column($blogIds, 'blog_id') as $blogId) {
-            if (empty($blogId)) {
+            if (empty($blogId) || !is_numeric($blogId)) {
                 $this->debug(message: 'No blog found matching criteria ' .
                     json_encode($criteria, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
                 return;
             }
+
+            $blogId = (int)$blogId;
 
             if ($removeTables) {
                 foreach ($this->grabBlogTableNames($blogId) as $tableName) {
@@ -3815,7 +3829,6 @@ class WPDb extends Db
 
             $filesPath = FS::untrailslashit($fs->getUploadsPath(dirname($attachedFile)));
 
-
             if (!(isset($attachmentMetadata['sizes']) && is_array($attachmentMetadata['sizes']))) {
                 continue;
             }
@@ -3882,6 +3895,8 @@ class WPDb extends Db
             if (!is_array($unserialized)) {
                 return [];
             }
+
+            return $unserialized;
         }
 
         return [];
@@ -3954,11 +3969,17 @@ class WPDb extends Db
 
         $ids = array_column($data, 'ID');
 
+        $deleted = [];
         foreach ($ids as $id) {
+            if (!is_numeric($id)) {
+                continue;
+            }
+            $id = (int)$id;
             $this->dontHaveUserInDatabase($id, $purgeMeta);
+            $deleted[] = $id;
         }
 
-        return $ids;
+        return $deleted;
     }
 
     /**
@@ -3998,7 +4019,16 @@ class WPDb extends Db
      */
     public function dontHaveUserInDatabase(int|string $userIdOrLogin, bool $purgeMeta = true): void
     {
-        $userId = is_numeric($userIdOrLogin) ? intval($userIdOrLogin) : $this->grabUserIdFromDatabase($userIdOrLogin);
+        if (is_numeric($userIdOrLogin)) {
+            $userId = (int)$userIdOrLogin;
+        } else {
+            try {
+                $userId = $this->grabUserIdFromDatabase($userIdOrLogin);
+            } catch (Exception) {
+                // User not found nothing to do.
+                return;
+            }
+        }
         $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('users'), ['ID' => $userId]);
         if ($purgeMeta) {
             $this->dontHaveInDatabase($this->grabPrefixedTableNameFor('usermeta'), ['user_id' => $userId]);
@@ -4015,12 +4045,17 @@ class WPDb extends Db
      *
      * @param string $userLogin The user login name.
      *
-     * @return int The user ID
+     * @return int|false The user ID or `false` if the user was not found.
      */
-    public function grabUserIdFromDatabase(string $userLogin): int
+    public function grabUserIdFromDatabase(string $userLogin): int|false
     {
         $userId = $this->grabFromDatabase($this->grabUsersTableName(), 'ID', ['user_login' => $userLogin]);
-        $this->assertIsInt($userId, sprintf('Failed to grab user ID for user "%s"', $userLogin));
+
+        if ($userId === false) {
+            return false;
+        }
+
+        $this->assertIsNumeric($userId, sprintf('Failed to grab user ID for user "%s"', $userLogin));
 
         /** @var string|int $userId */
         return (int)$userId;

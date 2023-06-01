@@ -1,10 +1,13 @@
 <?php namespace lucatume\WPBrowser;
 
+use Codeception\Test\Unit;
+use Generator;
+use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Db;
 
-class dbTest extends \Codeception\Test\Unit
+class dbTest extends Unit
 {
-    public function testDbDsnMapTypeDataProvider()
+    public function testDbDsnMapTypeDataProvider(): array
     {
         return [
             'empty' => [
@@ -193,7 +196,7 @@ class dbTest extends \Codeception\Test\Unit
         }
     }
 
-    public function testDbCredentialsDataProvider()
+    public function testDbCredentialsDataProvider(): array
     {
         return [
             'empty' => [
@@ -231,7 +234,7 @@ class dbTest extends \Codeception\Test\Unit
         }
     }
 
-    public function testdbDsnStringDataSet()
+    public function testdbDsnStringDataSet(): Generator
     {
         yield 'empty' => [
             [],
@@ -339,7 +342,7 @@ class dbTest extends \Codeception\Test\Unit
         $this->assertEquals($expected, Db::dbDsnString($inputMap, $forDbHost));
     }
 
-    public function dbDsnToMapDataProvider()
+    public function dbDsnToMapDataProvider(): array
     {
         return [
             'mysql on localhost' => ['mysql:host=localhost', ['type' => 'mysql', 'host' => 'localhost']],
@@ -386,7 +389,7 @@ class dbTest extends \Codeception\Test\Unit
         $this->assertEquals($expected, Db::dbDsnToMap($input));
     }
 
-    public function dbDsnToMapBadInputDataProvider()
+    public function dbDsnToMapBadInputDataProvider(): array
     {
         return [
             'empty' => [''],
@@ -405,7 +408,7 @@ class dbTest extends \Codeception\Test\Unit
      */
     public function test_db_dsn_to_map_will_throw_if_string_is_not_dsn_string($input)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         Db::dbDsnToMap($input);
     }

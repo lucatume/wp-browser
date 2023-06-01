@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Closure;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
@@ -234,8 +235,16 @@ class Scaffolded implements InstallationStateInterface
     }
 
     /**
-     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
-     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     * @return array{
+     *     AUTH_KEY: string,
+     *     SECURE_AUTH_KEY: string,
+     *     LOGGED_IN_KEY: string,
+     *     NONCE_KEY: string,
+     *     AUTH_SALT: string,
+     *     SECURE_AUTH_SALT: string,
+     *     LOGGED_IN_SALT: string,
+     *     NONCE_SALT: string,
+     * }
      * @throws InstallationException
      */
     public function getSalts(): array
@@ -316,6 +325,18 @@ class Scaffolded implements InstallationStateInterface
      * @throws InstallationException
      */
     public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation has not been configured yet.',
+            InstallationException::STATE_SCAFFOLDED
+        );
+    }
+
+
+    /**
+     * @throws InstallationException
+     */
+    public function executeClosureInWordPress(Closure $closure): mixed
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',

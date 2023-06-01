@@ -7,6 +7,7 @@
 
 namespace lucatume\WPBrowser\Polyfills\Dotenv;
 
+use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Env;
 
 /**
@@ -46,7 +47,7 @@ class Dotenv
         $this->envFilePath = $this->getEnvFilePath($rootDir, $envFile);
 
         if (! file_exists($this->envFilePath)) {
-            throw new \InvalidArgumentException("File {$this->envFilePath} does not exist.");
+            throw new InvalidArgumentException("File {$this->envFilePath} does not exist.");
         }
 
         $this->rootDir = $rootDir;

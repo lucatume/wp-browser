@@ -1,6 +1,8 @@
 <?php
 
-class ThemeActivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class ThemeActivationTest extends WPTestCase
 {
     /**
      * @test

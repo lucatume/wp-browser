@@ -1,13 +1,16 @@
 <?php
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use ArrayObject;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Iterators\Filters\FactoryQueriesFilter as Filter;
+use UnitTester;
 
-class FactoryQueriesFilterTest extends \Codeception\Test\Unit
+class FactoryQueriesFilterTest extends Unit
 {
     protected $backupGlobals = false;
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
 
@@ -27,9 +30,9 @@ class FactoryQueriesFilterTest extends \Codeception\Test\Unit
         $this->assertInstanceOf('lucatume\WPBrowser\Iterators\Filters\FactoryQueriesFilter', $sut);
     }
 
-    private function make_instance()
+    private function make_instance(): FactoryQueriesFilter
     {
-        return new Filter((new \ArrayObject($this->array))->getIterator());
+        return new Filter((new ArrayObject($this->array))->getIterator());
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Closure;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
@@ -14,6 +16,8 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
+use Opis\Closure\ReflectionClosure;
+use ReflectionException;
 use Throwable;
 
 class Configured implements InstallationStateInterface
@@ -193,6 +197,17 @@ class Configured implements InstallationStateInterface
      * @throws InstallationException
      */
     public function updateOption(string $option, mixed $value): int
+    {
+        throw new InstallationException(
+            'The WordPress installation has not been installed yet.',
+            InstallationException::STATE_CONFIGURED
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function executeClosureInWordPress(Closure $closure): mixed
     {
         throw new InstallationException(
             'The WordPress installation has not been installed yet.',

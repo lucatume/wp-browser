@@ -7,6 +7,7 @@
 
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use FilterIterator;
 use Iterator;
 use lucatume\WPBrowser\Utils\Strings;
 
@@ -15,12 +16,12 @@ use lucatume\WPBrowser\Utils\Strings;
  *
  * @package lucatume\WPBrowser\Iterators\Filters
  */
-class MainStatementQueriesFilter extends \FilterIterator
+class MainStatementQueriesFilter extends FilterIterator
 {
     /**
      * MainStatementQueriesFilter constructor.
      *
-     * @param Iterator<string> $iterator
+     * @param Iterator<array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}> $iterator
      * @param string $statement The statement to keep queries for.
      */
     public function __construct(Iterator $iterator, protected $statement = 'SELECT')
@@ -37,7 +38,7 @@ class MainStatementQueriesFilter extends \FilterIterator
      */
     public function accept(): bool
     {
-        /** @var array{0: string, 1: int, 2: string} $query */
+        /** @var array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>} $query */
         $query = $this->getInnerIterator()->current();
         $pattern = Strings::isRegex($this->statement) ? $this->statement : '/^' . $this->statement . '/i';
         /** @noinspection NotOptimalRegularExpressionsInspection */

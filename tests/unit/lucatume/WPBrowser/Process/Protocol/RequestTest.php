@@ -3,16 +3,18 @@
 
 namespace Unit\lucatume\WPBrowser\Process\Protocol;
 
+use Codeception\Test\Unit;
+use Generator;
 use lucatume\WPBrowser\Process\Protocol\Control;
 use lucatume\WPBrowser\Process\Protocol\Parser;
 use lucatume\WPBrowser\Process\Protocol\Request;
 use Opis\Closure\SerializableClosure;
-use \UnitTester;
+use UnitTester;
 
-class RequestTest extends \Codeception\Test\Unit
+class RequestTest extends Unit
 {
 
-    public function getPayloadDataProvider(): \Generator
+    public function getPayloadDataProvider(): Generator
     {
         yield 'empty control, empty function' => [
             [],

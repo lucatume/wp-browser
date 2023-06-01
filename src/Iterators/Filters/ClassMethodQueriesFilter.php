@@ -19,7 +19,7 @@ class ClassMethodQueriesFilter extends QueriesCallerBasedKeepingFilterIterator
     /**
      * ClassMethodQueriesFilter constructor.
      *
-     * @param Iterator<string> $iterator The iterator to filter.
+     * @param Iterator<array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}> $iterator
      * @param string $class              The class to filter queries by.
      * @param string $method             The class method to filter queries by.
      */

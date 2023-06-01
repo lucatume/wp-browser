@@ -1,5 +1,7 @@
 <?php
 
+use Codeception\Actor;
+
 
 /**
  * Inherited Methods
@@ -16,7 +18,7 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class IsolatedTester extends \Codeception\Actor
+class IsolatedTester extends Actor
 {
     use _generated\IsolatedTesterActions;
 

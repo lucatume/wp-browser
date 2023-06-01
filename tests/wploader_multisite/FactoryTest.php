@@ -1,6 +1,8 @@
 <?php
 
-class FactoryTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class FactoryTest extends WPTestCase
 {
     /**
      * It should expose the blog factory on the tester property

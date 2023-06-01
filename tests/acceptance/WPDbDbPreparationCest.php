@@ -9,7 +9,7 @@ class WPDbDbPreparationCest
      *
      * @test
      */
-    public function should_remove_the_admin_email_verification_by_default(AcceptanceTester $I)
+    public function should_remove_the_admin_email_verification_by_default(AcceptanceTester $I): void
     {
         $I->seeOptionInDatabase([
             'option_name'  => 'admin_email_lifespan',
@@ -22,7 +22,7 @@ class WPDbDbPreparationCest
      *
      * @test
      */
-    public function should_not_remove_the_admin_email_verification_if_wp_db_let_admin_email_verification_is_true(AcceptanceTester $I)
+    public function should_not_remove_the_admin_email_verification_if_wp_db_let_admin_email_verification_is_true(AcceptanceTester $I): void
     {
         $I->reconfigureWPDb(['letAdminEmailVerification' => true]);
 

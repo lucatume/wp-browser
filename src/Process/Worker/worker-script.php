@@ -9,13 +9,12 @@ require_once $processSrcRoot . '/Protocol/Parser.php';
 require_once $processSrcRoot . '/Protocol/Control.php';
 require_once $processSrcRoot . '/Protocol/Request.php';
 require_once $processSrcRoot . '/Protocol/ProtocolException.php';
-require_once $processSrcRoot . '/../Utils/ErrorHandling.php';
 
 try {
     $request = Request::fromPayload($argv[1]);
     $serializableClosure = $request->getSerializableClosure();
     $returnValue = $serializableClosure();
-} catch (\Throwable $throwable) {
+} catch (Throwable $throwable) {
     $returnValue = new SerializableThrowable($throwable);
 }
 

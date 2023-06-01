@@ -7,7 +7,9 @@
 
 namespace lucatume\WPBrowser\Generators;
 
+use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Strings;
+use RuntimeException;
 
 /**
  * Class Tables
@@ -90,12 +92,12 @@ class Tables
      *
      * @return string The rendered SQL query.
      *
-     * @throws \InvalidArgumentException If the table name is not a valid table name.
+     * @throws InvalidArgumentException If the table name is not a valid table name.
      */
     protected function renderQuery(string $table, array $data): string
     {
         if (!in_array($table, $this->tables(), true)) {
-            throw new \InvalidArgumentException('Table ' . $table . ' is not a valid table name');
+            throw new InvalidArgumentException('Table ' . $table . ' is not a valid table name');
         }
 
         $template = $this->templates($table);
@@ -144,20 +146,20 @@ class Tables
      *
      * @return string The SQL query.
      *
-     * @throws \RuntimeException If the SQL query cannot be fetched.
+     * @throws RuntimeException If the SQL query cannot be fetched.
      */
     protected function templates(string $table): string
     {
         $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "{$table}.handlebars";
 
         if (!is_file($templateFile)) {
-            throw new \RuntimeException("Template file {$templateFile} not found.");
+            throw new RuntimeException("Template file {$templateFile} not found.");
         }
 
         $queryTemplate = file_get_contents($templateFile);
 
         if (false === $queryTemplate) {
-            throw new \RuntimeException("Template file {$templateFile} could not be read.");
+            throw new RuntimeException("Template file {$templateFile} could not be read.");
         }
 
         return $queryTemplate;

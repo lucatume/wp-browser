@@ -8,6 +8,7 @@ use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Codeception;
+use lucatume\WPBrowser\Utils\Property;
 use ReflectionFunction;
 use ReflectionObject;
 use Throwable;
@@ -24,7 +25,7 @@ trait LoopIsolation
         string $cwd = null,
         array $requireFiles = [],
     ): mixed {
-        $options = ['rethrow' => true];
+        $options = ['rethrow' => false];
 
         $callerFile = (new ReflectionObject($this))->getFileName();
         $options['requireFiles'] = $requireFiles ?: [];
@@ -37,7 +38,17 @@ trait LoopIsolation
         $result = Loop::executeClosure($runAssertions, 30, $options);
         $returnValue = $result->getReturnValue();
 
-        if (! $returnValue instanceof \Throwable && $result->getExitCode() !== 0) {
+        if ($returnValue instanceof Throwable) {
+            // Update the stack trace to present the loop execution frame on top of the stack.
+            $stackTrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            Property::setPrivateProperties(
+                $returnValue,
+                ['trace' => array_merge($returnValue->getTrace(), $stackTrace),]
+            );
+            throw $returnValue;
+        }
+
+        if ($result->getExitCode() !== 0) {
             codecept_debug('STDOUT: ' . $result->getStdoutBuffer());
             codecept_debug('STDERR: ' . $result->getStderrBuffer());
             $this->fail('Loop execution failed with exit code ' . $result->getExitCode());

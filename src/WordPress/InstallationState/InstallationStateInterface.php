@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
+use Closure;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Version;
@@ -59,8 +60,16 @@ interface InstallationStateInterface
     public function isConfigured(): bool;
 
     /**
-     * @return array{AUTH_KEY: mixed, SECURE_AUTH_KEY: mixed, LOGGED_IN_KEY: mixed, NONCE_KEY: mixed, AUTH_SALT: mixed,
-     *                         SECURE_AUTH_SALT: mixed, LOGGED_IN_SALT: mixed, NONCE_SALT: mixed}
+     * @return array{
+     *     AUTH_KEY: string,
+     *     SECURE_AUTH_KEY: string,
+     *     LOGGED_IN_KEY: string,
+     *     NONCE_KEY: string,
+     *     AUTH_SALT: string,
+     *     SECURE_AUTH_SALT: string,
+     *     LOGGED_IN_SALT: string,
+     *     NONCE_SALT: string,
+     * }
      */
     public function getSalts(): array;
 
@@ -87,4 +96,6 @@ interface InstallationStateInterface
     public function getContentDir(string $path = ''): string;
 
     public function updateOption(string $option, mixed $value): int;
+
+    public function executeClosureInWordPress(Closure $closure):mixed;
 }

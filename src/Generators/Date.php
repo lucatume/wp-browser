@@ -7,6 +7,8 @@
 
 namespace lucatume\WPBrowser\Generators;
 
+use InvalidArgumentException;
+
 /**
  * Class Date
  *
@@ -20,9 +22,9 @@ class Date
     public const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
-     * @var int An injectable time value, used in tests.
+     * @var ?int An injectable time value, used in tests.
      */
-    protected static int $time;
+    protected static ?int $time = null;
 
     /**
      * Returns the current time in WordPress specific format.
@@ -89,7 +91,7 @@ class Date
         $timestamp = strtotime($strtotime);
 
         if ($timestamp === false) {
-            throw new \InvalidArgumentException('Invalid time: ' . $strtotime);
+            throw new InvalidArgumentException('Invalid time: ' . $strtotime);
         }
 
         return date(self::DATE_FORMAT);

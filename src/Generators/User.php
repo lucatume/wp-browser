@@ -28,7 +28,7 @@ class User
             'user_pass' => WP::passwordHash($user_login),
             'user_nicename' => $user_login,
             'user_email' => $login . "@example.com",
-            'user_url' => "https://{$login}.example.com",
+            'user_url' => "https://$login.example.com",
             'user_registered' => Date::now() ?: '0000-00-00 00:00:00',
             'user_activation_key' => '',
             'user_status' => '0',

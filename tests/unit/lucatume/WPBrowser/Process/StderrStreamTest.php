@@ -5,8 +5,13 @@ namespace Unit\lucatume\WPBrowser\Process;
 
 use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
+use CompileError;
+use Error;
+use ErrorException;
 use Generator;
 use lucatume\WPBrowser\Process\StderrStream;
+use ParseError;
+use PHPUnit\TextUI\RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class StderrStreamTest extends Unit
@@ -29,7 +34,7 @@ class StderrStreamTest extends Unit
 [1
 EOT;
 
-        yield 'Warning in stream' => [$warning, \ErrorException::class, E_WARNING];
+        yield 'Warning in stream' => [$warning, ErrorException::class, E_WARNING];
 
         $fatalError = <<<EOT
 [17-Mar-2023 10:21:16 Europe/Paris] PHP Fatal error:  Uncaught Error: Class "lucatume\WPBrowser\Utils\ErrorHandling" not found in /Users/lucatume/oss/wp-browser/src/Process/SerializableThrowable.php:24
@@ -39,7 +44,7 @@ Stack trace:
   thrown in /Users/lucatume/oss/wp-browser/src/Process/SerializableThrowable.php on line 24
 EOT;
 
-        yield 'Fatal error in stream' => [$fatalError, \Error::class];
+        yield 'Fatal error in stream' => [$fatalError, Error::class];
 
         $exception = <<<EOT
 [17-Mar-2023 16:23:28 Europe/Paris] PHP Fatal error:  Uncaught RuntimeException: This file is not meant to be executed directly. in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php:12
@@ -71,13 +76,13 @@ EOT;
 
         yield 'random noise and warning in stream' => [
             $randomNoise . PHP_EOL . $warning,
-            \ErrorException::class,
+            ErrorException::class,
             E_WARNING
         ];
 
         yield 'random noise and fatal error in stream' => [
             $randomNoise . PHP_EOL . $fatalError,
-            \Error::class
+            Error::class
         ];
 
         yield 'random noise and exception in stream' => [$randomNoise . PHP_EOL . $exception, \RuntimeException::class];
@@ -105,109 +110,109 @@ Stack trace:
   thrown in /Users/lucatume/oss/wp-browser/includes/core-phpunit/includes/bootstrap.php on line 261
 EOT;
 
-        yield 'nested exception in stream' => [$nestedException, \PHPUnit\TextUI\RuntimeException::class];
+        yield 'nested exception in stream' => [$nestedException, RuntimeException::class];
 
         yield 'nested exception and random noise in stream' => [
             $nestedException . PHP_EOL . $randomNoise,
-            \PHPUnit\TextUI\RuntimeException::class
+            RuntimeException::class
         ];
 
         yield 'all the things in stream' => [
             $randomNoise . PHP_EOL . $fatalError . PHP_EOL . $warning . PHP_EOL . $exception . PHP_EOL . $namespacedException . PHP_EOL . $nestedException,
-            \Error::class
+            Error::class
         ];
 
         yield 'Runtime warning in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Runtime warning:  count(): Parameter must be an array or an object that implements Countable in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_WARNING
         ];
 
         yield 'Parse error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Parse error:  syntax error, unexpected \'$\' in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ParseError::class
+            ParseError::class
         ];
 
         yield 'Runtime notice in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Runtime notice:  Undefined variable: foo in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_NOTICE
         ];
 
         yield 'Notice in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Notice:  Undefined variable: foo in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_NOTICE
         ];
 
         yield 'Strict standards in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Strict Standards:  Declaration of Foo::bar() should be compatible with Bar::bar() in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_STRICT
         ];
 
         yield 'Recoverable error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Recoverable error:  Object of class stdClass could not be converted to string in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_RECOVERABLE_ERROR
         ];
 
         yield 'Deprecated in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Deprecated:  Methods with the same name as their class will not be constructors in a future version of PHP; Foo has a deprecated constructor in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_DEPRECATED
         ];
 
         yield 'Core error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core error:  Unknown: Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_CORE_ERROR
         ];
 
         yield 'Core warning in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Core warning:  Unknown: Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_CORE_WARNING
         ];
 
         yield 'Compile error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \CompileError::class
+            CompileError::class
         ];
 
         yield 'Compile warning in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile warning:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_COMPILE_WARNING
         ];
 
         yield 'User error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP User error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_USER_ERROR
         ];
 
         yield 'User warning in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP User warning:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_USER_WARNING
         ];
 
         yield 'User notice in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP User notice:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_USER_NOTICE
         ];
 
         yield 'User deprecated in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP User deprecated:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_USER_DEPRECATED
         ];
 
         yield 'Weird error in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Weird error:  Cannot use output buffering in output buffering display handlers in /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php on line 15',
-            \ErrorException::class,
+            ErrorException::class,
             E_ERROR
         ];
 

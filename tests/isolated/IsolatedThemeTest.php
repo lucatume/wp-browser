@@ -1,6 +1,8 @@
 <?php
 
-class IsolatedThemeTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class IsolatedThemeTest extends WPTestCase
 {
     /**
      * @runInSeparateProcess

@@ -2,6 +2,7 @@
 
 namespace cli\Test;
 
+use Codeception\Example;
 use Step\Cli\CodeceptionCommand as CliTester;
 
 class GenerateCommandsCest extends BaseCommandCest
@@ -20,7 +21,7 @@ class GenerateCommandsCest extends BaseCommandCest
      *
      * @test
      */
-    public function it_should_scaffold_wpunit_like_tests(CliTester $I, \Codeception\Example $data)
+    public function it_should_scaffold_wpunit_like_tests(CliTester $I, Example $data)
     {
         $I->runCodecept("generate:{$data[0]} Unit Some", $I->sandboxPath());
 

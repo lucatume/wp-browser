@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use function preg_match;
 
 class WpConfigFileGenerator
 {
@@ -147,7 +148,7 @@ PHP;
 
 
         $placeholderPattern = '/^\\/\\*\\s*?That\'s all, stop editing!.*?$/um';
-        if (!\preg_match($placeholderPattern, $this->wpConfigFileContents, $placeholderMatches)) {
+        if (!preg_match($placeholderPattern, $this->wpConfigFileContents, $placeholderMatches)) {
             throw new InstallationException(
                 "Could not find the placeholder string in the wp-config.php file contents.",
                 InstallationException::WP_CONFIG_FILE_MISSING_PLACEHOLDER

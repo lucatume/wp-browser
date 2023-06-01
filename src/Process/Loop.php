@@ -64,6 +64,7 @@ class Loop
 
     /**
      * @param array{
+     *     rethrow?: bool,
      *     requireFiles?: array<string>,
      *     cwd?: string,
      * } $options
@@ -84,6 +85,26 @@ class Loop
         }
 
         return $result;
+    }
+
+    /**
+     * @param array{
+     *     rethrow?: bool,
+     *     requireFiles?: array<string>,
+     *     cwd?: string,
+     * } $options
+     *
+     * @throws WorkerException
+     * @throws Throwable
+     * @throws ProcessException
+     */
+    public static function executeClosureOrFail(
+        Closure $toInstallWordPressNetwork,
+        int $timeout = 30,
+        array $options = []
+    ): Result {
+        $options['rethrow'] = true;
+        return self::executeClosure($toInstallWordPressNetwork, $timeout, $options);
     }
 
     /**

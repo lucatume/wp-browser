@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Utils;
 
 use lucatume\WPBrowser\Generators\User;
+use function parse_url;
 
 class Url
 {
@@ -45,7 +46,7 @@ class Url
      */
     public static function parseUrl(string $url): array
     {
-        $parsed = \parse_url($url);
+        $parsed = parse_url($url);
 
         if (!is_array($parsed)) {
             return self::$parserUrlDefaults;

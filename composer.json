@@ -1,8 +1,7 @@
 {
-  "_hash": "11223344",
   "name": "lucatume/wp-browser",
   "type": "library",
-  "description": "WordPress extension of the PhpBrowser class.",
+  "description": "A set of Codeception modules to test WordPress projects.",
   "keywords": [
     "wordpress",
     "codeception"
@@ -64,10 +63,7 @@
   "autoload-dev": {
     "psr-4": {
       "lucatume\\WPBrowser\\Tests\\": "tests/_support"
-    },
-    "files": [
-      "tests/_support/functions.php"
-    ]
+    }
   },
   "extra": {
     "_hash": "484f861f69198089cab0e642f27e5653"

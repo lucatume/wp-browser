@@ -3,12 +3,12 @@
  * Plugin Name: Isolated test two plugin
  */
 
-function isolated_test_two_canary_function()
+function isolated_test_two_canary_function(): string
 {
     return 'Sum';
 }
 
-function isolated_test_two_activate()
+function isolated_test_two_activate(): array
 {
     global $wpdb;
     $table_name   = $wpdb->prefix . 'isolated_test_two_table';
@@ -28,7 +28,7 @@ function isolated_test_two_activate()
     return $result;
 }
 
-function isolated_test_two_write($data)
+function isolated_test_two_write($data): ?string
 {
     global $wpdb;
     $inserted = $wpdb->insert(
@@ -38,13 +38,13 @@ function isolated_test_two_write($data)
     );
 
     if ($inserted === false) {
-        throw new \RuntimeException('Could not insert ' . json_encode($data));
+        throw new RuntimeException('Could not insert ' . json_encode($data));
     }
 
     return $wpdb->get_var("SELECT MAX(id) AS id FROM {$wpdb->isolated_test_two}");
 }
 
-function isolated_test_two_read($id)
+function isolated_test_two_read($id): ?string
 {
     global $wpdb;
 
@@ -53,14 +53,14 @@ function isolated_test_two_read($id)
     return $wpdb->get_var($query);
 }
 
-function isolated_test_two_read_all()
+function isolated_test_two_read_all(): array|object|null
 {
     global $wpdb;
 
     return $wpdb->get_results("SELECT id, data FROM {$wpdb->isolated_test_two} WHERE 1=1");
 }
 
-function isolated_test_two_load()
+function isolated_test_two_load(): void
 {
     global $wpdb;
     $wpdb->isolated_test_two = $wpdb->prefix . 'isolated_test_two_table';

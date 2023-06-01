@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\DbException;
@@ -46,7 +47,7 @@ class Multisite implements InstallationStateInterface
             );
         }
 
-        if ($this->isInstalled(true)) {
+        if (!$this->isInstalled(true)) {
             throw new InstallationException(
                 "The WordPress multi-site installation is not installed.",
                 InstallationException::NOT_INSTALLED
@@ -54,6 +55,7 @@ class Multisite implements InstallationStateInterface
         }
 
         $this->version = new Version($this->wpRootDir);
+        $this->codeExecutionFactory = new CodeExecutionFactory($wpRootDir, $this->getBlogDomain());
     }
 
     public function isMultisite(): bool

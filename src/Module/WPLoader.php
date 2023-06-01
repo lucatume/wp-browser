@@ -7,12 +7,14 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use Closure;
 use Codeception\Command\Shared\ConfigTrait;
 use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Util\Debug;
+use Exception;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
@@ -145,7 +147,7 @@ class WPLoader extends Module
         'NONCE_SALT' => '',
         'AUTOMATIC_UPDATER_DISABLED' => true,
         'WP_HTTP_BLOCK_EXTERNAL' => true,
-        'dump' => '',
+        'dump' => ''
     ];
 
     private string $wpBootstrapFile;
@@ -153,7 +155,7 @@ class WPLoader extends Module
     private Installation $installation;
     private string $bootstrapOutput = '';
     private string $installationOutput = '';
-    private bool $bootstrapSuccessful = false;
+    private bool $earlyExit = true;
 
     public function _getBootstrapOutput(): string
     {
@@ -232,6 +234,7 @@ class WPLoader extends Module
 
         /**
          * The config is now validated and the values are defined.
+         *
          * @var array{
          *     loadOnly: bool,
          *     multisite: bool,
@@ -282,6 +285,8 @@ class WPLoader extends Module
             $db->create();
 
             $this->installation = new Installation($config['wpRootFolder'], $db);
+            // Update the config to the resolved path.
+            $config['wpRootFolder'] = $this->installation->getWpRootDir();
             $installationState = $this->installation->getState();
 
             // The WordPress root directory should be at least scaffolded, it cannot be empty.
@@ -314,6 +319,9 @@ class WPLoader extends Module
         } catch (DbException|InstallationException $e) {
             throw new ModuleConfigException($this, $e->getMessage(), $e);
         }
+
+        // Refresh the configuration.
+        $this->config = $config;
 
         $this->wpBootstrapFile = CorePHPUnit::bootstrapFile();
 
@@ -456,6 +464,7 @@ class WPLoader extends Module
 
     /**
      * Installs and bootstraps the WordPress installation.
+     *
      * @throws ModuleException
      * @throws ProcessException
      * @throws Throwable
@@ -477,8 +486,8 @@ class WPLoader extends Module
          */
         if ($isMultisite) {
             // Activate plugins and enable theme network-wide.
-            $activatePlugins = function () use (&$activatePlugins, $plugins): array {
-                remove_filter('pre_site_option_active_sitewide_plugins', $activatePlugins);
+            $activate = function () use (&$activate, $plugins): array {
+                remove_filter('pre_site_option_active_sitewide_plugins', $activate);
                 $this->activatePluginsSwitchThemeInSeparateProcess();
 
                 if ($this->config['theme']) {
@@ -500,11 +509,11 @@ class WPLoader extends Module
                 // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
                 return array_combine($plugins, array_fill(0, count($plugins), time()));
             };
-            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activatePlugins);
+            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
         } else {
             // Activate plugins and theme.
-            $activatePlugins = function () use (&$activatePlugins, $plugins): array {
-                remove_filter('pre_option_active_plugins', $activatePlugins);
+            $activate = function () use (&$activate, $plugins): array {
+                remove_filter('pre_option_active_plugins', $activate);
                 $this->activatePluginsSwitchThemeInSeparateProcess();
 
                 if ($this->config['theme']) {
@@ -524,21 +533,9 @@ class WPLoader extends Module
 
                 return $plugins;
             };
-            PreloadFilters::addFilter('pre_option_active_plugins', $activatePlugins);
+            PreloadFilters::addFilter('pre_option_active_plugins', $activate);
         }
-
-        ob_start(function ($buffer): void {
-            $this->bootstrapOutput = $buffer;
-            if ($this->bootstrapSuccessful === true) {
-                return;
-            }
-
-            // The bootstrap failed and called exit 1.
-            throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . $buffer);
-        });
-        require $this->wpBootstrapFile;
-        $this->bootstrapSuccessful = true;
-        ob_end_clean();
+        $this->includeCorePHPUniteSuiteBootstrapFile();
 
         Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);
 
@@ -567,7 +564,7 @@ class WPLoader extends Module
         $jobs = array_combine(
             array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
             array_map(
-                static fn(string $plugin): \Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
+                static fn(string $plugin): Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
                 $plugins
             )
         );
@@ -585,8 +582,6 @@ class WPLoader extends Module
             $returnValue = $result->getReturnValue();
 
             if ($returnValue instanceof Throwable) {
-                $this->debug($returnValue->getMessage());
-                $this->debug($returnValue->getTraceAsString());
                 // Not gift-wrapped in a ModuleException to make it easier to debug the issue.
                 throw $returnValue;
             }
@@ -607,6 +602,7 @@ class WPLoader extends Module
     {
         /**
          * Coming from the validation.
+         *
          * @var array{
          *     bootstrapActions: array<callable|string>,
          * } $config
@@ -758,6 +754,7 @@ class WPLoader extends Module
         try {
             /**
              * Coming from the validation.
+             *
              * @var array{
              *     dump: array<string>,
              * } $config
@@ -767,7 +764,7 @@ class WPLoader extends Module
                 $modified = $db->import($dumpFilePath);
                 $this->debug("Imported dump file `$dumpFilePath`: $modified rows modified.");
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $message = "Could not import dump file `$dumpFilePath`: " . lcfirst($e->getMessage());
             throw new ModuleException(__CLASS__, $message);
         }
@@ -811,5 +808,50 @@ class WPLoader extends Module
         $this->config['dbUser'] = $dbUser;
         $this->config['dbPassword'] = $dbPassword;
         $this->config['dbName'] = $dbName;
+    }
+
+    /**
+     * While loading, WordPress might `die` or `exit` if it encounters an error.
+     * Output buffering final handler will always run and provides an opportunity to orderly handle
+     * the exit and provide a meaningful message about the failure to the user.
+     *
+     * @throws ModuleException
+     * @throws Throwable
+     */
+    protected function includeCorePHPUniteSuiteBootstrapFile(): void
+    {
+        ob_start(function (string $buffer, int $phase): string {
+            $this->bootstrapOutput .= $buffer;
+
+            if ($phase === PHP_OUTPUT_HANDLER_FINAL) {
+                if (!$this->earlyExit) {
+                    return $buffer;
+                }
+
+                // The inclusion of the test bootstrap file, or a WordPress file included by it, called `exit` or `die`.
+                // Jump in on the flow to provide a meaningful message to the user.
+                throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . $buffer);
+            }
+
+            $buffer = trim($buffer);
+            if ($buffer === '' || str_starts_with($buffer, 'Not running')) {
+                // Do not print empty lines or the lines about skipped test groups.
+                return '';
+            }
+            $this->debug('[Core bootstrap] ' . trim($buffer));
+            return '';
+        }, 1);
+
+        try {
+            require $this->wpBootstrapFile;
+        } catch (Throwable $t) {
+            // Not an early exit: Codeception will handle the Exception and print it.
+            $this->earlyExit = false;
+            throw $t;
+        }
+
+        $this->earlyExit = false;
+        // Output has been already printed: no need to flush it.
+        ob_end_clean();
     }
 }

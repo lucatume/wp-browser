@@ -2,13 +2,15 @@
 
 namespace lucatume\WPBrowser\Module;
 
-class WPBrowserMethodsTest extends \Codeception\Test\Unit
+use Codeception\Test\Unit;
+
+class WPBrowserMethodsTest extends Unit
 {
     use WPBrowserMethods;
 
     protected $page;
 
-    public static function cronPageDataProvider()
+    public static function cronPageDataProvider(): array
     {
         return [
             'one element array' => [
@@ -30,7 +32,7 @@ class WPBrowserMethodsTest extends \Codeception\Test\Unit
         ];
     }
 
-    public function adminAjaxPageDatqProvider()
+    public function adminAjaxPageDatqProvider(): array
     {
         return [
             'one element array' => [['action' => 'foo_action'], '/wp-admin/admin-ajax.php?action=foo_action'],

@@ -34,6 +34,8 @@ class InstallationException extends Exception
     public const MULTISITE_SUBFOLDER_NOT_INSTALLED = 27;
     public const ERROR_DURING_LOADING = 28;
     public const TABLE_PREFIX_NOT_STRING = 29;
+    public const CONST_NOT_STRING = 31;
+    public const NO_ADMIN_USER_FOUND = 32;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {

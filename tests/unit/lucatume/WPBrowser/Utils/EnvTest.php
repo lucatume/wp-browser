@@ -2,9 +2,10 @@
 
 namespace lucatume\WPBrowser;
 
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Utils\Env;
 
-class envTest extends \Codeception\Test\Unit
+class envTest extends Unit
 {
     /**
      * It should allow loading an env file

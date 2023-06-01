@@ -27,15 +27,20 @@ class Installation
     private InstallationState\InstallationStateInterface $installationState;
 
     /**
+     * @throws DbException
      * @throws InstallationException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws WpConfigFileException
      */
     public function __construct(
         string $wpRootDir,
         ?Db $db = null,
     ) {
         $this->wpRootDir = $this->checkWpRootDir($wpRootDir);
-        $this->installationState = $this->setInstallationState();
         $this->db = $db;
+        $this->installationState = $this->setInstallationState();
     }
 
     /**
@@ -218,14 +223,14 @@ class Installation
 
     /**
      * @return array{
-     *     AUTH_KEY: mixed,
-     *     SECURE_AUTH_KEY: mixed,
-     *     LOGGED_IN_KEY: mixed,
-     *     NONCE_KEY: mixed,
-     *     AUTH_SALT: mixed,
-     *     SECURE_AUTH_SALT: mixed,
-     *     LOGGED_IN_SALT: mixed,
-     *     NONCE_SALT: mixed
+     *     AUTH_KEY: string,
+     *     SECURE_AUTH_KEY: string,
+     *     LOGGED_IN_KEY: string,
+     *     NONCE_KEY: string,
+     *     AUTH_SALT: string,
+     *     SECURE_AUTH_SALT: string,
+     *     LOGGED_IN_SALT: string,
+     *     NONCE_SALT: string
      * }
      */
     public function getSalts(): array

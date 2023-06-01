@@ -35,7 +35,8 @@ class Control
      */
     public function __construct(array $controlArray)
     {
-        $config = class_exists(Configuration::class) ? Configuration::config() : [];
+        $config = $controlArray['codeceptionConfig'] ??
+            (class_exists(Configuration::class) ? Configuration::config() : []);
         if (!empty($controlArray['cwd'])) {
             $cwd = $controlArray['cwd'];
         } else {

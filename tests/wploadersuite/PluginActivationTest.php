@@ -1,7 +1,9 @@
 <?php
 namespace lucatume\WPBrowser\Tests;
 
-class PluginActivationTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class PluginActivationTest extends WPTestCase
 {
     /**
      * @test

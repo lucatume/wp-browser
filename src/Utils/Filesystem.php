@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Exception;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 
@@ -200,7 +201,7 @@ class Filesystem
 
         try {
             exec($command, $output, $exitCode);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $exitCode = $e->getCode();
             $output = $e->getMessage();
         }

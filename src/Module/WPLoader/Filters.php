@@ -103,7 +103,7 @@ class Filters
      *
      * @return FiltersGroup The group of filters to remove.
      */
-    public function toRemove(): \lucatume\WPBrowser\Module\WPLoader\FiltersGroup
+    public function toRemove(): FiltersGroup
     {
         return new FiltersGroup($this->toRemove, $this->removeWith, $this->addWith);
     }
@@ -133,7 +133,7 @@ class Filters
      *
      * @return FiltersGroup The group of filters to add.
      */
-    public function toAdd(): \lucatume\WPBrowser\Module\WPLoader\FiltersGroup
+    public function toAdd(): FiltersGroup
     {
         return new FiltersGroup($this->toAdd, $this->removeWith, $this->addWith);
     }

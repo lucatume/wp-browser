@@ -194,7 +194,7 @@ class WPFilesystemTest extends Unit
 
         $sut = $this->module();
 
-        $sut->amInUploadsPath('2019-03');
+        $sut->amInUploadsPath('2019/03');
 
         $this->assertEquals($wpRoot . '/wp-content/uploads/2019/03', getcwd());
 

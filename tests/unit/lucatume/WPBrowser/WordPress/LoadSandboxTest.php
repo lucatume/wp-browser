@@ -3,6 +3,7 @@
 
 namespace Unit\lucatume\WPBrowser\WordPress;
 
+use Codeception\Test\Unit;
 use Exception;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Utils\Env;
@@ -15,7 +16,7 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\LoadSandbox;
 use PHPUnit\Framework\Assert;
 
-class LoadSandboxTest extends \Codeception\Test\Unit
+class LoadSandboxTest extends Unit
 {
     use LoopIsolation;
 
@@ -282,6 +283,33 @@ PHP;
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Exception thrown during loading');
+
+        $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
+
+        $this->assertInIsolation(static function () use ($loadSandbox) {
+            $loadSandbox->load();
+        });
+    }
+
+    /**
+     * It should handle wp_die called during loading
+     *
+     * @test
+     */
+    public function should_handle_wp_die_called_during_loading(): void
+    {
+        $wpRootDir = FS::tmpDir('sandbox_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        // Setup, but do not install WordPress.
+        Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('WordPress failed to load for the following reason: ' .
+            'error establishing a database connection.');
 
         $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
 

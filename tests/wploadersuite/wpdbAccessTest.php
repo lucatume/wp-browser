@@ -1,7 +1,9 @@
 <?php
 
 
-class wpdbAccessTest extends \lucatume\WPBrowser\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class wpdbAccessTest extends WPTestCase
 {
     /**
      * @test
@@ -9,7 +11,7 @@ class wpdbAccessTest extends \lucatume\WPBrowser\TestCase\WPTestCase
      */
     public function it_should_allow_accessing_the_wpdb_instance_in_tests()
     {
-        /** @var \wpdb $wpdb */
+        /** @var wpdb $wpdb */
         global $wpdb;
 
         $this->assertNotEmpty($wpdb);
@@ -22,7 +24,7 @@ class wpdbAccessTest extends \lucatume\WPBrowser\TestCase\WPTestCase
      */
     public function it_should_allow_running_queries_using_wpdb()
     {
-        /** @var \wpdb $wpdb */
+        /** @var wpdb $wpdb */
         global $wpdb;
 
         $wpdb->get_results("select * from {$wpdb->posts}");

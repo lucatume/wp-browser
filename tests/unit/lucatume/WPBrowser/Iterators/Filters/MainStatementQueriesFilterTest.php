@@ -1,13 +1,16 @@
 <?php
 namespace lucatume\WPBrowser\Iterators\Filters;
 
+use ArrayIterator;
+use Codeception\Test\Unit;
 use lucatume\WPBrowser\Iterators\Filters\MainStatementQueriesFilter as Filter;
+use UnitTester;
 
-class MainStatementQueriesFilterTest extends \Codeception\Test\Unit
+class MainStatementQueriesFilterTest extends Unit
 {
     protected $backupGlobals = false;
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
 
@@ -35,12 +38,12 @@ class MainStatementQueriesFilterTest extends \Codeception\Test\Unit
         $this->assertCount(0, $items);
     }
 
-    private function make_instance($statement = 'SELECT')
+    private function make_instance($statement = 'SELECT'): MainStatementQueriesFilter
     {
-        return new Filter(new \ArrayIterator($this->array), $statement);
+        return new Filter(new ArrayIterator($this->array), $statement);
     }
 
-    public function queries()
+    public function queries(): array
     {
         return [
             [1,
