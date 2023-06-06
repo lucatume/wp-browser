@@ -10,7 +10,6 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use RuntimeException;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class InstallationTest extends Unit
 {

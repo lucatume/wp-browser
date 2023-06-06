@@ -5,13 +5,10 @@ namespace lucatume\WPBrowser\Extension;
 use Closure;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
-use Codeception\Lib\Console\Output;
 use Codeception\Test\Unit;
-use Exception;
 use Generator;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class SymlinkerTest extends Unit

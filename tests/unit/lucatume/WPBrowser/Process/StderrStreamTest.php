@@ -105,7 +105,7 @@ Stack trace:
         }(3): lucatume\WPBrowser\Module\WPLoader->_initialize()
 #4 [internal function]: lucatume\WPBrowser\Module\WPLoaderTest::{closure}()
 #5 /Users/lucatume/oss/wp-browser/vendor/opis/closure/src/SerializableClosure.php(109): call_user_func_array(Object(Closure), Array)
-#6 /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php(15): Opis\Closure\SerializableClosure->__invoke()
+#6 /Users/lucatume/oss/wp-browser/src/Process/Worker/worker-script.php(15): lucatume\WPBrowser\Opis\Closure\SerializableClosure->__invoke()
 #7 {main}
   thrown in /Users/lucatume/oss/wp-browser/includes/core-phpunit/includes/bootstrap.php on line 261
 EOT;

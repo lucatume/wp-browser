@@ -1,7 +1,5 @@
 <?php
 
-use Codeception\Exception\ModuleException;
-
 class WPDbTableCest
 {
     /**

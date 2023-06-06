@@ -32,7 +32,6 @@
     "codeception/module-db": "^2.0 || ^3.0",
     "codeception/module-filesystem": "^2.0 || ^3.0",
     "codeception/module-cli": "^2.0 || ^3.0",
-    "opis/closure": "^3.5",
     "symfony/process": ">=4.4.24 <7.0",
     "vlucas/phpdotenv": "^5.0"
   },
@@ -53,7 +52,8 @@
         "src/",
         "src/Deprecated"
       ],
-      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass"
+      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
+      "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
     },
     "files": [
       "src/version-4-aliases.php",

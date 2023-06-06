@@ -2,7 +2,6 @@
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;
-use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class DotenvTest extends Unit
 {

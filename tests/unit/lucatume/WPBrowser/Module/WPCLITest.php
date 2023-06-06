@@ -15,8 +15,6 @@ use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
 use stdClass;
-use Symfony\Component\Process\PhpProcess;
-use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class WPCLITest extends Unit

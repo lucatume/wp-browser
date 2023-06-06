@@ -16,7 +16,7 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
-use Opis\Closure\ReflectionClosure;
+use lucatume\WPBrowser\Opis\Closure\ReflectionClosure;
 use ReflectionException;
 use Throwable;
 

@@ -3,7 +3,7 @@
 namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Exception\ConfigurationException;
-use Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 
 class Request
 {

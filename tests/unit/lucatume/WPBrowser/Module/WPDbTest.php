@@ -3,11 +3,9 @@
 namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use InvalidArgumentException;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;

@@ -8,8 +8,7 @@ use Generator;
 use lucatume\WPBrowser\Process\Protocol\Control;
 use lucatume\WPBrowser\Process\Protocol\Parser;
 use lucatume\WPBrowser\Process\Protocol\Request;
-use Opis\Closure\SerializableClosure;
-use UnitTester;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 
 class RequestTest extends Unit
 {

@@ -4,7 +4,6 @@ namespace Unit\lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Test\Unit;
 use Generator;
-use InvalidArgumentException;
 use lucatume\WPBrowser\Process\Protocol\Parser;
 use lucatume\WPBrowser\Process\Protocol\ProtocolException;
 

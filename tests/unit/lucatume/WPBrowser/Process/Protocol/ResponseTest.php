@@ -6,7 +6,7 @@ use CompileError;
 use Exception;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 

@@ -4,7 +4,6 @@ namespace lucatume\WPBrowser\Module\WPLoader;
 
 use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Module\WPLoader\Filters;
 use stdClass;
 
 class FiltersTest extends Unit

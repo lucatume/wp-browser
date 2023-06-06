@@ -17,7 +17,6 @@ use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Db;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
-use RuntimeException;
 
 class ConfiguredTest extends Unit
 {

@@ -5,7 +5,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Process\StderrStream;
 use lucatume\WPBrowser\Utils\Arr;
-use Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use Throwable;
 
 class Response

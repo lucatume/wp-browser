@@ -7,7 +7,7 @@ use Closure;
 use lucatume\WPBrowser\Process\MemoryUsage;
 use lucatume\WPBrowser\Process\Protocol\Request;
 use lucatume\WPBrowser\Process\Protocol\Response;
-use Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use RuntimeException;
 
 class Running implements WorkerInterface
