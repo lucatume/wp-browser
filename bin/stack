@@ -26,6 +26,7 @@ function print_help() {
   echo "  phpcbf                Run PHP Code Beautifier on the src directory."
   echo "  phpstan               Run PHPStan for the specified PHP version."
   echo "  ps                    Show the status of the containers for the specified PHP version."
+  echo "  run_suite             Run a specific test suite for the specified PHP version."
   echo "  ssh                   SSH into a service for the specified PHP version."
   echo "  test                  Run all the tests for the specified PHP version."
   echo "  up                    Starts the containers for the specified PHP version."
@@ -258,7 +259,7 @@ function run_tests() {
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
     docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter" || exit 1
+      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter --debug" || exit 1
   done
 }
 
@@ -337,6 +338,10 @@ ssh)
     docker_user="$(id -u):$(id -g)"
   fi
   docker compose exec -u "${docker_user}" -it "$service" bash
+  ;;
+run_suite)
+  shift
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept php vendor/bin/codecept run $@
   ;;
 test)
   run_tests

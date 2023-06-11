@@ -129,7 +129,7 @@
                 "date": "17-Mar-2023",
                 "time": "16:54:06",
                 "timezone": "Europe\/Paris",
-                "call": "Opis\\Closure\\SerializableClosure->__invoke",
+                "call": "lucatume\\WPBrowser\\Opis\\Closure\\SerializableClosure->__invoke",
                 "args": "",
                 "file": "\/src\/Process\/Worker\/worker-script.php",
                 "line": 15

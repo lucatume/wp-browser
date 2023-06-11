@@ -9,7 +9,7 @@ use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
 use Serializable;
 
-abstract class FileRequest implements Serializable
+abstract class FileRequest
 {
     /**
      * @var array<string,mixed>
@@ -27,9 +27,11 @@ abstract class FileRequest implements Serializable
      * @var array<Closure>
      */
     private array $afterLoadClosures = [];
+    private int $errorLevel = E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE
+    | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR;
 
     /**
-     * @param array<int|string|float|bool> $requestVars
+     * @param array<string,int|string|float|bool> $requestVars
      * @param array<string,string> $cookieJar
      * @param array<string,mixed> $presetGlobalVars
      * @param array<string, string> $redirectFiles
@@ -133,7 +135,10 @@ abstract class FileRequest implements Serializable
         }
 
         // Cast all errors to exceptions.
-        set_error_handler(static function ($errno, $errstr, $errfile, $errline) {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+            if (($errno & $this->errorLevel) === 0) {
+                return true;
+            }
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         }, E_ALL);
 
@@ -151,47 +156,72 @@ abstract class FileRequest implements Serializable
         return $returnValues;
     }
 
-    public function serialize(): ?string
+    /**
+     * @return array{
+     *     afterLoadClosures: array<Closure>,
+     *     constants: array<string,mixed>,
+     *     cookieJar: array<string,string>,
+     *     domain: string,
+     *     preloadClosures: array<Closure>,
+     *     preloadFilters: array<array{string, (callable(): mixed)|string, int, int}>,
+     *     presetGlobalVars: array<string,mixed>,
+     *     presetLocalVars: array<string,mixed>,
+     *     redirectFiles: array<string,string>,
+     *     requestUri: string,
+     *     requestVars?: array<string,int|string|float|bool>,
+     *     targetFile: string
+     *     }
+     */
+    public function __serialize(): array
     {
-        return serialize([
-            'requestVars' => $this->requestVars ?? [],
+        return [
+            'afterLoadClosures' => $this->afterLoadClosures,
+            'constants' => $this->constants,
+            'cookieJar' => $this->cookieJar,
+            'domain' => $this->domain ?: 'localhost',
+            'preloadClosures' => $this->preloadClosures,
+            'preloadFilters' => $this->preloadFilters,
             'presetGlobalVars' => $this->presetGlobalVars ?? [],
             'presetLocalVars' => $this->presetLocalVars ?? [],
             'redirectFiles' => $this->redirectFiles ?? [],
-            'domain' => $this->domain ?: 'localhost',
             'requestUri' => $this->requestUri,
+            'requestVars' => $this->requestVars ?? [],
             'targetFile' => $this->targetFile,
-            'cookieJar' => $this->cookieJar,
-            'constants' => $this->constants,
-            'preloadClosures' => $this->preloadClosures,
-            'preloadFilters' => $this->preloadFilters,
-            'afterLoadClosures' => $this->afterLoadClosures
-        ]);
+        ];
     }
 
     /**
+     * @param array{
+     *     afterLoadClosures?: array<Closure>,
+     *     constants?: array<string,bool|int|string|float>,
+     *     cookieJar?: array<string,string>,
+     *     domain?: string,
+     *     preloadClosures?: array<Closure>,
+     *     preloadFilters?: array<array{string, (callable(): mixed)|string, int, int}>,
+     *     presetGlobalVars?: array<string,mixed>,
+     *     presetLocalVars?: array<string,mixed>,
+     *     redirectFiles?: array<string,string>,
+     *     requestUri: string,
+     *     requestVars?: array<string,int|string|float|bool>,
+     *     targetFile: string
+     * } $data
+     *
      * @throws FileRequestException
      */
-    public function unserialize(string $data)
+    public function __unserialize(array $data):void
     {
-        $unserializedData = $this->unserializeData($data);
-
-        if (!is_array($unserializedData)) {
-            throw new FileRequestException('Unserialized data is not an array');
-        }
-
-        $this->presetGlobalVars = $unserializedData['presetGlobalVars'] ?? [];
-        $this->presetLocalVars = $unserializedData['presetLocalVars'] ?? [];
-        $this->redirectFiles = $unserializedData['redirectFiles'] ?? [];
-        $this->domain = $unserializedData['domain'] ?? 'localhost';
-        $this->requestUri = $unserializedData['requestUri'];
-        $this->requestVars = $unserializedData['requestVars'] ?? [];
-        $this->targetFile = $unserializedData['targetFile'] ?? false;
-        $this->cookieJar = $unserializedData['cookieJar'] ?? [];
-        $this->constants = $unserializedData['constants'] ?? [];
-        $this->preloadClosures = $unserializedData['preloadClosures'] ?? [];
-        $this->preloadFilters = $unserializedData['preloadFilters'] ?? [];
-        $this->afterLoadClosures = $unserializedData['afterLoadClosures'] ?? [];
+        $this->afterLoadClosures = $data['afterLoadClosures'] ?? [];
+        $this->constants = $data['constants'] ?? [];
+        $this->cookieJar = $data['cookieJar'] ?? [];
+        $this->domain = $data['domain'] ?? 'localhost';
+        $this->preloadClosures = $data['preloadClosures'] ?? [];
+        $this->preloadFilters = $data['preloadFilters'] ?? [];
+        $this->presetGlobalVars = $data['presetGlobalVars'] ?? [];
+        $this->presetLocalVars = $data['presetLocalVars'] ?? [];
+        $this->redirectFiles = $data['redirectFiles'] ?? [];
+        $this->requestUri = $data['requestUri'];
+        $this->requestVars = $data['requestVars'] ?? [];
+        $this->targetFile = $data['targetFile'];
 
         if (!$this->targetFile) {
             throw new FileRequestException('No target file specified.');
@@ -223,59 +253,6 @@ abstract class FileRequest implements Serializable
         $this->constants[$constant] = $value;
 
         return $this;
-    }
-
-    /**
-     * @param array<class-string> $carry
-     * @return array<class-string>
-     */
-    private function collectIncompleteClasses(mixed $unserializedData, array &$carry = []): array
-    {
-        if (!is_array($unserializedData)) {
-            return [];
-        }
-
-        foreach ($unserializedData as $datum) {
-            if (is_array($datum)) {
-                $carry = array_merge($carry, $this->collectIncompleteClasses($datum, $carry));
-                continue;
-            }
-
-            if ($datum instanceof __PHP_Incomplete_Class) {
-                $serialized = serialize($datum);
-                $class = preg_match('/^O:\d+:"([^"]+)"/', $serialized, $matches) ? $matches[1] : null;
-                $carry[] = $class;
-            }
-        }
-
-        return $carry;
-    }
-
-    /**
-     * @throws FileRequestException
-     */
-    private function unserializeData(string $data): mixed
-    {
-        $unserializationErorr = '';
-        set_error_handler(static function (int $errno, string $errstr) use (&$unserializationErorr): bool {
-            $unserializationErorr = $errstr;
-            return true;
-        }, E_WARNING);
-        $unserializedData = unserialize($data, ['allowed_classes' => true]);
-        restore_error_handler();
-
-        if ($unserializationErorr !== '') {
-            $message = $unserializationErorr;
-            $incompletes = $this->collectIncompleteClasses($unserializedData);
-
-            if (count($incompletes)) {
-                $message = 'These classes are not available at unserialize time: ' . implode(', ', $incompletes);
-            }
-
-            throw new FileRequestException($message);
-        }
-
-        return $unserializedData;
     }
 
     public function setConstant(string $constant, bool|int|float|string $value): FileRequest

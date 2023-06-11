@@ -44,12 +44,7 @@ class SerializableThrowableTest extends Unit
         throw new RuntimeException('test');
     }
 
-    /**
-     * It should pretty print serialized closure entry
-     *
-     * @test
-     */
-    public function should_pretty_print_serialized_closure_entry(): void
+    private function should_pretty_print_serialized_closure_entry(): string
     {
         $throwing = static function () {
             $set = 'foo';
@@ -67,8 +62,48 @@ class SerializableThrowableTest extends Unit
         $serializableThrowable = new SerializableThrowable($throwable);
         $serialized = serialize($serializableThrowable);
         $unserialized = unserialize($serialized)->getThrowable(SerializableThrowable::RELATIVE_PAHTNAMES);
-        $trace = StackTraceFilter::getFilteredStackTrace($unserialized);
+        return StackTraceFilter::getFilteredStackTrace($unserialized);
+    }
 
-        $this->assertMatchesCodeSnapshot($trace);
+    /**
+     * It should pretty print serialized Closure entry on PHP 8.0
+     *
+     * @test
+     */
+    public function should_pretty_print_serialized_closure_entry_on_php_8_0(): void
+    {
+        if (!(PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100)) {
+            $this->markTestSkipped('PHP 8.0 required.');
+        }
+
+        $this->assertMatchesCodeSnapshot($this->should_pretty_print_serialized_closure_entry());
+    }
+
+    /**
+     * It should pretty print serialized Closure entry on PHP 8.1
+     *
+     * @test
+     */
+    public function should_pretty_print_serialized_closure_entry_on_php_8_1(): void
+    {
+        if (!(PHP_VERSION_ID >= 80100 && PHP_VERSION_ID < 80200)) {
+            $this->markTestSkipped('PHP 8.1 required.');
+        }
+
+        $this->assertMatchesCodeSnapshot($this->should_pretty_print_serialized_closure_entry());
+    }
+
+    /**
+     * It should pretty print serialized Closure entry on PHP 8.2
+     *
+     * @test
+     */
+    public function should_pretty_print_serialized_closure_entry_on_php_8_2(): void
+    {
+        if (!(PHP_VERSION_ID >= 80200 && PHP_VERSION_ID < 80300)) {
+            $this->markTestSkipped('PHP 8.2 required.');
+        }
+
+        $this->assertMatchesCodeSnapshot($this->should_pretty_print_serialized_closure_entry());
     }
 }

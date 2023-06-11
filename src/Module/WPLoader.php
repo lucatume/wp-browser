@@ -575,9 +575,7 @@ class WPLoader extends Module
             $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
         }
 
-        $results = (new Loop($jobs, 1, true))->run()->getResults();
-
-        foreach ($results as $key => $result) {
+        foreach ((new Loop($jobs, 1, true))->run()->getResults() as $key => $result) {
             [$type, $name] = explode('::', $key, 2);
             $returnValue = $result->getReturnValue();
 

@@ -29,11 +29,11 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
         $activated = activate_plugin($plugin, '', $multisite);
         $activatedString = $multisite ? 'network activated' : 'activated';
-        $message = "Plugin {$plugin} could not be $activatedString.";
+        $message = "Plugin $plugin could not be $activatedString.";
 
         if ($activated instanceof WP_Error) {
             $message .= ' ' . $activated->get_error_message();
-            throw new RuntimeException($message);
+            throw new RuntimeException(trim($message));
         }
 
         $isActive = $multisite ? is_plugin_active_for_network($plugin) : is_plugin_active($plugin);

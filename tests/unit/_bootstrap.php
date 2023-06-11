@@ -7,9 +7,11 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
 
 Dispatcher::addListener(Events::TEST_AFTER, static function (TestEvent $event) {
-    if (!$event->getTest()->getResultAggregator()->wasSuccessful()) {
+    $isCI = getenv('CI') === 'true';
+    if (!($isCI || $event->getTest()->getResultAggregator()->wasSuccessful())) {
         return;
     }
+
     foreach (Installation::getScaffoldedInstallations() as $dir) {
         codecept_debug("Removing Installation at $dir after successful test ...");
         FS::rrmdir($dir);
@@ -17,4 +19,4 @@ Dispatcher::addListener(Events::TEST_AFTER, static function (TestEvent $event) {
     }
 });
 
-require_once dirname(__DIR__, 2). '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';
+require_once dirname(__DIR__, 2) . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';

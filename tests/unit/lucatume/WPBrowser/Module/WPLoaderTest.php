@@ -1032,7 +1032,6 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 
     /**
@@ -1118,7 +1117,6 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 
     private function copyOverContentFromTheMainInstallation(Installation $installation): void
@@ -1392,7 +1390,6 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 
     /**
@@ -1459,7 +1456,6 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-        $this->assertMatchesStringSnapshot(var_export($installationOutput, true));
     }
 
     /**

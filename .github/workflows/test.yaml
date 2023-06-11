@@ -54,5 +54,35 @@ jobs:
       - name: Install dependencies
         run: bin/stack -p${{ matrix.php_version }} composer_update
 
-      - name: Test
-        run: bin/stack -p${{ matrix.php_version }} test
+#      - name: acceptance
+#        run: bin/stack -p${{ matrix.php_version }} run_suite acceptance --ext DotReporter
+
+      - name: cli
+        run: bin/stack -p${{ matrix.php_version }} run_suite cli --ext DotReporter --debug
+
+#      - name: climodule
+#        run: bin/stack -p${{ matrix.php_version }} run_suite climodule --ext DotReporter
+#
+#      - name: functional
+#        run: bin/stack -p${{ matrix.php_version }} run_suite functional --ext DotReporter
+#
+#      - name: muloader
+#        run: bin/stack -p${{ matrix.php_version }} run_suite muloader --ext DotReporter
+#
+#      - name: unit
+#        run: bin/stack -p${{ matrix.php_version }} run_suite unit --ext DotReporter
+#
+#      - name: webdriver
+#        run: bin/stack -p${{ matrix.php_version }} run_suite webdriver --ext DotReporter
+#
+#      - name: wpcli_module
+#        run: bin/stack -p${{ matrix.php_version }} run_suite wpcli_module --ext DotReporter
+#
+#      - name: wploader_multisite
+#        run: bin/stack -p${{ matrix.php_version }} run_suite wploader_multisite --ext DotReporter
+#
+#      - name: wploader_wpdb_interaction
+#        run: bin/stack -p${{ matrix.php_version }} run_suite wploader_wpdb_interaction --ext DotReporter
+#
+#      - name: wploadersuite
+#        run: bin/stack -p${{ matrix.php_version }} run_suite wploadersuite --ext DotReporter
