@@ -3,7 +3,7 @@ ARG COMPOSER_VERSION=2
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
-FROM wordpress:php${PHP_VERSION}-apache
+FROM wordpress:6.2.1-php${PHP_VERSION}-apache
 
 ARG USER_UID=33
 ARG USER_GID=33
@@ -24,9 +24,11 @@ RUN chmod a+x /usr/local/bin/install-php-extensions && \
 RUN if [ "${TARGET}" = "codeception" ]; then install-php-extensions uopz; fi
 
 # Install required utils
-RUN apt-get update && apt-get install -y \
-    default-mysql-client curl git zip unzip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update &&  \
+    apt-get install -y default-mysql-client curl git zip unzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm /usr/local/bin/install-php-extensions
 
 # Set up PHP defaults
 COPY php.ini /usr/local/etc/php/conf.d/999-php-custom.ini
