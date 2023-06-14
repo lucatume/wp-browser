@@ -14,6 +14,7 @@ use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -36,6 +37,7 @@ class WPLoaderTest extends Unit
     use SnapshotAssertions;
     use DatabaseAssertions;
     use LoopIsolation;
+    use TmpFilesCleanup;
 
     protected $backupGlobals = false;
     /**

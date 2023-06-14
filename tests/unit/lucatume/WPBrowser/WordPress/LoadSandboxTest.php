@@ -6,6 +6,7 @@ namespace Unit\lucatume\WPBrowser\WordPress;
 use Codeception\Test\Unit;
 use Exception;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\Assert;
 class LoadSandboxTest extends Unit
 {
     use LoopIsolation;
+    use TmpFilesCleanup;
 
     /**
      * It should correctly load installed WordPress

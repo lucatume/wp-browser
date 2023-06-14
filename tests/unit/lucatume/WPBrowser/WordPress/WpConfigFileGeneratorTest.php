@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -12,6 +13,7 @@ class WpConfigFileGeneratorTest extends Unit
 {
     use UopzFunctions;
     use SnapshotAssertions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw if building on non existing root directory

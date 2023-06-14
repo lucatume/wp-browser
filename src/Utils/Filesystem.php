@@ -22,6 +22,11 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 class Filesystem
 {
     /**
+     * @var array<string>
+     */
+    private static array $tmpFiles = [];
+
+    /**
      * Recursively removes a directory and all its content.
      *
      * Differently from the `recurseRemoveDir` function, this one wil not stop on error.
@@ -343,11 +348,15 @@ class Filesystem
             }
             $tmpRootDir = self::realpath($tmpRootDir) ?: $tmpRootDir;
         }
-        return self::mkdirp(
+        $dir = self::mkdirp(
             $tmpRootDir . DIRECTORY_SEPARATOR . $prefix . md5(microtime()),
             $contents,
             $mode
         );
+
+        self::$tmpFiles[] = $dir;
+
+        return $dir;
     }
 
     public static function relativePath(string $from, string $to, string $separator = DIRECTORY_SEPARATOR): string
@@ -395,5 +404,16 @@ class Filesystem
             $contents,
             $mode
         );
+    }
+
+    /**
+     * @return array<string>
+     */
+    public static function getCleanTmpFiles(): array
+    {
+        $files = self::$tmpFiles;
+        self::$tmpFiles = [];
+
+        return $files;
     }
 }

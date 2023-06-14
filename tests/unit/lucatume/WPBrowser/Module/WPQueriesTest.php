@@ -6,6 +6,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -17,6 +18,7 @@ use wpdb;
 class WPQueriesTest extends Unit
 {
     use UopzFunctions;
+    use TmpFilesCleanup;
 
     private static ?string $wpRootDir = null;
     protected $backupGlobals = false;

@@ -816,7 +816,7 @@ class WPLoader extends Module
      * @throws ModuleException
      * @throws Throwable
      */
-    protected function includeCorePHPUniteSuiteBootstrapFile(): void
+    private function includeCorePHPUniteSuiteBootstrapFile(): void
     {
         ob_start(function (string $buffer, int $phase): string {
             $this->bootstrapOutput .= $buffer;

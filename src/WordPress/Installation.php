@@ -64,16 +64,6 @@ class Installation
         return self::$scaffoldedInstallations;
     }
 
-    public static function forgetScaffoldedInstallation(string $dir): void
-    {
-        $key = array_search($dir, self::$scaffoldedInstallations, true);
-        if ($key === false) {
-            return;
-        }
-        unset(self::$scaffoldedInstallations[$key]);
-        self::$scaffoldedInstallations = array_values(self::$scaffoldedInstallations);
-    }
-
     public function configure(
         Db $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,

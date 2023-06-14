@@ -7,6 +7,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -20,6 +21,7 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 class WPCLITest extends Unit
 {
     use SnapshotAssertions;
+    use TmpFilesCleanup;
 
     protected $backupGlobals = false;
     private static ?Installation $installation = null;
@@ -46,7 +48,6 @@ class WPCLITest extends Unit
                 'admin@admin',
                 'WPCLI Module Test Site'
             );
-        Installation::forgetScaffoldedInstallation(rtrim(self::$installation->getWpRootDir(), '\\/'));
     }
 
     private function module(array $config): WPCLI
@@ -359,7 +360,8 @@ class WPCLITest extends Unit
         $this->assertEquals($expected, $commandLine);
     }
 
-    public function strictArgsInlineValuesProvider():array{
+    public function strictArgsInlineValuesProvider(): array
+    {
         return [
             'url' => ['url', 'https://example.com', '--url=https://subdomain.example.com'],
             'user' => ['user', 23, '--user=89'],
@@ -384,8 +386,11 @@ class WPCLITest extends Unit
      * @test
      * @dataProvider strictArgsInlineValuesProvider
      */
-    public function should_allow_overriding_strict_args_in_command_line(string $strictArg, mixed $configValue, string $inlineValue): void
-    {
+    public function should_allow_overriding_strict_args_in_command_line(
+        string $strictArg,
+        mixed $configValue,
+        string $inlineValue
+    ): void {
         $wpcli = $this->module([
             'throw' => false,
             'path' => self::$installation->getWpRootDir(),

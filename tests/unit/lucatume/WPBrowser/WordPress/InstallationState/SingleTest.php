@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Random;
@@ -17,6 +18,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 class SingleTest extends Unit
 {
     use UopzFunctions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw when building on non existing root directory

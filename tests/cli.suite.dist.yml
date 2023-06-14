@@ -1,5 +1,0 @@
-actor: CliTester
-modules:
-    enabled:
-        - Cli
-        - Filesystem

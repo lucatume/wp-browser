@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -15,6 +16,7 @@ use PDO;
 class DbTest extends Unit
 {
     use UopzFunctions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw when building with invalid db name

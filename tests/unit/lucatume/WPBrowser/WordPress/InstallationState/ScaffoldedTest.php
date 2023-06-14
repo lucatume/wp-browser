@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -16,6 +17,7 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 class ScaffoldedTest extends Unit
 {
     use SnapshotAssertions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw when building on non existing root directory

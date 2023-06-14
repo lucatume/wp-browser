@@ -4,10 +4,13 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class VersionTest extends Unit
 {
+    use TmpFilesCleanup;
+
     /**
      * It should throw when built on non-existing root directory
      *
