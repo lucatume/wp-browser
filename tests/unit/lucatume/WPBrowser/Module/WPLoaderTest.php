@@ -40,6 +40,7 @@ class WPLoaderTest extends Unit
     use TmpFilesCleanup;
 
     protected $backupGlobals = false;
+
     /**
      * @var UnitTester
      */

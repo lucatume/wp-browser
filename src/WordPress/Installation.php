@@ -59,9 +59,12 @@ class Installation
     /**
      * @return array<string>
      */
-    public static function getScaffoldedInstallations(): array
+    public static function getCleanScaffoldedInstallations(): array
     {
-        return self::$scaffoldedInstallations;
+        $installations = self::$scaffoldedInstallations;
+        self::$scaffoldedInstallations = [];
+
+        return $installations;
     }
 
     public function configure(

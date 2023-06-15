@@ -20,6 +20,7 @@ class WPQueriesTest extends Unit
     use UopzFunctions;
     use TmpFilesCleanup;
 
+    protected bool $cleanupTmpAfterTest = false;
     private static ?string $wpRootDir = null;
     protected $backupGlobals = false;
     private array $config = [];

@@ -25,6 +25,7 @@ class WPCLITest extends Unit
 
     protected $backupGlobals = false;
     private static ?Installation $installation = null;
+    protected bool $cleanupTmpAfterTest = false;
 
     public function _before(): void
     {
