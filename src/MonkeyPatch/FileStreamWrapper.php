@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\MonkeyPatch;
 
-use Closure;
 use ErrorException;
 use Exception;
 use lucatume\WPBrowser\MonkeyPatch\Patchers\PatcherInterface;

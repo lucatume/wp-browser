@@ -21,7 +21,6 @@ use lucatume\WPBrowser\Generators\Post;
 use lucatume\WPBrowser\Generators\Tables;
 use lucatume\WPBrowser\Generators\User;
 use lucatume\WPBrowser\Module\Support\DbDump;
-use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Serializer;

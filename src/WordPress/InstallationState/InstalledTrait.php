@@ -12,7 +12,6 @@ use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\Opis\Closure\ReflectionClosure;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use Throwable;
 
 trait InstalledTrait

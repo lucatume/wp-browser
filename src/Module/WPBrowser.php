@@ -7,10 +7,7 @@
 
 namespace lucatume\WPBrowser\Module;
 
-use Codeception\Exception\ModuleConfigException;
-use Codeception\Exception\ModuleException;
 use Codeception\Module\PhpBrowser;
-use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**

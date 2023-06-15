@@ -29,8 +29,6 @@ class Filesystem
     /**
      * Recursively removes a directory and all its content.
      *
-     * Differently from the `recurseRemoveDir` function, this one wil not stop on error.
-     *
      * @param string $src The absolute path to the directory to remove.
      *
      * @return bool Whether the directory, and all its contents, were correctly removed or not.
@@ -218,20 +216,6 @@ class Filesystem
         }
 
         return true;
-    }
-
-    /**
-     * Recursively deletes a target directory.
-     *
-     * This function is just an alias of the `lucatume\WPBrowser\Utils\Filesystem::rrmdir` one.
-     *
-     * @param string $target The absolute path to a directory to remove.
-     *
-     * @return bool Whether the removal of the directory or file was completed or not.
-     */
-    public static function recurseRemoveDir(string $target): bool
-    {
-        return self::rrmdir($target);
     }
 
     /**

@@ -10,7 +10,6 @@ use lucatume\WPBrowser\Process\Worker\Running;
 use lucatume\WPBrowser\Process\Worker\Worker;
 use lucatume\WPBrowser\Process\Worker\WorkerInterface;
 use lucatume\WPBrowser\Process\Worker\Result;
-use RuntimeException;
 use Throwable;
 
 class Loop

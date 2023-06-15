@@ -4,7 +4,6 @@ namespace lucatume\WPBrowser\Tests\Traits;
 
 use Exception;
 use Generator;
-use PHPStan\Rules\Generics\EnumAncestorsRule;
 use RuntimeException;
 
 trait UopzFunctions

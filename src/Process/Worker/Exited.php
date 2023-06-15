@@ -2,8 +2,6 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
-use lucatume\WPBrowser\Process\Worker\Running;
-use lucatume\WPBrowser\Process\Worker\WorkerInterface;
 use lucatume\WPBrowser\Process\WorkerException;
 
 class Exited implements WorkerInterface

@@ -2,12 +2,10 @@
 
 namespace lucatume\WPBrowser\WordPress\FileRequests;
 
-use __PHP_Incomplete_Class;
 use Closure;
 use ErrorException;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
-use Serializable;
 
 abstract class FileRequest
 {

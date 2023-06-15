@@ -20,6 +20,7 @@ class SerializableThrowable
     private int $line;
     private int $code;
     private string $message;
+    private bool $colorize = true;
 
     public function __construct(Throwable $throwable)
     {
@@ -38,6 +39,7 @@ class SerializableThrowable
 
     /**
      * @return array{
+     *     colorize: bool,
      *     throwable: Throwable,
      *     message: string,
      *     code: int,
@@ -49,6 +51,7 @@ class SerializableThrowable
     public function __serialize(): array
     {
         return [
+            'colorize' => $this->colorize,
             'throwable' => $this->throwable,
             'message' => $this->message,
             'code' => $this->code,
@@ -60,6 +63,7 @@ class SerializableThrowable
 
     /**
      * @param array{
+     *     colorize: bool,
      *     throwable: Throwable,
      *     message: string,
      *     code: int,
@@ -67,11 +71,13 @@ class SerializableThrowable
      *     line: int,
      *     trace: array<int,array<string,mixed>>
      * } $data
+     *
      * @throws ReflectionException
      */
     public function __unserialize(array $data): void
     {
         $this->throwable = $data['throwable'];
+        $this->colorize = $data['colorize'];
         Property::setPrivateProperties($this->throwable, [
             'message' => $data['message'],
             'trace' => $this->prettyPrintTrace($data['trace']),
@@ -81,6 +87,9 @@ class SerializableThrowable
         ]);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function getThrowable(int $options = 0): Throwable
     {
         if ($options & self::RELATIVE_PAHTNAMES) {
@@ -92,12 +101,13 @@ class SerializableThrowable
 
     /**
      * @param array<int,array<string,mixed>> $trace
+     *
      * @return array<int,array<string,mixed>>
      */
     private function prettyPrintTrace(array $trace): array
     {
         $updatedTrace = [];
-        $colorize = stream_isatty(STDOUT);
+        $colorize = $this->colorize && stream_isatty(STDOUT);
         // Detect whether to use colors or not depdending on the TTY.
         foreach ($trace as $k => $traceEntry) {
             if (!(isset($traceEntry['file']) && is_string($traceEntry['file'])
@@ -139,16 +149,24 @@ class SerializableThrowable
     {
         $relativePathnameTrace = [];
         $cwd = getcwd() ?: '';
+        $relativeFile = str_replace($cwd, '', $this->throwable->getFile());
         foreach ($this->throwable->getTrace() as $k => $traceEntry) {
             if (!isset($traceEntry['file']) || str_contains($traceEntry['file'], 'closure://')) {
                 $relativePathnameTrace[$k] = $traceEntry;
                 continue;
             }
             $traceEntry['file'] = str_replace($cwd, '', $traceEntry['file']);
+            $traceEntry['line'] = 1;
             $relativePathnameTrace[$k] = $traceEntry;
         }
         Property::setPrivateProperties($this->throwable, [
+            'file' => $relativeFile,
             'trace' => $relativePathnameTrace,
         ]);
+    }
+
+    public function colorize(bool $colorize): void
+    {
+        $this->colorize = $colorize;
     }
 }

@@ -60,6 +60,7 @@ class SerializableThrowableTest extends Unit
         }
 
         $serializableThrowable = new SerializableThrowable($throwable);
+        $serializableThrowable->colorize(false);
         $serialized = serialize($serializableThrowable);
         $unserialized = unserialize($serialized)->getThrowable(SerializableThrowable::RELATIVE_PAHTNAMES);
         return StackTraceFilter::getFilteredStackTrace($unserialized);
@@ -76,7 +77,11 @@ class SerializableThrowableTest extends Unit
             $this->markTestSkipped('PHP 8.0 required.');
         }
 
-        $this->assertMatchesCodeSnapshot($this->should_pretty_print_serialized_closure_entry());
+        $print = $this->should_pretty_print_serialized_closure_entry();
+
+        codecept_debug($print);
+
+        $this->assertMatchesCodeSnapshot($print);
     }
 
     /**

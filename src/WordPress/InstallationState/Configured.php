@@ -3,7 +3,6 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Closure;
-use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
@@ -16,8 +15,6 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
 use lucatume\WPBrowser\WordPress\WpConfigFileException;
-use lucatume\WPBrowser\Opis\Closure\ReflectionClosure;
-use ReflectionException;
 use Throwable;
 
 class Configured implements InstallationStateInterface

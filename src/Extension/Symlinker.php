@@ -12,8 +12,6 @@ use Codeception\Events as CodeceptionEvents;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use Codeception\Lib\Console\Output;
-use Exception;
-use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**

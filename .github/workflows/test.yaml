@@ -55,31 +55,31 @@ jobs:
         run: bin/stack -p${{ matrix.php_version }} composer_update
 
       - name: acceptance
-        run: bin/stack -p${{ matrix.php_version }} run_suite acceptance --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run acceptance --ext DotReporter
 
       - name: climodule
-        run: bin/stack -p${{ matrix.php_version }} run_suite climodule --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run climodule --ext DotReporter
 
       - name: functional
-        run: bin/stack -p${{ matrix.php_version }} run_suite functional --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run functional --ext DotReporter
 
       - name: muloader
-        run: bin/stack -p${{ matrix.php_version }} run_suite muloader --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run muloader --ext DotReporter
 
       - name: unit
-        run: bin/stack -p${{ matrix.php_version }} run_suite unit --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run unit --debug -f
 
       - name: webdriver
-        run: bin/stack -p${{ matrix.php_version }} run_suite webdriver --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run webdriver --ext DotReporter
 
       - name: wpcli_module
-        run: bin/stack -p${{ matrix.php_version }} run_suite wpcli_module --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run wpcli_module --ext DotReporter
 
       - name: wploader_multisite
-        run: bin/stack -p${{ matrix.php_version }} run_suite wploader_multisite --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run wploader_multisite --ext DotReporter
 
       - name: wploader_wpdb_interaction
-        run: bin/stack -p${{ matrix.php_version }} run_suite wploader_wpdb_interaction --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run wploader_wpdb_interaction --ext DotReporter
 
       - name: wploadersuite
-        run: bin/stack -p${{ matrix.php_version }} run_suite wploadersuite --ext DotReporter
+        run: bin/stack -p${{ matrix.php_version }} run wploadersuite --ext DotReporter

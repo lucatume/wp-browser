@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
-use lucatume\WPBrowser\Generators\User;
 use function parse_url;
 
 class Url
