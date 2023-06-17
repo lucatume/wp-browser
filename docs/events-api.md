@@ -35,13 +35,15 @@ With that information, the costly `cleanup` procedure can be avoided.
 ```php
 <?php
 
-$registerPostsCleanup = static function (tad\WPBrowser\Events\WpbrowserEvent $event) {
+use lucatume\WPBrowser\Events\Dispatcher;
+
+$registerPostsCleanup = static function (lucatume\WPBrowser\Events\WpbrowserEvent $event) {
     $ids = $event->get('ids', []);
     /** @var \EventsTester $db */
     $db = $event->get('db');
 
     // When tests are done, then remove all the posts we've created at the start of the test, if any.
-    tad\WPBrowser\addListener(
+    Dispatcher::addListener(
         Codeception\Events::TEST_AFTER,
         static function () use ($ids, $db) {
             foreach ($ids as $id) {
@@ -55,7 +57,7 @@ $registerPostsCleanup = static function (tad\WPBrowser\Events\WpbrowserEvent $ev
 };
 
 // Listen for this event to register the posts to remove, along with their custom fields, after the test.
-tad\WPBrowser\addListener('test-event-1/setup-posts', $registerPostsCleanup);
+Dispatcher::addListener('test-event-1/setup-posts', $registerPostsCleanup);
 ```
 
 In this simple test I'm adding 3 posts [using the `factory` provided by the `WPLoader` module in `loadOnly` mode][2] and want to make sure those, and the relative meta, are removed at the end of the tests.
@@ -65,6 +67,9 @@ Mirroring the requirement of the clean up function I've defined above, I'm passi
 
 ```php
 <?php
+
+use lucatume\WPBrowser\Events\Dispatcher;
+
 /** @var Codeception\Scenario $scenario */
 $I = new AcceptanceTester($scenario);
 $I->wantTo('add posts and clean them up using the Events API');
@@ -76,7 +81,7 @@ $I->wantTo('add posts and clean them up using the Events API');
  */
 $ids = $I->factory()->post->create_many(3, [ 'post_type' => 'some_post_type' ]);
 
-tad\WPBrowser\dispatch('test-event-1/setup-posts', __FILE__, [
+Dispatcher::dispatch('test-event-1/setup-posts', __FILE__, [
     'ids' => $ids,
     'db'  => $I
 ]);

@@ -7,7 +7,7 @@ class LoggingOutCest
      */
     protected $postUri;
 
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
         $this->postUri = '/index.php/?p=' . $I->havePostInDatabase(['post_status' => 'private']);
@@ -18,7 +18,7 @@ class LoggingOutCest
      *
      * @test
      */
-    public function should_allow_logging_out_and_not_move(AcceptanceTester $I)
+    public function should_allow_logging_out_and_not_move(AcceptanceTester $I): void
     {
         $I->logOut(false);
 
@@ -32,7 +32,7 @@ class LoggingOutCest
      *
      * @test
      */
-    public function should_allow_logging_out_and_return_to_the_previous_page(AcceptanceTester $I)
+    public function should_allow_logging_out_and_return_to_the_previous_page(AcceptanceTester $I): void
     {
         $I->amOnPage($this->postUri);
         // Redirection.
@@ -50,7 +50,7 @@ class LoggingOutCest
      *
      * @test
      */
-    public function should_allow_logging_out_and_go_to_a_different_page(AcceptanceTester $I)
+    public function should_allow_logging_out_and_go_to_a_different_page(AcceptanceTester $I): void
     {
         $I->logOut($this->postUri);
 

@@ -1,8 +1,8 @@
 <?php
 
-use function tad\WPBrowser\db;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class PluginActivationTest extends \Codeception\TestCase\WPTestCase
+class PluginActivationTest extends WPTestCase
 {
     public function test_plugin_is_loaded()
     {

@@ -7,16 +7,14 @@ The module will set, if not set already, the `SAVEQUERIES` constant to `true` an
 This module does not require any configuration, but requires the [WPLoader module](WPLoader.md) to work correctly. 
 
 ## Usage
-This module must be used in a test case extending the `\Codeception\TestCase\WPTestCase` class.  
+This module must be used in a test case extending the `\lucatume\WPBrowser\TestCase\WPTestCase` class.  
 
-The module public API is accessible calling via the `\Codeception\TestCase\WPTestCase::queries()` method:
+The module public API is accessible calling via the `\lucatume\WPBrowser\TestCase\WPTestCase::queries()` method:
 
 ```php
 <?php
 
-use Codeception\Module\WPQueries;
-
-class WPQueriesUsageTest extends \Codeception\TestCase\WPTestCase
+class WPQueriesUsageTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     public function test_queries_made_by_factory_are_not_tracked()
     {

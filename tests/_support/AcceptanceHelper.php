@@ -1,10 +1,16 @@
 <?php
+
 namespace Codeception\Module;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
-class AcceptanceHelper extends \Codeception\Module
+use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
+use Codeception\Module;
+use lucatume\WPBrowser\Module\WPDb;
+
+class AcceptanceHelper extends Module
 {
 
     /**
@@ -12,11 +18,11 @@ class AcceptanceHelper extends \Codeception\Module
      *
      * @param array<string,mixed> $configurationOverrides A map of the WPDb configuration parameters to override.
      *
-     * @throws \Codeception\Exception\ModuleConfigException If the WPDb module cannot be fetched.
+     * @throws ModuleConfigException|ModuleException If the WPDb module cannot be fetched.
      */
-    public function reconfigureWPDb(array $configurationOverrides)
+    public function reconfigureWPDb(array $configurationOverrides): void
     {
-        $wpdb          = $this->getWPDbModule();
+        $wpdb = $this->getWPDbModule();
         $configuration = array_merge($wpdb->_getConfig(), $configurationOverrides);
         $wpdb->_reconfigure($configuration);
         $wpdb->_loadDump();
@@ -25,12 +31,12 @@ class AcceptanceHelper extends \Codeception\Module
     /**
      * Returns the current instance of the WPDb module.
      *
-     * @return \Codeception\Module\WPDb The current instance of the WPDb module.
+     * @return WPDb The current instance of the WPDb module.
      *
-     * @throws \Codeception\Exception\ModuleException If the WPDb module is not loaded in the suite.
+     * @throws ModuleException If the WPDb module is not loaded in the suite.
      */
-    protected function getWPDbModule()
+    protected function getWPDbModule(): WPDb
     {
-        return $this->getModule('WPDb');
+        return $this->getModule(WPDb::class);
     }
 }

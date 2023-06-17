@@ -1,0 +1,3 @@
+{
+    "tlaplus.tlc.modelChecker.options": "-deadlock"
+}

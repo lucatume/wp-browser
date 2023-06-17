@@ -3,9 +3,11 @@
 * [Welcome](welcome.md)	
     * [Frequently asked questions](faq.md)	
     * [Codeception, PHPUnit and wp-browser](codeception-phpunit-and-wpbrowser.md)	
-* [Using wp-browser with Codeception 4.0](codeception-4-suport.md)
+* [Using wp-browser with Codeception 4.0](codeception-4-support.md)
+* [Using wp-browser with Codeception 5.0](codeception-5-support.md)
 * Migration guides
     * [Version 2 to version 3](migration/from-version-2-to-version-3.md)
+    * [Version 3 to version 4](migration/from-version-3-to-version-4.md)
 * [Levels of testing](levels-of-testing.md)	
 * Getting started	
     * [Requirements](requirements.md)	

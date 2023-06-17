@@ -2,11 +2,11 @@
 
 class WPDbTablePrefixCest
 {
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -14,7 +14,7 @@ class WPDbTablePrefixCest
      * @test
      * it should allow using a secondary blog table
      */
-    public function it_should_allow_using_a_secondary_blog_table(FunctionalTester $I, $scenario)
+    public function it_should_allow_using_a_secondary_blog_table(FunctionalTester $I, $scenario): void
     {
 
         foreach ($this->tables() as $table) {
@@ -28,7 +28,7 @@ class WPDbTablePrefixCest
         }
     }
 
-    public function tables()
+    public function tables(): array
     {
         return [
             'commentmeta',
@@ -47,7 +47,7 @@ class WPDbTablePrefixCest
      * @test
      * it should allow getting non blog id prefixed table names for main blog
      */
-    public function it_should_allow_getting_non_blog_id_prefixed_table_names_for_main_blog(FunctionalTester $I)
+    public function it_should_allow_getting_non_blog_id_prefixed_table_names_for_main_blog(FunctionalTester $I): void
     {
         $tables = [
             'commentmeta',

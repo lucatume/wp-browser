@@ -1,4 +1,4 @@
-class_name: MuloaderTester
+actor: MuloaderTester
 modules:
     enabled:
         - \Helper\Muloader

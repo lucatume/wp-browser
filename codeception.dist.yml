@@ -1,30 +1,26 @@
 actor: Tester
 paths:
     tests: tests
-    log: tests/_output
     data: tests/_data
     helpers: tests/_support
+    log: var/_output
+    output: var/_output
 settings:
     colors: true
     memory_limit: 1024M
 params:
-    - .env.testing.docker
+    - tests/.env
 bootstrap: _bootstrap.php
 coverage:
     enabled: true
     include:
         - src/*
-    exclude:
-        - src/tad/scripts/*
-        - src/data/*
-        - src/includes/*
 wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
-        - tad\WPBrowser\Extension\Copier
-        - tad\WPBrowser\Extension\Events
+        - lucatume\WPBrowser\Extension\Copier
     config:
-        tad\WPBrowser\Extension\Copier:
+        lucatume\WPBrowser\Extension\Copier:
             files:
                'tests/_data/themes/dummy': '%WORDPRESS_ROOT_DIR%/wp-content/themes/dummy'
                'tests/_data/themes/isolated': '%WORDPRESS_ROOT_DIR%/wp-content/themes/isolated'
@@ -32,14 +28,13 @@ extensions:
                'tests/_data/plugins/test': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/test'
                'tests/_data/plugins/isolated-test-plugin': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin'
                'tests/_data/plugins/isolated-test-plugin-two': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin-two'
-        tad\WPBrowser\Extension\Events:
-            suites: ['events']
     commands:
-        - "Codeception\\Command\\GenerateWPUnit"
-        - "Codeception\\Command\\GenerateWPRestApi"
-        - "Codeception\\Command\\GenerateWPRestController"
-        - "Codeception\\Command\\GenerateWPRestPostTypeController"
-        - "Codeception\\Command\\GenerateWPAjax"
-        - "Codeception\\Command\\GenerateWPCanonical"
-        - "Codeception\\Command\\GenerateWPXMLRPC"
+        - "lucatume\\WPBrowser\\Command\\RunAll"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
 

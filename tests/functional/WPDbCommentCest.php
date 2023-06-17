@@ -1,6 +1,6 @@
 <?php
 
-use tad\WPBrowser\Generators\Date;
+use lucatume\WPBrowser\Generators\Date;
 
 class WPDbCommentCest
 {
@@ -8,7 +8,7 @@ class WPDbCommentCest
      * @test
      * it should allow having a comment in the database
      */
-    public function it_should_allow_having_a_comment_in_the_database(FunctionalTester $I)
+    public function it_should_allow_having_a_comment_in_the_database(FunctionalTester $I): void
     {
         $now = time();
         Date::_injectNow($now);
@@ -39,7 +39,7 @@ class WPDbCommentCest
      * @test
      * it should allow overriding a comment defaults
      */
-    public function it_should_allow_overriding_a_comment_defaults(FunctionalTester $I)
+    public function it_should_allow_overriding_a_comment_defaults(FunctionalTester $I): void
     {
         $now = time();
         Date::_injectNow($now);
@@ -76,12 +76,12 @@ class WPDbCommentCest
      * @test
      * it should allow having many comments
      */
-    public function it_should_allow_having_many_comments(FunctionalTester $I)
+    public function it_should_allow_having_many_comments(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $ids = $I->haveManyCommentsInDatabase(5, $postId);
 
-        $I->assertEquals(5, count($ids));
+        $I->assertCount(5, $ids);
         foreach ($ids as $commentId) {
             $I->seeInDatabase($I->grabCommentsTableName(), [
                 'comment_ID' => $commentId,
@@ -94,7 +94,7 @@ class WPDbCommentCest
      * @test
      * it should allow having many comments with overrides
      */
-    public function it_should_allow_having_many_comments_with_overrides(FunctionalTester $I)
+    public function it_should_allow_having_many_comments_with_overrides(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
 
@@ -116,7 +116,7 @@ class WPDbCommentCest
 
         $ids = $I->haveManyCommentsInDatabase(5, $postId, $overrides);
 
-        $I->assertEquals(5, count($ids));
+        $I->assertCount(5, $ids);
         foreach ($ids as $commentId) {
             foreach ($overrides as $key => $value) {
                 $I->seeInDatabase($I->grabCommentsTableName(), [
@@ -132,7 +132,7 @@ class WPDbCommentCest
      * @test
      * it should allow having many comments with number placeholder
      */
-    public function it_should_allow_having_many_comments_with_number_placeholder(FunctionalTester $I)
+    public function it_should_allow_having_many_comments_with_number_placeholder(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
 
@@ -154,7 +154,7 @@ class WPDbCommentCest
 
         $ids = $I->haveManyCommentsInDatabase(5, $postId, $overrides);
 
-        $I->assertEquals(5, count($ids));
+        $I->assertCount(5, $ids);
         for ($i = 0; $i < count($ids); $i++) {
             foreach ($overrides as $key => $value) {
                 $I->seeInDatabase($I->grabCommentsTableName(), [
@@ -170,7 +170,7 @@ class WPDbCommentCest
      * @test
      * it should allow having comment meta in the database
      */
-    public function it_should_allow_having_comment_meta_in_the_database(FunctionalTester $I)
+    public function it_should_allow_having_comment_meta_in_the_database(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId);
@@ -188,7 +188,7 @@ class WPDbCommentCest
      * @test
      * it should serialize array comment meta
      */
-    public function it_should_serialize_array_comment_meta(FunctionalTester $I)
+    public function it_should_serialize_array_comment_meta(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId);
@@ -207,7 +207,7 @@ class WPDbCommentCest
      * @test
      * it should serialize object comment meta
      */
-    public function it_should_serialize_object_comment_meta(FunctionalTester $I)
+    public function it_should_serialize_object_comment_meta(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId);
@@ -226,7 +226,7 @@ class WPDbCommentCest
      * @test
      * it should allow having comment meta while having comment
      */
-    public function it_should_allow_having_comment_meta_while_having_comment(FunctionalTester $I)
+    public function it_should_allow_having_comment_meta_while_having_comment(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId, ['meta' => ['foo' => 'bar']]);
@@ -238,7 +238,7 @@ class WPDbCommentCest
      * @test
      * it should allow not having comment meta in database
      */
-    public function it_should_allow_not_having_comment_meta_in_database(FunctionalTester $I)
+    public function it_should_allow_not_having_comment_meta_in_database(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId);
@@ -255,7 +255,7 @@ class WPDbCommentCest
      * @test
      * it should allow not having comment in database
      */
-    public function it_should_allow_not_having_comment_in_database(FunctionalTester $I)
+    public function it_should_allow_not_having_comment_in_database(FunctionalTester $I): void
     {
         $postId = $I->havePostInDatabase();
         $commentId = $I->haveCommentInDatabase($postId);
@@ -267,7 +267,7 @@ class WPDbCommentCest
         $I->dontSeeCommentInDatabase(['comment_ID' => $commentId]);
     }
 
-    protected function commentCountAndApproval()
+    protected function commentCountAndApproval(): array
     {
         return [
             '0-and-approved' => ['starting' => 0, 'approved' => '1', 'expected' => 1],
@@ -286,7 +286,7 @@ class WPDbCommentCest
      *
      * @dataProvider commentCountAndApproval
      */
-    public function should_update_the_comment_count_when_approved(FunctionalTester $I, \Codeception\Example $example)
+    public function should_update_the_comment_count_when_approved(FunctionalTester $I, \Codeception\Example $example): void
     {
         $startingCount = $example['starting'];
         $approved = $example['approved'];

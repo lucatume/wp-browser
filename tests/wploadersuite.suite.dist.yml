@@ -1,11 +1,12 @@
-class_name: WploaderTester
+actor: WploaderTester
+bootstrap: _bootstrap.php
 modules:
     enabled:
         - \Helper\Wploadersuite
-        - WPLoader
-        - WPQueries
+        - lucatume\WPBrowser\Module\WPLoader
+        - lucatume\WPBrowser\Module\WPQueries
     config:
-        WPLoader:
+         lucatume\WPBrowser\Module\WPLoader:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
             dbName: '%WORDPRESS_DB_NAME%'
             dbHost: '%WORDPRESS_DB_HOST%'
@@ -13,8 +14,8 @@ modules:
             dbPassword: '%WORDPRESS_DB_PASSWORD%'
             wpDebug: true
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
-            domain: '%WP_DOMAIN%'
-            adminEmail: 'admin@%WP_DOMAIN%'
+            domain: '%WORDPRESS_DOMAIN%'
+            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
             title: Test
             configFile: ''
             theme: dummy

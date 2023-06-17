@@ -1,0 +1,10 @@
+parameters:
+  level: max
+  paths:
+    - ./../src/
+  scanDirectories:
+    - ./../includes/
+    - ./../tests/
+  treatPhpDocTypesAsCertain: false
+  excludePaths:
+    - ./../src/WordPress/Version.php # Using the WordPress version file.

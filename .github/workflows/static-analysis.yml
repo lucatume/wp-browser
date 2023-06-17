@@ -1,48 +1,48 @@
-name: Static Analysis
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-on: [push]
+name: "Static Analysis"
+
+on:  # yamllint disable-line rule:truthy
+    push:
+        branches:
+        - "master"
+    pull_request: null
+# Add [skip ci] to commit message to skip CI.
+
+permissions: {}  # yamllint disable-line rule:braces
+
+concurrency:
+    group: "${{ github.workflow }}-${{ github.ref }}"
+    cancel-in-progress: true
 
 jobs:
-
-  lint-on-56:
-    name: PHP 5.6 lint
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Lint
-        run: make lint
-
-  phpcs:
-    name: phpcs
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Sniff files
-        run: make phpcs
-
-  phpstsan:
-    name: phpstan
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set src directory hash
-        run: echo "SRC_HASH=$(_build/dir_hash.sh src)" >> $GITHUB_ENV
-      - name: Cache Composer dependencies
-        uses: gerbal/always-cache@v1
-        with:
-          path: vendor
-          key: composer-5.6-cc-4.0-${{ hashFiles('**/composer.json') }}-${{ env.SRC_HASH }}
-      - name: Prepare Composer dependencies
-        run: make php_container composer_install
-        env:
-          PHP_VERSION: 5.6
-          CODECEPTION_MAJOR_VERSION: 4
-          COMPOSER_VERSION: 2
-      - name: Run PHPStan static analysis
-        run: make phpstan
-        env:
-          PHP_VERSION: 5.6
-          PHPSTAN_LEVEL: max
+    static_analysis:
+        name: "Static Analysis"
+        runs-on: "ubuntu-22.04"
+        steps:
+        -
+            name: "Set up PHP"
+            uses: "shivammathur/setup-php@v2"
+            with:
+                php-version: "8.0"
+                coverage: "none"
+        -
+            name: "Checkout repository"
+            uses: "actions/checkout@v3"
+        -
+            name: "Validate Composer configuration"
+            run: "composer validate --no-interaction --strict"
+        -
+            name: "Install dependencies"
+            uses: "ramsey/composer-install@v2"
+            with:
+                dependency-versions: "highest"
+        -
+            name: "Check PSR-4 mapping"
+            run: "composer dump-autoload --no-interaction --optimize --strict-psr"
+        -
+            name: "Run PHPHStan"
+            run: "composer run stan"
+        -
+            name: "Run PHP Code Sniffer"
+            run: "composer run cs"

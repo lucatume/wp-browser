@@ -129,7 +129,7 @@ In the context of integration testing the class dependencies and/or the context 
 <?php
 // file tests/integration/SubmissionHandlingTest.php
 
-class SubmissionHandlingTest extends \Codeception\TestCase\WPTestCase {
+class SubmissionHandlingTest extends \lucatume\WPBrowser\TestCase\WPTestCase {
     public function test_good_request() {
         $request = new WP_Rest_Request();
         $request->set_body_params( [ 'name' => 'luca', 'email' => 'luca@theaveragedev.com' ] );
@@ -160,7 +160,7 @@ class SubmissionHandlingTest extends \Codeception\TestCase\WPTestCase {
 }
 ```
 
-The test format used is the familiar [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") one; the only difference is the base test class that's being extended (`\Codeception\TestCase\WPTestCase`) is one provided by wp-browser.  
+The test format used is the familiar [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") one; the only difference is the base test class that's being extended (`\lucatume\WPBrowser\TestCase\WPTestCase`) is one provided by wp-browser.  
 
 In the context of WordPress _"integration"_ might also mean testing that filters used by the code have the expected effect.  
 

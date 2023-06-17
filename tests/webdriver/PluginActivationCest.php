@@ -9,12 +9,12 @@ class PluginActivationCest
      */
     protected $delete = [];
 
-    public function _before(WebDriverTester $I)
+    public function _before(WebDriverTester $I): void
     {
         $this->deleteFiles();
     }
 
-    protected function deleteFiles()
+    protected function deleteFiles(): void
     {
         foreach ($this->delete as $file) {
             if (file_exists($file)) {
@@ -23,12 +23,12 @@ class PluginActivationCest
         }
     }
 
-    public function _after(WebDriverTester $I)
+    public function _after(WebDriverTester $I): void
     {
         $this->deleteFiles();
     }
 
-    public function _failed(WebDriverTester $I)
+    public function _failed(WebDriverTester $I): void
     {
         $this->deleteFiles();
     }
@@ -38,7 +38,7 @@ class PluginActivationCest
      *
      * @test
      */
-    public function be_able_to_activate_plugins(WebDriverTester $I)
+    public function be_able_to_activate_plugins(WebDriverTester $I): void
     {
         $I->loginAsAdmin();
         $I->amOnPluginsPage();
@@ -55,7 +55,7 @@ class PluginActivationCest
      *
      * @test
      */
-    public function be_able_to_activate_plugins_in_a_long_list(WebDriverTester $I)
+    public function be_able_to_activate_plugins_in_a_long_list(WebDriverTester $I): void
     {
         $this->scaffoldTestPlugins($I);
 
@@ -69,7 +69,7 @@ class PluginActivationCest
         $I->seePluginDeactivated('plugin-z');
     }
 
-    protected function scaffoldTestPlugins(WebDriverTester $I)
+    protected function scaffoldTestPlugins(WebDriverTester $I): void
     {
         $template
             = <<< HANDLEBARS
@@ -96,7 +96,7 @@ HANDLEBARS;
      *
      * @test
      */
-    public function be_able_to_activate_multiple_plugins(WebDriverTester $I)
+    public function be_able_to_activate_multiple_plugins(WebDriverTester $I): void
     {
         $this->scaffoldTestPlugins($I);
 

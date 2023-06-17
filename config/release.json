@@ -1,0 +1,10 @@
+{
+  "keep_files": [
+    "includes",
+    "src",
+    "CHANGELOG.md",
+    "composer.json",
+    "LICENSE",
+    "README.md"
+  ]
+}

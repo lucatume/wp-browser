@@ -1,0 +1,14 @@
+diff --git a/includes/core-phpunit/includes/testcase-rest-controller.php b/includes/core-phpunit/includes/testcase-rest-controller.php
+index 9a4c2a0b..4f12bc91 100644
+--- a/includes/core-phpunit/includes/testcase-rest-controller.php
++++ b/includes/core-phpunit/includes/testcase-rest-controller.php
+@@ -1,6 +1,8 @@
+ <?php
+ 
+-abstract class WP_Test_REST_Controller_Testcase extends WP_Test_REST_TestCase {
++namespace lucatume\WPBrowser\TestCase;
++
++abstract class WPRestControllerTestCase extends WPTestCase {
+ 
+ 	protected $server;
+ 

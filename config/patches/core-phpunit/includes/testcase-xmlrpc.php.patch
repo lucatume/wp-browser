@@ -1,0 +1,18 @@
+diff --git a/includes/core-phpunit/includes/testcase-xmlrpc.php b/includes/core-phpunit/includes/testcase-xmlrpc.php
+index 2608ca1f..987ebea6 100644
+--- a/includes/core-phpunit/includes/testcase-xmlrpc.php
++++ b/includes/core-phpunit/includes/testcase-xmlrpc.php
+@@ -1,9 +1,12 @@
+ <?php
++
++namespace lucatume\WPBrowser\TestCase;
++
+ require_once ABSPATH . 'wp-admin/includes/admin.php';
+ require_once ABSPATH . WPINC . '/class-IXR.php';
+ require_once ABSPATH . WPINC . '/class-wp-xmlrpc-server.php';
+ 
+-abstract class WP_XMLRPC_UnitTestCase extends WP_UnitTestCase {
++abstract class WPXMLRPCTestCase extends WPTestCase {
+ 	/**
+ 	 * @var wp_xmlrpc_server
+ 	 */

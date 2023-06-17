@@ -1,0 +1,14 @@
+diff --git a/includes/core-phpunit/includes/testcase-xml.php b/includes/core-phpunit/includes/testcase-xml.php
+index 253ac2c7..aa5bf20e 100644
+--- a/includes/core-phpunit/includes/testcase-xml.php
++++ b/includes/core-phpunit/includes/testcase-xml.php
+@@ -1,6 +1,8 @@
+ <?php
+ 
+-abstract class WP_Test_XML_TestCase extends WP_UnitTestCase {
++namespace lucatume\WPBrowser\TestCase;
++
++abstract class WPXMLTestCase extends WPTestCase {
+ 	/**
+ 	 * Load XML from a string.
+ 	 *

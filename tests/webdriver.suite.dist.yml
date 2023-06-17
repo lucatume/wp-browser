@@ -1,4 +1,4 @@
-class_name: WebDriverTester
+actor: WebDriverTester
 modules:
   enabled:
     - \Helper\WebDriver
@@ -17,11 +17,10 @@ modules:
       window_size: false
       capabilities:
         chromeOptions:
-          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+          # args: ["--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*", "--no-sandbox", "--disable-dev-shm-usage"] # support VNC
+          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*", "--no-sandbox", "--disable-dev-shm-usage"] # no VNC
     WPDb:
-      dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
-      user: '%WORDPRESS_DB_USER%'
-      password: '%WORDPRESS_DB_PASSWORD%'
+      dbUrl: '%WORDPRESS_DB_URL%'
       dump: 'tests/_data/dump.sql'
       populate: true
       cleanup: true

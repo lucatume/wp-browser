@@ -1,5 +1,7 @@
 <?php
 
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
 class Api
 {
 }
@@ -25,7 +27,7 @@ function get_api()
     return $api;
 }
 
-class apiTest extends \Codeception\TestCase\WPTestCase
+class apiTest extends WPTestCase
 {
     public function test_get_api_exists()
     {

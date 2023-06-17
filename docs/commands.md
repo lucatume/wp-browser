@@ -12,22 +12,22 @@ They can be added to any existing project adding, or editing, the `commands` sec
 ```yaml
 extensions:
     commands:
-        - "Codeception\\Command\\GenerateWPUnit"
-        - "Codeception\\Command\\GenerateWPRestApi"
-        - "Codeception\\Command\\GenerateWPRestController"
-        - "Codeception\\Command\\GenerateWPRestPostTypeController"
-        - "Codeception\\Command\\GenerateWPAjax"
-        - "Codeception\\Command\\GenerateWPCanonical"
-        - "Codeception\\Command\\GenerateWPXMLRPC"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
+        - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
 ```
 
 ## Generation commands
 The library provides commands to quickly scaffold **integration** test cases for specific types of WordPress components, see [levels of testing for more information](./../levels-of-testing.md).  
 
-The tests are almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `Codeception\TestCase\WPTestCase` test case.
+The tests are almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `lucatume\WPBrowser\TestCase\WPTestCase` test case.
 
 ### generate:wpunit
-Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPTestCase` class using the
 
 ```sh
   codecept generate:wpunit suite SomeClass
@@ -35,11 +35,10 @@ Generates a test case extending the `\Codeception\TestCase\WPTestCase` class usi
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     public function setUp()
     {
@@ -60,7 +59,7 @@ class SomeClassTest extends \Codeception\TestCase\WPTestCase
 ```
 
 ### generate:wprest
-Generates a test case extending the `\Codeception\TestCase\WPRestApiTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPRestApiTestCase` class using the
 
 ```sh
   codecept generate:wprest suite SomeClass
@@ -68,11 +67,10 @@ Generates a test case extending the `\Codeception\TestCase\WPRestApiTestCase` cl
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPRestApiTestCase
 {
     public function setUp()
     {
@@ -93,7 +91,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
 ```
 
 ### generate:wprestcontroller
-Generates a test case extending the `\Codeception\TestCase\WPRestControllerTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPRestControllerTestCase` class using the
 
 ```sh
   codecept generate:wprest suite SomeClass
@@ -101,11 +99,10 @@ Generates a test case extending the `\Codeception\TestCase\WPRestControllerTestC
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPRestControllerTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
 {
     public function setUp()
     {
@@ -125,7 +122,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestControllerTestCase
 }
 ```
 ### generate:wprestposttypecontroller
-Generates a test case extending the `\Codeception\TestCase\WPRestPostTypeControllerTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase` class using the
 
 ```sh
   codecept generate:wprest suite SomeClass
@@ -133,11 +130,10 @@ Generates a test case extending the `\Codeception\TestCase\WPRestPostTypeControl
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPRestPostTypeControllerTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase
 {
     public function setUp()
     {
@@ -158,7 +154,7 @@ class SomeClassTest extends \Codeception\TestCase\WPRestPostTypeControllerTestCa
 ```
 
 ### generate:wpajax
-Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPAjaxTestCase` class using the
 
 ```sh
   codecept generate:wpajax suite SomeClass
@@ -166,11 +162,10 @@ Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPAjaxTestCase
 {
     public function setUp()
     {
@@ -191,7 +186,7 @@ class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
 ```
 
 ### generate:wpxmlrpc
-Generates a test case extending the `\Codeception\TestCase\WPXMLRPCTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPXMLRPCTestCase` class using the
 
 ```sh
   codecept generate:wpxmlrpc suite SomeClass
@@ -199,11 +194,10 @@ Generates a test case extending the `\Codeception\TestCase\WPXMLRPCTestCase` cla
 
 The command will generate a skeleton test case like
 
-
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPXMLRPCTestCase
 {
     public function setUp()
     {
@@ -224,7 +218,7 @@ class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
 ```
 
 ### generate:wpcanonical
-Generates a test case extending the `\Codeception\TestCase\WPCanonicalTestCase` class using the
+Generates a test case extending the `\lucatume\WPBrowser\TestCase\WPCanonicalTestCase` class using the
 
 ```sh
   codecept generate:wpcanonical suite SomeClass
@@ -235,7 +229,7 @@ The command will generate a skeleton test case like
 ```php
 <?php
 
-class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
+class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPCanonicalTestCase
 {
     public function setUp()
     {

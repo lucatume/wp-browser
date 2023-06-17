@@ -1,6 +1,8 @@
 <?php
 
-class SecondIsolatedTest extends \Codeception\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class SecondIsolatedTest extends WPTestCase
 {
     /**
      * @runInSeparateProcess
@@ -10,7 +12,7 @@ class SecondIsolatedTest extends \Codeception\TestCase\WPTestCase
     {
         $post = static::factory()->post->create_and_get();
 
-        $this->assertInstanceOf(\WP_Post::class, $post);
+        $this->assertInstanceOf(WP_Post::class, $post);
         $this->assertCount(1, get_posts());
 
         define('TEST_CONST', 23);
@@ -27,7 +29,7 @@ class SecondIsolatedTest extends \Codeception\TestCase\WPTestCase
     {
         $post = static::factory()->post->create_and_get();
 
-        $this->assertInstanceOf(\WP_Post::class, $post);
+        $this->assertInstanceOf(WP_Post::class, $post);
         $this->assertCount(1, get_posts());
 
         $this->assertFalse(defined('TEST_CONST'));
@@ -45,7 +47,7 @@ class SecondIsolatedTest extends \Codeception\TestCase\WPTestCase
     {
         $post = static::factory()->post->create_and_get();
 
-        $this->assertInstanceOf(\WP_Post::class, $post);
+        $this->assertInstanceOf(WP_Post::class, $post);
         $this->assertCount(1, get_posts());
 
         $this->assertFalse(defined('TEST_CONST'));

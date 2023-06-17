@@ -1,8 +1,8 @@
 <?php
 
-use function tad\WPBrowser\db;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class ThemeActivationTest extends \Codeception\TestCase\WPTestCase
+class ThemeActivationTest extends WPTestCase
 {
     public function test_theme_is_loaded()
     {

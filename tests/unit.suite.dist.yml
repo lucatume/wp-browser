@@ -1,7 +1,8 @@
 # Codeception Test Suite Configuration
 
 # suite for unit (internal) tests.
-class_name: UnitTester
+actor: UnitTester
+bootstrap: _bootstrap.php
 modules:
     enabled: [Asserts, UnitHelper]
     config:
@@ -13,8 +14,8 @@ modules:
             dbPassword: '%WORDPRESS_DB_PASSWORD%'
             wpDebug: true
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
-            domain: '%WP_DOMAIN%'
-            adminEmail: 'admin@%WP_DOMAIN%'
+            domain: '%WORDPRESS_DOMAIN%'
+            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
             title: Test
             configFile: ''
             theme: dummy

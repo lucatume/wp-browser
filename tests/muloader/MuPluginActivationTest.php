@@ -1,7 +1,9 @@
 <?php
-namespace tad\WPBrowser\Tests;
+namespace lucatume\WPBrowser\Tests;
 
-class MuPluginActivationTest extends \Codeception\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class MuPluginActivationTest extends WPTestCase
 {
     /**
      * @test

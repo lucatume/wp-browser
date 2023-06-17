@@ -9,7 +9,7 @@ class WPFilesystemCest
      *
      * @test
      */
-    public function should_allow_creating_a_plugin(AcceptanceTester $I)
+    public function should_allow_creating_a_plugin(AcceptanceTester $I): void
     {
         $code = <<< PHP
 function my_test_function(){
@@ -31,7 +31,7 @@ PHP;
      *
      * @test
      */
-    public function should_allow_creating_a_mu_plugin(AcceptanceTester $I)
+    public function should_allow_creating_a_mu_plugin(AcceptanceTester $I): void
     {
         $code = <<< PHP
 function my_test_function(){
@@ -52,7 +52,7 @@ PHP;
      *
      * @test
      */
-    public function should_allow_creating_a_theme(AcceptanceTester $I)
+    public function should_allow_creating_a_theme(AcceptanceTester $I): void
     {
         $indexCode = <<< PHP
 echo "Hello from baz theme!";
@@ -72,7 +72,7 @@ PHP;
      */
     public function should_allow_creating_a_theme_with_functions_files(
         AcceptanceTester $I
-    ) {
+    ): void {
         $indexCode = <<< PHP
 echo baz_say_hi();
 PHP;
@@ -96,7 +96,7 @@ PHP;
      *
      * @test
      */
-    public function should_remove_temp_files_after_each_test(AcceptanceTester $I)
+    public function should_remove_temp_files_after_each_test(AcceptanceTester $I): void
     {
         $I->dontSeePluginFileFound('foo');
         $I->dontSeeMuPluginFileFound('bar');
