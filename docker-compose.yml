@@ -28,6 +28,7 @@ services:
     image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-apache
     build:
       context: ./containers/php
+      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
       args:
         PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"
@@ -64,6 +65,7 @@ services:
     image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-codeception
     build:
       context: ./containers/php
+      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
       args:
         PHP_VERSION: "${PHP_VERSION:-5.6}"
         USER_UID: "${USER_UID:-33}"

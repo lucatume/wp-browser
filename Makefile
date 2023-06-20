@@ -4,7 +4,7 @@ build:
 	bin/stack -p7.1 build
 	bin/stack -p7.2 build
 	bin/stack -p7.3 build
-	bin/stack -p7.3 build
+	bin/stack -p7.4 build
 	bin/stack -p8.0 build
 	bin/stack -p8.1 build
 .PHONY: build

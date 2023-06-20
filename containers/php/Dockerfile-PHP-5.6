@@ -3,7 +3,7 @@ ARG COMPOSER_VERSION=2.2
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
-FROM wordpress:6.2.1-php${PHP_VERSION}-apache
+FROM wordpress:php${PHP_VERSION}-apache
 
 ARG USER_UID=33
 ARG USER_GID=33
@@ -18,10 +18,17 @@ RUN chmod a+rx /usr/local/bin/wp
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod a+x /usr/local/bin/install-php-extensions && \
     chmod -R a+rwx /usr/local/etc/php/conf.d && \
-    install-php-extensions gd xdebug pdo pdo_mysql mysqli zip
+    install-php-extensions gd pdo pdo_mysql mysqli zip
+
+COPY php_56_sos/uopz.so /usr/local/lib/php/extensions/no-debug-non-zts-20131226/uopz.so
+COPY php_56_sos/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20131226/xdebug.so
+RUN docker-php-ext-enable xdebug
 
 # If the target is `codeception`, then install the uopz extension.
-RUN if [ "${TARGET}" = "codeception" ]; then install-php-extensions uopz; fi
+RUN if [ "${TARGET}" = "codeception" ]; \
+    then docker-php-ext-enable uopz; \
+    else rm /usr/local/lib/php/extensions/no-debug-non-zts-20131226/uopz.so; \
+    fi
 
 # Install required utils
 RUN apt-get update && apt-get install -y \

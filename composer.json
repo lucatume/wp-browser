@@ -35,8 +35,6 @@
     "vria/nodiacritic": "^0.1.2"
   },
   "require-dev": {
-    "ext-sockets": "*",
-    "ext-pcntl": "*",
     "erusev/parsedown": "^1.7",
     "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
