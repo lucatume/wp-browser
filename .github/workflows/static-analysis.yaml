@@ -24,8 +24,8 @@ jobs:
       - run: |
           rm -f composer.json
           rm -f composer.lock
-          mv config/composer.codecept-4.json composer.json
-          mv config/composer.codecept-4.lock composer.lock
+          mv config/composer/composer-7.4-codeception-4.json composer.json
+          mv config/composer/composer-7.4-codeception-4.lock composer.lock
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:

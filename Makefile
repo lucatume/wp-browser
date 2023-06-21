@@ -19,6 +19,67 @@ build_images:
 	bin/stack -p8.0 build_images
 	bin/stack -p8.1 build_images
 
+build_56_lock_files:
+	[ -d config/composer ] || mkdir config/composer
+	rm -f config/composer/*5.6*
+	cp composer.json config/composer/composer.json.bak
+
+	bin/stack -p5.6 -c2 composer_update
+	mv composer.json config/composer/composer-5.6-codeception-2.json
+	mv composer.lock config/composer/composer-5.6-codeception-2.lock
+	cp config/composer/composer.json.bak composer.json
+
+	bin/stack -p5.6 -c3 composer_update
+	mv composer.json config/composer/composer-5.6-codeception-3.json
+	mv composer.lock config/composer/composer-5.6-codeception-3.lock
+	cp config/composer/composer.json.bak composer.json
+
+	bin/stack -p5.6 -c4 composer_update
+	mv composer.json config/composer/composer-5.6-codeception-4.json
+	mv composer.lock config/composer/composer-5.6-codeception-4.lock
+
+	mv config/composer/composer.json.bak composer.json
+
+build_74_lock_files:
+	[ -d config/composer ] || mkdir config/composer
+	cp composer.json config/composer/composer.json.bak
+
+	bin/stack -p7.4 -d -c2 composer_update
+	mv composer.json config/composer/composer-7.4-codeception-2.json
+	mv composer.lock config/composer/composer-7.4-codeception-2.lock
+	cp config/composer/composer.json.bak composer.json
+
+	bin/stack -p7.4 -d -c3 composer_update
+	mv composer.json config/composer/composer-7.4-codeception-3.json
+	mv composer.lock config/composer/composer-7.4-codeception-3.lock
+	cp config/composer/composer.json.bak composer.json
+
+	bin/stack -p7.4 -d -c4 composer_update
+	mv composer.json config/composer/composer-7.4-codeception-4.json
+	mv composer.lock config/composer/composer-7.4-codeception-4.lock
+
+	mv config/composer/composer.json.bak composer.json
+
+build_80_lock_files:
+	[ -d config/composer ] || mkdir config/composer
+	cp composer.json config/composer/composer.json.bak
+
+	bin/stack -p8.0 -d -c4 composer_update
+	mv composer.json config/composer/composer-8.0-codeception-4.json
+	mv composer.lock config/composer/composer-8.0-codeception-4.lock
+
+	mv config/composer/composer.json.bak composer.json
+
+build_81_lock_files:
+	[ -d config/composer ] || mkdir config/composer
+	cp composer.json config/composer/composer.json.bak
+
+	bin/stack -p8.1 -d -c4 composer_update
+	mv composer.json config/composer/composer-8.1-codeception-4.json
+	mv composer.lock config/composer/composer-8.1-codeception-4.lock
+
+	mv config/composer/composer.json.bak composer.json
+
 lint:
 	docker run --rm \
 		--volume "$(PWD):$(PWD):ro" \
@@ -63,9 +124,6 @@ phpstan:
 		--workdir "$(PWD)" \
 		lucatume/wpstan:0.12.42 analyze \
 			-l max
-phpstan:
-	docker run --rm --volume "$(PWD):$(PWD):ro" --workdir "$(PWD)" lucatume/wpstan:0.12.42 analyze -l max
-.PHONY: phpstan
 
 static_analysis: lint phpcs phpstan
 .PHONE: static_analysis

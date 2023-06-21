@@ -16,6 +16,7 @@ function print_help() {
   echo "  build                 Build the images for the specified PHP version."
   echo "  clean                 Remove the containers and images, remove the wordpress installation."
   echo "  composer              Runs a Composer command in the specified PHP and Codeception version."
+  echo "  composer_install      Install the Composer dependencies for the specified PHP and Codeception version."
   echo "  composer_update       Update the Composer dependencies for the specified PHP and Codeception version."
   echo "  config                Show the docker compose configuration for the specified PHP version."
   echo "  dc                    Execute a docker compose command fore the specified PHP version."
@@ -147,7 +148,7 @@ function run_wp_cli_command() {
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "wp-browser-v3-wordpress:php${PHP_VERSION}-apache" \
+    "lucatume/wp-browser-v3-build:php${PHP_VERSION}-apache" \
     wp --allow-root --url=http://wordpress.test --path=/var/www/html "$@"
 }
 
@@ -168,7 +169,7 @@ function ensure_wordpress_configured() {
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "wp-browser-v3-wordpress:php${PHP_VERSION}-apache" \
+    "lucatume/wp-browser-v3-build:php${PHP_VERSION}-apache" \
     bash -c "wp --allow-root core config --dbname=wordpress --dbuser=root --dbpass=password --dbhost=database --dbprefix=wp_ --extra-php <<PHP
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
@@ -226,8 +227,9 @@ function build_images() {
   if [ "${PHP_VERSION}" = "5.6" ]; then
     export DOCKERFILE_SUFFIX="-PHP-5.6"
   fi
-  docker compose build wordpress || exit 1
-  docker compose build codecept || exit 1
+
+  docker compose build --progress plain wordpress || exit 1
+  docker compose build --progress plain codecept || exit 1
 }
 
 function build() {
@@ -256,8 +258,8 @@ function clean() {
   for version in "${SUPPORTED_PHP_VERSIONS[@]}"; do
     PHP_VERSION=$version docker compose down -v
     PHP_VERSION=$version docker compose rm -f
-    docker rmi "wp-browser-v3-wordpress:php${version}-apache"
-    docker rmi "wp-browser-v3-wordpress:php${version}-codeception"
+    docker rmi "lucatume/wp-browser-v3-build:php${version}-apache"
+    docker rmi "lucatume/wp-browser-v3-build:php${version}-codeception"
   done
 
   rm -rf var/wordpress
@@ -276,16 +278,16 @@ function config() {
 }
 
 function composer_run() {
-  docker compose exec \
+  docker compose run --rm \
     -u "$(id -u):$(id -g)" \
     -w "$(pwd)" \
-    codecept \
-    bash -c "composer $*" || exit 1
+    --no-deps \
+    --entrypoint=bash \
+    codecept -c "composer $*" || exit 1
 }
 
 function composer_update() {
   rm -rf vendor composer.lock || exit 1
-  xdebug_off
 
   if [ "${CODECEPTION_VERSION}" != "4" ]; then
     composer_run remove \
@@ -298,28 +300,23 @@ function composer_update() {
       codeception/util-universalframework
   fi
 
-  if [ "${CODECEPTION_VERSION}" = "3" ]; then
-    composer_run remove codeception/lib-asserts
-  fi
-
-  docker compose exec \
-    -u "$(id -u):$(id -g)" \
-    -w "$(pwd)" \
-    codecept \
-    bash -c "composer update -o -a -n -W" &&
-    composer_run require codeception/codeception:^"${CODECEPTION_VERSION}" -W -n
-
   if [ "${CODECEPTION_VERSION}" = "4" ]; then
-    composer_run require \
-      codeception/lib-asserts:^1.0 \
+    composer_run require -W -n \
+      codeception/codeception:^"${CODECEPTION_VERSION}" \
       codeception/module-asserts:^1.0 \
       codeception/module-phpbrowser:^1.0 \
       codeception/module-webdriver:^1.0 \
       codeception/module-db:^1.0 \
       codeception/module-filesystem:^1.0 \
       codeception/module-cli:^1.0 \
-      codeception/util-universalframework:^1.0
+      codeception/util-universalframework:^1.0 -W -n
+  else
+    composer_run require -W -n codeception/codeception:^"${CODECEPTION_VERSION}"
   fi
+}
+
+function composer_install() {
+  composer_run install --no-interaction --no-progress --no-suggest --no-scripts --no-autoloader || exit 1
 }
 
 function run_tests() {
@@ -362,6 +359,9 @@ clean_tmp)
   ;;
 composer)
   composer_run "${@:2}"
+  ;;
+composer_install)
+  composer_install
   ;;
 composer_update)
   composer_update
