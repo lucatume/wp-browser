@@ -9,6 +9,16 @@ build:
 	bin/stack -p8.1 build
 .PHONY: build
 
+build_images:
+	bin/stack -p5.6 build_images
+	bin/stack -p7.0 build_images
+	bin/stack -p7.1 build_images
+	bin/stack -p7.2 build_images
+	bin/stack -p7.3 build_images
+	bin/stack -p7.4 build_images
+	bin/stack -p8.0 build_images
+	bin/stack -p8.1 build_images
+
 lint:
 	docker run --rm \
 		--volume "$(PWD):$(PWD):ro" \

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+SUPPORTED_CODECEPTION_VERSIONS=(2 3 4)
 SUPPORTED_PHP_VERSIONS=(5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2)
 SKIP_BUILD=0
 
 function print_help() {
   echo "Usage: $0 [-p PHP_VERSION] [-drh] [--] [COMMAND]"
+  echo "  -c<CODECEPTION_VERSION> The Codeception version to use. Default: 4"
   echo "  -p<PHP_VERSION>         The PHP version to use. Default: 8.0"
   echo "  -d                      Enable debug mode."
   echo "  -r                      Access container as root."
@@ -13,7 +15,8 @@ function print_help() {
   echo "Supported COMMANDs"
   echo "  build                 Build the images for the specified PHP version."
   echo "  clean                 Remove the containers and images, remove the wordpress installation."
-  echo "  composer_update       Update the composer dependencies for the specified PHP and Codeception version."
+  echo "  composer              Runs a Composer command in the specified PHP and Codeception version."
+  echo "  composer_update       Update the Composer dependencies for the specified PHP and Codeception version."
   echo "  config                Show the docker compose configuration for the specified PHP version."
   echo "  dc                    Execute a docker compose command fore the specified PHP version."
   echo "  clean_tmp             Remove the var/tmp directory."
@@ -34,8 +37,11 @@ function print_help() {
   echo "  xdebug-on             Activates XDebug in the WordPress and Codeception service."
 }
 
-while getopts "p:hdrs" opt; do
+while getopts "c:p:hdrs" opt; do
   case $opt in
+  c)
+    CODECEPTION_VERSION=$OPTARG
+    ;;
   p)
     PHP_VERSION=$OPTARG
     ;;
@@ -69,11 +75,18 @@ shift $((OPTIND - 1))
 
 [ "${1:-}" = "--" ] && shift
 
+CODECEPTION_VERSION=${CODECEPTION_VERSION:-4}
 PHP_VERSION=${PHP_VERSION:-8.0}
-# If the PHP version is not supported, exit with an error.
+
 if [[ ! " ${SUPPORTED_PHP_VERSIONS[@]} " =~ " ${PHP_VERSION} " ]]; then
   echo "PHP version ${PHP_VERSION} is not supported."
   echo "Supported PHP versions: ${SUPPORTED_PHP_VERSIONS[@]}"
+  exit 1
+fi
+
+if [[ ! " ${SUPPORTED_CODECEPTION_VERSIONS[@]} " =~ " ${CODECEPTION_VERSION} " ]]; then
+  echo "Codeception version ${CODECEPTION_VERSION} is not supported."
+  echo "Supported Codeception versions: ${SUPPORTED_CODECEPTION_VERSIONS[@]}"
   exit 1
 fi
 
@@ -134,8 +147,14 @@ function run_wp_cli_command() {
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "wp-browser-wordpress:php${PHP_VERSION}-apache" \
+    "wp-browser-v3-wordpress:php${PHP_VERSION}-apache" \
     wp --allow-root --url=http://wordpress.test --path=/var/www/html "$@"
+}
+
+function ensure_wordpress_updated() {
+  if ! run_wp_cli_command core update; then
+    exit 1
+  fi
 }
 
 function ensure_wordpress_configured() {
@@ -149,7 +168,7 @@ function ensure_wordpress_configured() {
     --network "wpbrowser_php_${PHP_VERSION}" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "wp-browser-wordpress:php${PHP_VERSION}-apache" \
+    "wp-browser-v3-wordpress:php${PHP_VERSION}-apache" \
     bash -c "wp --allow-root core config --dbname=wordpress --dbuser=root --dbpass=password --dbhost=database --dbprefix=wp_ --extra-php <<PHP
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
@@ -199,12 +218,16 @@ function ensure_externals_blocked() {
   run_wp_cli_command config set WP_HTTP_BLOCK_EXTERNAL true || exit 1
 }
 
-function build_images(){
-    if [ "${PHP_VERSION}" = "5.6" ]; then
-      export DOCKERFILE_SUFFIX="-PHP-5.6"
-    fi
-    docker compose build wordpress || exit 1
-    docker compose build codecept || exit 1
+function ensure_externals_unblocked() {
+  run_wp_cli_command config delete WP_HTTP_BLOCK_EXTERNAL
+}
+
+function build_images() {
+  if [ "${PHP_VERSION}" = "5.6" ]; then
+    export DOCKERFILE_SUFFIX="-PHP-5.6"
+  fi
+  docker compose build wordpress || exit 1
+  docker compose build codecept || exit 1
 }
 
 function build() {
@@ -218,6 +241,8 @@ function build() {
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
   ensure_wordpress_installed
+  ensure_externals_unblocked
+  ensure_wordpress_updated
   docker compose up -d --wait wordpress
   docker compose up -d --wait chrome
   docker compose up -d --wait codecept
@@ -231,8 +256,8 @@ function clean() {
   for version in "${SUPPORTED_PHP_VERSIONS[@]}"; do
     PHP_VERSION=$version docker compose down -v
     PHP_VERSION=$version docker compose rm -f
-    docker rmi "wp-browser-wordpress:php${version}-apache"
-    docker rmi "wp-browser-wordpress:php${version}-codeception"
+    docker rmi "wp-browser-v3-wordpress:php${version}-apache"
+    docker rmi "wp-browser-v3-wordpress:php${version}-codeception"
   done
 
   rm -rf var/wordpress
@@ -250,12 +275,51 @@ function config() {
   docker compose config
 }
 
-function composer_update() {
+function composer_run() {
   docker compose exec \
     -u "$(id -u):$(id -g)" \
     -w "$(pwd)" \
     codecept \
-    bash -c "composer update -o -a"
+    bash -c "composer $*" || exit 1
+}
+
+function composer_update() {
+  rm -rf vendor composer.lock || exit 1
+  xdebug_off
+
+  if [ "${CODECEPTION_VERSION}" != "4" ]; then
+    composer_run remove \
+      codeception/module-asserts \
+      codeception/module-phpbrowser \
+      codeception/module-webdriver \
+      codeception/module-db \
+      codeception/module-filesystem \
+      codeception/module-cli \
+      codeception/util-universalframework
+  fi
+
+  if [ "${CODECEPTION_VERSION}" = "3" ]; then
+    composer_run remove codeception/lib-asserts
+  fi
+
+  docker compose exec \
+    -u "$(id -u):$(id -g)" \
+    -w "$(pwd)" \
+    codecept \
+    bash -c "composer update -o -a -n -W" &&
+    composer_run require codeception/codeception:^"${CODECEPTION_VERSION}" -W -n
+
+  if [ "${CODECEPTION_VERSION}" = "4" ]; then
+    composer_run require \
+      codeception/lib-asserts:^1.0 \
+      codeception/module-asserts:^1.0 \
+      codeception/module-phpbrowser:^1.0 \
+      codeception/module-webdriver:^1.0 \
+      codeception/module-db:^1.0 \
+      codeception/module-filesystem:^1.0 \
+      codeception/module-cli:^1.0 \
+      codeception/util-universalframework:^1.0
+  fi
 }
 
 function run_tests() {
@@ -266,18 +330,18 @@ function run_tests() {
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
     docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter --debug" || exit 1
+      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter" || exit 1
   done
 }
 
 function xdebug_off() {
-  docker compose exec -u "$(id -u):$(id -g)" wordpress bash xdebug-off || exit 1
-  docker compose exec -u "$(id -u):$(id -g)" codecept bash xdebug-off || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "/var/www/html" wordpress bash xdebug-off || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash xdebug-off || exit 1
 }
 
 function xdebug_on() {
-  docker compose exec -u "$(id -u):$(id -g)" wordpress bash xdebug-on || exit 1
-  docker compose exec -u "$(id -u):$(id -g)" codecept bash xdebug-on || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "/var/www/html" wordpress bash xdebug-on || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)}" codecept bash xdebug-on || exit 1
 }
 
 COMMAND=${1:-help}
@@ -295,6 +359,9 @@ clean)
   ;;
 clean_tmp)
   clean_tmp
+  ;;
+composer)
+  composer_run "${@:2}"
   ;;
 composer_update)
   composer_update

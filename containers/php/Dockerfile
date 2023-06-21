@@ -3,7 +3,7 @@ ARG COMPOSER_VERSION=2.2
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
-FROM wordpress:6.2.1-php${PHP_VERSION}-apache
+FROM wordpress:5-php${PHP_VERSION}-apache
 
 ARG USER_UID=33
 ARG USER_GID=33

@@ -25,7 +25,7 @@ services:
     user: "${USER_UID}:${USER_GID}"
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
-    image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-apache
+    image: wp-browser-v3-wordpress:php${PHP_VERSION:-5.6}-apache
     build:
       context: ./containers/php
       dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
@@ -62,7 +62,7 @@ services:
   codecept:
     container_name: wpbrowser_php_${PHP_VERSION:-5.6}_codeception
     user: "${USER_UID}:${USER_GID}"
-    image: wp-browser-wordpress:php${PHP_VERSION:-5.6}-codeception
+    image: wp-browser-v3-wordpress:php${PHP_VERSION:-5.6}-codeception
     build:
       context: ./containers/php
       dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
