@@ -1,5 +1,8 @@
-# WPDb module
-This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+---
+title: WPDb module
+---
+
+This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing).  
 This module extends the [Db module](https://codeception.com/docs/modules/Db) adding WordPress-specific configuration parameters and methods.  
 The module provides methods to read, write and update the WordPress database **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 
@@ -21,7 +24,7 @@ You can set the `populate` and `cleanup` parameters to `false` to prevent this d
 
 ## Change the database used depending on whether you're running tests or not
 The chore of having to plug different databases, or backup them, depending on whether you're manually testing the site or automatically testing can be mitigated switching them automatically depending on the browser user agent or request headers.  
-This module was born to be used in acceptance and functional tests (see [levels of testing for more information](./../levels-of-testing.md)) and will often be coupled with modules like the [WPBrowser](WPBrowser.md) one or the [WPWebDriver](WPWebDriver.md) one.  
+This module was born to be used in acceptance and functional tests (see [levels of testing for more information](./../levels-of-testing)) and will often be coupled with modules like the [WPBrowser](WPBrowser) one or the [WPWebDriver](WPWebDriver) one.  
 Depending on which of the two modules is being used in the suite there are different ways to automate the "database switching".
 
 ### Automatically changing database based on the browser user agent
@@ -49,7 +52,7 @@ if (
 }
 ```
 
-If you're using the [WPWebDriver](WPWebDriver.md) module set the user agent in the browser, in this example I'm setting the user agent in Chromedriver:
+If you're using the [WPWebDriver](WPWebDriver) module set the user agent in the browser, in this example I'm setting the user agent in Chromedriver:
 ```yaml
 actor: AcceptanceTester
 modules:
@@ -87,7 +90,7 @@ modules:
                     args: ["--no-sandbox", "--headless", "--disable-gpu", "--user-agent=wp-browser"]
 ```
 
-If you're using the [WPBrowser](WPBrowser.md) module send a specific header in the context of test requests: 
+If you're using the [WPBrowser](WPBrowser) module send a specific header in the context of test requests: 
 ```yaml
 actor: AcceptanceTester
 modules:
@@ -153,8 +156,8 @@ modules:
 ```
 
 ## Using the module with the WPLoader one
-This module is often used in conjunction with the [WPLoader one](WPLoader.md) to use WordPress-defined functions, classes and methods in acceptance or functional tests.  
-The WPLoader module should be [set to only load WordPress](WPLoader.md#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.enabled` section of the suite configuration file **before** the `WPLoader` one:
+This module is often used in conjunction with the [WPLoader one](WPLoader) to use WordPress-defined functions, classes and methods in acceptance or functional tests.  
+The WPLoader module should be [set to only load WordPress](WPLoader#wploader-to-only-bootstrap-wordpress) and this module should be listed, in the `modules.enabled` section of the suite configuration file **before** the `WPLoader` one:
 
 ```yaml
 modules:

@@ -1,4 +1,7 @@
-# WPCLI module
+---
+title: WPCLI module
+---
+
 This module should be used in acceptance and functional tests to setup, or verify, tests pre and post conditions using WP-CLI commands.  
 This module allows invoking [WP-CLI](https://wp-cli.org/) commands, refer to the official site for more information.
 

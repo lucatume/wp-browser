@@ -1,4 +1,6 @@
-# Contributing to wp-browser
+---
+title: Contributing
+---
 
 There are many ways you can contribute to the project and most of them do not involve having an intimate knowledge of
  [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") or `wp-browser` internals.

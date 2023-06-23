@@ -1,8 +1,10 @@
-## Initializing wp-browser
+---
+title: Configuration
+---
 
 While wp-browser can be configured manually creating each file the fastest way to bootstrap its configuration is by using its initialization template.  
 
-Throughout the steps below I will use the WordPress setup [I've prepared before](setting-up-minimum-wordpress-installation.md)
+Throughout the steps below I will use the WordPress setup [I've prepared before](setting-up-minimum-wordpress-installation)
 From the root folder of the project, `/Users/luca/Sites/wordpress/wp-content/plugins/acme-plugin` in the example, run the command:
 
 ```bash
@@ -16,9 +18,9 @@ When I click enter I'm presented with a list of questions, each answer will be u
 
 In the screenshot the answers I've provided to each question, with reference to the setup above:
 
-![codecept init wpbrowser 1](images/codecept-init-wpbrowser-01.png)
+![codecept init wpbrowser 1](/assets/v3/images/codecept-init-wpbrowser-01.png)
 
-![codecept init wpbrowser 2](images/codecept-init-wpbrowser-02.png)
+![codecept init wpbrowser 2](/assets/v3/images/codecept-init-wpbrowser-02.png)
 
 wp-browser will try to provide a brief explanation of what each question is but below is the long version.
 
@@ -55,19 +57,19 @@ Below is a longer explanation of each question:
 
 #### How would you like the acceptance suite to be called?
 
-With reference to the [testing levels definition](levels-of-testing.md) this question provides you with the possibility to change the name of the acceptance-like test suite.  
+With reference to the [testing levels definition](levels-of-testing) this question provides you with the possibility to change the name of the acceptance-like test suite.  
 
 Common, alternative, names are `ui`, `rest` and `user`.  
 
 #### How would you like the functional suite to be called?
 
-With reference to the [testing levels definition](levels-of-testing.md) this question provides you with the possibility to change the name of the functional-like test suite.  
+With reference to the [testing levels definition](levels-of-testing) this question provides you with the possibility to change the name of the functional-like test suite.  
 
 A common alternative name is `service`.  
 
 #### How would you like the WordPress unit and integration suite to be called?
 
-With reference to the [testing levels definition](levels-of-testing.md) this question provides you with the possibility to change the name of the suite dedicated to integration and "WordPress unit" tests.  
+With reference to the [testing levels definition](levels-of-testing) this question provides you with the possibility to change the name of the suite dedicated to integration and "WordPress unit" tests.  
 
 A common alternative name is `integration`.  
 
@@ -132,7 +134,7 @@ If I am using the database of a [Local by Flywheel](https://local.getflywheel.co
 
 If I am running the tests from within a virtualized machine (a Docker container, a Vagrant box et cetera) then it would probably be `localhost` or `1270.0.0.1`.  
 
-This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb.md).
+This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb).
 
 #### What is the user of the test database used by the test site?
 
@@ -140,7 +142,7 @@ In my example setup it's `root` as I'm using MySQL server root user to access th
 
 Depending on your setup it might be different; since wp-browser will need to not only read but write too to the database make sure to use a user that has full access to the database specified in the answer to the [What is the host of the test database used by the test site?](#what-is-the-host-of-the-test-database-used-by-the-test-site) question.
 
-This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb.md).
+This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb).
 
 #### What is the password of the test database used by the test site?
 
@@ -148,7 +150,7 @@ In my example setup it's empty as I've not set any password for the root account
   
 In your case it might be different and it should be the password associated with the user specified in the answer to the [What is the user of the test database used by the test site?](#what-is-the-user-of-the-test-database-used-by-the-test-site) question.
 
-This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb.md).
+This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb).
 
 #### What is the table prefix of the test database used by the test site?
 
@@ -156,7 +158,7 @@ In my example setup it's `wp_`; that value is taken from the [WordPress installa
 
 To have any influence on the site wp-browser will need to modify the same database tables WordPress is using; as I did you can take this value from the `wp-config.php` file directly: it's the value of the `$table_prefix` variable.  
 
-This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb.md).
+This detail will be used in the context of acceptance and functional tests by the [WPDb module](modules/WPDb).
 
 #### What is the name of the test database WPLoader should use?
 
@@ -170,7 +172,7 @@ One of the first things WordPress does, when loading, is trying to connect to a 
 
 In the answer to the question [Where is WordPress installed?](#where-is-wordpress-installed) I've told wp-browser where to find WordPress code, in this answer I'm telling wp-browser what database it should use to bootstrap WordPress.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress.
 **It's highly recommended to use a different database from the [one used for functional and acceptance tests](#what-is-the-host-of-the-test-database-used-by-the-test-site)**.
 
 #### What is the host of the test database WPLoader should use? 
@@ -181,7 +183,7 @@ As in the answer to the question [What is the name of the test database WPLoader
 
 Again the database host is **in relation to the machine running the tests**, all the considerations done for [What is the host of the test database used by the test site?](#what-is-the-host-of-the-test-database-used-by-the-test-site) apply.
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress.
 
 #### What is the user of the test database WPLoader should use?
 
@@ -189,7 +191,7 @@ In my example it's `root`.
 
 Similar to the question [What is the user of the test database used by the test site?](#what-is-the-user-of-the-test-database-used-by-the-test-site) but in relation to the database specified in the question [What is the name of the test database WPLoader should use?](#what-is-the-name-of-the-test-database-wploader-should-use).  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress.
 
 #### What is the password of the test database WPLoader should use?
 
@@ -197,7 +199,7 @@ In my example setup it's empty as I've not set any password for the root account
 
 Similar to the question [What is the password of the test database used by the test site?](#what-is-the-password-of-the-test-database-used-by-the-test-site) but in relation to the database specified in the question [What is the name of the test database WPLoader should use?](#what-is-the-name-of-the-test-database-wploader-should-use).  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress.
 
 #### What is the table prefix of the test database WPLoader should use?
 
@@ -205,7 +207,7 @@ In my example setup it's `wp_`.
 
 Similar to the question [What is the table prefix of the test database used by the test site?](#what-is-the-table-prefix-of-the-test-database-used-by-the-test-site) but in relation to the database specified in the question [What is the name of the test database WPLoader should use?](#what-is-the-name-of-the-test-database-wploader-should-use).  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress.
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress.
 
 #### What is the URL the test site?
 
@@ -217,19 +219,19 @@ This is the full URL you would have to enter in the browser, on the machine that
 
 In my example setup it's `admin@wp.localhost`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and, while required, it's usually not relevant unless you're testing email communications.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and, while required, it's usually not relevant unless you're testing email communications.  
 
 #### What is the title of the test site?
 
 In my example setup it's `Acme Plugin Test Site`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and, while required, it's usually not relevant unless you're testing around the site title.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and, while required, it's usually not relevant unless you're testing around the site title.  
 
 #### What is the login of the administrator user of the test site?
 
 In my example setup it's `admin`.  
 
-This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
+This detail will be used by the [WPBrowser](modules/WPBrowser) or [WPWebDriver](modules/WPWebDriver) modules to fill in the login details for the administrator user.  
 
 It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
@@ -237,13 +239,13 @@ It should be the same as the one that allows you to acccess the site administrat
 
 In my example setup it's `password`.  
 
-This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
+This detail will be used by the [WPBrowser](modules/WPBrowser) or [WPWebDriver](modules/WPWebDriver) modules to fill in the login details for the administrator user.  
 
 It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
 #### Are you testing a plugin, a theme or a combination of both?
 
-Depending on the answer the [WPLoader module](modules/WPLoader.md) will load, during integration or WordPress "unit" tests, your WordPress plugin or theme.  
+Depending on the answer the [WPLoader module](modules/WPLoader) will load, during integration or WordPress "unit" tests, your WordPress plugin or theme.  
 
 If you replied with `both` (for "a combination of both") then you'll be able to choose the plugins and theme to load in integration and WordPress "unit" tests in the following questions.  
 
@@ -256,14 +258,14 @@ This is the `<folder>/<main-plugin-file>.php` path, relative to the WordPress in
 
 The main plugin file is the one that contains the [plugin header](https://codex.wordpress.org/File_Header#Plugin_File_Header_Example).
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load your plugin or theme in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load your plugin or theme in integration and WordPress "unit" tests.  
 
 #### Are you developing a child theme?
 
 This question will be asked only if you replied `theme` to the question [Are you testing a plugin, a theme or a combination of both?](#are-you-testing-a-plugin-a-theme-or-a-combination-of-both).  
 Enter `yes` if you are developing a child theme.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
 
 >Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.
 
@@ -272,7 +274,7 @@ This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootst
 This question will be asked only if you replied `both` to the question [Are you testing a plugin, a theme or a combination of both?](#are-you-testing-a-plugin-a-theme-or-a-combination-of-both).  
 Enter `yes` if you are using a child theme.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
 
 >Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.
 
@@ -282,7 +284,7 @@ This question will be asked only if you replied `yes` to the question [Are you d
 
 Reply with the slug of the parent theme, that's usually the name of the folder the parent theme lives in, e.g. `twentyseventeen`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  
 
 >Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.
 
@@ -291,14 +293,14 @@ This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootst
 This question will be asked only if you replied `theme` to the question [Are you testing a plugin, a theme or a combination of both?](#are-you-testing-a-plugin-a-theme-or-a-combination-of-both).  
 Reply with the slug of the theme, that's usually the name of the folder the theme lives in, e.g. `twentyseventeen`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load your theme in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load your theme in integration and WordPress "unit" tests.  
 
 #### What is the slug of the theme you are using?
 
 This question will be asked only if you replied `both` to the question [Are you testing a plugin, a theme or a combination of both?](#are-you-testing-a-plugin-a-theme-or-a-combination-of-both).  
 Reply with the slug of the theme you are using, that's usually the name of the folder the theme lives in, e.g. `twentyseventeen`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load the theme integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load the theme integration and WordPress "unit" tests.  
 
 #### Does your project needs additional plugins to be activated to work?
 
@@ -308,7 +310,7 @@ As an example if I'm testing a WooCommerce extension I need the WooCommerce plug
 
 The required plugins follow the same format as the one used in the question [What is the folder/plugin.php name of the plugin?](#what-is-the-folderpluginphp-name-of-the-plugin): `<plugin-folder>/<plugin-main-file>.php`; in the case of WooCommerce it would be `woocommerce/woocommerce.php`.  
 
-This detail will be used by the [WPLoader module](modules/WPLoader.md) to bootstrap WordPress and load the required plugins in integration and WordPress "unit" tests.  
+This detail will be used by the [WPLoader module](modules/WPLoader) to bootstrap WordPress and load the required plugins in integration and WordPress "unit" tests.  
 
 >Please note that wp-browser will not download and install the required plugins in the WordPress installation for you.
 
@@ -364,9 +366,9 @@ codecept run integration
 codecept run unit
 ```
 
-How comes I'm not using the command `codecept run` (without specifying the suite names)? See the [FAQ entry](faq.md/#can-i-run-all-my-tests-with-one-command).
+How comes I'm not using the command `codecept run` (without specifying the suite names)? See the [FAQ entry](faq/#can-i-run-all-my-tests-with-one-command).
 
-![Pre-flight check](images/codecept-run.png)
+![Pre-flight check](/assets/v3/images/codecept-run.png)
 
 If you cannot run all the suites without issues then check your configuration settings again, read the errors and see [If you entered a wrong value](#if-you-entered-a-wrong-value)
 

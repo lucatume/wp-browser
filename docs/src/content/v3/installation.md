@@ -1,4 +1,6 @@
-## Installation
+---
+title: Installation
+---
 
 ### Where should I install wp-browser?
 
@@ -46,4 +48,4 @@ composer require --dev lucatume/wp-browser
 
 This will install the latest stable version of wp-browser and, along with it, Codeception and PHPUnit in the `vendor` folder of your project.  
 
-Once that's done it's time to move to the [setup and configuration of wp-browser](configuration.md).
+Once that's done it's time to move to the [setup and configuration of wp-browser](configuration).

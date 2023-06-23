@@ -1,4 +1,6 @@
-## What is a unit test? An acceptance test?
+---
+title: Levels of testing
+---
 
 This page has no pretense to be _THE_ source of truth about what is called how in the context of tests; the purpose of this page is to lay out the terminology that I'll use in the documentation to define the levels and component of testing. Wikipedia, forums and other documents online will offer alternate, and equally valid, definitions.
 

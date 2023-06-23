@@ -1,4 +1,6 @@
-## Some common questions
+---
+title: FAQ
+---
 
 There are questions I keep receiving via email, GitHub or in person at conferences.
 
@@ -20,7 +22,7 @@ In the WordPress ecosystem there's a tendency to call **any** kind of test a "un
 
 Without drowning into a long and painful battle for definitions this guide will use the following definitions for different levels of testing.
 
-The [next section](levels-of-testing.md) will detail the conventions this documentation uses to define different levels of testing in more detail.
+The [next section](levels-of-testing) will detail the conventions this documentation uses to define different levels of testing in more detail.
 
 ### Isn't WordPress untestable?
 
@@ -64,7 +66,7 @@ As almost any testing tool, wp-browser should be used locally on local installat
 
 You should always backup any database that contains any information you care about **before** running any test.
 
-You can read the answer to this question [in the WPDb module documentation](modules/WPDb.md#change-the-databse-used-depending-on-whether-you're-running-tests-or-not).
+You can read the answer to this question [in the WPDb module documentation](modules/WPDb#change-the-databse-used-depending-on-whether-you're-running-tests-or-not).
 
 ### Can I run all my tests with one command?
 
@@ -86,7 +88,7 @@ So, in short, **run each suite separately**.
 
 Yes, you should.
 
-As an example you might have a `frontend` suite running [acceptance tests](levels-of-testing.md#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.
+As an example you might have a `frontend` suite running [acceptance tests](levels-of-testing#acceptance-tests) on the site frontend and a `backend` suite running acceptance tests on the site backend.
 
 Think of suites as a tool to organize your tests: there's a good measure between too organized and not organized at all.
 

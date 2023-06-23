@@ -1,4 +1,6 @@
-# Sponsors
+---
+title: Sponsors
+---
 
 I maintain the wp-browser project while working full-time as a freelance and dedicating my spare time to it.
 I do it with passion and for "love of the craft," but it can become a chore at times.

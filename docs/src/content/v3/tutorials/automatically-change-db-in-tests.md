@@ -1,4 +1,6 @@
-# Automatically change database during acceptance and functional tests
+---
+title: Automatically change database during acceptance and functional tests
+---
 
 **You should always back up any site you run tests on if you care about the site content.**
 

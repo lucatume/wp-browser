@@ -1,9 +1,12 @@
-# WpWebDriver module
-This module should be used in acceptance tests, see [levels of testing for more information](./../levels-of-testing.md).  
+---
+title: WPWebDriver module
+---
+
+This module should be used in acceptance tests, see [levels of testing for more information](./../levels-of-testing).  
 
 This module extends the [WebDriver module](https://codeception.com/docs/modules/WebDriver) adding WordPress-specific configuration parameters and methods.  
 
-The module simulates a user interaction with the site **with Javascript support**; if you don't need to test your project with Javascript support use the [WPBrowser module](WPBrowser.md).  
+The module simulates a user interaction with the site **with Javascript support**; if you don't need to test your project with Javascript support use the [WPBrowser module](WPBrowser).  
 
 ## Module requirements for Codeception 4.0+
 

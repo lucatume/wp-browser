@@ -1,5 +1,7 @@
-## Using wp-browser with Codeception 4.0
-Codeception [version `4.0` introduced a number of new features to the framework][1] and it's the version of wp-browser that will be maintained from now on.  
+---
+title: Codeception 4.0 support
+---
+odeception [version `4.0` introduced a number of new features to the framework][1] and it's the version of wp-browser that will be maintained from now on.  
 
 I've made an effort to keep `wp-browser` compatible with PHP 5.6 and Codeception versions from `2.5` up.  
 

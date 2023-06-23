@@ -1,4 +1,7 @@
-# Custom commands provided by wp-browser
+---
+title: Commands
+---
+
 The project comes with its own set of custom Codeception commands.  
 
 The commands provide functionalities to quickly scaffold different types of tests.
@@ -22,7 +25,7 @@ extensions:
 ```
 
 ## Generation commands
-The library provides commands to quickly scaffold **integration** test cases for specific types of WordPress components, see [levels of testing for more information](./../levels-of-testing.md).  
+The library provides commands to quickly scaffold **integration** test cases for specific types of WordPress components, see [levels of testing for more information](./../levels-of-testing).  
 
 The tests are almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `lucatume\WPBrowser\TestCase\WPTestCase` test case.
 

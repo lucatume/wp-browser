@@ -1,3 +1,7 @@
+---
+title: Codeception, PHPUnit and wp-browser
+---
+
 ## The wp-browser stack
 
 The wp-browser project is built leveraging the power of a number of open-source projects.  

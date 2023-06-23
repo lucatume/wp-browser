@@ -1,4 +1,6 @@
-# Extensions
+---
+title: Extensions
+---
 
 The [Codeception testing framework](http://codeception.com/ "Codeception - BDD-style PHP testing.") can be extended in a number of ways.  
 
@@ -189,4 +191,4 @@ extensions:
 The extension only configuration is the `suites` parameter that allows specifying the suites the extension should apply to.  
 If the `suites` parameter is not specified, then the extension will apply to all suites.  
 
-[4]: events-api.md
+[4]: events-api

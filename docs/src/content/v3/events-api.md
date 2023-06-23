@@ -1,4 +1,6 @@
-## Events API
+---
+title: Events API
+---
 
 Codeception [comes with a set of events modules and extensions can subscribe to][1].  
 

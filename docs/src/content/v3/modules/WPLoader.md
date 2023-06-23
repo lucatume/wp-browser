@@ -1,5 +1,8 @@
-# WPLoader module
-This module should be used in integration tests, see [levels of testing for more information](./../levels-of-testing.md), to bootstrap WordPress code in the context of the tests.  
+---
+title: WPLoader module
+---
+
+This module should be used in integration tests, see [levels of testing for more information](./../levels-of-testing), to bootstrap WordPress code in the context of the tests.  
 Setting the `loadOnly` parameter to `true` the module can be additionally used in acceptance and functional tests to acccess WordPress code in the tests context.  
 This module is a wrapper around the functionalities provided by [the WordPress PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/), as such it provides the same method and facilities.  
 The parameters provided to the module duplicate the ones used in the WordPress configuration file: the `WPLoader` module will **not** bootstrap WordPress using the `wp-config.php` file, it will define and use its own WordPress configuration built from the module parameters.
@@ -85,9 +88,9 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 
 ## Usage in integration or "WordPress unit" tests
 
-The most common use of this module is to run integration, or "WordPress unit" tests (see [levels of testing for more information](./../levels-of-testing.md)).  
+The most common use of this module is to run integration, or "WordPress unit" tests (see [levels of testing for more information](./../levels-of-testing)).  
 
-As a first step generate a `WPTestCase` using Codeception command-line utility (see [the commands provided by wp-browser](./../commands.md)):
+As a first step generate a `WPTestCase` using Codeception command-line utility (see [the commands provided by wp-browser](./../commands)):
 
 ```bash
 codecept generate:wpunit my_suite "Acme\User"

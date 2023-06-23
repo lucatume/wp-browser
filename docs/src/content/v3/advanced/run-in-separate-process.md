@@ -1,4 +1,6 @@
-## Running tests in separate processes
+---
+title: Running tests in separate processes
+---
 
 PHPUnit offers the possibility to run tests [in a separate PHP process][1]; Codeception does not officially support the option as of version 4.0.
 

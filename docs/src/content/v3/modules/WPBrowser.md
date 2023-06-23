@@ -1,10 +1,12 @@
-# WPBrowser module
+---
+title: WPBrowser module
+---
 
-This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing).  
 
 This module extends the [PHPBrowser module](https://codeception.com/docs/modules/PhpBrowser) adding WordPress-specific configuration parameters and methods.  
 
-The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver.md).  
+The module simulates a user interaction with the site **without Javascript support**; if you need to test your project with Javascript support use the [WPWebDriver module](WPWebDriver).  
 
 ## Module requirements for Codeception 4.0+
 

@@ -1,5 +1,8 @@
-# WPFilesystem module
-This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing.md).  
+---
+title: WPFilesystem module
+---
+
+This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing).  
 This module extends the [Filesystem module](https://codeception.com/docs/modules/Filesystem) adding WordPress-specific configuration parameters and methods.  
 The module provides methods to read, write and update the WordPress filesystem **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 This module also provides methods to scaffold plugins and themes on the fly in the context of tests and auto-remove them after each test.

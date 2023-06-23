@@ -1,6 +1,8 @@
-## Setting up a minimum WordPress installation
+---
+title: Setting up a minimum WordPress installation 
+---
 
-As mentioned in [Installation](installation.md) section wp-browser will **not** download, configure and install WordPress for you.  
+As mentioned in [Installation](installation) section wp-browser will **not** download, configure and install WordPress for you.  
 
 On a high level, once WordPress is installed and configured, whatever local development environment solution you've used, there are some informations you'll need to gather before moving into wp-browser configuration.  
 
@@ -37,4 +39,4 @@ While there will be a section dedicated to different environments and setups I w
 * I've installed WordPress via its UI (`http://localhost:8080/wp-admin`), the administrator username is `admin`, the administrator password is `password`.
 * I'm testing a plugin and that plugin is in the folder, relative to the WordPress root folder, `wp-content/plugins/acme-plugin`.
     
-With all the steps above done I can now move into the [actual wp-browser configuration phase](configuration.md).
+With all the steps above done I can now move into the [actual wp-browser configuration phase](configuration).
