@@ -27,6 +27,8 @@ parameters:
     - %currentWorkingDirectory%/vendor/codeception/lib-innerbrowser/src/Codeception/Lib/InnerBrowser.php
     # WP_CLI_Command class definition.
     - %currentWorkingDirectory%/vendor/wp-cli/wp-cli/php/class-wp-cli-command.php
+    # Codeception shims.
+    - %currentWorkingDirectory%/vendor/codeception/codeception/shim.php
   excludes_analyse:
     - %currentWorkingDirectory%/src/Codeception/TestCase
     - %currentWorkingDirectory%/src/tad/WPBrowser/Compat/Compatibility.php

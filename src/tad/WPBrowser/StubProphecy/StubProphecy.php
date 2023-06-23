@@ -38,7 +38,7 @@ class StubProphecy
 {
     /**
      * The fully qualified name of the class this stub prophecy was built for.
-     * @var string
+     * @var class-string
      */
     protected $class;
 
@@ -70,11 +70,16 @@ class StubProphecy
     /**
      * StubProphecy constructor.
      *
-     * @param string $class The fully qualified name of the class to build a stub prophecy for.
+     * @param string $class            The fully qualified name of the class to build a stub prophecy for.
      * @param TestCase|false $testCase The test case to attach the stubs to.
+     *
+     * @throws StubProphecyException If the class does not exist.
      */
     public function __construct($class, $testCase = false)
     {
+        if (!(class_exists($class) || interface_exists($class))) {
+            throw new StubProphecyException(sprintf('The class "%s" does not exist.', $class));
+        }
         $this->class    = $class;
         $this->testCase = $testCase;
     }

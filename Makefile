@@ -98,7 +98,7 @@ phpcs:
 			--colors \
 			-p \
 			-s \
-			--standard=phpcs.xml \
+			--standard=config/phpcs.xml \
 			--ignore=src/data,src/includes,src/tad/scripts,src/tad/WPBrowser/Compat  \
 			src
 .PHONY: phpcs
@@ -111,18 +111,29 @@ phpcs_fix:
 			--colors \
 			-p \
 			-s \
-			--standard=phpcs.xml \
+			--standard=config/phpcs.xml \
 			--ignore=src/data,src/includes,src/tad/scripts,_build \
 			src tests
 .PHONY: phpcs_fix
 
 phpcs_fix_and_sniff: phpcs_fix phpcs
 
+build_phpstan:
+	mv composer.json composer.json.bak
+	[ ! -f composer.lock ] || mv composer.lock composer.lock.bak
+	cp config/composer/composer-7.4-codeception-4.json composer.json
+	cp config/composer/composer-7.4-codeception-4.lock composer.lock
+	bin/stack -p7.4 composer_install
+	rm -rf composer.json composer.lock
+	mv composer.json.bak composer.json
+	[ ! -f composer.lock.bak ] || mv composer.lock.bak composer.lock
+
 phpstan:
 	docker run --rm \
 		--volume "$(PWD):$(PWD):ro" \
 		--workdir "$(PWD)" \
 		lucatume/wpstan:0.12.42 analyze \
+			--configuration=config/phpstan.neon.dist \
 			-l max
 
 static_analysis: lint phpcs phpstan
