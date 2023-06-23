@@ -4,15 +4,19 @@ import tailwind from "@astrojs/tailwind";
 import { SITE_URL } from './src/site_config';
 
 // https://astro.build/config
+import mdx from "@astrojs/mdx";
+
+// https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
-  integrations: [tailwind(), sitemap()],
+  integrations: [tailwind(), sitemap(), mdx()],
   vite: {
     plugins: [rawFonts(['.ttf'])],
-    optimizeDeps: { exclude: ['@resvg/resvg-js'] }
-  },
+    optimizeDeps: {
+      exclude: ['@resvg/resvg-js']
+    }
+  }
 });
-
 function rawFonts(ext) {
   return {
     name: 'vite-plugin-raw-fonts',
