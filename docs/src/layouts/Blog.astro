@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Base from "./Base.astro";
+
+export interface Props {
+  /** Title of the page */
+	title?: string;
+  /** OpenGraph thumbnail of the page */
+  thumbnail?: {
+    /** URL of the thumbnail */
+    src: string;
+    /** Alt text of the thumbnail */
+    alt: string;
+  };
+  nextEntry?: CollectionEntry<'blog'>;
+  prevEntry?: CollectionEntry<'blog'>;
+}
+
+const {
+  title,
+  thumbnail,
+  nextEntry,
+  prevEntry,
+} = Astro.props;
+---
+
+<Base title={title} thumbnail={thumbnail}>
+  <main>
+    <article class="mt-8 p-8 mx-auto prose prose-zinc dark:prose-invert">
+      <h1>{title}</h1>
+      <slot/>
+
+      <div class="mt-8">
+        <hr/>
+        <div class="justify-between gap-x-4">
+          {prevEntry && (
+            <a href={`/blog/${prevEntry?.slug}`} class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+              ← {prevEntry?.data.title}
+            </a>
+          )}
+          {nextEntry && (
+            <a href={`/blog/${nextEntry?.slug}`} class="float-right text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+              {nextEntry?.data.title} →
+            </a>
+          )}
+        </div>
+      </div>
+    </article>
+  </main>
+</Base>

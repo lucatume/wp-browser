@@ -1,0 +1,143 @@
+---
+import type { MarkdownHeading } from "astro";
+import { getCollection } from "astro:content";
+import { Icon } from "astro-iconify"
+import Base from "./Base.astro";
+import { SIDEBAR_ITEMS } from "../site_config";
+
+export interface Props {
+  /** Title of the page */
+	title?: string;
+  /** OpenGraph thumbnail of the page */
+  thumbnail?: {
+    /** URL of the thumbnail */
+    src: string;
+    /** Alt text of the thumbnail */
+    alt: string;
+  };
+  headings: MarkdownHeading[];
+}
+
+const docs = await getCollection('docs');
+
+const {
+  title,
+  thumbnail,
+  headings
+} = Astro.props;
+---
+
+<Base title={title} thumbnail={thumbnail}>
+  <main class="grid grid-cols-12 min-h-screen">
+    <aside id="docs_nav" class="max-md:fixed hidden md:block order-1 md:-order-1 col-span-3 bg-zinc-100 dark:bg-zinc-900" data-pagefind-ignore>
+      <div class="max-md:bg-zinc-100 dark:max-md:bg-zinc-900 pt-16 pr-16 w-5/6 md:w-1/4 h-screen fixed overflow-y-auto overflow-x-hidden top-0 border-r-2 border-zinc-200 dark:border-zinc-700">
+        <button id="close" class="md:hidden float-right" aria-label="Close navigation">
+          <Icon name="mdi:close" class="-mr-8 mt-4 w-8 h-8 dark:text-white" />
+        </button>
+        <div class="md:float-right w-full max-md:py-4 px-8 md:px-4">
+          {Object.keys(SIDEBAR_ITEMS).map((section) => {
+            return <>
+              <h2 class="text-lg font-bold mt-8 py-2 px-4 dark:text-zinc-100">{section}</h2>
+              {SIDEBAR_ITEMS[section as keyof typeof SIDEBAR_ITEMS].map((path) => (
+                <a href={path} 
+                  class={`relative block py-2 px-4 text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-zinc-300 transition-colors
+                    ${(Astro.url.pathname === path) && 'dark:!text-white after:content-[""] after:hidden md:after:block after:w-3 after:h-3 after:bg-zinc-200 dark:after:bg-zinc-700 after:absolute after:top-4 after:rotate-45 after:right-[-5.4rem]'}`}
+                >
+                  {docs.find((doc) => path.endsWith(doc.slug))?.data.title}
+                </a>
+              ))}
+            </>
+          })}
+        </div>
+      </div>
+      <script>
+        const open = document.querySelector('#open');
+        open.addEventListener('click', () => {
+          document.querySelector('#docs_nav').classList.remove('hidden');
+        });
+
+        const close = document.querySelector('#close');
+        close.addEventListener('click', () => {
+          document.querySelector('#docs_nav').classList.add('hidden');
+        });
+      </script>
+    </aside>
+
+    <div class="col-span-12 md:col-span-6 dark:bg-zinc-800">
+      <article class="px-8 pb-16 mx-auto prose max-w-2xl prose-sky dark:prose-invert">
+        <button id="open" class="mt-4 md:hidden bg-zinc-100 dark:bg-zinc-900 border-2 dark:border-zinc-700 w-10 h-10 pl-0.5 rounded-lg" aria-label="Navigate docs">
+          <Icon name="mdi:menu" class="w-8 h-8 text-zinc-500 dark:text-white" />
+        </button>
+        <h1 class="my-8">{title}</h1>
+        <slot/>
+      </article>
+    </div>
+
+    <aside class="hidden md:block relative col-span-3 dark:bg-zinc-800" data-pagefind-ignore>
+      <div id="_anchor" class="fixed top-0 py-24 px-4">
+        <h1 class="dark:text-white text-xl my-4">On This Page</h1>
+        {headings.map((heading) => {
+          let Heading: any = `h${heading.depth}`;
+          let className = `peer border-l-2 border-l-zinc-400 dark:border-l-zinc-700 `
+          switch (heading.depth) {
+            case 2:
+              className += `pl-2`;
+              break;
+            case 3:
+              className += `pl-4`;
+              break;
+            case 4:
+              className += `pl-6`;
+              break;
+            case 5:
+              className += `pl-8`;
+              break;
+            case 6:
+              className += `pl-10`;
+              break;
+            default:
+              break;
+          }
+          return <Heading class={className}>
+            <a href={`#${heading.slug}`} class="block py-1 text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-zinc-300 transition-colors">
+              {heading.text}
+            </a>
+          </Heading>
+        })}
+        <span id="_hover" class="peer-hover:border-l-green-600 dark:peer-hover:border-l-zinc-400 display absolute h-8 border-l-2 border-transparent -translate-y-40 transition-all" aria-hidden="true"></span>
+        <span id="_active" class="hidden border-l-black dark:border-l-white display absolute h-8 border-l-2 border-transparent -translate-y-40 transition-all" aria-hidden="true"></span>
+        <script>
+          const headings = document.querySelectorAll("#_anchor h2, #_anchor h3, #_anchor h4, #_anchor h5, #_anchor h6");
+          const hover = document.getElementById("_hover");
+          const active = document.getElementById("_active");
+          headings.forEach((heading, i) => {
+            heading.addEventListener("mouseenter", () => {
+              hover.style.transform = `translateY(${(i - headings.length) * 32}px)`;
+            });
+          });
+
+          function select(ev) {
+            const hash = window.location.hash;
+            if (hash) {
+              const heading = document.querySelector(`#_anchor [href="${hash}"]`).parentElement
+              if (heading) {
+                active.style.display = 'block'
+                active.style.transform = `translateY(${(Array.from(headings).indexOf(heading) - headings.length) * 32}px)`;
+                heading.firstElementChild.classList.add('dark:!text-white', '!text-black', 'font-bold')
+                console.log(heading.firstElementChild)
+              }
+              const oldHeading = document.querySelector(`#_anchor [href="${new URL(ev?.oldURL ?? 'https://example.com').hash}"]`)
+              if (oldHeading) {
+                oldHeading.classList.remove('dark:!text-white', '!text-black', 'font-bold')
+              }
+            } else {
+              active.style.display = 'none'
+            }
+          }
+          window.addEventListener('hashchange', select)
+          window.addEventListener('DOMContentLoaded', select)
+        </script>
+      </div>
+    </aside>
+  </main>
+</Base>

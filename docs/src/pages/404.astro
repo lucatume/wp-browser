@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const blog = await getCollection('blog');
+---
+
+<Base title="404 Page Not Found">
+  <main class="mt-8 mx-auto prose prose-zinc dark:prose-invert" data-pagefind-ignore>
+    <h1 class="text-center">404 Page Not Found</h1>
+    <a href="/" class="no-underline">
+      <p class="text-center hover:text-green-500">Back To Home</p>
+    </a>
+  </main>
+</Base>

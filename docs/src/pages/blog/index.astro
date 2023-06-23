@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const blog = await getCollection('blog');
+---
+
+<Base title="Blog">
+  <main class="mt-8 px-8 md:px-0 mx-auto prose prose-zinc dark:prose-invert" data-pagefind-ignore>
+    {blog.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(p => {
+      return <a href={`/blog/${p.slug}`} class="no-underline">
+        <article>
+          <h2>{p.data.title}</h2>
+          <p class="dark:text-zinc-400 font-bold">{p.data.published.toLocaleDateString(undefined, {dateStyle: 'medium'})}</p>
+          <p class="dark:text-zinc-400">{p.data.description}</p>
+        </article>
+      </a>
+      <hr/>
+    })}
+
+    <a href="/" class="no-underline">
+      <p class="text-center font-bold">Back To Home</p>
+    </a>
+  </main>
+</Base>
