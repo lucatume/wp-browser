@@ -173,10 +173,6 @@ class InstallationTest extends BaseTest
      */
     public function should_correctly_scaffold_with_mysql_on_unix_socket_with_home_symbol_in_path()
     {
-        if (! extension_loaded('uopz')) {
-            $this->markTestSkipped('This test requires the uopz extension to run.');
-        }
-
         $workDir          = codecept_output_dir('init/installationTest/mysql_on_unix_socket_w_home_symbol');
 
         $this->replacingWithUopz([

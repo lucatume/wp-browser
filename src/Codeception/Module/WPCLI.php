@@ -550,7 +550,7 @@ class WPCLI extends Module
      */
     public function seeInShellOutput($text)
     {
-        \Codeception\PHPUnit\TestCase::assertStringContainsString($text, $this->lastOutput);
+        \Codeception\PHPUnit\TestCase::assertStringContainsString($text, (string)$this->lastOutput);
     }
 
     /**

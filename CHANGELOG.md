@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Removed the `lucatume\WPBrowser\Traits\WithForks` trait.
+
 ## [3.1.9] 2023-04-11;
 
 ### Fixed

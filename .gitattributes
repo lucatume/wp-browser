@@ -1,6 +1,7 @@
 # Exclude all build files
 /.github                    export-ignore
 /bin                        export-ignore
+/config                     export-ignore
 /containers                 export-ignore
 /docs                       export-ignore
 /tests                      export-ignore

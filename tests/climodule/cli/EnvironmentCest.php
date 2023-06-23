@@ -25,7 +25,6 @@ class EnvironmentCest
         } finally {
             putenv('BAZ');
         }
-
     }
 
     public function test_that_environment_is_inherited_from_ENV(ClimoduleTester $I)
@@ -71,7 +70,6 @@ class EnvironmentCest
             putenv('X_BAZ');
             putenv('X_FOO');
         }
-
     }
 
     public function test_that_wp_cli_config_variables_dont_prevent_inheriting_the_environment(ClimoduleTester $I)
@@ -97,7 +95,6 @@ class EnvironmentCest
         } finally {
             putenv('X_BOO');
         }
-
     }
 
     public function test_that_per_process_environment_variables_can_be_set(ClimoduleTester $I)
@@ -119,7 +116,6 @@ class EnvironmentCest
         } finally {
             putenv('BAZ');
         }
-
     }
 
     public function test_that_global_env_variables_can_be_set_in_the_module(ClimoduleTester $I)
@@ -153,7 +149,6 @@ class EnvironmentCest
         } finally {
             putenv('FOO');
         }
-
     }
 
     public function test_that_global_env_variables_can_be_passed_from_the_config_file(ClimoduleTester $I)
@@ -209,7 +204,6 @@ class EnvironmentCest
         putenv('FOO=global_BAR');
 
         try {
-
             $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"'], [], false);
             $I->seeInShellOutput('Not set');
 
@@ -221,7 +215,6 @@ class EnvironmentCest
             // WP_BROWSER_HOST request marker is still set.
             $I->cli(['eval', '"var_dump(\$_SERVER[\'WPBROWSER_HOST_REQUEST\'] ?? \'Not set\');"'], [], false);
             $I->seeInShellOutput('1');
-
         } finally {
             putenv('FOO');
         }
@@ -237,7 +230,6 @@ class EnvironmentCest
         putenv('FOO=global_FOO');
         putenv('BAR=global_BAR');
         try {
-
             $I->dontInheritShellEnvironment(['FOO']);
 
             $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO\'] ?? \'Not set\');"']);
@@ -249,7 +241,6 @@ class EnvironmentCest
 
             $I->cli(['eval', '"var_dump(\$_SERVER[\'BAR\'] ?? \'Not set\');"']);
             $I->seeInShellOutput('global_BAR');
-
         } finally {
             putenv('FOO');
             putenv('BAR');
@@ -266,23 +257,24 @@ class EnvironmentCest
 
         putenv('FOO_BLOCKED=global_FOO');
         try {
-
             $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"']);
             $I->seeInShellOutput('Not set');
 
-            $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'],
-                ['FOO_BLOCKED' => 'THIS_WORKS']);
+            $I->cli(
+                ['eval', '"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'],
+                ['FOO_BLOCKED' => 'THIS_WORKS']
+            );
             $I->seeInShellOutput('THIS_WORKS');
 
             $I->haveInShellEnvironment(['FOO_BLOCKED', 'THIS_WORKS_TOO']);
 
-            $I->cli(['eval', '"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'],
-                ['FOO_BLOCKED' => 'THIS_WORKS_TOO']);
+            $I->cli(
+                ['eval', '"var_dump(\$_SERVER[\'FOO_BLOCKED\'] ?? \'Not set\');"'],
+                ['FOO_BLOCKED' => 'THIS_WORKS_TOO']
+            );
             $I->seeInShellOutput('THIS_WORKS_TOO');
-
         } finally {
             putenv('FOO_BLOCKED');
         }
     }
-
 }

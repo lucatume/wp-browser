@@ -1,5 +1,4 @@
 {
-  "_hash": "11223344",
   "name": "lucatume/wp-browser",
   "type": "library",
   "description": "WordPress extension of the PhpBrowser class.",
@@ -35,15 +34,14 @@
     "vria/nodiacritic": "^0.1.2"
   },
   "require-dev": {
-    "ext-sockets": "*",
-    "ext-pcntl": "*",
     "erusev/parsedown": "^1.7",
     "lucatume/codeception-snapshot-assertions": "^0.2",
     "mikey179/vfsstream": "^1.6",
     "victorjonsson/markdowndocs": "dev-master",
     "gumlet/php-image-resize": "^1.6",
     "vlucas/phpdotenv": "^3.0",
-    "wp-cli/wp-cli-bundle": "*"
+    "wp-cli/wp-cli-bundle": "*",
+    "symfony/translation": "^3.4"
   },
   "autoload": {
     "psr-4": {

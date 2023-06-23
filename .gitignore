@@ -7,6 +7,7 @@ _build/*.gz
 
 # Composer files.
 vendor/
+composer.lock
 
 # Local test configuration files.
 codeception.yml
