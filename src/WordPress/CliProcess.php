@@ -9,9 +9,12 @@ use Symfony\Component\Process\Process;
 
 class CliProcess extends Process
 {
+    private const WP_CLI_PHAR_URL = 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar';
+
     /**
-     * @param array<string>            $command
+     * @param array<string> $command
      * @param array<string,mixed>|null $env
+     *
      * @throws RuntimeException
      */
     public function __construct(
@@ -37,10 +40,10 @@ class CliProcess extends Process
         ?float $timeout = 60
     ): static {
         $command = implode(' ', [
-                escapeshellarg(PHP_BINARY),
-                escapeshellarg(self::getWpCliPharPath()),
-                $command
-            ]);
+            escapeshellarg(PHP_BINARY),
+            escapeshellarg(self::getWpCliPharPath()),
+            $command
+        ]);
         return parent::fromShellCommandline(
             $command,
             $cwd,
@@ -68,10 +71,7 @@ class CliProcess extends Process
 
     private static function downloadWpCliPhar(string $wpCliPhar): string
     {
-        return Download::fileFromUrl(
-            'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
-            $wpCliPhar
-        );
+        return Download::fileFromUrl(self::WP_CLI_PHAR_URL, $wpCliPhar);
     }
 
     public static function getWpCliPharPathname(): string

@@ -5,7 +5,7 @@ class LoadingCest
 {
 
     /**
-     * It should be able to load WordPress correctly in concert with other Db modules
+     * It should be able to load WordPress correctly in concert with other MysqlDatabase modules
      *
      * @test
      */

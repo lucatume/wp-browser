@@ -14,11 +14,13 @@ use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Assert as WPAssert;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
@@ -27,7 +29,6 @@ use PHPUnit\Framework\Assert;
 use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
-use lucatume\WPBrowser\WordPress\Assert as WPAssert;
 use WP_Theme;
 use const ABSPATH;
 use const WP_DEBUG;
@@ -38,6 +39,7 @@ class WPLoaderTest extends Unit
     use DatabaseAssertions;
     use LoopIsolation;
     use TmpFilesCleanup;
+    use MainInstallationAccess;
 
     protected $backupGlobals = false;
 
@@ -326,7 +328,7 @@ class WPLoaderTest extends Unit
             'dbUser' => $dbUser,
             'dbPassword' => $dbPassword,
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         $installation = Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -587,7 +589,7 @@ class WPLoaderTest extends Unit
             'loadOnly' => true,
             'domain' => ''
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -618,7 +620,7 @@ class WPLoaderTest extends Unit
             'loadOnly' => true,
             'domain' => 'wordpress.test'
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -656,7 +658,7 @@ class WPLoaderTest extends Unit
             'domain' => 'wordpress.test',
             'configFile' => codecept_data_dir('files/test_file_002.php'),
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -725,7 +727,7 @@ class WPLoaderTest extends Unit
 
     public function dbModuleCompatDataProvider(): Generator
     {
-        yield 'Db' => ['Db', Db::class];
+        yield 'MysqlDatabase' => ['MysqlDatabase', MysqlDatabase::class];
         yield 'WPDb' => ['WPDb', WPDb::class];
         yield WPDb::class => [WPDb::class, WPDb::class];
     }
@@ -755,7 +757,7 @@ class WPLoaderTest extends Unit
             'domain' => 'wordpress.test',
             'configFile' => codecept_data_dir('files/test_file_002.php')
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -838,7 +840,7 @@ class WPLoaderTest extends Unit
             'dbPassword' => $dbPassword,
             'loadOnly' => true,
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
 
         $wpLoader = $this->module();
@@ -1122,26 +1124,6 @@ class WPLoaderTest extends Unit
         codecept_debug($installationOutput);
     }
 
-    private function copyOverContentFromTheMainInstallation(Installation $installation): void
-    {
-        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        foreach ([
-                     'hello-dolly',
-                     'akismet',
-                     'woocommerce',
-                 ] as $plugin) {
-            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
-                $installation->getPluginsDir($plugin))) {
-                throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
-            }
-        }
-        // Copy over theme from the main installation.
-        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
-            $installation->getThemesDir('twentytwenty'))) {
-            throw new RuntimeException('Could not copy theme twentytwenty');
-        }
-    }
-
     public function singleSiteAndMultisite(): array
     {
         return [
@@ -1359,7 +1341,7 @@ class WPLoaderTest extends Unit
             ],
             'theme' => 'twentytwenty-child'
         ];
-        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $db = (new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
             ->configure($db)
             ->install(
@@ -1425,7 +1407,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty-child',
             'multisite' => true,
         ];
-        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $db = (new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
         $installation->install(

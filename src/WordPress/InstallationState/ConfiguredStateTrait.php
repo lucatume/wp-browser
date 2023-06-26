@@ -4,7 +4,9 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
@@ -15,7 +17,7 @@ trait ConfiguredStateTrait
 {
     private WPConfigFile $wpConfigFile;
     private string $wpRootDir;
-    private Db $db;
+    private DatabaseInterface $db;
 
     /**
      * @throws InstallationException
@@ -188,10 +190,14 @@ trait ConfiguredStateTrait
         }
 
         $this->wpConfigFile = new WPConfigFile($this->wpRootDir, $wpConfigFilePath);
-        $this->db = Db::fromWpConfigFile($this->wpConfigFile);
+        if ($this->wpConfigFile->usesMySQL()) {
+            $this->db = MysqlDatabase::fromWpConfigFile($this->wpConfigFile);
+        } else {
+            $this->db = SQLiteDatabase::fromWpConfigFile($this->wpConfigFile);
+        }
     }
 
-    public function getDb(): Db
+    public function getDb(): DatabaseInterface
     {
         return $this->db;
     }

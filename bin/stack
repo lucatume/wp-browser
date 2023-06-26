@@ -327,7 +327,8 @@ phpstan)
   docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash -c "composer run stan"
   ;;
 ps)
-  docker compose ps
+  shift
+  docker compose ps "${@}"
   ;;
 ssh)
   service=${2:-codecept}

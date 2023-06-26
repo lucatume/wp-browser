@@ -17,7 +17,8 @@ class RunAll extends Command implements CustomCommandInterface
 
     public static function getCommandName(): string
     {
-        return 'run:all';
+        // Replace the Codeception `run` command with this one.
+        return 'run';
     }
 
     public function getDescription(): string
@@ -46,7 +47,7 @@ class RunAll extends Command implements CustomCommandInterface
 
         foreach ($this->getSuites() as $suite) {
             try {
-                $process = new Process([$codeceptBin, 'run', $suite, ...$runOptions]);
+                $process = new Process([$codeceptBin, 'codeception:run', $suite, ...$runOptions]);
                 $process->setTimeout(null);
                 $process->start();
 

@@ -32,7 +32,11 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         $message = "Plugin $plugin could not be $activatedString.";
 
         if ($activated instanceof WP_Error) {
-            $message .= ' ' . $activated->get_error_message();
+            $message = $activated->get_error_message();
+            $data = $activated->get_error_data();
+            if ($data) {
+                $message .= ": $data";
+            }
             throw new RuntimeException(trim($message));
         }
 

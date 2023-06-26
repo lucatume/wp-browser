@@ -36,6 +36,8 @@ class InstallationException extends Exception
     public const TABLE_PREFIX_NOT_STRING = 29;
     public const CONST_NOT_STRING = 31;
     public const NO_ADMIN_USER_FOUND = 32;
+    public const RELATIVE_PATH_ROOT_NOT_FOUND = 33;
+    public const DROPIN_COPY_FAILED = 34;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {

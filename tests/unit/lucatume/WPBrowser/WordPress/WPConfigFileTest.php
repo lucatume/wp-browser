@@ -171,4 +171,58 @@ PHP;
             'VAR4' => ['foo' => 23, 'bar' => '89'],
         ], $wpConfigFile->getConstants());
     }
+
+    /**
+     * It should detect use of MySQL database
+     *
+     * @test
+     */
+    public function should_detect_use_of_my_sql_database(): void
+    {
+        $wpConfigFileCode = <<< PHP
+<?php
+define('DB_NAME', 'wordpress');
+define('DB_USER', 'wordpress');
+define('DB_PASSWORD', 'wordpress');
+define('DB_HOST', 'localhost:3306');
+PHP;
+
+        $wpRootDir = FS::tmpDir('wp-config_', [
+            'wp-settings.php' => '<?php echo "Hello there!";',
+            'wp-config.php' => $wpConfigFileCode
+        ]);
+
+        $wpConfigFile = new WPConfigFile($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertTrue($wpConfigFile->usesMySQL());
+        $this->assertFalse($wpConfigFile->usesSQLite());
+    }
+
+    /**
+     * It should detect use of SQLite database
+     *
+     * @test
+     */
+    public function should_detect_use_of_sq_lite_database(): void
+    {
+        $wpConfigFileCode = <<< PHP
+<?php
+define('DB_NAME', '');
+define('DB_USER', '');
+define('DB_PASSWORD', '');
+define('DB_HOST', '');
+define('DB_DIR', __DIR__. '/wp-content');
+define('DB_FILE', '/db.sqlite');
+PHP;
+
+        $wpRootDir = FS::tmpDir('wp-config_', [
+            'wp-settings.php' => '<?php echo "Hello there!";',
+            'wp-config.php' => $wpConfigFileCode
+        ]);
+
+        $wpConfigFile = new WPConfigFile($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertFalse($wpConfigFile->usesMySQL());
+        $this->assertTrue($wpConfigFile->usesSQLite());
+    }
 }

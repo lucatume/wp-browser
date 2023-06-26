@@ -3,17 +3,21 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use function preg_match;
 
 class WpConfigFileGenerator
 {
     private string $wpConfigFileContents;
+    private string $relativePathRoot;
 
     /**
      * @throws InstallationException
      */
-    public function __construct(string $wpRootDir)
+    public function __construct(string $wpRootDir, string $relativePathRoot = null)
     {
         if (!is_dir($wpRootDir)) {
             throw new InstallationException(
@@ -33,10 +37,19 @@ class WpConfigFileGenerator
             );
         }
 
+        if ($relativePathRoot && !is_dir($relativePathRoot)) {
+            throw new InstallationException(
+                'The relative path root directory does not exist.',
+                InstallationException::RELATIVE_PATH_ROOT_NOT_FOUND
+            );
+        }
+
+        $this->relativePathRoot = $relativePathRoot ?? $wpRootDir;
+
         $this->wpConfigFileContents = $wpConfigSampleFileContents;
     }
 
-    private function setDbCredentials(Db $db): self
+    private function setDbCredentials(DatabaseInterface $db): self
     {
         $this->wpConfigFileContents = str_replace(
             [
@@ -125,14 +138,27 @@ PHP;
      * @throws InstallationException
      */
     public function produce(
-        Db $db,
-        ConfigurationData $configurationData,
+        DatabaseInterface $db,
+        ?ConfigurationData $configurationData = null,
         int $multisite = InstallationStateInterface::SINGLE_SITE
     ): string {
+        $configurationData = $configurationData ?? new ConfigurationData();
+        $extraPHP = $configurationData->getExtraPhp();
+
+        if ($db instanceof SQLiteDatabase) {
+            $relativeDbDir = FS::relativePath($this->relativePathRoot, $db->getDbDir());
+            $relativeDbDir = $relativeDbDir ? "__DIR__ . '/$relativeDbDir'" : '__DIR__';
+            $extraPHP = <<< PHP
+define( 'DB_DIR', {$relativeDbDir} );
+define( 'DB_FILE', '{$db->getDbFile()}' );
+$extraPHP
+PHP;
+        }
+
         $this->setDbCredentials($db)
             ->setSalts($configurationData)
             ->setMultisite($multisite)
-            ->setExtraPHP($configurationData->getExtraPhp())
+            ->setExtraPHP($extraPHP)
             ->removeExcessBlankLines();
         return $this->wpConfigFileContents;
     }

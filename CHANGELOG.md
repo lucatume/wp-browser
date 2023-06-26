@@ -63,7 +63,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
   - Removed the `WithWordPressFilters` trait
   - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
-
+  - Removed the `generate:wpajax` command and related support classes.
+  - Removed the `generate:wpcanonical` command and related support classes.
+  - Removed the `generate:wprest` command and related support classes.
+  - Removed the `generate:wprestcontroller` command and related support classes.
+  - Removed the `generate:wprestposttypecontroller` command and related support classes.
+  - Removed the `generate:wpxmlrpc` command and related support classes.
+  - Removed the `Copier` and `Symlinker` extensions.
+  - Removed support for PHPUnit's `@runInSeparateProcess` annotation.
+    
 ## [3.1.6] 2022-04-28;
 
 ### Changed

@@ -4,7 +4,8 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Closure;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Version;
 
 interface InstallationStateInterface
@@ -22,7 +23,7 @@ interface InstallationStateInterface
     public function scaffold(string $version = 'latest'): InstallationStateInterface;
 
     public function configure(
-        Db $db,
+        DatabaseInterface $db,
         int $multisite = self::SINGLE_SITE,
         ?ConfigurationData $configurationData = null
     ): InstallationStateInterface;
@@ -77,7 +78,7 @@ interface InstallationStateInterface
 
     public function getConstant(string $constant): mixed;
 
-    public function getDb(): Db;
+    public function getDb(): DatabaseInterface;
 
     /**
      * @return array<string,mixed>
@@ -97,5 +98,5 @@ interface InstallationStateInterface
 
     public function updateOption(string $option, mixed $value): int;
 
-    public function executeClosureInWordPress(Closure $closure):mixed;
+    public function executeClosureInWordPress(Closure $closure): mixed;
 }

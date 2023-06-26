@@ -253,4 +253,16 @@ class ControlTest extends Unit
         ]);
         $control->apply();
     }
+
+    public function testItCorrectlyHandlesEmptyCodeceptionConfiguration(): void
+    {
+        $this->uopzSetStaticMethodReturn(Configuration::class, 'isEmpty', true);
+
+        $this->assertEquals([], Control::getDefault()['codeceptionConfig']);
+
+        $control = new Control([]);
+
+        $this->assertEquals([], $control->toArray()['codeceptionConfig']);
+    }
+
 }

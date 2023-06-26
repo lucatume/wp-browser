@@ -1,18 +1,20 @@
 <?php namespace Codeception\Template;
 
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class WpbrowserTest extends \Codeception\Test\Unit
 {
+    use TmpFilesCleanup;
     use SnapshotAssertions;
 
     public function test_plugin_project_scaffold(): void
     {
         $projectDir = FS::tmpDir('project_factory_', [
             'plugin_89' => [
-                'main.php' => "<?php\n/* Plugin Name: Plugin 89 */"
+                'plugin.php' => "<?php\n/* Plugin Name: Plugin 89 */"
             ]
         ]);
 
@@ -26,7 +28,10 @@ class WpbrowserTest extends \Codeception\Test\Unit
         $process = new Process($command);
 
         // Answer "yes" to the question about the project type.
-        $process->setInput("y\n");
+        $process->setInput([
+            "yes", // Confirm the project type.
+            "yes", // Use the SQLite, PHP, Chrome setup.
+        ]);
 
         $process->mustRun();
 

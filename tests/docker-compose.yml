@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  database:
+    image: mariadb:11.0.2
+    ports:
+      - '${MYSQL_LOCALHOST_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    healthcheck:
+      test: [ "CMD", "mariadb-show", "-uroot", "-ppassword",  "test" ]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+    tmpfs:
+      - /var/lib/mysql

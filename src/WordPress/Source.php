@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Zip;
 
@@ -11,7 +12,7 @@ class Source
 {
     public static function getForVersion(string $version = 'latest'): string
     {
-        $cacheDir = Env::get('TEST_CACHE_DIR', codecept_output_dir('_cache'));
+        $cacheDir = Filesystem::cacheDir();
         $sourceDir = $cacheDir . '/wordpress/' . $version;
 
         if (!is_dir($sourceDir) || !is_file($sourceDir . '/wp-config-sample.php')) {

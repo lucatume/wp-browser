@@ -7,7 +7,7 @@ use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
 use lucatume\WPBrowser\WordPress\DbException;
 use PDOException;
 use Throwable;
@@ -24,7 +24,7 @@ trait InstallationChecks
     {
         $db = $this->db;
 
-        if (!$db instanceof Db) {
+        if (!$db instanceof DatabaseInterface) {
             return false;
         }
 

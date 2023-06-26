@@ -5,6 +5,8 @@ namespace lucatume\WPBrowser\WordPress;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationChecks;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
@@ -18,11 +20,13 @@ class Installation
     use WordPressChecks;
     use InstallationChecks;
 
+    public const DROPIN_SQLITE = __DIR__ . '/../../includes/wp-sqlite-db/db.php';
+
     /**
      * @var array<string>
      */
     private static array $scaffoldedInstallations = [];
-    private ?Db $db;
+    private ?DatabaseInterface $db;
     private string $wpRootDir;
     private InstallationState\InstallationStateInterface $installationState;
 
@@ -36,7 +40,7 @@ class Installation
      */
     public function __construct(
         string $wpRootDir,
-        ?Db $db = null,
+        ?DatabaseInterface $db = null,
     ) {
         $this->wpRootDir = $this->checkWpRootDir($wpRootDir);
         $this->db = $db;
@@ -44,7 +48,12 @@ class Installation
     }
 
     /**
+     * @throws DbException
      * @throws InstallationException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws WpConfigFileException
      */
     public static function scaffold(string $wpRootDir, string $version = 'latest'): self
     {
@@ -68,7 +77,7 @@ class Installation
     }
 
     public function configure(
-        Db $db,
+        DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
         ConfigurationData $configurationData = null
     ): self {
@@ -139,7 +148,7 @@ class Installation
         return $this->installationState->isMultisite();
     }
 
-    public function getDb(): ?Db
+    public function getDb(): ?DatabaseInterface
     {
         return $this->db ?? $this->installationState->getDb();
     }
@@ -233,6 +242,7 @@ class Installation
 
     /**
      * @param ?array<string> $checkKeys
+     *
      * @return array<string, mixed>
      */
     public function report(array $checkKeys = null): array
@@ -280,10 +290,21 @@ class Installation
 
     /**
      * @param string[] $command
+     *
      * @throws ProcessFailedException
      */
     public function runWpCliCommandOrThrow(array $command): Process
     {
         return (new CliProcess($command, $this->getRootDir()))->mustRun();
+    }
+
+    public function usesSqlite(): bool
+    {
+        return $this->installationState->getDb() instanceof SQLiteDatabase;
+    }
+
+    public function usesMysql(): bool
+    {
+        return $this->installationState->getDb() instanceof MySQLDatabase;
     }
 }

@@ -9,19 +9,17 @@
 
 namespace lucatume\WPBrowser\Project;
 
-/**
- * Class ThemeProject.
- *
- * @since   TBD
- *
- * @package lucatume\WPBrowser\Project;
- */
-class ThemeProject implements ProjectInterface
+use Codeception\InitTemplate;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class ThemeProject extends InitTemplate implements ProjectInterface
 {
     private string $themeDir;
 
-    public function __construct(string $workDir)
+    public function __construct(InputInterface $input, OutputInterface $output, protected string $workDir)
     {
+        parent::__construct($input, $output);
         $this->themeDir = basename($workDir);
     }
 
@@ -33,5 +31,15 @@ class ThemeProject implements ProjectInterface
     public function getThemeString(): string
     {
         return $this->themeDir;
+    }
+
+    public function setup()
+    {
+        // TODO: Implement setup() method.
+    }
+
+    public function getTestEnv(): ?TestEnvironment
+    {
+        return new TestEnvironment();
     }
 }

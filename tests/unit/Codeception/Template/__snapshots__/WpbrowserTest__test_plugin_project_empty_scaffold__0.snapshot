@@ -1,0 +1,42 @@
+>>> /plugin_89/tests/Support/Data/.gitkeep >>>
+
+<<< /plugin_89/tests/Support/Data/.gitkeep <<<
+
+>>> /plugin_89/tests/_output/.gitignore >>>
+*
+!.gitignore
+
+<<< /plugin_89/tests/_output/.gitignore <<<
+
+>>> /plugin_89/codeception.yml >>>
+namespace: Tests
+support_namespace: Support
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/Support/Data
+    support: tests/Support
+    envs: tests/_envs
+actor_suffix: Tester
+params:
+    - tests/.env
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+    commands:
+        - lucatume\WPBrowser\Command\RunAll
+        - lucatume\WPBrowser\Command\GenerateWPUnit
+        - lucatume\WPBrowser\Command\GenerateWPRestApi
+        - lucatume\WPBrowser\Command\GenerateWPRestController
+        - lucatume\WPBrowser\Command\GenerateWPRestPostTypeController
+        - lucatume\WPBrowser\Command\GenerateWPAjax
+        - lucatume\WPBrowser\Command\GenerateWPCanonical
+        - lucatume\WPBrowser\Command\GenerateWPXML
+        - lucatume\WPBrowser\Command\GenerateWPXMLRPC
+
+<<< /plugin_89/codeception.yml <<<
+
+>>> /plugin_89/main.php >>>
+<?php
+/* Plugin Name: Plugin 89 */
+<<< /plugin_89/main.php <<<

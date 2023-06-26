@@ -25,7 +25,7 @@ use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
@@ -274,7 +274,7 @@ class WPLoader extends Module
          */
         $config = $this->config;
         try {
-            $db = new Db(
+            $db = new MysqlDatabase(
                 $config['dbName'],
                 $config['dbUser'],
                 $config['dbPassword'],
@@ -369,7 +369,7 @@ class WPLoader extends Module
             return;
         }
 
-        foreach (['Db', 'WPDb', WPDb::class] as $moduleName) {
+        foreach (['MysqlDatabase', 'WPDb', WPDb::class] as $moduleName) {
             if (!$this->moduleContainer->hasModule($moduleName)) {
                 continue;
             }
@@ -415,9 +415,9 @@ class WPLoader extends Module
 
         if (Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode(
-                $this->installation->report(),
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-            ));
+                    $this->installation->report(),
+                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                ));
         }
     }
 
@@ -573,6 +573,13 @@ class WPLoader extends Module
         $stylesheet = $this->config['theme'];
         if ($stylesheet) {
             $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
+        }
+
+        $pluginsList = implode(', ', $plugins);
+        if ($stylesheet) {
+            codecept_debug('Activating plugins: ' . $pluginsList . ' and switching theme: ' . $stylesheet);
+        } else {
+            codecept_debug('Activating plugins: ' . $pluginsList);
         }
 
         foreach ((new Loop($jobs, 1, true))->run()->getResults() as $key => $result) {
@@ -742,7 +749,7 @@ class WPLoader extends Module
     {
         $db = $this->installation->getDb();
 
-        if (!$db instanceof Db) {
+        if (!$db instanceof MysqlDatabase) {
             throw new ModuleException(
                 __CLASS__,
                 'The WPLoader module is configured to import dumps, but the database is not configured.'

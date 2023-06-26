@@ -1,0 +1,17 @@
+PRAGMA foreign_keys=OFF;
+DROP TABLE IF EXISTS wp_options;
+-- Scaffold the wp_options table.
+CREATE TABLE wp_options (
+    option_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    option_name VARCHAR(191) NOT NULL DEFAULT '',
+    option_value LONGTEXT NOT NULL,
+    autoload VARCHAR(20) NOT NULL DEFAULT 'yes'
+);
+-- Insert some data in the wp_options table.
+INSERT INTO wp_options (option_name, option_value, autoload) VALUES
+    ('siteurl', 'http://example.com', 'yes'),
+    ('home', 'http://example.com', 'yes'),
+    ('blogname', 'Example', 'yes'),
+    ('users_can_register', '0', 'yes'),
+    ('admin_email', 'hello@wordpress.test', 'yes');
+PRAGMA foreign_keys=ON;

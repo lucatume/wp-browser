@@ -22,6 +22,8 @@ class ClosureStream
 
     protected $pointer = 0;
 
+    public $context;
+
     function stream_open($path, $mode, $options, &$opened_path): bool
     {
         $this->content = "<?php\nreturn " . substr($path, strlen(static::STREAM_PROTO . '://')) . ";";

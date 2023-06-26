@@ -35,8 +35,13 @@ class Control
      */
     public function __construct(array $controlArray)
     {
-        $config = $controlArray['codeceptionConfig'] ??
-            (class_exists(Configuration::class) ? Configuration::config() : []);
+        if (!isset($controlArray['codeceptionConfig'])) {
+            $codeceptionConfig = class_exists(Configuration::class) && !Configuration::isEmpty() ?
+                Configuration::config()
+                : [];
+        } else {
+            $codeceptionConfig = $controlArray['codeceptionConfig'];
+        }
         if (!empty($controlArray['cwd'])) {
             $cwd = $controlArray['cwd'];
         } else {
@@ -47,7 +52,7 @@ class Control
             'requireFiles' => $controlArray['requireFiles'] ?? [],
             'cwd' => $cwd,
             'codeceptionRootDir' => (string)($controlArray['codeceptionRootDir'] ?? codecept_root_dir()),
-            'codeceptionConfig' => $config,
+            'codeceptionConfig' => $codeceptionConfig,
             'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath']
                 ?? $GLOBALS['_composer_autoload_path'] ?? null),
             'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null)
@@ -73,7 +78,7 @@ class Control
             'requireFiles' => [],
             'cwd' => getcwd() ?: codecept_root_dir(),
             'codeceptionRootDir' => codecept_root_dir(),
-            'codeceptionConfig' => Configuration::config(),
+            'codeceptionConfig' => Configuration::isEmpty() ? [] : Configuration::config(),
             'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
             'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null
         ];

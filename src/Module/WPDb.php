@@ -31,7 +31,7 @@ use PDOException;
 use RuntimeException;
 
 /**
- * An extension of Codeception Db class to add WordPress database specific
+ * An extension of Codeception MysqlDatabase class to add WordPress database specific
  * methods.
  */
 class WPDb extends Db

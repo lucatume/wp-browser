@@ -2,95 +2,108 @@
 
 [![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
 
-wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
-whole sites using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
+You can use wp-browser to test WordPress sites, plugins and themes.
 
-Find out more in [the documentation](https://wpbrowser.wptestkit.dev).
+## Installation
 
-## Installation and setup - the really fast version
-
-Using [Composer](https://getcomposer.org/) require `wp-browser` as a development dependency:
+Add wp-browser to your project as a development dependency using [Composer](https://getcomposer.org/):
 
 ```bash
 cd my-wordrpess-project
 composer require --dev lucatume/wp-browser
+```
+
+Initialize wp-browser to quickly configured to suite your project and setup:
+
+```bash
 vendor/bin/codecept init wpbrowser
 ```
 
-Answer the questions and you will be ready to test your project. Find out more about the setup in [the project 
-documentation][1].
+The command walks you through a series of questions to configure wp-browser for your project by either following a
+default configuration or by asking you to provide the information needed to configure it.
 
-## Using wp-browser with Codeception 4.0
+### Configuration
 
-Codeception version `4.0`, while still being compatible with PHP `5.6` and wp-browser, did break its structure into discrete modules.  
+The default configuration will get you started in little time using:
 
-If you want to use wp-browser with Codeception version `4.0+` you will need to make sure you've got all the required packages.  
-Add the following requirements in your `composer.json` file, in the `require-dev` section:
+* MySQL as the database engine, using [Docker][1] to run the database server
+* PHP built-in web server to serve the WordPress site
+* Chromedriver installed using [the `webdriver-binary/binary-chromedriver`][2] Composer package
 
-```json
-{
-  "require-dev": {
-    "lucatume/wp-browser": "^3.0",
-    "codeception/module-asserts": "^1.0",
-    "codeception/module-phpbrowser": "^1.0",
-    "codeception/module-webdriver": "^1.0",
-    "codeception/module-db": "^1.0",
-    "codeception/module-filesystem": "^1.0",
-    "codeception/module-cli": "^1.0",
-    "codeception/util-universalframework": "^1.0"
-  }
-}
-```
+If you're working on a plugin or theme project, he default configuration will add some extra steps:
 
-You might not need all of them depending on the modules you use in your suites, but this will cover all the modules for this project. 
+* install the latest version of WordPress in the `tests/_wordpress` directory
+* create a `tests/_plugins` directory: any file or directory in this directory will be symlinked into the WordPress
+  installation in `tests/_wordpress/wp-content/plugins`
+* create a `tests/_themes` directory: any file or directory in this directory will be symlinked into the WordPress
+  installation in `tests/_wordpress/wp-content/themes`
 
-[Read more here.][2]
+For most projects this configuration will be enough to get started with testing.
+The default configuration will start all the required services before running the tests; you can start and stop the
+running services with the following commands:
 
-## Usage
-The project provides a number of modules to ease the testing of WordPress projects; you can find out more in the 
-[modules section of the documentation][3].  
-Here's a quick example acceptance test you can write:
+```bash
+vendor/bin/codecept wp:dev-start
+vendor/bin/codecept wp:dev-stop
+````
 
-```php
-// tests/acceptance/PrivatePostsCept.php
-$I->haveManyPostsInDatabase(3, ['post_title' => 'Test post {{n}}', 'post_status' => 'private']);
+If you decide to skip the default configuration, you will be able to set up `wp-browser` to suit your needs and local
+setup by editing the `tests/.env` file.
+The inline documentation in the file will guide you through the configuration process.
 
-$I->loginAs('subscriber', 'secret');
-$I->amOnPage('/');
-$I->see('Nothing found');
+### Running tests
 
-$I->loginAs('editor', 'secret');
-$I->amOnPage('/');
-$I->see('Test post 0');
-$I->see('Test post 1');
-$I->see('Test post 2');
+The configuration will set up two test suites:
+
+* `integration` to run your project code in the context of WordPress. This suite works like the one used
+  by [WordPress Core][6] to run [PHPUnit][3] tests. Integration tests are often referred to as "unit tests" in the
+  WordPress ecosystem. These are usually low-level and fast tests.
+* `end2end` to run tests that interact with the WordPress site using a browser. The default configuration will "drive"
+  Chrome using ChromeDriver. These tests are high-level and slower than integration tests.
+
+You can run all the tests using this command:
+
+```bash
+vendor/bin/codecept run
 ``` 
 
-This is just a bite though, find out more in [the documentation][1].
+> Note: the project replaces Codeception `run` command with one that will run each suite in a separate process. You can
+> invoke the original Codeception command using the `codeception:run` command.
 
-## Current Sponsors
+You can run a single test suite using this command:
 
-My sincere thanks to my sponsors: you make maintaining this project easier.
+```bash
+vendor/bin/codecept run integration
+vendor/bin/codecept run end2end
+```
 
-* [@Borlabs-Ben](https://github.com/Borlabs-Ben)
-* [@DrewAPicture](https://github.com/DrewAPicture)
-* [@Luc45](https://github.com/Luc45)
-* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
-* [@bordoni](https://github.com/bordoni)
-* [@borkweb](https://github.com/borkweb)
-* [@cliffordp](https://github.com/cliffordp)
-* [@dingo-d](https://github.com/dingo-d)
-* [@francescamarano](https://github.com/francescamarano)
-* [@jchristopher](https://github.com/jchristopher)
-* [@jerclarke](https://github.com/jerclarke)
-* [@johnbillion](https://github.com/johnbillion)
-* [@joppuyo](https://github.com/joppuyo)
-* [@moraleida](https://github.com/johnbillion/moreleida)
-* [@pods-framework](https://github.com/pods-framework)
-* [@roborourke](https://github.com/roborourke)
-* [@ryanshoover](https://github.com/ryanshoover)
-* [@zackkatz](https://github.com/zackkatz)
+There are more commands available to run tests, you can find them in the [Codeception documentation][4].
 
-[1]: https://wpbrowser.wptestkit.dev/
-[2]: https://wpbrowser.wptestkit.dev/levels-of-testing
-[3]: https://wpbrowser.wptestkit.dev/modules
+## Getting support for wp-browser configuration and usage
+
+The best place to get support for wp-browser is [the project documentation][7].
+Since this project builds on top of [PHPUnit][3] and [Codeception][4], you can also refer to their documentation.
+
+If you can't find the answer to your question here you can ask on
+the ["Issues" section of the wp-browser repository][5].
+
+Finally, you can [contact me directly][7] to set up a call to discuss your project needs and how wp-browser can help
+you.
+
+## Sponsors
+
+A thanks to my sponsors: you make maintaining this project easier.
+
+[1]: https://www.docker.com/
+
+[2]: https://packagist.org/packages/webdriver-binary/binary-chromedriver
+
+[3]: https://phpunit.de/
+
+[4]: https://codeception.com/
+
+[5]: https://github.com/lucatume/wp-browser/issues
+
+[6]: https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/
+
+[7]: /docs/README.md
