@@ -338,7 +338,7 @@ modules:
             dump: 'tests/_data/dump.sql'
 ```
 
-The `dump` parameter is inherited by the `WPDb` module from [the Codeception `Db` module](https://codeception.com/docs/modules/Db) and defines the SQL dump file that should be loaded before, and between, tests to reset the testing environment to a base known state.  
+The `dump` parameter is inherited by the `WPDb` module from [the Codeception `MysqlDatabase` module](https://codeception.com/docs/modules/Db) and defines the SQL dump file that should be loaded before, and between, tests to reset the testing environment to a base known state.  
 
 As for any other database-related operation wp-browser **will not** create the dump for me.
 I use MySQL binary to export the database state (a dump) with the command:

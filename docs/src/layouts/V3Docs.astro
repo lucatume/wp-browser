@@ -4,7 +4,7 @@ import { getCollection } from "astro:content";
 import { Icon } from "astro-iconify"
 import Base from "./Base.astro";
 import { SIDEBAR_V3_ITEMS } from "../site_config";
-import OldVersionCallout from '../components/OldVersionCallout.astro';
+import CalloutWarning from "../components/CalloutWarning.astro";
 
 export interface Props {
   /** Title of the page */
@@ -70,7 +70,11 @@ const {
           <Icon name="mdi:menu" class="w-8 h-8 text-zinc-500 dark:text-white" />
         </button>
         <h1 class="my-8">{title}</h1>
-        <OldVersionCallout />
+        <CalloutWarning title="Old version!">
+          <p>This documentation is for version <code>3.*</code> of the project.
+            Go to the <a href="/docs">most recent version</a> of the project documentation if you're looking for the latest version.
+          </p>
+        </CalloutWarning>
         <slot/>
       </article>
     </div>

@@ -5,7 +5,9 @@ import Layout from '../layouts/Base.astro';
 const CODE = `# Require it as a dev dependency
 composer require --dev lucatume/wp-browser
 # Initialize it for your WordPress project
-vendor/bin/codecept init wpbrowser`
+vendor/bin/codecept init wpbrowser
+# Start testing
+vendor/bin/codecept run end2end`
 ---
 
 <Layout title="Manual">

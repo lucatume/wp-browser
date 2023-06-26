@@ -3,7 +3,7 @@ title: WPDb module
 ---
 
 This module should be used in acceptance and functional tests, see [levels of testing for more information](./../levels-of-testing).  
-This module extends the [Db module](https://codeception.com/docs/modules/Db) adding WordPress-specific configuration parameters and methods.  
+This module extends the [MysqlDatabase module](https://codeception.com/docs/modules/Db) adding WordPress-specific configuration parameters and methods.  
 The module provides methods to read, write and update the WordPress database **directly**, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  
 
 ## Module requirements for Codeception 4.0+
@@ -17,7 +17,7 @@ composer require --dev codeception/module-db:^1.0
 ```
 
 ## Backup your content
-This module, like the [Codeception Db](https://codeception.com/docs/modules/Db) one it extends, by default **will load a database dump in the database it's using.**  
+This module, like the [Codeception MysqlDatabase](https://codeception.com/docs/modules/Db) one it extends, by default **will load a database dump in the database it's using.**  
 This means that **the database contents will be replaced by the dump contents** on each run of a suite using the module.  
 You can set the `populate` and `cleanup` parameters to `false` to prevent this default behavior but it's usually not what you need in an automated test.  
 **Make a backup of any database you're using in tests that contains any information you care about before you run any test!**
@@ -2821,8 +2821,8 @@ $I->useTheme('twentyseventeen');
 <li><code>string</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of</li></ul>
 
 
-*This class extends \Codeception\Module\Db*
+*This class extends \Codeception\Module\MysqlDatabase*
 
-*This class implements \Codeception\Lib\Interfaces\Db*
+*This class implements \Codeception\Lib\Interfaces\MysqlDatabase*
 
 <!--/doc-->

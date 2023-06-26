@@ -24,7 +24,7 @@ This is the kind of API that is better shown with an example, though.
 
 ### Example
 
-In this example I'm writing acceptance tests and would like to avoid the performance hit that the `cleanup` configuration parameter of the `Db`, or `WPDb`, module implies.  
+In this example I'm writing acceptance tests and would like to avoid the performance hit that the `cleanup` configuration parameter of the `MysqlDatabase`, or `WPDb`, module implies.  
 The `cleanup` parameter will trigger the drop of all tables in the test database and the re-import of the SQL dump file, or files, between each test.  
 This will ensure a clean starting fixture between tests, but for larger setup fixtures this might be a long operation that wastes precious seconds when, say, the only change is the addition of 3 posts, as in this example.
 
@@ -63,7 +63,7 @@ Dispatcher::addListener('test-event-1/setup-posts', $registerPostsCleanup);
 ```
 
 In this simple test I'm adding 3 posts [using the `factory` provided by the `WPLoader` module in `loadOnly` mode][2] and want to make sure those, and the relative meta, are removed at the end of the tests.
-The `WPDb` module, extending the `Db` module from Codeception, will remove the inserted rows, but will not take care of modified rows, or rows not inserted by the `WPDb` module.
+The `WPDb` module, extending the `MysqlDatabase` module from Codeception, will remove the inserted rows, but will not take care of modified rows, or rows not inserted by the `WPDb` module.
 
 Mirroring the requirement of the clean up function I've defined above, I'm passing the post IDs of the posts I've created and the current tester to provide the clean up function with database handling capabilities.
 
