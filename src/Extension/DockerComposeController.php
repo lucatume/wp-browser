@@ -3,23 +3,31 @@
 namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
-use Symfony\Component\Console\Cursor;
+use lucatume\WPBrowser\ManagedProcess\PhpBuiltInServer;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class DockerComposeController extends ServiceExtension
 {
+    private const PID_FILENAME = 'docker-compose.running';
+
     /**
      * @throws ExtensionException
      */
     public function start(OutputInterface $output): void
     {
+        $runningFile = codecept_output_dir(self::PID_FILENAME);
+
+        if (is_file($runningFile)) {
+            $output->writeln('Docker Compose stack already up.');
+            return;
+        }
+
         $config = $this->config;
         $composeFile = $this->getComposeFile($config);
         $envFile = $this->getEnvFile($config);
 
-        codecept_debug('Starting docker compose stack ...');
         if ($envFile) {
             $command = ['docker', 'compose', '-f', $composeFile, '--env-file', $envFile, 'up', '--wait'];
         } else {
@@ -39,6 +47,13 @@ class DockerComposeController extends ServiceExtension
             );
         }
         $output->write(' ok', true);
+
+        if (file_put_contents($runningFile, $process->getPid()) === false) {
+            throw new ExtensionException(
+                $this,
+                'Failed to write Docker Compose running file.'
+            );
+        }
     }
 
     /**
@@ -67,6 +82,13 @@ class DockerComposeController extends ServiceExtension
             throw new ExtensionException(
                 $this,
                 'Failed to stop Docker Compose: ' . $e->getMessage()
+            );
+        }
+        $runningFile = codecept_output_dir(self::PID_FILENAME);
+        if (!(is_file($runningFile) && unlink($runningFile))) {
+            throw new ExtensionException(
+                $this,
+                'Failed to remove Docker Compose running file.'
             );
         }
     }
