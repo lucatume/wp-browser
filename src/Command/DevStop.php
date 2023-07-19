@@ -15,9 +15,8 @@ class DevStop extends Command implements CustomCommandInterface
 
     public static function getCommandName(): string
     {
-        return 'wp:dev-stop';
+        return 'dev:stop';
     }
-
 
     public function getDescription(): string
     {

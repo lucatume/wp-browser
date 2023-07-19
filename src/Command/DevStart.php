@@ -6,7 +6,6 @@ use Codeception\CustomCommandInterface;
 use Codeception\Exception\ConfigurationException;
 use Codeception\Exception\ExtensionException;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,7 +15,7 @@ class DevStart extends Command implements CustomCommandInterface
 
     public static function getCommandName(): string
     {
-        return 'wp:dev-start';
+        return 'dev:start';
     }
 
     public function getDescription(): string
