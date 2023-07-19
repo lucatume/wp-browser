@@ -43,8 +43,8 @@ The default configuration will start all the required services before running th
 running services with the following commands:
 
 ```bash
-vendor/bin/codecept wp:dev-start
-vendor/bin/codecept wp:dev-stop
+vendor/bin/codecept dev:start
+vendor/bin/codecept dev:stop
 ````
 
 If you decide to skip the default configuration, you will be able to set up `wp-browser` to suit your needs and local
