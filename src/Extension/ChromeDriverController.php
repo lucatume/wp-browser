@@ -15,22 +15,14 @@ class ChromeDriverController extends ServiceExtension
      */
     public function start(OutputInterface $output): void
     {
-        $pidFile = codecept_output_dir(ChromeDriver::PID_FILE_NAME);
+        $pidFile = $this->getPidFile();
 
         if (is_file($pidFile)) {
             $output->writeln('ChromeDriver already running.');
             return;
         }
 
-        $config = $this->config;
-        if (isset($config['port']) && !is_numeric($config['port']) && $config['port'] > 0) {
-            throw new ExtensionException(
-                $this,
-                'The "port" configuration option must be an integer greater than 0.'
-            );
-        }
-        /** @var array{port?: number} $config */
-        $port = (int)($config['port'] ?? 4444);
+        $port = $this->getPort();
 
         $output->write("Starting ChromeDriver on port $port ...");
         (new ChromeDriver($port))->start();
@@ -39,7 +31,7 @@ class ChromeDriverController extends ServiceExtension
 
     public function stop(OutputInterface $output): void
     {
-        $pidFile = codecept_output_dir(ChromeDriver::PID_FILE_NAME);
+        $pidFile = $this->getPidFile();
 
         if (!is_file($pidFile)) {
             return;
@@ -65,5 +57,48 @@ class ChromeDriverController extends ServiceExtension
     public function getPrettyName(): string
     {
         return 'ChromeDriver';
+    }
+
+    /**
+     * @return array{
+     *     running: string,
+     *     port: int,
+     *     pidFile: string
+     * }
+     * @throws ExtensionException
+     */
+    public function getInfo(): array
+    {
+        $pidFile = $this->getPidFile();
+        $port = $this->getPort();
+
+        return [
+            'running' => is_file($pidFile) ? 'yes' : 'no',
+            'pidFile' => $pidFile,
+            'port' => $port,
+        ];
+    }
+
+    private function getPidFile(): string
+    {
+        $pidFile = codecept_output_dir(ChromeDriver::PID_FILE_NAME);
+        return $pidFile;
+    }
+
+    /**
+     * @throws ExtensionException
+     */
+    private function getPort(): int
+    {
+        $config = $this->config;
+        if (isset($config['port']) && !is_numeric($config['port']) && $config['port'] > 0) {
+            throw new ExtensionException(
+                $this,
+                'The "port" configuration option must be an integer greater than 0.'
+            );
+        }
+        /** @var array{port?: number} $config */
+        $port = (int)($config['port'] ?? 4444);
+        return $port;
     }
 }

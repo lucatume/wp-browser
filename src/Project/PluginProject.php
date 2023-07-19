@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Project;
 
 use Codeception\InitTemplate;
 use Exception;
+use lucatume\WPBrowser\Command\DevInfo;
 use lucatume\WPBrowser\Command\DevStart;
 use lucatume\WPBrowser\Command\DevStop;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
@@ -193,6 +194,7 @@ EOT;
             ];
             $testEnvironment->customCommands[] = DevStart::class;
             $testEnvironment->customCommands[] = DevStop::class;
+            $testEnvironment->customCommands[] = DevInfo::class;
 
             $basename = basename($this->workDir);
             FS::symlink($this->workDir, $wpRootDir . '/wp-content/plugins/' . $basename);

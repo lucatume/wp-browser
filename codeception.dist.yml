@@ -37,3 +37,4 @@ extensions:
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
         - "lucatume\\WPBrowser\\Command\\DevStart"
         - "lucatume\\WPBrowser\\Command\\DevStop"
+        - "lucatume\\WPBrowser\\Command\\DevInfo"

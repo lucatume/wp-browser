@@ -3,10 +3,10 @@
 namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
-use lucatume\WPBrowser\ManagedProcess\PhpBuiltInServer;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 
 class DockerComposeController extends ServiceExtension
 {
@@ -17,7 +17,7 @@ class DockerComposeController extends ServiceExtension
      */
     public function start(OutputInterface $output): void
     {
-        $runningFile = codecept_output_dir(self::PID_FILENAME);
+        $runningFile = $this->getRunningFile();
 
         if (is_file($runningFile)) {
             $output->writeln('Docker Compose stack already up.');
@@ -25,17 +25,10 @@ class DockerComposeController extends ServiceExtension
         }
 
         $config = $this->config;
-        $composeFile = $this->getComposeFile($config);
-        $envFile = $this->getEnvFile($config);
-
-        if ($envFile) {
-            $command = ['docker', 'compose', '-f', $composeFile, '--env-file', $envFile, 'up', '--wait'];
-        } else {
-            $command = ['docker', 'compose', '-f', $composeFile, 'up', '--wait'];
-        }
+        $command = $this->getCommand($config);
 
         $output->write("Starting compose stack ...", false);
-        $process = new Process($command);
+        $process = new Process([...$command, 'up', '--wait']);
         try {
             $process->mustRun(function () use ($output) {
                 $output->write('.', false);
@@ -84,7 +77,7 @@ class DockerComposeController extends ServiceExtension
                 'Failed to stop Docker Compose: ' . $e->getMessage()
             );
         }
-        $runningFile = codecept_output_dir(self::PID_FILENAME);
+        $runningFile = $this->getRunningFile();
         if (!(is_file($runningFile) && unlink($runningFile))) {
             throw new ExtensionException(
                 $this,
@@ -138,5 +131,58 @@ class DockerComposeController extends ServiceExtension
     public function getPrettyName(): string
     {
         return 'Docker Compose Stack';
+    }
+
+    /**
+     * @return array{
+     *     status: string,
+     *     config: string|mixed[]
+     * }
+     * @throws ExtensionException
+     */
+    public function getInfo(): array
+    {
+        $runningFile = $this->getRunningFile();
+        if (is_file($runningFile)) {
+            // run the docker compose config command and return the output
+            $dockerComposeConfig = (new Process([
+                ...$this->getCommand($this->config),
+                'config'
+            ]))->mustRun()->getOutput();
+
+            return [
+                'status' => 'up',
+                'config' => Yaml::parse($dockerComposeConfig)
+            ];
+        }
+
+        return [
+            'status' => 'down',
+            'config' => '',
+        ];
+    }
+
+    private function getRunningFile(): string
+    {
+        return codecept_output_dir(self::PID_FILENAME);
+    }
+
+    /**
+     * @param array<string,mixed> $config
+     *
+     * @return string[]
+     * @throws ExtensionException
+     */
+    protected function getCommand(array $config): array
+    {
+        $composeFile = $this->getComposeFile($config);
+        $envFile = $this->getEnvFile($config);
+
+        if ($envFile) {
+            $command = ['docker', 'compose', '-f', $composeFile, '--env-file', $envFile];
+        } else {
+            $command = ['docker', 'compose', '-f', $composeFile];
+        }
+        return $command;
     }
 }

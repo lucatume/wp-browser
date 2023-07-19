@@ -51,4 +51,6 @@ abstract class ServiceExtension extends Extension
     abstract public function stop(OutputInterface $output): void;
 
     abstract public function getPrettyName(): string;
+
+    abstract public function getInfo(): array;
 }

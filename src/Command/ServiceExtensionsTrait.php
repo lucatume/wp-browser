@@ -8,7 +8,6 @@ use lucatume\WPBrowser\Extension\ServiceExtension;
 
 trait ServiceExtensionsTrait
 {
-
     /**
      * @param class-string $serviceExtension
      *
@@ -17,7 +16,7 @@ trait ServiceExtensionsTrait
      */
     protected function buildServiceExtension(string $serviceExtension): ServiceExtension
     {
-        $config = Configuration::config()['extensions']['config'][$serviceExtension] ?? [];
+        $config = $this->getServiceExtensionConfig($serviceExtension);
         return new $serviceExtension($config, []);
     }
 
@@ -29,8 +28,17 @@ trait ServiceExtensionsTrait
     {
         $config = Configuration::config();
         $enabledExtensions = $config['extensions']['enabled'] ?? [];
-        return array_filter($enabledExtensions,
+        return array_filter(
+            $enabledExtensions,
             static fn(string $extension) => is_a($extension, ServiceExtension::class, true),
         );
+    }
+
+    /**
+     * @throws ConfigurationException
+     */
+    protected function getServiceExtensionConfig(string $serviceExtension): mixed
+    {
+        return Configuration::config()['extensions']['config'][$serviceExtension] ?? [];
     }
 }
