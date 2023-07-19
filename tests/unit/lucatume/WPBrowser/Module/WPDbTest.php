@@ -7,15 +7,20 @@ use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\Support\DbDump;
+use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
+use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use PDO;
 use RuntimeException;
 
 class WPDbTest extends Unit
 {
     use UopzFunctions;
+    use LoopIsolation;
 
     protected $backupGlobals = false;
     private array $config = [
@@ -240,5 +245,241 @@ SQL;
 
         $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
 
+    }
+
+    /**
+     * It should throw if using Salite database and URL replacement function
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_throw_if_using_salite_database_and_url_replacement_function(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'dump' => 'tests/_data/sqlite/single-installation.sql',
+            'populate' => true,
+            'cleanup' => true,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+    }
+
+    /**
+     * It should initialize correctly on non-existing sqlite file
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_on_non_existing_sqlite_file(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $this->assertInIsolation(static function () use ($wpdb): void {
+            $wpdb->_initialize();
+        });
+    }
+
+    /**
+     * It should initialize correctly on existing sqlite file
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_on_existing_sqlite_file(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        touch($dbFile);
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+    }
+
+    /**
+     * It should initialize correctly with sqlite db and crateIfNotExists flag
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_with_sqlite_db_and_crate_if_not_exists_flag(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+    }
+
+    /**
+     * It should support post operations with sqlite db
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_support_post_operations_with_sqlite_db(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'dump' => 'tests/_data/sqlite/single-installation.sql',
+            'populate' => true,
+            'cleanup' => true,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $wpdb->_beforeSuite();
+
+        $postID = $wpdb->havePostInDatabase();
+
+        $this->assertIsInt($postID);
+        $this->assertGreaterThan(0, $postID);
+
+        $wpdb->havePostmetaInDatabase($postID, 'test_meta', 'test_value');
+
+        $this->assertEquals('test_value', $wpdb->grabPostmetaFromDatabase($postID, 'test_meta', true));
+
+        $postIDs = $wpdb->haveManyPostsInDatabase(3);
+
+        $this->assertCount(3, $postIDs);
+        $this->assertContainsOnly('int', $postIDs);
+        $this->assertGreaterThan(0, $postIDs[0]);
+        $this->assertGreaterThan(0, $postIDs[1]);
+        $this->assertGreaterThan(0, $postIDs[2]);
+    }
+
+    /**
+     * It should support user operations with sqlite
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_support_user_operations_with_sqlite(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'dump' => 'tests/_data/sqlite/single-installation.sql',
+            'populate' => true,
+            'cleanup' => true,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $wpdb->_beforeSuite();
+
+        $userID = $wpdb->haveUserInDatabase('luca', 'contributor');
+
+        $this->assertIsInt($userID);
+        $this->assertGreaterThan(0, $userID);
+
+        $wpdb->haveUserMetaInDatabase($userID, 'lorem', 'dolor');
+
+        $this->assertEquals('dolor', $wpdb->grabUserMetaFromDatabase($userID, 'lorem', true));
+    }
+
+    /**
+     * It should support blog operations with sqlite
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_support_blog_operations_with_sqlite(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'dump' => 'tests/_data/sqlite/multisite-subfolder-installation.sql',
+            'populate' => true,
+            'cleanup' => true,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $wpdb->_beforeSuite();
+
+        $blogId = $wpdb->haveBlogInDatabase('example.com/blog1', [], false);
+
+        $this->assertIsInt($blogId);
+
+        $wpdb->haveSiteMetaInDatabase($blogId, 'lorem', 'dolor');
+        $wpdb->haveSiteMetaInDatabase($blogId, 'lorem', 'sit');
+
+        $this->assertEquals('dolor', $wpdb->grabSiteMetaFromDatabase($blogId, 'lorem', true));
+        $this->assertEquals(['dolor', 'sit'], $wpdb->grabSiteMetaFromDatabase($blogId, 'lorem', false));
+
+        $wpdb->haveSiteOptionInDatabase('some_site_option', 'some_value');
+        $this->assertEquals('some_value', $wpdb->grabSiteOptionFromDatabase('some_site_option'));
+
+        $wpdb->useBlog($blogId);
+        $title = 'Post ' . uniqid('test_', true);
+        $postID = $wpdb->havePostInDatabase(['post_title' => $title]);
+
+        $this->assertIsInt($postID);
+        $this->assertGreaterThan(0, $postID);
+        $this->assertEquals(
+            $title,
+            $wpdb->grabFromDatabase($wpdb->grabPrefixedTableNameFor('posts'), 'post_title', ['ID' => $postID])
+        );
+    }
+
+    /**
+     * It should support custom post operations with sqlite
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_support_custom_post_operations_with_sqlite(): void
+    {
+        $dbFile = codecept_output_dir(uniqid('wpdb_', true) . '.sqlite');
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite://' . $dbFile,
+            'createIfNotExists' => true,
+            'dump' => 'tests/_data/sqlite/multisite-subfolder-installation.sql',
+            'populate' => true,
+            'cleanup' => true,
+            'urlReplacement' => false,
+        ];
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $wpdb->_beforeSuite();
+
+        $postID = $wpdb->havePostInDatabase(['post_type' => 'book', 'post_title' => 'Alice in Wonderland']);
+
+        $this->assertIsInt($postID);
+        $this->assertGreaterThan(0, $postID);
+        $this->assertEquals('Alice in Wonderland', $wpdb->grabPostFieldFromDatabase($postID, 'post_title'));
+        $this->assertEquals('book', $wpdb->grabPostFieldFromDatabase($postID, 'post_type'));
     }
 }

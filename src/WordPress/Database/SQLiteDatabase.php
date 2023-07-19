@@ -224,22 +224,52 @@ class SQLiteDatabase implements DatabaseInterface
 
         $tables = $db->query("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
 
+        if ($tables === false) {
+            throw new DbException("Could not read tables from database.", DbException::FAILED_DUMP);
+        }
+
         while ($table = $tables->fetchArray(SQLITE3_NUM)) {
-            $sql .= $db->querySingle("SELECT sql FROM sqlite_master WHERE name = '{$table[0]}'") . ";\n\n";
-            $rows = $db->query("SELECT * FROM {$table[0]}");
-            $sql .= "INSERT INTO {$table[0]} (";
-            $columns = $db->query("PRAGMA table_info({$table[0]})");
-            $fieldnames = array();
-            while ($column = $columns->fetchArray(SQLITE3_ASSOC)) {
-                $fieldnames[] = $column["name"];
+            $tableSql = $db->querySingle("SELECT sql FROM sqlite_master WHERE name = '$table[0]'");
+
+            if (empty($tableSql) || !is_string($tableSql)) {
+                throw new DbException("Could not read table $table[0] from database.", DbException::FAILED_DUMP);
             }
-            $sql .= implode(",", $fieldnames) . ") VALUES";
-            while ($row = $rows->fetchArray(SQLITE3_ASSOC)) {
+
+            $sql .= $tableSql . ";\n\n";
+            $rows = $db->query("SELECT * FROM $table[0]");
+
+            if ($rows === false) {
+                throw new DbException("Could not read rows from table $table[0].", DbException::FAILED_DUMP);
+            }
+
+            $row = $rows->fetchArray(SQLITE3_ASSOC);
+
+            if ($row === false) {
+                continue;
+            }
+
+            $sql .= "INSERT INTO {$table[0]} (";
+            $columns = $db->query("PRAGMA table_info($table[0])");
+
+            if ($columns === false) {
+                throw new DbException("Could not read columns from table $table[0].", DbException::FAILED_DUMP);
+            }
+
+            $fieldNames = [];
+
+            while ($column = $columns->fetchArray(SQLITE3_ASSOC)) {
+                $fieldNames[] = $column["name"];
+            }
+
+            $sql .= implode(",", $fieldNames) . ") VALUES";
+
+            do {
                 foreach ($row as $k => $v) {
-                    $row[$k] = "'" . SQLite3::escapeString($v) . "'";
+                    $row[$k] = "'" . str_replace("\n", "' || char(10) || '", SQLite3::escapeString($v)) . "'";
                 }
                 $sql .= "\n(" . implode(",", $row) . "),";
-            }
+            } while ($row = $rows->fetchArray(SQLITE3_ASSOC));
+
             $sql = rtrim($sql, ",") . ";\n\n";
         }
 

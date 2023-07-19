@@ -27,10 +27,10 @@ class Db
      * Imports a dump file using the `mysql` binary.
      *
      * @param string $dumpFile The path to the SQL dump file to import.
-     * @param string $dbName The name of the database to import the SQL dump file to.
-     * @param string $dbUser The database user to use to import the dump.
-     * @param string $dbPass The database password to use to import the dump.
-     * @param string $dbHost The database host to use to import the dump.
+     * @param string $dbName   The name of the database to import the SQL dump file to.
+     * @param string $dbUser   The database user to use to import the dump.
+     * @param string $dbPass   The database password to use to import the dump.
+     * @param string $dbHost   The database host to use to import the dump.
      *
      * @throws RuntimeException If there's an error while importing the database.
      *
@@ -88,9 +88,9 @@ class Db
     /**
      * Open a database connection and returns a callable to run queries on it.
      *
-     * @param string $dsn The database DSN string.
-     * @param string $user The database user.
-     * @param string $pass The database password.
+     * @param string $dsn         The database DSN string.
+     * @param string $user        The database user.
+     * @param string $pass        The database password.
      * @param string|null $dbName The optional name of the database to use.
      *
      * @return Closure A callable to run queries on the database; the function will return the query result
@@ -246,9 +246,9 @@ class Db
      * Builds a map of the dsn, user and password credentials to connect to a database.
      *
      * @param array{type: string, host: string, port: string, unix_socket: string, version: string, file: string,
-     *     memory: bool} $dsn The database DSN map.
-     * @param string $dbuser The database user.
-     * @param string $dbpass The database password for the user.
+     *     memory: bool} $dsn     The database DSN map.
+     * @param string $dbuser      The database user.
+     * @param string $dbpass      The database password for the user.
      * @param string|null $dbname The optional database name.
      *
      * @return array{dsn: string, user: string, password: string} The database credentials map: dsn string, user and
@@ -282,7 +282,7 @@ class Db
      * Builds the database DSN string from a database DSN map.
      *
      * @param array<string,bool|int|string|null> $dbDsnMap The database DSN map.
-     * @param bool $forDbHost Whether to format for `DB_HOST`, or similar, use or not.
+     * @param bool $forDbHost                              Whether to format for `DB_HOST`, or similar, use or not.
      *
      * @return string The database DSN string in the format required.
      *
@@ -404,12 +404,32 @@ class Db
         $parsed = parse_url($dbUrl);
 
         if ($parsed === false) {
-            throw new InvalidArgumentException("The string '{$dbUrl}' is not a valid DSN string.");
+            // Maybe using a format like `sqlite:///path/to/file.db`?
+            $parsed = parse_url(str_replace('sqlite://', 'sqlite:', $dbUrl));
+
+            if ($parsed === false) {
+                throw new InvalidArgumentException("The string '{$dbUrl}' is not a valid DSN string.");
+            }
         }
 
         $name = $parsed['path'] ?? '';
         $host = $parsed['host'] ?? '';
-        $name = $name ? trim($name, '/') : '';
+        $sqlite = ($parsed['scheme'] ?? null) === 'sqlite';
+
+        if ($name) {
+            $name = $sqlite ? $name : trim($name, '/');
+        } else {
+            $name = '';
+        }
+
+        if ($host) {
+            $dsn = DbUtils::dbDsnString(array_merge(['dbname' => $name], $parsed));
+        } elseif ($sqlite) {
+            $dsn = 'sqlite:' . $name;
+        } else {
+            $dsn = '';
+        }
+
         return [
             'type' => $parsed['scheme'] ?? '',
             'user' => $parsed['user'] ?? '',
@@ -417,7 +437,7 @@ class Db
             'host' => $host,
             'port' => $parsed['port'] ?? '',
             'name' => $name,
-            'dsn' => $host ? DbUtils::dbDsnString(array_merge(['dbname' => $name], $parsed)) : ''
+            'dsn' => $dsn
         ];
     }
 }

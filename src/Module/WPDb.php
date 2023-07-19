@@ -19,6 +19,7 @@ use lucatume\WPBrowser\Generators\Comment;
 use lucatume\WPBrowser\Generators\Links;
 use lucatume\WPBrowser\Generators\Post;
 use lucatume\WPBrowser\Generators\Tables;
+use lucatume\WPBrowser\Generators\TablesGeneratorFactory;
 use lucatume\WPBrowser\Generators\User;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
@@ -31,7 +32,7 @@ use PDOException;
 use RuntimeException;
 
 /**
- * An extension of Codeception MysqlDatabase class to add WordPress database specific
+ * An extension of Codeception Db class to add WordPress database specific
  * methods.
  */
 class WPDb extends Db
@@ -213,6 +214,86 @@ class WPDb extends Db
         $this->dbDump = $dbDump ?? new DbDump();
     }
 
+    /**
+     * Adds a meta key and value for a site in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveSiteMetaInDatabase(1, 'foo', 'bar');
+     * $insertedId = $I->haveSiteMetaInDatabase(2, 'foo', ['bar' => 'baz']);
+     * ```
+     *
+     * @param int $blogId    The blog ID.
+     * @param string $string The meta key.
+     * @param mixed $value   The meta value.
+     *
+     * @return int The inserted row ID.
+     */
+    public function haveSiteMetaInDatabase(int $blogId, string $string, mixed $value): int
+    {
+        $tableName = $this->grabPrefixedTableNameFor('sitemeta');
+        return $this->haveInDatabase($tableName, [
+            'meta_key' => $string,
+            'meta_value' => Serializer::maybeSerialize($value),
+            'site_id' => $blogId,
+        ]);
+    }
+
+    /**
+     * Returns a single or all meta values for a site meta key.
+     *
+     * @example
+     * ```php
+     * $I->haveSiteMetaInDatabase(1, 'foo', 'bar');
+     * $value = $I->grabSiteMetaFromDatabase(1, 'foo', true);
+     * $values = $I->grabSiteMetaFromDatabase(1, 'foo', false);
+     * ```
+     *
+     * @param int $blogId The blog ID.
+     * @param string $key The meta key.
+     * @param bool $single Whether to return a single value or all of them.
+     *
+     * @return mixed Either a single value or an array of values.
+     *
+     * @throws Exception On unserialize failure.
+     */
+    public function grabSiteMetaFromDatabase(int $blogId, string $key, bool $single): mixed
+    {
+        $tableName = $this->grabPrefixedTableNameFor('sitemeta');
+        $criteria = [
+            'meta_key' => $key,
+            'site_id' => $blogId,
+        ];
+
+        if ($single) {
+            $meta = $this->grabFromDatabase($tableName, 'meta_value', $criteria);
+            return Serializer::maybeUnserialize($meta);
+        }
+
+        $meta = $this->grabColumnFromDatabase($tableName, 'meta_value', $criteria);
+        return array_map([Serializer::class, 'maybeUnserialize'], $meta);
+    }
+
+    /**
+     * Returns the value of a post field for a post, from the `posts`  table.
+     *
+     * @example
+     * ```php
+     * $title = $I->grabPostFieldFromDatabase(1, 'post_title');
+     * $type = $I->grabPostFieldFromDatabase(1, 'post_type');
+     * ```
+     *
+     * @param int $postId   The post ID.
+     * @param string $field The post field to get the value for.
+     *
+     * @return string The value of the post field.
+     */
+    public function grabPostFieldFromDatabase(int $postId, string $field): string
+    {
+        $tableName = $this->grabPrefixedTableNameFor('posts');
+        return $this->grabFromDatabase($tableName, $field, ['ID' => $postId]);
+    }
+
     protected function validateConfig(): void
     {
         if (isset($this->config['dbUrl'])) {
@@ -224,9 +305,19 @@ class WPDb extends Db
             }
             $parsedDbUrl = DbUtils::parseDbUrl($this->config['dbUrl'] ?? '');
             $this->config['dsn'] = $parsedDbUrl['dsn'];
+
+            if ($parsedDbUrl['type'] === 'sqlite') {
+                // Ensure the path is relative to Codeception root directory; the SQLite adapter will assume it.
+                $rootRelativePath = FS::relativePath(codecept_root_dir(), $parsedDbUrl['name']);
+                $this->config['dsn'] = 'sqlite:' . $rootRelativePath;
+            }
+
             $this->config['user'] = $parsedDbUrl['user'];
             $this->config['password'] = $parsedDbUrl['password'];
         }
+
+        $dsn = $this->config['dsn'] ?? '';
+        $useSqlite = str_starts_with($dsn, 'sqlite:');
 
         parent::validateConfig();
 
@@ -237,6 +328,14 @@ class WPDb extends Db
         $this->config['dump'] = array_filter((array)$this->config['dump']);
         $this->config['populator'] = (string)$this->config['populator'];
         $this->config['urlReplacement'] = (bool)$this->config['urlReplacement'];
+
+        if ($useSqlite && !empty($this->config['urlReplacement'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                message: "The 'urlReplacement' configuration parameter cannot be used with SQLite."
+            );
+        }
+
         $this->config['originalUrl'] = (string)$this->config['originalUrl'];
         $this->config['waitlock'] = (int)$this->config['waitlock'];
         $this->config['createIfNotExists'] = $this->config['createIfNotExists'] ?? false;
@@ -263,7 +362,6 @@ class WPDb extends Db
         parent::_initialize();
 
         $this->tablePrefix = $this->config['tablePrefix'];
-        $this->tables = $table ?: new Tables();
         $this->didInit = true;
 
         /**
@@ -1460,12 +1558,14 @@ class WPDb extends Db
      *
      * @param int $userId      The ID of th user to get the meta for.
      * @param string $meta_key The meta key to fetch the value for.
+     * @param bool $single     Whether to return a single value or an array of values.
      *
-     * @return array<int,mixed> An array of the different meta key values.
+     * @return array<int,mixed>|mixed An array of the different meta key values or a single value if `$single` is set
+     *                                to `true`.
      *
      * @throws Exception If the search criteria is incoherent.
      */
-    public function grabUserMetaFromDatabase(int $userId, string $meta_key): array
+    public function grabUserMetaFromDatabase(int $userId, string $meta_key, bool $single = false): mixed
     {
         $table = $this->grabPrefixedTableNameFor('usermeta');
         $meta = $this->grabAllFromDatabase(
@@ -1474,13 +1574,18 @@ class WPDb extends Db
             ['user_id' => $userId, 'meta_key' => $meta_key]
         );
         if (empty($meta)) {
-            return [];
+            return $single ? '' : [];
         }
 
         $normalized = [];
-
         foreach ($meta as $row) {
-            $normalized[] = Serializer::maybeUnserialize($row['meta_value']);
+            $value = Serializer::maybeUnserialize($row['meta_value']);
+
+            if ($single) {
+                return $value;
+            }
+
+            $normalized[] =$value;
         }
 
         return $normalized;
@@ -3168,12 +3273,17 @@ class WPDb extends Db
      * @param string $domainOrPath Either the path or the sub-domain of the blog to create.
      * @param bool $isSubdomain    Whether to create a sub-folder or a sub-domain blog.
      *
-     *
+     * @throws PDOException If there's any issue executing the query.
      * @throws JsonException If there's any issue debugging the query.
      */
     protected function scaffoldBlogTables(int $blogId, string $domainOrPath, bool $isSubdomain = true): void
     {
         $stylesheet = $this->grabOptionFromDatabase('stylesheet');
+
+        if (!is_string($stylesheet)) {
+            $stylesheet = '';
+        }
+
         $subdomain = $isSubdomain ?
             trim($domainOrPath, '.')
             : '';
@@ -3187,17 +3297,19 @@ class WPDb extends Db
             'subfolder' => $subFolder,
             'stylesheet' => $stylesheet,
         ];
-        $dbh = $this->_getDbh();
+        $pdo = $this->_getDbh();
 
-        $dropQuery = $this->tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
-        $sth = $dbh->prepare($dropQuery);
-        $this->debugSection('Query', $sth->queryString);
-        $sth->execute();
+        $tables = new Tables(get_class($this->drivers[$this->currentDatabase]));
 
-        $scaffoldQuery = $this->tables->getBlogScaffoldQuery($this->config['tablePrefix'], $blogId, $data);
-        $sth = $dbh->prepare($scaffoldQuery);
-        $this->debugSection('Query', $sth->queryString);
-        $sth->execute();
+        $dropQuery = $tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
+        $pdoStatement = $pdo->prepare($dropQuery);
+        $this->debugSection('Query', $pdoStatement->queryString);
+        $pdo->exec($dropQuery);
+
+        $scaffoldQuery = $tables->getBlogScaffoldQuery($this->config['tablePrefix'], $blogId, $data);
+        $pdoStatement = $pdo->prepare($scaffoldQuery);
+        $this->debugSection('Query', $pdoStatement->queryString);
+        $pdo->exec($scaffoldQuery);
 
         $this->scaffoldedBlogIds[] = $blogId;
     }
@@ -4384,6 +4496,10 @@ class WPDb extends Db
      */
     protected function createDatabasesIfNotExist(array $config): void
     {
+        if (str_starts_with($config['dsn'], 'sqlite:')) {
+            return;
+        }
+
         $createIfNotExist = [];
         if (!empty($config['createIfNotExists'])) {
             $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
