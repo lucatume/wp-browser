@@ -345,7 +345,7 @@ class WPDbAttachmentCest
         }
 
         $I->seeUploadedFileFound('pdf-doc.pdf', 'now');
-        $I->seePostMetaInDatabase(['post_id' => $id, 'meta_key' => '_wp_attached_file', 'meta_value' => "{$year}/${month}/pdf-doc.pdf"]);
+        $I->seePostMetaInDatabase(['post_id' => $id, 'meta_key' => '_wp_attached_file', 'meta_value' => "{$year}/{$month}/pdf-doc.pdf"]);
     }
 
     /**
