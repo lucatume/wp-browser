@@ -638,7 +638,8 @@ class WPLoader extends Module
 
 
     /**
-     * Returns an array of the configuration files specified with the `configFile` parameter of the module configuration.
+     * Returns an array of the configuration files
+     * specified with the `configFile` parameter of the module configuration.
      *
      * @throws ModuleConfigException If a specified configuration file does not exist.
      */
