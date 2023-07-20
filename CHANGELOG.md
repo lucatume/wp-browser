@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Removed the `lucatume\WPBrowser\Traits\WithForks` trait.
 
+### Fixed
+
+- Correctly invoke the `after_switch_theme` action in the `WPLoader` module.
+
 ## [3.1.9] 2023-04-11;
 
 ### Fixed

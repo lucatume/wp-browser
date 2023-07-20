@@ -797,12 +797,14 @@ class WPLoader extends Module
         } else {
             $stylesheet = $this->config['theme'];
         }
-        $functionsFile = $this->wp->getWpContentDir() . '/themes/' . $stylesheet . '/functions.php';
+        $themeRoot = $this->wp->getWpContentDir() . '/themes';
+        $functionsFile = $themeRoot . '/' . $stylesheet . '/functions.php';
         if (file_exists($functionsFile)) {
             require_once($functionsFile);
         }
         $this->wp->switch_theme($stylesheet);
-        $this->wp->do_action('after_switch_theme', $stylesheet);
+        $stylesheetTheme = new \WP_Theme($stylesheet, $themeRoot);
+        $this->wp->do_action('after_switch_theme', $stylesheet, $stylesheetTheme);
     }
 
     /**
