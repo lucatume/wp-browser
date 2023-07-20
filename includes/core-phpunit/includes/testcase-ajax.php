@@ -136,7 +136,7 @@ abstract class WPAjaxTestCase extends WPTestCase {
 	/**
 	 * Sets up the test fixture.
 	 *
-	 * Overrides wp_die(), pretends to be Ajax, and suppresses E_WARNINGGs.
+	 * Overrides wp_die(), pretends to be Ajax, and suppresses E_WARNINGs.
 	 */
 	public function set_up() {
 		parent::set_up();
