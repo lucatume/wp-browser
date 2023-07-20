@@ -21,12 +21,12 @@ While there will be a section dedicated to different environments and setups I w
     define( 'DB_HOST', '127.0.0.1' );
     define( 'DB_CHARSET', 'utf8' );
     define( 'DB_COLLATE', '' );
-    
+
     $table_prefix = 'wp_';
-  
+
     if ( ! defined( 'ABSPATH' ) )
-    	define( 'ABSPATH', dirname( __FILE__ ) . '/' );
-    
+        define( 'ABSPATH', dirname( __FILE__ ) . '/' );
+
     require_once ABSPATH . 'wp-settings.php';
     ```
 * To serve the site I'm using PHP built-in server with the command:

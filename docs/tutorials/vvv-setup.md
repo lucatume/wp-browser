@@ -72,7 +72,7 @@ Create the main plugin file in the `http://one.wordpress.test` installation plug
 <?php
 /**
  * Plugin Name: My plugin
- */	
+ */
 ```
 
 The plugin should now show up, activate and deactivate correctly, among the plugins listed in the VVV default WordPress installation at `http://one.wordpress.test/wp-admin/plugins.php`.  
