@@ -251,11 +251,11 @@ class WPDbAttachmentCest
     }
 
     /**
-     * It should allow definining the image sizes to create
+     * It should allow defining the image sizes to create
      *
      * @test
      */
-    public function should_allow_definining_the_image_sizes_to_create(FunctionalTester $I): void
+    public function should_allow_defining_the_image_sizes_to_create(FunctionalTester $I): void
     {
         $file       = codecept_data_dir('attachments/kitten.jpeg');
         $date       = '2016-01-01 10:00:00';

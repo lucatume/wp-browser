@@ -413,7 +413,7 @@ $I->loginAsAdmin();
 
 <hr>
 
-<p>Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
+<p>Assert a plugin is installed, no matter its activation status, in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
 ```php
 $I->loginAsAdmin();
   $I->amOnPluginsPage();

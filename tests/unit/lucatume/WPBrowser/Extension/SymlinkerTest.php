@@ -79,7 +79,7 @@ class SymlinkerTest extends Unit
             ],
             []
         ];
-        yield 'not a string in env based config, no env specfied' => [
+        yield 'not a string in env based config, no env specified' => [
             [
                 'rootFolder' => [
                     'first' => 231,
@@ -89,7 +89,7 @@ class SymlinkerTest extends Unit
             ],
             []
         ];
-        yield 'not a string in env based config, env specfied' => [
+        yield 'not a string in env based config, env specified' => [
             [
                 'rootFolder' => [
                     'first' => 231,
@@ -99,7 +99,7 @@ class SymlinkerTest extends Unit
             ],
             ['current_environment' => 'first']
         ];
-        yield 'not a string in env based config, default env specfied' => [
+        yield 'not a string in env based config, default env specified' => [
             [
                 'rootFolder' => [
                     'default' => 231,

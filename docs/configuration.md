@@ -87,13 +87,13 @@ The answer can be an absolute path, like `/Users/luca/Sites/wordrpress`, or a pa
  
 This path should be accessible **by the machine that is running the tests**; if you're running the tests from your machine (e.g. your laptop) that's just the path to the folder where WordPress is installed, `/Users/luca/Sites/wordpress` in the example configuration above.  
 
-If you are, instead, running the tests from withing a virtualized machine (e.g. [Vagrant](https://www.vagrantup.com/) or [Docker](https://www.docker.com/)) then the path should be the one used by the virtualized machine.  
+If you are, instead, running the tests from within a virtualized machine (e.g. [Vagrant](https://www.vagrantup.com/) or [Docker](https://www.docker.com/)) then the path should be the one used by the virtualized machine.  
 
 To make an example:
 
 * on my machine WordPress is installed at `/Users/luca/Sites/wordpress`
 * I've created a Docker container using [the official WordPress image](https://hub.docker.com/_/wordpress) and bound the above folder into the container
-* internall the container will put WordPress in the `/var/www/html` folder
+* internal the container will put WordPress in the `/var/www/html` folder
 
 If I run the tests from my host machine then WordPress root directory will be `/Users/luca/Sites/wordpress`, if I run the tests from **within** the Docker container then WordPress root folder will be `/var/www/html`. 
  
@@ -231,7 +231,7 @@ In my example setup it's `admin`.
 
 This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
 
-It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
+It should be the same as the one that allows you to access the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
 #### What is the password of the administrator user of the test site?
 
@@ -239,7 +239,7 @@ In my example setup it's `password`.
 
 This detail will be used by the [WPBrowser](modules/WPBrowser.md) or [WPWebDriver](modules/WPWebDriver.md) modules to fill in the login details for the administrator user.  
 
-It should be the same as the one that allows you to acccess the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
+It should be the same as the one that allows you to access the site administration area in the WordPress test site, `http://localhost:8080/wp-admin` in my example.
 
 #### Are you testing a plugin, a theme or a combination of both?
 

@@ -308,7 +308,7 @@ PHP;
 
         $scaffolded->getNonceSalt();
 
-        $this->expecteException(InstallationException::class);
+        $this->expectedException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
 
         $scaffolded->getSalts();
