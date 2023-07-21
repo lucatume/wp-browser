@@ -108,7 +108,7 @@ class SerializableThrowable
     {
         $updatedTrace = [];
         $colorize = $this->colorize && stream_isatty(STDOUT);
-        // Detect whether to use colors or not depdending on the TTY.
+        // Detect whether to use colors or not depending on the TTY.
         foreach ($trace as $k => $traceEntry) {
             if (!(isset($traceEntry['file']) && is_string($traceEntry['file'])
                 && str_contains($traceEntry['file'], 'closure://'))) {

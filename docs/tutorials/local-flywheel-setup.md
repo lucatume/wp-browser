@@ -49,7 +49,7 @@ Create the main plugin file in the WordPress installation plugins directory, in 
 <?php
 /**
  * Plugin Name: My plugin
- */	
+ */
 ```
 
 The plugin should now show up, activate and deactivate correctly, among the plugins listed in the WordPress installation at `http://myplugin.local/wp-admin/plugins.php`.  

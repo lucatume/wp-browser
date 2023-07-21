@@ -42,7 +42,7 @@ $I->waitForElement( '#signup-confirmation' );
 
 In brief: **make assertions as a developer would**.  
 
-The test code below asserts front-end submissions are correcty processed from the developer perspective:
+The test code below asserts front-end submissions are correctly processed from the developer perspective:
 
 ```php
 <?php

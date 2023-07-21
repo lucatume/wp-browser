@@ -982,11 +982,8 @@ class WPQueriesTest extends Unit
     }
 
     /**
-     * ${CARET}
-     *
      * @return wpdb
      * @since TBD
-     *
      */
     protected function getWpdb(): wpdb
     {

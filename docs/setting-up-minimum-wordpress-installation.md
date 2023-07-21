@@ -2,7 +2,7 @@
 
 As mentioned in [Installation](installation.md) section wp-browser will **not** download, configure and install WordPress for you.  
 
-On a high level, once WordPress is installed and configured, whatever local development environment solution you've used, there are some informations you'll need to gather before moving into wp-browser configuration.  
+On a high level, once WordPress is installed and configured, whatever local development environment solution you've used, there are some information you'll need to gather before moving into wp-browser configuration.  
 
 While there will be a section dedicated to different environments and setups I will outline below the example setup I will use, in the next section, to configure wp-browser:
 
@@ -21,12 +21,12 @@ While there will be a section dedicated to different environments and setups I w
     define( 'DB_HOST', '127.0.0.1' );
     define( 'DB_CHARSET', 'utf8' );
     define( 'DB_COLLATE', '' );
-    
+
     $table_prefix = 'wp_';
-  
+
     if ( ! defined( 'ABSPATH' ) )
-    	define( 'ABSPATH', dirname( __FILE__ ) . '/' );
-    
+        define( 'ABSPATH', dirname( __FILE__ ) . '/' );
+
     require_once ABSPATH . 'wp-settings.php';
     ```
 * To serve the site I'm using PHP built-in server with the command:

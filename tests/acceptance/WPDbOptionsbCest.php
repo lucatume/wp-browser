@@ -79,11 +79,11 @@ class WPDbOptionsbCest
     }
 
     /**
-     * It should allo seeing a site option in database using array criteria
+     * It should allow seeing a site option in database using array criteria
      *
      * @test
      */
-    public function should_allo_seeing_a_site_option_in_database_using_array_criteria(Tester $I): void
+    public function should_allow_seeing_a_site_option_in_database_using_array_criteria(Tester $I): void
     {
         $I->haveSiteOptionInDatabase('test_option', 'test_value');
         $I->haveSiteOptionInDatabase('test_array_option', ['one' => 23, 'two' => ['foo','bar','baz']]);

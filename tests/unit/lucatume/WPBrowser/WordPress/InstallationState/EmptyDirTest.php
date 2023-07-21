@@ -408,11 +408,11 @@ class EmptyDirTest extends Unit
     }
 
     /**
-     * It should throw if trying ot update option
+     * It should throw if trying to update option
      *
      * @test
      */
-    public function should_throw_if_trying_ot_update_option(): void
+    public function should_throw_if_trying_to_update_option(): void
     {
         $wpRootDir = FS::tmpDir('empty-dir_');
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Provides informations about WordPress tables.
+ * Provides information about WordPress tables.
  *
  * @package lucatume\WPBrowser\Generators
  */

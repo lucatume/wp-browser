@@ -14,7 +14,7 @@ require the `symfony/process` as explained above and launch processes in backgro
 * Refactored the `WPCLI` module to build and escape string command lines differently; the handling of command-line arguments
 for the `WPCLI` module has been modified to make it a bit more consistent and robust; as a consequence, you might experience
 some breakages in string commands that used to work correctly before; should this be the case then either modify
-your code ot provide the command in array format (taking care of the correct escaping in your code), or make sure to 
+your code to provide the command in array format (taking care of the correct escaping in your code), or make sure to 
 pass a correctly structured command string to the `WPCLI` module.
 
 [1]: https://symfony.com/doc/current/components/process.html

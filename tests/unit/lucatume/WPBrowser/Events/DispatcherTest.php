@@ -65,11 +65,11 @@ class DispatcherTest extends Unit
     }
 
     /**
-     * It should return a purposedly built Dispatcher when the Codeception instance is not available
+     * It should return a purposely built Dispatcher when the Codeception instance is not available
      *
      * @test
      */
-    public function should_return_a_purposedly_built_dispatcher_when_the_codeception_instance_is_not_available(): void
+    public function should_return_a_purposely_built_dispatcher_when_the_codeception_instance_is_not_available(): void
     {
         // Partial mocking.
         $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getCodecept', null);

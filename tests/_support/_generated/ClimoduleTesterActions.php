@@ -1534,7 +1534,7 @@ trait ClimoduleTesterActions
      *
      * @example
      * ```php
-     * // Assert a specifid meta for a comment exists.
+     * // Assert a specified meta for a comment exists.
      * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
      * // Assert the comment has at least one meta set.
      * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId]);
@@ -1557,7 +1557,7 @@ trait ClimoduleTesterActions
      *
      * @example
      * ```php
-     * // Assert a specifid meta for a comment exists.
+     * // Assert a specified meta for a comment exists.
      * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
      * // Assert the comment has at least one meta set.
      * $I->seeCommentMetaInDatabase(['comment_ID' => $commentId]);
@@ -1899,7 +1899,7 @@ trait ClimoduleTesterActions
      *
      * @param string $option_name The option name.
      * @param mixed $option_value The option value; if an array or object it will be serialized.
-     * @param string $autoload    Wether the option should be autoloaded by WordPress or not.
+     * @param string $autoload    Whether the option should be autoloaded by WordPress or not.
      *
      * @return int The inserted option `option_id`
      * @see \lucatume\WPBrowser\Module\WPDb::haveOptionInDatabase()
@@ -1963,7 +1963,7 @@ trait ClimoduleTesterActions
      * ```
      *
      * @param string $key  The name of the option to insert.
-     * @param mixed $value The value ot insert for the option.
+     * @param mixed $value The value to insert for the option.
      *
      * @return int The inserted option `option_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteOptionInDatabase()
@@ -3466,7 +3466,7 @@ trait ClimoduleTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Removes one ore more blogs frome the database.
+     * Removes one ore more blogs from the database.
      *
      * @example
      * ```php
@@ -4085,7 +4085,7 @@ trait ClimoduleTesterActions
      *
      * @param int $postId     The post ID.
      * @param string $metaKey The key of the meta to retrieve.
-     * @param bool $single    Whether to return a single meta value or an arrya of all available meta values.
+     * @param bool $single    Whether to return a single meta value or an array of all available meta values.
      *
      * @return mixed|array<string,mixed> Either a single meta value or an array of all the available meta values.
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostMetaFromDatabase()
@@ -7253,7 +7253,7 @@ trait ClimoduleTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen.
+     * Assert a plugin is installed, no matter its activation status, in the plugin administration screen.
      *
      * The method will **not** handle authentication and navigation to the plugin administration screen.
      *
@@ -7276,7 +7276,7 @@ trait ClimoduleTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * [!] Conditional Assertion: Test won't be stopped on fail
-     * Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen.
+     * Assert a plugin is installed, no matter its activation status, in the plugin administration screen.
      *
      * The method will **not** handle authentication and navigation to the plugin administration screen.
      *

@@ -21,7 +21,7 @@ class RunAllTest extends Unit
     use UopzFunctions;
     use ClassStubs;
 
-    public function test_descritpion_and_command_name(): void
+    public function test_description_and_command_name(): void
     {
         $command = new RunAll();
         $nameAndDescription = $command->getName() . '-' . $command->getDescription();

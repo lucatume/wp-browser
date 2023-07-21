@@ -22,7 +22,7 @@ class Constants
      *
      * @param string $key The name of the constant to check on.
      *
-     * @return bool Whether the contstant is defined or not.
+     * @return bool Whether the constant is defined or not.
      */
     public function defined(string $key): bool
     {

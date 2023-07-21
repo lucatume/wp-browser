@@ -17,7 +17,7 @@ composer require --dev codeception/module-filesystem:^1.0
 ## Configuration
 
 * `wpRootFolder` *required* The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the `wp-load.php` file.
-* `themes` - defaults to `/wp-content/themes`; the path, relative to the the WordPress installaion root folder, to the themes folder.
+* `themes` - defaults to `/wp-content/themes`; the path, relative to the the WordPress installation root folder, to the themes folder.
 * `plugins` - defaults to `/wp-content/plugins`; the path, relative to the WordPress installation root folder, to the plugins folder.
 * `mu-plugins` - defaults to `wp-content/mu-plugins`; the path, relative to the WordPress installation root folder, to the must-use plugins folder.
 * `uploads` - defaults to `/wp-content/uploads`; the path, relative to the WordPress installation root folder, to the uploads folder.

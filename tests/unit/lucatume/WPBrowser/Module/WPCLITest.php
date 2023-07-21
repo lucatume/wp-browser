@@ -988,11 +988,11 @@ class WPCLITest extends Unit
     }
 
     /**
-     * It should allow asserting shell ouptut matches regex pattern
+     * It should allow asserting shell output matches regex pattern
      *
      * @test
      */
-    public function should_allow_asserting_shell_ouptut_matches_regex_pattern(): void
+    public function should_allow_asserting_shell_output_matches_regex_pattern(): void
     {
         $wpcli = $this->module([
             'path' => self::$installation->getWpRootDir(),
