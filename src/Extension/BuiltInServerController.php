@@ -81,6 +81,7 @@ class BuiltInServerController extends ServiceExtension
             'port' => $port,
             'docroot' => $docRoot,
             'workers' => $workers,
+            'url' => 'http://localhost:' . $port . '/'
         ];
     }
 

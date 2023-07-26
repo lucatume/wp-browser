@@ -38,3 +38,4 @@ extensions:
         - "lucatume\\WPBrowser\\Command\\DevStart"
         - "lucatume\\WPBrowser\\Command\\DevStop"
         - "lucatume\\WPBrowser\\Command\\DevInfo"
+        - "lucatume\\WPBrowser\\Command\\DevRestart"

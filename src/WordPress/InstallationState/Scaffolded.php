@@ -90,15 +90,8 @@ class Scaffolded implements InstallationStateInterface
         }
         $configured= new Configured($this->wpRootDir, $wpConfigFilePath);
 
-        if (($db instanceof SQLiteDatabase) &&
-            !copy(
-                Installation::DROPIN_SQLITE,
-                $configured->getContentDir('/db.php')
-            )) {
-            throw new InstallationException(
-                "Could not copy the SQLite drop-in file to {$this->wpRootDir}.",
-                InstallationException::DROPIN_COPY_FAILED
-            );
+        if ($db instanceof SQLiteDatabase) {
+            Installation::placeSqliteDropin($configured->getContentDir('/db.php'));
         }
 
         return $configured;

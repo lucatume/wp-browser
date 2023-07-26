@@ -24,7 +24,7 @@ class RunAll extends Run implements CustomCommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->hasArgument('suite') || $input->hasArgument('test')) {
+        if ($input->getArgument('suite') || $input->getArgument('test')) {
             return parent::execute($input, $output);
         }
 

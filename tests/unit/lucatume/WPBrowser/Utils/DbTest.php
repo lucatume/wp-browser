@@ -491,6 +491,19 @@ class dbTest extends Unit
                     'name' => '.\var\db.sqlite',
                     'dsn' => 'sqlite:.\var\db.sqlite'
                 ]
+            ],
+            'sqlite relative to codecept root dir' => [
+               'sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite' ,
+                [
+                    'type' => 'sqlite',
+                    'user' => '',
+                    'password' => '',
+                    'host' => '',
+                    'port' => '',
+                    'name' => codecept_root_dir('tests/_wordpress/data/db.sqlite'),
+                    'dsn' => 'sqlite:' . codecept_root_dir('tests/_wordpress/data/db.sqlite')
+
+                ]
             ]
         ];
     }

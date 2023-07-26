@@ -401,6 +401,10 @@ class Db
      */
     public static function parseDbUrl(string $dbUrl): array
     {
+        if (str_contains($dbUrl, '%codecept_root_dir%')) {
+            $dbUrl = str_replace('%codecept_root_dir%', rtrim(codecept_root_dir(), '\\/'), $dbUrl);
+        }
+
         $parsed = parse_url($dbUrl);
 
         if ($parsed === false) {

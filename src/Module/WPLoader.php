@@ -25,7 +25,9 @@ use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
@@ -231,7 +233,6 @@ class WPLoader extends Module
      */
     public function _initialize(): void
     {
-
         /**
          * The config is now validated and the values are defined.
          *
@@ -274,17 +275,34 @@ class WPLoader extends Module
          */
         $config = $this->config;
         try {
-            $db = new MysqlDatabase(
-                $config['dbName'],
-                $config['dbUser'],
-                $config['dbPassword'],
-                $config['dbHost'],
-                $config['tablePrefix']
-            );
+            if (empty($config['dbHost']) && str_starts_with($config['dbName'], codecept_root_dir())) {
+                $dbFile = (array_reverse(explode(DIRECTORY_SEPARATOR, $config['dbName']))[0]);
+                $dbDir = rtrim(str_replace($dbFile, '', $config['dbName']), DIRECTORY_SEPARATOR);
+                $db = new SqliteDatabase($dbDir, $dbFile);
+            } else {
+                $db = new MysqlDatabase(
+                    $config['dbName'],
+                    $config['dbUser'],
+                    $config['dbPassword'],
+                    $config['dbHost'],
+                    $config['tablePrefix']
+                );
+            }
+
             // Try and initialize the database connection now.
             $db->create();
 
             $this->installation = new Installation($config['wpRootFolder'], $db);
+
+            $dropInPathname = $this->installation->getContentDir('db.php');
+            if ($db instanceof SQLiteDatabase && !is_file($dropInPathname)) {
+                throw new ModuleConfigException(
+                    __CLASS__,
+                    'WPLoader is configured to use a SQLite database, but no db.php drop-in file ' .
+                    "was found in the content folder ($dropInPathname)."
+                );
+            }
+
             // Update the config to the resolved path.
             $config['wpRootFolder'] = $this->installation->getWpRootDir();
             $installationState = $this->installation->getState();
@@ -749,7 +767,7 @@ class WPLoader extends Module
     {
         $db = $this->installation->getDb();
 
-        if (!$db instanceof MysqlDatabase) {
+        if (!$db instanceof DatabaseInterface) {
             throw new ModuleException(
                 __CLASS__,
                 'The WPLoader module is configured to import dumps, but the database is not configured.'

@@ -3,6 +3,8 @@
 namespace lucatume\WPBrowser\Tests\Traits;
 
 use Closure;
+use Codeception\Codecept;
+use Codeception\Util\Debug;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
@@ -23,7 +25,7 @@ trait LoopIsolation
         string $cwd = null,
         array $requireFiles = [],
     ): mixed {
-        $options = ['rethrow' => false];
+        $options = ['cwd' => $cwd, 'rethrow' => false];
 
         $callerFile = (new ReflectionObject($this))->getFileName();
         $options['requireFiles'] = $requireFiles ?: [];
@@ -33,7 +35,8 @@ trait LoopIsolation
 
         $options['cwd'] = !empty($options['cwd']) ? $options['cwd'] : getcwd();
 
-        $result = Loop::executeClosure($runAssertions, 30, $options);
+        $timeout = Debug::isEnabled() ? PHP_INT_MAX : 30;
+        $result = Loop::executeClosure($runAssertions, $timeout, $options);
         $returnValue = $result->getReturnValue();
 
         if ($returnValue instanceof Throwable) {

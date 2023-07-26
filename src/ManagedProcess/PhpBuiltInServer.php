@@ -35,11 +35,12 @@ class PhpBuiltInServer implements ManagedProcessinterface
      */
     public function doStart(): void
     {
-        $process = new Process(
-            [PHP_BINARY, '-S', "localhost:{$this->port}"],
-            $this->docRoot,
-            $this->env
-        );
+	    $routerPathname = dirname( __DIR__, 2 ) . '/includes/cli-server/router.php';
+	    $process        = new Process(
+		    [ PHP_BINARY, '-S', "localhost:$this->port", $routerPathname ],
+		    $this->docRoot,
+		    $this->env
+	    );
         $process->setOptions(['create_new_console' => true]);
         $process->start();
         $confirmPort = $this->readPortFromProcessOutput($process);

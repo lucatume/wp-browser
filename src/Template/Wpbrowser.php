@@ -78,8 +78,10 @@ class Wpbrowser extends Bootstrap
         $testEnvironment = $this->testEnvironment;
 
         $this->say(PHP_EOL . 'Setup completed.' . PHP_EOL);
-        $testEnvironment->sayAfterSuccess();
-        $this->say();
+        if ($testEnvironment->afterSuccess !== null) {
+            $testEnvironment->runAfterSuccess();
+            $this->say();
+        }
         $this->say('You can run tests with <info>vendor/bin/codecept run</info>.');
     }
 
@@ -245,10 +247,10 @@ modules:
             browser: chrome
             host: '%CHROMEDRIVER_HOST%'
             port: '%CHROMEDRIVER_PORT%'
-            window_size: false
+            window_size: 1200x1000
             capabilities:
                 chromeOptions:
-                    args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+                    args: ["--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
         lucatume\WPBrowser\Module\WPDb:
             dbUrl: '%WORDPRESS_DB_URL%'
             dump: 'tests/Support/Data/dump.sql'
@@ -256,14 +258,15 @@ modules:
             cleanup: true
             reconnect: false
             url: '%WORDPRESS_URL%'
+            urlReplacement: false
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
         lucatume\WPBrowser\Module\WPFilesystem:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
         lucatume\WPBrowser\Module\WPLoader:
-           loadOnly: true
-           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
-           dbUrl: '%WORDPRESS_DB_URL%'
-           domain: '%WORDPRESS_DOMAIN%'
+            loadOnly: true
+            wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+            dbUrl: '%WORDPRESS_DB_URL%'
+            domain: '%WORDPRESS_DOMAIN%'
             
 EOF;
         $this->createSuite('EndToEnd', 'EndToEnd', $suiteConfig);

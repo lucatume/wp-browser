@@ -277,4 +277,9 @@ class SQLiteDatabase implements DatabaseInterface
             throw new DbException("Could not write dump file $dumpFilePath.", DbException::FAILED_DUMP);
         }
     }
+
+    public function getDbPathname(): string
+    {
+        return $this->dbPathname;
+    }
 }

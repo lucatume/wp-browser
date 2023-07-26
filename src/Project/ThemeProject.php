@@ -33,7 +33,7 @@ class ThemeProject extends InitTemplate implements ProjectInterface
         return $this->themeDir;
     }
 
-    public function setup()
+    public function setup(): void
     {
         // TODO: Implement setup() method.
     }

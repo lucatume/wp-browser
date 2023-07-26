@@ -21,6 +21,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Assert as WPAssert;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
@@ -1645,5 +1646,97 @@ class WPLoaderTest extends Unit
         $this->expectExceptionMessage($message);
 
         $this->module();
+    }
+
+    /**
+     * It should throw about missing Sqlite drop-in
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_throw_about_missing_sqlite_drop_in(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $dbPathname = $wpRootDir . '/db.sqlite';
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+        });
+    }
+
+    /**
+     * It should initialize correctly with Sqlite database
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_with_sqlite_database(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $dbPathname = $wpRootDir . '/db.sqlite';
+        Installation::placeSqliteDropin($wpRootDir . '/wp-content/db.php');
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        });
+    }
+
+    /**
+     * It should initialize correctly with Sqlite database in loadOnly mode
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_with_sqlite_database_in_load_only_mode(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        Installation::placeSqliteDropin($wpRootDir . '/wp-content/db.php');
+        $dbPathname = $wpRootDir . '/db.sqlite';
+        $installation->configure(new SQLiteDatabase($wpRootDir, 'db.sqlite'));
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+            'loadOnly' => true,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
+
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        });
     }
 }

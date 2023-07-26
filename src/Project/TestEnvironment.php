@@ -21,20 +21,18 @@ class TestEnvironment
      */
     public array $extensionsEnabled = [];
     public ?string $dumpFile = null;
-    public Closure $sayAfterSuccess;
+    public ?Closure $afterSuccess = null;
     /**
      * @var array<class-string>
      */
     public array $customCommands = [];
     public string $envFileContents = '';
 
-    public function __construct()
+    public function runAfterSuccess(): void
     {
-        $this->sayAfterSuccess = fn() => null;
-    }
-
-    public function sayAfterSuccess(): void
-    {
-        ($this->sayAfterSuccess)();
+        if ($this->afterSuccess === null) {
+            return;
+        }
+        ($this->afterSuccess)();
     }
 }

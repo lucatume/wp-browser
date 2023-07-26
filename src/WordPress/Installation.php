@@ -76,6 +76,20 @@ class Installation
         return $installations;
     }
 
+
+    /**
+     * @throws InstallationException
+     */
+    public static function placeSqliteDropin(string $dropinPathname):void
+    {
+        if (!copy(Installation::DROPIN_SQLITE, $dropinPathname)) {
+            throw new InstallationException(
+                "Could not copy the SQLite drop-in file to $dropinPathname.",
+                InstallationException::DROPIN_COPY_FAILED
+            );
+        }
+    }
+
     public function configure(
         DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
