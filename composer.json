@@ -33,6 +33,7 @@
     "codeception/module-filesystem": "^2.0 || ^3.0",
     "codeception/module-cli": "^2.0 || ^3.0",
     "symfony/process": ">=4.4.24 <7.0",
+    "symfony/filesystem": ">=4.4.24 <7.0",
     "vlucas/phpdotenv": "^5.0",
     "ifsnop/mysqldump-php": "^2.12"
   },
