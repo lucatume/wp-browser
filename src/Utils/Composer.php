@@ -7,6 +7,7 @@ namespace lucatume\WPBrowser\Utils;
 use JsonException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use StdClass;
+use Symfony\Component\Process\Process;
 
 class Composer
 {
@@ -77,6 +78,9 @@ class Composer
         }
     }
 
+    /**
+     * @throws JsonException
+     */
     public function update(string $package = null): void
     {
         $this->write();
@@ -102,20 +106,25 @@ class Composer
     /**
      * @throws RuntimeException
      */
-    private function runUpdate(string $package): void
+    private function runUpdate(string $package = null): void
     {
-        $command = $package ? sprintf('composer update %s', $package) : 'composer update';
-        exec($command, $output, $exitCode);
-        if ($exitCode !== 0) {
+        $lockFileExists = file_exists(dirname($this->composerJsonFile) . '/composer.lock');
+        $command = $package && $lockFileExists ?
+            ['composer', 'update', '--no-interaction', $package]
+            : ['composer', 'update', '--no-interaction'];
+        $process = new Process($command);
+        $process->run();
+        if ($process->getExitCode() !== 0) {
+            $errorOutput = $process->getErrorOutput();
             throw new RuntimeException(
-                sprintf('Composer command "%s" failed.', 'composer update'),
+                sprintf('Composer command failed: %s', $errorOutput),
                 self::ERR_UPDATE_FAILED
             );
         }
     }
 
     /**
-     * @return stdClass<string,mixed>
+     * @return stdClass
      */
     public function getDecodedContents(): stdClass
     {
@@ -130,5 +139,18 @@ class Composer
         $encoded = json_encode($this->decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         /** @var string $encoded */
         return $encoded;
+    }
+
+    public function allowPluginsFromPackage(string $package): void
+    {
+        if (!isset($this->decoded->config)) {
+            $this->decoded->config = new StdClass();
+        }
+
+        if (!isset($this->decoded->config->{'allow-plugins'})) {
+            $this->decoded->config->{'allow-plugins'} = new StdClass();
+        }
+
+        $this->decoded->config->{'allow-plugins'}->{$package} = true;
     }
 }

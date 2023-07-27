@@ -4,6 +4,8 @@ namespace lucatume\WPBrowser\Template;
 
 use Codeception\Extension\RunFailed;
 use Codeception\Template\Bootstrap;
+use lucatume\WPBrowser\Command\DbExport;
+use lucatume\WPBrowser\Command\DbImport;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Command\RunOriginal;
@@ -107,6 +109,8 @@ class Wpbrowser extends Bootstrap
                     RunOriginal::class,
                     RunAll::class,
                     GenerateWPUnit::class,
+                    DbExport::class,
+                    DbImport::class,
                     ...$testEnv->customCommands
                 ]
             ]

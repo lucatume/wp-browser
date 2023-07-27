@@ -91,7 +91,7 @@ class Scaffolded implements InstallationStateInterface
         $configured= new Configured($this->wpRootDir, $wpConfigFilePath);
 
         if ($db instanceof SQLiteDatabase) {
-            Installation::placeSqliteDropin($configured->getContentDir('/db.php'));
+            Installation::placeSqliteMuPlugin($configured->getMuPluginsDir(), $configured->getContentDir());
         }
 
         return $configured;
@@ -330,6 +330,11 @@ class Scaffolded implements InstallationStateInterface
     public function getPluginsDir(string $path = ''): string
     {
         return $this->getContentDir('plugins/' . ltrim($path, '\\/'));
+    }
+
+    public function getMuPluginsDir(string $path = ''): string
+    {
+        return $this->getContentDir('mu-plugins/' . ltrim($path, '\\/'));
     }
 
     public function getThemesDir(string $path = ''): string

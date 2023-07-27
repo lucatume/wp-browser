@@ -618,6 +618,93 @@ class SingleTest extends Unit
     }
 
     /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins', $single->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/site-content/mu-plugins', $single->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_plugin_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('single_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = new ConfigurationData();
+        $configurationData->setConst('WPMU_PLUGIN_DIR', $wpRootDir . '/site-mu-plugins');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test');
+
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/site-mu-plugins', $single->getMuPluginsDir());
+        $this->assertEquals($wpRootDir . '/site-mu-plugins/plugin-1.php', $single->getMuPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/site-mu-plugins/test-plugin', $single->getMuPluginsDir('test-plugin'));
+    }
+
+    /**
      * It should return the themes directory
      *
      * @test

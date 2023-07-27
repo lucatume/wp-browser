@@ -37,7 +37,9 @@ class InstallationException extends Exception
     public const CONST_NOT_STRING = 31;
     public const NO_ADMIN_USER_FOUND = 32;
     public const RELATIVE_PATH_ROOT_NOT_FOUND = 33;
-    public const DROPIN_COPY_FAILED = 34;
+    public const SQLITE_DROPIN_COPY_FAILED = 34;
+    public const SQLITE_PLUGIN_COPY_FAILED = 35;
+    public const SQLITE_PLUGIN_DB_COPY_READ_FAILED = 36;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {

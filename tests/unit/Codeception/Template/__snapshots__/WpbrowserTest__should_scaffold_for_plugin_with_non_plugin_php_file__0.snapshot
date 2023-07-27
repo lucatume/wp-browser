@@ -1,0 +1,156 @@
+>>> /tests/Integration.suite.yml >>>
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
+
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - lucatume\WPBrowser\Module\WPLoader
+    config:
+        lucatume\WPBrowser\Module\WPLoader:
+           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+           dbUrl: '%WORDPRESS_DB_URL%'
+           wpDebug: true
+           tablePrefix: '%TEST_TABLE_PREFIX%'
+           domain: '%WORDPRESS_DOMAIN%'
+           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+           title: 'Integration Tests'
+           plugins: ['plugin_89/main-file.php']
+           theme: '' 
+<<< /tests/Integration.suite.yml <<<
+
+>>> /tests/Support/IntegrationTester.php >>>
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Support;
+
+/**
+ * Inherited Methods
+ * @method void wantTo($text)
+ * @method void wantToTest($text)
+ * @method void execute($callable)
+ * @method void expectTo($prediction)
+ * @method void expect($prediction)
+ * @method void amGoingTo($argumentation)
+ * @method void am($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void comment($description)
+ * @method void pause($vars = [])
+ *
+ * @SuppressWarnings(PHPMD)
+*/
+class IntegrationTester extends \Codeception\Actor
+{
+    use _generated\IntegrationTesterActions;
+
+    /**
+     * Define custom actions here
+     */
+}
+
+<<< /tests/Support/IntegrationTester.php <<<
+
+>>> /tests/Support/Data/.gitkeep >>>
+
+<<< /tests/Support/Data/.gitkeep <<<
+
+>>> /tests/.env >>>
+# The path to the WordPress root directory, the one containing the wp-load.php file.
+# This can be a relative path from the directory that contains the codeception.yml file,
+# or an absolute path.
+WORDPRESS_ROOT_DIR=tests/_wordpress
+
+# Tests will require a MySQL database to run.
+# The database will be created if it does not exist.
+# Do not use a database that contains important data!
+WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite
+
+# The Integration suite will use this table prefix for the WordPress tables.
+TEST_TABLE_PREFIX=test_
+
+# This table prefix used by the WordPress site in end-to-end tests.
+WORDPRESS_TABLE_PREFIX=wp_
+
+# The URL and domain of the WordPress site used in end-to-end tests.
+WORDPRESS_URL=http://localhost:59473
+WORDPRESS_DOMAIN=localhost:59473
+
+# The username and password of the administrator user of the WordPress site used in end-to-end tests.
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=password
+
+# The host and port of the ChromeDriver server that will be used in end-to-end tests.
+CHROMEDRIVER_HOST=localhost
+CHROMEDRIVER_PORT=59500
+
+# The port on which the PHP built-in server will serve the WordPress installation.
+BUILTIN_SERVER_PORT=59473
+<<< /tests/.env <<<
+
+>>> /tests/_output/.gitignore >>>
+*
+!.gitignore
+
+<<< /tests/_output/.gitignore <<<
+
+>>> /codeception.yml >>>
+namespace: Tests
+support_namespace: Support
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/Support/Data
+    support: tests/Support
+    envs: tests/_envs
+actor_suffix: Tester
+params:
+    - tests/.env
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+        - lucatume\WPBrowser\Extension\ChromeDriverController
+        - lucatume\WPBrowser\Extension\BuiltInServerController
+    config:
+        lucatume\WPBrowser\Extension\ChromeDriverController:
+            port: '%CHROMEDRIVER_PORT%'
+        lucatume\WPBrowser\Extension\BuiltInServerController:
+            workers: 5
+            port: '%BUILTIN_SERVER_PORT%'
+            docroot: tests/_wordpress
+    commands:
+        - lucatume\WPBrowser\Command\RunOriginal
+        - lucatume\WPBrowser\Command\RunAll
+        - lucatume\WPBrowser\Command\GenerateWPUnit
+        - lucatume\WPBrowser\Command\DbExport
+        - lucatume\WPBrowser\Command\DbImport
+        - lucatume\WPBrowser\Command\DevStart
+        - lucatume\WPBrowser\Command\DevStop
+        - lucatume\WPBrowser\Command\DevInfo
+        - lucatume\WPBrowser\Command\DevRestart
+
+<<< /codeception.yml <<<
+
+>>> /composer.json >>>
+{
+    "name": "acme/plugin-89",
+    "type": "wordpress-plugin",
+    "require": {},
+    "require-dev": {
+        "webdriver-binary/binary-chromedriver": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "webdriver-binary/binary-chromedriver": true
+        }
+    }
+}
+<<< /composer.json <<<
+
+>>> /main-file.php >>>
+<?php
+/* Plugin Name: Plugin 89 */
+<<< /main-file.php <<<

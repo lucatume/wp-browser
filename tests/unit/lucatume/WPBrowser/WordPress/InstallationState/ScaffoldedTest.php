@@ -513,6 +513,25 @@ PHP;
     }
 
     /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '5.6.2');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/', $scaffolded->getMuPluginsDir());
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/plugin-1.php',
+            $scaffolded->getMuPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/test-plugin',
+            $scaffolded->getMuPluginsDir('test-plugin'));
+    }
+
+    /**
      * It should return themes directory
      *
      * @test
@@ -588,6 +607,7 @@ PHP;
      * It should configure correctly with SQLite database
      *
      * @test
+     * @group sqlite
      */
     public function should_configure_correctly_with_sq_lite_database(): void
     {
@@ -596,7 +616,6 @@ PHP;
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
-
         $configured = $scaffolded->configure($db);
 
         $this->assertFileExists($wpRootDir . '/wp-content/db.php');
@@ -604,21 +623,73 @@ PHP;
     }
 
     /**
-     * It should throw if sqlite dropin cannot be copied into installation
+     * It should throw if sqlite plugin cannot be copied
      *
      * @test
+     * @group sqlite
      */
-    public function should_throw_if_sqlite_dropin_cannot_be_copied_into_installation(): void
+    public function should_throw_if_sqlite_plugin_cannot_be_copied(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
         Installation::scaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
-        $this->uopzSetFunctionReturn('copy', false);
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::DROPIN_COPY_FAILED);
 
         $scaffolded = new Scaffolded($wpRootDir);
-        $scaffolded->configure($db);
+
+        $this->uopzSetStaticMethodReturn(FS::class, 'recurseCopy', false);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_COPY_FAILED);
+
+        $configured = $scaffolded->configure($db);
+    }
+
+    /**
+     * It should throw if sqlite plugin db.copy file cannot be read
+     *
+     * @test
+     */
+    public function should_throw_if_sqlite_plugin_db_copy_file_cannot_be_read(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+            if (str_ends_with($file, 'db.copy')) {
+                return false;
+            }
+            return file_get_contents(...func_get_args());
+        }, true);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_DB_COPY_READ_FAILED);
+
+        $configured = $scaffolded->configure($db);
+    }
+
+    /**
+     * It should throw if sqlite drop-in placement fails
+     *
+     * @test
+     */
+    public function should_throw_if_sqlite_drop_in_placement_fails(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->uopzSetFunctionReturn('file_put_contents', function (string $file) {
+            if (str_ends_with($file, 'db.php')) {
+                return false;
+            }
+            return file_put_contents(...func_get_args());
+        }, true);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_DROPIN_COPY_FAILED);
+
+        $configured = $scaffolded->configure($db);
     }
 }

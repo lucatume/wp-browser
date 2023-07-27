@@ -336,4 +336,26 @@ trait ConfiguredStateTrait
 
         return $path ? $themesDir . '/' . ltrim($path, '\\/') : $themesDir;
     }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getMuPluginsDir(string $path = ''): string
+    {
+        $muPluginsDir = $this->getContentDir('mu-plugins');
+
+        if ($wpContentDirConst = $this->getConstant('WPMU_PLUGIN_DIR')) {
+            if (!is_string($wpContentDirConst)) {
+                throw new InstallationException(
+                    "The WPMU_PLUGIN_DIR constant is not a string.",
+                    InstallationException::CONST_NOT_STRING
+                );
+            }
+            $muPluginsDir = $wpContentDirConst;
+        }
+
+        $muPluginsDir = rtrim($muPluginsDir, '\\/');
+
+        return $path ? $muPluginsDir . '/' . ltrim($path, '\\/') : $muPluginsDir;
+    }
 }

@@ -20,6 +20,7 @@ use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\Source;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -78,8 +79,8 @@ class PluginProject extends InitTemplate implements ProjectInterface
                 continue;
             }
 
-            if (preg_match('/Plugin Name:\\s+(.*)$/um', $content, $matches)) {
-                $pluginName = $matches[1];
+            if (preg_match('/Plugin Name:\\s+(.*?)(\*\/)?$/um', $content, $matches)) {
+                $pluginName = trim($matches[1]);
                 $pluginFile = $file;
                 break;
             }
@@ -117,6 +118,8 @@ class PluginProject extends InitTemplate implements ProjectInterface
 
             $this->sayInfo('Installing WordPress in <info>tests/_wordpress</info> ...');
             Installation::scaffold($wpRootDir);
+            // Remove the directory used to store the WordPress installation.
+            FS::rrmdir(Source::getWordPressVersionsCacheDir());
             $installation = new Installation($wpRootDir);
             $installation->configure($db);
             $serverLocalhostPort = $this->getFreeLocalhostPort($this->workDir);
@@ -127,8 +130,6 @@ class PluginProject extends InitTemplate implements ProjectInterface
                 'admin@exmaple.com',
                 $this->getName() . ' Test'
             );
-            FS::rrmdir($wpRootDir . '/wp-content/plugins');
-            FS::mkdirp($wpRootDir . '/wp-content/plugins');
 
             $basename = basename($this->workDir);
             FS::symlink($this->workDir, $wpRootDir . '/wp-content/plugins/' . $basename);
@@ -153,12 +154,10 @@ class PluginProject extends InitTemplate implements ProjectInterface
             throw new RuntimeException('Could not create database dump: ' . $e->getMessage());
         }
 
-
         $this->sayInfo('Adding Chromedriver binary as a development dependency ...');
-        $this->sayInfo('Composer might ask if you trust "webdriver-binary/binary-chromedriver" to execute code ' .
-            'and wish to enable it now, answer "yes".');
         $composer = new Composer($this->workDir . '/composer.json');
         $composer->requireDev(['webdriver-binary/binary-chromedriver' => '*']);
+        $composer->allowPluginsFromPackage('webdriver-binary/binary-chromedriver');
         $composer->update('webdriver-binary/binary-chromedriver');
         $this->say();
 
@@ -249,7 +248,7 @@ EOT;
         }
     }
 
-    protected function activate(mixed $wpRootDir, int $serverLocalhostPort): bool
+    protected function activate(string $wpRootDir, int $serverLocalhostPort): bool
     {
         $codeExec = new CodeExecutionFactory($wpRootDir, 'localhost:' . $serverLocalhostPort);
         $pluginString = basename(dirname($this->pluginFile)) . '/' . basename($this->pluginFile);

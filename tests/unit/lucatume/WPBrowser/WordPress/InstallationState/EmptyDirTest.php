@@ -374,6 +374,22 @@ class EmptyDirTest extends Unit
     }
 
     /**
+     * It should throw if trying to get mu-plugins directory
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_get_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->getMuPluginsDir();
+    }
+
+    /**
      * It should throw if trying to get themes directory
      *
      * @test

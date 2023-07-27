@@ -756,4 +756,66 @@ class ConfiguredTest extends Unit
             return 'foo';
         });
     }
+
+    /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins', $configured->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/site-content/mu-plugins', $configured->getMuPluginsDir());
+
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_plugins_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WPMU_PLUGIN_DIR', $wpRootDir . '/mu-plugins'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/mu-plugins', $configured->getMuPluginsDir());
+    }
 }

@@ -20,7 +20,7 @@ class Installation
     use WordPressChecks;
     use InstallationChecks;
 
-    public const DROPIN_SQLITE = __DIR__ . '/../../includes/wp-sqlite-db/db.php';
+    public const SQLITE_PLUGIN = __DIR__ . '/../../includes/sqlite-database-integration';
 
     /**
      * @var array<string>
@@ -76,16 +76,48 @@ class Installation
         return $installations;
     }
 
-
     /**
      * @throws InstallationException
      */
-    public static function placeSqliteDropin(string $dropinPathname):void
+    public static function placeSqliteMuPlugin(string $getMuPluginsDir, string $contentDir): void
     {
-        if (!copy(Installation::DROPIN_SQLITE, $dropinPathname)) {
+        if (!(
+            FS::mkdirp($getMuPluginsDir)
+            && FS::recurseCopy(self::SQLITE_PLUGIN, $getMuPluginsDir . '/sqlite-database-integration')
+        )) {
             throw new InstallationException(
-                "Could not copy the SQLite drop-in file to $dropinPathname.",
-                InstallationException::DROPIN_COPY_FAILED
+                "Could not copy the SQLite mu-plugin file to $getMuPluginsDir.",
+                InstallationException::SQLITE_PLUGIN_COPY_FAILED
+            );
+        }
+
+        $pluginDirPathname = $getMuPluginsDir . '/sqlite-database-integration';
+        $dbCopyPathname = $pluginDirPathname . '/db.copy';
+        $dbCopyContents = file_get_contents($dbCopyPathname);
+
+        if (empty($dbCopyContents)) {
+            throw new InstallationException(
+                "Could not read the SQLite db.copy file at $dbCopyPathname.",
+                InstallationException::SQLITE_PLUGIN_DB_COPY_READ_FAILED
+            );
+        }
+
+        $updatedContents = str_replace(
+            [
+                '{SQLITE_IMPLEMENTATION_FOLDER_PATH}',
+                '{SQLITE_PLUGIN}'
+            ],
+            [
+                $pluginDirPathname,
+                'sqlite-database-integration/load.php'
+            ],
+            $dbCopyContents
+        );
+
+        if (!file_put_contents($contentDir . '/db.php', $updatedContents, LOCK_EX)) {
+            throw new InstallationException(
+                "Could not write the SQLite db.php file at $contentDir.",
+                InstallationException::SQLITE_DROPIN_COPY_FAILED
             );
         }
     }

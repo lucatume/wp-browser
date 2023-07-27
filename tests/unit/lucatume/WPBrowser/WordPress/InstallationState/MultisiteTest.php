@@ -477,6 +477,101 @@ class MultisiteTest extends Unit
     }
 
     /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER
+        )->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins', $multisite->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugin directory build from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugin_directory_build_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData())
+            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData
+        )->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/site-content/mu-plugins', $multisite->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugin directory build from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugin_directory_build_from_wp_plugin_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('multisite_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $configurationData = (new ConfigurationData())
+            ->setConst('WPMU_PLUGIN_DIR', $wpRootDir . '/site-mu-plugins');
+        Installation::scaffold($wpRootDir, '6.1.1')->configure(
+            $db,
+            InstallationStateInterface::MULTISITE_SUBFOLDER,
+            $configurationData
+        )->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($wpRootDir . '/site-mu-plugins', $multisite->getMuPluginsDir());
+        $this->assertEquals($wpRootDir . '/site-mu-plugins/plugin-1.php', $multisite->getMuPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/site-mu-plugins/test-plugin', $multisite->getMuPluginsDir('test-plugin'));
+    }
+
+    /**
      * It should return themes directory
      *
      * @test

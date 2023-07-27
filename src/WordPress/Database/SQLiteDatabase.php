@@ -258,7 +258,7 @@ class SQLiteDatabase implements DatabaseInterface
             $fieldNames = [];
 
             while ($column = $columns->fetchArray(SQLITE3_ASSOC)) {
-                $fieldNames[] = $column["name"];
+                $fieldNames[] = "'" . $column["name"] . "'";
             }
 
             $sql .= implode(",", $fieldNames) . ") VALUES";
