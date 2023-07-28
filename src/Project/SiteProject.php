@@ -18,7 +18,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
         return 'site';
     }
 
-    public function setup(): void
+    public function setup()
     {
         // TODO: Implement setup() method.
     }

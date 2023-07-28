@@ -39,7 +39,6 @@ class Wpbrowser extends Bootstrap
 
         $this->say('Initializing <info>wp-browser</info> for a <info>' . $project->getType() . '</info> project.');
         $this->say('You can quit this process at any time with <info>CTRL+C</info>.');
-        $this->say('');
 
         $input = $this->input;
         $namespace = $input->hasOption('namespace') ? $input->getOption('namespace') : null;
@@ -54,7 +53,6 @@ class Wpbrowser extends Bootstrap
 
         $this->createDirs();
         $this->sayInfo('Created <info>tests</info> directory and sub-directories.');
-        $this->say();
 
         try {
             $project->setup();
@@ -128,11 +126,11 @@ class Wpbrowser extends Bootstrap
     {
         $plugins = '';
         if ($project instanceof PluginProject) {
-            $plugins = $project->getPluginsString();
+            $plugins = "'{$project->getActivationString()}'";
         }
         $theme = '';
         if ($project instanceof ThemeProject) {
-            $theme = $project->getThemeString();
+            $theme = $project->getActivationString();
         }
 
         $suiteConfig = <<<EOF
@@ -154,8 +152,8 @@ modules:
            domain: '%WORDPRESS_DOMAIN%'
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
-           plugins: ['$plugins']
-           theme: '$theme' 
+           plugins: [$plugins]
+           theme: '$theme'
 EOF;
         $this->createSuite('Integration', 'Integration', $suiteConfig);
         $bootstrapContents = <<<EOF
@@ -306,11 +304,11 @@ EOF;
     private function buildProjectFromWorkDir(string $workDir): ProjectInterface
     {
         // If we find a style.css file in the work directory we assume it's a theme.
-        if (file_exists($workDir . '/style.css')) {
+        if (ThemeProject::parseDir($workDir)) {
             return new ThemeProject($this->input, $this->output, $workDir);
         }
 
-        if (PluginProject::findPluginNameAndFile($workDir)) {
+        if (PluginProject::parseDir($workDir)) {
             return new PluginProject($this->input, $this->output, $workDir);
         }
 

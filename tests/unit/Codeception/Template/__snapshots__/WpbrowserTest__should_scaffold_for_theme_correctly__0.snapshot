@@ -43,46 +43,6 @@ modules:
             
 <<< /tests/EndToEnd.suite.yml <<<
 
->>> /tests/Integration/SampleTest.php >>>
-<?php
-
-namespace Tests;
-
-use lucatume\WPBrowser\TestCase\WPTestCase;
-
-class SampleTest extends WPTestCase
-{
-    public function setUp(): void
-    {
-        // Before...
-        parent::setUp();
-
-        // Your set-up methods here.
-    }
-
-    public function tearDown(): void
-    {
-        // Your tear down methods here.
-
-        // Then...
-        parent::tearDown();
-    }
-
-    // Tests
-    public function test_factory(): void
-    {
-        $post = static::factory()->post->create_and_get();
-
-        $this->assertInstanceOf(\WP_Post::class, $post);
-    }
-
-    public function test_plugin_active(): void
-    {
-        $this->assertTrue(is_plugin_active('plugin_89/main-file.php'));
-    }
-}
-<<< /tests/Integration/SampleTest.php <<<
-
 >>> /tests/Integration/_bootstrap.php >>>
 <?php
 /*
@@ -117,8 +77,8 @@ modules:
            domain: '%WORDPRESS_DOMAIN%'
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
-           plugins: ['plugin_89/main-file.php']
-           theme: ''
+           plugins: []
+           theme: 'theme_23'
 <<< /tests/Integration.suite.yml <<<
 
 >>> /tests/Support/IntegrationTester.php >>>
@@ -212,34 +172,6 @@ class EndToEndTester extends \Codeception\Actor
  */
 <<< /tests/EndToEnd/_bootstrap.php <<<
 
->>> /tests/EndToEnd/ActivationCest.php >>>
-<?php
-
-namespace Tests\EndToEnd;
-
-use Tests\Support\EndToEndTester;
-
-class ActivationCest
-{
-    public function test_it_deactivates_activates_correctly(EndToEndTester $I): void
-    {
-        $I->loginAsAdmin();
-        $I->amOnPluginsPage();
-
-        $I->seePluginActivated('plugin-89');
-
-        $I->deactivatePlugin('plugin-89');
-
-        $I->seePluginDeactivated('plugin-89');
-
-        $I->activatePlugin('plugin-89');
-
-        $I->seePluginActivated('plugin-89');
-    }
-}
-
-<<< /tests/EndToEnd/ActivationCest.php <<<
-
 >>> /tests/.env >>>
 # The path to the WordPress root directory, the one containing the wp-load.php file.
 # This can be a relative path from the directory that contains the codeception.yml file,
@@ -258,8 +190,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:57807
-WORDPRESS_DOMAIN=localhost:57807
+WORDPRESS_URL=http://localhost:57469
+WORDPRESS_DOMAIN=localhost:57469
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
 WORDPRESS_ADMIN_USER=admin
@@ -267,10 +199,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=57816
+CHROMEDRIVER_PORT=57478
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=57807
+BUILTIN_SERVER_PORT=57469
 <<< /tests/.env <<<
 
 >>> /tests/_output/.gitignore >>>
@@ -316,10 +248,16 @@ extensions:
 
 <<< /codeception.yml <<<
 
+>>> /style.css >>>
+/*
+Theme Name: Theme 23
+*/
+<<< /style.css <<<
+
 >>> /composer.json >>>
 {
-    "name": "acme/plugin-89",
-    "type": "wordpress-plugin",
+    "name": "acme/theme-23",
+    "type": "wordpress-theme",
     "require": {},
     "require-dev": {
         "webdriver-binary/binary-chromedriver": "*"
@@ -331,8 +269,3 @@ extensions:
     }
 }
 <<< /composer.json <<<
-
->>> /main-file.php >>>
-<?php
-/* Plugin Name: Plugin 89 */
-<<< /main-file.php <<<

@@ -10,7 +10,6 @@ use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
