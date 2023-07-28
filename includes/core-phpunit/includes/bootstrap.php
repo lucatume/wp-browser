@@ -262,7 +262,7 @@ if ( '1' !== getenv( 'WP_TESTS_SKIP_INSTALL' ) ) {
 	$core_tests = ( defined( 'WP_RUN_CORE_TESTS' ) && WP_RUN_CORE_TESTS ) ? 'run_core_tests' : 'no_core_tests';
 	$ms_tests   = $multisite ? 'run_ms_tests' : 'no_ms_tests';
 
-	$output = system( WP_PHP_BINARY . ' ' . escapeshellarg( __DIR__ . '/install.php' ) . ' ' . escapeshellarg( $config_file_path ) . ' ' . $ms_tests . ' ' . $core_tests, $retval );
+	system( WP_PHP_BINARY . ' ' . escapeshellarg( __DIR__ . '/install.php' ) . ' ' . escapeshellarg( $config_file_path ) . ' ' . $ms_tests . ' ' . $core_tests, $retval );
 	if ( 0 !== $retval ) {
 		exit( $retval );
 	}
