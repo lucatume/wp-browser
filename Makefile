@@ -31,6 +31,6 @@ package: update_core_phpunit_includes test
 	bin/gitattributes-update
 .PHONY: package
 
-update_wp_sqlite_db:
-	bin/update_wp_sqlite_db
+update_sqlite_plugin:
+	bin/update_sqlite_plugin
 
