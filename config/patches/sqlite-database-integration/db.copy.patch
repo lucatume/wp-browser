@@ -1,0 +1,22 @@
+diff --git a/includes/sqlite-database-integration/db.copy b/includes/sqlite-database-integration/db.copy
+index 0b0797e8..23caff78 100644
+--- a/includes/sqlite-database-integration/db.copy
++++ b/includes/sqlite-database-integration/db.copy
+@@ -32,6 +32,17 @@ if ( ! defined( 'DATABASE_TYPE' ) ) {
+ if ( ! defined( 'DB_ENGINE' ) ) {
+ 	define( 'DB_ENGINE', 'sqlite' );
+ }
++// Define SQLite main file constant to avoid having the plugin loaded automatically.
++if ( ! defined( 'SQLITE_MAIN_FILE' ) ) {
++	define( 'SQLITE_MAIN_FILE', '{SQLITE_MAIN_FILE}' );
++}
++// Define DB_DIR and DB_FILE from env, if not already defined.
++if( ! defined( 'DB_DIR' ) && getenv( 'DB_DIR' ) ) {
++    define( 'DB_DIR', realpath( getenv( 'DB_DIR' ) ) );
++}
++if( ! defined( 'DB_FILE' ) && getenv( 'DB_FILE' ) ) {
++    define( 'DB_FILE', getenv( 'DB_FILE' ) );
++}
+
+ // Require the implementation from the plugin.
+ require_once $sqlite_plugin_implementation_folder_path . '/wp-includes/sqlite/db.php';

@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
@@ -12,6 +13,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
+use lucatume\WPBrowser\WordPress\InstallationState\Configured;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Multisite;
 use lucatume\WPBrowser\WordPress\InstallationState\Single;
@@ -468,5 +470,195 @@ class InstallationTest extends Unit
             $wooCommerceActivationProcess->getExitCode()
         );
         codecept_debug($wooCommerceActivationProcess->getOutput());
+    }
+
+    /**
+     * It should throw if changing db from MySQL to SQLite but db dropin not found
+     *
+     * @test
+     */
+    public function should_throw_if_changing_db_from_my_sql_to_sq_lite_but_db_dropin_not_found(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $mysqlDb = new MysqlDatabase(
+            Random::dbName(),
+            Env::get('WORDPRESS_DB_USER'),
+            Env::get('WORDPRESS_DB_PASSWORD'),
+            Env::get('WORDPRESS_DB_HOST')
+        );
+        $setupInstallation = Installation::scaffold($wpRoot)
+            ->configure($mysqlDb)
+            ->install(
+                'https://site-project.local',
+                'admin',
+                'password',
+                'admin@site-project.local',
+                'Site Project'
+            );
+
+        $this->assertInstanceOf(MysqlDatabase::class, $setupInstallation->getDb());
+
+        $installation = new Installation($wpRoot);
+
+        $this->assertInstanceOf(Single::class, $installation->getState());
+
+        $sqliteDb = new SQLiteDatabase($wpRoot, 'db.sqlite');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_NOT_FOUND);
+
+        $installation->setDb($sqliteDb);
+    }
+
+    /**
+     * It should throw if trying to place SQLite plugin but db dropin already there
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_place_sq_lite_plugin_but_db_dropin_already_there(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $installation = Installation::scaffold($wpRoot);
+        $contentDir = $installation->getContentDir();
+        $otherDbDropinCode = <<< PHP
+<?php
+/**
+ * Plugin Name: Some other db dropin
+ */
+
+echo 'Some other db dropin';
+PHP;
+
+        file_put_contents($contentDir . '/db.php', $otherDbDropinCode);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::DB_DROPIN_ALREADY_EXISTS);
+
+        Installation::placeSqliteMuPlugin($contentDir . '/wp-content/mu-plugins', $contentDir);
+    }
+
+    /**
+     * It should allow placing SQLite plugin multiple times
+     *
+     * @test
+     */
+    public function should_allow_placing_sq_lite_plugin_multiple_times(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $installation = Installation::scaffold($wpRoot);
+        $contentDir = $installation->getContentDir();
+
+        Installation::placeSqliteMuPlugin($contentDir . '/wp-content/mu-plugins', $contentDir);
+        Installation::placeSqliteMuPlugin($contentDir . '/wp-content/mu-plugins', $contentDir);
+
+        $this->assertFileExists($installation->getContentDir('db.php'));
+    }
+
+    /**
+     * It should be possible to change an installation database from mysql to sqlite
+     *
+     * @test
+     */
+    public function should_be_possible_to_change_an_installation_database_from_mysql_to_sqlite(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $mysqlDb = new MysqlDatabase(
+            Random::dbName(),
+            Env::get('WORDPRESS_DB_USER'),
+            Env::get('WORDPRESS_DB_PASSWORD'),
+            Env::get('WORDPRESS_DB_HOST')
+        );
+        $setupInstallation = Installation::scaffold($wpRoot)
+            ->configure($mysqlDb)
+            ->install(
+                'https://site-project.local',
+                'admin',
+                'password',
+                'admin@site-project.local',
+                'Site Project'
+            );
+
+        $this->assertInstanceOf(MysqlDatabase::class, $setupInstallation->getDb());
+
+        $installation = new Installation($wpRoot);
+
+        $this->assertInstanceOf(Single::class, $installation->getState());
+
+        $sqliteDb = new SQLiteDatabase($wpRoot, 'db.sqlite');
+
+        $installation->setDb($sqliteDb);
+
+        $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
+        $this->assertInstanceOf(Configured::class, $installation->getState());
+
+        $installation->install(
+            'https://test.local',
+            'admin',
+            'password',
+            'admin@test.local',
+            'Sqlite Test'
+        );
+
+        $this->assertInstanceOf(Single::class, $installation->getState());
+        $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
+    }
+
+    /**
+     * It should allow building installation without checking db
+     *
+     * @test
+     */
+    public function should_allow_building_installation_without_checking_db(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $mysqlDb = new MysqlDatabase(
+            Random::dbName(),
+            Env::get('WORDPRESS_DB_USER'),
+            Env::get('WORDPRESS_DB_PASSWORD'),
+            Env::get('WORDPRESS_DB_HOST')
+        );
+        $setupInstallation = Installation::scaffold($wpRoot)
+            ->configure($mysqlDb);
+
+        $installation = new Installation($wpRoot, false);
+
+        $this->assertInstanceOf(Configured::class, $installation->getState());
+    }
+
+    /**
+     * It should throw if WordPress installation cannot be found in directory
+     *
+     * @test
+     */
+    public function should_throw_if_word_press_installation_cannot_be_found_in_directory(): void
+    {
+        $dir = FS::tmpDir('installation_');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::WORDPRESS_NOT_FOUND);
+
+        Installation::findInDir($dir);
+    }
+
+    /**
+     * It should find WordPress installation in directory
+     *
+     * @test
+     */
+    public function should_find_word_press_installation_in_directory(): void
+    {
+        $db = new MysqlDatabase(
+            Random::dbName(),
+            Env::get('WORDPRESS_DB_USER'),
+            Env::get('WORDPRESS_DB_PASSWORD'),
+            Env::get('WORDPRESS_DB_HOST')
+        );
+        $dir = (new BedrockProject($db, 'http://example.com'))->scaffold(FS::tmpDir('installation_'));
+
+        $installation = Installation::findInDir($dir);
+
+        $this->assertInstanceOf(Installation::class, $installation);
+        $this->assertInstanceOf(Configured::class, $installation->getState());
+        $this->assertEquals($dir . '/web/wp/', $installation->getRootDir());
     }
 }

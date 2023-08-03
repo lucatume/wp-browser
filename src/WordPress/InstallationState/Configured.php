@@ -166,8 +166,8 @@ class Configured implements InstallationStateInterface
         }
 
         return $this->isMultisite() ?
-            new Multisite($this->wpRootDir, $this->wpConfigFile->getFilePath()) :
-            new Single($this->wpRootDir, $this->wpConfigFile->getFilePath());
+            new Multisite($this->wpRootDir, $this->wpConfigFile->getFilePath(), $this->db) :
+            new Single($this->wpRootDir, $this->wpConfigFile->getFilePath(), $this->db);
     }
 
     /**
@@ -212,5 +212,25 @@ class Configured implements InstallationStateInterface
             'The WordPress installation has not been installed yet.',
             InstallationException::STATE_CONFIGURED
         );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
+    {
+        $clone = clone $this;
+        $multisite = $this->isMultisite();
+        $db->setEnvVars();
+        $db->create();
+        $clone->db = $db;
+
+        if ($clone->isInstalled($multisite)) {
+            $site = $multisite ? new Multisite($clone->wpRootDir, $clone->wpConfigFile->getFilePath()) :
+                new Single($clone->wpRootDir, $clone->wpConfigFile->getFilePath());
+            return $site->setDb($db);
+        }
+
+        return $clone;
     }
 }

@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Configuration;
 use Codeception\Exception\ConfigurationException;
+use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class Control
 {
@@ -15,7 +16,8 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     private array $control;
@@ -28,7 +30,8 @@ class Control
      *     codeceptionRootDir?: string,
      *     codeceptionConfig?: array<string, mixed>,
      *     composerAutoloadPath?: ?string,
-     *     composerBinDir?: ?string
+     *     composerBinDir?: ?string,
+     *     env?: array<string, string|int|float|bool>
      * } $controlArray
      *
      * @throws ConfigurationException
@@ -55,7 +58,8 @@ class Control
             'codeceptionConfig' => $codeceptionConfig,
             'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath']
                 ?? $GLOBALS['_composer_autoload_path'] ?? null),
-            'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null)
+            'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null),
+            'env' => $controlArray['env'] ?? $this->getCurrentEnv(),
         ];
     }
 
@@ -67,7 +71,8 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      * @throws ConfigurationException
      */
@@ -154,6 +159,13 @@ class Control
             }
             chdir($control['cwd']);
         }
+
+        if (!empty($control['env'])) {
+            foreach ($control['env'] as $key => $value) {
+                putenv("$key=$value");
+                $_ENV[$key] = $value;
+            }
+        }
     }
 
     /**
@@ -164,11 +176,27 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     public function toArray(): array
     {
         return $this->control;
+    }
+
+    /**
+     * @return array<string, string|int|float|bool>
+     */
+    private function getCurrentEnv(): array
+    {
+        $currentEnv = getenv();
+
+        // @phpstan-ignore-next-line $_ENV is not always defined.
+        if (isset($_ENV)) {
+            $currentEnv = array_merge($currentEnv, $_ENV);
+        }
+
+        return $currentEnv;
     }
 }

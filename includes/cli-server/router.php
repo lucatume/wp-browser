@@ -7,6 +7,8 @@
 $root = $_SERVER['DOCUMENT_ROOT'];
 $path = '/'. ltrim( parse_url( urldecode( $_SERVER['REQUEST_URI'] ),PHP_URL_PATH ), '/' );
 
+define('DB_ENGINE', getenv('DB_ENGINE') ?: 'mysql');
+
 if ( file_exists( $root.$path ) ) {
 
 	// Enforces trailing slash, keeping links tidy in the admin

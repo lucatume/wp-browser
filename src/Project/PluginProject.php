@@ -41,6 +41,7 @@ class PluginProject extends ContentProject
         }
 
         [$this->pluginFile, $this->pluginName] = $pluginNameAndFile;
+        $this->testEnvironment = new TestEnvironment();
     }
 
     public function getType(): string

@@ -56,7 +56,7 @@ class InstallAction implements CodeExecutionActionInterface
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         require_once ABSPATH . '/wp-includes/class-wpdb.php';
-        wp_install($title, $adminUser, $adminEmail, true, '', wp_slash($adminPassword));
+        $installed = wp_install($title, $adminUser, $adminEmail, true, '', wp_slash($adminPassword));
     }
 
     public function getClosure(): Closure

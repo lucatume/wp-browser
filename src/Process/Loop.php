@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process;
 
 use Closure;
 use Codeception\Exception\ConfigurationException;
+use Codeception\Util\Debug;
 use lucatume\WPBrowser\Process\Worker\Exited;
 use lucatume\WPBrowser\Process\Worker\Result;
 use lucatume\WPBrowser\Process\Worker\Running;
@@ -55,6 +56,9 @@ class Loop
         private float $timeout = 30,
         array $options = []
     ) {
+        if (Debug::isEnabled() || getenv('WPBROWSER_LOOP_DEBUG')) {
+            $this->timeout = 10 ** 10;
+        }
         $this->addWorkers($workers, $options);
     }
 

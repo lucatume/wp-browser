@@ -692,4 +692,23 @@ PHP;
 
         $configured = $scaffolded->configure($db);
     }
+
+    /**
+     * It should throw when setting db
+     *
+     * @test
+     */
+    public function should_throw_when_setting_db(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+
+        $scaffolded->setDb($db);
+    }
 }

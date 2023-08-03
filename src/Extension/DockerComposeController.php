@@ -78,7 +78,7 @@ class DockerComposeController extends ServiceExtension
             );
         }
         $runningFile = $this->getRunningFile();
-        if (!(is_file($runningFile) && unlink($runningFile))) {
+        if (is_file($runningFile) && !unlink($runningFile)) {
             throw new ExtensionException(
                 $this,
                 'Failed to remove Docker Compose running file.'

@@ -57,11 +57,6 @@ class Wpbrowser extends Bootstrap
         try {
             $project->setup();
             $this->testEnvironment = $project->getTestEnv();
-
-            if ($this->testEnvironment === null) {
-                return;
-            }
-
             $this->createGlobalConfig();
             $this->say('Created Codeception configuration file <info>codeception.yml</info>.');
             $this->createEnvFile();
@@ -114,7 +109,7 @@ class Wpbrowser extends Bootstrap
             ]
         ];
 
-        $str = Yaml::dump($basicConfig, 4);
+        $str = Yaml::dump($basicConfig, 6);
         if ($this->namespace !== '') {
             $namespace = rtrim($this->namespace, '\\');
             $str = "namespace: $namespace\n" . $str;
@@ -215,8 +210,8 @@ CHROMEDRIVER_HOST={$testEnv->chromeDriverHost}
 CHROMEDRIVER_PORT={$testEnv->chromeDriverPort}
 ENV;
 
-        if ($testEnv->envFileContents) {
-            $envFileContents .= PHP_EOL . PHP_EOL . $testEnv->envFileContents;
+        if ($testEnv->extraEnvFileContents) {
+            $envFileContents .= PHP_EOL . PHP_EOL . $testEnv->extraEnvFileContents;
         }
 
         file_put_contents('tests/.env', $envFileContents);

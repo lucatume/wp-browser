@@ -22,10 +22,13 @@ class BuiltInServerController extends ServiceExtension
             return;
         }
 
-        [$port, $docRoot, $workers] = $this->parseConfig();
+        [$port, $docRoot, $workers, $env] = $this->parseConfig();
 
         $output->write("Starting PHP built-in server on port $port to serve $docRoot ...");
-        $phpBuiltInServer = new PhpBuiltInServer($docRoot, $port, ['PHP_CLI_SERVER_WORKERS' => $workers]);
+        $env = array_merge([
+            'PHP_CLI_SERVER_WORKERS' => $workers,
+        ], $env);
+        $phpBuiltInServer = new PhpBuiltInServer($docRoot, $port, $env);
         $phpBuiltInServer->start();
         $output->write(' ok', true);
     }
@@ -66,13 +69,15 @@ class BuiltInServerController extends ServiceExtension
      *     port: int,
      *     docroot: string,
      *     workers: int,
-     *     pid: int|null
+     *     pid: int|null,
+     *     url: string,
+     *     env: array<string,string|int|float>
      * }
      * @throws ExtensionException
      */
     public function getInfo(): array
     {
-        [$port, $docRoot, $workers] = $this->parseConfig();
+        [$port, $docRoot, $workers, $env] = $this->parseConfig();
         $pidFile = $this->getPidFile();
 
         return [
@@ -81,7 +86,8 @@ class BuiltInServerController extends ServiceExtension
             'port' => $port,
             'docroot' => $docRoot,
             'workers' => $workers,
-            'url' => 'http://localhost:' . $port . '/'
+            'url' => 'http://localhost:' . $port . '/',
+            'env' => $env
         ];
     }
 
@@ -89,7 +95,8 @@ class BuiltInServerController extends ServiceExtension
      * @return array{
      *     0: int,
      *     1: string,
-     *     2: int
+     *     2: int,
+     *     3: array<string,string|int|float>
      * }
      * @throws ExtensionException
      */
@@ -122,7 +129,21 @@ class BuiltInServerController extends ServiceExtension
         }
         /** @var array{workers?: number} $config */
         $workers = (int)($config['workers'] ?? 5);
-        return array($port, $docRoot, $workers);
+
+        if (isset($config['env']) && !is_array($config['env'])) {
+            throw new ExtensionException(
+                $this,
+                'The "env" configuration option must be an array.'
+            );
+        }
+        $env = $config['env'] ?? [];
+        $env = array_map( static function ( $value ): mixed {
+            return is_string( $value ) ?
+                str_replace( '%codecept_root_dir%', rtrim( codecept_root_dir(), '\\/' ), $value )
+                : $value;
+        }, $env );
+
+        return [$port, $docRoot, $workers, $env];
     }
 
     private function getPidFile(): string

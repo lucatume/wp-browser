@@ -10,6 +10,7 @@ use Error;
 use ErrorException;
 use Generator;
 use lucatume\WPBrowser\Process\StderrStream;
+use lucatume\WPBrowser\WordPress\InstallationException;
 use ParseError;
 use PHPUnit\TextUI\RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -20,7 +21,6 @@ class StderrStreamTest extends Unit
 
     public function fromStreamDataProvider(): Generator
     {
-
         yield 'empty stream' => [
             'stream' => ''
         ];
@@ -230,6 +230,27 @@ EXCEPTION;
         yield 'Exception with line breaks in message' => [
             $exceptionWithLineBreaks,
             ModuleException::class
+        ];
+
+        $fatalErrorFromIsolatedAssertion = <<< ERROR
+PHP Fatal error:  Uncaught lucatume\WPBrowser\WordPress\InstallationException: WordPress is not installed. in /Users/lucatume/oss/wp-browser/src/WordPress/InstallationException.php:54
+Stack trace:
+#0 /Users/lucatume/oss/wp-browser/src/WordPress/LoadSandbox.php(78): lucatume\WPBrowser\WordPress\InstallationException::becauseWordPressIsNotInstalled()
+#1 [internal function]: lucatume\WPBrowser\WordPress\LoadSandbox->obCallback('', 9)
+#2 /Users/lucatume/oss/wp-browser/var/tmp/wploader_4affd42539aa6da4efba7a0de0de5319/wp-includes/functions.php(5279): ob_end_flush()
+#3 [internal function]: wp_ob_end_flush_all('')
+#4 /Users/lucatume/oss/wp-browser/var/tmp/wploader_4affd42539aa6da4efba7a0de0de5319/wp-includes/class-wp-hook.php(308): call_user_func_array('wp_ob_end_flush...', Array)
+#5 /Users/lucatume/oss/wp-browser/var/tmp/wploader_4affd42539aa6da4efba7a0de0de5319/wp-includes/class-wp-hook.php(332): WP_Hook->apply_filters('', Array)
+#6 /Users/lucatume/oss/wp-browser/var/tmp/wploader_4affd42539aa6da4efba7a0de0de5319/wp-includes/plugin.php(517): WP_Hook->do_action(Array)
+#7 /Users/lucatume/oss/wp-browser/var/tmp/wploader_4affd42539aa6da4efba7a0de0de5319/wp-includes/load.php(1124): do_action('shutdown')
+#8 [internal function]: shutdown_action_hook()
+#9 {main}
+  thrown in /Users/lucatume/oss/wp-browser/src/WordPress/InstallationException.php on line 54
+ERROR;
+
+        yield 'Fatal error from isolatedAssertion' => [
+            $fatalErrorFromIsolatedAssertion,
+            InstallationException::class
         ];
     }
 

@@ -364,4 +364,15 @@ class Scaffolded implements InstallationStateInterface
             InstallationException::STATE_SCAFFOLDED
         );
     }
+
+    /**
+     * @throws InstallationException
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
+    {
+        throw new InstallationException(
+            'The WordPress installation has already been configured.',
+            InstallationException::STATE_SCAFFOLDED
+        );
+    }
 }

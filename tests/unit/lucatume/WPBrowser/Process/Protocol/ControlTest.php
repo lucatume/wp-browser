@@ -50,6 +50,7 @@ class ControlTest extends Unit
             'codeceptionConfig' => Configuration::config(),
             'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'],
             'composerBinDir' => $GLOBALS['_composer_bin_dir'],
+            'env' => array_merge(getenv(), $_ENV ?? [])
         ], $control->toArray());
     }
 
@@ -63,6 +64,7 @@ class ControlTest extends Unit
             'codeceptionConfig' => ['config' => 'value'],
             'composerAutoloadPath' => 'autoload.php',
             'composerBinDir' => '/var/bin',
+            'env' => ['FOO' => 'bar', 'BAR' => 'baz']
         ]);
 
         $this->assertEquals([
@@ -73,6 +75,7 @@ class ControlTest extends Unit
             'codeceptionConfig' => ['config' => 'value'],
             'composerAutoloadPath' => 'autoload.php',
             'composerBinDir' => '/var/bin',
+            'env' => ['FOO' => 'bar', 'BAR' => 'baz']
         ], $control->toArray());
     }
 
@@ -265,4 +268,65 @@ class ControlTest extends Unit
         $this->assertEquals([], $control->toArray()['codeceptionConfig']);
     }
 
+    /**
+     * It should  build with default env vars
+     *
+     * @test
+     */
+    public function should_build_with_default_env_vars(): void
+    {
+        $control = new Control([]);
+
+        $this->assertArrayHasKey('env', $control->toArray());
+    }
+
+    /**
+     * It should parse correctly env vars from build array
+     *
+     * @test
+     */
+    public function should_parse_correctly_env_vars_from_build_array(): void
+    {
+        $controlArray = [
+            'env' => [
+                'FOO' => 'BAR',
+                'BAR' => 'BAZ',
+            ]
+        ];
+
+        $control = new Control($controlArray);
+
+        $this->assertArrayHasKey('env', $control->toArray());
+        $this->assertEquals([
+            'FOO' => 'BAR',
+            'BAR' => 'BAZ',
+        ], $control->toArray()['env']);
+    }
+
+    /**
+     * It should set environment variables when applying
+     *
+     * @test
+     */
+    public function should_set_environment_variables_when_applying(): void
+    {
+        putenv('TEST_ENV_VAR_1=TEST_ENV_VAR_1_VALUE');
+        $_ENV['TEST_ENV_VAR_2'] = 'TEST_ENV_VAR_2_VALUE';
+
+        $control = new Control([]);
+
+        $this->assertArrayHasKey('env', $control->toArray());
+        $this->assertEquals('TEST_ENV_VAR_1_VALUE', $control->toArray()['env']['TEST_ENV_VAR_1']);
+        $this->assertEquals('TEST_ENV_VAR_2_VALUE', $control->toArray()['env']['TEST_ENV_VAR_2']);
+
+        putenv('TEST_ENV_VAR_1=ANOTHER_VALUE');
+        $_ENV['TEST_ENV_VAR_2'] = 'ANOTHER_VALUE';
+
+        $control->apply();
+
+        $this->assertEquals('TEST_ENV_VAR_1_VALUE', $_ENV['TEST_ENV_VAR_1']);
+        $this->assertEquals('TEST_ENV_VAR_1_VALUE', getenv('TEST_ENV_VAR_1'));
+        $this->assertEquals('TEST_ENV_VAR_2_VALUE', $_ENV['TEST_ENV_VAR_2']);
+        $this->assertEquals('TEST_ENV_VAR_2_VALUE', getenv('TEST_ENV_VAR_2'));
+    }
 }

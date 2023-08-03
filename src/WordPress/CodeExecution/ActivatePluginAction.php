@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use lucatume\WPBrowser\WordPress\InstallationException;
 use WP_Error;
 use function activate_plugin;
 
@@ -24,6 +25,9 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         $this->request = $request;
     }
 
+    /**
+     * @throws InstallationException
+     */
     private function activatePlugin(string $plugin, bool $multisite): void
     {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -34,10 +38,10 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         if ($activated instanceof WP_Error) {
             $message = $activated->get_error_message();
             $data = $activated->get_error_data();
-            if ($data) {
+            if ($data && is_string($data)) {
                 $message .= ": $data";
             }
-            throw new RuntimeException(trim($message));
+            throw new InstallationException(trim($message));
         }
 
         $isActive = $multisite ? is_plugin_active_for_network($plugin) : is_plugin_active($plugin);

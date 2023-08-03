@@ -459,4 +459,22 @@ class EmptyDirTest extends Unit
 
         $emptyDir->executeClosureInWordPress($closure);
     }
+
+    /**
+     * It should throw when setting db
+     *
+     * @test
+     */
+    public function should_throw_when_setting_db(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+        $db = new MysqlDatabase('foo', 'bar', 'baz', 'qux');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->setDb($db);
+    }
 }

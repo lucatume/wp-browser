@@ -33,4 +33,3 @@ package: update_core_phpunit_includes test
 
 update_sqlite_plugin:
 	bin/update_sqlite_plugin
-

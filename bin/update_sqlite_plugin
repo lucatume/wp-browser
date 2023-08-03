@@ -10,4 +10,5 @@ curl -L "$plugin_file_src" -o "$root_dir/includes/sqlite-database-integration.zi
 unzip -o "$root_dir/includes/sqlite-database-integration.zip" -d "$root_dir/includes/"
 # Remove the zip file
 rm "$root_dir/includes/sqlite-database-integration.zip"
+git apply "${root_dir}"/config/patches/sqlite-database-integration/db.copy.patch
 

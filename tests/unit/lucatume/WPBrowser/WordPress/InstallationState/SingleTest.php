@@ -12,6 +12,7 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
@@ -968,9 +969,10 @@ class SingleTest extends Unit
 
         $this->expectException(InvalidArgumentException::class);
 
-        $this->assertEquals('https://wp.local', $single->executeClosureInWordPress(function () {
-            return get_option('siteurl');
-        }));
+        $this->assertEquals('https://wp.local',
+            $single->executeClosureInWordPress(function () {
+                return get_option('siteurl');
+            }));
     }
 
     /**
@@ -997,8 +999,79 @@ class SingleTest extends Unit
             );
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->assertEquals('https://wp.local', $single->executeClosureInWordPress(static function () {
-            return get_option('siteurl');
-        }));
+        $this->assertEquals('https://wp.local',
+            $single->executeClosureInWordPress(static function () {
+                return get_option('siteurl');
+            }));
+    }
+
+    /**
+     * It should allow setting the db
+     *
+     * @test
+     */
+    public function should_allow_setting_the_db(): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
+        $wpRootDir = FS::tmpDir('single_');
+        Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $dumpFile = $wpRootDir .'/dump.sql';
+        $db->dump($dumpFile);
+
+        // Create a new database and import the dump: still installed.
+        $dbName2 = Random::dbName();
+        $db2 = new MysqlDatabase($dbName2, $dbUser, $dbPassword, $dbHost);
+        $db2->import($dumpFile);
+
+        $withInstalledDb = $single->setDb($db2);
+
+        $this->assertInstanceOf(Single::class, $withInstalledDb);
+        $this->assertSame($db2, $withInstalledDb->getDb());
+
+        Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir . '/wp-content');
+
+        $sqliteDb = new SqliteDatabase($wpRootDir . '/wp-content', 'test.db');
+
+        $withSqliteDb = $single->setDb($sqliteDb);
+
+        $this->assertInstanceOf(Configured::class, $withSqliteDb);
+        $this->assertSame($sqliteDb, $withSqliteDb->getDb());
+
+        // Install using SQLite.
+        $installedOnSqlite = $withSqliteDb->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $this->assertInstanceOf(Single::class, $installedOnSqlite);
+
+        // NOT USING DB_DIR, DB_FILE!
+        $sqliteDb->dump($dumpFile);
+
+        $dumpContents = file_get_contents($dumpFile);
+
+        $sqliteDb2 = new SqliteDatabase($wpRootDir . '/wp-content', 'test2.db');
+        $sqliteDb2->import($dumpFile);
+
+        $withSqliteDb2 = $withSqliteDb->setDb($sqliteDb2);
+
+        $this->assertInstanceOf(Single::class, $withSqliteDb2);
+        $this->assertSame($sqliteDb2, $withSqliteDb2->getDb());
     }
 }

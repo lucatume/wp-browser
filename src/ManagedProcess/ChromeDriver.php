@@ -56,8 +56,9 @@ class ChromeDriver implements ManagedProcessInterface
      */
     private function confirmStart(Process $process): void
     {
+        $start = time();
         $output = $process->getOutput();
-        for ($attempts = 0; $attempts < 30; $attempts++) {
+        while (time() < $start + 30) {
             if (str_contains($output, 'ChromeDriver was started successfully.')) {
                 return;
             }

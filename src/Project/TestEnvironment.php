@@ -26,7 +26,7 @@ class TestEnvironment
      * @var array<class-string>
      */
     public array $customCommands = [];
-    public string $envFileContents = '';
+    public string $extraEnvFileContents = '';
 
     public function runAfterSuccess(): void
     {

@@ -40,6 +40,9 @@ class InstallationException extends Exception
     public const SQLITE_DROPIN_COPY_FAILED = 34;
     public const SQLITE_PLUGIN_COPY_FAILED = 35;
     public const SQLITE_PLUGIN_DB_COPY_READ_FAILED = 36;
+    public const SQLITE_PLUGIN_NOT_FOUND = 37;
+    public const DB_DROPIN_ALREADY_EXISTS = 38;
+    public const WORDPRESS_NOT_FOUND = 39;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {

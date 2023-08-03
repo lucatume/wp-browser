@@ -30,7 +30,7 @@ class Multisite implements InstallationStateInterface
      * @throws Throwable
      * @throws WorkerException
      */
-    public function __construct(string $wpRootDir, string $wpConfigFilePath)
+    public function __construct(string $wpRootDir, string $wpConfigFilePath, DatabaseInterface $db = null)
     {
         $this->buildConfigured($wpRootDir, $wpConfigFilePath);
 
@@ -45,6 +45,11 @@ class Multisite implements InstallationStateInterface
                 "The installation is not a multi-site one.",
                 InstallationException::STATE_SINGLE
             );
+        }
+
+        if ($db !== null) {
+            $this->db = $db;
+            $this->db->setEnvVars();
         }
 
         if (!$this->isInstalled(true)) {
@@ -113,5 +118,23 @@ class Multisite implements InstallationStateInterface
             'The WordPress installation is already scaffolded.',
             InstallationException::STATE_MULTISITE
         );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
+    {
+        $clone = clone $this;
+        $clone->db = $db;
+        $db->setEnvVars();
+        $db->create();
+
+        if (!$clone->isInstalled(false)) {
+            return (new Configured($this->wpRootDir, $this->wpConfigFile->getFilePath()))->setDb($db);
+        }
+
+
+        return $clone;
     }
 }

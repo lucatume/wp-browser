@@ -287,8 +287,8 @@ class EmptyDir implements InstallationStateInterface
     }
 
     /**
-     * @throws InstallationException
      * @return array<string,mixed>
+     * @throws InstallationException
      */
     public function getConstants(): array
     {
@@ -299,8 +299,8 @@ class EmptyDir implements InstallationStateInterface
     }
 
     /**
-     * @throws InstallationException
      * @return array<string,mixed>
+     * @throws InstallationException
      */
     public function getGlobals(): array
     {
@@ -368,7 +368,18 @@ class EmptyDir implements InstallationStateInterface
     /**
      * @throws InstallationException
      */
-    public function executeClosureInWordPress(Closure $closure):mixed
+    public function executeClosureInWordPress(Closure $closure): mixed
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
     {
         throw new InstallationException(
             'The WordPress installation is empty.',

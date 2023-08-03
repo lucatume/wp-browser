@@ -88,6 +88,7 @@ class SQLiteDatabase implements DatabaseInterface
      */
     public function getPDO(): PDO
     {
+        $this->setEnvVars();
         if ($this->pdo !== null) {
             return $this->pdo;
         }
@@ -278,8 +279,15 @@ class SQLiteDatabase implements DatabaseInterface
         }
     }
 
-    public function getDbPathname(): string
+    public function setEnvVars(): void
     {
-        return $this->dbPathname;
+        putenv('DATABASE_TYPE=sqlite');
+        $_ENV['DATABASE_TYPE'] = 'sqlite';
+        putenv('DB_ENGINE=sqlite');
+        $_ENV['DB_ENGINE'] = 'sqlite';
+        putenv('DB_DIR=' . $this->getDbDir());
+        $_ENV['DB_DIR'] = $this->getDbDir();
+        putenv('DB_FILE=' . $this->getDbFile());
+        $_ENV['DB_FILE'] = $this->getDbFile();
     }
 }

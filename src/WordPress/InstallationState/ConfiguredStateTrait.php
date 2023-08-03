@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
@@ -15,6 +16,8 @@ use Throwable;
 
 trait ConfiguredStateTrait
 {
+    use InstallationChecks;
+
     private WPConfigFile $wpConfigFile;
     private string $wpRootDir;
     private DatabaseInterface $db;

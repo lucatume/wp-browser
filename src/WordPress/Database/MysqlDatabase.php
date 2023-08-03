@@ -100,6 +100,7 @@ class MysqlDatabase implements DatabaseInterface
      */
     public function getPDO(): PDO
     {
+        $this->setEnvVars();
         if (!$this->pdo instanceof PDO) {
             try {
                 $this->pdo = new PDO($this->dsnWithoutDbName, $this->dbUser, $this->dbPassword);
@@ -337,5 +338,17 @@ class MysqlDatabase implements DatabaseInterface
         } catch (\Exception $e) {
             throw new  DbException("Failed to dump database: " . $e->getMessage(), DbException::FAILED_DUMP);
         }
+    }
+
+    public function setEnvVars(): void
+    {
+        putenv('DATABASE_TYPE=mysql');
+        $_ENV['DATABASE_TYPE'] = 'mysql';
+        putenv('DB_ENGINE=mysql');
+        $_ENV['DB_ENGINE'] = 'mysql';
+        putenv('DB_DIR=');
+        $_ENV['DB_DIR'] = '';
+        putenv('DB_FILE=');
+        $_ENV['DB_FILE'] = '';
     }
 }

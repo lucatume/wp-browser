@@ -76,4 +76,6 @@ interface DatabaseInterface
      * @throws DbException
      */
     public function dump(string $dumpFilePath): void;
+
+    public function setEnvVars(): void;
 }

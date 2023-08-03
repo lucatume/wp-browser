@@ -101,4 +101,6 @@ interface InstallationStateInterface
     public function updateOption(string $option, mixed $value): int;
 
     public function executeClosureInWordPress(Closure $closure): mixed;
+
+    public function setDb(DatabaseInterface $db): InstallationStateInterface;
 }

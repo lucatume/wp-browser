@@ -158,6 +158,7 @@ class WPLoader extends Module
     private string $bootstrapOutput = '';
     private string $installationOutput = '';
     private bool $earlyExit = true;
+    private ?DatabaseInterface $db = null;
 
     public function _getBootstrapOutput(): string
     {
@@ -291,17 +292,10 @@ class WPLoader extends Module
 
             // Try and initialize the database connection now.
             $db->create();
+			$db->setEnvVars();
+            $this->db = $db;
 
-            $this->installation = new Installation($config['wpRootFolder'], $db);
-
-            $dropInPathname = $this->installation->getContentDir('db.php');
-            if ($db instanceof SQLiteDatabase && !is_file($dropInPathname)) {
-                throw new ModuleConfigException(
-                    __CLASS__,
-                    'WPLoader is configured to use a SQLite database, but no db.php drop-in file ' .
-                    "was found in the content folder ($dropInPathname)."
-                );
-            }
+	        $this->installation = new Installation( $config['wpRootFolder'], false );
 
             // Update the config to the resolved path.
             $config['wpRootFolder'] = $this->installation->getWpRootDir();
@@ -311,7 +305,14 @@ class WPLoader extends Module
             if ($installationState instanceof EmptyDir) {
                 $wpRootDir = $this->installation->getWpRootDir();
                 Installation::scaffold($wpRootDir);
-                $this->installation = new Installation($wpRootDir, $db);
+                $this->installation = new Installation($wpRootDir);
+            }
+
+            if ($db instanceof SqliteDatabase && !is_file($this->installation->getContentDir('db.php'))) {
+                Installation::placeSqliteMuPlugin(
+                    $this->installation->getMuPluginsDir(),
+                    $this->installation->getContentDir()
+                );
             }
 
             $config['wpRootFolder'] = $this->installation->getWpRootDir();
@@ -511,17 +512,15 @@ class WPLoader extends Module
                 if ($this->config['theme']) {
                     // Refresh the theme related options.
                     update_site_option('allowedthemes', [$this->config['theme'] => true]);
-                    $db = $this->installation->getDb();
-
-                    if ($db === null) {
+                    if ($this->db === null) {
                         throw new ModuleException(
                             __CLASS__,
                             'Could not get database instance from installation.'
                         );
                     }
 
-                    update_option('template', $db->getOption('template'));
-                    update_option('stylesheet', $db->getOption('stylesheet'));
+                    update_option('template', $this->db->getOption('template'));
+                    update_option('stylesheet', $this->db->getOption('stylesheet'));
                 }
 
                 // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
@@ -536,23 +535,22 @@ class WPLoader extends Module
 
                 if ($this->config['theme']) {
                     // Refresh the theme related options.
-                    $db = $this->installation->getDb();
-
-                    if ($db === null) {
+                    if ($this->db === null) {
                         throw new ModuleException(
                             __CLASS__,
                             'Could not get database instance from installation.'
                         );
                     }
 
-                    update_option('template', $db->getOption('template'));
-                    update_option('stylesheet', $db->getOption('stylesheet'));
+                    update_option('template', $this->db->getOption('template'));
+                    update_option('stylesheet', $this->db->getOption('stylesheet'));
                 }
 
                 return $plugins;
             };
             PreloadFilters::addFilter('pre_option_active_plugins', $activate);
         }
+
         $this->includeCorePHPUniteSuiteBootstrapFile();
 
         Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);
@@ -604,15 +602,20 @@ class WPLoader extends Module
             [$type, $name] = explode('::', $key, 2);
             $returnValue = $result->getReturnValue();
 
-            if ($returnValue instanceof Throwable) {
+            if ($returnValue instanceof Throwable && !($returnValue instanceof InstallationException)) {
                 // Not gift-wrapped in a ModuleException to make it easier to debug the issue.
                 throw $returnValue;
             }
 
-            if ($result->getExitCode() !== 0) {
+            $error = $result->getExitCode() !== 0 || $returnValue instanceof InstallationException;
+
+            if ($error) {
+                $reason = $returnValue instanceof InstallationException ?
+                    $returnValue->getMessage()
+                    : $result->getStdoutBuffer();
                 $message = $type === 'plugin' ?
-                    "Failed to activate plugin $name: {$result->getStdoutBuffer()}"
-                    : "Failed to switch theme $name: {$result->getStdoutBuffer()}";
+                    "Failed to activate plugin $name. $reason"
+                    : "Failed to switch theme $name. $reason";
                 throw new ModuleException(__CLASS__, $message);
             }
         }
@@ -734,6 +737,7 @@ class WPLoader extends Module
      */
     private function checkInstallationToLoadOnly(): void
     {
+        // The installation must be at least configured: it might be installed by a dump.
         if (!$this->installation->isConfigured()) {
             $dir = $this->installation->getWpRootDir();
             throw new ModuleException(
@@ -765,7 +769,7 @@ class WPLoader extends Module
      */
     private function importDumps(): void
     {
-        $db = $this->installation->getDb();
+        $db = $this->db;
 
         if (!$db instanceof DatabaseInterface) {
             throw new ModuleException(

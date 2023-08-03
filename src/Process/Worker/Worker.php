@@ -19,7 +19,8 @@ class Worker implements WorkerInterface
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     private array $control;
@@ -34,6 +35,7 @@ class Worker implements WorkerInterface
      *     codeceptionConfig?: array<string, mixed>|null,
      *     composerAutoloadPath?: ?string,
      *     composerBinDir?: ?string,
+     *     env?: array<string, string|int|float|bool>
      * } $control
      * @throws ConfigurationException
      */
@@ -87,7 +89,8 @@ class Worker implements WorkerInterface
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     public function getControl(): array

@@ -7,7 +7,6 @@ use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
 class CheckWordPressInstalledAction implements CodeExecutionActionInterface
 {
-
     private FileRequest $request;
 
     public function __construct(FileRequest $request, string $wpRootDir, bool $multisite)

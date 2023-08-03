@@ -1,0 +1,78 @@
+[
+    {
+        "isException": true,
+        "exceptionClass": "lucatume\\WPBrowser\\WordPress\\InstallationException",
+        "date": "04-Aug-2023",
+        "time": "00:48:41",
+        "timezone": "UTC",
+        "type": "Fatal error",
+        "message": "Uncaught lucatume\\WPBrowser\\WordPress\\InstallationException: WordPress is not installed.",
+        "file": "\/src\/WordPress\/InstallationException.php",
+        "line": 54,
+        "trace": [
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "do_action",
+                "args": "'shutdown'",
+                "file": "\/var\/tmp\/wploader_4affd42539aa6da4efba7a0de0de5319\/wp-includes\/load.php",
+                "line": 1124
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "WP_Hook->do_action",
+                "args": "Array",
+                "file": "\/var\/tmp\/wploader_4affd42539aa6da4efba7a0de0de5319\/wp-includes\/plugin.php",
+                "line": 517
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "WP_Hook->apply_filters",
+                "args": "'', Array",
+                "file": "\/var\/tmp\/wploader_4affd42539aa6da4efba7a0de0de5319\/wp-includes\/class-wp-hook.php",
+                "line": 332
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "call_user_func_array",
+                "args": "'wp_ob_end_flush...', Array",
+                "file": "\/var\/tmp\/wploader_4affd42539aa6da4efba7a0de0de5319\/wp-includes\/class-wp-hook.php",
+                "line": 308
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "ob_end_flush",
+                "args": "",
+                "file": "\/var\/tmp\/wploader_4affd42539aa6da4efba7a0de0de5319\/wp-includes\/functions.php",
+                "line": 5279
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "lucatume\\WPBrowser\\WordPress\\InstallationException::becauseWordPressIsNotInstalled",
+                "args": "",
+                "file": "\/src\/WordPress\/LoadSandbox.php",
+                "line": 78
+            },
+            {
+                "date": "04-Aug-2023",
+                "time": "00:48:41",
+                "timezone": "UTC",
+                "call": "n\/a",
+                "args": "n\/a",
+                "file": "\/src\/WordPress\/InstallationException.php",
+                "line": 54
+            }
+        ]
+    }
+]

@@ -20,9 +20,9 @@ trait InstallationChecks
      * @throws WorkerException
      * @throws ProcessException
      */
-    protected function isInstalled(bool $multisite): bool
+    protected function isInstalled(bool $multisite, DatabaseInterface $db = null): bool
     {
-        $db = $this->db;
+        $db = $db ?? $this->db;
 
         if (!$db instanceof DatabaseInterface) {
             return false;
@@ -46,6 +46,11 @@ trait InstallationChecks
 
         if (!$host) {
             return false;
+        }
+
+        $port = parse_url($siteurl, PHP_URL_PORT);
+        if ($port) {
+            $host .= ':' . $port;
         }
 
         $codeExecutionFactory = new CodeExecutionFactory($this->wpRootDir, $host);

@@ -1161,8 +1161,8 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be activated. Plugin file does not exist.');
+        $this->expectException(ModuleException::class);
+        $this->expectExceptionMessage('Failed to activate plugin some-plugin/some-plugin.php. Plugin file does not exist.');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1199,8 +1199,8 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be network activated. Plugin file does not exist.');
+        $this->expectException(ModuleException::class);
+        $this->expectExceptionMessage('Failed to activate plugin some-plugin/some-plugin.php. Plugin file does not exist.');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1234,7 +1234,7 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage('Theme some-theme does not exist.');
 
         $wpLoader = $this->module();
@@ -1270,7 +1270,7 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage('Theme some-theme does not exist.');
 
         $wpLoader = $this->module();
@@ -1649,12 +1649,12 @@ class WPLoaderTest extends Unit
     }
 
     /**
-     * It should throw about missing Sqlite drop-in
+     * It should place SQLite dropin if using SQLite database for tests
      *
      * @test
      * @group sqlite
      */
-    public function should_throw_about_missing_sqlite_drop_in(): void
+    public function should_place_sq_lite_dropin_if_using_sq_lite_database_for_tests(): void
     {
         $wpRootDir = FS::tmpDir('wploader_');
         Installation::scaffold($wpRootDir);
@@ -1667,10 +1667,9 @@ class WPLoaderTest extends Unit
 
         $wpLoader = $this->module();
 
-        $this->expectException(ModuleConfigException::class);
-
-        $this->assertInIsolation(static function () use ($wpLoader) {
+        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
+            Assert::assertFileExists($wpRootDir . '/wp-content/db.php');
         });
     }
 
@@ -1685,7 +1684,7 @@ class WPLoaderTest extends Unit
         $wpRootDir = FS::tmpDir('wploader_');
         Installation::scaffold($wpRootDir);
         $dbPathname = $wpRootDir . '/db.sqlite';
-        Installation::placeSqliteDropin($wpRootDir . '/wp-content/db.php');
+        Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir . '/wp-content');
 
         $this->config = [
             'wpRootFolder' => $wpRootDir,
@@ -1712,7 +1711,7 @@ class WPLoaderTest extends Unit
     {
         $wpRootDir = FS::tmpDir('wploader_');
         $installation = Installation::scaffold($wpRootDir);
-        Installation::placeSqliteDropin($wpRootDir . '/wp-content/db.php');
+        Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir.'/wp-content');
         $dbPathname = $wpRootDir . '/db.sqlite';
         $installation->configure(new SQLiteDatabase($wpRootDir, 'db.sqlite'));
         $installation->install(

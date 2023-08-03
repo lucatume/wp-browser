@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Process;
 
 use CompileError;
+use DateTime;
 use ErrorException;
 use lucatume\WPBrowser\Process\StderrStream\Error;
 use lucatume\WPBrowser\Process\StderrStream\TraceEntry;
@@ -78,6 +79,7 @@ class StderrStream
 
     public function parse(string $stderrStreamContents, int $options = 0): void
     {
+        $now = new DateTime();
         $len = strlen($stderrStreamContents);
 
         if ($len === 0) {
@@ -91,12 +93,12 @@ class StderrStream
         $currentError = null;
         $isNumericStackTrace = false;
 
-        $typePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+        $typePattern = '/^(\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] )?' .
             'PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*) in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
-        $typeStartPattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+        $typeStartPattern = '/^(\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] )?' .
             'PHP (?<type>[\\w\\s]+?):\\s+(?<message>.*)$/';
         $typeEndPattern = '/ in (?<file>.+?)(?:on line |:)(?<line>\\d+)$/';
-        $dateTracePattern = '/^\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] ' .
+        $dateTracePattern = '/^(\\[(?<date>.+?) (?<time>.+?) (?<timezone>.+?)\\] )?' .
             'PHP\\s+\\d+\\. (?<call>.+?)\\((?<args>.*?)\\) (?<file>.+?):(?<line>\\d+)$/';
         $numberTracePattern = '/^#\\d+ /';
         $numberTraceInlinePattern = '/^#\\d+ (?<file>.+?)\\((?<line>\\d+)\\): (?<call>.+?)\\((?<args>.*?)\\)$/';
@@ -114,9 +116,9 @@ class StderrStream
 
                 $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError->date = $typeMatches['date'];
-                $currentError->time = $typeMatches['time'];
-                $currentError->timezone = $typeMatches['timezone'];
+                $currentError->date = $typeMatches['date'] ?: $now->format('d-M-Y');
+                $currentError->time = $typeMatches['time'] ?: $now->format('H:i:s');
+                $currentError->timezone = $typeMatches['timezone'] ?: $now->getTimezone()->getName();
                 $currentError->type = $typeMatches['type'];
                 $currentError->message = $typeMatches['message'];
                 $currentError->file = $typeMatches['file'];
@@ -141,9 +143,9 @@ class StderrStream
 
                 $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError->date = $typeStartMatches['date'];
-                $currentError->time = $typeStartMatches['time'];
-                $currentError->timezone = $typeStartMatches['timezone'];
+                $currentError->date = $typeStartMatches['date'] ?: $now->format('d-M-Y');
+                $currentError->time = $typeStartMatches['time'] ?: $now->format('H:i:s');
+                $currentError->timezone = $typeStartMatches['timezone'] ?: $now->getTimezone()->getName();
                 $currentError->type = $typeStartMatches['type'];
                 $currentError->message = $typeStartMatches['message'];
 

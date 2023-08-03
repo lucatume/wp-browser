@@ -37,6 +37,7 @@ class ThemeProject extends ContentProject
         }
 
         [$this->name] = $themeInfo;
+        $this->testEnvironment = new TestEnvironment();
     }
 
     public function getType(): string
