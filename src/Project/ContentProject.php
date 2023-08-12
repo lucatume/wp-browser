@@ -12,6 +12,7 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\Source;
@@ -93,7 +94,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         FS::rrmdir(Source::getWordPressVersionsCacheDir());
         $installation = new Installation($wpRootDir);
         $installation->configure($db);
-        $serverLocalhostPort = $this->getFreeLocalhostPort($this->workDir);
+        $serverLocalhostPort = Random::openLocalhostPort();
         $installation->install(
             "http://localhost:$serverLocalhostPort",
             'admin',
@@ -123,7 +124,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         $this->sayInfo('Created database dump in <info>tests/Support/Data/dump.sql</info>.');
 
         $this->addChromedriverDevDependency();
-        $chromedriverPort = $this->getFreeLocalhostPort($this->workDir);
+        $chromedriverPort = Random::openLocalhostPort();
         $this->testEnvironment->testTablePrefix = 'test_';
         $this->testEnvironment->wpTablePrefix = 'wp_';
         $this->testEnvironment->wpUrl = "http://localhost:$serverLocalhostPort";

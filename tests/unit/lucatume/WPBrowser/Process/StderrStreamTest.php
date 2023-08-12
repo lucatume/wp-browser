@@ -6,6 +6,8 @@ namespace Unit\lucatume\WPBrowser\Process;
 use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
 use CompileError;
+use DateTimeImmutable;
+use DateTimeZone;
 use Error;
 use ErrorException;
 use Generator;
@@ -262,7 +264,8 @@ ERROR;
         ?string $expectedThrowableClass = null,
         ?int $expectedSeverity = null
     ): void {
-        $stderrStream = new StderrStream($stream, StderrStream::RELATIVE_PATHNAMES);
+        $currentDateTime = new DateTimeImmutable('2023-03-17 16:54:06', new DateTimeZone('Europe/Paris'));
+        $stderrStream = new StderrStream($stream, StderrStream::RELATIVE_PATHNAMES, $currentDateTime);
         $errors = $stderrStream->getParsed();
 
         $encoded = json_encode($errors, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);

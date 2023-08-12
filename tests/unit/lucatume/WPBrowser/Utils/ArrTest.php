@@ -223,5 +223,60 @@ class ArrTest extends Unit
         $actual = Arr::containsOnly($array, $type);
         $this->assertEquals($expected, $actual);
     }
+
+    public function isAssociativeDataProvider(): array
+    {
+        return [
+            'empty array' => [
+                'input' => [],
+                'expected' => true
+            ],
+            'array with numeric keys' => [
+                'input' => [1, 2, 3],
+                'expected' => false
+            ],
+            'array with string keys' => [
+                'input' => ['a' => 1, 'b' => 2, 'c' => 3],
+                'expected' => true
+            ],
+            'array with mixed keys' => [
+                'input' => ['a' => 1, 2, 'c' => 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is first' => [
+                'input' => ['a' => 1, 2, 'c' => 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is last' => [
+                'input' => [1, 2, 'c' => 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is in the middle' => [
+                'input' => [1, 'b' => 2, 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is in the middle, string key is first' => [
+                'input' => ['a' => 1, 'b' => 2, 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is in the middle, string key is last' => [
+                'input' => [1, 'b' => 2, 'c' => 3],
+                'expected' => false
+            ],
+            'array with mixed keys, string key is in the middle, string key is in the middle' => [
+                'input' => [1, 'b' => 2, 3, 'd' => 4],
+                'expected' => false
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider isAssociativeDataProvider
+     */
+    public function test_isAssociative(array $input, bool $expected): void
+    {
+        $actual = Arr::isAssociative($input);
+        $this->assertEquals($expected, $actual);
+    }
 }
 

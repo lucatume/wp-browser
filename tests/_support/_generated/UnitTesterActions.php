@@ -1,4 +1,4 @@
-<?php  //[STAMP] cac9a72d0fee89b4fed6f82c6f5369fc
+<?php  //[STAMP] 6623cf0fab90f71e35337c7649e31601
 // phpcs:ignoreFile
 namespace _generated;
 

@@ -16,32 +16,6 @@ use Symfony\Component\Process\Process;
 
 trait SetupTemplateTrait
 {
-
-    protected function getFreeLocalhostPort(
-        string $docRoot
-    ): int {
-        try {
-            $process = new Process(['php', '-S', 'localhost:0', '-t', $docRoot]);
-            $process->start();
-            do {
-                if (!$process->isRunning() && $process->getExitCode() !== 0) {
-                    throw new RuntimeException($process->getErrorOutput() ?: $process->getOutput());
-                }
-                $output = $process->getErrorOutput();
-                $port = preg_match('~localhost:(\d+)~', $output, $matches) ? $matches[1] : null;
-            } while ($port === null);
-            return (int)$port;
-        } catch (Exception $e) {
-            throw new RuntimeException(
-                'Could not start PHP built-in server to find free localhost port: ' . $e->getMessage()
-            );
-        } finally {
-            if (isset($process)) {
-                $process->stop();
-            }
-        }
-    }
-
     /**
      * @throws JsonException
      */
@@ -52,6 +26,5 @@ trait SetupTemplateTrait
         $composer->requireDev(['webdriver-binary/binary-chromedriver' => '*']);
         $composer->allowPluginsFromPackage('webdriver-binary/binary-chromedriver');
         $composer->update('webdriver-binary/binary-chromedriver');
-        $this->say();
     }
 }

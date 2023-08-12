@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
 use lucatume\WPBrowser\ManagedProcess\ChromeDriver;
+use lucatume\WPBrowser\Utils\Filesystem;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ChromeDriverController extends ServiceExtension
@@ -42,7 +43,7 @@ class ChromeDriverController extends ServiceExtension
         if ($read === false) {
             throw new ExtensionException(
                 $this,
-                'Failed to read the ChromeDriver PID file.'
+                'Could not read the ChromeDriver PID file.'
             );
         }
 
@@ -62,27 +63,23 @@ class ChromeDriverController extends ServiceExtension
     /**
      * @return array{
      *     running: string,
-     *     port: int,
-     *     pidFile: string
+     *     pidFile: string,
+     *     port: int
      * }
      * @throws ExtensionException
      */
     public function getInfo(): array
     {
-        $pidFile = $this->getPidFile();
-        $port = $this->getPort();
-
         return [
-            'running' => is_file($pidFile) ? 'yes' : 'no',
-            'pidFile' => $pidFile,
-            'port' => $port,
+            'running' => is_file($this->getPidFile()) ? 'yes' : 'no',
+            'pidFile' => Filesystem::relativePath(codecept_root_dir(), $this->getPidFile()),
+            'port' => $this->getPort(),
         ];
     }
 
     private function getPidFile(): string
     {
-        $pidFile = codecept_output_dir(ChromeDriver::PID_FILE_NAME);
-        return $pidFile;
+        return ChromeDriver::getPidFile();
     }
 
     /**
@@ -91,14 +88,13 @@ class ChromeDriverController extends ServiceExtension
     private function getPort(): int
     {
         $config = $this->config;
-        if (isset($config['port']) && !is_numeric($config['port']) && $config['port'] > 0) {
+        if (isset($config['port']) && !(is_numeric($config['port']) && $config['port'] > 0)) {
             throw new ExtensionException(
                 $this,
                 'The "port" configuration option must be an integer greater than 0.'
             );
         }
         /** @var array{port?: number} $config */
-        $port = (int)($config['port'] ?? 4444);
-        return $port;
+        return (int)($config['port'] ?? 4444);
     }
 }

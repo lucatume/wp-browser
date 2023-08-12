@@ -7,7 +7,7 @@ includes_src="https://github.com/WordPress/wordpress-develop/branches/trunk/test
 rm -rf "${root_dir}"/includes/core-phpunit/includes &&
   mkdir -p "${root_dir}"/includes/core-phpunit &&
   cd "${root_dir}"/includes/core-phpunit &&
-  svn export $includes_src &&
+  svn export $includes_src
   git apply "${root_dir}"/config/patches/core-phpunit/includes/abstract-testcase.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-ajax.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-canonical.php.patch &&

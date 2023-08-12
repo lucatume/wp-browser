@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 class DockerComposeController extends ServiceExtension
 {
@@ -17,7 +18,7 @@ class DockerComposeController extends ServiceExtension
      */
     public function start(OutputInterface $output): void
     {
-        $runningFile = $this->getRunningFile();
+        $runningFile = self::getRunningFile();
 
         if (is_file($runningFile)) {
             $output->writeln('Docker Compose stack already up.');
@@ -33,7 +34,7 @@ class DockerComposeController extends ServiceExtension
             $process->mustRun(function () use ($output) {
                 $output->write('.', false);
             });
-        } catch (ProcessFailedException $e) {
+        } catch (Throwable $e) {
             throw new ExtensionException(
                 $this,
                 'Failed to start Docker Compose services: ' . $e->getMessage()
@@ -71,13 +72,13 @@ class DockerComposeController extends ServiceExtension
                 $output->write('.', false);
             });
             $output->write(' ok', true);
-        } catch (ProcessFailedException $e) {
+        } catch (Throwable $e) {
             throw new ExtensionException(
                 $this,
                 'Failed to stop Docker Compose: ' . $e->getMessage()
             );
         }
-        $runningFile = $this->getRunningFile();
+        $runningFile = self::getRunningFile();
         if (is_file($runningFile) && !unlink($runningFile)) {
             throw new ExtensionException(
                 $this,
@@ -142,13 +143,14 @@ class DockerComposeController extends ServiceExtension
      */
     public function getInfo(): array
     {
-        $runningFile = $this->getRunningFile();
+        $runningFile = self::getRunningFile();
         if (is_file($runningFile)) {
-            // run the docker compose config command and return the output
-            $dockerComposeConfig = (new Process([
+            // Run the docker compose config command and return the output.
+            $process = new Process([
                 ...$this->getCommand($this->config),
                 'config'
-            ]))->mustRun()->getOutput();
+            ]);
+            $dockerComposeConfig = $process->mustRun()->getOutput();
 
             return [
                 'status' => 'up',
@@ -162,7 +164,7 @@ class DockerComposeController extends ServiceExtension
         ];
     }
 
-    private function getRunningFile(): string
+    public static function getRunningFile(): string
     {
         return codecept_output_dir(self::PID_FILENAME);
     }

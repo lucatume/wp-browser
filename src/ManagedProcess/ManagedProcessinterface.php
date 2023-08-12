@@ -1,13 +1,6 @@
 <?php
-/**
- * ${CARET}
- *
- * @since TBD
- */
 
 namespace lucatume\WPBrowser\ManagedProcess;
-
-use lucatume\WPBrowser\Exceptions\RuntimeException;
 
 interface ManagedProcessinterface
 {
@@ -28,5 +21,5 @@ interface ManagedProcessinterface
 
     public function getPid(): int;
 
-    public function getPidFile(): string;
+    public static function getPidFile(): string;
 }

@@ -981,13 +981,6 @@ class WPQueriesTest extends Unit
         $this->assertEquals($this->wpdb->queries, $sut->getQueries());
     }
 
-    /**
-     * ${CARET}
-     *
-     * @return wpdb
-     * @since TBD
-     *
-     */
     protected function getWpdb(): wpdb
     {
         $user = Env::get('WORDPRESS_DB_USER');

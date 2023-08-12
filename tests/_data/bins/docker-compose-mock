@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+echo 'Starting docker-compose-mock'
+tail -f /dev/null

@@ -1,0 +1,11 @@
+array (
+  'running' => 'yes',
+  'pidFile' => 'var/_output/php-built-in-server.pid',
+  'port' => 8923,
+  'docroot' => 'tests/unit/lucatume/WPBrowser/Extension',
+  'workers' => 5,
+  'url' => 'http://localhost:8923/',
+  'env' => 
+  array (
+  ),
+)

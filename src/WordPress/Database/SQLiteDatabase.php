@@ -199,7 +199,14 @@ class SQLiteDatabase implements DatabaseInterface
         if ($dump === false) {
             throw new DbException("Could not read dump file $dumpFilePath.", DbException::DUMP_FILE_NOT_READABLE);
         }
-        $queries = explode(';', $dump);
+
+        // Break the queries down following the dump pattern of a semicolon followed by a newline.
+        $queries = preg_split('/;\s*[\r\n]+/', $dump);
+
+        if($queries === false) {
+            throw new DbException("Could not split dump file $dumpFilePath.", DbException::DUMP_FILE_NOT_READABLE);
+        }
+
         $modified = 0;
         foreach ($queries as $query) {
             $query = trim($query);

@@ -4,12 +4,16 @@
 namespace lucatume\WPBrowser\Utils;
 
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use \UnitTester;
+use PHPUnit\Framework\Assert;
+use Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class ComposerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;
+    use ClassStubs;
 
     /**
      * It should throw if trying to build on non existing file
@@ -106,20 +110,50 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_allow_updating_the_composer_file(): void
     {
-        $calledCommand = null;
-        $this->uopzSetFunctionReturn('exec',
-            function (string $command, ?array &$output, ?int &$result) use (&$calledCommand) {
-                $calledCommand = $command;
-                return exec('exit 0', $output, $result);
-            },
-            true);
+        $built = 0;
+        $this->uopzSetMock(Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => function () use (&$built) {
+                    Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);
+                    $built++;
+                },
+                'run' => fn() => 0,
+                'getExitCode' => fn() => 0,
+            ]));
         $hash = md5(microtime());
         $testFile = sys_get_temp_dir() . "/$hash-composer.json";
         copy(codecept_data_dir('composer-files/test-1-composer.json'), $testFile);
         $composer = new Composer($testFile);
         $composer->requireDev(['foo/bar' => '1.0.0', 'foo/baz' => '^2.3']);
         $composer->update();
-        $this->assertEquals('composer update', $calledCommand);
+        $this->assertEquals(1, $built);
+    }
+
+    /**
+     * It should allow updating the Composer file for a specific package
+     *
+     * @test
+     */
+    public function should_allow_updating_the_composer_file_for_a_specific_package(): void
+    {
+        $built = 0;
+        $this->uopzSetMock(Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => function () use (&$built) {
+                    Assert::assertEquals(['composer', 'update', '--no-interaction', 'foo/baz'], func_get_args()[0]);
+                    $built++;
+                },
+                'run' => fn() => 0,
+                'getExitCode' => fn() => 0,
+            ]));
+        $tmpDir = FS::tmpDir('composer_', [
+            'composer.json' => file_get_contents(codecept_data_dir('composer-files/test-1-composer.json')),
+            'composer.lock' => ''
+        ]);
+        $composer = new Composer($tmpDir . '/composer.json');
+        $composer->requireDev(['foo/bar' => '1.0.0', 'foo/baz' => '^2.3']);
+        $composer->update('foo/baz');
+        $this->assertEquals(1, $built);
     }
 
     /**
@@ -129,11 +163,14 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_update_fails(): void
     {
-        $this->uopzSetFunctionReturn('exec',
-            function (string $command, ?array &$output, ?int &$result) {
-                return exec('exit 1', $output, $result);
-            },
-            true);
+        $this->uopzSetMock(Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => function () {
+                    Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);
+                },
+                'run' => fn() => 1,
+                'getExitCode' => fn() => 1,
+            ]));
         $hash = md5(microtime());
         $testFile = sys_get_temp_dir() . "/$hash-composer.json";
         copy(codecept_data_dir('composer-files/test-1-composer.json'), $testFile);

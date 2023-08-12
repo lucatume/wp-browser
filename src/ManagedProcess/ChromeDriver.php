@@ -11,6 +11,7 @@ class ChromeDriver implements ManagedProcessInterface
     use ManagedProcessTrait;
 
     public const PID_FILE_NAME = 'chromedriver.pid';
+    public const PORT_DEFAULT = 9515;
 
     private string $binary;
     private string $prettyName = 'ChromeDriver';
@@ -21,7 +22,7 @@ class ChromeDriver implements ManagedProcessInterface
      * @throws RuntimeException
      */
     public function __construct(
-        private int $port = 0,
+        private int $port = self::PORT_DEFAULT,
         private array $arguments = ['--url-base=/wd/hub'],
         ?string $binary = null
     ) {

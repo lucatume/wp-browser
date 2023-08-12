@@ -1061,10 +1061,7 @@ class SingleTest extends Unit
 
         $this->assertInstanceOf(Single::class, $installedOnSqlite);
 
-        // NOT USING DB_DIR, DB_FILE!
         $sqliteDb->dump($dumpFile);
-
-        $dumpContents = file_get_contents($dumpFile);
 
         $sqliteDb2 = new SqliteDatabase($wpRootDir . '/wp-content', 'test2.db');
         $sqliteDb2->import($dumpFile);

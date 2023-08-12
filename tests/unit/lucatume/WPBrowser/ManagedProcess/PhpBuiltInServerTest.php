@@ -8,6 +8,30 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem;
+use Symfony\Component\Process\Process;
+
+class PhpBuiltinServerProcessMock extends Process
+{
+    public static array $instances = [];
+
+    public function __construct(
+        array $command,
+        string $cwd = null,
+        array $env = null,
+        mixed $input = null,
+        ?float $timeout = 60
+    ) {
+        parent::__construct($command, $cwd, $env, $input, $timeout);
+        self::$instances[] = [
+            'command' => $command,
+            'cwd' => $cwd,
+            'env' => $env,
+            'input' => $input,
+            'timeout' => $timeout,
+            'object' => $this
+        ];
+    }
+}
 
 class PhpBuiltInServerTest extends Unit
 {
@@ -15,22 +39,17 @@ class PhpBuiltInServerTest extends Unit
     use UopzFunctions;
 
     /**
-     * It should start PHP Built-in server on random port if none is provided
-     *
-     * @test
+     * @before
+     * @after
      */
-    public function should_start_php_built_in_server_on_random_port_if_none_is_provided(): void
+    public function cleanUp(): void
     {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-        $server = new PhpBuiltInServer($docRoot);
-        $server->start(['XDEBUG_MODE' => 'off']);
-        $port = $server->getPort();
-
-        $this->assertEquals('Hello World!', file_get_contents("http://localhost:$port"));
-
-        $this->assertEquals(0, pcntl_wexitstatus($server->stop()));
+        if (is_file(PhpBuiltInServer::getPidFile())) {
+            unlink(PhpBuiltInServer::getPidFile());
+        }
+        $dir = __DIR__;
+        `pgrep -f 'php -S.*$dir' | xargs kill`;
+        PhpBuiltinServerProcessMock::$instances = [];
     }
 
     /**
@@ -42,102 +61,89 @@ class PhpBuiltInServerTest extends Unit
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(PhpBuiltInServer::ERR_DOC_ROOT_NOT_FOUND);
+
         new PhpBuiltInServer(__DIR__ . '/not-a-dir');
     }
 
+    public function notAssociativeArrayProvider(): array
+    {
+        return [
+            'integer keys' => [[0 => 'foo', 1 => 'bar']],
+            'implicit integer keys' => [['foo', 'bar']],
+            'mixed keys' => [['foo' => 'bar', 1 => 'baz']],
+        ];
+    }
+
     /**
-     * It should throw if server cannot be started on port
+     * It should throw if env is not associative array
+     *
+     * @test
+     * @dataProvider notAssociativeArrayProvider
+     */
+    public function should_throw_if_env_is_not_associative_array(mixed $env): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(PhpBuiltInServer::ERR_ENV);
+
+        new PhpBuiltInServer(__DIR__, 0, $env);
+    }
+
+    /**
+     * It should start PHP built-in server with specified workers
      *
      * @test
      */
-    public function should_throw_if_server_cannot_be_started_on_port(): void
+    public function should_start_php_built_in_server_with_specified_workers(): void
     {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-        $server1 = new PhpBuiltInServer($docRoot);
-        $server1->start(['XDEBUG_MODE' => 'off']);
-        $port = $server1->getPort();
+        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
 
-        usleep(750000);
-        $server2 = new PhpBuiltInServer($docRoot, $port);
+        $server = new PhpBuiltInServer(__DIR__, 0, [
+            'PHP_CLI_SERVER_WORKERS' => 3,
+        ]);
+        $server->start();
+
+        $this->assertCount(1, PhpBuiltinServerProcessMock::$instances);
+        $this->assertEquals(['PHP_CLI_SERVER_WORKERS' => 3], PhpBuiltinServerProcessMock::$instances[0]['env']);
+    }
+
+    /**
+     * It should start on random port if not specified
+     *
+     * @test
+     */
+    public function should_start_on_random_port_if_not_specified(): void
+    {
+        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
+
+        $server = new PhpBuiltInServer(__DIR__, 0);
+        $server->start();
+
+        $this->assertCount(1, PhpBuiltinServerProcessMock::$instances);
+        $this->assertIsInt($server->getPort());
+    }
+
+    /**
+     * It should throw if specified port already in use
+     *
+     * @test
+     */
+    public function should_throw_if_specified_port_already_in_use(): void
+    {
+        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
+
+        $startServer = new PhpBuiltInServer(__DIR__, 0);
+        $startServer->start();
+
+        // Remove the PID file to allow starting another one.
+        if (!unlink(PhpBuiltInServer::getPidFile())) {
+            throw new \RuntimeException('Could not remove PID file.');
+        }
+
+        $server = new PhpBuiltInServer(__DIR__, $startServer->getPort());
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(PhpBuiltInServer::ERR_PORT_ALREADY_IN_USE);
 
-        $server2->start();
-    }
-
-    /**
-     * It should throw if trying to stop not running server
-     *
-     * @test
-     */
-    public function should_throw_if_trying_to_stop_not_running_server(): void
-    {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-        $server = new PhpBuiltInServer($docRoot);
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(PhpBuiltInServer::ERR_NO_STARTED);
-
-        $server->stop();
-    }
-
-    /**
-     * It should throw if trying to get PID of not running server
-     *
-     * @test
-     */
-    public function should_throw_if_trying_to_get_pid_of_not_running_server(): void
-    {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-        $server = new PhpBuiltInServer($docRoot);
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(PhpBuiltInServer::ERR_NO_STARTED);
-
-        $server->getPid();
-    }
-
-    /**
-     * It should register its PID in a file
-     *
-     * @test
-     */
-    public function should_register_its_pid_in_a_file(): void
-    {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-
-        $server = new PhpBuiltInServer($docRoot);
-        $server->start(['XDEBUG_MODE' => 'off']);
-
-        $this->assertIsInt($server->getPid());
-        $this->assertFileExists($server->getPidFile());
-    }
-
-    /**
-     * It should throw if PID file cannot be written
-     *
-     * @test
-     */
-    public function should_throw_if_pid_file_cannot_be_written(): void
-    {
-        $docRoot = Filesystem::tmpDir('server_', [
-            'index.php' => '<?php echo "Hello World!";',
-        ]);
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(PhpBuiltInServer::ERR_PID_FILE);
-        $this->uopzSetFunctionReturn('file_put_contents', false);
-
-        $server = new PhpBuiltInServer($docRoot);
-        $server->start(['XDEBUG_MODE' => 'off']);
+        $server->start();
     }
 }

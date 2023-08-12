@@ -1,1 +1,1 @@
-run:all-Runs all the test suites, each in a separate process.
+run - Runs all the test suites, each in a separate process.

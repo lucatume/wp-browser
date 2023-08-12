@@ -4,6 +4,8 @@ namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
 use lucatume\WPBrowser\ManagedProcess\PhpBuiltInServer;
+use lucatume\WPBrowser\Utils\Arr;
+use lucatume\WPBrowser\Utils\Filesystem;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BuiltInServerController extends ServiceExtension
@@ -46,7 +48,7 @@ class BuiltInServerController extends ServiceExtension
         if ($read === false) {
             throw new ExtensionException(
                 $this,
-                'Failed to read the PHP built-in server PID file.'
+                'Could not read the PHP built-in server PID file.'
             );
         }
 
@@ -66,10 +68,10 @@ class BuiltInServerController extends ServiceExtension
     /**
      * @return array{
      *     running: string,
+     *     pidFile: string,
      *     port: int,
      *     docroot: string,
      *     workers: int,
-     *     pid: int|null,
      *     url: string,
      *     env: array<string,string|int|float>
      * }
@@ -82,9 +84,9 @@ class BuiltInServerController extends ServiceExtension
 
         return [
             'running' => is_file($pidFile) ? 'yes' : 'no',
-            'pid' => is_file($pidFile) ? (int)file_get_contents($pidFile) : null,
+            'pidFile' => Filesystem::relativePath(codecept_root_dir(), $this->getPidFile()),
             'port' => $port,
-            'docroot' => $docRoot,
+            'docroot' => Filesystem::relativePath(codecept_root_dir(), $docRoot),
             'workers' => $workers,
             'url' => 'http://localhost:' . $port . '/',
             'env' => $env
@@ -130,24 +132,24 @@ class BuiltInServerController extends ServiceExtension
         /** @var array{workers?: number} $config */
         $workers = (int)($config['workers'] ?? 5);
 
-        if (isset($config['env']) && !is_array($config['env'])) {
+        if (isset($config['env']) && !(is_array($config['env']) && Arr::isAssociative($config['env']))) {
             throw new ExtensionException(
                 $this,
-                'The "env" configuration option must be an array.'
+                'The "env" configuration option must be an associative array.'
             );
         }
         $env = $config['env'] ?? [];
-        $env = array_map( static function ( $value ): mixed {
-            return is_string( $value ) ?
-                str_replace( '%codecept_root_dir%', rtrim( codecept_root_dir(), '\\/' ), $value )
+        $env = array_map(static function ($value): mixed {
+            return is_string($value) ?
+                str_replace('%codecept_root_dir%', rtrim(codecept_root_dir(), '\\/'), $value)
                 : $value;
-        }, $env );
+        }, $env);
 
         return [$port, $docRoot, $workers, $env];
     }
 
     private function getPidFile(): string
     {
-        return codecept_output_dir(PhpBuiltInServer::PID_FILE_NAME);
+        return PhpBuiltInServer::getPidFile();
     }
 }

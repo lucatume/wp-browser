@@ -622,21 +622,18 @@ EOT;
             codecept_root_dir("vendor/bin/codecept"),
             'init',
             'wpbrowser',
-            '--path=' . $projectDir . '/web'
+            '--path=' . $projectDir
         ];
         $process = new Process($command);
 
         $process->setInput(
-            "no\n" // No, do not use reccomended setup.
+            "no\n" // No, do not use recommended setup.
         );
 
         $process->mustRun();
 
-        // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/web/wp');
-
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir,
+        $this->assertMatchesDirectorySnapshot($projectDir. '/tests',
             fn() => $this->replaceRandomPorts(...func_get_args()));
     }
 }

@@ -11,6 +11,7 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
@@ -89,7 +90,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
         Installation::placeSqliteMuPlugin($this->installation->getMuPluginsDir(), $contentDir);
 
         $this->sayInfo('SQLite drop-in placed, installing WordPress ...');
-        $serverLocalhostPort = $this->getFreeLocalhostPort($this->workDir);
+        $serverLocalhostPort = Random::openLocalhostPort();
         $tablePrefix = $this->installation->getState()->getTablePrefix();
         $db = new SQLiteDatabase($dataDir, 'db.sqlite',$tablePrefix);
         $this->installation->setDb($db);
@@ -117,7 +118,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
         $this->sayInfo('Created database dump in <info>tests/Support/Data/dump.sql</info>.');
 
         $this->addChromedriverDevDependency();
-        $chromedriverPort = $this->getFreeLocalhostPort($this->workDir);
+        $chromedriverPort = Random::openLocalhostPort();
         $this->testEnvironment->testTablePrefix = 'test_';
         $this->testEnvironment->wpTablePrefix = 'wp_';
         $this->testEnvironment->wpUrl = "http://localhost:$serverLocalhostPort";

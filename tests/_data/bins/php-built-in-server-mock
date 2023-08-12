@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+# Get today's date in the Mon Aug 14 07:27:11 2023 format.
+now=$(date +"%a %b %d %H:%M:%S %Y")
+echo "[$now] PHP 8.2.6 Development Server (http://localhost:9999) started"
+tail -f /dev/null

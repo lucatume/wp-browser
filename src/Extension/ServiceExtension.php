@@ -6,6 +6,7 @@ use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
+use lucatume\WPBrowser\Utils\Arr;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class ServiceExtension extends Extension
@@ -24,7 +25,9 @@ abstract class ServiceExtension extends Extension
     {
         $config = $this->config;
 
-        if (isset($config['suites']) && !is_array($config['suites'])) {
+        if (isset($config['suites']) && !(
+                is_array($config['suites']) && Arr::containsOnly($config['suites'], 'string'))
+        ) {
             throw new ExtensionException($this, 'The "suites" configuration option must be an array.');
         }
         /** @var string[] $suites */

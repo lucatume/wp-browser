@@ -586,6 +586,7 @@ PHP;
 
         $sqliteDb = new SQLiteDatabase($wpRoot, 'db.sqlite');
 
+        Installation::placeSqliteMuPlugin($installation->getMuPluginsDir(), $installation->getContentDir());
         $installation->setDb($sqliteDb);
 
         $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());

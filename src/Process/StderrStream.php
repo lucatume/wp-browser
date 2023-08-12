@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process;
 
 use CompileError;
 use DateTime;
+use DateTimeInterface;
 use ErrorException;
 use lucatume\WPBrowser\Process\StderrStream\Error;
 use lucatume\WPBrowser\Process\StderrStream\TraceEntry;
@@ -22,8 +23,11 @@ class StderrStream
      */
     private array $parsed = [];
 
-    public function __construct(string $streamContents, int $options = 0)
+    private DateTimeInterface $currentDatetime;
+
+    public function __construct(string $streamContents, int $options = 0, DateTimeInterface $currentDateTime = null)
     {
+        $this->currentDatetime = $currentDateTime ?: new DateTime();
         $this->parse($streamContents, $options);
     }
 
@@ -79,7 +83,7 @@ class StderrStream
 
     public function parse(string $stderrStreamContents, int $options = 0): void
     {
-        $now = new DateTime();
+        $currentDateTime = $this->currentDatetime ?? new DateTime();
         $len = strlen($stderrStreamContents);
 
         if ($len === 0) {
@@ -116,9 +120,9 @@ class StderrStream
 
                 $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError->date = $typeMatches['date'] ?: $now->format('d-M-Y');
-                $currentError->time = $typeMatches['time'] ?: $now->format('H:i:s');
-                $currentError->timezone = $typeMatches['timezone'] ?: $now->getTimezone()->getName();
+                $currentError->date = $typeMatches['date'] ?: $currentDateTime->format('d-M-Y');
+                $currentError->time = $typeMatches['time'] ?: $currentDateTime->format('H:i:s');
+                $currentError->timezone = $typeMatches['timezone'] ?: $currentDateTime->getTimezone()->getName();
                 $currentError->type = $typeMatches['type'];
                 $currentError->message = $typeMatches['message'];
                 $currentError->file = $typeMatches['file'];
@@ -143,9 +147,9 @@ class StderrStream
 
                 $currentError = new Error();
                 $isNumericStackTrace = false;
-                $currentError->date = $typeStartMatches['date'] ?: $now->format('d-M-Y');
-                $currentError->time = $typeStartMatches['time'] ?: $now->format('H:i:s');
-                $currentError->timezone = $typeStartMatches['timezone'] ?: $now->getTimezone()->getName();
+                $currentError->date = $typeStartMatches['date'] ?: $currentDateTime->format('d-M-Y');
+                $currentError->time = $typeStartMatches['time'] ?: $currentDateTime->format('H:i:s');
+                $currentError->timezone = $typeStartMatches['timezone'] ?: $currentDateTime->getTimezone()->getName();
                 $currentError->type = $typeStartMatches['type'];
                 $currentError->message = $typeStartMatches['message'];
 
