@@ -58,7 +58,7 @@ SQL;
 
     /**
      * @test
-     * it should replace https scheam with http
+     * it should replace https schema with http
      */
     public function it_should_replace_https_schema_with_http(): void
     {
@@ -344,9 +344,9 @@ SQL;
     {
         return [
             'IP Address to URL' => ['http://1.2.3.4', 'http://wordpress.local'],
-            'IP Address wth port to URL' => ['http://127.0.0.1:8888', 'http://wordpress.local'],
-            'IP Address wth port to URL with port' => ['http://127.0.0.1:8888', 'http://wordpress.local:2111'],
-            'IP Address wth port to URL with same port' => ['http://127.0.0.1:8888', 'http://wordpress.local:8888'],
+            'IP Address with port to URL' => ['http://127.0.0.1:8888', 'http://wordpress.local'],
+            'IP Address with port to URL with port' => ['http://127.0.0.1:8888', 'http://wordpress.local:2111'],
+            'IP Address with port to URL with same port' => ['http://127.0.0.1:8888', 'http://wordpress.local:8888'],
             'IP address to IP address' => ['http://127.0.0.1', 'http://1.2.3.4'],
             'IP address with port to IP address' => ['http://127.0.0.1:9999', 'http://1.2.3.4'],
             'IP address with port to IP address with port' => ['http://127.0.0.1:9999', 'http://1.2.3.4:2133'],

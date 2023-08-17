@@ -366,7 +366,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Fixed
 
-- URL replacement function in `WPDb` module that would incorrectly handling the replacement of `locahost:port` URLs, fixes #430
+- URL replacement function in `WPDb` module that would incorrectly handling the replacement of `localhost:port` URLs, fixes #430
 
 ## [2.6.5] 2020-07-16;
 
@@ -437,7 +437,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Added
 
-- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowe to spawn during tests or not (new default).
+- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowed to spawn during tests or not (new default).
 
 ### Fixed
 
@@ -717,7 +717,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.14] 2019-06-14;
 ### Fixed
-- remove left-over `%WP_URL%` from generated configuration files when runnin `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
+- remove left-over `%WP_URL%` from generated configuration files when running `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
 
 ## [2.2.13] 2019-06-13;
 ### Fixed
@@ -757,7 +757,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.7] 2019-05-08;
 ### Changed
-- replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
+- replaced `wp-cli/wp-cli:1.1.*` dependency with the `wp-cli/wp-cli-bundle:^2.0` one
 
 ## [2.2.6] 2019-05-07;
 ### Added
@@ -778,7 +778,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.3] 2019-04-19;
 ### Added
-- first version of the documentaion
+- first version of the documentation
 - fixed an issue where the initialization template would not correctly set the placeholder names (thanks @Luc45)
 - methods `getQueries` and `countQueries` to the `WPQueries` module
 
@@ -811,7 +811,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
 - added a clear disclaimer about db wiping in the `init wpbrowser` command
 - an issue where the WpWebDriver module would not login correctly [#121](https://github.com/lucatume/wp-browser/pull/121)
-- code style compatibilty with PSR-2 standard
+- code style compatibility with PSR-2 standard
 - an issue in the `tad\WPBrowser\Tests\Support\importDump` function that would prevent the function from working if the database host specified a port
 - an issue with end-of-line chars in tests on Windows [#191](https://github.com/lucatume/wp-browser/pull/191) - thanks @Luc45
 
@@ -909,7 +909,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.22.7] 2018-02-27;
 ### Added
-- more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framwork_` classes
+- more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framework_` classes
 
 ## [1.22.6.1] 2018-02-14;
 ### Fixed
@@ -933,7 +933,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ## [1.22.3] 2018-01-30;
 ### Fixed
 - removed the faulty `output` parameter from the `WPCLI::cli` method
-- fixed issues witht `WPCLI` module arguments escaping
+- fixed issues with `WPCLI` module arguments escaping
 
 ## [1.22.2] 2018-01-27;
 ### Changed
@@ -1195,7 +1195,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - Travis configuration file `.travis.yml` to use [external Apache setuup script](https://github.com/lucatume/travis-apache-set)
 
 ## [1.15.3] 2016-08-19
-### Addded
+### Added
 - Travis CI integration
 
 ### Fixed
@@ -1543,7 +1543,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.7.6] 2015-10-21
 ### Fixed
-- call to deprecated `set_current_user` function replaced with call to `wp_set_curren_user`
+- call to deprecated `set_current_user` function replaced with call to `wp_set_current_user`
 
 ## [1.7.5] 2015-10-21
 ### Fixed

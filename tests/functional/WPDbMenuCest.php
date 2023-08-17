@@ -43,9 +43,9 @@ class WPDbMenuCest
 
     /**
      * @test
-     * it should add a menu in the databaase
+     * it should add a menu in the database
      */
-    public function it_should_add_a_menu_in_the_databaase(FunctionalTester $I): void
+    public function it_should_add_a_menu_in_the_database(FunctionalTester $I): void
     {
         $I->useTheme('foo');
 

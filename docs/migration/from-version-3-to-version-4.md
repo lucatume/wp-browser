@@ -1,0 +1,7 @@
+##  Migrating projects from version 2 of wp-browser to version 3
+
+TODO: update references to classes to use the lucatume\WPBrowser namespace.
+TODO: migrate utility functions to use static methods (e.g. filesystem)
+TODO: new Events API
+* require the dotenv package in the project composer file
+* update setUp et al to return void

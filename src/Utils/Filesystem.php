@@ -255,7 +255,7 @@ class Filesystem
     }
 
     /**
-     * Realpath, withs support for virtual file systems.
+     * Realpath, with support for virtual file systems.
      *
      * @param string $path The path to resolve.
      *

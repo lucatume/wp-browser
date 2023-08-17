@@ -26,11 +26,11 @@ class InstallationTest extends Unit
     use MainInstallationAccess;
 
     /**
-     * It should throw when buiding on non-existing root directory
+     * It should throw when building on non-existing root directory
      *
      * @test
      */
-    public function should_throw_when_buiding_on_non_existing_root_directory(): void
+    public function should_throw_when_building_on_non_existing_root_directory(): void
     {
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::ROOT_DIR_NOT_FOUND);
@@ -224,11 +224,11 @@ class InstallationTest extends Unit
     }
 
     /**
-     * It should allow runing wp-cli command on empty installation
+     * It should allow running wp-cli command on empty installation
      *
      * @test
      */
-    public function should_allow_runing_wp_cli_command_on_empty_installation(): void
+    public function should_allow_running_wp_cli_command_on_empty_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
 

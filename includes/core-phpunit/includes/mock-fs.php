@@ -190,19 +190,19 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 				continue;
 			}
 
-			$struc         = array();
-			$struc['name'] = $entry->name;
-			$struc['type'] = $entry->type;
+			$struct         = array();
+			$struct['name'] = $entry->name;
+			$struct['type'] = $entry->type;
 
-			if ( 'd' === $struc['type'] ) {
+			if ( 'd' === $struct['type'] ) {
 				if ( $recursive ) {
-					$struc['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struc['name'] ), $include_hidden, $recursive );
+					$struct['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struct['name'] ), $include_hidden, $recursive );
 				} else {
-					$struc['files'] = array();
+					$struct['files'] = array();
 				}
 			}
 
-			$ret[ $entry->name ] = $struc;
+			$ret[ $entry->name ] = $struct;
 		}
 		return $ret;
 	}

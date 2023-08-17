@@ -19,7 +19,7 @@ namespace Hautelook\Phpass;
  *
  * The homepage URL for this framework is:
  *
- *	http://www.openwall.com/phpass/
+ * http://www.openwall.com/phpass/
  *
  * Please be sure to update the Version line if you edit this file in any way.
  * It is suggested that you leave the main version number intact, but indicate
