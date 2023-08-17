@@ -238,11 +238,11 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should throw if trying ot import import non-readable file
+     * It should throw if trying to import import non-readable file
      *
      * @test
      */
-    public function should_throw_if_trying_ot_import_import_non_readable_file(): void
+    public function should_throw_if_trying_to_import_import_non_readable_file(): void
     {
         $dump = codecept_data_dir('dump.sqlite');
         $dir = FS::tmpDir('sqlite_');

@@ -1,0 +1,4 @@
+[default.extend-identifiers]
+RebOOter = "RebOOter"
+[files]
+extend-exclude = ["vendor", "includes"]

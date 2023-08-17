@@ -10,7 +10,7 @@ function print_help() {
   echo "  -r                      Access container as root."
   echo "  -s                      Skip building images in build command."
   echo "  -h                      Display this help message."
-  echo "Supported COMMANDs"
+  echo "Supported commands"
   echo "  build                 Build the images for the specified PHP version."
   echo "  clean                 Remove the containers and images, remove the wordpress installation."
   echo "  composer_update       Update the composer dependencies for the specified PHP and Codeception version."

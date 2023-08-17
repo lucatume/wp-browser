@@ -27,3 +27,5 @@ jobs:
       -
         name: "Search for misspellings"
         uses: "crate-ci/typos@master"
+        with:
+          config: ./config/typos.toml
