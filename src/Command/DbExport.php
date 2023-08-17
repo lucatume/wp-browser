@@ -30,7 +30,7 @@ class DbExport extends Command implements CustomCommandInterface
         return 'Exports the database used by a suite to a file.';
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('path', InputArgument::REQUIRED, 'The path to the WordPress root directory.');
         $this->addArgument('dumpFilePath', InputArgument::REQUIRED, 'The path of the dump file to create.');

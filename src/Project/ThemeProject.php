@@ -199,5 +199,4 @@ EOT,
             throw new RuntimeException('Could not write tests/Integration/SampleTest.php.');
         }
     }
-
 }

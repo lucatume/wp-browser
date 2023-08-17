@@ -11,5 +11,4 @@ trait DockerComposeUserTrait
         $process = new Process(['docker','--version']);
         $process->mustRun();
     }
-
 }

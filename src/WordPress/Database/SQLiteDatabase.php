@@ -168,7 +168,8 @@ class SQLiteDatabase implements DatabaseInterface
      */
     public function getOption(string $name, mixed $default = null): mixed
     {
-        $stmt = $this->getPDO()->prepare("SELECT option_value FROM {$this->tablePrefix}options WHERE option_name = :name");
+        $query = "SELECT option_value FROM {$this->tablePrefix}options WHERE option_name = :name";
+        $stmt = $this->getPDO()->prepare($query);
         $stmt->execute([':name' => $name]);
         $value = $stmt->fetchColumn();
         if ($value === false) {
@@ -203,7 +204,7 @@ class SQLiteDatabase implements DatabaseInterface
         // Break the queries down following the dump pattern of a semicolon followed by a newline.
         $queries = preg_split('/;\s*[\r\n]+/', $dump);
 
-        if($queries === false) {
+        if ($queries === false) {
             throw new DbException("Could not split dump file $dumpFilePath.", DbException::DUMP_FILE_NOT_READABLE);
         }
 

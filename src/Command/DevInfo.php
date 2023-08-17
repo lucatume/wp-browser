@@ -43,7 +43,7 @@ class DevInfo extends Command implements CustomCommandInterface
             $info[$extension->getPrettyName()] = $extension->getInfo();
         }
 
-        $output->writeln(Yaml::dump($info, 8,2));
+        $output->writeln(Yaml::dump($info, 8, 2));
 
         return 0;
     }

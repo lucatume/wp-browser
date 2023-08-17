@@ -46,5 +46,4 @@ class DevStop extends Command implements CustomCommandInterface
 
         return 0;
     }
-
 }

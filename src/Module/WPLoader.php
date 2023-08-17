@@ -292,10 +292,10 @@ class WPLoader extends Module
 
             // Try and initialize the database connection now.
             $db->create();
-			$db->setEnvVars();
+            $db->setEnvVars();
             $this->db = $db;
 
-	        $this->installation = new Installation( $config['wpRootFolder'], false );
+            $this->installation = new Installation($config['wpRootFolder'], false);
 
             // Update the config to the resolved path.
             $config['wpRootFolder'] = $this->installation->getWpRootDir();
@@ -434,9 +434,9 @@ class WPLoader extends Module
 
         if (Debug::isEnabled()) {
             codecept_debug('WordPress status: ' . json_encode(
-                    $this->installation->report(),
-                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                ));
+                $this->installation->report(),
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            ));
         }
     }
 

@@ -92,7 +92,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
         $this->sayInfo('SQLite drop-in placed, installing WordPress ...');
         $serverLocalhostPort = Random::openLocalhostPort();
         $tablePrefix = $this->installation->getState()->getTablePrefix();
-        $db = new SQLiteDatabase($dataDir, 'db.sqlite',$tablePrefix);
+        $db = new SQLiteDatabase($dataDir, 'db.sqlite', $tablePrefix);
         $this->installation->setDb($db);
         $this->installation->install(
             "http://localhost:$serverLocalhostPort",

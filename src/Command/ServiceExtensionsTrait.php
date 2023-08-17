@@ -18,7 +18,8 @@ trait ServiceExtensionsTrait
     protected function buildServiceExtension(string $serviceExtension): ServiceExtension
     {
         if (!is_a($serviceExtension, ServiceExtension::class, true)) {
-            $message = "The class {$serviceExtension} does not implement the " . ServiceExtension::class . " interface.";
+            $message = "The class {$serviceExtension} does not implement the "
+                . ServiceExtension::class . " interface.";
             throw new InvalidArgumentException($message);
         }
         $config = $this->getServiceExtensionConfig($serviceExtension);
