@@ -60,6 +60,7 @@ class Worker implements WorkerInterface
             'codeceptionConfig' => $control['codeceptionConfig'] ?? $defaultControl['codeceptionConfig'],
             'composerAutoloadPath' => $control['composerAutoloadPath'] ?? $defaultControl['composerAutoloadPath'],
             'composerBinDir' => $control['composerBinDir'] ?? $defaultControl['composerBinDir'],
+            'env' => $control['env'] ?? $defaultControl['env'],
         ];
     }
 

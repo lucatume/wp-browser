@@ -52,6 +52,22 @@ class ComposerTest extends \Codeception\Test\Unit
     }
 
     /**
+     * It should throw if json file contents cannot be decoded
+     *
+     * @test
+     */
+    public function should_throw_if_json_file_contents_cannot_be_decoded(): void
+    {
+        $jsonFile = sys_get_temp_dir() . '/json-file-returning-array.json';
+        file_put_contents($jsonFile, '[]');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(Composer::ERR_DECODING_FAILED);
+
+        new Composer($jsonFile);
+    }
+
+    /**
      * It should throw if file contents cannot be read
      *
      * @test

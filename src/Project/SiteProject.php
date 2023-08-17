@@ -68,7 +68,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
     /**
      * @throws Throwable
      */
-    public function setup()
+    public function setup(): void
     {
         $this->say('You can use a portable configuration based on PHP built-in server, Chromedriver ' .
             'and SQLite.');

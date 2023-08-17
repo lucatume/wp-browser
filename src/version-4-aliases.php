@@ -2,13 +2,7 @@
 
 namespace lucatume\WPBrowser;
 
-use lucatume\WPBrowser\Command\GenerateWPAjax;
-use lucatume\WPBrowser\Command\GenerateWPCanonical;
-use lucatume\WPBrowser\Command\GenerateWPRestApi;
-use lucatume\WPBrowser\Command\GenerateWPRestController;
-use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
-use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -45,13 +39,7 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\Module\\WPLoader' => WPLoader::class,
         'Codeception\\Module\\WPQueries' => WPQueries::class,
         'Codeception\\Module\\WPWebDriver' => WPWebDriver::class,
-        'Codeception\\Command\\GenerateWPAjax' => GenerateWPAjax::class,
-        'Codeception\\Command\\GenerateWPCanonical' => GenerateWPCanonical::class,
-        'Codeception\\Command\\GenerateWPRestApi' => GenerateWPRestApi::class,
-        'Codeception\\Command\\GenerateWPRestController' => GenerateWPRestController::class,
-        'Codeception\\Command\\GenerateWPRestPostTypeController' => GenerateWPRestPostTypeController::class,
         'Codeception\\Command\\GenerateWPUnit' => GenerateWPUnit::class,
-        'Codeception\\Command\\GenerateWPXMLRPC' => GenerateWPXMLRPC::class,
         'Codeception\\Template\\Wpbrowser' => WpbrowserInitTemplate::class,
         'Codeception\\TestCase\\WPTestCase' => WPTestCase::class,
         'Codeception\\TestCase\\WPAjaxTestCase' => WPAjaxTestCase::class,

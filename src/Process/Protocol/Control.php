@@ -85,7 +85,8 @@ class Control
             'codeceptionRootDir' => codecept_root_dir(),
             'codeceptionConfig' => Configuration::isEmpty() ? [] : Configuration::config(),
             'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
-            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null
+            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
+            'env' => $_ENV,
         ];
     }
 

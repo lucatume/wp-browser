@@ -88,7 +88,7 @@ class DockerComposeController extends ServiceExtension
     }
 
     /**
-     * @param array<string,mixed> $config
+     * @param array<int|string,mixed> $config
      *
      * @throws ExtensionException
      */
@@ -109,7 +109,7 @@ class DockerComposeController extends ServiceExtension
     }
 
     /**
-     * @param array<string,mixed> $config
+     * @param array<int|string,mixed> $config
      *
      * @throws ExtensionException
      */
@@ -137,7 +137,7 @@ class DockerComposeController extends ServiceExtension
     /**
      * @return array{
      *     status: string,
-     *     config: string|mixed[]
+     *     config: mixed
      * }
      * @throws ExtensionException
      */
@@ -170,7 +170,7 @@ class DockerComposeController extends ServiceExtension
     }
 
     /**
-     * @param array<string,mixed> $config
+     * @param array<int|string,mixed> $config
      *
      * @return string[]
      * @throws ExtensionException

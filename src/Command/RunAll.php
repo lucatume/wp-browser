@@ -38,7 +38,7 @@ class RunAll extends Run implements CustomCommandInterface
 
         foreach ($this->getSuites() as $suite) {
             try {
-                $cwd = getcwd();
+                $cwd = getcwd() ?: null;
                 $process = new Process([$codeceptBin, 'codeception:run', $suite, ...$runOptions], $cwd);
                 $process->setTimeout(null);
                 $process->start();

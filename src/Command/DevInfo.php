@@ -5,7 +5,6 @@ namespace lucatume\WPBrowser\Command;
 use Codeception\CustomCommandInterface;
 use Codeception\Exception\ConfigurationException;
 use Codeception\Exception\ExtensionException;
-use lucatume\WPBrowser\Extension\ServiceExtensionInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

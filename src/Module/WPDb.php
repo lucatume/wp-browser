@@ -19,7 +19,6 @@ use lucatume\WPBrowser\Generators\Comment;
 use lucatume\WPBrowser\Generators\Links;
 use lucatume\WPBrowser\Generators\Post;
 use lucatume\WPBrowser\Generators\Tables;
-use lucatume\WPBrowser\Generators\TablesGeneratorFactory;
 use lucatume\WPBrowser\Generators\User;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
@@ -286,9 +285,9 @@ class WPDb extends Db
      * @param int $postId   The post ID.
      * @param string $field The post field to get the value for.
      *
-     * @return string The value of the post field.
+     * @return mixed The value of the post field.
      */
-    public function grabPostFieldFromDatabase(int $postId, string $field): string
+    public function grabPostFieldFromDatabase(int $postId, string $field): mixed
     {
         $tableName = $this->grabPrefixedTableNameFor('posts');
         return $this->grabFromDatabase($tableName, $field, ['ID' => $postId]);
@@ -4496,13 +4495,14 @@ class WPDb extends Db
      */
     protected function createDatabasesIfNotExist(array $config): void
     {
-        if (str_starts_with($config['dsn'], 'sqlite:')) {
+        $configDsn = $config['dsn'];
+        if (is_string($configDsn) && str_starts_with($configDsn, 'sqlite:')) {
             return;
         }
 
         $createIfNotExist = [];
         if (!empty($config['createIfNotExists'])) {
-            $createIfNotExist[$config['dsn']] = [$config['user'], $config['password']];
+            $createIfNotExist[$configDsn] = [$config['user'], $config['password']];
         }
 
         if (!empty($config['databases']) && is_array($config['databases'])) {

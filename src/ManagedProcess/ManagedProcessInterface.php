@@ -2,7 +2,7 @@
 
 namespace lucatume\WPBrowser\ManagedProcess;
 
-interface ManagedProcessinterface
+interface ManagedProcessInterface
 {
     public const ERR_START = 1;
     public const ERR_NO_STARTED = 2;
@@ -19,7 +19,7 @@ interface ManagedProcessinterface
 
     public function stop(): ?int;
 
-    public function getPid(): int;
+    public function getPid(): ?int;
 
     public static function getPidFile(): string;
 }

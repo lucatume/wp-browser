@@ -17,7 +17,7 @@ class TestEnvironment
     public string $chromeDriverHost = 'localhost';
     public int $chromeDriverPort = 4444;
     /**
-     * @var array<class-string,array<string,string|int|float>>
+     * @var array<string,array<string,mixed>>
      */
     public array $extensionsEnabled = [];
     public ?string $dumpFile = null;

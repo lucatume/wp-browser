@@ -35,7 +35,7 @@ class ChromedriverTest extends Unit
         $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', '/not-a-binary');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_BINARY_NOT_FOUND);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_BINARY_NOT_FOUND);
 
         new ChromeDriver();
     }
@@ -50,7 +50,7 @@ class ChromedriverTest extends Unit
         $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', __FILE__);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_BINARY_NOT_FOUND);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_BINARY_NOT_FOUND);
         new ChromeDriver();
     }
 
@@ -65,7 +65,7 @@ class ChromedriverTest extends Unit
         $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $throwingBin);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_START);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_START);
 
         $chromedriver = new ChromeDriver();
         $chromedriver->start();
@@ -94,7 +94,7 @@ class ChromedriverTest extends Unit
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_PID);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_PID);
 
         $chromedriver->start();
     }
@@ -122,7 +122,7 @@ class ChromedriverTest extends Unit
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_PID_FILE);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_PID_FILE);
 
         $this->uopzSetFunctionReturn('file_put_contents', function (string $file): false|int {
             return $file === ChromeDriver::getPidFile() ? false : 0;
@@ -171,7 +171,7 @@ class ChromedriverTest extends Unit
         $this->uopzSetFunctionReturn('unlink', false);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ManagedProcessinterface::ERR_PID_FILE_DELETE);
+        $this->expectExceptionCode(ManagedProcessInterface::ERR_PID_FILE_DELETE);
 
         $chromedriver->stop();
     }

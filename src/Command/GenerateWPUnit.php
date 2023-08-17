@@ -6,7 +6,6 @@ use Codeception\Command\GenerateTest;
 use Codeception\Configuration;
 use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
-use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\Lib\Generator\WPUnit as WPUnitGenerator;
 use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\TestCase\WPTestCase;

@@ -43,6 +43,75 @@ modules:
             
 <<< /EndToEnd.suite.yml <<<
 
+>>> /EndToEnd/ActivationCest.php >>>
+<?php
+
+namespace Tests\EndToEnd;
+
+use Tests\Support\EndToEndTester;
+
+class ActivationCest
+{
+    public function test_homepage_works(EndToEndTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->seeElement('body');
+    }
+    
+    public function test_can_login_as_admin(EndToEndTester $I): void
+    {
+        $I->loginAsAdmin();
+        $I->amOnAdminPage('/');
+        $I->seeElement('body.wp-admin');
+    }
+}
+
+<<< /EndToEnd/ActivationCest.php <<<
+
+>>> /EndToEnd/_bootstrap.php >>>
+<?php
+/*
+ * EndToEnd suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
+ * 
+ * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
+ * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
+ * and re-created from the dump file(s).
+ * 
+ * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
+ * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
+ * E.g.:
+ * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
+ * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
+ * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
+ * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
+ */
+<<< /EndToEnd/_bootstrap.php <<<
+
+>>> /Integration.suite.yml >>>
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
+
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - lucatume\WPBrowser\Module\WPLoader
+    config:
+        lucatume\WPBrowser\Module\WPLoader:
+           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+           dbUrl: '%WORDPRESS_DB_URL%'
+           wpDebug: true
+           tablePrefix: '%TEST_TABLE_PREFIX%'
+           domain: '%WORDPRESS_DOMAIN%'
+           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+           title: 'Integration Tests'
+           plugins: []
+           theme: ''
+<<< /Integration.suite.yml <<<
+
 >>> /Integration/SampleTest.php >>>
 <?php
 
@@ -103,61 +172,39 @@ class SampleTest extends WPTestCase
  */
 <<< /Integration/_bootstrap.php <<<
 
->>> /Integration.suite.yml >>>
-# Integration suite configuration
-#
-# Run integration and "WordPress unit" tests.
+>>> /.env >>>
+# The path to the WordPress root directory, the one containing the wp-load.php file.
+# This can be a relative path from the directory that contains the codeception.yml file,
+# or an absolute path.
+WORDPRESS_ROOT_DIR=.
 
-actor: IntegrationTester
-bootstrap: _bootstrap.php
-modules:
-    enabled:
-        - lucatume\WPBrowser\Module\WPLoader
-    config:
-        lucatume\WPBrowser\Module\WPLoader:
-           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
-           dbUrl: '%WORDPRESS_DB_URL%'
-           wpDebug: true
-           tablePrefix: '%TEST_TABLE_PREFIX%'
-           domain: '%WORDPRESS_DOMAIN%'
-           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
-           title: 'Integration Tests'
-           plugins: []
-           theme: ''
-<<< /Integration.suite.yml <<<
+# Tests will require a MySQL database to run.
+# The database will be created if it does not exist.
+# Do not use a database that contains important data!
+WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite
 
->>> /Support/IntegrationTester.php >>>
-<?php
+# The Integration suite will use this table prefix for the WordPress tables.
+TEST_TABLE_PREFIX=test_
 
-declare(strict_types=1);
+# This table prefix used by the WordPress site in end-to-end tests.
+WORDPRESS_TABLE_PREFIX=wp_
 
-namespace Tests\Support;
+# The URL and domain of the WordPress site used in end-to-end tests.
+WORDPRESS_URL=http://localhost:42911
+WORDPRESS_DOMAIN=localhost:42911
 
-/**
- * Inherited Methods
- * @method void wantTo($text)
- * @method void wantToTest($text)
- * @method void execute($callable)
- * @method void expectTo($prediction)
- * @method void expect($prediction)
- * @method void amGoingTo($argumentation)
- * @method void am($role)
- * @method void lookForwardTo($achieveValue)
- * @method void comment($description)
- * @method void pause($vars = [])
- *
- * @SuppressWarnings(PHPMD)
-*/
-class IntegrationTester extends \Codeception\Actor
-{
-    use _generated\IntegrationTesterActions;
+# The username and password of the administrator user of the WordPress site used in end-to-end tests.
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=password
 
-    /**
-     * Define custom actions here
-     */
-}
+# The host and port of the ChromeDriver server that will be used in end-to-end tests.
+CHROMEDRIVER_HOST=localhost
+CHROMEDRIVER_PORT=37863
 
-<<< /Support/IntegrationTester.php <<<
+# The port on which the PHP built-in server will serve the WordPress installation.
+BUILTIN_SERVER_PORT=42911
+
+<<< /.env <<<
 
 >>> /Support/EndToEndTester.php >>>
 <?php
@@ -192,9 +239,38 @@ class EndToEndTester extends \Codeception\Actor
 
 <<< /Support/EndToEndTester.php <<<
 
->>> /Support/Data/.gitkeep >>>
+>>> /Support/IntegrationTester.php >>>
+<?php
 
-<<< /Support/Data/.gitkeep <<<
+declare(strict_types=1);
+
+namespace Tests\Support;
+
+/**
+ * Inherited Methods
+ * @method void wantTo($text)
+ * @method void wantToTest($text)
+ * @method void execute($callable)
+ * @method void expectTo($prediction)
+ * @method void expect($prediction)
+ * @method void amGoingTo($argumentation)
+ * @method void am($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void comment($description)
+ * @method void pause($vars = [])
+ *
+ * @SuppressWarnings(PHPMD)
+*/
+class IntegrationTester extends \Codeception\Actor
+{
+    use _generated\IntegrationTesterActions;
+
+    /**
+     * Define custom actions here
+     */
+}
+
+<<< /Support/IntegrationTester.php <<<
 
 >>> /Support/_generated/EndToEndTesterActions.php >>>
 <?php  //[STAMP] ddd60126267f41007f7e482c7a2a933b
@@ -3824,10 +3900,10 @@ trait EndToEndTesterActions
      * @param int $postId   The post ID.
      * @param string $field The post field to get the value for.
      *
-     * @return string The value of the post field.
+     * @return mixed The value of the post field.
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostFieldFromDatabase()
      */
-    public function grabPostFieldFromDatabase(int $postId, string $field): string {
+    public function grabPostFieldFromDatabase(int $postId, string $field): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostFieldFromDatabase', func_get_args()));
     }
 
@@ -10064,85 +10140,9 @@ trait IntegrationTesterActions
 
 <<< /Support/_generated/.gitignore <<<
 
->>> /EndToEnd/_bootstrap.php >>>
-<?php
-/*
- * EndToEnd suite bootstrap file.
- * 
- * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
- * 
- * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
- * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
- * and re-created from the dump file(s).
- * 
- * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
- * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
- * E.g.:
- * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
- * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
- * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
- * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
- */
-<<< /EndToEnd/_bootstrap.php <<<
+>>> /Support/Data/.gitkeep >>>
 
->>> /EndToEnd/ActivationCest.php >>>
-<?php
-
-namespace Tests\EndToEnd;
-
-use Tests\Support\EndToEndTester;
-
-class ActivationCest
-{
-    public function test_homepage_works(EndToEndTester $I): void
-    {
-        $I->amOnPage('/');
-        $I->seeElement('body');
-    }
-    
-    public function test_can_login_as_admin(EndToEndTester $I): void
-    {
-        $I->loginAsAdmin();
-        $I->amOnAdminPage('/');
-        $I->seeElement('body.wp-admin');
-    }
-}
-
-<<< /EndToEnd/ActivationCest.php <<<
-
->>> /.env >>>
-# The path to the WordPress root directory, the one containing the wp-load.php file.
-# This can be a relative path from the directory that contains the codeception.yml file,
-# or an absolute path.
-WORDPRESS_ROOT_DIR=.
-
-# Tests will require a MySQL database to run.
-# The database will be created if it does not exist.
-# Do not use a database that contains important data!
-WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite
-
-# The Integration suite will use this table prefix for the WordPress tables.
-TEST_TABLE_PREFIX=test_
-
-# This table prefix used by the WordPress site in end-to-end tests.
-WORDPRESS_TABLE_PREFIX=wp_
-
-# The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:53843
-WORDPRESS_DOMAIN=localhost:53843
-
-# The username and password of the administrator user of the WordPress site used in end-to-end tests.
-WORDPRESS_ADMIN_USER=admin
-WORDPRESS_ADMIN_PASSWORD=password
-
-# The host and port of the ChromeDriver server that will be used in end-to-end tests.
-CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=53851
-
-# The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=53843
-
-<<< /.env <<<
+<<< /Support/Data/.gitkeep <<<
 
 >>> /_output/.gitignore >>>
 *

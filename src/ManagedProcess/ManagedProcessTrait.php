@@ -5,8 +5,10 @@ namespace lucatume\WPBrowser\ManagedProcess;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Throwable;
 
+/**
+ * @property string $prettyName
+ */
 trait ManagedProcessTrait
 {
     private ?Process $process = null;
@@ -14,12 +16,13 @@ trait ManagedProcessTrait
 
     private function writePidFile(): void
     {
-        $pid = $this->process->getPid();
+        $process = $this->checkIsRunning();
+        $pid = $process->getPid();
 
         if (!is_numeric($pid) || (int)$pid < 1) {
             $error = new RuntimeException(
-                "Could not start $this->prettyName: " . $this->process->getErrorOutput(),
-                ManagedProcessinterface::ERR_PID
+                "Could not start $this->prettyName: " . $process->getErrorOutput(),
+                ManagedProcessInterface::ERR_PID
             );
             $this->stop();
             throw $error;
@@ -29,20 +32,20 @@ trait ManagedProcessTrait
         if (file_put_contents($pidFile, $pid, LOCK_EX) === false) {
             throw new RuntimeException(
                 "Could not write PID file '$pidFile'.",
-                ManagedProcessinterface::ERR_PID_FILE
+                ManagedProcessInterface::ERR_PID_FILE
             );
         }
     }
 
     public function stop(): ?int
     {
-        $this->checkStarted();
-        $exitCode = $this->process->stop();
+        $process = $this->checkStarted();
+        $exitCode = $process->stop();
 
         if (is_file(static::getPidFile()) && !unlink(static::getPidFile())) {
             throw new RuntimeException(
                 "Could not remove PID file '{static::getPidFile(}'.",
-                ManagedProcessinterface::ERR_PID_FILE_DELETE
+                ManagedProcessInterface::ERR_PID_FILE_DELETE
             );
         }
 
@@ -54,14 +57,16 @@ trait ManagedProcessTrait
         return codecept_output_dir(self::PID_FILE_NAME);
     }
 
-    private function checkStarted(): void
+    private function checkStarted(): Process
     {
         if ($this->process === null) {
             throw new RuntimeException(
                 "{$this->prettyName} not started.",
-                ManagedProcessinterface::ERR_NO_STARTED
+                ManagedProcessInterface::ERR_NO_STARTED
             );
         }
+
+        return $this->process;
     }
 
     public function getPort(): int
@@ -87,25 +92,26 @@ trait ManagedProcessTrait
             }
             throw new RuntimeException(
                 "Could not start $this->prettyName: " . $t->getMessage(),
-                ManagedProcessinterface::ERR_START,
+                ManagedProcessInterface::ERR_START,
                 $t
             );
         }
     }
 
-    public function getPid(): int
+    public function getPid(): ?int
     {
-        $this->checkIsRunning();
-        return $this->pid;
+        return $this->checkIsRunning()->getPid();
     }
 
-    private function checkIsRunning(): void
+    private function checkIsRunning(): Process
     {
-        if (!($this->process instanceof Process) && $this->process->isRunning()) {
+        if (!($this->process instanceof Process && $this->process->isRunning())) {
             throw new RuntimeException(
-                "{$this->prettyName} is not running.",
-                ManagedProcessinterface::ERR_NOT_RUNNING
+                "$this->prettyName is not running.",
+                ManagedProcessInterface::ERR_NOT_RUNNING
             );
         }
+
+        return $this->process;
     }
 }

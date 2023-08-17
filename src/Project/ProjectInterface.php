@@ -8,5 +8,5 @@ interface ProjectInterface
 
     public function getTestEnv(): ?TestEnvironment;
 
-    public function setup();
+    public function setup() : void;
 }

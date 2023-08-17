@@ -7,7 +7,7 @@ use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
 use Symfony\Component\Process\Process;
 
-class PhpBuiltInServer implements ManagedProcessinterface
+class PhpBuiltInServer implements ManagedProcessInterface
 {
     use ManagedProcessTrait;
 
@@ -15,7 +15,7 @@ class PhpBuiltInServer implements ManagedProcessinterface
     public const ERR_PORT_ALREADY_IN_USE = 2;
     public const ERR_ENV = 3;
     public const PID_FILE_NAME = 'php-built-in-server.pid';
-    private string $prettyName = 'PHP built-in server';
+    private string $prettyName = 'PHP Built-in Server';
 
     /**
      * @param array<string,mixed> $env
@@ -66,7 +66,7 @@ class PhpBuiltInServer implements ManagedProcessinterface
         if ($confirmPort === null || !(is_numeric($confirmPort) && (int)$confirmPort > 0)) {
             $error = new RuntimeException(
                 'Could not start PHP Built-in server: ' . $process->getErrorOutput(),
-                ManagedProcessinterface::ERR_START
+                ManagedProcessInterface::ERR_START
             );
             $this->stop();
             throw $error;

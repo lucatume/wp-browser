@@ -55,5 +55,8 @@ abstract class ServiceExtension extends Extension
 
     abstract public function getPrettyName(): string;
 
+    /**
+     * @return array<string,mixed>
+     */
     abstract public function getInfo(): array;
 }

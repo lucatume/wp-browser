@@ -31,7 +31,7 @@ class ChromeDriver implements ManagedProcessInterface
         if (!(file_exists($binary) && is_executable($binary))) {
             throw new RuntimeException(
                 "ChromeDriver binary $binary does not exist.",
-                ManagedProcessinterface::ERR_BINARY_NOT_FOUND
+                ManagedProcessInterface::ERR_BINARY_NOT_FOUND
             );
         }
 
@@ -72,7 +72,7 @@ class ChromeDriver implements ManagedProcessInterface
 
         throw new RuntimeException(
             'Could not start ChromeDriver: ' . $process->getOutput(),
-            ManagedProcessinterface::ERR_START
+            ManagedProcessInterface::ERR_START
         );
     }
 }

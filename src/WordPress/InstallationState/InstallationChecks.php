@@ -12,6 +12,9 @@ use lucatume\WPBrowser\WordPress\DbException;
 use PDOException;
 use Throwable;
 
+/**
+ * @property DatabaseInterface $db
+ */
 trait InstallationChecks
 {
     /**
@@ -22,9 +25,11 @@ trait InstallationChecks
      */
     protected function isInstalled(bool $multisite, DatabaseInterface $db = null): bool
     {
-        $db = $db ?? $this->db;
+        if ($db === null && property_exists($this,'db') && $this->db instanceof DatabaseInterface) {
+            $db = $this->db;
+        }
 
-        if (!$db instanceof DatabaseInterface) {
+        if ($db === null) {
             return false;
         }
 
