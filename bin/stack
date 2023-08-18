@@ -218,6 +218,8 @@ function build() {
   ensure_twentytwenty_theme
   ensure_test_plugins
   ensure_externals_blocked
+  cp -R tests/_data/themes/dummy var/wordpress/wp-content/themes/dummy
+  cp -R tests/_data/plugins/mu-plugin-1 var/wordpress/wp-content/plugins/mu-plugin-1
 }
 
 function clean() {

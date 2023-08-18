@@ -6,6 +6,7 @@ namespace lucatume\WPBrowser\Events;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Property;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class DispatcherTest extends Unit
 {
@@ -61,7 +62,6 @@ class DispatcherTest extends Unit
             'new first',
             'second',
         ], $callStack);
-        $callStack = [];
     }
 
     /**
@@ -71,12 +71,12 @@ class DispatcherTest extends Unit
      */
     public function should_return_a_purposely_built_dispatcher_when_the_codeception_instance_is_not_available(): void
     {
-        // Partial mocking.
-        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getCodecept', null);
-        // And property tampering.
-        Property::setPrivateProperties(Dispatcher::class, [
-            'codeceptionEventDispatcherInstance' => null,
-        ]);
+        $previousDispatcher = Dispatcher::getEventDispatcher();
+
+        Dispatcher::setEventDispatcher();
+
+        $this->assertInstanceOf(EventDispatcherInterface::class, Dispatcher::getEventDispatcher());
+        $this->assertNotSame($previousDispatcher, Dispatcher::getEventDispatcher());
 
         $callStack = [];
         Dispatcher::addListener('TEST_EVENT', static function () use (&$callStack) {
@@ -121,6 +121,5 @@ class DispatcherTest extends Unit
             'new first',
             'second',
         ], $callStack);
-        $callStack = [];
     }
 }

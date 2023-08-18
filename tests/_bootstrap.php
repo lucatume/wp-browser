@@ -1,6 +1,9 @@
 <?php
 // This is global bootstrap for autoloading.
+use Codeception\Event\SuiteEvent;
+use Codeception\Events;
 use Codeception\Util\Autoload;
+use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Utils\Db;
 use lucatume\WPBrowser\Utils\Env;
 
@@ -29,3 +32,9 @@ Autoload::addNamespace('\lucatume\WPBrowser\Tests\Traits', codecept_root_dir('te
 if (function_exists('uopz_allow_exit')) {
     uopz_allow_exit(true);
 }
+
+// This is here to test the EventDispatcherBridge extension.
+Dispatcher::addListener(Events::MODULE_INIT, function (SuiteEvent $suiteEvent) {
+    $suiteName = $suiteEvent->getSuite()?->getName();
+    codecept_debug('Suite name: ' . $suiteName);
+});

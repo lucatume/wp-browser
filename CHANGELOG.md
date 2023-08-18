@@ -31,7 +31,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `bordoni/phpass` dependency, internalized the `Hautelook\Phpass` portable password hashing library.
 - Removed the `mikemclin/laravel-wp-password` dependency.
 - Removed the `WordPress` module and related support classes.
-- Removed the `mode` configuration parameter from the `Symlinker` extension.
 - Removed the `StubProphecy` and `FunctionProphecy` classes.
 - Removed the `WPHealthcheck` class in favor of reports provided by the `WordPress\Installation` class.
 - Removed the `tad\WPBrowser\Utils\Map` class
