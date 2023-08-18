@@ -1,0 +1,31 @@
+{
+  "name": "roots/wp-config",
+  "description": "Collect configuration values and safely define() them",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Austin Pray",
+      "email": "austin@austinpray.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Roots\\WPConfig\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=5.6"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.3",
+    "roave/security-advisories": "dev-master",
+    "phpunit/phpunit": "^5.7",
+    "php-coveralls/php-coveralls": "^2.1"
+  },
+  "config": {
+    "platform": {
+      "php": "5.6"
+    }
+  }
+}
