@@ -98,8 +98,7 @@ trait ServiceExtensionsTrait
         // Look up the `enabled` section.
         if (isset($extensions['enabled']) && is_array($extensions['enabled'])) {
             foreach ($extensions['enabled'] as $key => $value) {
-                if (
-                    $key === $serviceExtension
+                if ($key === $serviceExtension
                     && is_a($key, ServiceExtension::class, true)
                     && isset($value[0]) && is_array($value[0])
                 ) {
