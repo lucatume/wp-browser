@@ -7,6 +7,7 @@ use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use lucatume\WPBrowser\Events\Dispatcher;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
 
 class EventDispatcherBridge extends Extension
@@ -57,13 +58,16 @@ class EventDispatcherBridge extends Extension
         }
 
         $previousDispatcher = Dispatcher::getEventDispatcher();
-        /** @var callable[] $listeners */
-        $listeners = $previousDispatcher->getListeners($eventName);
 
-        // Call the listeners for this event now,remove them from the previous dispatcher.
-        foreach ($listeners as $listener) {
-            $listener($event, $eventName, $eventDispatcher);
-            $previousDispatcher->removeListener($eventName, $listener);
+        if ($previousDispatcher !== null) {
+            /** @var callable[] $listeners */
+            $listeners = $previousDispatcher->getListeners($eventName);
+
+            // Call the listeners for this event now,remove them from the previous dispatcher.
+            foreach ($listeners as $listener) {
+                $listener($event, $eventName, $eventDispatcher);
+                $previousDispatcher->removeListener($eventName, $listener);
+            }
         }
 
         Dispatcher::setEventDispatcher($eventDispatcher);

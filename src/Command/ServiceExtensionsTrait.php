@@ -50,10 +50,35 @@ trait ServiceExtensionsTrait
             return [];
         }
 
-        return array_filter(
-            $enabledExtensions,
-            static fn($extension) => is_string($extension) && is_a($extension, ServiceExtension::class, true),
-        );
+        $serviceExtensions = [];
+        foreach ($enabledExtensions as $key => $value) {
+            if (is_string($key) && is_a($key, ServiceExtension::class, true)) {
+                $serviceExtensions[] = $key;
+                continue;
+            }
+
+            if (is_array($value)) {
+                // Configured inline.
+                $extensionClass = array_key_first($value);
+
+                if (!is_string($extensionClass)) {
+                    continue;
+                }
+
+                if (!is_a($extensionClass, ServiceExtension::class, true)) {
+                    continue;
+                }
+
+                $serviceExtensions[] = $extensionClass;
+                continue;
+            }
+
+            if (is_string($value) && is_a($value, ServiceExtension::class, true)) {
+                $serviceExtensions[] = $value;
+            }
+        }
+
+        return $serviceExtensions;
     }
 
     /**
@@ -68,26 +93,45 @@ trait ServiceExtensionsTrait
             return [];
         }
 
-        if (!(
-            isset($codeceptionConfig['extensions']['config'])
-            && is_array($codeceptionConfig['extensions']['config']))
+        $extensions = $codeceptionConfig['extensions'];
+
+        // Look up the `enabled` section.
+        if (isset($extensions['enabled']) && is_array($extensions['enabled'])) {
+            foreach ($extensions['enabled'] as $key => $value) {
+                if (
+                    $key === $serviceExtension
+                    && is_a($key, ServiceExtension::class, true)
+                    && isset($value[0]) && is_array($value[0])
+                ) {
+                    // Configured inline.
+                    return $value[0];
+                }
+
+                if (is_array($value)) {
+                    $extensionClass = array_key_first($value);
+
+                    if ($extensionClass !== $serviceExtension) {
+                        continue;
+                    }
+
+                    if ($value[$extensionClass] === null) {
+                        continue;
+                    }
+
+                    return $value[$extensionClass];
+                }
+            }
+        }
+
+        // Lookup the `config` section.
+        if (isset($extensions['config'])
+            && is_array($extensions['config'])
+            && isset($extensions['config'][$serviceExtension])
+            && is_array($extensions['config'][$serviceExtension])
         ) {
-            return [];
+            return $extensions['config'][$serviceExtension];
         }
 
-        if (!(
-            isset($codeceptionConfig['extensions']['config'][$serviceExtension])
-            && is_array($codeceptionConfig['extensions']['config'][$serviceExtension]))
-        ) {
-            return [];
-        }
-
-        $extensionConfig = $codeceptionConfig['extensions']['config'][$serviceExtension];
-
-        if (!is_array($extensionConfig)) {
-            return [];
-        }
-
-        return $extensionConfig;
+        return [];
     }
 }

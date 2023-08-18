@@ -17,8 +17,6 @@ coverage:
         - src/*
 wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
-    enabled:
-        - "lucatume\\WPBrowser\\Extension\\EventDispatcherBridge"
     commands:
         - "lucatume\\WPBrowser\\Command\\RunOriginal"
         - "lucatume\\WPBrowser\\Command\\RunAll"

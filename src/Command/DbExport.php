@@ -20,6 +20,10 @@ use Throwable;
 class DbExport extends Command implements CustomCommandInterface
 {
 
+    public const INVALID_PATH = 1;
+    public const DUMP_DIR_NOT_FOUND = 2;
+    public const INSTALLATION_DB_NOT_FOUND = 3;
+
     public static function getCommandName(): string
     {
         return 'wp:db:export';
@@ -50,19 +54,26 @@ class DbExport extends Command implements CustomCommandInterface
         $dumpFilePath = $input->getArgument('dumpFilePath');
 
         if (!(is_string($path) && is_dir($path) && is_file($path . '/wp-load.php'))) {
-            throw new InvalidArgumentException("The path provided is not a valid WordPress root directory.");
+            throw new InvalidArgumentException(
+                "The path provided is not a valid WordPress root directory.",
+                self::INVALID_PATH
+            );
         }
 
         if (!(is_string($dumpFilePath) && is_dir(dirname($dumpFilePath)))) {
             throw new InvalidArgumentException(
-                "The dump file path provided is not valid: the directory does not exist."
+                "The dump file path provided is not valid: the directory does not exist.",
+                self::DUMP_DIR_NOT_FOUND
             );
         }
 
         $db = (new Installation($path))->getDb();
 
         if ($db === null) {
-            throw new RuntimeException("Could not get the database instance from the installation.");
+            throw new RuntimeException(
+                "Could not get the database instance from the installation.",
+                self::INSTALLATION_DB_NOT_FOUND
+            );
         }
 
         $db->dump($dumpFilePath);

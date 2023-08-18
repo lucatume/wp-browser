@@ -3,21 +3,37 @@
 namespace lucatume\WPBrowser\Events;
 
 
+use Codeception\Events;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Property;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class DispatcherTest extends Unit
 {
     use UopzFunctions;
+
+    private \Symfony\Component\EventDispatcher\EventDispatcherInterface $backupGlobalDispatcher;
+
+    public function _before(): void
+    {
+        $this->backupGlobalDispatcher = Dispatcher::getEventDispatcher();
+    }
+
+    public function _after(): void
+    {
+        Dispatcher::setEventDispatcher($this->backupGlobalDispatcher);
+        Dispatcher::setEventDispatcher(null);
+    }
 
     /**
      * It should allow listening to and dispatching events
      *
      * @test
      */
-    public function should_allow_listening_to_and_dispatching_events()
+    public
+    function should_allow_listening_to_and_dispatching_events()
     {
         $callStack = [];
         Dispatcher::addListener('TEST_EVENT', static function () use (&$callStack) {
@@ -69,7 +85,8 @@ class DispatcherTest extends Unit
      *
      * @test
      */
-    public function should_return_a_purposely_built_dispatcher_when_the_codeception_instance_is_not_available(): void
+    public
+    function should_return_a_purposely_built_dispatcher_when_the_codeception_instance_is_not_available(): void
     {
         $previousDispatcher = Dispatcher::getEventDispatcher();
 
@@ -121,5 +138,33 @@ class DispatcherTest extends Unit
             'new first',
             'second',
         ], $callStack);
+    }
+
+    /**
+     * It should port over listeners and priorities from previous dispatcher when setting new one
+     *
+     * @test
+     */
+    public
+    function should_port_over_listeners_and_priorities_from_previous_dispatcher_when_setting_new_one(): void
+    {
+        $previousEventDispatcher = new EventDispatcher();
+        $calls = 0;
+        $callbackOne = function () use (&$calls) {
+            return $calls++;
+        };
+        $previousEventDispatcher->addListener(Events::SUITE_BEFORE, $callbackOne, 89);
+        $callbackTwo = function () use (&$calls) {
+            return $calls++;
+        };
+        $previousEventDispatcher->addListener(Events::SUITE_BEFORE, $callbackTwo, 23);
+
+        Dispatcher::setEventDispatcher($previousEventDispatcher);
+
+        $newEventDispatcher = new EventDispatcher();
+
+        Dispatcher::setEventDispatcher($newEventDispatcher);
+
+        $this->assertEquals($newEventDispatcher->getListeners(), $previousEventDispatcher->getListeners());
     }
 }

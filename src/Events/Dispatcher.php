@@ -27,28 +27,21 @@ class Dispatcher
             return;
         }
 
-        try {
-            if ($previousEventDispatcher instanceof EventDispatcherInterface) {
-                $listeners = Property::readPrivate($previousEventDispatcher, 'listeners');
-            } else {
-                $listeners = [];
-            }
-
-            if ($listeners && is_array($listeners)) {
-                foreach ($listeners as $event => $priorities) {
-                    foreach ($priorities as $priority => $callback) {
-                        $eventDispatcher->addListener($event, $callback, $priority);
-                    }
+        if ($previousEventDispatcher !== null) {
+            /** @var array<callable[]> $previousListeners */
+            $previousListeners = $previousEventDispatcher->getListeners();
+            foreach ($previousListeners as $eventName => $listeners) {
+                foreach ($listeners as $listener) {
+                    $priority = $previousEventDispatcher->getListenerPriority($eventName, $listener);
+                    $eventDispatcher->addListener($eventName, $listener, $priority ?? 0);
                 }
             }
-        } catch (ReflectionException) {
-            // Do nothing.
         }
 
         self::$eventDispatcher = $eventDispatcher;
     }
 
-    public static function getEventDispatcher(): EventDispatcherInterface
+    public static function getEventDispatcher(): ?EventDispatcherInterface
     {
         if (self::$eventDispatcher === null) {
             // Create a one local to the Dispatcher.
@@ -73,10 +66,10 @@ class Dispatcher
      */
     public static function addListener(string $eventName, callable $listener, int $priority = 0): Closure
     {
-        self::getEventDispatcher()->addListener($eventName, $listener, $priority);
+        self::getEventDispatcher()?->addListener($eventName, $listener, $priority);
 
         return static function () use ($eventName, $listener): void {
-            self::getEventDispatcher()->removeListener($eventName, $listener);
+            self::getEventDispatcher()?->removeListener($eventName, $listener);
         };
     }
 
@@ -90,12 +83,12 @@ class Dispatcher
      * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
      *                                       event.
      *
-     * @return object The dispatched event.
+     * @return object|null The dispatched event, or `null` if no event was dispatched.
      */
-    public static function dispatch(string $name, mixed $origin = null, array $context = []): object
+    public static function dispatch(string $name, mixed $origin = null, array $context = []): ?object
     {
         $event = new Event($name, $context, $origin);
 
-        return self::getEventDispatcher()->dispatch($event, $name);
+        return self::getEventDispatcher()?->dispatch($event, $name);
     }
 }

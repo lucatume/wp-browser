@@ -19,6 +19,9 @@ use Throwable;
 
 class DbImport extends Command implements CustomCommandInterface
 {
+    public const INVALID_PATH = 1;
+    public const DUMP_FILE_NOT_FOUND = 2;
+
     public static function getCommandName(): string
     {
         return 'wp:db:import';
@@ -49,11 +52,17 @@ class DbImport extends Command implements CustomCommandInterface
         $dumpFilePath = $input->getArgument('dumpFilePath');
 
         if (!(is_string($path) && is_dir($path) && is_file($path . '/wp-load.php'))) {
-            throw new InvalidArgumentException("The path provided is not a valid WordPress root directory.");
+            throw new InvalidArgumentException(
+                "The path provided is not a valid WordPress root directory.",
+                self::INVALID_PATH
+            );
         }
 
         if (!(is_string($dumpFilePath) && is_file($dumpFilePath) && is_readable($dumpFilePath))) {
-            throw new InvalidArgumentException("The dump file path provided is not a readable file.");
+            throw new InvalidArgumentException(
+                "The dump file path provided is not a readable file.",
+                self::DUMP_FILE_NOT_FOUND
+            );
         }
 
         $db = (new Installation($path))->getDb();

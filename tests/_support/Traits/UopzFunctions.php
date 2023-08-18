@@ -183,4 +183,20 @@ trait UopzFunctions
         unset(self::$uopzSetMocks[$index]);
         uopz_unset_mock($class);
     }
+
+    protected function uopzUnsetFunctionReturn(string $string)
+    {
+        if (!function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('This test requires the uopz extension');
+        }
+
+        $index = array_search($string, self::$uopzSetFunctionReturns, true);
+
+        if ($index === false) {
+            return;
+        }
+
+        uopz_unset_return($string);
+        unset(self::$uopzSetFunctionReturns[$index]);
+    }
 }

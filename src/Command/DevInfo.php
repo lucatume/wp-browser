@@ -33,7 +33,7 @@ class DevInfo extends Command implements CustomCommandInterface
         $serviceExtensions = $this->getServiceExtensions();
 
         if (count($serviceExtensions) === 0) {
-            $output->writeln('No services to start.');
+            $output->writeln('No services extensions found.');
             return 0;
         }
 
