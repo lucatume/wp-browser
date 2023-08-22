@@ -46,3 +46,11 @@ RUN chmod a+x /usr/local/bin/xdebug-on && chmod a+x /usr/local/bin/xdebug-off
 # Ensure the gropup and user exist.
 RUN getent group ${USER_GID} || groupadd -g ${USER_GID} ${USER_NAME}
 RUN getent passwd ${USER_UID} || useradd -u ${USER_UID} -g ${USER_GID} -m -s /bin/bash ${USER_NAME}
+
+# Create a Chrome mock where expected.
+RUN if [ "${TARGET}" = "codeception" ]; then \
+    mkdir -p /usr/bin && \
+    echo '#!/bin/bash' > /usr/bin/google-chrome && \
+    echo 'echo 'Google Chrome 116.0.5845.96'' >> /usr/bin/google-chrome && \
+    chmod a+x /usr/bin/google-chrome; \
+    fi

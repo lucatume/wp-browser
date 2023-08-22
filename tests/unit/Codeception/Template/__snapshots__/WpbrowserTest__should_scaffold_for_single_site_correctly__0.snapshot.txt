@@ -36,3 +36,4 @@ extensions:
         - lucatume\WPBrowser\Command\DevStop
         - lucatume\WPBrowser\Command\DevInfo
         - lucatume\WPBrowser\Command\DevRestart
+        - lucatume\WPBrowser\Command\ChromedriverUpdate

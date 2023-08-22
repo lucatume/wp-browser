@@ -23,3 +23,4 @@ extensions:
         - "lucatume\\WPBrowser\\Command\\RunOriginal"
         - "lucatume\\WPBrowser\\Command\\RunAll"
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+        - "lucatume\\WPBrowser\\Command\\ChromedriverUpdate"

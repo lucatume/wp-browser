@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Project;
 
 use Codeception\InitTemplate;
+use lucatume\WPBrowser\Command\ChromedriverUpdate;
 use lucatume\WPBrowser\Command\DevInfo;
 use lucatume\WPBrowser\Command\DevRestart;
 use lucatume\WPBrowser\Command\DevStart;
@@ -10,6 +11,7 @@ use lucatume\WPBrowser\Command\DevStop;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
+use lucatume\WPBrowser\Utils\ChromedriverInstaller;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
@@ -22,8 +24,6 @@ use Throwable;
 
 class SiteProject extends InitTemplate implements ProjectInterface
 {
-    use SetupTemplateTrait;
-
     private Installation $installation;
     private TestEnvironment $testEnvironment;
 
@@ -117,7 +117,9 @@ class SiteProject extends InitTemplate implements ProjectInterface
         }
         $this->sayInfo('Created database dump in <info>tests/Support/Data/dump.sql</info>.');
 
-        $this->addChromedriverDevDependency();
+        $this->sayInfo('Installing Chromedriver ...');
+        $chromedriverPath = (new ChromedriverInstaller())->install();
+        $this->sayInfo("Chromedriver installed in $chromedriverPath");
         $chromedriverPort = Random::openLocalhostPort();
         $this->testEnvironment->testTablePrefix = 'test_';
         $this->testEnvironment->wpTablePrefix = 'wp_';
@@ -152,6 +154,7 @@ EOT;
         $this->testEnvironment->customCommands[] = DevStop::class;
         $this->testEnvironment->customCommands[] = DevInfo::class;
         $this->testEnvironment->customCommands[] = DevRestart::class;
+        $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = '.';
         $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite';
 

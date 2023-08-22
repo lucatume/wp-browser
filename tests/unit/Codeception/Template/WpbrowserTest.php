@@ -70,7 +70,11 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'plugin_89' => [
                 'plugin.php' => "<?php\n/* Plugin Name: Plugin 89 */",
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -83,7 +87,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/plugin_89'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -95,14 +99,12 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
 
         $this->assertFileExists($projectDir . '/plugin_89/vendor/bin/chromedriver');
-        $this->assertFileExists($projectDir . '/plugin_89/composer.lock');
         $this->assertFileExists($projectDir . '/plugin_89/tests/_wordpress/wp-config.php');
         $this->assertFileExists($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
-        unlink($projectDir . '/plugin_89/composer.lock');
         unlink($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
         unlink($projectDir . '/plugin_89/composer');
 
@@ -130,7 +132,11 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'plugin_89' => [
                 'main-file.php' => "<?php\n/* Plugin Name: Plugin 89 */",
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -143,7 +149,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/plugin_89'
         ];
-        $process = new Process($command, null);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -155,7 +161,6 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
 
         $this->assertFileExists($projectDir . '/plugin_89/vendor/bin/chromedriver');
-        $this->assertFileExists($projectDir . '/plugin_89/composer.lock');
         $this->assertFileExists($projectDir . '/plugin_89/tests/_wordpress/wp-config.php');
         $this->assertFileExists($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
 
@@ -163,7 +168,6 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
         FS::rrmdir($projectDir . '/plugin_89/var');
-        unlink($projectDir . '/plugin_89/composer.lock');
         unlink($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
         unlink($projectDir . '/plugin_89/composer');
 
@@ -191,7 +195,11 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'plugin_89' => [
                 'plugin.php' => "<?php\n/* Plugin Name: Plugin 89 */",
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -202,7 +210,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/plugin_89'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
 
         $process->setInput(
             "no\n" // No, do not use recommended setup.
@@ -237,7 +245,11 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'plugin_89' => [
                 'main.php' => "<?php\n/* Plugin Name: Plugin 89 */",
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -248,7 +260,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/plugin_89'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
 
         $process->setInput(
             "no\n" // No, do not use recommended setup.
@@ -283,7 +295,11 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'theme_23' => [
                 'style.css' => "/*\nTheme Name: Theme 23\n*/",
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -296,7 +312,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/theme_23'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/theme_23/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -308,14 +324,12 @@ EOT;
         FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
 
         $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
-        $this->assertFileExists($projectDir . '/theme_23/composer.lock');
         $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
         $this->assertFileExists($projectDir . '/theme_23/tests/Support/Data/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
-        unlink($projectDir . '/theme_23/composer.lock');
         unlink($projectDir . '/theme_23/tests/Support/Data/dump.sql');
         unlink($projectDir . '/theme_23/composer');
 
@@ -348,7 +362,11 @@ Theme Name: Theme 23
 Template: twentytwenty
 */
 EOT,
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -361,7 +379,7 @@ EOT,
             'wpbrowser',
             '--path=' . $projectDir . '/theme_23'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/theme_23/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -373,14 +391,12 @@ EOT,
         FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
 
         $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
-        $this->assertFileExists($projectDir . '/theme_23/composer.lock');
         $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
         $this->assertFileExists($projectDir . '/theme_23/tests/Support/Data/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
-        unlink($projectDir . '/theme_23/composer.lock');
         unlink($projectDir . '/theme_23/tests/Support/Data/dump.sql');
         unlink($projectDir . '/theme_23/composer');
 
@@ -412,7 +428,11 @@ EOT;
 Theme Name: Theme 23
 */
 EOT,
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
 
@@ -425,7 +445,7 @@ EOT,
             'wpbrowser',
             '--path=' . $projectDir . '/theme_23'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/theme_23/vendor/bin']);
 
         $process->setInput(
             "no\n" // No, do not use recommended setup.
@@ -459,7 +479,11 @@ EOT;
 
         $projectDir = FS::tmpDir('setup_', [
             'site' => [
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
         $dbName = Random::dbName();
@@ -486,7 +510,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/site'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/site/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -534,7 +558,11 @@ EOT;
 
         $projectDir = FS::tmpDir('setup_', [
             'site' => [
-                'composer.json' => $composerFileCode
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
             ]
         ]);
         $dbName = Random::dbName();
@@ -561,7 +589,7 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/site'
         ];
-        $process = new Process($command);
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/site/vendor/bin']);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
@@ -632,8 +660,11 @@ EOT;
 
         $process->mustRun();
 
+        // Remove some hashed files.
+        FS::rrmdir($projectDir . '/tests/Support/_generated');
+
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir. '/tests',
+        $this->assertMatchesDirectorySnapshot($projectDir . '/tests',
             fn() => $this->replaceRandomPorts(...func_get_args()));
     }
 }
