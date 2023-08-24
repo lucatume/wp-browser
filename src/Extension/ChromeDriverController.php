@@ -4,6 +4,8 @@ namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
 use lucatume\WPBrowser\ManagedProcess\ChromeDriver;
+use lucatume\WPBrowser\Utils\ChromedriverInstaller;
+use lucatume\WPBrowser\Utils\Composer;
 use lucatume\WPBrowser\Utils\Filesystem;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,13 +22,15 @@ class ChromeDriverController extends ServiceExtension
 
         if (is_file($pidFile)) {
             $output->writeln('ChromeDriver already running.');
+
             return;
         }
 
         $port = $this->getPort();
+        $binary = $this->getBinary();
 
         $output->write("Starting ChromeDriver on port $port ...");
-        (new ChromeDriver($port))->start();
+        (new ChromeDriver($port, [], $binary))->start();
         $output->write(' ok', true);
     }
 
@@ -94,7 +98,22 @@ class ChromeDriverController extends ServiceExtension
                 'The "port" configuration option must be an integer greater than 0.'
             );
         }
+
         /** @var array{port?: number} $config */
         return (int)($config['port'] ?? 4444);
+    }
+
+    private function getBinary(): ?string
+    {
+        $config = $this->config;
+        if (isset($config['binary']) && !(is_string($config['binary']) && is_executable($config['binary']))) {
+            throw new ExtensionException(
+                $this,
+                'The "binary" configuration option must be an executable file.'
+            );
+        }
+
+        /** @var array{binary?: string} $config */
+        return ($config['binary'] ?? null);
     }
 }

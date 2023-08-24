@@ -9,7 +9,8 @@ WordPress extensive use of global variables, constants and side effectes makes i
 in the same process without running into conflicts due to leaking state and side effects.
 For this reason the project replaces Codeception `run` command with one that will run each suite in a separate process.
 You can invoke the original Codeception command using the `codeception:run` command.
-Just like [the original][1], the `run` command accepts all the arguments and options of the original Codeception command.
+Just like [the original][1], the `run` command accepts all the arguments and options of the original Codeception
+command.
 
 Run all the suites, each one in a separate process:
 
@@ -39,7 +40,7 @@ Read the [Codeception documentation][1] for more information about the `run` com
 
 [1]: https://codeception.com/docs/reference/Commands#Run
 
-### `wp:dev-start`
+### `dev:start`
 
 If not already running, start the services required to run the tests.
 The started services are read from the Codeception configuration file (either `codeception.yml`
@@ -67,7 +68,7 @@ extensions:
 
 Running the command will start ChromeDriver, the built-in PHP server and Docker Compose.
 
-### `wp:dev-stop`
+### `dev:stop`
 
 If running, stop the services required to run the tests.
 The stopped services are read from the Codeception configuration file (either `codeception.yml`
@@ -95,25 +96,41 @@ extensions:
 
 Running the command will stop ChromeDriver, the built-in PHP server and Docker Compose.
 
-### `wp:cli`
+### `dev:restart`
 
-Run a WP-CLI command in the WordPress installation used by a suite.
+This command is just a shortcut to run `dev:stop` and `dev:start` in sequence.
 
-```bash
-vendor/bin/codecept wp:cli EndToEnd -- plugin list --status=active
-```
+### `dev:info`
 
-**Note** use the `-- ` separator to separate the suite name from the WP-CLI command and avoid Codeception parsing
-the WP-CLI command as a Codeception command.
+Provides information about the local testing stack managed by
+the [DockerComposeController](extensions.md#dockercomposecontroller), [BuiltInServerController](extensions.md#builtinservercontroller)
+and [ChromeDriverController](extensions.md#chromedrivercontroller) extensions.
 
-The command will read suite configuration and the Codeception global configuration looking for
-the [`WPLoader` module](modules/WPLoader.md) or the [`WPFilesystem` module](modules/WPFilesystem.md) configuration and
-use the WordPress installation path found there to run the WP-CLI command.
+### `wp:db:import`
+
+You can use [WP CLI][1] to interact with your WordPress installation, but WP CLI does not support SQLite databases in
+the context of the `wp db import` command.
+This command fills that gap by providing a database dump file import command that will support MySQL and SQLite
+databases.
+
+### `wp:db:export`
+
+You can use [WP CLI][1] to interact with your WordPress installation, but WP CLI does not support SQLite databases in
+the context of the `wp db export` command.
+This command fills that gap by providing a database dump file export command that will support MySQL and SQLite
+databases.
+
+### `chromedriver:update`
+
+If you're using Chromedriver as a binary installed in the Composer vendor directory (`vendor/bin` by default), you can
+use this command to update it.
+This command will download the latest version of Chromedriver compatible with the Chrome version installed on your
+machine in the Composer vendor directory.
 
 ### `generate:wpunit`
 
 Generate a test case extending the `lucatume\WPBrowser\TestCase\WPTestCase` class.
-The class incorporates the WordPress test case from [the `wordpress-develop`][1] repository and adds some utility
+The class incorporates the WordPress test case from [the `wordpress-develop`][2] repository and adds some utility
 methods to make testing easier in the context of Codeception.
 
 The `lucatume\WPBrowser\TestCase\WPTestCase` class is the one that should be used when writing tests for WordPress
@@ -129,4 +146,6 @@ Database queries running in the context of test methods of a test case extending
 transaction that is rolled back after the test method is run. This means that any database change happening in the
 context of a test method will not appear in the database while the test is running and after the test is run.
 
-[1]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit
+[1]: https://wp-cli.org/
+
+[2]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit

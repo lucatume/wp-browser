@@ -103,7 +103,6 @@ class WPLoader extends Module
      *     phpBinary: string,
      *     language: string,
      *     configFile: string|string[],
-     *     contentFolder: string,
      *     pluginsFolder: string,
      *     plugins: string[],
      *     bootstrapActions: string|string[],
@@ -118,6 +117,9 @@ class WPLoader extends Module
      *     NONCE_SALT: string,
      *     AUTOMATIC_UPDATER_DISABLED: bool,
      *     WP_HTTP_BLOCK_EXTERNAL: bool,
+     *     WP_CONTENT_DIR?: ?string,
+     *     WP_PLUGIN_DIR?: ?string,
+     *     WPMU_PLUGIN_DIR?: ?string,
      *     dump: string|string[],
      *     dbUrl?: string
      * }
@@ -134,7 +136,6 @@ class WPLoader extends Module
         'phpBinary' => 'php',
         'language' => '',
         'configFile' => '',
-        'contentFolder' => '',
         'pluginsFolder' => '',
         'plugins' => [],
         'bootstrapActions' => '',
@@ -149,6 +150,9 @@ class WPLoader extends Module
         'NONCE_SALT' => '',
         'AUTOMATIC_UPDATER_DISABLED' => true,
         'WP_HTTP_BLOCK_EXTERNAL' => true,
+        'WP_CONTENT_DIR' => null,
+        'WP_PLUGIN_DIR' => null,
+        'WPMU_PLUGIN_DIR' => null,
         'dump' => ''
     ];
 
@@ -249,7 +253,6 @@ class WPLoader extends Module
          *     phpBinary: string,
          *     language: string,
          *     configFile: string|string[],
-         *     contentFolder: string,
          *     pluginsFolder: string,
          *     plugins: string[],
          *     bootstrapActions: string|string[],
@@ -272,6 +275,9 @@ class WPLoader extends Module
          *     dbPassword: string,
          *     dbName: string,
          *     tablePrefix: string,
+         *     WP_CONTENT_DIR?: string,
+         *     WP_PLUGIN_DIR?: string,
+         *     WPMU_PLUGIN_DIR?: string
          * } $config
          */
         $config = $this->config;
@@ -322,21 +328,30 @@ class WPLoader extends Module
                 : [];
 
             foreach ([
-                         'AUTH_KEY',
-                         'SECURE_AUTH_KEY',
-                         'LOGGED_IN_KEY',
-                         'NONCE_KEY',
-                         'AUTH_SALT',
-                         'SECURE_AUTH_SALT',
-                         'LOGGED_IN_SALT',
-                         'NONCE_SALT',
-                     ] as $salt) {
+                    'AUTH_KEY',
+                    'SECURE_AUTH_KEY',
+                    'LOGGED_IN_KEY',
+                    'NONCE_KEY',
+                    'AUTH_SALT',
+                    'SECURE_AUTH_SALT',
+                    'LOGGED_IN_SALT',
+                    'NONCE_SALT',
+                ] as $salt
+            ) {
                 if (empty($config[$salt])) {
                     $config[$salt] = $configurationSalts[$salt] ?? Random::salt();
                 }
             }
         } catch (DbException|InstallationException $e) {
             throw new ModuleConfigException($this, $e->getMessage(), $e);
+        }
+
+        // Define the path-related constants read from the installation, if any.
+        foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR'] as $pathConst) {
+            $constValue = $this->installation->getState()->getConstant($pathConst);
+            if ($constValue && is_string($constValue)) {
+                $config[$pathConst] = $constValue;
+            }
         }
 
         // Refresh the configuration.
@@ -433,10 +448,12 @@ class WPLoader extends Module
         $this->factoryStore = new FactoryStore();
 
         if (Debug::isEnabled()) {
-            codecept_debug('WordPress status: ' . json_encode(
-                $this->installation->report(),
-                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-            ));
+            codecept_debug(
+                'WordPress status: ' . json_encode(
+                    $this->installation->report(),
+                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                )
+            );
         }
     }
 
@@ -446,16 +463,16 @@ class WPLoader extends Module
      * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
      * and will, finally, look in the default path from the WordPress root directory.
      *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $plugins = $this->getPluginsFolder();
      * $hello = $this->getPluginsFolder('hello.php');
      * ```
      *
-     * @param string $path A relative path to append to te plugins directory absolute path.
-     *
-     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      */
     public function getPluginsFolder(string $path = ''): string
     {
@@ -465,16 +482,16 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the themes directory.
      *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $themes = $this->getThemesFolder();
      * $twentytwenty = $this->getThemesFolder('/twentytwenty');
      * ```
      *
-     * @param string $path A relative path to append to te themes directory absolute path.
-     *
-     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      */
     public function getThemesFolder(string $path = ''): string
     {
@@ -507,46 +524,14 @@ class WPLoader extends Module
             // Activate plugins and enable theme network-wide.
             $activate = function () use (&$activate, $plugins): array {
                 remove_filter('pre_site_option_active_sitewide_plugins', $activate);
-                $this->activatePluginsSwitchThemeInSeparateProcess();
-
-                if ($this->config['theme']) {
-                    // Refresh the theme related options.
-                    update_site_option('allowedthemes', [$this->config['theme'] => true]);
-                    if ($this->db === null) {
-                        throw new ModuleException(
-                            __CLASS__,
-                            'Could not get database instance from installation.'
-                        );
-                    }
-
-                    update_option('template', $this->db->getOption('template'));
-                    update_option('stylesheet', $this->db->getOption('stylesheet'));
-                }
-
-                // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
-                return array_combine($plugins, array_fill(0, count($plugins), time()));
+                return $this->muActivatePluginsTheme($plugins);
             };
             PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
         } else {
             // Activate plugins and theme.
             $activate = function () use (&$activate, $plugins): array {
                 remove_filter('pre_option_active_plugins', $activate);
-                $this->activatePluginsSwitchThemeInSeparateProcess();
-
-                if ($this->config['theme']) {
-                    // Refresh the theme related options.
-                    if ($this->db === null) {
-                        throw new ModuleException(
-                            __CLASS__,
-                            'Could not get database instance from installation.'
-                        );
-                    }
-
-                    update_option('template', $this->db->getOption('template'));
-                    update_option('stylesheet', $this->db->getOption('stylesheet'));
-                }
-
-                return $plugins;
+                return $this->activatePluginsTheme($plugins);
             };
             PreloadFilters::addFilter('pre_option_active_plugins', $activate);
         }
@@ -648,14 +633,14 @@ class WPLoader extends Module
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
+     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
-     *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
@@ -694,6 +679,9 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the WordPress content directory.
      *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -701,9 +689,6 @@ class WPLoader extends Module
      * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
      * ```
      *
-     * @param string $path An optional path to append to the content directory absolute path.
-     *
-     * @return string The content directory absolute path, or a path in it.
      */
     public function getContentFolder(string $path = ''): string
     {
@@ -881,5 +866,70 @@ class WPLoader extends Module
         $this->earlyExit = false;
         // Output has been already printed: no need to flush it.
         ob_end_clean();
+    }
+
+    /**
+     * @param array<string> $plugins
+     * @return array<string>
+     * @throws Throwable
+     */
+    private function activatePluginsTheme(array $plugins): array
+    {
+        $this->activatePluginsSwitchThemeInSeparateProcess();
+
+        /** @var DatabaseInterface $database */
+        $database = $this->db;
+
+        if ($this->config['theme']) {
+            // Refresh the theme related options.
+            if ($database === null) {
+                throw new ModuleException(
+                    __CLASS__,
+                    'Could not get database instance from installation.'
+                );
+            }
+
+            update_option('template', $database->getOption('template'));
+            update_option('stylesheet', $database->getOption('stylesheet'));
+        }
+
+        // Flush the cache to force the refetch of the options' value.
+        wp_cache_delete('alloptions', 'options');
+
+        return $plugins;
+    }
+
+    /**
+     * @param array<string> $plugins
+     * @return array<string, int>
+     *
+     * @throws Throwable
+     */
+    private function muActivatePluginsTheme(array $plugins): array
+    {
+        $this->activatePluginsSwitchThemeInSeparateProcess();
+
+        /** @var DatabaseInterface $database */
+        $database = $this->db;
+
+        if ($this->config['theme']) {
+            // Refresh the theme related options.
+            update_site_option('allowedthemes', [$this->config['theme'] => true]);
+            if ($database === null) {
+                throw new ModuleException(
+                    __CLASS__,
+                    'Could not get database instance from installation.'
+                );
+            }
+
+            update_option('template', $database->getOption('template'));
+            update_option('stylesheet', $database->getOption('stylesheet'));
+        }
+
+        // Flush the cache to force the refetch of the options' value.
+        wp_cache_delete("1::active_sitewide_plugins", 'site-options');
+
+        // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
+        return array_combine($plugins, array_fill(0, count($plugins), time()));
     }
 }

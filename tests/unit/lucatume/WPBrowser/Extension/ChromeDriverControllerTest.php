@@ -229,4 +229,48 @@ class ChromeDriverControllerTest extends Unit
 
         $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
     }
+
+    /**
+     * It should throw if binary set and is not string
+     *
+     * @test
+     */
+    public function should_throw_if_binary_set_and_is_not_string(): void
+    {
+        $this->assertFileNotExists(ChromeDriver::getPidFile());
+
+        $config = ['suites' => ['end2end'], 'binary' => 23];
+        $options = [];
+
+        $extension = new ChromeDriverController($config, $options);
+
+        $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('The "binary" configuration option must be an executable file.');
+
+        $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
+    }
+
+    /**
+     * It should throw if binary set and is not executable
+     *
+     * @test
+     */
+    public function should_throw_if_binary_set_and_is_not_executable(): void
+    {
+        $this->assertFileNotExists(ChromeDriver::getPidFile());
+
+        $config = ['suites' => ['end2end'], 'binary' => __DIR__ . '/foo-bar.file'];
+        $options = [];
+
+        $extension = new ChromeDriverController($config, $options);
+
+        $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('The "binary" configuration option must be an executable file.');
+
+        $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
+    }
 }
