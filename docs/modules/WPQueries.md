@@ -1,4 +1,4 @@
-# WPQueries module
+## WPQueries module
 
 This module provides assertions for WordPress queries.
 

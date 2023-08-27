@@ -1,7 +1,7 @@
 # WPQueries module
 This module should be used in integration tests, see [levels of testing for more information](./../levels-of-testing.md), to make assertions on the database queries made by the global `$wpdb` object.  
 This module **requires** the [WPLoader module](/WPLoader.md) to work.  
-The module will set, if not set already, the `SAVEQUERIES` constant to `true` and will throw an exception if the contstant is already set to a falsy value.  
+The module will set, if not set already, the `SAVEQUERIES` constant to `true` and will throw an exception if the constant is already set to a falsy value.  
 
 ## Configuration
 This module does not require any configuration, but requires the [WPLoader module](WPLoader.md) to work correctly. 

@@ -1,4 +1,4 @@
-# WPFilesystem module
+## WPFilesystem module
 
 Interact and make assertions on the WordPress file structure.
 

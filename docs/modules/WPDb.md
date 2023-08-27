@@ -1,4 +1,4 @@
-# WPDb module
+## WPDb module
 
 This module allows to manipulate the database of the WordPress installation under test directly, without using the
 WordPress API.

@@ -1,4 +1,4 @@
-# WPLoader module
+## WPLoader module
 
 A module to load WordPress and make its code available in tests.
 

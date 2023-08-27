@@ -1,4 +1,4 @@
-# WPCLI module
+## WPCLI module
 
 Use [WP-CLI][1] to interact with the WordPress installation under test and issue commands.
 

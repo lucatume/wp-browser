@@ -1,4 +1,4 @@
-# WPWebDriver module
+## WPWebDriver module
 
 This module drives a browser using a solution like [Selenium][1] or [Chromedriver][2] to simulate user interactions with
 the WordPress project.

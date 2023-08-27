@@ -1,3 +1,8 @@
+## Custom testing configuration
+
+Any non [default configuration](default-configuration.md) is considered a custom configuration.  
+If your project requires a tailored set up, this is the configuration for you.
+
 ## Using a custom configuration to run tests
 
 If you decide to skip the default configuration, or are working

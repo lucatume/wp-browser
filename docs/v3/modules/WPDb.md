@@ -120,7 +120,7 @@ modules:
 * `dsn` *required* - the database POD DSN connection details; read more [on PHP PDO documentation](https://secure.php.net/manual/en/ref.pdo-mysql.connection.php). If the database is accessible (as is the case on the latest version of [Local by Flywheel][http://localwp.com]) **via unix socket**, then the string to insert here should look like this `mysql:unix_socket=/path/to/the/mysql.sock;dbname=wordpress`.
 * `user` *required* - the database user.
 * `password` *required* - the database password.
-* `url` *required* - the full URL, including the HTTP scheme, of the website whose database is being accessed. WordPress uses hard-codece URLs in the databas, that URL will be set by this module when applying the SQL dump file during population or cleanup.
+* `url` *required* - the full URL, including the HTTP scheme, of the website whose database is being accessed. WordPress uses hard-codece URLs in the database, that URL will be set by this module when applying the SQL dump file during population or cleanup.
 * `dump` *required* - defaults to `null`; sets the path, relative to the project root folder, or absolute to the SQL dump file that will be used to set the tests initial database fixture. If set to `null` then the `populate`, `cleanup` and `populator` parameters will be ignored.
 * `populate` - defaults to `true` to empty the target database and import the SQL dump(s) specified in the `dump` argument before the test suite is started.
 * `cleanup` - defaults to `true` empty the target database and import the SQL dump(s) specified in the `dump` argument before each test. 
@@ -636,7 +636,7 @@ $postmeta = $I->grabpostmetatablename();
 
 <hr>
 
-<p>Removes one ore more blogs frome the database.</p>
+<p>Removes one ore more blogs from the database.</p>
 ```php
 // Remove the blog, all its tables and files.
   $I->dontHaveBlogInDatabase(['path' => 'test/one']);
@@ -1529,7 +1529,7 @@ $thumbnail_id = $I->grabPostMetaFromDatabase($postId, '_thumbnail_id', true);
 <ul>
 <li><code>int</code> <strong>$postId</strong> - The post ID.</li>
 <li><code>string</code> <strong>$metaKey</strong> - The key of the meta to retrieve.</li>
-<li><code>bool</code> <strong>$single</strong> - Whether to return a single meta value or an arrya of all available meta values.</li></ul>
+<li><code>bool</code> <strong>$single</strong> - Whether to return a single meta value or an array of all available meta values.</li></ul>
   
 
 <h3>grabPostmetaTableName</h3>
@@ -2110,7 +2110,7 @@ $I->haveOptionInDatabase('posts_per_page', 23);
 <ul>
 <li><code>string</code> <strong>$option_name</strong> - The option name.</li>
 <li><code>mixed</code> <strong>$option_value</strong> - The option value; if an array or object it will be serialized.</li>
-<li><code>string</code> <strong>$autoload</strong> - Wether the option should be autoloaded by WordPress or not.</li></ul>
+<li><code>string</code> <strong>$autoload</strong> - Weather the option should be autoloaded by WordPress or not.</li></ul>
   
 
 <h3>havePageInDatabase</h3>
@@ -2208,7 +2208,7 @@ $fooCountOptionId = $I->haveSiteOptionInDatabase('foo_count','23');
 <h4>Parameters</h4>
 <ul>
 <li><code>string</code> <strong>$key</strong> - The name of the option to insert.</li>
-<li><code>mixed</code> <strong>$value</strong> - The value ot insert for the option.</li></ul>
+<li><code>mixed</code> <strong>$value</strong> - The value to insert for the option.</li></ul>
   
 
 <h3>haveSiteTransientInDatabase</h3>
@@ -2507,7 +2507,7 @@ $I->seeCommentInDatabase(['comment_ID' => 23]);
 
 <p>Checks that a comment meta value is in the database. Will look up the &quot;commentmeta&quot; table.</p>
 ```php
-// Assert a specifid meta for a comment exists.
+// Assert a specified meta for a comment exists.
   $I->seeCommentMetaInDatabase(['comment_ID' => $commentId, 'meta_key' => 'karma', 'meta_value' => 23]);
   // Assert the comment has at least one meta set.
   $I->seeCommentMetaInDatabase(['comment_ID' => $commentId]);

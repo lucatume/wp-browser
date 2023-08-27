@@ -1,4 +1,7 @@
-# Default testing configuration
+## Default testing configuration
+
+The recommended configuration for most projects.
+It allows you to get into WordPress integration and end-to-end testing quickly and easily.
 
 ## Requirements
 

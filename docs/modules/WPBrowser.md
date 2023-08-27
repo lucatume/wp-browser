@@ -1,4 +1,4 @@
-# WPBrowser module
+## WPBrowser module
 
 Browse and test the site HTML with a fast browser without Javascript support.
 

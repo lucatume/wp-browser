@@ -1,6 +1,6 @@
 <?php
 if ($argc !== 3) {
-    echo 'Usage: "echo ${source_file} ${dest_file} | xargs php udpate_doc.php"';
+    echo 'Usage: "echo ${source_file} ${dest_file} | xargs php update_doc.php"';
     exit(1);
 }
 

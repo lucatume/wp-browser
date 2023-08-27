@@ -68,7 +68,7 @@ In the example configuration below the `allow-root` flag and the `some-option` o
 
 ### Environment configuration
 
-The wp-cli binary supports [a set of enviroment variables to modify its behavior](https://make.wordpress.org/cli/handbook/config/#environment-variables).   
+The wp-cli binary supports [a set of environment variables to modify its behavior](https://make.wordpress.org/cli/handbook/config/#environment-variables).   
 
 These environment variables can be set on the commands ran by the `WPCLI` module using the optional `env` array in the module configuration.  
 The example configuration below shows all of them with some **example** values.  

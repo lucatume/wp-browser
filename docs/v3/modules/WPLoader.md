@@ -1,6 +1,6 @@
 # WPLoader module
 This module should be used in integration tests, see [levels of testing for more information](./../levels-of-testing.md), to bootstrap WordPress code in the context of the tests.  
-Setting the `loadOnly` parameter to `true` the module can be additionally used in acceptance and functional tests to acccess WordPress code in the tests context.  
+Setting the `loadOnly` parameter to `true` the module can be additionally used in acceptance and functional tests to access WordPress code in the tests context.  
 This module is a wrapper around the functionalities provided by [the WordPress PHPUnit Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/), as such it provides the same method and facilities.  
 The parameters provided to the module duplicate the ones used in the WordPress configuration file: the `WPLoader` module will **not** bootstrap WordPress using the `wp-config.php` file, it will define and use its own WordPress configuration built from the module parameters.
 
@@ -68,7 +68,7 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
           WPLoader:
               multisite: false
               wpRootFolder: "/Users/luca/www/wordpress"
-              dbName: "wordpresss_tests"
+              dbName: "wordpress_tests"
               dbHost: "localhost"
               dbUser: "root"
               dbPassword: "password"
@@ -98,7 +98,7 @@ The class extends the `Codeception\TestCase\WPTestCase` class provided by wp-bro
 Understanding them might help you work with it:
 
 * WordPress is installed and configured for the tests **before** the test case is loaded; WordPress defined functions and classes (and those of the plugins and themes loaded with it) will be available in the `setUpBeforeClass` method. 
-* WordPress is **not** loaded when PHPUnit will call the [data provider methods](https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers); this means the `post_provider` method wil generate a function not found exception when the test case runs as the WordPress defined methods are not loaded yet:
+* WordPress is **not** loaded when PHPUnit will call the [data provider methods](https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers); this means the `post_provider` method will generate a function not found exception when the test case runs as the WordPress defined methods are not loaded yet:
 	```php
 	public function post_provider(){
 			// `wp_insert_post` is loaded with WordPress and WordPress has not been loaded yet!
@@ -163,7 +163,7 @@ An example configuration for the module in this mode is this one:
 ```
 
 With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.  
-The module can be used in conjuction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand; when doing so please take care to list, in the suite configuration file `modules` section (see example above) the `WPDb` module **before** the `WPLoader` one.  
+The module can be used in conjunction with a `WPDb` module to provide the tests with a WordPress installation suiting the tests at hand; when doing so please take care to list, in the suite configuration file `modules` section (see example above) the `WPDb` module **before** the `WPLoader` one.  
 Codeception will initialize the modules **in the same order they are listed in the modules section of the suite configuration file** and the WPLoader module **needs** the database to be populated by the `WPDb` module before it runs!
 As an example this is a correct suite configuration:
 ```yaml

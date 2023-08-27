@@ -64,7 +64,7 @@ As almost any testing tool, wp-browser should be used locally on local installat
 
 You should always backup any database that contains any information you care about **before** running any test.
 
-You can read the answer to this question [in the WPDb module documentation](modules/WPDb.md#change-the-databse-used-depending-on-whether-you're-running-tests-or-not).
+You can read the answer to this question [in the WPDb module documentation](modules/WPDb.md#change-the-database-used-depending-on-whether-you're-running-tests-or-not).
 
 ### Can I run all my tests with one command?
 
