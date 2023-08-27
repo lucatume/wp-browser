@@ -1,4 +1,4 @@
-# wp-browser documentaion
+# wp-browser documentation
 
 You can use wp-browser to test WordPress sites, plugins and themes.
 

@@ -24,7 +24,7 @@ If your plugin or theme project requires additional plugins or theme to work, yo
 the `tests/_worpdress/wp-content/plugins` and `tests/_wordpress/wp-content/themes` directories respectively.
 
 When adding, or removing, plugin and themes, remember to
-update [teh WPLoader module configuration](modules/WPLoader.md#configuration) to load the correct plugins and themes in
+update [the WPLoader module configuration](modules/WPLoader.md#configuration) to load the correct plugins and themes in
 your integration tests.
 
 On the same note, update the database dump used by [the WPDb module](modules/WPDb.md#configuration) to reflect the
