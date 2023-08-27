@@ -20,9 +20,9 @@ vendor/bin/codecept init wpbrowser
 
 The command will set up your project to run integration and end-to-end tests using:
 
-* SQLite as the database engine, leveragin the [SQLite Database Integration plugin][2]
+* SQLite as the database engine, leveraging the [SQLite Database Integration plugin][2]
 * PHP built-in web server to serve the WordPress site on localhost (e.g. `http://localhost:8080`)
-* Chromedriver to dirve the local version of Chrome installed on your machine
+* Chromedriver to drive the local version of Chrome installed on your machine
 
 If you're working on a plugin or theme project, the default configuration will add some extra steps:
 
