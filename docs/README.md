@@ -2,6 +2,9 @@
 
 You can use wp-browser to test WordPress sites, plugins and themes.
 
+> **This is the documentation for version 4 of the project, the current version.**
+> **Documentation for the previous version of the project, version 3, can be found [here](v3/README.md).**
+
 ## Installation
 
 Add wp-browser to your project as a development dependency using [Composer][1]
