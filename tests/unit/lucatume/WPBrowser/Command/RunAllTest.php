@@ -24,7 +24,7 @@ class RunAllTest extends Unit
     public function test_description_and_command_name(): void
     {
         $command = new RunAll();
-        $nameAndDescription = $command->getName() . '-' . $command->getDescription();
+        $nameAndDescription = $command->getCommandName() . ' - ' . $command->getDescription();
         $this->assertMatchesStringSnapshot($nameAndDescription);
     }
 
@@ -41,7 +41,7 @@ class RunAllTest extends Unit
                 global $argv;
                 $expectedCommand = [
                     $argv[0],
-                    'run',
+                    'codeception:run',
                     'suite-' . ++$calls
                 ];
                 Assert::assertEquals($expectedCommand, $command);

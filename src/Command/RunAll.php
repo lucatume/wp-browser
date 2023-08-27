@@ -2,22 +2,19 @@
 
 namespace lucatume\WPBrowser\Command;
 
-use Codeception\Command\Run as CodeceptionRunCommand;
-use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Command\Run;
 use Codeception\CustomCommandInterface;
 use Exception;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class RunAll extends Command implements CustomCommandInterface
+class RunAll extends Run implements CustomCommandInterface
 {
-    use ConfigTrait;
-
     public static function getCommandName(): string
     {
-        return 'run:all';
+        // Replace the Codeception `run` command with this one.
+        return 'run';
     }
 
     public function getDescription(): string
@@ -25,19 +22,14 @@ class RunAll extends Command implements CustomCommandInterface
         return 'Runs all the test suites, each in a separate process.';
     }
 
-    protected function configure(): void
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $codeceptionRunCommandDefinition = (new CodeceptionRunCommand)->getDefinition();
-        $this->setName(self::getCommandName())
-            ->setDescription($this->getDescription())
-            ->setDefinition($codeceptionRunCommandDefinition);
-    }
+        if ($input->getArgument('suite') || $input->getArgument('test')) {
+            return parent::execute($input, $output);
+        }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
         global $argv;
         $codeceptBin = $argv[0];
-
         if (method_exists($input, '__toString')) {
             $runOptions = array_slice(explode(' ', $input->__toString()), 1);
         } else {
@@ -46,7 +38,8 @@ class RunAll extends Command implements CustomCommandInterface
 
         foreach ($this->getSuites() as $suite) {
             try {
-                $process = new Process([$codeceptBin, 'run', $suite, ...$runOptions]);
+                $cwd = getcwd() ?: null;
+                $process = new Process([$codeceptBin, 'codeception:run', $suite, ...$runOptions], $cwd);
                 $process->setTimeout(null);
                 $process->start();
 

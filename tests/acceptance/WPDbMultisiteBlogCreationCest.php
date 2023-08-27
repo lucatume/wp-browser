@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Lib\Driver\MySql;
 use lucatume\WPBrowser\Generators\Date;
 use lucatume\WPBrowser\Generators\Tables;
 
@@ -13,7 +14,7 @@ class WPDbMultisiteBlogCreationCest
 
     public function _before(FunctionalTester $I): void
     {
-        $this->tables = new Tables();
+        $this->tables = new Tables(MySql::class);
     }
 
     /**

@@ -1,192 +1,145 @@
-# Extensions
+## Codeception Extensions provided by the library
 
-The [Codeception testing framework](http://codeception.com/ "Codeception - BDD-style PHP testing.") can be extended in a number of ways.  
+The library provides some custom Codeception extensions that can be added to the project Codeception configuration file,
+in the `extensions` section.
 
-The one this project leverages the most are modules but [extensions are another way].  
+### `BuiltInServerController`
 
-Modules extend the functionality of Codeception in the context of the tests, while extensions extend its interaction capacities; this is by no means a strict rule but that's usually the case.  
+This extension will start and stop the PHP built-in web server before and after the tests run.
 
-The package contains two additional extensions to facilitate testers' life.
+The extension can be configured with the following parameters:
 
-### Symlinker
+* required
+    * `docRoot` - the document root to use for the PHP Built-in server; it can be either an absolute path or a path
+      relative to the Codeception root directory.
+* optional
+    * `suites` - an array of Codeception suites to run the server for; if not set the server will be started for all the
+      suites.
+    * `port` - the port to use for the PHP Built-in server, if not set the server will use port `2389`.
+    * `workers` - the number of workers to use for the PHP Built-in server, if not set the server will use `5` workers.
+      This is the equivalent of the `PHP_CLI_SERVER_WORKERS` environment variable.
 
-The `lucatume\WPBrowser\Extension\Symlinker` extension provides an automation to have the Codeception root directory symbolically linked in a WordPress local installation.  
+> Note: if you run PHP built-in server on Windows, the `workers` parameter will be ignored and the server will always
+> run with a single worker. This limit is not present in WSL.
 
-Since version `3.9` WordPress supports this feature (with some [precautions](https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/)) and the extension takes charge of:
-
-* symbolically linking a plugin or theme folder in the specified destination before any suite boots up
-* unlinking that symbolic link after all of the suites did run
-
-It's the equivalent of doing something like this from the command line (on a Mac):
-
-```bash
-ln -s /my/central/plugin/folder/my-plugin /my/local/wordpress/installation/wp-content/plugins/my-plugin
-/my/central/plugin/folder/my-plugin/vendor/bin/codecept run
-rm -rf /my/local/wordpress/installation/wp-content/plugins/my-plugin
-
-```
-
-The extension needs small configuration in the `codeception.yml` file:
+Example configuration starting the server for all suites:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Symlinker
-    config:
-        lucatume\WPBrowser\Extension\Symlinker:
-            mode: plugin
-            destination: /my/local/wordpress/installation/wp-content/plugins
-            rootFolder: /some/plugin/folder
+  enabled:
+    - lucatume\WPBrowser\Extension\BuiltInServerController
+  config:
+    lucatume\WPBrowser\Extension\BuiltInServerController:
+      docRoot: /var/www/html
+      workers: 5
 ```
 
-The arguments are:
-
-* `mode` - can be `plugin` or `theme` and indicates whether the current Codeception root folder being symlinked is a plugin or a theme one
-* `destination` - the absolute path to the WordPress local installation plugins or themes folder; to take the never ending variety of possible setups into account the extension will make no checks on the nature of the destination: could be any folder.
-* `rootFolder` - optional absolute path to the WordPress plugin or theme to be symlinked root folder; will default to the Codeception root folder
-
-### Copier
-
-The `lucatume\WPBrowser\Extension\Copier` extension provides an automation to have specific files and folders copied to specified destination files and folders before the suites run.
-
-While WordPress handles symbolic linking pretty well there are some cases, like themes and drop-ins, where there is a need for "real" files to be put in place.
-
-One of such cases is, currently, one where [Docker](https://www.docker.com/get-started) is used to to host and serve the code under test: symbolically linked files cannot be bound inside a container and Docker containers will fail to start in this case.
-
-The extension follows the standard Codeception extension activation and has one configuration parameter only:
-
+The extension can access environment variables defined in the tests configuration file:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Copier
-    config:
-        lucatume\WPBrowser\Extension\Copier:
-            files:
-                tests/_data/required-drop-in.php: /var/www/wordpress/wp-content/drop-in.php
-                tests/_data/themes/dummy: /var/www/wordpress/wp-content/themes/dummy
-                /Users/Me/Repos/required-plugin: /var/www/wordpress/wp-content/plugins/required-plugin.php
-                /Users/Me/Repos/mu-plugin.php: ../../../../wp-content/mu-plugins/mu-plugin.php
+  enabled:
+    - lucatume\WPBrowser\Extension\BuiltInServerController
+  config:
+    lucatume\WPBrowser\Extension\BuiltInServerController:
+      suites:
+        - EndToEnd
+        - WebApp
+      docRoot: '%WORDPRESS_ROOT_DIR%'
+      port: '%BUILT_IN_SERVER_PORT%'
+      workers: '%BUILT_IN_SERVER_WORKERS%'
 ```
 
-The extension will handle absolute and relative paths for sources and destinations and will resolve relative paths from the project root folder.
+This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
+and [`dev:stop`](commands.md#devstop) commands.
 
-When copying directories the extension will only create the destination folder and not the folder tree required; in the example configuration above the last entry specifies that a `mu-plugin.php` file should be copied to the `mu-plugins` folder: that `mu-plugins` folder must be there already.
+### `ChromeDriverController`
 
-#### Environments support
+This extension will start and stop the ChromeDriver before and after the tests are run.
 
-Being able to symlink a plugin or theme folder into a WordPress installation for testing purposes could make sense when trying to test, as an example, a plugin in a single site and in multi site environment.  
+The extension can be configured with the following parameters:
 
-Codeception [supports environments](http://codeception.com/docs/07-AdvancedUsage#Environmentshttp://codeception.com/docs/07-AdvancedUsage#Environments) and the extension does as well specifying a destination for each.
+* optional
+    * `suites` - an array of Codeception suites to run the server for; if not set the server will be started for all the
+      suites.
+    * `port` - the port to use for the ChromeDriver, if not set the server will use port `9515`.
+    * `binary` - the path to the ChromeDriver binary, if not set the server will use the `chromedriver` binary in the
+      Composer `bin` directory.
 
-As an example the `acceptance.suite.yml` file might be configured to support `single` and `multisite` environments:
-
-```yaml
-env:
-    single:
-        modules:
-            config:
-                WPBrowser:
-                    url: 'http://wp.dev'
-                WPDb:
-                    dsn: 'mysql:host=127.0.0.1;dbname=wp'
-    multisite:
-        modules:
-            config:
-                WPBrowser:
-                    url: 'http://mu.dev'
-                WPDb:
-                    dsn: 'mysql:host=127.0.0.1;dbname=mu'
-```
-
-In the `codeception.yml` file specifying a `destination` for each supported environment will tell the extension to symbolically link the plugin or theme file to different locations according to the current environment:
+Example configuration starting the server for all suites:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Symlinker
-    config:
-        lucatume\WPBrowser\Extension\Symlinker:
-            mode: plugin
-            destination:
-                single: /var/www/wp/wp-content/plugins
-                multisite: /var/www/mu/wp-content/plugins
+  enabled:
+    - lucatume\WPBrowser\Extension\ChromeDriverController
+  config:
+    lucatume\WPBrowser\Extension\ChromeDriverController:
+      port: 4444
+      binary: /usr/local/bin/chromedriver
 ```
 
-If no destination is specified for the current environment the extension will fallback to the first specified one.  
-
-A `default` destination can be specified to override this behaviour.
+The extension can access environment variables defined in the tests configuration file:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Symlinker
-    config:
-        lucatume\WPBrowser\Extension\Symlinker:
-            mode: plugin
-            destination:
-                default: /var/www/default/wp-content/plugins
-                single: /var/www/wp/wp-content/plugins
-                multisite: /var/www/mu/wp-content/plugins
+  enabled:
+    - lucatume\WPBrowser\Extension\ChromeDriverController
+  config:
+    suites:
+      - EndToEnd
+      - WebApp
+    lucatume\WPBrowser\Extension\ChromeDriverController:
+      port: '%CHROMEDRIVER_PORT%'
+      binary: '%CHROMEDRIVER_BINARY%'
 ```
 
-When running a suite specifying more than one environment like
+You can use [the `chromedriver:update` command](commands.md#chromedriverupdate) to download the latest version of
+ChromeDriver
+compatible with your Chrome browser version and place it in the Composer `bin` directory.
 
+This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
+and [`dev:stop`](commands.md#devstop) commands.
 
-```bash
-codecept run acceptance --env foo,baz,multisite
-```
+### `DockerComposeController`
 
-Then the extension will use the first matched one, in the case above the `multisite` destination will be used.  
+This extension will start and stop [a `docker compose` stack][1] before and after the tests are run.
 
-The `rootFolder` parameter too can be set to be environment-aware and it will follow the same logic as the destination:
+The extension can be configured with the following parameters:
 
+* required
+    * `compose-file` - the path to the `docker compose` file to use; it can be either an absolute path or a path
+      relative to the Codeception root directory.
+* optional
+    * `env-file`- the path to the environment file to use; it can be either an absolute path or a path.
+
+Example configuration starting the server for all suites:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Symlinker
-    config:
-        lucatume\WPBrowser\Extension\Symlinker:
-            mode: plugin
-            rootFolder:
-                dev: /
-                dist: /dist
-                default: /
-            destination:
-                default: /var/www/dev/wp-content/plugins
-                dev: /var/www/dev/wp-content/plugins
-                dist: /var/www/dist/wp-content/plugins
+  enabled:
+    - lucatume\WPBrowser\Extension\DockerComposeController
+  config:
+    lucatume\WPBrowser\Extension\DockerComposeController:
+      compose-file: /var/www/html/docker-compose.yml
+      env-file: /var/www/html/.env
 ```
 
-When running a suite specifying more than one environment like
-
-```bash
-codecept run acceptance --env dist
-```
-
-Then the extension will symlink the files from `/dist` into the `/var/www/dist/wp-content/plugins` folder.
-
-### Events
-
-Due to some internal changes in Codeception `4.0`, the internal API (really a collection of low-level hacks on my part) that allowed `wp-browser` to dispatch, and listen for, events in the modules has been removed.
-
-If you want to leverage [the event system wp-browser provides] with Codeception default events (e.g. `suite.init` or `test.before`), then you will need to use this extension.
-
-You will **not** need this extension if you're not using Codeception version `4.0`.
-
-You will need to enable it in your Codeception **main** configuration file (e.g. `codeception.dist.yml`).
+The extension can access environment variables defined in the tests configuration file:
 
 ```yaml
 extensions:
-    enabled:
-        - lucatume\WPBrowser\Extension\Events
-    config:
-      lucatume\WPBrowser\Extension\Events:
-        suites: ['acceptance']
+  enabled:
+    - lucatume\WPBrowser\Extension\DockerComposeController
+  config:
+    suites:
+      - EndToEnd
+      - WebApp
+    lucatume\WPBrowser\Extension\DockerComposeController:
+      compose-file: '%DOCKER_COMPOSE_FILE%'
+      env-file: '%DOCKER_COMPOSE_ENV_FILE%'
 ```
 
-The extension only configuration is the `suites` parameter that allows specifying the suites the extension should apply to.  
-If the `suites` parameter is not specified, then the extension will apply to all suites.  
+This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
+and [`wp:dev-stop`](commands.md#devstop) commands.
 
-[4]: events-api.md
+[1]: https://docs.docker.com

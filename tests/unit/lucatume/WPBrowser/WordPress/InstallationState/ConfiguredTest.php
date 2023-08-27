@@ -15,7 +15,8 @@ use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\CodeExecution\ExitAction;
 use lucatume\WPBrowser\WordPress\CodeExecution\ThrowAction;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
@@ -105,7 +106,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
         Installation::scaffold($singleRootDir)->configure($db);
 
         $configured = new Configured($singleRootDir, $singleRootDir . '/wp-config.php');
@@ -135,7 +136,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
@@ -155,7 +156,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -178,7 +179,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = ConfigurationData::fromArray([
             'AUTH_KEY' => 'auth-key-salt',
             'SECURE_AUTH_KEY' => 'secure-auth-key-salt',
@@ -216,7 +217,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -274,7 +275,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -299,7 +300,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -324,7 +325,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -356,7 +357,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -388,7 +389,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -411,7 +412,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -434,7 +435,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -481,7 +482,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -504,7 +505,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -546,7 +547,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -573,7 +574,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -592,7 +593,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db,
             InstallationStateInterface::SINGLE_SITE,
             (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
@@ -614,7 +615,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db,
             InstallationStateInterface::SINGLE_SITE,
             (new ConfigurationData())->setConst('WP_PLUGIN_DIR', $wpRootDir . '/plugins'));
@@ -635,7 +636,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -655,7 +656,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db,
             InstallationStateInterface::SINGLE_SITE,
             (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
@@ -677,7 +678,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -698,7 +699,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db,
             InstallationStateInterface::SINGLE_SITE,
             (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
@@ -721,7 +722,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -744,7 +745,7 @@ class ConfiguredTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($wpRootDir)->configure($db);
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
@@ -755,5 +756,113 @@ class ConfiguredTest extends Unit
         $configured->executeClosureInWordPress(function () {
             return 'foo';
         });
+    }
+
+    /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins', $configured->getMuPluginsDir());
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_CONTENT_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_content_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/site-content/mu-plugins', $configured->getMuPluginsDir());
+
+    }
+
+    /**
+     * It should return mu-plugins directory built from WP_PLUGIN_DIR if set
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory_built_from_wp_plugins_dir_if_set(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        Installation::scaffold($wpRootDir)->configure($db,
+            InstallationStateInterface::SINGLE_SITE,
+            (new ConfigurationData())->setConst('WPMU_PLUGIN_DIR', $wpRootDir . '/mu-plugins'));
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+        $this->assertEquals($wpRootDir . '/mu-plugins', $configured->getMuPluginsDir());
+    }
+
+    /**
+     * It should allow changing the db from MySQL to SQLite
+     *
+     * @test
+     */
+    public function should_allow_changing_the_db_from_mysql_to_sqlite(): void
+    {
+        $wpRootDir = FS::tmpDir('configured_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $mysqlDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+
+        Installation::scaffold($wpRootDir)->configure($mysqlDb);
+
+        $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
+
+        $this->assertEquals($mysqlDb, $configured->getDb());
+
+        $sqliteDb = new SqliteDatabase($wpRootDir . '/wp-content', 'db.sqlite', 'test_');
+
+        $contentDir = $wpRootDir . '/wp-content';
+        Installation::placeSqliteMuPlugin($contentDir . '/mu-plugins', $contentDir);
+        $withSqliteDb = $configured->setDb($sqliteDb);
+
+        $this->assertEquals($sqliteDb, $withSqliteDb->getDb());
+
+        $installedOnSqlite = $withSqliteDb->install(
+            'http://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test Blog',
+        );
+
+        $this->assertFileExists($wpRootDir . '/wp-content/db.sqlite');
+        $this->assertEquals('http://wp.local', $sqliteDb->getOption('siteurl'));
+        $this->assertInstanceOf(Single::class, $installedOnSqlite);
+
+        $mysqlCheck = $installedOnSqlite->setDb($mysqlDb);
+
+        $this->assertInstanceOf(Configured::class, $mysqlCheck);
+        $this->assertEquals($mysqlDb, $mysqlCheck->getDb());
     }
 }

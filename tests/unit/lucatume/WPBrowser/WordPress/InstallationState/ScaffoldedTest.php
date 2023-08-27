@@ -5,11 +5,13 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -18,6 +20,7 @@ class ScaffoldedTest extends Unit
 {
     use SnapshotAssertions;
     use TmpFilesCleanup;
+    use UopzFunctions;
 
     /**
      * It should throw when building on non existing root directory
@@ -130,7 +133,7 @@ class ScaffoldedTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $scaffolded = new Scaffolded($wpRootDir);
         unlink($wpRootDir . '/wp-config-sample.php');
@@ -154,7 +157,7 @@ class ScaffoldedTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $scaffolded = new Scaffolded($wpRootDir);
         $configured = $scaffolded->configure($db);
@@ -176,7 +179,7 @@ class ScaffoldedTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $scaffolded = new Scaffolded($wpRootDir);
         $configured = $scaffolded->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN);
@@ -199,7 +202,7 @@ class ScaffoldedTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $scaffolded = new Scaffolded($wpRootDir);
         $configured = $scaffolded->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
@@ -222,7 +225,7 @@ class ScaffoldedTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $scaffolded = new Scaffolded($wpRootDir);
         $extraPHP = <<< PHP
@@ -504,8 +507,28 @@ PHP;
         $scaffolded = new Scaffolded($wpRootDir);
 
         $this->assertEquals($wpRootDir . '/wp-content/plugins/', $scaffolded->getPluginsDir());
-        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php', $scaffolded->getPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php',
+            $scaffolded->getPluginsDir('plugin-1.php'));
         $this->assertEquals($wpRootDir . '/wp-content/plugins/test-plugin', $scaffolded->getPluginsDir('test-plugin'));
+    }
+
+    /**
+     * It should return mu-plugins directory
+     *
+     * @test
+     */
+    public function should_return_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '5.6.2');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/', $scaffolded->getMuPluginsDir());
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/plugin-1.php',
+            $scaffolded->getMuPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/test-plugin',
+            $scaffolded->getMuPluginsDir('test-plugin'));
     }
 
     /**
@@ -578,5 +601,114 @@ PHP;
         $scaffolded->executeClosureInWordPress(function () {
             return 'test';
         });
+    }
+
+    /**
+     * It should configure correctly with SQLite database
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_configure_correctly_with_sq_lite_database(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+        $configured = $scaffolded->configure($db);
+
+        $this->assertFileExists($wpRootDir . '/wp-content/db.php');
+        $this->assertTrue($configured->getDb() instanceof SQLiteDatabase);
+    }
+
+    /**
+     * It should throw if sqlite plugin cannot be copied
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_throw_if_sqlite_plugin_cannot_be_copied(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->uopzSetStaticMethodReturn(FS::class, 'recurseCopy', false);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_COPY_FAILED);
+
+        $configured = $scaffolded->configure($db);
+    }
+
+    /**
+     * It should throw if sqlite plugin db.copy file cannot be read
+     *
+     * @test
+     */
+    public function should_throw_if_sqlite_plugin_db_copy_file_cannot_be_read(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+            if (str_ends_with($file, 'db.copy')) {
+                return false;
+            }
+            return file_get_contents(...func_get_args());
+        }, true);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_DB_COPY_READ_FAILED);
+
+        $configured = $scaffolded->configure($db);
+    }
+
+    /**
+     * It should throw if sqlite drop-in placement fails
+     *
+     * @test
+     */
+    public function should_throw_if_sqlite_drop_in_placement_fails(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->uopzSetFunctionReturn('file_put_contents', function (string $file) {
+            if (str_ends_with($file, 'db.php')) {
+                return false;
+            }
+            return file_put_contents(...func_get_args());
+        }, true);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::SQLITE_DROPIN_COPY_FAILED);
+
+        $configured = $scaffolded->configure($db);
+    }
+
+    /**
+     * It should throw when setting db
+     *
+     * @test
+     */
+    public function should_throw_when_setting_db(): void
+    {
+        $wpRootDir = FS::tmpDir('scaffolded_');
+        Installation::scaffold($wpRootDir, '6.1.1');
+        $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
+
+        $scaffolded = new Scaffolded($wpRootDir);
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
+
+        $scaffolded->setDb($db);
     }
 }

@@ -2,95 +2,72 @@
 
 [![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
 
-wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
-whole sites using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
+You can use wp-browser to test WordPress sites, plugins and themes.
 
-Find out more in [the documentation](https://wpbrowser.wptestkit.dev).
+## Installation
 
-## Installation and setup - the really fast version
-
-Using [Composer](https://getcomposer.org/) require `wp-browser` as a development dependency:
+Add wp-browser to your project as a development dependency using [Composer][1]
 
 ```bash
 cd my-wordrpess-project
 composer require --dev lucatume/wp-browser
+```
+
+Initialize wp-browser to quickly configured to suite your project and setup:
+
+```bash
 vendor/bin/codecept init wpbrowser
 ```
 
-Answer the questions and you will be ready to test your project. Find out more about the setup in [the project 
-documentation][1].
+The command will set up your project to run integration and end-to-end tests using:
 
-## Using wp-browser with Codeception 4.0
+* SQLite as the database engine, leveragin the [SQLite Database Integration plugin][2]
+* PHP built-in web server to serve the WordPress site on localhost (e.g. `http://localhost:8080`)
+* Chromedriver to dirve the local version of Chrome installed on your machine
 
-Codeception version `4.0`, while still being compatible with PHP `5.6` and wp-browser, did break its structure into discrete modules.  
+If you're working on a plugin or theme project, the default configuration will add some extra steps:
 
-If you want to use wp-browser with Codeception version `4.0+` you will need to make sure you've got all the required packages.  
-Add the following requirements in your `composer.json` file, in the `require-dev` section:
+* install the latest version of WordPress in the `tests/_wordpress` directory
+* create a `tests/_plugins` directory: any file or directory in this directory will be symlinked into the WordPress
+  installation in `tests/_wordpress/wp-content/plugins`
+* create a `tests/_themes` directory: any file or directory in this directory will be symlinked into the WordPress
+  installation in `tests/_wordpress/wp-content/themes`
 
-```json
-{
-  "require-dev": {
-    "lucatume/wp-browser": "^3.0",
-    "codeception/module-asserts": "^1.0",
-    "codeception/module-phpbrowser": "^1.0",
-    "codeception/module-webdriver": "^1.0",
-    "codeception/module-db": "^1.0",
-    "codeception/module-filesystem": "^1.0",
-    "codeception/module-cli": "^1.0",
-    "codeception/util-universalframework": "^1.0"
-  }
-}
-```
+For most projects this configuration will be enough to get started with testing.
 
-You might not need all of them depending on the modules you use in your suites, but this will cover all the modules for this project. 
+You can run your tests immediately using the `vendor/bin/codecept run` command.
 
-[Read more here.][2]
+[Read more about the commands provided by the library here.](docs/commands.md)
 
-## Usage
-The project provides a number of modules to ease the testing of WordPress projects; you can find out more in the 
-[modules section of the documentation][3].  
-Here's a quick example acceptance test you can write:
+### Using a custom configuration
 
-```php
-// tests/acceptance/PrivatePostsCept.php
-$I->haveManyPostsInDatabase(3, ['post_title' => 'Test post {{n}}', 'post_status' => 'private']);
+If you decide to skip the default configuration, you will be able to set up `wp-browser` to suit your needs and local
+setup by editing the `tests/.env` file.
+The inline documentation in the file will guide you through the configuration process.
 
-$I->loginAs('subscriber', 'secret');
-$I->amOnPage('/');
-$I->see('Nothing found');
+[Read more about using a custom configuration here.](docs/custom-configuration.md)
 
-$I->loginAs('editor', 'secret');
-$I->amOnPage('/');
-$I->see('Test post 0');
-$I->see('Test post 1');
-$I->see('Test post 2');
-``` 
+## Getting support for wp-browser configuration and usage
 
-This is just a bite though, find out more in [the documentation][1].
+The best place to get support for wp-browser is [the project documentation](docs/README.md).
+Since this project builds on top of [PHPUnit][3] and [Codeception][4], you can also refer to their documentation.
 
-## Current Sponsors
+If you can't find the answer to your question here you can ask on
+the ["Issues" section of the wp-browser repository][5] taking care to provide as much information as possible.
 
-My sincere thanks to my sponsors: you make maintaining this project easier.
+Finally, you can <a href="mailto:luca@theaveragedev.com">contact me directly</a> to set up a call to discuss your
+project needs and how wp-browser can help you.
 
-* [@Borlabs-Ben](https://github.com/Borlabs-Ben)
-* [@DrewAPicture](https://github.com/DrewAPicture)
-* [@Luc45](https://github.com/Luc45)
-* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
-* [@bordoni](https://github.com/bordoni)
-* [@borkweb](https://github.com/borkweb)
-* [@cliffordp](https://github.com/cliffordp)
-* [@dingo-d](https://github.com/dingo-d)
-* [@francescamarano](https://github.com/francescamarano)
-* [@jchristopher](https://github.com/jchristopher)
-* [@jerclarke](https://github.com/jerclarke)
-* [@johnbillion](https://github.com/johnbillion)
-* [@joppuyo](https://github.com/joppuyo)
-* [@moraleida](https://github.com/johnbillion/moreleida)
-* [@pods-framework](https://github.com/pods-framework)
-* [@roborourke](https://github.com/roborourke)
-* [@ryanshoover](https://github.com/ryanshoover)
-* [@zackkatz](https://github.com/zackkatz)
+## Sponsors
 
-[1]: https://wpbrowser.wptestkit.dev/
-[2]: https://wpbrowser.wptestkit.dev/levels-of-testing
-[3]: https://wpbrowser.wptestkit.dev/modules
+A thanks to my sponsors: you make maintaining this project easier.
+
+[1]: https://getcomposer.org/
+
+[2]: https://wordpress.org/plugins/sqlite-database-integration/
+
+[3]: https://phpunit.de/
+
+[4]: https://codeception.com/
+
+[5]: https://github.com/lucatume/wp-browser/issues/new/choose

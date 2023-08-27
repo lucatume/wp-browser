@@ -4,55 +4,41 @@ namespace lucatume\WPBrowser\Template;
 
 use Codeception\Extension\RunFailed;
 use Codeception\Template\Bootstrap;
-use lucatume\WPBrowser\Command\GenerateWPAjax;
-use lucatume\WPBrowser\Command\GenerateWPCanonical;
-use lucatume\WPBrowser\Command\GenerateWPRestApi;
-use lucatume\WPBrowser\Command\GenerateWPRestController;
-use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
+use lucatume\WPBrowser\Command\DbExport;
+use lucatume\WPBrowser\Command\DbImport;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
-use lucatume\WPBrowser\Command\GenerateWPXML;
-use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Command\RunAll;
+use lucatume\WPBrowser\Command\RunOriginal;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Project\PluginProject;
-use lucatume\WPBrowser\Project\ProjectFactory;
 use lucatume\WPBrowser\Project\ProjectInterface;
+use lucatume\WPBrowser\Project\SiteProject;
+use lucatume\WPBrowser\Project\TestEnvironment;
 use lucatume\WPBrowser\Project\ThemeProject;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 class Wpbrowser extends Bootstrap
 {
+    private ?TestEnvironment $testEnvironment = null;
+
     /**
      * @throws RuntimeException
      */
     public function setup(): void
     {
-        $this->say('Set up <info>wp-browser</info> to test your WordPress project.');
-        $this->say('See Codeception documentation at <info>https://codeception.com/docs/Introduction</info>.');
-        $this->say('See wp-browser documentation at <info>https://wpbrowser.wptestkit.dev.</info>');
-        $this->say('You can quit this process at any time with <info>CTRL+C</info>.');
-        $this->say('');
-        $cwd = getcwd();
+        // At this stage Codeception changed the working directory to the work dir one.
+        $workDir = getcwd();
 
-        if ($cwd === false) {
+        if ($workDir === false) {
             throw new RuntimeException('Could not get the current working directory.');
         }
 
-        $project = ProjectFactory::fromDir($cwd);
-        $detectedProjectTypeCorrect = $this->ask(
-            "This looks like <info>a WordPress {$project->getType()}</info>: is this correct?",
-            true
-        );
+        $project = $this->buildProjectFromWorkDir($workDir);
 
-        if (!$detectedProjectTypeCorrect) {
-            /** @var string $projectType */
-            $projectType = $this->ask("What type of WordPress project is this?", [
-                'plugin',
-                'theme',
-                'site',
-            ]);
-            $project = ProjectFactory::make($projectType, $cwd);
-        }
+        $this->say('Initializing <info>wp-browser</info> for a <info>' . $project->getType() . '</info> project.');
+        $this->say('You can quit this process at any time with <info>CTRL+C</info>.');
 
         $input = $this->input;
         $namespace = $input->hasOption('namespace') ? $input->getOption('namespace') : null;
@@ -65,30 +51,39 @@ class Wpbrowser extends Bootstrap
             $this->actorSuffix = $actor;
         }
 
-        $this->say("Bootstrapping <info>Codeception</info> and <info>wp-browser</info> " .
-            "for a <info>{$project->getType()}</info> project ...");
-
-        $this->createGlobalConfig();
-        $this->say('Created Codeception configuration file <info>codeception.yml</info>.');
-
         $this->createDirs();
-        $this->say('Created <info>tests</info> directory and sub-directories.');
+        $this->sayInfo('Created <info>tests</info> directory and sub-directories.');
 
-        if ($input->hasOption('empty') && $input->getOption('empty')) {
+        try {
+            $project->setup();
+            $this->testEnvironment = $project->getTestEnv();
+            $this->createGlobalConfig();
+            $this->say('Created Codeception configuration file <info>codeception.yml</info>.');
+            $this->createEnvFile();
+            $this->createIntegrationSuite($project);
+            $this->createEndToEndSuite($project);
+        } catch (Throwable $e) {
+            $this->sayError($e->getMessage());
+            $this->sayError('Setup failed, check the error message above and try again.');
+            $this->cleanUpOnFail();
             return;
         }
 
-        $this->createEnvFile();
-        $this->createIntegrationSuite($project);
-        $this->createEndToEndSuite($project);
+        /** @var TestEnvironment $testEnvironment */
+        $testEnvironment = $this->testEnvironment;
 
-        $this->say('');
-        $this->saySuccess('All done, time to test!');
-        $this->say('Customize the <info>tests/.env</info> file to match your set up and start testing.');
+        $this->say(PHP_EOL . 'Setup completed.' . PHP_EOL);
+        if ($testEnvironment->afterSuccess !== null) {
+            $testEnvironment->runAfterSuccess();
+            $this->say();
+        }
+        $this->say('You can run tests with <info>vendor/bin/codecept run</info>.');
     }
 
     public function createGlobalConfig(): void
     {
+        /** @var TestEnvironment $testEnv */
+        $testEnv = $this->testEnvironment;
         $basicConfig = [
             'support_namespace' => $this->supportNamespace,
             'paths' => [
@@ -101,25 +96,23 @@ class Wpbrowser extends Bootstrap
             'actor_suffix' => 'Tester',
             'params' => ['tests/.env'],
             'extensions' => [
-                'enabled' => [RunFailed::class],
+                'enabled' => [RunFailed::class, ...array_keys($testEnv->extensionsEnabled)],
+                'config' => $testEnv->extensionsEnabled,
                 'commands' => [
+                    RunOriginal::class,
                     RunAll::class,
                     GenerateWPUnit::class,
-                    GenerateWPRestApi::class,
-                    GenerateWPRestController::class,
-                    GenerateWPRestPostTypeController::class,
-                    GenerateWPAjax::class,
-                    GenerateWPCanonical::class,
-                    GenerateWPXML::class,
-                    GenerateWPXMLRPC::class,
+                    DbExport::class,
+                    DbImport::class,
+                    ...$testEnv->customCommands
                 ]
             ]
         ];
 
-        $str = Yaml::dump($basicConfig, 4);
+        $str = Yaml::dump($basicConfig, 6);
         if ($this->namespace !== '') {
             $namespace = rtrim($this->namespace, '\\');
-            $str = "namespace: {$namespace}\n" . $str;
+            $str = "namespace: $namespace\n" . $str;
         }
         $this->createFile('codeception.yml', $str);
     }
@@ -128,11 +121,11 @@ class Wpbrowser extends Bootstrap
     {
         $plugins = '';
         if ($project instanceof PluginProject) {
-            $plugins = $project->getPluginsString();
+            $plugins = "'{$project->getActivationString()}'";
         }
         $theme = '';
         if ($project instanceof ThemeProject) {
-            $theme = $project->getThemeString();
+            $theme = $project->getActivationString();
         }
 
         $suiteConfig = <<<EOF
@@ -154,50 +147,77 @@ modules:
            domain: '%WORDPRESS_DOMAIN%'
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
-           plugins: ['$plugins']
-           theme: '$theme' 
+           plugins: [$plugins]
+           theme: '$theme'
 EOF;
         $this->createSuite('Integration', 'Integration', $suiteConfig);
+        $bootstrapContents = <<<EOF
+<?php
+/*
+ * Integration suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized, WordPress, plugins and themes are loaded.
+ * 
+ * If you need to load plugins or themes, add them to the Integration suite configuration file, in the 
+ * "modules.config.WPLoader.plugins" and "modules.config.WPLoader.theme" settings.
+ * 
+ * If you need to load one or more database dump file(s) to set up the test database, add the path to the dump file to
+ * the "modules.config.WPLoader.dump" setting.
+ */
+EOF;
+        $bootstrapPathname = $this->workDir . '/tests/Integration/_bootstrap.php';
+        if (!file_put_contents($bootstrapPathname, $bootstrapContents, LOCK_EX)) {
+            throw new RuntimeException(
+                'Could not write to file ' . $this->workDir . '/tests/Integration/_bootstrap.php'
+            );
+        }
 
         $this->say('Created <info>Integration</info> suite and configuration.');
     }
 
     private function createEnvFile(): void
     {
+        /** @var TestEnvironment $testEnv */
+        $testEnv = $this->testEnvironment;
+
         $envFileContents = <<< ENV
 # The path to the WordPress root directory, the one containing the wp-load.php file.
 # This can be a relative path from the directory that contains the codeception.yml file,
 # or an absolute path.
-WORDPRESS_ROOT_DIR=vendor/wordpress/wordpress
+WORDPRESS_ROOT_DIR={$testEnv->wpRootDir}
 
 # Tests will require a MySQL database to run.
 # The database will be created if it does not exist.
 # Do not use a database that contains important data!
-WORDPRESS_DB_URL=mysql://User:secret!@127.0.0.1:3306/test
+WORDPRESS_DB_URL={$testEnv->dbUrl}
 
 # The Integration suite will use this table prefix for the WordPress tables.
-TEST_TABLE_PREFIX=test_
+TEST_TABLE_PREFIX={$testEnv->testTablePrefix}
 
 # This table prefix used by the WordPress site in end-to-end tests.
-WORDPRESS_TABLE_PREFIX=wp_
+WORDPRESS_TABLE_PREFIX={$testEnv->wpTablePrefix}
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://wpbrowser.test
-WORDPRESS_DOMAIN=wpbrowser.test
+WORDPRESS_URL={$testEnv->wpUrl}
+WORDPRESS_DOMAIN={$testEnv->wpDomain}
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
-WORDPRESS_ADMIN_USER=admin
-WORDPRESS_ADMIN_PASSWORD=password
+WORDPRESS_ADMIN_USER={$testEnv->wpAdminUser}
+WORDPRESS_ADMIN_PASSWORD={$testEnv->wpAdminPassword}
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
-CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=4444
+CHROMEDRIVER_HOST={$testEnv->chromeDriverHost}
+CHROMEDRIVER_PORT={$testEnv->chromeDriverPort}
 ENV;
+
+        if ($testEnv->extraEnvFileContents) {
+            $envFileContents .= PHP_EOL . PHP_EOL . $testEnv->extraEnvFileContents;
+        }
 
         file_put_contents('tests/.env', $envFileContents);
         $this->say('Created <info>tests/.env</info> file.');
-        putenv('WORDPRESS_DB_URL=mysql://User:secret!@127.0.0.1:3306/test');
-        $_ENV['WORDPRESS_DB_URL'] = 'mysql://User:secret!@127.0.0.1:3306/test';
+        putenv("WORDPRESS_DB_URL=$testEnv->dbUrl");
+        $_ENV['WORDPRESS_DB_URL'] = $testEnv->dbUrl;
     }
 
     private function createEndToEndSuite(ProjectInterface $project): void
@@ -214,6 +234,7 @@ modules:
         - lucatume\WPBrowser\Module\WPWebDriver
         - lucatume\WPBrowser\Module\WPDb
         - lucatume\WPBrowser\Module\WPFilesystem
+        - lucatume\WPBrowser\Module\WPLoader
     config:
         lucatume\WPBrowser\Module\WPWebDriver:
             url: '%WORDPRESS_URL%'
@@ -223,23 +244,78 @@ modules:
             browser: chrome
             host: '%CHROMEDRIVER_HOST%'
             port: '%CHROMEDRIVER_PORT%'
-            window_size: false
+            window_size: 1200x1000
             capabilities:
                 chromeOptions:
-                    args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+                    args: ["--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
         lucatume\WPBrowser\Module\WPDb:
             dbUrl: '%WORDPRESS_DB_URL%'
-            dump: 'tests/_data/dump.sql'
+            dump: 'tests/Support/Data/dump.sql'
             populate: true
             cleanup: true
             reconnect: false
             url: '%WORDPRESS_URL%'
+            urlReplacement: false
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
         lucatume\WPBrowser\Module\WPFilesystem:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+        lucatume\WPBrowser\Module\WPLoader:
+            loadOnly: true
+            wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+            dbUrl: '%WORDPRESS_DB_URL%'
+            domain: '%WORDPRESS_DOMAIN%'
+            
 EOF;
         $this->createSuite('EndToEnd', 'EndToEnd', $suiteConfig);
+        $bootstrapContents = <<<EOF
+<?php
+/*
+ * EndToEnd suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
+ * 
+ * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
+ * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
+ * and re-created from the dump file(s).
+ * 
+ * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
+ * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
+ * E.g.:
+ * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
+ * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
+ * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
+ * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
+ */
+EOF;
+        $bootstrapPathname = $this->workDir . '/tests/EndToEnd/_bootstrap.php';
+        if (!file_put_contents($bootstrapPathname, $bootstrapContents, LOCK_EX)) {
+            throw new RuntimeException('Could not write to file '
+                . $this->workDir . '/tests/Integration/_bootstrap.php');
+        }
 
         $this->say('Created <info>EndToEnd</info> suite and configuration.');
+    }
+
+    private function buildProjectFromWorkDir(string $workDir): ProjectInterface
+    {
+        // If we find a style.css file in the work directory we assume it's a theme.
+        if (ThemeProject::parseDir($workDir)) {
+            return new ThemeProject($this->input, $this->output, $workDir);
+        }
+
+        if (PluginProject::parseDir($workDir)) {
+            return new PluginProject($this->input, $this->output, $workDir);
+        }
+
+        // Assume it's a site.
+        return new SiteProject($this->input, $this->output, $workDir);
+    }
+
+    protected function cleanUpOnFail(): void
+    {
+        FS::rrmdir($this->workDir . '/tests');
+        if (is_file($this->workDir . '/codeception.yml')) {
+            @unlink($this->workDir . '/codeception.yml');
+        }
     }
 }

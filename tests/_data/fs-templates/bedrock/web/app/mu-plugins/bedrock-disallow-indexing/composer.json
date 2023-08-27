@@ -1,0 +1,33 @@
+{
+  "name": "roots/bedrock-disallow-indexing",
+  "type": "wordpress-muplugin",
+  "license": "MIT",
+  "description": "Disallow indexing of your site on non-production environments",
+  "authors": [
+    {
+      "name": "Ben Word",
+      "email": "ben@benword.com",
+      "homepage": "https://github.com/retlehs"
+    },
+    {
+      "name": "Scott Walkinshaw",
+      "email": "scott.walkinshaw@gmail.com",
+      "homepage": "https://github.com/swalkinshaw"
+    },
+    {
+      "name": "QWp6t",
+      "email": "hi@qwp6t.me",
+      "homepage": "https://github.com/qwp6t"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/roots/bedrock-disallow-indexing/issues",
+    "forum": "https://discourse.roots.io/"
+  },
+  "require": {
+    "php": ">=7.1"
+  }
+}

@@ -7,9 +7,12 @@
 
 namespace lucatume\WPBrowser\Generators;
 
-use InvalidArgumentException;
+use Codeception\Lib\Driver\Db;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Strings;
 use RuntimeException;
+use Codeception\Lib\Driver\Sqlite;
+use Codeception\Lib\Driver\MySql;
 
 /**
  * Class Tables
@@ -19,23 +22,28 @@ use RuntimeException;
 class Tables
 {
     /**
-     * The absolute path to the the templates directory.
+     * The absolute path to the templates directory.
      */
-    protected string $templatesDir;
+    private string $templatesDir;
 
     /**
      * Tables constructor.
      */
-    public function __construct()
+    public function __construct(string $driverClass)
     {
-        $this->templatesDir = __DIR__ . '/templates';
+        $dir = match ($driverClass) {
+            Sqlite::class => 'sqlite',
+            MySql::class => 'mysql',
+            default => throw new InvalidArgumentException('Unsupported database type ' . $driverClass)
+        };
+        $this->templatesDir = __DIR__ . '/' . $dir;
     }
 
     /**
      * Returns a list of default table names for a single site WordPress installation.
      *
      * @param string $table_prefix The table prefix to prepend to each blog table name.
-     * @param int $blog_id The ID of the blog to return the table names for.
+     * @param int $blog_id         The ID of the blog to return the table names for.
      *
      * @return array<string> The list of tables, not prefixed with the table prefix.
      */
@@ -59,87 +67,6 @@ class Tables
     }
 
     /**
-     * Returns the SQL to alter a table.
-     *
-     * @param string $table The table to alter.
-     * @param string $prefix The prefix of the table to alter.
-     *
-     * @return string The SQL.
-     */
-    public function getAlterTableQuery(string $table, string $prefix): string
-    {
-        $data = ['operation' => 'ALTER TABLE', 'prefix' => $prefix];
-        return in_array($table, $this->alterableTables(), true) ? $this->renderQuery($table, $data) : '';
-    }
-
-    /**
-     * Returns  a list of alterable tables.
-     *
-     * @return array<string> The list of alterable tables in the context of multisite installations.
-     */
-    private function alterableTables(): array
-    {
-        return [
-            'users'
-        ];
-    }
-
-    /**
-     * Renders a SQL query for a WordPress table operation.
-     *
-     * @param string $table The name of the table to render the query for, e.g. `blogs` or `posts`.
-     * @param array<string,mixed> $data The data that should be used to render the query.
-     *
-     * @return string The rendered SQL query.
-     *
-     * @throws InvalidArgumentException If the table name is not a valid table name.
-     */
-    protected function renderQuery(string $table, array $data): string
-    {
-        if (!in_array($table, $this->tables(), true)) {
-            throw new InvalidArgumentException('Table ' . $table . ' is not a valid table name');
-        }
-
-        $template = $this->templates($table);
-
-        return Strings::renderString($template, $data);
-    }
-
-    /**
-     * Returns a list of all the site tables.
-     *
-     * @return array<string> A list of all the site tables.
-     */
-    protected function tables(): array
-    {
-        return array_merge([], self::multisiteTables());
-    }
-
-    /**
-     * Returns a list of additional table names that will be created in default multi-site installation.
-     *
-     * This list does not include single site installation tables.
-     *
-     * @param string $table_prefix The table prefix to prepend to each table name.
-     *
-     * @return array<string> The list of tables, not prefixed with the table prefix.
-     *
-     * @see Tables::blogTables()
-     */
-    public static function multisiteTables(string $table_prefix = ''): array
-    {
-        return array_map(static function ($table) use ($table_prefix): string {
-            return $table_prefix . $table;
-        }, [
-            'blogs',
-            'sitemeta',
-            'site',
-            'signups',
-            'registration_log'
-        ]);
-    }
-
-    /**
      * Returns the SQL query to perform a table operation.
      *
      * @param string $table The table name or table operation slug.
@@ -148,9 +75,9 @@ class Tables
      *
      * @throws RuntimeException If the SQL query cannot be fetched.
      */
-    protected function templates(string $table): string
+    private function templates(string $table): string
     {
-        $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "{$table}.handlebars";
+        $templateFile = $this->templatesDir . DIRECTORY_SEPARATOR . "$table.handlebars";
 
         if (!is_file($templateFile)) {
             throw new RuntimeException("Template file {$templateFile} not found.");
@@ -166,24 +93,10 @@ class Tables
     }
 
     /**
-     * Returns the SQL code to create a blog table.
-     *
-     * @param string $table The table name.
-     * @param string $prefix The table prefix.
-     *
-     * @return string The SQL.
-     */
-    public function getCreateTableQuery(string $table, string $prefix): string
-    {
-        $data = ['operation' => 'CREATE TABLE IF NOT EXISTS', 'prefix' => $prefix];
-        return $this->renderQuery($table, $data);
-    }
-
-    /**
      * Returns the SQL code required to scaffold a blog tables.
      *
-     * @param string $prefix The blog prefix.
-     * @param int $blogId The blog ID.
+     * @param string $prefix            The blog prefix.
+     * @param int $blogId               The blog ID.
      * @param array<string,mixed> $data The blog data.
      *
      * @return string The SQL query.
@@ -218,7 +131,7 @@ class Tables
      * Returns the SQL code to drop a blog tables.
      *
      * @param string $tablePrefix The database table prefix.
-     * @param int $blogId The blog ID.
+     * @param int $blogId         The blog ID.
      *
      * @return string SQL code.
      */

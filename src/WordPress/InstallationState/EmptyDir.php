@@ -3,12 +3,13 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Closure;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Source;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
-use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Version;
 
 class EmptyDir implements InstallationStateInterface
@@ -51,7 +52,7 @@ class EmptyDir implements InstallationStateInterface
      * @throws InstallationException
      */
     public function configure(
-        Db $db,
+        DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
         ?ConfigurationData $configurationData = null
     ): InstallationStateInterface {
@@ -277,7 +278,7 @@ class EmptyDir implements InstallationStateInterface
     /**
      * @throws InstallationException
      */
-    public function getDb(): Db
+    public function getDb(): DatabaseInterface
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
@@ -286,8 +287,8 @@ class EmptyDir implements InstallationStateInterface
     }
 
     /**
-     * @throws InstallationException
      * @return array<string,mixed>
+     * @throws InstallationException
      */
     public function getConstants(): array
     {
@@ -298,8 +299,8 @@ class EmptyDir implements InstallationStateInterface
     }
 
     /**
-     * @throws InstallationException
      * @return array<string,mixed>
+     * @throws InstallationException
      */
     public function getGlobals(): array
     {
@@ -313,6 +314,17 @@ class EmptyDir implements InstallationStateInterface
      * @throws InstallationException
      */
     public function getPluginsDir(string $path = ''): string
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getMuPluginsDir(string $path = ''): string
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
@@ -356,7 +368,18 @@ class EmptyDir implements InstallationStateInterface
     /**
      * @throws InstallationException
      */
-    public function executeClosureInWordPress(Closure $closure):mixed
+    public function executeClosureInWordPress(Closure $closure): mixed
+    {
+        throw new InstallationException(
+            'The WordPress installation is empty.',
+            InstallationException::STATE_EMPTY
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
     {
         throw new InstallationException(
             'The WordPress installation is empty.',

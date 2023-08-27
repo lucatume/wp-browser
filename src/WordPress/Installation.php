@@ -2,13 +2,22 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use DirectoryIterator;
+use FilesystemIterator;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationChecks;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use lucatume\WPBrowser\WordPress\InstallationState\Multisite;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Throwable;
@@ -18,11 +27,12 @@ class Installation
     use WordPressChecks;
     use InstallationChecks;
 
+    public const SQLITE_PLUGIN = __DIR__ . '/../../includes/sqlite-database-integration';
+
     /**
      * @var array<string>
      */
     private static array $scaffoldedInstallations = [];
-    private ?Db $db;
     private string $wpRootDir;
     private InstallationState\InstallationStateInterface $installationState;
 
@@ -36,15 +46,19 @@ class Installation
      */
     public function __construct(
         string $wpRootDir,
-        ?Db $db = null,
+        bool $checkDb = true
     ) {
         $this->wpRootDir = $this->checkWpRootDir($wpRootDir);
-        $this->db = $db;
-        $this->installationState = $this->setInstallationState();
+        $this->installationState = $this->setInstallationState($checkDb);
     }
 
     /**
+     * @throws DbException
      * @throws InstallationException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WorkerException
+     * @throws WpConfigFileException
      */
     public static function scaffold(string $wpRootDir, string $version = 'latest'): self
     {
@@ -67,8 +81,111 @@ class Installation
         return $installations;
     }
 
+    /**
+     * @throws InstallationException
+     */
+    public static function placeSqliteMuPlugin(string $muPluginsDir, string $contentDir): void
+    {
+        if (self::hasSqliteDropin($contentDir . '/db.php')) {
+            return;
+        }
+
+        if (is_file($contentDir . '/db.php')) {
+            throw new InstallationException(
+                "The db.php file already exists in the $contentDir directory and it's not a SQLite drop-in.",
+                InstallationException::DB_DROPIN_ALREADY_EXISTS
+            );
+        }
+
+        if (!(
+            FS::mkdirp($muPluginsDir)
+            && FS::recurseCopy(self::SQLITE_PLUGIN, $muPluginsDir . '/sqlite-database-integration')
+        )) {
+            throw new InstallationException(
+                "Could not copy the SQLite mu-plugin file to $muPluginsDir.",
+                InstallationException::SQLITE_PLUGIN_COPY_FAILED
+            );
+        }
+
+        $pluginDirPathname = $muPluginsDir . '/sqlite-database-integration';
+        $dbCopyPathname = $pluginDirPathname . '/db.copy';
+        $dbCopyContents = file_get_contents($dbCopyPathname);
+
+        if (empty($dbCopyContents)) {
+            throw new InstallationException(
+                "Could not read the SQLite db.copy file at $dbCopyPathname.",
+                InstallationException::SQLITE_PLUGIN_DB_COPY_READ_FAILED
+            );
+        }
+
+        $updatedContents = str_replace(
+            [
+                '{SQLITE_IMPLEMENTATION_FOLDER_PATH}',
+                '{SQLITE_PLUGIN}',
+                '{SQLITE_MAIN_FILE}'
+            ],
+            [
+                $pluginDirPathname,
+                'sqlite-database-integration/load.php',
+                $pluginDirPathname . '/load.php'
+            ],
+            $dbCopyContents
+        );
+
+        if (!file_put_contents($contentDir . '/db.php', $updatedContents, LOCK_EX)) {
+            throw new InstallationException(
+                "Could not write the SQLite db.php file at $contentDir.",
+                InstallationException::SQLITE_DROPIN_COPY_FAILED
+            );
+        }
+
+        // Place a .gitignore file to ignore the db.php file, throw if failed.
+        if (!is_file($contentDir . '/.gitignore')
+            && !file_put_contents($contentDir . '/.gitignore', 'db.php', LOCK_EX)
+        ) {
+            throw new InstallationException(
+                "Could not write the SQLite .gitignore file at $contentDir.",
+                InstallationException::SQLITE_DROPIN_COPY_FAILED
+            );
+        }
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function findInDir(string $searchDir, bool $checkDb = true): self
+    {
+        $wpDir = null;
+
+        // Recursively look into the wpDir to find the directory that contains the wp-load.php file.
+        $files = new \RegexIterator(
+            new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $searchDir,
+                    FilesystemIterator::UNIX_PATHS | FilesystemIterator::CURRENT_AS_PATHNAME
+                ),
+                RecursiveIteratorIterator::SELF_FIRST
+            ),
+            '/^.+\/wp-load\.php$/i',
+        );
+        /** @var string $file */
+        foreach ($files as $file) {
+            $wpDir = dirname($file);
+            break;
+        }
+
+        if (!is_string($wpDir)) {
+            throw new InstallationException(
+                "Could not find a WordPress installation in the $searchDir directory.",
+                InstallationException::WORDPRESS_NOT_FOUND
+            );
+        }
+
+        return new self($wpDir, $checkDb);
+    }
+
     public function configure(
-        Db $db,
+        DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
         ConfigurationData $configurationData = null
     ): self {
@@ -139,9 +256,9 @@ class Installation
         return $this->installationState->isMultisite();
     }
 
-    public function getDb(): ?Db
+    public function getDb(): ?DatabaseInterface
     {
-        return $this->db ?? $this->installationState->getDb();
+        return $this->installationState->getDb();
     }
 
     public function getWpRootDir(?string $path = null): string
@@ -157,7 +274,7 @@ class Installation
      * @throws Throwable
      * @throws WorkerException
      */
-    private function setInstallationState(): InstallationState\InstallationStateInterface
+    private function setInstallationState(bool $checkDb = true): InstallationState\InstallationStateInterface
     {
         if (!is_file($this->wpRootDir . '/wp-load.php')) {
             return new InstallationState\EmptyDir($this->wpRootDir);
@@ -172,7 +289,11 @@ class Installation
         $installationState = new InstallationState\Configured($this->wpRootDir, $wpConfigFilePath);
         $multisite = $installationState->isMultisite();
 
-        if ($this->db === null || !$this->isInstalled($multisite)) {
+        if (!$checkDb) {
+            return $installationState;
+        }
+
+        if (!$this->isInstalled($multisite, $installationState->getDb())) {
             return $installationState;
         }
 
@@ -233,6 +354,7 @@ class Installation
 
     /**
      * @param ?array<string> $checkKeys
+     *
      * @return array<string, mixed>
      */
     public function report(array $checkKeys = null): array
@@ -280,10 +402,80 @@ class Installation
 
     /**
      * @param string[] $command
+     *
      * @throws ProcessFailedException
+     * @throws DbException
      */
     public function runWpCliCommandOrThrow(array $command): Process
     {
+        if ($this->installationState instanceof Multisite) {
+            $hasUrlOption = false;
+            foreach ($command as $arg) {
+                if (str_starts_with($arg, '--url')) {
+                    $hasUrlOption = true;
+                    break;
+                }
+            }
+            $db = $this->installationState->getDb();
+            if (!$hasUrlOption && ($url = $db->getOption('home'))) {
+                array_unshift($command, '--url=' . $url);
+            }
+        }
         return (new CliProcess($command, $this->getRootDir()))->mustRun();
+    }
+
+    public function usesSqlite(): bool
+    {
+        return $this->installationState->getDb() instanceof SQLiteDatabase;
+    }
+
+    public function usesMysql(): bool
+    {
+        return $this->installationState->getDb() instanceof MySQLDatabase;
+    }
+
+    public function getMuPluginsDir(): string
+    {
+        return $this->installationState->getMuPluginsDir();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function setDb(DatabaseInterface $db): self
+    {
+        if ($db instanceof SQLiteDatabase && !$this->hasSqliteDropin($this->getContentDir('db.php'))) {
+            throw new InstallationException(
+                'SQLite database requires sqlite drop-in.',
+                InstallationException::SQLITE_PLUGIN_NOT_FOUND
+            );
+        }
+
+        $this->installationState = $this->installationState->setDb($db);
+        return $this;
+    }
+
+    private static function hasSqliteDropin(string $dropinPathname): bool
+    {
+
+        if (!is_file($dropinPathname)) {
+            return false;
+        }
+
+        $file = fopen($dropinPathname, 'rb');
+
+        if (!is_resource($file)) {
+            return false;
+        }
+
+        $contents = fread($file, 1024);
+
+        if ($contents === false) {
+            return false;
+        }
+
+        fclose($file);
+
+        return str_contains($contents, 'Plugin Name: SQLite integration (Drop-in)');
     }
 }

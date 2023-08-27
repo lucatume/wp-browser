@@ -4,19 +4,17 @@ namespace lucatume\WPBrowser\Process;
 
 use Closure;
 use Codeception\Exception\ConfigurationException;
-use lucatume\WPBrowser\Events\Dispatcher;
+use Codeception\Util\Debug;
 use lucatume\WPBrowser\Process\Worker\Exited;
+use lucatume\WPBrowser\Process\Worker\Result;
 use lucatume\WPBrowser\Process\Worker\Running;
 use lucatume\WPBrowser\Process\Worker\Worker;
 use lucatume\WPBrowser\Process\Worker\WorkerInterface;
-use lucatume\WPBrowser\Process\Worker\Result;
 use Throwable;
 
 class Loop
 {
     use MemoryUsage;
-
-    public const EVENT_AFTER_WORKER_EXIT = 'loop.worker.exit.after';
 
     private int $peakParallelism = 0;
     /**
@@ -58,6 +56,9 @@ class Loop
         private float $timeout = 30,
         array $options = []
     ) {
+        if (Debug::isEnabled() || getenv('WPBROWSER_LOOP_DEBUG')) {
+            $this->timeout = 10 ** 10;
+        }
         $this->addWorkers($workers, $options);
     }
 
@@ -304,7 +305,6 @@ class Loop
 
                 if ($fastFailureFlagRaised) {
                     $this->fastFailureFlagRaised = true;
-                    $this->dispatchOnWorkerExit(Exited::fromRunningWorker($w));
                     $this->debugLine('Fast failure flag raised, terminating all workers.');
                     $this->terminateAllRunningWorkers();
                     break 2;
@@ -312,7 +312,6 @@ class Loop
 
                 if ($status !== null) {
                     $exitedWorker = Exited::fromRunningWorker($w);
-                    $this->dispatchOnWorkerExit($exitedWorker);
                     $this->exited[$w->getId()] = $exitedWorker;
                     unset($this->running[$w->getId()]);
                     $this->debugLine("Worker {$w->getId()} exited with status {$w->getExitCode()}.");
@@ -322,7 +321,6 @@ class Loop
 
                 if ($isOverTime) {
                     $exitedWorker = $w->terminate();
-                    $this->dispatchOnWorkerExit($exitedWorker);
                     $this->exited[$w->getId()] = $exitedWorker;
                     unset($this->running[$w->getId()]);
                     $this->debugLine("Worker {$w->getId()} took too long, terminated.");
@@ -477,10 +475,5 @@ class Loop
         }
 
         codecept_debug("Loop: $line");
-    }
-
-    private function dispatchOnWorkerExit(Exited $exitedWorker): void
-    {
-        Dispatcher::dispatch(self::EVENT_AFTER_WORKER_EXIT, $exitedWorker);
     }
 }

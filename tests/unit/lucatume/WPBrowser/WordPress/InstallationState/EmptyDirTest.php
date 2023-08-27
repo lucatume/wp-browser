@@ -7,10 +7,10 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
-use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Db;
-use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\InstallationException;
 
 class EmptyDirTest extends Unit
 {
@@ -91,7 +91,7 @@ class EmptyDirTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost);
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
@@ -374,6 +374,22 @@ class EmptyDirTest extends Unit
     }
 
     /**
+     * It should throw if trying to get mu-plugins directory
+     *
+     * @test
+     */
+    public function should_throw_if_trying_to_get_mu_plugins_directory(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->getMuPluginsDir();
+    }
+
+    /**
      * It should throw if trying to get themes directory
      *
      * @test
@@ -442,5 +458,23 @@ class EmptyDirTest extends Unit
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
 
         $emptyDir->executeClosureInWordPress($closure);
+    }
+
+    /**
+     * It should throw when setting db
+     *
+     * @test
+     */
+    public function should_throw_when_setting_db(): void
+    {
+        $wpRootDir = FS::tmpDir('empty-dir_');
+
+        $emptyDir = new EmptyDir($wpRootDir);
+        $db = new MysqlDatabase('foo', 'bar', 'baz', 'qux');
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionCode(InstallationException::STATE_EMPTY);
+
+        $emptyDir->setDb($db);
     }
 }

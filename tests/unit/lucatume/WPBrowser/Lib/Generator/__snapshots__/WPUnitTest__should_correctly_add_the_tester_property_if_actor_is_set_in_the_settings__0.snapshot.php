@@ -26,7 +26,7 @@ class SomeClassTest extends \lucatume\WPBrowser\TestCase\WPTestCase
     }
 
     // Tests
-    public function test_it_works()
+    public function test_factory() :void
     {
         $post = static::factory()->post->create_and_get();
         

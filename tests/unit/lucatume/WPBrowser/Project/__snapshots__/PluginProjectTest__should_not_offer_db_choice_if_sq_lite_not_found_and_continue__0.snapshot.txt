@@ -1,0 +1,3 @@
+SQLite PHP extensions not found.
+You can exit and install them or continue and use MySQL.
+? Exit and come back when SQLite extension are installed? (y/n) Install and enable the <code>sqlite3</code> and <code>pdo_sqlite</code> PHP extensions and try again.

@@ -1,0 +1,120 @@
+<?php
+
+
+namespace Unit\lucatume\WPBrowser\Extension;
+
+use Codeception\Event\SuiteEvent;
+use Codeception\Events;
+use Codeception\Exception\ExtensionException;
+use Codeception\Test\Unit;
+use lucatume\WPBrowser\Events\Dispatcher;
+use lucatume\WPBrowser\Extension\EventDispatcherBridge;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use PHPUnit\Framework\Assert;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use UnitTester;
+
+class EventDispatcherBridgeTest extends Unit
+{
+    use UopzFunctions;
+
+    /**
+     * It should throw if event dispatcher cannot be found in trace
+     *
+     * @test
+     */
+    public function should_throw_if_event_dispatcher_cannot_be_found_in_trace(): void
+    {
+        $mockTrace = [];
+        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
+
+        $eventDispatcherBridge = new EventDispatcherBridge([], []);
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Could not find the application event dispatcher.');
+
+        $eventDispatcherBridge->onModuleInit(new SuiteEvent());
+    }
+
+    /**
+     * It should set global event dispatcher to application one
+     *
+     * @test
+     */
+    public function should_set_global_event_dispatcher_to_application_one(): void
+    {
+        $eventDispatcher = new EventDispatcher();
+        $mockTrace = [
+            ['object' => $eventDispatcher]
+        ];
+        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class,
+            'setEventDispatcher',
+            function (EventDispatcherInterface $setEventDispatcher) use (
+                $eventDispatcher
+            ) {
+                Assert::assertSame($eventDispatcher, $setEventDispatcher);
+            });
+
+        $eventDispatcherBridge = new EventDispatcherBridge([], []);
+        $eventDispatcherBridge->onSuiteInit(new SuiteEvent());
+    }
+
+    /**
+     * It should immediately call previous event dispatcher listeners on this event
+     *
+     * @test
+     */
+    public function should_immediately_call_previous_event_dispatcher_listeners_on_this_event(): void
+    {
+        $eventDispatcher = new EventDispatcher();
+        $previousEventDispatcher = new EventDispatcher();
+        $calls = 0;
+        $callbackOne = function () use (&$calls) {
+            return $calls++;
+        };
+        $previousEventDispatcher->addListener(Events::SUITE_BEFORE, $callbackOne, 89);
+        $callbackTwo = function () use (&$calls) {
+            return $calls++;
+        };
+        $previousEventDispatcher->addListener(Events::SUITE_BEFORE, $callbackTwo, 23);
+        $mockTrace = [
+            ['object' => $eventDispatcher]
+        ];
+        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', $previousEventDispatcher);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'setEventDispatcher', null);
+
+        $eventDispatcherBridge = new EventDispatcherBridge([], []);
+        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent());
+
+        $this->assertEquals(2, $calls);
+    }
+
+    /**
+     * It should correctly handle the case where the previous event dispatcher is null
+     *
+     * @test
+     */
+    public function should_correctly_handle_the_case_where_the_previous_event_dispatcher_is_null(): void
+    {
+        $eventDispatcher = new EventDispatcher();
+        $mockTrace = [
+            ['object' => $eventDispatcher]
+        ];
+        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
+        $this->uopzSetStaticMethodReturn(Dispatcher::class,
+            'setEventDispatcher',
+            function ($eventDispatcher) use (&$setEventDispatcher) {
+                $setEventDispatcher = $eventDispatcher;
+            } , true);
+
+        $eventDispatcherBridge = new EventDispatcherBridge([], []);
+        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent());
+
+        $this->assertSame($eventDispatcher, $setEventDispatcher);
+    }
+}

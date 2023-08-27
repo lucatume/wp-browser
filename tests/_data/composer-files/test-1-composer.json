@@ -1,0 +1,15 @@
+{
+    "name": "lucatume/test-1",
+    "autoload": {
+        "psr-4": {
+            "Lucatume\\Test1\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Luca Tumedei",
+            "email": "luca@theaveragedev.com"
+        }
+    ],
+    "require": {}
+}

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "Something went wrong"
+exit 1

@@ -5,4 +5,4 @@ There are a number of reasons why this might happen and the most common is an em
 E.g. you are trying to bootstrap WordPress as multisite on a database that does not contain multisite tables.
 Run the same test command again activating debug (-vvv) to run a WordPress status check.
 Since the `WPLoader::loadOnly` parameter is set to `true` the WPLoader module will not try to populate the database.
-The database should be populated from a dump using the WPDb/Db modules.
+The database should be populated from a dump using the WPDb/MysqlDatabase modules.

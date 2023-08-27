@@ -1,0 +1,29 @@
+diff --git a/includes/sqlite-database-integration/db.copy b/includes/sqlite-database-integration/db.copy
+index 0b0797e8..e164139d 100644
+--- a/includes/sqlite-database-integration/db.copy
++++ b/includes/sqlite-database-integration/db.copy
+@@ -26,11 +26,22 @@ if ( ! $sqlite_plugin_implementation_folder_path || ! file_exists( $sqlite_plugi
+ 
+ // Constant for backward compatibility.
+ if ( ! defined( 'DATABASE_TYPE' ) ) {
+-	define( 'DATABASE_TYPE', 'sqlite' );
++	define( 'DATABASE_TYPE', getenv( 'DATABASE_TYPE' ) ?: 'sqlite' );
+ }
+ // Define SQLite constant.
+ if ( ! defined( 'DB_ENGINE' ) ) {
+-	define( 'DB_ENGINE', 'sqlite' );
++	define( 'DB_ENGINE', getenv( 'DB_ENGINE' ) ?: 'sqlite' );
++}
++// Define SQLite main file constant to avoid having the plugin loaded automatically.
++if ( ! defined( 'SQLITE_MAIN_FILE' ) ) {
++	define( 'SQLITE_MAIN_FILE', '{SQLITE_MAIN_FILE}' );
++}
++// Define DB_DIR and DB_FILE from env, if not already defined.
++if( ! defined( 'DB_DIR' ) && getenv( 'DB_DIR' ) ) {
++    define( 'DB_DIR', realpath( getenv( 'DB_DIR' ) ) );
++}
++if( ! defined( 'DB_FILE' ) && getenv( 'DB_FILE' ) ) {
++    define( 'DB_FILE', getenv( 'DB_FILE' ) );
+ }
+ 
+ // Require the implementation from the plugin.

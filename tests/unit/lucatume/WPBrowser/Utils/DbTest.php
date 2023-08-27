@@ -186,6 +186,7 @@ class dbTest extends Unit
 
     /**
      * Test dbDsnMap
+     *
      * @dataProvider testDbDsnMapTypeDataProvider
      */
     public function test_dbDsnMap($input, $expected)
@@ -335,6 +336,7 @@ class dbTest extends Unit
 
     /**
      * Test dbDsnString
+     *
      * @dataProvider testdbDsnStringDataSet
      */
     public function test_dbDsnString($inputMap, $forDbHost, $expected)
@@ -382,6 +384,7 @@ class dbTest extends Unit
 
     /**
      * Test dbDsnToMap
+     *
      * @dataProvider dbDsnToMapDataProvider
      */
     public function test_db_dsn_to_map($input, $expected)
@@ -404,6 +407,7 @@ class dbTest extends Unit
 
     /**
      * Test dbDsnToMap will throw if string is not DSN string
+     *
      * @dataProvider dbDsnToMapBadInputDataProvider
      */
     public function test_db_dsn_to_map_will_throw_if_string_is_not_dsn_string($input)
@@ -450,6 +454,55 @@ class dbTest extends Unit
                     'port' => 2389,
                     'name' => 'test',
                     'dsn' => 'mysql:host=127.0.0.1;port=2389;dbname=test'
+                ]
+            ],
+            'sqlite' => [
+                'sqlite:///var/db.sqlite',
+                [
+                    'type' => 'sqlite',
+                    'user' => '',
+                    'password' => '',
+                    'host' => '',
+                    'port' => '',
+                    'name' => '/var/db.sqlite',
+                    'dsn' => 'sqlite:/var/db.sqlite'
+                ]
+            ],
+            'sqlite with Windows absolute file path' => [
+                'sqlite:C:\var\db.sqlite',
+                [
+                    'type' => 'sqlite',
+                    'user' => '',
+                    'password' => '',
+                    'host' => '',
+                    'port' => '',
+                    'name' => 'C:\var\db.sqlite',
+                    'dsn' => 'sqlite:C:\var\db.sqlite'
+                ]
+            ],
+            'sqlite with Windows relative file path' => [
+                'sqlite:.\var\db.sqlite',
+                [
+                    'type' => 'sqlite',
+                    'user' => '',
+                    'password' => '',
+                    'host' => '',
+                    'port' => '',
+                    'name' => '.\var\db.sqlite',
+                    'dsn' => 'sqlite:.\var\db.sqlite'
+                ]
+            ],
+            'sqlite relative to codecept root dir' => [
+               'sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite' ,
+                [
+                    'type' => 'sqlite',
+                    'user' => '',
+                    'password' => '',
+                    'host' => '',
+                    'port' => '',
+                    'name' => codecept_root_dir('tests/_wordpress/data/db.sqlite'),
+                    'dsn' => 'sqlite:' . codecept_root_dir('tests/_wordpress/data/db.sqlite')
+
                 ]
             ]
         ];

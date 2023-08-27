@@ -83,8 +83,11 @@ foreach ([
              'WP_TESTS_FORCE_KNOWN_BUGS' => false,
              'AUTOMATIC_UPDATER_DISABLED' => $wpLoaderConfig['AUTOMATIC_UPDATER_DISABLED'],
              'WP_HTTP_BLOCK_EXTERNAL' => $wpLoaderConfig['WP_HTTP_BLOCK_EXTERNAL'],
+             'WP_CONTENT_DIR' => $wpLoaderConfig['WP_CONTENT_DIR'] ?? null,
+             'WP_PLUGIN_DIR' => $wpLoaderConfig['WP_PLUGIN_DIR'] ?? null,
+             'WPMU_PLUGIN_DIR' => $wpLoaderConfig['WPMU_PLUGIN_DIR'] ?? null,
          ] as $const => $value) {
-    if (!defined($const)) {
+    if ($value && !defined($const)) {
         define($const, $value);
     }
 }

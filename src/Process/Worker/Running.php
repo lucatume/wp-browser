@@ -165,7 +165,7 @@ class Running implements WorkerInterface
 
     private function kill(int $pid): void
     {
-        stripos(php_uname(''), 'win') > -1 ?
+        DIRECTORY_SEPARATOR === '\\' ?
             exec("taskkill /F /T /PID $pid 2>nul 1>nul")
             : exec("kill -9 $pid 2>&1 > /dev/null");
     }

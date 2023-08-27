@@ -73,4 +73,12 @@ class Arr
 
         return true;
     }
+
+    /**
+     * @param array<int|string,mixed> $array
+     */
+    public static function isAssociative(array $array): bool
+    {
+        return array_filter(array_keys($array), 'is_string') === array_keys($array);
+    }
 }

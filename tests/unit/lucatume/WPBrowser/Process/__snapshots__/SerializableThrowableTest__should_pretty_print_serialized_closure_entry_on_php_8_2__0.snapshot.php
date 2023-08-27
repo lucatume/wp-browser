@@ -8,4 +8,5 @@ closure://static function () {
 /includes/opis/closure/src/SerializableClosure.php:1
 /tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:1
 /tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:1
+/vendor/symfony/console/Command/Command.php:1
 /vendor/bin/codecept:1

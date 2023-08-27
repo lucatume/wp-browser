@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Hoa\Compiler\Llk\Sampler\Exception;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
+use Symfony\Component\Process\Process;
+use Throwable;
+
 class Random
 {
     private static string $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
@@ -45,5 +50,30 @@ class Random
         }
 
         return $generated;
+    }
+
+    public static function openLocalhostPort(): int
+    {
+        try {
+            $docRoot = __DIR__;
+            $process = new Process([PHP_BINARY, '-S', 'localhost:0', '-t', $docRoot]);
+            $process->start();
+            do {
+                if (!$process->isRunning() && $process->getExitCode() !== 0) {
+                    throw new RuntimeException($process->getErrorOutput() ?: $process->getOutput());
+                }
+                $output = $process->getErrorOutput();
+                $port = preg_match('~localhost:(\d+)~', $output, $matches) ? $matches[1] : null;
+            } while ($port === null);
+            return (int)$port;
+        } catch (Throwable $e) {
+            throw new RuntimeException(
+                'Could not start PHP built-in server to find free localhost port: ' . $e->getMessage()
+            );
+        } finally {
+            if (isset($process)) {
+                $process->stop();
+            }
+        }
     }
 }

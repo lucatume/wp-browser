@@ -7,11 +7,14 @@ use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
 use lucatume\WPBrowser\WordPress\DbException;
 use PDOException;
 use Throwable;
 
+/**
+ * @property DatabaseInterface $db
+ */
 trait InstallationChecks
 {
     /**
@@ -20,11 +23,13 @@ trait InstallationChecks
      * @throws WorkerException
      * @throws ProcessException
      */
-    protected function isInstalled(bool $multisite): bool
+    protected function isInstalled(bool $multisite, DatabaseInterface $db = null): bool
     {
-        $db = $this->db;
+        if ($db === null && property_exists($this, 'db') && $this->db instanceof DatabaseInterface) {
+            $db = $this->db;
+        }
 
-        if (!$db instanceof Db) {
+        if ($db === null) {
             return false;
         }
 
@@ -46,6 +51,11 @@ trait InstallationChecks
 
         if (!$host) {
             return false;
+        }
+
+        $port = parse_url($siteurl, PHP_URL_PORT);
+        if ($port) {
+            $host .= ':' . $port;
         }
 
         $codeExecutionFactory = new CodeExecutionFactory($this->wpRootDir, $host);

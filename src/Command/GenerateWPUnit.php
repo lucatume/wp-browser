@@ -3,11 +3,13 @@
 namespace lucatume\WPBrowser\Command;
 
 use Codeception\Command\GenerateTest;
+use Codeception\Configuration;
 use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
-use lucatume\WPBrowser\Lib\Generator\WPUnit;
 use lucatume\WPBrowser\Lib\Generator\WPUnit as WPUnitGenerator;
+use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\TestCase\WPTestCase;
+use lucatume\WPBrowser\Traits\ConfigurationReader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,6 +25,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 {
+    use ConfigurationReader;
+
     /**
      * Returns the name of the command.
      *
@@ -46,7 +50,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Executes the command.
      *
-     * @param InputInterface $input The input.
+     * @param InputInterface $input   The input.
      * @param OutputInterface $output The output.
      *
      * @return int Either the command return value or `null`.
@@ -58,6 +62,27 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
 
         if (!is_string($suite)) {
             throw new InvalidArgumentException('Suite argument must be a string.');
+        }
+
+        $modules = [WPLoader::class, 'WPLoader'];
+        $globalConfig = Configuration::config();
+        $suiteConfig = Configuration::suiteSettings($suite, $globalConfig);
+        $wpLoaderConfigs = $this->getConfigsForModules($suiteConfig, $modules);
+        if (count($wpLoaderConfigs) === 0) {
+            $wpLoaderConfigs = $this->getConfigsForModules($globalConfig, $modules);
+        }
+
+        $wploaderCorrectLoad = count($wpLoaderConfigs)
+            && array_reduce($wpLoaderConfigs, fn($carry, $config) => $carry || empty($config['loadOnly']), false);
+
+        if (!$wploaderCorrectLoad) {
+            $output->writeln("<error>Test suite $suite does not use the WPLoader module or uses it in " .
+                "`loadOnly` mode.</error>");
+            $output->writeln("<error>WPUnit tests can only be generated for test suites that use the " .
+                "WPLoader module.</error>");
+            $output->writeln("<error>If you want to generate a test for a suite that does not use the " .
+                "WPLoader module you can use the `codecept generate:test` command.</error>");
+            return 1;
         }
 
         /** @var string $class */
@@ -83,7 +108,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
     /**
      * Returns the built path.
      *
-     * @param string $path The root path.
+     * @param string $path  The root path.
      * @param string $class The class to build the path for.
      *
      * @return string The built path.
@@ -102,7 +127,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      * Returns the configured generator.
      *
      * @param array{namespace: string, actor: string} $config The generator configuration.
-     * @param string $class The class to generate the test case for.
+     * @param string $class                                   The class to generate the test case for.
      *
      * @return WPUnitGenerator An instance of the test case code generator.
      */

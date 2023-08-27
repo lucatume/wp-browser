@@ -10,7 +10,7 @@ use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
@@ -34,7 +34,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -69,7 +69,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)
             ->install(
@@ -106,7 +106,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER)
             ->install(
@@ -143,7 +143,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -173,7 +173,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
         $db->create();
@@ -202,7 +202,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN);
         $db->create();
@@ -231,7 +231,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
         $db->create();
@@ -260,7 +260,7 @@ class LoadSandboxTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         $installation = Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -305,7 +305,7 @@ PHP;
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         // Setup, but do not install WordPress.
         Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
 

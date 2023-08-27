@@ -1,5 +1,5 @@
 diff --git a/includes/core-phpunit/includes/testcase-rest-api.php b/includes/core-phpunit/includes/testcase-rest-api.php
-index 45e7c5e1..44e8c1b0 100644
+index 54644f13..670a2cd1 100644
 --- a/includes/core-phpunit/includes/testcase-rest-api.php
 +++ b/includes/core-phpunit/includes/testcase-rest-api.php
 @@ -1,6 +1,8 @@
@@ -11,4 +11,4 @@ index 45e7c5e1..44e8c1b0 100644
 +abstract class WPRestApiTestCase extends WPTestCase {
  	protected function assertErrorResponse( $code, $response, $status = null ) {
  
- 		if ( is_a( $response, 'WP_REST_Response' ) ) {
+ 		if ( $response instanceof WP_REST_Response ) {

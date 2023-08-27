@@ -13,6 +13,7 @@ namespace lucatume\WPBrowser\Utils;
 use Exception;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
 /**
  * Class Filesystem.
@@ -25,6 +26,7 @@ class Filesystem
      * @var array<string>
      */
     private static array $tmpFiles = [];
+    private static ?SymfonyFilesystem $symfonyFilesystem = null;
 
     /**
      * Recursively removes a directory and all its content.
@@ -99,7 +101,7 @@ class Filesystem
     /**
      * Resolves a path from a specified root to an absolute path.
      *
-     * @param string $path The path to resolve from the root.
+     * @param string $path      The path to resolve from the root.
      * @param string|null $root Either the absolute path to resolve the path from, or `null` to use the current working
      *                          directory.
      *
@@ -165,7 +167,7 @@ class Filesystem
     /**
      * Recursively copies a source to a destination.
      *
-     * @param string $source The absolute path to the source.
+     * @param string $source      The absolute path to the source.
      * @param string $destination The absolute path to the destination.
      *
      * @return bool Whether the recurse directory of file copy was successful or not.
@@ -199,7 +201,7 @@ class Filesystem
             }
             $escapedSource = escapeshellarg($resolvedSource);
             $escapedDestination = escapeshellarg($resolvedDestination);
-            $command = "cp -R -u $escapedSource $escapedDestination";
+            $command = "cp -R $escapedSource $escapedDestination";
         }
 
         try {
@@ -273,13 +275,12 @@ class Filesystem
     /**
      * Recursively Create a directory structure with files and sub-directories starting at a root path.
      *
-     * @param string $pathname The path to the root directory, if not existing, it will be
-     *                                                    recursively created.
+     * @param string $pathname                                          The path to the root directory, if not
+     *                                                                  existing, it will be recursively created.
      * @param string|array<string,string|array<string,mixed>> $contents Either a directory structure to produce or the
-     *     contents of a file to create.
-     * @param int $mode The filemode that will be used to create each directory in
-     *                                                    the
-     *                                                    directory tree.
+     *                                                                  contents of a file to create.
+     * @param int $mode                                                 The filemode that will be used to create each
+     *                                                                  directory in the directory tree.
      *
      * @return string The path to the created directory.
      *
@@ -399,5 +400,30 @@ class Filesystem
         self::$tmpFiles = [];
 
         return $files;
+    }
+
+    public static function symlink(string $target, string $link): void
+    {
+        self::symfonyFilesystem()->symlink($target, $link);
+    }
+
+    public static function cacheDir(): string
+    {
+        $envCacheDir = Env::get('TEST_CACHE_DIR');
+        if (!empty($envCacheDir)) {
+            return rtrim($envCacheDir, '\\/');
+        }
+        try {
+            return codecept_output_dir('cache');
+        } catch (Exception) {
+        }
+
+        return sys_get_temp_dir();
+    }
+
+    private static function symfonyFilesystem(): SymfonyFilesystem
+    {
+        self::$symfonyFilesystem ??= new SymfonyFilesystem();
+        return self::$symfonyFilesystem;
     }
 }

@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Configuration;
 use Codeception\Exception\ConfigurationException;
+use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class Control
 {
@@ -15,7 +16,8 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     private array $control;
@@ -28,15 +30,21 @@ class Control
      *     codeceptionRootDir?: string,
      *     codeceptionConfig?: array<string, mixed>,
      *     composerAutoloadPath?: ?string,
-     *     composerBinDir?: ?string
+     *     composerBinDir?: ?string,
+     *     env?: array<string, string|int|float|bool>
      * } $controlArray
      *
      * @throws ConfigurationException
      */
     public function __construct(array $controlArray)
     {
-        $config = $controlArray['codeceptionConfig'] ??
-            (class_exists(Configuration::class) ? Configuration::config() : []);
+        if (!isset($controlArray['codeceptionConfig'])) {
+            $codeceptionConfig = class_exists(Configuration::class) && !Configuration::isEmpty() ?
+                Configuration::config()
+                : [];
+        } else {
+            $codeceptionConfig = $controlArray['codeceptionConfig'];
+        }
         if (!empty($controlArray['cwd'])) {
             $cwd = $controlArray['cwd'];
         } else {
@@ -47,10 +55,11 @@ class Control
             'requireFiles' => $controlArray['requireFiles'] ?? [],
             'cwd' => $cwd,
             'codeceptionRootDir' => (string)($controlArray['codeceptionRootDir'] ?? codecept_root_dir()),
-            'codeceptionConfig' => $config,
+            'codeceptionConfig' => $codeceptionConfig,
             'composerAutoloadPath' => (string)($controlArray['composerAutoloadPath']
                 ?? $GLOBALS['_composer_autoload_path'] ?? null),
-            'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null)
+            'composerBinDir' => (string)($controlArray['composerBinDir'] ?? $GLOBALS['_composer_bin_dir'] ?? null),
+            'env' => $controlArray['env'] ?? $this->getCurrentEnv(),
         ];
     }
 
@@ -62,7 +71,8 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      * @throws ConfigurationException
      */
@@ -73,9 +83,10 @@ class Control
             'requireFiles' => [],
             'cwd' => getcwd() ?: codecept_root_dir(),
             'codeceptionRootDir' => codecept_root_dir(),
-            'codeceptionConfig' => Configuration::config(),
+            'codeceptionConfig' => Configuration::isEmpty() ? [] : Configuration::config(),
             'composerAutoloadPath' => $GLOBALS['_composer_autoload_path'] ?? null,
-            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null
+            'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
+            'env' => $_ENV,
         ];
     }
 
@@ -149,6 +160,13 @@ class Control
             }
             chdir($control['cwd']);
         }
+
+        if (!empty($control['env'])) {
+            foreach ($control['env'] as $key => $value) {
+                putenv("$key=$value");
+                $_ENV[$key] = $value;
+            }
+        }
     }
 
     /**
@@ -159,11 +177,27 @@ class Control
      *     codeceptionRootDir: string ,
      *     codeceptionConfig: array<string, mixed>,
      *     composerAutoloadPath: ?string,
-     *     composerBinDir: ?string
+     *     composerBinDir: ?string,
+     *     env: array<string, string|int|float|bool>
      * }
      */
     public function toArray(): array
     {
         return $this->control;
+    }
+
+    /**
+     * @return array<string, string|int|float|bool>
+     */
+    private function getCurrentEnv(): array
+    {
+        $currentEnv = getenv();
+
+        // @phpstan-ignore-next-line $_ENV is not always defined.
+        if (isset($_ENV)) {
+            $currentEnv = array_merge($currentEnv, $_ENV);
+        }
+
+        return $currentEnv;
     }
 }

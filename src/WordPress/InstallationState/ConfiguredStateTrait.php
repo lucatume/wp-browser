@@ -4,7 +4,10 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
@@ -13,9 +16,11 @@ use Throwable;
 
 trait ConfiguredStateTrait
 {
+    use InstallationChecks;
+
     private WPConfigFile $wpConfigFile;
     private string $wpRootDir;
-    private Db $db;
+    private DatabaseInterface $db;
 
     /**
      * @throws InstallationException
@@ -188,10 +193,14 @@ trait ConfiguredStateTrait
         }
 
         $this->wpConfigFile = new WPConfigFile($this->wpRootDir, $wpConfigFilePath);
-        $this->db = Db::fromWpConfigFile($this->wpConfigFile);
+        if ($this->wpConfigFile->usesMySQL()) {
+            $this->db = MysqlDatabase::fromWpConfigFile($this->wpConfigFile);
+        } else {
+            $this->db = SQLiteDatabase::fromWpConfigFile($this->wpConfigFile);
+        }
     }
 
-    public function getDb(): Db
+    public function getDb(): DatabaseInterface
     {
         return $this->db;
     }
@@ -329,5 +338,27 @@ trait ConfiguredStateTrait
         $themesDir = rtrim($themesDir, '\\/');
 
         return $path ? $themesDir . '/' . ltrim($path, '\\/') : $themesDir;
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getMuPluginsDir(string $path = ''): string
+    {
+        $muPluginsDir = $this->getContentDir('mu-plugins');
+
+        if ($wpContentDirConst = $this->getConstant('WPMU_PLUGIN_DIR')) {
+            if (!is_string($wpContentDirConst)) {
+                throw new InstallationException(
+                    "The WPMU_PLUGIN_DIR constant is not a string.",
+                    InstallationException::CONST_NOT_STRING
+                );
+            }
+            $muPluginsDir = $wpContentDirConst;
+        }
+
+        $muPluginsDir = rtrim($muPluginsDir, '\\/');
+
+        return $path ? $muPluginsDir . '/' . ltrim($path, '\\/') : $muPluginsDir;
     }
 }

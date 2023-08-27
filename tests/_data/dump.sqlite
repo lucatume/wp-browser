@@ -1,0 +1,25 @@
+PRAGMA foreign_keys=OFF;
+DROP TABLE IF EXISTS wp_options;
+-- Scaffold the wp_options table.
+CREATE TABLE wp_options (
+    option_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    option_name VARCHAR(191) NOT NULL DEFAULT '',
+    option_value LONGTEXT NOT NULL,
+    autoload VARCHAR(20) NOT NULL DEFAULT 'yes'
+);
+-- Insert some data in the wp_options table.
+INSERT INTO wp_options (option_name, option_value, autoload) VALUES
+    ('siteurl', 'http://example.com', 'yes'),
+    ('home', 'http://example.com', 'yes'),
+    ('blogname', 'Example', 'yes'),
+    ('users_can_register', '0', 'yes'),
+    ('admin_email', 'hello@wordpress.test', 'yes');
+-- Create an empty wp_termmeta table.
+DROP TABLE IF EXISTS wp_termmeta;
+CREATE TABLE wp_termmeta (
+    meta_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    term_id INTEGER NOT NULL DEFAULT '0',
+    meta_key VARCHAR(255) DEFAULT NULL,
+    meta_value LONGTEXT
+);
+PRAGMA foreign_keys=ON;

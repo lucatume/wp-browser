@@ -12,13 +12,17 @@ use Exception;
 use Generator;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
+use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Assert as WPAssert;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
@@ -27,8 +31,8 @@ use PHPUnit\Framework\Assert;
 use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
-use lucatume\WPBrowser\WordPress\Assert as WPAssert;
 use WP_Theme;
+
 use const ABSPATH;
 use const WP_DEBUG;
 
@@ -38,6 +42,7 @@ class WPLoaderTest extends Unit
     use DatabaseAssertions;
     use LoopIsolation;
     use TmpFilesCleanup;
+    use MainInstallationAccess;
 
     protected $backupGlobals = false;
 
@@ -81,12 +86,14 @@ class WPLoaderTest extends Unit
      */
     public function undefineConstants(): void
     {
-        foreach ([
-                     'DB_HOST',
-                     'DB_NAME',
-                     'DB_USER',
-                     'DB_PASSWORD',
-                 ] as $const) {
+        foreach (
+            [
+                'DB_HOST',
+                'DB_NAME',
+                'DB_USER',
+                'DB_PASSWORD',
+            ] as $const
+        ) {
             if (defined($const)) {
                 uopz_undefine($const);
             }
@@ -174,7 +181,7 @@ class WPLoaderTest extends Unit
 
         $wpLoader1 = $this->module();
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader1) {
-            chdir($rootDir) ;
+            chdir($rootDir);
             $wpLoader1->_initialize();
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->_getConfig('wpRootFolder'));
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
@@ -191,7 +198,7 @@ class WPLoaderTest extends Unit
         $wpLoader2 = $this->module();
 
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader2) {
-            chdir($rootDir) ;
+            chdir($rootDir);
             $wpLoader2->_initialize();
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->_getConfig('wpRootFolder'));
             Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
@@ -326,7 +333,7 @@ class WPLoaderTest extends Unit
             'dbUser' => $dbUser,
             'dbPassword' => $dbPassword,
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         $installation = Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -587,7 +594,7 @@ class WPLoaderTest extends Unit
             'loadOnly' => true,
             'domain' => ''
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -618,7 +625,7 @@ class WPLoaderTest extends Unit
             'loadOnly' => true,
             'domain' => 'wordpress.test'
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db);
 
@@ -656,7 +663,7 @@ class WPLoaderTest extends Unit
             'domain' => 'wordpress.test',
             'configFile' => codecept_data_dir('files/test_file_002.php'),
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -725,7 +732,7 @@ class WPLoaderTest extends Unit
 
     public function dbModuleCompatDataProvider(): Generator
     {
-        yield 'Db' => ['Db', Db::class];
+        yield 'MysqlDatabase' => ['MysqlDatabase', MysqlDatabase::class];
         yield 'WPDb' => ['WPDb', WPDb::class];
         yield WPDb::class => [WPDb::class, WPDb::class];
     }
@@ -755,7 +762,7 @@ class WPLoaderTest extends Unit
             'domain' => 'wordpress.test',
             'configFile' => codecept_data_dir('files/test_file_002.php')
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
@@ -807,8 +814,10 @@ class WPLoaderTest extends Unit
         $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
 
         $this->expectException(ModuleConfigException::class);
-        $this->expectExceptionMessageMatches('/The WPLoader module is not being used to only load ' .
-            'WordPress, but to also install it/');
+        $this->expectExceptionMessageMatches(
+            '/The WPLoader module is not being used to only load ' .
+            'WordPress, but to also install it/'
+        );
 
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
@@ -838,7 +847,7 @@ class WPLoaderTest extends Unit
             'dbPassword' => $dbPassword,
             'loadOnly' => true,
         ];
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
 
         $wpLoader = $this->module();
@@ -1018,12 +1027,18 @@ class WPLoaderTest extends Unit
             Assert::assertFalse(is_multisite());
             Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
             Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
-            Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
-                $wpLoader->getContentFolder('some/path/some-file.php'));
-            Assert::assertEquals($wpRootDir . '/wp-content/plugins/some-file.php',
-                $wpLoader->getPluginsFolder('/some-file.php'));
-            Assert::assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
-                $wpLoader->getThemesFolder('/some-file.php'));
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/some/path/some-file.php',
+                $wpLoader->getContentFolder('some/path/some-file.php')
+            );
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/plugins/some-file.php',
+                $wpLoader->getPluginsFolder('/some-file.php')
+            );
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/themes/some-file.php',
+                $wpLoader->getThemesFolder('/some-file.php')
+            );
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
             WPAssert::assertUpdatesDisabled();
@@ -1103,12 +1118,18 @@ class WPLoaderTest extends Unit
             Assert::assertTrue(is_multisite());
             Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
             Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
-            Assert::assertEquals($wpRootDir . '/wp-content/some/path/some-file.php',
-                $wpLoader->getContentFolder('some/path/some-file.php'));
-            Assert::assertEquals($wpRootDir . '/wp-content/plugins/some-file.php',
-                $wpLoader->getPluginsFolder('/some-file.php'));
-            Assert::assertEquals($wpRootDir . '/wp-content/themes/some-file.php',
-                $wpLoader->getThemesFolder('/some-file.php'));
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/some/path/some-file.php',
+                $wpLoader->getContentFolder('some/path/some-file.php')
+            );
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/plugins/some-file.php',
+                $wpLoader->getPluginsFolder('/some-file.php')
+            );
+            Assert::assertEquals(
+                $wpRootDir . '/wp-content/themes/some-file.php',
+                $wpLoader->getThemesFolder('/some-file.php')
+            );
             WPAssert::assertTableExists('posts');
             WPAssert::assertTableExists('woocommerce_order_items');
             WPAssert::assertUpdatesDisabled();
@@ -1120,26 +1141,6 @@ class WPLoaderTest extends Unit
         });
 
         codecept_debug($installationOutput);
-    }
-
-    private function copyOverContentFromTheMainInstallation(Installation $installation): void
-    {
-        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        foreach ([
-                     'hello-dolly',
-                     'akismet',
-                     'woocommerce',
-                 ] as $plugin) {
-            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
-                $installation->getPluginsDir($plugin))) {
-                throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
-            }
-        }
-        // Copy over theme from the main installation.
-        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
-            $installation->getThemesDir('twentytwenty'))) {
-            throw new RuntimeException('Could not copy theme twentytwenty');
-        }
     }
 
     public function singleSiteAndMultisite(): array
@@ -1178,8 +1179,10 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be activated. Plugin file does not exist.');
+        $this->expectException(ModuleException::class);
+        $this->expectExceptionMessage(
+            'Failed to activate plugin some-plugin/some-plugin.php. Plugin file does not exist.'
+        );
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1216,8 +1219,10 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Plugin some-plugin/some-plugin.php could not be network activated. Plugin file does not exist.');
+        $this->expectException(ModuleException::class);
+        $this->expectExceptionMessage(
+            'Failed to activate plugin some-plugin/some-plugin.php. Plugin file does not exist.'
+        );
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1251,7 +1256,7 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage('Theme some-theme does not exist.');
 
         $wpLoader = $this->module();
@@ -1287,7 +1292,7 @@ class WPLoaderTest extends Unit
         ];
         Installation::scaffold($wpRootDir, 'latest');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage('Theme some-theme does not exist.');
 
         $wpLoader = $this->module();
@@ -1359,7 +1364,7 @@ class WPLoaderTest extends Unit
             ],
             'theme' => 'twentytwenty-child'
         ];
-        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $db = (new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
             ->configure($db)
             ->install(
@@ -1425,7 +1430,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty-child',
             'multisite' => true,
         ];
-        $db = (new Db($dbName, $dbUser, $dbPassword, $dbHost))->create();
+        $db = (new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
         $installation->install(
@@ -1663,5 +1668,170 @@ class WPLoaderTest extends Unit
         $this->expectExceptionMessage($message);
 
         $this->module();
+    }
+
+    /**
+     * It should place SQLite dropin if using SQLite database for tests
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_place_sq_lite_dropin_if_using_sq_lite_database_for_tests(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $dbPathname = $wpRootDir . '/db.sqlite';
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
+            $wpLoader->_initialize();
+            Assert::assertFileExists($wpRootDir . '/wp-content/db.php');
+        });
+    }
+
+    /**
+     * It should initialize correctly with Sqlite database
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_with_sqlite_database(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        Installation::scaffold($wpRootDir);
+        $dbPathname = $wpRootDir . '/db.sqlite';
+        Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir . '/wp-content');
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        });
+    }
+
+    /**
+     * It should initialize correctly with Sqlite database in loadOnly mode
+     *
+     * @test
+     * @group sqlite
+     */
+    public function should_initialize_correctly_with_sqlite_database_in_load_only_mode(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir . '/wp-content');
+        $dbPathname = $wpRootDir . '/db.sqlite';
+        $installation->configure(new SQLiteDatabase($wpRootDir, 'db.sqlite'));
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => 'sqlite://' . $dbPathname,
+            'loadOnly' => true,
+        ];
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
+
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        });
+    }
+
+    /**
+     * It should correctly load the module on a Bedrock installation
+     *
+     * @test
+     */
+    public function should_correctly_load_the_module_on_a_bedrock_installation(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $wpRootDir = (new BedrockProject($db, 'https://the-project.local'))->scaffold($wpRootDir);
+
+        $setupInstallation = new Installation($wpRootDir . '/web/wp');
+        $this->assertEquals($wpRootDir . '/web/app/plugins', $setupInstallation->getPluginsDir());
+
+        // Scaffold 1 plugins to activate.
+        $pluginsDir = $wpRootDir . '/web/app/plugins';
+
+        FS::mkdirp($pluginsDir, [
+            'plugin-1' => [
+                'plugin.php' => <<< PHP
+<?php
+/** Plugin Name: Plugin 1 */
+function plugin_1_canary() {}
+PHP
+            ],
+            'plugin-2' => [
+                'plugin.php' => <<< PHP
+<?php
+/** Plugin Name: Plugin 2 */
+function plugin_2_canary() {}
+PHP
+            ]
+        ]);
+
+        // Scaffold the theme to activate.
+        $themesDir = $wpRootDir . '/web/app/themes';
+        FS::mkdirp($themesDir, [
+            'theme-1' => [
+                'style.css' => '/** Theme Name: Theme 1 */',
+                'index.php' => '<?php echo "Hello World"; ?>'
+            ]
+        ]);
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir . '/web/wp',
+            'tablePrefix' => 'test_',
+            'dbUrl' => "mysql://$dbUser:$dbPassword@$dbHost/$dbName",
+            'plugins' => [
+                'plugin-1/plugin.php',
+                'plugin-2/plugin.php',
+            ],
+            'theme' => 'theme-1'
+        ];
+
+        // @todo test content
+
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertTrue(function_exists('plugin_1_canary'));
+            Assert::assertTrue(is_plugin_active('plugin-1/plugin.php'));
+            Assert::assertTrue(function_exists('plugin_2_canary'));
+            Assert::assertTrue(is_plugin_active('plugin-2/plugin.php'));
+            Assert::assertEquals('theme-1', wp_get_theme()->get_stylesheet());
+        });
     }
 }

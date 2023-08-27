@@ -18,23 +18,9 @@ coverage:
 wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
-        - lucatume\WPBrowser\Extension\Copier
-    config:
-        lucatume\WPBrowser\Extension\Copier:
-            files:
-               'tests/_data/themes/dummy': '%WORDPRESS_ROOT_DIR%/wp-content/themes/dummy'
-               'tests/_data/themes/isolated': '%WORDPRESS_ROOT_DIR%/wp-content/themes/isolated'
-               'tests/_data/plugins/mu-plugin-1': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/mu-plugin-1'
-               'tests/_data/plugins/test': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/test'
-               'tests/_data/plugins/isolated-test-plugin': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin'
-               'tests/_data/plugins/isolated-test-plugin-two': '%WORDPRESS_ROOT_DIR%/wp-content/plugins/isolated-test-plugin-two'
+        - "lucatume\\WPBrowser\\Extension\\EventDispatcherBridge"
     commands:
+        - "lucatume\\WPBrowser\\Command\\RunOriginal"
         - "lucatume\\WPBrowser\\Command\\RunAll"
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
-        - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
-
+        - "lucatume\\WPBrowser\\Command\\ChromedriverUpdate"

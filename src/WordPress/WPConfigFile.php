@@ -33,7 +33,7 @@ class WPConfigFile
 
         if (!is_file($wpConfigFilePath)) {
             throw new InstallationException(
-                "Cannot read multisite constants: wp-config.php file missing.",
+                'Could not find the wp-config.php file.',
                 InstallationException::WP_CONFIG_FILE_NOT_FOUND
             );
         }
@@ -85,6 +85,31 @@ class WPConfigFile
     }
 
     /**
+     * @return array{
+     *     constants: array<string,int|float|string|bool|null>,
+     *     variables: array<string,mixed>
+     * }
+     */
+    private function toIncludeFile(string $wpConfigFile, string $wpSettingsFile): array
+    {
+        // Include the wp-config.php file, but do not include the wp-settings.php file.
+        MonkeyPatch::redirectFileToFile($wpSettingsFile, MonkeyPatch::dudFile());
+        $definedConstantsBefore = get_defined_constants(true)['user'] ?? [];
+        include $wpConfigFile;
+
+        $constants = array_diff_key(get_defined_constants(true)['user'] ?? [], $definedConstantsBefore);
+        $variables = get_defined_vars();
+        unset(
+            $variables['constants'],
+            $variables['wpSettingsFile'],
+            $variables['wpConfigFile'],
+            $variables['definedConstantsBefore']
+        );
+
+        return ['constants' => $constants, 'variables' => $variables];
+    }
+
+    /**
      * @throws ProcessException|Throwable
      */
     private function includeFile(): void
@@ -93,22 +118,8 @@ class WPConfigFile
         $wpSettingsFile = $this->wpSettingsFilePath;
 
         try {
-            $result = Loop::executeClosure(static function () use ($wpSettingsFile, $wpConfigFile): array {
-                // Include the wp-config.php file, but do not include the wp-settings.php file.
-                MonkeyPatch::redirectFileToFile($wpSettingsFile, MonkeyPatch::dudFile());
-                $definedConstantsBefore = get_defined_constants(true)['user'] ?? [];
-                include $wpConfigFile;
-
-                $constants = array_diff_key(get_defined_constants(true)['user'] ?? [], $definedConstantsBefore);
-                $variables = get_defined_vars();
-                unset(
-                    $variables['constants'],
-                    $variables['wpSettingsFile'],
-                    $variables['wpConfigFile'],
-                    $variables['definedConstantsBefore']
-                );
-
-                return ['constants' => $constants, 'variables' => $variables];
+            $result = Loop::executeClosure(function () use ($wpSettingsFile, $wpConfigFile): array {
+                return $this->toIncludeFile($wpConfigFile, $wpSettingsFile);
             });
 
             $returnValue = $result->getReturnValue();
@@ -183,5 +194,15 @@ class WPConfigFile
         }
 
         return $this->variables[$string];
+    }
+
+    public function usesMySQL(): bool
+    {
+        return !$this->usesSQLite();
+    }
+
+    public function usesSQLite(): bool
+    {
+        return $this->isDefinedConst('DB_DIR', 'DB_FILE');
     }
 }

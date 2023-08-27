@@ -24,10 +24,12 @@ clean_tmp:
 .PHONY: clean_tmp
 
 update_core_phpunit_includes:
-	bin/update-core-phpunit-includes
+	bin/update_core_phpunit_includes
 .PHONY: update_core_phpunit_includes
 
 package: update_core_phpunit_includes test
 	bin/gitattributes-update
 .PHONY: package
 
+update_sqlite_plugin:
+	bin/update_sqlite_plugin

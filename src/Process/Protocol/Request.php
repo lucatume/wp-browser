@@ -17,7 +17,8 @@ class Request
      *     codeceptionRootDir?: string,
      *     codeceptionConfig?: array<string, mixed>,
      *     composerAutoloadPath?: ?string,
-     *     composerBinDir?: ?string
+     *     composerBinDir?: ?string,
+     *     env?: array<string, string|int|float|bool>
      * } $controlArray
      * @throws ConfigurationException
      */

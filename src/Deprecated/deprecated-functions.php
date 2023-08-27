@@ -19,7 +19,7 @@ namespace tad\WPBrowser {
     use wpdb;
 
     /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::importDumpWithMysqlBin instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::importDumpWithMysqlBin instead.
      */
     function importDumpWithMysqlBin(
         string $dumpFile,
@@ -32,7 +32,7 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::mysqlBin instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::mysqlBin instead.
      */
     function mysqlBin(): string
     {
@@ -40,7 +40,7 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::db instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::db instead.
      */
     function db(string $dsn, string $user, string $pass, string $dbName = null): callable
     {
@@ -49,7 +49,7 @@ namespace tad\WPBrowser {
 
     /**
      * @return array<string,string|true>
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnMap instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::dbDsnMap instead.
      */
     function dbDsnMap(string $dbHost): array
     {
@@ -71,7 +71,7 @@ namespace tad\WPBrowser {
      *     user: string,
      *     password: string
      * }
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbCredentials instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::dbCredentials instead.
      */
     function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
     {
@@ -90,7 +90,7 @@ namespace tad\WPBrowser {
      *     memory: bool
      * } $dbDsnMap
      *
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnString instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::dbDsnString instead.
      */
     function dbDsnString(array $dbDsnMap, bool $forDbHost = false): string
     {
@@ -98,7 +98,7 @@ namespace tad\WPBrowser {
     }
 
     /**
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::isDsnString instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::isDsnString instead.
      */
     function isDsnString(string $string): bool
     {
@@ -107,7 +107,7 @@ namespace tad\WPBrowser {
 
     /**
      * @return array<string,string|true>
-     * @deprecated Use \lucatume\WPBrowser\Utils\Db::dbDsnToMap instead.
+     * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::dbDsnToMap instead.
      */
     function dbDsnToMap(string $dsnString): array
     {

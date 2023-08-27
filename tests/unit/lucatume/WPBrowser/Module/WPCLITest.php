@@ -12,7 +12,7 @@ use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CliProcess;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\AssertionFailedError;
 use stdClass;
@@ -39,7 +39,7 @@ class WPCLITest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new Db($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         self::$installation = Installation::scaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(

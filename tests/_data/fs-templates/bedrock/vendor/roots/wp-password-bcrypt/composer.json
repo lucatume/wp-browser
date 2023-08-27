@@ -1,0 +1,71 @@
+{
+  "name": "roots/wp-password-bcrypt",
+  "license": "MIT",
+  "description": "WordPress plugin which replaces wp_hash_password and wp_check_password's phpass hasher with PHP 5.5's password_hash and password_verify using bcrypt.",
+  "homepage": "https://roots.io/plugins/wp-password-bcrypt",
+  "authors": [
+    {
+      "name": "Scott Walkinshaw",
+      "email": "scott.walkinshaw@gmail.com",
+      "homepage": "https://github.com/swalkinshaw"
+    },
+    {
+      "name": "QWp6t",
+      "homepage": "https://github.com/qwp6t"
+    },
+    {
+      "name": "Brandon Nifong",
+      "homepage": "https://github.com/log1x"
+    },
+    {
+      "name": "Jan Pingel",
+      "email": "jpingel@bitpiston.com",
+      "homepage": "http://janpingel.com"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "bcrypt",
+    "passwords"
+  ],
+  "support": {
+    "issues": "https://github.com/roots/wp-password-bcrypt/issues",
+    "forum": "https://discourse.roots.io/"
+  },
+  "autoload": {
+    "files": ["wp-password-bcrypt.php"]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Roots\\PasswordBcrypt\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=5.6.0"
+  },
+  "require-dev": {
+    "brain/monkey": "^2.6",
+    "mockery/mockery": "^1.4",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+    "phpunit/phpunit": "<= 9.3",
+    "squizlabs/php_codesniffer": "^3.5",
+    "phpcompatibility/php-compatibility": "^9.3"
+  },
+  "archive" : {
+    "exclude": [
+      ".editorconfig",
+      ".gitattributes",
+      ".gitignore",
+      ".github",
+      "CONTRIBUTING.md",
+      "phpcs.xml.dist",
+      "phpunit.xml.dist",
+      "tests"
+    ]
+  },
+  "scripts": {
+    "test": "phpunit",
+    "lint": "phpcs",
+    "coverage": "XDEBUG_MODE=coverage phpunit --coverage-text --coverage-html=coverage"
+  }
+}

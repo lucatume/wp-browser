@@ -578,7 +578,7 @@ class WPCLI extends Module
          * } $config Validated config.
          */
         $config = $this->config;
-        $cacheDir = $config['cache-dir'] ?? codecept_output_dir('wp-cli-cache');
+        $cacheDir = $config['cache-dir'] ?? (Filesystem::cacheDir() . '/wp-cli');
         $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
 
         if (isset($config['config-path'])) {

@@ -1,0 +1,1 @@
+- update default configuration to pick up custom file structures from projects like Bedrock

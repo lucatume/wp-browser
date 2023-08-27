@@ -5,84 +5,50 @@ namespace lucatume\WPBrowser\Events;
 
 use Closure;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use ReflectionException;
-use Symfony\Component\Console\Command\Command;
-use Codeception\Codecept;
 use lucatume\WPBrowser\Utils\Property;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use ReflectionException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Dispatcher
 {
-    private static ?Codecept $codecept = null;
-    private static ?EventDispatcherInterface $codeceptDispatcher = null;
+    private static ?EventDispatcherInterface $eventDispatcher = null;
 
-    private static function getCodecept(): ?Codecept
+    public static function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null): void
     {
-        if (self::$codecept !== null) {
-            return self::$codecept;
+        $previousEventDispatcher = self::$eventDispatcher;
+
+        if ($previousEventDispatcher === $eventDispatcher) {
+            return;
         }
 
-        $reverseBacktraceHead = array_reverse(
-            array_slice(
-                array_reverse(
-                    debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT)
-                ),
-                0,
-                20
-            )
-        );
+        if ($eventDispatcher === null) {
+            self::$eventDispatcher = null;
+            return;
+        }
 
-        foreach ($reverseBacktraceHead as $backtraceEntry) {
-            $object = $backtraceEntry['object'] ?? null;
-
-            if (!$object instanceof Command) {
-                continue;
-            }
-
-            try {
-                $codeceptInstance = Property::readPrivate($object, 'codecept');
-
-                if (!$codeceptInstance instanceof Codecept) {
-                    continue;
+        if ($previousEventDispatcher !== null) {
+            /** @var array<callable[]> $previousListeners */
+            $previousListeners = $previousEventDispatcher->getListeners();
+            foreach ($previousListeners as $eventName => $listeners) {
+                foreach ($listeners as $listener) {
+                    $priority = $previousEventDispatcher->getListenerPriority($eventName, $listener);
+                    $eventDispatcher->addListener($eventName, $listener, $priority ?? 0);
                 }
-
-                self::$codecept = $codeceptInstance;
-                return self::$codecept;
-            } catch (ReflectionException) {
             }
         }
 
-        return self::$codecept;
+        self::$eventDispatcher = $eventDispatcher;
     }
 
-    private static function getCodeceptionEventDispatcher(): EventDispatcherInterface
+    public static function getEventDispatcher(): ?EventDispatcherInterface
     {
-        if (self::$codeceptDispatcher !== null) {
-            return self::$codeceptDispatcher;
-        }
-
-        $codeceptInstance = self::getCodecept();
-
-        if ($codeceptInstance === null) {
+        if (self::$eventDispatcher === null) {
             // Create a one local to the Dispatcher.
-            self::$codeceptDispatcher = new EventDispatcher();
-            return self::$codeceptDispatcher;
+            self::$eventDispatcher = new EventDispatcher();
         }
 
-        try {
-            $dispatcher = Property::readPrivate($codeceptInstance, 'dispatcher');
-            if (!$dispatcher instanceof EventDispatcherInterface) {
-                $message = 'The Codeception dispatcher is not an instance of ' . EventDispatcherInterface::class . '.';
-                throw new RuntimeException($message);
-            }
-            self::$codeceptDispatcher = $dispatcher;
-        } catch (ReflectionException) {
-            // Create a one local to the Dispatcher.
-            self::$codeceptDispatcher = new EventDispatcher();
-        }
-
-        return self::$codeceptDispatcher;
+        return self::$eventDispatcher;
     }
 
     /**
@@ -90,9 +56,9 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `add_action` function as it works pretty much the same.
      *
-     * @param string $eventName The event to run the callback on.
+     * @param string $eventName  The event to run the callback on.
      * @param callable $listener The callback to run on the event.
-     * @param int $priority The priority that will be assigned to the callback in the context of the event.
+     * @param int $priority      The priority that will be assigned to the callback in the context of the event.
      *
      * @return Closure The callback to remove the listener from the event.
      *
@@ -100,10 +66,10 @@ class Dispatcher
      */
     public static function addListener(string $eventName, callable $listener, int $priority = 0): Closure
     {
-        self::getCodeceptionEventDispatcher()->addListener($eventName, $listener, $priority);
+        self::getEventDispatcher()?->addListener($eventName, $listener, $priority);
 
         return static function () use ($eventName, $listener): void {
-            self::getCodeceptionEventDispatcher()->removeListener($eventName, $listener);
+            self::getEventDispatcher()?->removeListener($eventName, $listener);
         };
     }
 
@@ -112,17 +78,17 @@ class Dispatcher
      *
      * The method name recalls the WordPress framework `do_action` function as it works pretty much the same.
      *
-     * @param string $name The name of the event to dispatch.
-     * @param mixed|null $origin The event origin: an object, a string or null.
-     * @param array<string,mixed> $context A map of the event context that will set as context of the dispatched
+     * @param string $name                   The name of the event to dispatch.
+     * @param mixed|null $origin             The event origin: an object, a string or null.
+     * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
      *                                       event.
      *
-     * @return object The dispatched event.
+     * @return object|null The dispatched event, or `null` if no event was dispatched.
      */
-    public static function dispatch(string $name, mixed $origin = null, array $context = []): object
+    public static function dispatch(string $name, mixed $origin = null, array $context = []): ?object
     {
         $event = new Event($name, $context, $origin);
 
-        return self::getCodeceptionEventDispatcher()->dispatch($event, $name);
+        return self::getEventDispatcher()?->dispatch($event, $name);
     }
 }

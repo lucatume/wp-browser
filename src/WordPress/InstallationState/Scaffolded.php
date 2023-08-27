@@ -5,12 +5,18 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 use Closure;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
-use lucatume\WPBrowser\WordPress\Db;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
+use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\Version;
+use lucatume\WPBrowser\WordPress\WPConfigFile;
+use lucatume\WPBrowser\WordPress\WpConfigFileException;
 use lucatume\WPBrowser\WordPress\WpConfigFileGenerator;
+use Throwable;
 
 class Scaffolded implements InstallationStateInterface
 {
@@ -60,10 +66,14 @@ class Scaffolded implements InstallationStateInterface
     }
 
     /**
-     * @throws DbException|InstallationException|ProcessException
+     * @throws DbException
+     * @throws InstallationException
+     * @throws ProcessException
+     * @throws Throwable
+     * @throws WpConfigFileException
      */
     public function configure(
-        Db $db,
+        DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
         ?ConfigurationData $configurationData = null
     ): InstallationStateInterface {
@@ -78,7 +88,13 @@ class Scaffolded implements InstallationStateInterface
         if (!file_put_contents($wpConfigFilePath, $wpConfigFileContents, LOCK_EX)) {
             throw new InstallationException("Could not write to $wpConfigFilePath.");
         }
-        return new Configured($this->wpRootDir, $wpConfigFilePath);
+        $configured= new Configured($this->wpRootDir, $wpConfigFilePath);
+
+        if ($db instanceof SQLiteDatabase) {
+            Installation::placeSqliteMuPlugin($configured->getMuPluginsDir(), $configured->getContentDir());
+        }
+
+        return $configured;
     }
 
     /**
@@ -280,7 +296,7 @@ class Scaffolded implements InstallationStateInterface
     /**
      * @throws InstallationException
      */
-    public function getDb(): Db
+    public function getDb(): DatabaseInterface
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',
@@ -316,6 +332,11 @@ class Scaffolded implements InstallationStateInterface
         return $this->getContentDir('plugins/' . ltrim($path, '\\/'));
     }
 
+    public function getMuPluginsDir(string $path = ''): string
+    {
+        return $this->getContentDir('mu-plugins/' . ltrim($path, '\\/'));
+    }
+
     public function getThemesDir(string $path = ''): string
     {
         return $this->getContentDir('themes/' . ltrim($path, '\\/'));
@@ -340,6 +361,17 @@ class Scaffolded implements InstallationStateInterface
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',
+            InstallationException::STATE_SCAFFOLDED
+        );
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function setDb(DatabaseInterface $db): InstallationStateInterface
+    {
+        throw new InstallationException(
+            'The WordPress installation has already been configured.',
             InstallationException::STATE_SCAFFOLDED
         );
     }
