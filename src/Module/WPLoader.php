@@ -347,10 +347,12 @@ class WPLoader extends Module
         }
 
         // Define the path-related constants read from the installation, if any.
-        foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR'] as $pathConst) {
-            $constValue = $this->installation->getState()->getConstant($pathConst);
-            if ($constValue && is_string($constValue)) {
-                $config[$pathConst] = $constValue;
+        if ($this->installation->isConfigured()) {
+            foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR'] as $pathConst) {
+                $constValue = $this->installation->getState()->getConstant($pathConst);
+                if ($constValue && is_string($constValue)) {
+                    $config[$pathConst] = $constValue;
+                }
             }
         }
 
