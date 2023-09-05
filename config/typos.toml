@@ -2,3 +2,9 @@
 RebOOter = "RebOOter"
 [files]
 extend-exclude = ["vendor", "includes"]
+[type.css]
+extend-glob = ["*.min.css", "*.min.css.map"]
+check-file = false
+[type.js]
+extend-glob = ["*.min.js", "*.min.js.map"]
+check-file = false
