@@ -2,6 +2,8 @@
 .idea
 .DS_Store
 
+.cache
+
 # Composer files.
 vendor/
 
