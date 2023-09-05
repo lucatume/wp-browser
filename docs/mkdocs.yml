@@ -1,0 +1,105 @@
+site_name: 'wp-browser docs'
+site_url: 'https://wpbrowser.wptestkit.dev/'
+repo_url: 'https://github.com/lucatume/wp-browser/'
+edit_uri: 'blob/main/docs/src'
+site_description: 'Documentation for the wp-browser WordPress testing framework.'
+site_author: 'Luca Tumedei'
+nav:
+  - Getting started: 'README.md'
+  - Default configuration: 'default-configuration.md'
+  - Custom configuration: 'custom-configuration.md'
+  - Modules:
+      - WPBrowser: 'modules/WPBrowser.md'
+      - WPCLI: 'modules/WPCLI.md'
+      - WPDb: 'modules/WPDb.md'
+      - WPFilesystem: 'modules/WPFilesystem.md'
+      - WPLoader: 'modules/WPLoader.md'
+      - WPQueries: 'modules/WPQueries.md'
+      - WPWebDriver: 'modules/WPWebDriver.md'
+  - Extensions:
+      - PHP Built-in Server Controller: '/extensions#builtinservercontroller'
+      - ChromeDriver Controller: '/extensions#chromedrivercontroller'
+      - Docker Compose Controller: '/extensions#dockercomposecontroller'
+  - Commands:
+      - run and codeception:run: 'commands#run-and-codeceptionrun'
+      - dev:start: 'commands#devstart'
+      - dev:stop: 'commands#devstop'
+      - dev:restart: 'commands#devrestart'
+      - wp:db:import: 'commands#wpdbimport'
+      - wp:db:export: 'commands#wpdbexport'
+      - chromedriver:update: 'commands#chromedriverupdate'
+      - generate:wpunit: 'commands#generatewpunit'
+  - Sponsorship: 'https://github.com/sponsors/lucatume'
+  - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'
+  - Version 3 documentation:
+    -  Welcome: v3/README.md
+    - Frequently asked questions: v3/faq.md
+    - Codeception, PHPUnit and wp-browser: v3/codeception-phpunit-and-wpbrowser.md
+    - Using wp-browser with Codeception 4.0: v3/codeception-4-support.md
+    - Migration guides:
+        - Version 2 to version 3: v3/migration/from-version-2-to-version-3.md
+        - Levels of testing: v3/levels-of-testing.md
+    - Getting started:
+        - Requirements: v3/requirements.md
+        - Installation: v3/installation.md
+        - Setting up a minimum WordPress installation: v3/setting-up-minimum-wordpress-installation.md
+        - Configuration: v3/configuration.md
+    - Tutorials:
+        - Automatically change database during acceptance and functional tests: v3/tutorials/automatically-change-db-in-tests.md
+        - Setting up wp-browser on VVV to test a plugin: v3/tutorials/vvv-setup.md
+        - Setting up wp-browser on MAMP for Mac to test a plugin: v3/tutorials/mamp-mac-setup.md
+        - Setting up wp-browser on WAMP for Windows to test a plugin: v3/tutorials/wamp-setup.md
+        - Setting up wp-browser on Local by Flywheel to test a plugin: v3/tutorials/local-flywheel-setup.md
+    - Modules:
+        - WPBrowser: v3/modules/WPBrowser.md
+        - WPCLI: v3/modules/WPCLI.md
+        - WPDb: v3/modules/WPDb.md
+        - WPFilesystem: v3/modules/WPFilesystem.md
+        - WPLoader: v3/modules/WPLoader.md
+        - WPQueries: v3/modules/WPQueries.md
+        - WPWebDriver: v3/modules/WPWebDriver.md
+    - Advanced Usage:
+        - Running tests in separate processes: v3/advanced/run-in-separate-process.md
+        - Events API: v3/events-api.md
+        - Extensions: v3/extensions.md
+        - Commands: v3/commands.md
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.tracking
+    - navigation.top
+#    - navigation.expand
+#    - toc.integrate
+    - toc.follow
+    - content.code.select
+
+  palette:
+    primary: teal
+docs_dir: src
+site_dir: public
+watch:
+  - src
+use_directory_urls: true
+plugins:
+  - search
+  - privacy:
+      links_attr_map:
+        target: _blank
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+extra:
+  social:
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:luca@theaveragedev.com
+    - icon: fontawesome/brands/github
+      link: https://github.com/lucatume

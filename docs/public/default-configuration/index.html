@@ -1,0 +1,432 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the wp-browser WordPress testing framework.">
+      
+      
+        <meta name="author" content="Luca Tumedei">
+      
+      
+        <link rel="canonical" href="https://wpbrowser.wptestkit.dev/default-configuration/">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.20">
+    
+    
+      
+        <title>Default configuration - wp-browser docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#default-testing-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="wp-browser docs" class="md-header__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            wp-browser docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Default configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="wp-browser docs" class="md-nav__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    wp-browser docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Start here
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#default-testing-configuration" class="md-nav__link">
+    Default testing configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview-plugin-and-theme-project" class="md-nav__link">
+    Overview - plugin and theme project
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview-site-project" class="md-nav__link">
+    Overview - site project
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-not-to-use-the-default-configuration" class="md-nav__link">
+    When not to use the default configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="When not to use the default configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-drop-in" class="md-nav__link">
+    Database drop-in
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multisite-with-sub-domains" class="md-nav__link">
+    Multisite with sub-domains
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-site-structure" class="md-nav__link">
+    Custom site structure
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Default configuration</h1>
+
+<h2 id="default-testing-configuration">Default testing configuration</h2>
+<p>The recommended configuration for most projects.
+It allows you to get into WordPress integration and end-to-end testing quickly and easily.</p>
+<h2 id="requirements">Requirements</h2>
+<p>The default configuration will set up <a href="https://codeception.com/">Codeception</a> and wp-browser to use SQLite as the database engine, PHP built-in
+server to serve the test site on localhost and your local version of Chrome, driven by Chromedriver, to run end-to-end
+tests.</p>
+<p>As such, the default configuration has the following requirements:</p>
+<ul>
+<li>the <code>sqlite3</code> PHP extension; you can check if if's installed by running <code>php -m | grep sqlite3</code> in your terminal</li>
+<li>the <code>pdo_sqlite</code> PHP extension; you can check if if's installed by running <code>php -m | grep pdo_sqlite</code> in your terminal</li>
+<li>PHP built-in server can work with only one thread, but it will be faster using multiple threads; multiple threads are
+  not supported on Windows, but they are supported on WSL.</li>
+<li>the Chrome browser installed on your machine</li>
+</ul>
+<h2 id="overview-plugin-and-theme-project">Overview - plugin and theme project</h2>
+<p>If you're configuring wp-browser for a plugin or theme project, the default configuration will install WordPress in
+the <code>tests/_wordpress</code> directory and configure the installation to run using SQLite as a database engine.
+The <a href="https://wordpress.org/plugins/sqlite-database-integration/">SQLite Database Integration plugin</a>) will be placed in the installation must-use plugins directory.</p>
+<p>If your plugin or theme project requires additional plugins or theme to work, you can place them in
+the <code>tests/_worpdress/wp-content/plugins</code> and <code>tests/_wordpress/wp-content/themes</code> directories respectively.</p>
+<p>When adding, or removing, plugin and themes, remember to
+update <a href="../modules/WPLoader/#configuration">the WPLoader module configuration</a> to load the correct plugins and themes in
+your integration tests.</p>
+<p>On the same note, update the database dump used by <a href="../modules/WPDb/#configuration">the WPDb module</a> to reflect the
+changes in the dump loaded in the end-to-end tests.
+The easiest way to update the database fixture is to load the current database dump
+using <a href="../commands/#wpdbimport">the <code>wp:db:import</code> command</a>, manually setting up the site interacting with it and then
+exporting the database dump using <a href="../commands/#wpdbexport">the <code>wp:db:export</code> command</a>.</p>
+<p>You can find out about the URL of the site served by the PHP built-in web server by
+running <a href="../commands/#devinfo">the <code>dev:info</code> command</a>.</p>
+<h2 id="overview-site-project">Overview - site project</h2>
+<p>If you're configuring wp-browser for a site project, the default configuration will use a combination of PHP built-in
+web server and the <a href="https://wordpress.org/plugins/sqlite-database-integration/">SQLite Database Integration plugin</a> to run the tests and serve your site.</p>
+<p>The router file used by the PHP built-in web server will force the site, when served on localhost, to use SQLite as
+database engine leaving your existing local MySQL database untouched.</p>
+<p>Your existing WordPress installation will be picked up as it is, with all the plugins and themes found in the contents
+directory.</p>
+<p>Existing plugins and themes are not added to <a href="../modules/WPLoader/#configuration">WPLoader module configuration</a> by
+wp-browser, you have to do that manually.</p>
+<p>Similarly, the database dump used by <a href="../modules/WPDb/#configuration">the WPDb module</a> is, by default, an empty WordPress
+installation where no plugins and themes are active.
+You have to update the database dump used by the module to reflect the state of your site.
+You can do that by loading the current database dump using <a href="../commands/#wpdbimport">the <code>wp:db:import</code> command</a>,
+manually setting up the site interacting with it and then
+exporting the database dump using <a href="../commands/#wpdbexport">the <code>wp:db:export</code> command</a>.</p>
+<p>You can find out about the URL of the site served by the PHP built-in web server by
+running <a href="../commands/#devinfo">the <code>dev:info</code> command</a>.</p>
+<h2 id="when-not-to-use-the-default-configuration">When not to use the default configuration</h2>
+<p>The default configuration is the recommended one for most projects, but some projects might require you to use a custom
+configuration to make the most out of wp-browser.</p>
+<h3 id="database-drop-in">Database drop-in</h3>
+<p>The default configuration will use the <a href="https://wordpress.org/plugins/sqlite-database-integration/">SQLite Database Integration plugin</a> to use SQLite as the database engine.
+This requires placing a <code>db.php</code> drop-in file in the WordPress content directory.</p>
+<p>If your project already requires a <code>db.php</code> drop-in file, you will have to use a custom configuration.</p>
+<h3 id="multisite-with-sub-domains">Multisite with sub-domains</h3>
+<p>While Chrome will handle sub-domains correctly, even on <code>localhost</code>, WordPress will not.
+If you're testing a multisite installation with sub-domains, you will have to use a custom configuration.</p>
+<h3 id="custom-site-structure">Custom site structure</h3>
+<p>If your site uses a customized file structure to manage WordPress, you will need to configure wp-browser using a custom
+configuration.
+This is usually true for some site projects, and will most likely not be an issue for plugin and theme projects.</p>
+<p>Using a custom configuration is not that difficult
+though: <a href="../custom-configuration/">read more about using a custom configuration here.</a></p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>

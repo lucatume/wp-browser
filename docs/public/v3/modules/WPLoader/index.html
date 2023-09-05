@@ -1,0 +1,679 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the wp-browser WordPress testing framework.">
+      
+      
+        <meta name="author" content="Luca Tumedei">
+      
+      
+        <link rel="canonical" href="https://wpbrowser.wptestkit.dev/v3/modules/WPLoader/">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.20">
+    
+    
+      
+        <title>WPLoader module - wp-browser docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wploader-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="wp-browser docs" class="md-header__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            wp-browser docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WPLoader module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="wp-browser docs" class="md-nav__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    wp-browser docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Start here
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#everything-happens-in-a-transaction" class="md-nav__link">
+    Everything happens in a transaction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-configuration" class="md-nav__link">
+    Example configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-in-integration-or-wordpress-unit-tests" class="md-nav__link">
+    Usage in integration or "WordPress unit" tests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wploader-to-only-bootstrap-wordpress" class="md-nav__link">
+    WPLoader to only bootstrap WordPress
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-api" class="md-nav__link">
+    Public API
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="wploader-module">WPLoader module</h1>
+<p>This module should be used in integration tests, see <a href="../../levels-of-testing/">levels of testing for more information</a>, to bootstrap WordPress code in the context of the tests.<br />
+Setting the <code>loadOnly</code> parameter to <code>true</code> the module can be additionally used in acceptance and functional tests to access WordPress code in the tests context.<br />
+This module is a wrapper around the functionalities provided by <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/">the WordPress PHPUnit Core test suite</a>, as such it provides the same method and facilities.<br />
+The parameters provided to the module duplicate the ones used in the WordPress configuration file: the <code>WPLoader</code> module will <strong>not</strong> bootstrap WordPress using the <code>wp-config.php</code> file, it will define and use its own WordPress configuration built from the module parameters.</p>
+<h2 id="everything-happens-in-a-transaction">Everything happens in a transaction</h2>
+<p>When used to bootstrap and install WordPress (<code>loadOnly: false</code>) exactly as the <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/">the WordPress PHPUnit Core test suite</a> it is based on, this module will operate any change to the database in a transaction.<br />
+This means that, in the context of integration tests, the result of any write or delete operation done during the tests will be rolled back at the end of each test method; this is done for a number of reasons like performance and tests independence.<br />
+Inspection of the database during tests, e.g. stopping execution using XDebug, <strong>will not show any change in the database</strong>.
+Keep this in mind while trying to debug integration tests using the <code>WPLoader</code> module.<br />
+When configured to only load WordPress (<code>loadOnly: true</code>) then any database operation will be committed and written to the database.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li><code>wpRootFolder</code> <em>required</em> The absolute, or relative to the project root folder, path to the root WordPress installation folder. The WordPress installation root folder is the one that contains the <code>wp-load.php</code> file.</li>
+<li><code>dbName</code> <em>required</em> - The name of the database used by the WordPress installation, same as the <code>DB_NAME</code> constant.</li>
+<li><code>dbHost</code> <em>required</em> - The host of the database used by the WordPress installation, same as the <code>DB_HOST</code> constant. If the database is accessible (as is the case on the latest version of [Local by Flywheel][http://localwp.com]) <strong>via unix socket</strong>, then the string to insert here should look like this <code>localhost:/path/to/the/mysql.sock</code>.</li>
+<li><code>dbUser</code> <em>required</em> - The user of the database used by the WordPress installation, same as the <code>DB_USER</code> constant.</li>
+<li><code>dbPassword</code> <em>required</em> - The password of the database used by the WordPress installation, same as <code>DB_PASSWORD</code> constant.</li>
+<li><code>loadOnly</code> - defaults to <code>false</code>; whether to only load WordPress, without bootstrapping a fresh installation for tests or not. Read more in the <a href="#using-wploader-in-acceptance-and-functional-tests">"Using WPLoader in acceptance and functional tests"</a> section. If this parameter is set to <code>true</code> the following parameters will not apply.</li>
+<li><code>isolatedInstall</code> - defaults to <code>true</code>, whether to install and bootstrap the WordPress installation in a secondary PHP thread for thread safety or not. Maintained for back-compatibility purposes with wp-browser first versions: to get a replica of the bootstrap process used by <a href="">WordPress Core PHPUnit tests</a> leave this to <code>true</code>.</li>
+<li><code>installationTableHandling</code> - defaults to <code>empty</code>; it controls how tables created by WordPress and plugins will be handled during the installation of WordPress during tests. By default tables will be emptied of any content, but some plugins might require tables to be dropped before WordPress is installed and after plugins are activated (this used to be the default behavior). Supported values are <code>drop</code> to drop the tables, <code>empty</code> to just empty the tables and <code>let</code> to do nothing about the tables. If you get errors from database queries while the <code>WPLoader</code> module installs the tests, then try changing this parameter value. </li>
+<li><code>wpDebug</code> - defaults to <code>true</code>, the value the <code>WP_DEBUG</code> constant will be set to.</li>
+<li><code>multisite</code> - defaults to <code>false</code>, the value the <code>MULTISITE</code> constant will be set to.</li>
+<li><code>skipPluggables</code> - defaults to <code>false</code>, if set to <code>true</code> will skip the definition of pluggable functions.</li>
+<li><code>dbCharset</code> - defaults to <code>utf8</code>, the value the <code>DB_CHARSET</code> constant will be set to.</li>
+<li><code>dbCollate</code> - defaults to an empty string, the value the <code>DB_COLLATE</code> constant will be set to.</li>
+<li><code>tablePrefix</code> - defaults to <code>wptests_</code>, the value the <code>$table_prefix</code> variable will be set to.</li>
+<li><code>domain</code> - defaults to <code>example.org</code>, the domain of the WordPress site to scaffold for the tests.</li>
+<li><code>adminEmail</code> - defaults to <code>admin@example.org</code>, the email of the WordPress site to scaffold for the tests.</li>
+<li><code>title</code> - defaults to <code>Test Blog</code>, the title of the WordPress site to scaffolded for the tests.</li>
+<li><code>phpBinary</code> - defaults to <code>php</code>, the PHP binary the host machine will have to use to bootstrap and load the test WordPress installation.</li>
+<li><code>language</code> - defaults to an empty string, the language of the WordPress installation to scaffold.</li>
+<li><code>configFile</code> - defaults to an empty string, an additional configuration file to include <strong>before</strong> loading WordPress. Any instruction in this fill will run <strong>before</strong> any WordPress file is included.</li>
+<li><code>contentFolder</code> - defaults to an empty string; the path, relative to the <code>wpRootFolder</code> or absolute, to the content folder if different from the default one or the one defined by the <code>WP_CONTENT_DIR</code> constant; if the <code>WP_CONTENT_DIR</code> constant is defined in a config file (see the <code>configFile</code> parameter) this will be ignored.</li>
+<li><code>pluginsFolder</code> - defaults to an empty string; the path, relative to the <code>wpRootFolder</code> or absolute, to the plugins folder from the <code>wpRootFolder</code> if different from the default one or the one defined by the <code>WP_PLUGIN_DIR</code> constant; if the <code>WP_PLUGIN_DIR</code> constant is defined in a config file (see the <code>configFile</code> parameter) this will be ignored.</li>
+<li><code>plugins</code> - defaults to an empty string; a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the <code>folder/plugin-file.php</code> format.</li>
+<li><code>activatePlugins</code> - defaults to an empty string, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the <code>folder/plugin-file.php</code> format; when the <code>multisite</code> option is set to <code>true</code> the plugins will be <strong>network activated</strong> during the installation.</li>
+<li><code>bootstrapActions</code> - defaults to an empty string, a list of actions or <strong>static functions</strong> that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
+    <code>yaml
+    bootstrapActions:
+        - action_one
+        - action_two
+        - [MyClass, myStaticMethod]</code></li>
+<li>
+<p><code>theme</code> - defaults to an empty string, the theme that should be activated for the tests; if a string is passed then both <code>template</code> and <code>stylesheet</code> options will be set to the passed value; if an array is passed then the <code>template</code> and <code>stylesheet</code> will be set in that order:</p>
+<p><code>yaml
+theme: my-theme</code></p>
+<p>The theme will be set to <code>my-theme</code>.</p>
+<p><code>yaml
+theme: [ parent, child ]</code></p>
+<p>The <code>template</code> will be set to <code>parent</code>, the <code>stylesheet</code> will be set to <code>child</code>.</p>
+</li>
+</ul>
+<p><strong>A word of caution</strong>: right now the only way to write tests able to take advantage of the suite is to use the <code>WP_UnitTestCase</code> test case class; while the module will load fine and will raise no problems <code>WP_UnitTestCase</code> will take care of handling the database as intended and using another test case class will almost certainly result in an error if the test case defines more than one test method.</p>
+<h3 id="example-configuration">Example configuration</h3>
+<pre><code class="language-yml">  modules:
+      enabled:
+          - WPLoader
+      config:
+          WPLoader:
+              multisite: false
+              wpRootFolder: &quot;/Users/luca/www/wordpress&quot;
+              dbName: &quot;wordpress_tests&quot;
+              dbHost: &quot;localhost&quot;
+              dbUser: &quot;root&quot;
+              dbPassword: &quot;password&quot;
+              isolatedInstall: true
+              installationTableHandling: drop
+              tablePrefix: &quot;wptests_&quot;
+              domain: &quot;wordrpess.localhost&quot;
+              adminEmail: &quot;admin@wordpress.localhost&quot;
+              title: &quot;Test Blog&quot;
+              theme: my-theme
+              plugins: ['hello.php', 'my-plugin/my-plugin.php']
+              activatePlugins: ['hello.php', 'my-plugin/my-plugin.php']
+</code></pre>
+<h2 id="usage-in-integration-or-wordpress-unit-tests">Usage in integration or "WordPress unit" tests</h2>
+<p>The most common use of this module is to run integration, or "WordPress unit" tests (see <a href="../../levels-of-testing/">levels of testing for more information</a>).  </p>
+<p>As a first step generate a <code>WPTestCase</code> using Codeception command-line utility (see <a href="../../commands/">the commands provided by wp-browser</a>):</p>
+<pre><code class="language-bash">codecept generate:wpunit my_suite &quot;Acme\User&quot;
+</code></pre>
+<p>Codeception will generate the <code>tests/my_suite/Acme/UserTest.php</code> class.
+The class extends the <code>Codeception\TestCase\WPTestCase</code> class provided by wp-browser; this looks like a normal PHPUnit test case but has some perks due to it's <em>mixed breed</em> nature.<br />
+Understanding them might help you work with it:</p>
+<ul>
+<li>WordPress is installed and configured for the tests <strong>before</strong> the test case is loaded; WordPress defined functions and classes (and those of the plugins and themes loaded with it) will be available in the <code>setUpBeforeClass</code> method. </li>
+<li>
+<p>WordPress is <strong>not</strong> loaded when PHPUnit will call the <a href="https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers">data provider methods</a>; this means the <code>post_provider</code> method will generate a function not found exception when the test case runs as the WordPress defined methods are not loaded yet:
+    <code>``php
+    public function post_provider(){
+            //</code>wp_insert_post` is loaded with WordPress and WordPress has not been loaded yet!
+            return [
+                    [wp_insert_post(['post_title' =&gt; 'Test', 'post_status' =&gt; 'publish'])]
+            ];
+    }</p>
+<p>public function test_posts($post_id){
+        $this-&gt;assertInstanceOf(WP_Post::class, get_post($post_id));
+}
+<code>* WordPress is reset to an initial known state before each test runs; the database transaction is rolled back to wipe any data and tables you might have manipulated in the tests, the global space is cleaned. See [Everything happens in a transaction](#everything-happens-in-a-transaction).  
+* This is a [Codeception Unit test](https://codeception.com/docs/05-UnitTests), as such it does provide access to the `$this-&gt;tester` property to access the methods defined in other modules loaded in the suite and to [Codeception test doubles](https://codeception.com/docs/05-UnitTests#Test-Doubles)
+* This is a [PhpUnit](https://phpunit.de/ "PHPUnit – The PHP Testing Framework") test case too; there are way too many testing functions to cover to report them here but, to highlight a few: [mocking with Prophecy](https://phpunit.readthedocs.io/en/8.2/test-doubles.html) and the wealth of [PHPUnit assertion methods](https://phpunit.readthedocs.io/en/8.2/writing-tests-for-phpunit.html).
+* This is kind of a WordPress Core suite test case; as such it provides access to its functions and to the often-overlooked `static::factory()` method; in this instance too there are too many methods to list them all but it's worth noting how easy it is to set up test fixtures with the factory:</code>php
+public function test_post_creation(){
+        $random_post_id = static::factory()-&gt;post-&gt;create();</p>
+<pre><code>    $this-&gt;assertInstanceOf(WP_Post::class, get_post($random_post_id));
+</code></pre>
+<p>}
+<code>* The `factory` property can be accessed on the `tester` property too and will work the same way as if called using `static::factory()`:</code>php
+public function test_post_creation(){
+        $random_post_id = $this-&gt;tester-&gt;factory()-&gt;post-&gt;create();</p>
+<pre><code>    $this-&gt;assertInstanceOf(WP_Post::class, get_post($random_post_id));
+</code></pre>
+<p>}
+```</p>
+</li>
+</ul>
+<h2 id="wploader-to-only-bootstrap-wordpress">WPLoader to only bootstrap WordPress</h2>
+<p>If the need is to just bootstrap the WordPress installation in the context of the tests variable scope then the <code>WPLoader</code> module <code>loadOnly</code> parameter should be set to <code>true</code>; this could be the case for functional tests in need to access WordPress provided methods, functions and values.<br />
+An example configuration for the module in this mode is this one:</p>
+<pre><code class="language-yaml">  modules:
+      enabled:
+          - WPDb # BEFORE the WPLoader one!
+          - WPLoader # AFTER the WPDb one!
+      config:
+          WPDb:
+              dsn: 'mysql:host=localhost;dbname=wordpress'
+              user: 'root'
+              password: 'password'
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              waitlock: 10
+              url: 'http://wordpress.localhost'
+              urlReplacement: true
+              tablePrefix: 'wp_'
+          WPLoader:
+              loadOnly: true 
+              wpRootFolder: &quot;/Users/User/www/wordpress&quot;
+              dbName: &quot;wpress-tests&quot;
+              dbHost: &quot;localhost&quot;
+              dbUser: &quot;root&quot;
+              dbPassword: &quot;root&quot;
+              domain: &quot;wordpress.localhost&quot;
+</code></pre>
+<p>With reference to the table above the module will not take care of the test WordPress installation state before and after the tests, the installed and activated plugins, and theme.<br />
+The module can be used in conjunction with a <code>WPDb</code> module to provide the tests with a WordPress installation suiting the tests at hand; when doing so please take care to list, in the suite configuration file <code>modules</code> section (see example above) the <code>WPDb</code> module <strong>before</strong> the <code>WPLoader</code> one.<br />
+Codeception will initialize the modules <strong>in the same order they are listed in the modules section of the suite configuration file</strong> and the WPLoader module <strong>needs</strong> the database to be populated by the <code>WPDb</code> module before it runs!
+As an example this is a correct suite configuration:</p>
+<pre><code class="language-yaml">modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+</code></pre>
+<!--doc-->
+
+<h2 id="public-api">Public API</h2>
+<nav>
+    <ul>
+        <li>
+            <a href="#debugwpactionfinal">debugWpActionFinal</a>
+        </li>
+        <li>
+            <a href="#debugwpactioninitial">debugWpActionInitial</a>
+        </li>
+        <li>
+            <a href="#debugwpfilterfinal">debugWpFilterFinal</a>
+        </li>
+        <li>
+            <a href="#debugwpfilterinitial">debugWpFilterInitial</a>
+        </li>
+        <li>
+            <a href="#factory">factory</a>
+        </li>
+        <li>
+            <a href="#getcontentfolder">getContentFolder</a>
+        </li>
+        <li>
+            <a href="#getpluginsfolder">getPluginsFolder</a>
+        </li>
+        <li>
+            <a href="#startwpfiltersdebug">startWpFiltersDebug</a>
+        </li>
+        <li>
+            <a href="#stopwpfiltersdebug">stopWpFiltersDebug</a>
+        </li>
+    </ul>
+</nav>
+
+<h3>debugWpActionFinal</h3>
+
+<hr>
+
+<p>Debugs a single WordPress action final call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+
+<pre><code class="language-php">// Start debugging all WordPress actions final value.
+  add_action('all', [$this,'debugWpActionFinal']);
+  // Run some code firing actions and debug them.
+  // Stop debugging all WordPress actions final value.
+  remove_action('all', [$this,'debugWpActionFinal']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+
+<h3>debugWpActionInitial</h3>
+
+<hr>
+
+<p>Debugs a single WordPress action initial call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+
+<pre><code class="language-php">// Start debugging all WordPress actions initial value.
+  add_action('all', [$this,'debugWpActionInitial']);
+  // Run some code firing actions and debug them.
+  // Stop debugging all WordPress actions initial value.
+  remove_action('all', [$this,'debugWpActionInitial']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+
+<h3>debugWpFilterFinal</h3>
+
+<hr>
+
+<p>Debugs a single WordPress filter final call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+
+<pre><code class="language-php">// Start debugging all WordPress filters final value.
+  add_filter('all', [$this,'debugWpFilterFinal']);
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters final value.
+  remove_filter('all', [$this,'debugWpFilterFinal']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+
+<h3>debugWpFilterInitial</h3>
+
+<hr>
+
+<p>Debugs a single WordPress filter initial call using Codeception debug functions. The output will show following the selected output verbosity (<code>--debug</code> and <code>-vvv</code> CLI options).</p>
+
+<pre><code class="language-php">// Start debugging all WordPress filters initial value.
+  add_filter('all', [$this,'debugWpFilterInitial']);
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters initial value.
+  remove_filter('all', [$this,'debugWpFilterInitial']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>mixed</code> <strong>$args</strong></li></ul>
+
+<h3>factory</h3>
+
+<hr>
+
+<p>Accessor method to get the object storing the factories for things. This methods gives access to the same factories provided by the <a href="https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/">Core test suite</a>.</p>
+
+<pre><code class="language-php">$postId = $I-&gt;factory()-&gt;post-&gt;create();
+  $userId = $I-&gt;factory()-&gt;user-&gt;create(['role' =&gt; 'administrator']);
+</code></pre>
+<h3>getContentFolder</h3>
+
+<hr>
+
+<p>Returns the absolute path to the WordPress content directory.</p>
+
+<pre><code class="language-php">$content = $this-&gt;getContentFolder();
+  $themes = $this-&gt;getContentFolder('themes');
+  $twentytwenty = $this-&gt;getContentFolder('themes/twentytwenty');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$path</strong> - An optional path to append to the content directory absolute path.</li></ul>
+
+<h3>getPluginsFolder</h3>
+
+<hr>
+
+<p>Returns the absolute path to the plugins directory. The value will first look at the <code>WP_PLUGIN_DIR</code> constant, then the <code>pluginsFolder</code> configuration parameter and will, finally, look in the default path from the WordPress root directory.</p>
+
+<pre><code class="language-php">$plugins = $this-&gt;getPluginsFolder();
+  $hello = $this-&gt;getPluginsFolder('hello.php');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$path</strong> - A relative path to append to te plugins directory absolute path.</li></ul>
+
+<h3>startWpFiltersDebug</h3>
+
+<hr>
+
+<p>Starts the debug of all WordPress filters and actions. The method hook on <code>all</code> filters and actions to debug their value.</p>
+
+<pre><code class="language-php">// Start debugging all WordPress filters and action final and initial values.
+  $this-&gt;startWpFiltersDebug();
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters and action final and initial values.
+  $this-&gt;stopWpFiltersDebug();
+  the array of arguments as input.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\callable</code> <strong>$format</strong> - A callback function to format the arguments debug output; the callback will receive</li></ul>
+
+<h3>stopWpFiltersDebug</h3>
+
+<hr>
+
+<p>Stops the debug of all WordPress filters and actions.</p>
+
+<pre><code class="language-php">// Start debugging all WordPress filters and action final and initial values.
+  $this-&gt;startWpFiltersDebug();
+  // Run some code firing filters and debug them.
+  // Stop debugging all WordPress filters and action final and initial values.
+  $this-&gt;stopWpFiltersDebug();
+</code></pre>
+<p><em>This class extends \Codeception\Module</em></p>
+<!--/doc-->
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>

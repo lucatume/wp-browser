@@ -1,0 +1,2893 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the wp-browser WordPress testing framework.">
+      
+      
+        <meta name="author" content="Luca Tumedei">
+      
+      
+        <link rel="canonical" href="https://wpbrowser.wptestkit.dev/v3/modules/WPDb/">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.20">
+    
+    
+      
+        <title>WPDb module - wp-browser docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wpdb-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="wp-browser docs" class="md-header__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            wp-browser docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WPDb module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="wp-browser docs" class="md-nav__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    wp-browser docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Start here
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#module-requirements-for-codeception-40" class="md-nav__link">
+    Module requirements for Codeception 4.0+
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup-your-content" class="md-nav__link">
+    Backup your content
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#change-the-database-used-depending-on-whether-your-running-tests-or-not" class="md-nav__link">
+    Change the database used depending on whether you're running tests or not
+  </a>
+  
+    <nav class="md-nav" aria-label="Change the database used depending on whether you're running tests or not">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatically-changing-database-based-on-the-browser-user-agent" class="md-nav__link">
+    Automatically changing database based on the browser user agent
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-configuration" class="md-nav__link">
+    Example configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-module-with-the-wploader-one" class="md-nav__link">
+    Using the module with the WPLoader one
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-api" class="md-nav__link">
+    Public API
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="wpdb-module">WPDb module</h1>
+<p>This module should be used in acceptance and functional tests, see <a href="../../levels-of-testing/">levels of testing for more information</a>.<br />
+This module extends the <a href="https://codeception.com/docs/modules/Db">Db module</a> adding WordPress-specific configuration parameters and methods.<br />
+The module provides methods to read, write and update the WordPress database <strong>directly</strong>, without relying on WordPress methods, using WordPress functions or triggering WordPress filters.  </p>
+<h2 id="module-requirements-for-codeception-40">Module requirements for Codeception 4.0+</h2>
+<p>This module requires the <code>codeception/module-db</code> Composer package to work when wp-browser is used with Codeception 4.0.  </p>
+<p>To install the package run: </p>
+<pre><code class="language-bash">composer require --dev codeception/module-db:^1.0
+</code></pre>
+<h2 id="backup-your-content">Backup your content</h2>
+<p>This module, like the <a href="https://codeception.com/docs/modules/Db">Codeception Db</a> one it extends, by default <strong>will load a database dump in the database it's using.</strong><br />
+This means that <strong>the database contents will be replaced by the dump contents</strong> on each run of a suite using the module.<br />
+You can set the <code>populate</code> and <code>cleanup</code> parameters to <code>false</code> to prevent this default behavior but it's usually not what you need in an automated test.<br />
+<strong>Make a backup of any database you're using in tests that contains any information you care about before you run any test!</strong></p>
+<h2 id="change-the-database-used-depending-on-whether-your-running-tests-or-not">Change the database used depending on whether you're running tests or not</h2>
+<p>The chore of having to plug different databases, or backup them, depending on whether you're manually testing the site or automatically testing can be mitigated switching them automatically depending on the browser user agent or request headers.<br />
+This module was born to be used in acceptance and functional tests (see <a href="../../levels-of-testing/">levels of testing for more information</a>) and will often be coupled with modules like the <a href="../WPBrowser/">WPBrowser</a> one or the <a href="../WPWebDriver/">WPWebDriver</a> one.<br />
+Depending on which of the two modules is being used in the suite there are different ways to automate the "database switching".</p>
+<h3 id="automatically-changing-database-based-on-the-browser-user-agent">Automatically changing database based on the browser user agent</h3>
+<p>If you would like to automate the "switching above" below you will find an example setup.<br />
+Update the test site <code>wp-config.php</code> file from this:</p>
+<pre><code class="language-php">define( 'DB_NAME', 'wordpress' );
+</code></pre>
+<p>to this:</p>
+<pre><code class="language-php">&lt;?php
+if ( 
+    // Custom header.
+    isset( $_SERVER['HTTP_X_TESTING'] )
+    // Custom user agent.
+    || ( isset( $_SERVER['HTTP_USER_AGENT'] ) &amp;&amp; $_SERVER['HTTP_USER_AGENT'] === 'wp-browser' )
+    // The env var set by the WPClIr or WordPress modules.
+    || getenv( 'WPBROWSER_HOST_REQUEST' )
+) {
+    // Use the test database if the request comes from a test.
+    define( 'DB_NAME', 'wordpress_test' );
+} else {
+    // Else use the default one.
+    define( 'DB_NAME', 'wordpress' );
+}
+</code></pre>
+<p>If you're using the <a href="../WPWebDriver/">WPWebDriver</a> module set the user agent in the browser, in this example I'm setting the user agent in Chromedriver:</p>
+<pre><code class="language-yaml">class_name: AcceptanceTester
+modules:
+    enabled:
+        - \Helper\Acceptance
+        - WPDb
+        - WPWebDriver
+    config:
+        WPDb:
+            dsn: 'mysql:host=%WP_DB_HOST%;dbname=%WP_DB_NAME%'
+            user: %WP_DB_USER%
+            password: %WP_DB_PASSWORD%
+            dump: tests/_data/dump.sql
+            populate: true
+            cleanup: false
+            url: '%WP_URL%'
+            tablePrefix: %WP_TABLE_PREFIX%
+            urlReplacement: true
+        WPWebDriver:
+            url: '%WP_URL%'
+            adminUsername: '%WP_ADMIN_USERNAME%'
+            adminPassword: '%WP_ADMIN_PASSWORD%'
+            adminPath: '%WP_ADMIN_PATH%'
+            browser: chrome
+            host: localhost
+            port: 4444
+            window_size: false
+            wait: 5
+            capabilities:
+                # Used in more recent releases of Selenium.
+                &quot;goog:chromeOptions&quot;:
+                    args: [&quot;--no-sandbox&quot;, &quot;--headless&quot;, &quot;--disable-gpu&quot;, &quot;--user-agent=wp-browser&quot;]
+                # Support the old format for back-compatibility purposes. 
+                &quot;chromeOptions&quot;:
+                    args: [&quot;--no-sandbox&quot;, &quot;--headless&quot;, &quot;--disable-gpu&quot;, &quot;--user-agent=wp-browser&quot;]
+</code></pre>
+<p>If you're using the <a href="../WPBrowser/">WPBrowser</a> module send a specific header in the context of test requests: </p>
+<pre><code class="language-yaml">class_name: AcceptanceTester
+modules:
+    enabled:
+        - \Helper\Acceptance
+        - WPDb
+        - WPBrowser
+    config:
+        WPDb:
+              dsn: 'mysql:host=%DB_HOST%;dbname=%WP_DB_NAME%'
+              user: %WP_DB_USER%
+              password: %WP_DB_PASSWORD%
+              dump: 'tests/_data/dump.sql'
+              populate: true
+              cleanup: true
+              reconnect: false
+              url: '%WP_URL%'
+              tablePrefix: 'wp_'
+        WPBrowser:
+              url: '%WP_URL%'
+              adminUsername: 'admin'
+              adminPassword: 'admin'
+              adminPath: '/wp-admin'
+              headers: 
+                X-Testing: 'wp-browser'
+</code></pre>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li><code>dsn</code> <em>required</em> - the database POD DSN connection details; read more <a href="https://secure.php.net/manual/en/ref.pdo-mysql.connection.php">on PHP PDO documentation</a>. If the database is accessible (as is the case on the latest version of [Local by Flywheel][http://localwp.com]) <strong>via unix socket</strong>, then the string to insert here should look like this <code>mysql:unix_socket=/path/to/the/mysql.sock;dbname=wordpress</code>.</li>
+<li><code>user</code> <em>required</em> - the database user.</li>
+<li><code>password</code> <em>required</em> - the database password.</li>
+<li><code>url</code> <em>required</em> - the full URL, including the HTTP scheme, of the website whose database is being accessed. WordPress uses hard-codece URLs in the database, that URL will be set by this module when applying the SQL dump file during population or cleanup.</li>
+<li><code>dump</code> <em>required</em> - defaults to <code>null</code>; sets the path, relative to the project root folder, or absolute to the SQL dump file that will be used to set the tests initial database fixture. If set to <code>null</code> then the <code>populate</code>, <code>cleanup</code> and <code>populator</code> parameters will be ignored.</li>
+<li><code>populate</code> - defaults to <code>true</code> to empty the target database and import the SQL dump(s) specified in the <code>dump</code> argument before the test suite is started.</li>
+<li><code>cleanup</code> - defaults to <code>true</code> empty the target database and import the SQL dump(s) specified in the <code>dump</code> argument before each test. </li>
+<li><code>urlReplacement</code> - defaults to <code>true</code> to replace, while using the built-in, PHP-based, dump import solution the hard-coded WordPress URL in the database with the specified one.</li>
+<li><code>originalUrl</code> - specifies the original URL hard-coded into the version controlled SQL dump files. This can help prevent some URL replacement issues when the <code>urlReplacement</code> configuration parameter is set to <code>true</code>.</li>
+<li><code>populator</code> - defaults to <code>null</code>, if set to an executable shell command then that command will be used to populate the database in place of the built-in PHP solution; URL replacement will not apply in this case. Read more about this <a href="https://codeception.com/docs/modules/Db#Populator">on Codeception documentation</a>.</li>
+<li><code>reconnect</code> - defaults to <code>true</code> to force the module to reconnect to the database before each test in place of only connecting at the start of the tests.</li>
+<li><code>waitlock</code> - defaults to <code>10</code>; wait lock (in seconds) that the database session should use for DDL statements.</li>
+<li><code>tablePrefix</code> - defaults to <code>wp_</code>; sets the prefix of the tables that the module will manipulate.</li>
+<li><code>letAdminEmailVerification</code> - defaults to an empty value to remove the Administrator Email Verification screen introduced in WordPress 5.3. Set to <code>true</code> to not remove the screen and show it when an administrator user first logs in.</li>
+<li><code>letCron</code> - defaults to an empty value to avoid <code>wp-cron</code> from being spawned during tests. Setting this to <code>true</code> will let <code>wp-cron</code> requests to fire during tests.</li>
+</ul>
+<h3 id="example-configuration">Example configuration</h3>
+<pre><code class="language-yaml">modules:
+  enabled:
+      - WPDb
+  config:
+      WPDb:
+          dsn: 'mysql:host=localhost;dbname=wordpress'
+          user: 'root'
+          password: 'password'
+          dump: 'tests/_data/dump.sql'
+          populate: true
+          cleanup: true
+          waitlock: 10
+          url: 'http://wordpress.localhost'
+          urlReplacement: true
+          tablePrefix: 'wp_'
+</code></pre>
+<h2 id="using-the-module-with-the-wploader-one">Using the module with the WPLoader one</h2>
+<p>This module is often used in conjunction with the <a href="../WPLoader/">WPLoader one</a> to use WordPress-defined functions, classes and methods in acceptance or functional tests.<br />
+The WPLoader module should be <a href="../WPLoader/#wploader-to-only-bootstrap-wordpress">set to only load WordPress</a> and this module should be listed, in the <code>modules.enabled</code> section of the suite configuration file <strong>before</strong> the <code>WPLoader</code> one:</p>
+<pre><code class="language-yaml">modules:
+  enabled:
+      - WPDb # this before...
+      - WPLoader # ...this one.
+  config:
+      WPDb:
+        # ...
+      WPLoader:
+        loadOnly: true
+        # ... 
+</code></pre>
+<p>This will avoid issues where the <code>WPLoader</code> module could <code>exit</code>, terminating the test run, due to an inconsistent database state.</p>
+<!--doc-->
+
+<h2 id="public-api">Public API</h2>
+<nav>
+    <ul>
+        <li>
+            <a href="#countrowsindatabase">countRowsInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveattachmentfilesindatabase">dontHaveAttachmentFilesInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveattachmentindatabase">dontHaveAttachmentInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveblogindatabase">dontHaveBlogInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavecommentindatabase">dontHaveCommentInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavecommentmetaindatabase">dontHaveCommentMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveindatabase">dontHaveInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavelinkindatabase">dontHaveLinkInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveoptionindatabase">dontHaveOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavepostindatabase">dontHavePostInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavepostmetaindatabase">dontHavePostMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavepostthumbnailindatabase">dontHavePostThumbnailInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavesiteoptionindatabase">dontHaveSiteOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavesitetransientindatabase">dontHaveSiteTransientInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetableindatabase">dontHaveTableInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetermindatabase">dontHaveTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetermmetaindatabase">dontHaveTermMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetermrelationshipindatabase">dontHaveTermRelationshipInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetermtaxonomyindatabase">dontHaveTermTaxonomyInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthavetransientindatabase">dontHaveTransientInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveuserindatabase">dontHaveUserInDatabase</a>
+        </li>
+        <li>
+            <a href="#donthaveuserindatabasewithemail">dontHaveUserInDatabaseWithEmail</a>
+        </li>
+        <li>
+            <a href="#donthaveusermetaindatabase">dontHaveUserMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseeattachmentindatabase">dontSeeAttachmentInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseeblogindatabase">dontSeeBlogInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseecommentindatabase">dontSeeCommentInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseecommentmetaindatabase">dontSeeCommentMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseelinkindatabase">dontSeeLinkInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseeoptionindatabase">dontSeeOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseepageindatabase">dontSeePageInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseepostindatabase">dontSeePostInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseepostmetaindatabase">dontSeePostMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseepostwithtermindatabase">dontSeePostWithTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseesiteoptionindatabase">dontSeeSiteOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseetableindatabase">dontSeeTableInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseetermindatabase">dontSeeTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseetermmetaindatabase">dontSeeTermMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseetermtaxonomyindatabase">dontSeeTermTaxonomyInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseeuserindatabase">dontSeeUserInDatabase</a>
+        </li>
+        <li>
+            <a href="#dontseeusermetaindatabase">dontSeeUserMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#getsitedomain">getSiteDomain</a>
+        </li>
+        <li>
+            <a href="#getuserstablename">getUsersTableName</a>
+        </li>
+        <li>
+            <a href="#graballfromdatabase">grabAllFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabattachmentattachedfile">grabAttachmentAttachedFile</a>
+        </li>
+        <li>
+            <a href="#grabattachmentmetadata">grabAttachmentMetadata</a>
+        </li>
+        <li>
+            <a href="#grabblogdomain">grabBlogDomain</a>
+        </li>
+        <li>
+            <a href="#grabblogpath">grabBlogPath</a>
+        </li>
+        <li>
+            <a href="#grabblogtablename">grabBlogTableName</a>
+        </li>
+        <li>
+            <a href="#grabblogtablenames">grabBlogTableNames</a>
+        </li>
+        <li>
+            <a href="#grabblogtableprefix">grabBlogTablePrefix</a>
+        </li>
+        <li>
+            <a href="#grabblogversionstablename">grabBlogVersionsTableName</a>
+        </li>
+        <li>
+            <a href="#grabblogstablename">grabBlogsTableName</a>
+        </li>
+        <li>
+            <a href="#grabcommentmetatablename">grabCommentmetaTableName</a>
+        </li>
+        <li>
+            <a href="#grabcommentstablename">grabCommentsTableName</a>
+        </li>
+        <li>
+            <a href="#grablatestentrybyfromdatabase">grabLatestEntryByFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grablinkstablename">grabLinksTableName</a>
+        </li>
+        <li>
+            <a href="#graboptionfromdatabase">grabOptionFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabpostmetafromdatabase">grabPostMetaFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabpostmetatablename">grabPostmetaTableName</a>
+        </li>
+        <li>
+            <a href="#grabpoststablename">grabPostsTableName</a>
+        </li>
+        <li>
+            <a href="#grabprefixedtablenamefor">grabPrefixedTableNameFor</a>
+        </li>
+        <li>
+            <a href="#grabregistrationlogtablename">grabRegistrationLogTableName</a>
+        </li>
+        <li>
+            <a href="#grabsignupstablename">grabSignupsTableName</a>
+        </li>
+        <li>
+            <a href="#grabsitemetatablename">grabSiteMetaTableName</a>
+        </li>
+        <li>
+            <a href="#grabsiteoptionfromdatabase">grabSiteOptionFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabsitetablename">grabSiteTableName</a>
+        </li>
+        <li>
+            <a href="#grabsitetransientfromdatabase">grabSiteTransientFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabsiteurl">grabSiteUrl</a>
+        </li>
+        <li>
+            <a href="#grabtableprefix">grabTablePrefix</a>
+        </li>
+        <li>
+            <a href="#grabtermidfromdatabase">grabTermIdFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabtermmetatablename">grabTermMetaTableName</a>
+        </li>
+        <li>
+            <a href="#grabtermrelationshipstablename">grabTermRelationshipsTableName</a>
+        </li>
+        <li>
+            <a href="#grabtermtaxonomyidfromdatabase">grabTermTaxonomyIdFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabtermtaxonomytablename">grabTermTaxonomyTableName</a>
+        </li>
+        <li>
+            <a href="#grabtermstablename">grabTermsTableName</a>
+        </li>
+        <li>
+            <a href="#grabuseridfromdatabase">grabUserIdFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabusermetafromdatabase">grabUserMetaFromDatabase</a>
+        </li>
+        <li>
+            <a href="#grabusermetatablename">grabUsermetaTableName</a>
+        </li>
+        <li>
+            <a href="#grabuserstablename">grabUsersTableName</a>
+        </li>
+        <li>
+            <a href="#haveattachmentindatabase">haveAttachmentInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveblogindatabase">haveBlogInDatabase</a>
+        </li>
+        <li>
+            <a href="#havecommentindatabase">haveCommentInDatabase</a>
+        </li>
+        <li>
+            <a href="#havecommentmetaindatabase">haveCommentMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#havelinkindatabase">haveLinkInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanyblogsindatabase">haveManyBlogsInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanycommentsindatabase">haveManyCommentsInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanylinksindatabase">haveManyLinksInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanypostsindatabase">haveManyPostsInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanytermsindatabase">haveManyTermsInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemanyusersindatabase">haveManyUsersInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemenuindatabase">haveMenuInDatabase</a>
+        </li>
+        <li>
+            <a href="#havemenuitemindatabase">haveMenuItemInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveoptionindatabase">haveOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#havepageindatabase">havePageInDatabase</a>
+        </li>
+        <li>
+            <a href="#havepostindatabase">havePostInDatabase</a>
+        </li>
+        <li>
+            <a href="#havepostthumbnailindatabase">havePostThumbnailInDatabase</a>
+        </li>
+        <li>
+            <a href="#havepostmetaindatabase">havePostmetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#havesiteoptionindatabase">haveSiteOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#havesitetransientindatabase">haveSiteTransientInDatabase</a>
+        </li>
+        <li>
+            <a href="#havetermindatabase">haveTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#havetermmetaindatabase">haveTermMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#havetermrelationshipindatabase">haveTermRelationshipInDatabase</a>
+        </li>
+        <li>
+            <a href="#havetransientindatabase">haveTransientInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveusercapabilitiesindatabase">haveUserCapabilitiesInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveuserindatabase">haveUserInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveuserlevelsindatabase">haveUserLevelsInDatabase</a>
+        </li>
+        <li>
+            <a href="#haveusermetaindatabase">haveUserMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#importsql">importSql</a>
+        </li>
+        <li>
+            <a href="#importsqldumpfile">importSqlDumpFile</a>
+        </li>
+        <li>
+            <a href="#seeattachmentindatabase">seeAttachmentInDatabase</a>
+        </li>
+        <li>
+            <a href="#seeblogindatabase">seeBlogInDatabase</a>
+        </li>
+        <li>
+            <a href="#seecommentindatabase">seeCommentInDatabase</a>
+        </li>
+        <li>
+            <a href="#seecommentmetaindatabase">seeCommentMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#seelinkindatabase">seeLinkInDatabase</a>
+        </li>
+        <li>
+            <a href="#seeoptionindatabase">seeOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#seepageindatabase">seePageInDatabase</a>
+        </li>
+        <li>
+            <a href="#seepostindatabase">seePostInDatabase</a>
+        </li>
+        <li>
+            <a href="#seepostmetaindatabase">seePostMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#seepostwithtermindatabase">seePostWithTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#seesiteoptionindatabase">seeSiteOptionInDatabase</a>
+        </li>
+        <li>
+            <a href="#seesitesitetransientindatabase">seeSiteSiteTransientInDatabase</a>
+        </li>
+        <li>
+            <a href="#seetableindatabase">seeTableInDatabase</a>
+        </li>
+        <li>
+            <a href="#seetermindatabase">seeTermInDatabase</a>
+        </li>
+        <li>
+            <a href="#seetermmetaindatabase">seeTermMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#seetermrelationshipindatabase">seeTermRelationshipInDatabase</a>
+        </li>
+        <li>
+            <a href="#seetermtaxonomyindatabase">seeTermTaxonomyInDatabase</a>
+        </li>
+        <li>
+            <a href="#seeuserindatabase">seeUserInDatabase</a>
+        </li>
+        <li>
+            <a href="#seeusermetaindatabase">seeUserMetaInDatabase</a>
+        </li>
+        <li>
+            <a href="#useblog">useBlog</a>
+        </li>
+        <li>
+            <a href="#usemainblog">useMainBlog</a>
+        </li>
+        <li>
+            <a href="#usetheme">useTheme</a>
+        </li>
+    </ul>
+</nav>
+
+<h3>countRowsInDatabase</h3>
+
+<hr>
+
+<p>Returns the number of table rows matching a criteria.</p>
+
+<pre><code class="language-php">$I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'draft' ]);
+  $I-&gt;haveManyPostsInDatabase(3, ['post_status' =&gt; 'private' ]);
+  // Make sure there are now the expected number of draft posts.
+  $postsTable = $I-&gt;grabPostsTableName();
+  $draftsCount = $I-&gt;countRowsInDatabase($postsTable, ['post_status' =&gt; 'draft']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$table</strong> - The table to count the rows in.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - Search criteria, if empty all table rows will be counted.</li></ul>
+
+<h3>dontHaveAttachmentFilesInDatabase</h3>
+
+<hr>
+
+<p>Removes all the files attached with an attachment post, it will not remove the database entries. Requires the <code>WPFilesystem</code> module to be loaded in the suite.</p>
+
+<pre><code class="language-php">$posts = $I-&gt;grabPostsTableName();
+  $attachmentIds = $I-&gt;grabColumnFromDatabase($posts, 'ID', ['post_type' =&gt; 'attachment']);
+  // This will only remove the files, not the database entries.
+  $I-&gt;dontHaveAttachmentFilesInDatabase($attachmentIds);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<int>/int</code> <strong>$attachmentIds</strong> - An attachment post ID or an array of attachment post IDs.</li></ul>
+
+<h3>dontHaveAttachmentInDatabase</h3>
+
+<hr>
+
+<p>Removes an attachment from the posts table. table. the suite.</p>
+
+<pre><code class="language-php">$postmeta = $I-&gt;grabpostmetatablename();
+  $thumbnailId = $I-&gt;grabFromDatabase($postmeta, 'meta_value', [
+  'post_id' =&gt; $id,
+  'meta_key'=&gt;'thumbnail_id'
+  ]);
+  // Remove only the database entry (including postmeta) but not the files.
+  $I-&gt;dontHaveAttachmentInDatabase($thumbnailId);
+  // Remove the database entry (including postmeta) and the files.
+  $I-&gt;dontHaveAttachmentInDatabase($thumbnailId, true, true);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria to find the attachment post in the posts</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the attachment will be purged too.</li>
+<li><code>bool</code> <strong>$removeFiles</strong> - Remove all files too, requires the <code>WPFilesystem</code> module to be loaded in</li></ul>
+
+<h3>dontHaveBlogInDatabase</h3>
+
+<hr>
+
+<p>Removes one ore more blogs from the database.</p>
+
+<pre><code class="language-php">// Remove the blog, all its tables and files.
+  $I-&gt;dontHaveBlogInDatabase(['path' =&gt; 'test/one']);
+  // Remove the blog entry, not the tables though.
+  $I-&gt;dontHaveBlogInDatabase(['blog_id' =&gt; $blogId]);
+  // Remove multiple blogs.
+  $I-&gt;dontHaveBlogInDatabase(['domain' =&gt; 'test']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria to find the blog rows in the blogs table.</li>
+<li><code>bool</code> <strong>$removeTables</strong> - Remove the blog tables.</li>
+<li><code>bool</code> <strong>$removeUploads</strong> - Remove the blog uploads; requires the <code>WPFilesystem</code> module.</li></ul>
+
+<h3>dontHaveCommentInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the comments table.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveCommentInDatabase(['comment_post_ID' =&gt; 23, 'comment_url' =&gt; 'http://example.copm']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the comment will be purged too.</li></ul>
+
+<h3>dontHaveCommentMetaInDatabase</h3>
+
+<hr>
+
+<p>Removes a post comment meta from the database</p>
+
+<pre><code class="language-php">// Remove all meta for the comment with an ID of 23.
+  $I-&gt;dontHaveCommentMetaInDatabase(['comment_id' =&gt; 23]);
+  // Remove the `count` comment meta for the comment with an ID of 23.
+  $I-&gt;dontHaveCommentMetaInDatabase(['comment_id' =&gt; 23, 'meta_key' =&gt; 'count']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHaveInDatabase</h3>
+
+<hr>
+
+<p>Deletes a database entry. criteria.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveInDatabase('custom_table', ['book_ID' =&gt; 23, 'book_genre' =&gt; 'fiction']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$table</strong> - The table name.</li>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An associative array of the column names and values to use as deletion</li></ul>
+
+<h3>dontHaveLinkInDatabase</h3>
+
+<hr>
+
+<p>Removes a link from the database.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveLinkInDatabase(['link_url' =&gt; 'http://example.com']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHaveOptionInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the options table.</p>
+
+<pre><code class="language-php">// Remove the `foo` option.
+  $I-&gt;dontHaveOptionInDatabase('foo');
+  // Remove the 'bar' option only if it has the `baz` value.
+  $I-&gt;dontHaveOptionInDatabase('bar', 'baz');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - If set the option will only be removed if its value matches the passed one.</li></ul>
+
+<h3>dontHavePostInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the posts table.</p>
+
+<pre><code class="language-php">$posts = $I-&gt;haveManyPostsInDatabase(3, ['post_title' =&gt; 'Test {{n}}']);
+  $I-&gt;dontHavePostInDatabase(['post_title' =&gt; 'Test 2']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - If set to <code>true</code> then the meta for the post will be purged too.</li></ul>
+
+<h3>dontHavePostMetaInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the postmeta table.</p>
+
+<pre><code class="language-php">$postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['rating' =&gt; 23]]);
+  $I-&gt;dontHavePostMetaInDatabase(['post_id' =&gt; $postId, 'meta_key' =&gt; 'rating']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHavePostThumbnailInDatabase</h3>
+
+<hr>
+
+<p>Remove the thumbnail (featured image) from a post, if any. Please note: the method will NOT remove the attachment post, post meta and file.</p>
+
+<pre><code class="language-php">$attachmentId = $I-&gt;haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+  $postId = $I-&gt;havePostInDatabase();
+  // Attach the thumbnail to the post.
+  $I-&gt;havePostThumbnailInDatabase($postId, $attachmentId);
+  // Remove the thumbnail from the post.
+  $I-&gt;dontHavePostThumbnailInDatabase($postId);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID to remove the thumbnail (featured image) from.</li></ul>
+
+<h3>dontHaveSiteOptionInDatabase</h3>
+
+<hr>
+
+<p>Removes a site option from the database.</p>
+
+<pre><code class="language-php">// Remove the `foo_count` option.
+  $I-&gt;dontHaveSiteOptionInDatabase('foo_count');
+  // Remove the `foo_count` option only if its value is `23`.
+  $I-&gt;dontHaveSiteOptionInDatabase('foo_count', 23);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - If set the option will only be removed it its value matches the specified one.</li></ul>
+
+<h3>dontHaveSiteTransientInDatabase</h3>
+
+<hr>
+
+<p>Removes a site transient from the database.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveSiteTransientInDatabase(['my_plugin_site_buffer']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The name of the transient to delete.</li></ul>
+
+<h3>dontHaveTableInDatabase</h3>
+
+<hr>
+
+<p>Removes a table from the database. The case where a table does not exist is handled without raising an error.</p>
+
+<pre><code class="language-php">$ordersTable = $I-&gt;grabPrefixedTableNameFor('orders');
+  $I-&gt;dontHaveTableInDatabase($ordersTable);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$fullTableName</strong> - The full table name, including the table prefix.</li></ul>
+
+<h3>dontHaveTermInDatabase</h3>
+
+<hr>
+
+<p>Removes a term from the database.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveTermInDatabase(['name' =&gt; 'romance']);
+  $I-&gt;dontHaveTermInDatabase(['slug' =&gt; 'genre--romance']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - Whether the terms meta should be purged along side with the meta or not.</li></ul>
+
+<h3>dontHaveTermMetaInDatabase</h3>
+
+<hr>
+
+<p>Removes a term meta from the database.</p>
+
+<pre><code class="language-php">// Remove the &quot;karma&quot; key.
+  $I-&gt;dontHaveTermMetaInDatabase(['term_id' =&gt; $termId, 'meta_key' =&gt; 'karma']);
+  // Remove all meta for the term.
+  $I-&gt;dontHaveTermMetaInDatabase(['term_id' =&gt; $termId]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHaveTermRelationshipInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the term_relationships table.</p>
+
+<pre><code class="language-php">// Remove the relation between a post and a category.
+  $I-&gt;dontHaveTermRelationshipInDatabase(['object_id' =&gt; $postId, 'term_taxonomy_id' =&gt; $ttaxId]);
+  // Remove all terms for a post.
+  $I-&gt;dontHaveTermMetaInDatabase(['object_id' =&gt; $postId]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHaveTermTaxonomyInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the <code>term_taxonomy</code> table.</p>
+
+<pre><code class="language-php">// Remove a specific term from the genre taxonomy.
+  $I-&gt;dontHaveTermTaxonomyInDatabase(['term_id' =&gt; $postId, 'taxonomy' =&gt; 'genre']);
+  // Remove all terms for a taxonomy.
+  $I-&gt;dontHaveTermTaxonomyInDatabase(['taxonomy' =&gt; 'genre']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontHaveTransientInDatabase</h3>
+
+<hr>
+
+<p>Removes a transient from the database.</p>
+
+<pre><code class="language-php">// Removes the `tweets` transient from the database, if set.
+  $I-&gt;dontHaveTransientInDatabase('tweets');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$transient</strong> - The name of the transient to delete.</li></ul>
+
+<h3>dontHaveUserInDatabase</h3>
+
+<hr>
+
+<p>Removes a user from the database.</p>
+
+<pre><code class="language-php">$bob = $I-&gt;haveUserInDatabase('bob');
+  $alice = $I-&gt;haveUserInDatabase('alice');
+  // Remove Bob's user and meta.
+  $I-&gt;dontHaveUserInDatabase('bob');
+  // Remove Alice's user but not meta.
+  $I-&gt;dontHaveUserInDatabase($alice);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int/string</code> <strong>$userIdOrLogin</strong> - The user ID or login name.</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - Whether the user meta should be purged alongside the user or not.</li></ul>
+
+<h3>dontHaveUserInDatabaseWithEmail</h3>
+
+<hr>
+
+<p>Removes a user(s) from the database using the user email address.</p>
+
+<pre><code class="language-php">$luca = $I-&gt;haveUserInDatabase('luca', 'editor', ['user_email' =&gt; 'luca@example.org']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$userEmail</strong> - The email of the user to remove.</li>
+<li><code>bool</code> <strong>$purgeMeta</strong> - Whether the user meta should be purged alongside the user or not.</li></ul>
+
+<h3>dontHaveUserMetaInDatabase</h3>
+
+<hr>
+
+<p>Removes an entry from the usermeta table.</p>
+
+<pre><code class="language-php">// Remove the `karma` user meta for a user.
+  $I-&gt;dontHaveUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
+  // Remove all the user meta for a user.
+  $I-&gt;dontHaveUserMetaInDatabase(['user_id' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeAttachmentInDatabase</h3>
+
+<hr>
+
+<p>Checks that an attachment is not in the database.</p>
+
+<pre><code class="language-php">$url = 'https://example.org/images/foo.png';
+  $I-&gt;dontSeeAttachmentInDatabase(['guid' =&gt; $url]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeBlogInDatabase</h3>
+
+<hr>
+
+<p>Checks that a row is not present in the <code>blogs</code> table.</p>
+
+<pre><code class="language-php">$I-&gt;haveManyBlogsInDatabase(2, ['path' =&gt; 'test-{{n}}'], false)
+  $I-&gt;dontSeeBlogInDatabase(['path' =&gt; '/test-3/'])
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeCommentInDatabase</h3>
+
+<hr>
+
+<p>Checks that a comment is not in the database. Will look up the &quot;comments&quot; table.</p>
+
+<pre><code class="language-php">// Checks for one comment.
+  $I-&gt;dontSeeCommentInDatabase(['comment_ID' =&gt; 23]);
+  // Checks for comments from a user.
+  $I-&gt;dontSeeCommentInDatabase(['user_id' =&gt; 89]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - The search criteria.</li></ul>
+
+<h3>dontSeeCommentMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks that a comment meta value is not in the database. Will look up the &quot;commentmeta&quot; table.</p>
+
+<pre><code class="language-php">// Delete a comment `karma` meta.
+  $I-&gt;dontSeeCommentMetaInDatabase(['comment_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
+  // Delete all meta for a comment.
+  $I-&gt;dontSeeCommentMetaInDatabase(['comment_id' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeLinkInDatabase</h3>
+
+<hr>
+
+<p>Checks that a link is not in the <code>links</code> database table.</p>
+
+<pre><code class="language-php">$I-&gt;dontSeeLinkInDatabase(['link_url' =&gt; 'http://example.com']);
+  $I-&gt;dontSeeLinkInDatabase(['link_url' =&gt; 'http://example.com', 'link_name' =&gt; 'example']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeOptionInDatabase</h3>
+
+<hr>
+
+<p>Checks that an option is not in the database for the current blog. If the value is an object or an array then the serialized option will be checked.</p>
+
+<pre><code class="language-php">$I-&gt;dontHaveOptionInDatabase('posts_per_page');
+  $I-&gt;dontSeeOptionInDatabase('posts_per_page');
+  $I-&gt;dontSeeOptionInDatabase('posts_per_page', 23);
+  $I-&gt;dontSeeOptionInDatabase(['option_name' =&gt; 'posts_per_page']);
+  $I-&gt;dontSeeOptionInDatabase(['option_name' =&gt; 'posts_per_page', 'option_value' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/string</code> <strong>$criteriaOrName</strong> - An array of search criteria or the option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - The optional value to try and match, only used if the option name is provided.</li></ul>
+
+<h3>dontSeePageInDatabase</h3>
+
+<hr>
+
+<p>Checks that a page is not in the database.</p>
+
+<pre><code class="language-php">// Assert a page with an ID does not exist.
+  $I-&gt;dontSeePageInDatabase(['ID' =&gt; 23]);
+  // Assert a page with a slug and ID.
+  $I-&gt;dontSeePageInDatabase(['post_name' =&gt; 'test', 'ID' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeePostInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post is not in the database.</p>
+
+<pre><code class="language-php">// Asserts a post with title 'Test' is not in the database.
+  $I-&gt;dontSeePostInDatabase(['post_title' =&gt; 'Test']);
+  // Asserts a post with title 'Test' and content 'Test content' is not in the database.
+  $I-&gt;dontSeePostInDatabase(['post_title' =&gt; 'Test', 'post_content' =&gt; 'Test content']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeePostMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post meta value does not exist. If the meta value is an object or an array then the check will be made on its serialized version.</p>
+
+<pre><code class="language-php">$postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']]);
+  $I-&gt;dontSeePostMetaInDatabase(['post_id' =&gt; $postId, 'meta_key' =&gt; 'woot']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeePostWithTermInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post to term relation does not exist in the database. The method will check the &quot;term_relationships&quot; table.</p>
+
+<pre><code class="language-php">$fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $nonFiction = $I-&gt;haveTermInDatabase('non-fiction', 'genre');
+  $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+  $I-&gt;dontSeePostWithTermInDatabase($postId, $nonFiction['term_taxonomy_id], );
+  passed this parameter will be interpreted as a `term_id`, else as a
+  the
+  term order.
+  to build a `taxonomy_term_id` from the `term_id`.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
+
+<h3>dontSeeSiteOptionInDatabase</h3>
+
+<hr>
+
+<p>Checks that a site option is not in the database.</p>
+
+<pre><code class="language-php">// Check that the option is not set in the database.
+  $I-&gt;dontSeeSiteOptionInDatabase('foo_count');
+  // Check that the option is not set with a specific value.
+  $I-&gt;dontSeeSiteOptionInDatabase('foo_count', 23);
+  $I-&gt;dontSeeSiteOptionInDatabase(['option_name =&gt; 'foo_count', 'option_value' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/string</code> <strong>$criteriaOrName</strong> - An array of search criteria or the option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - The optional value to try and match, only used if the option name is provided.</li></ul>
+
+<h3>dontSeeTableInDatabase</h3>
+
+<hr>
+
+<p>Checks that a table is not in the database.</p>
+
+<pre><code class="language-php">$options = $I-&gt;grabPrefixedTableNameFor('options');
+  $I-&gt;dontHaveTableInDatabase($options)
+  $I-&gt;dontSeeTableInDatabase($options);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
+
+<h3>dontSeeTermInDatabase</h3>
+
+<hr>
+
+<p>Makes sure a term is not in the database. Looks up both the <code>terms</code> table and the <code>term_taxonomy</code> tables. and the <code>term_taxonomy</code> tables.</p>
+
+<pre><code class="language-php">// Asserts a 'fiction' term is not in the database.
+  $I-&gt;dontSeeTermInDatabase(['name' =&gt; 'fiction']);
+  // Asserts a 'fiction' term with slug 'genre--fiction' is not in the database.
+  $I-&gt;dontSeeTermInDatabase(['name' =&gt; 'fiction', 'slug' =&gt; 'genre--fiction']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code></li></ul>
+
+<h3>dontSeeTermMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks that a term meta is not in the database.</p>
+
+<pre><code class="language-php">list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $I-&gt;haveTermMetaInDatabase($termId, 'rating', 4);
+  $I-&gt;dontSeeTermMetaInDatabase(['term_id' =&gt; $termId,'meta_key' =&gt; 'average_review']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeTermTaxonomyInDatabase</h3>
+
+<hr>
+
+<p>Checks that a term taxonomy is not in the database.</p>
+
+<pre><code class="language-php">list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $I-&gt;dontSeeTermTaxonomyInDatabase(['term_id' =&gt; $termId, 'taxonomy' =&gt; 'country']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeUserInDatabase</h3>
+
+<hr>
+
+<p>Checks that a user is not in the database.</p>
+
+<pre><code class="language-php">// Asserts a user does not exist in the database.
+  $I-&gt;dontSeeUserInDatabase(['user_login' =&gt; 'luca']);
+  // Asserts a user with email and login is not in the database.
+  $I-&gt;dontSeeUserInDatabase(['user_login' =&gt; 'luca', 'user_email' =&gt; 'luca@theaveragedev.com']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>dontSeeUserMetaInDatabase</h3>
+
+<hr>
+
+<p>Check that a user meta value is not in the database.</p>
+
+<pre><code class="language-php">// Asserts a user does not have a 'karma' meta assigned.
+  $I-&gt;dontSeeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
+  // Asserts no user has any 'karma' meta assigned.
+  $I-&gt;dontSeeUserMetaInDatabase(['meta_key' =&gt; 'karma']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>getSiteDomain</h3>
+
+<hr>
+
+<p>Returns the site domain inferred from the <code>url</code> set in the config.</p>
+
+<pre><code class="language-php">$domain = $I-&gt;getSiteDomain();
+  // We should be redirected to the HTTPS version when visiting the HTTP version.
+  $I-&gt;amOnPage('http://' . $domain);
+  $I-&gt;seeCurrentUrlEquals('https://' . $domain);
+</code></pre>
+<h3>getUsersTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed users table name.</p>
+
+<pre><code class="language-php">// Given a `wp_` table prefix returns `wp_users`.
+  $usersTable = $I-&gt;getUsersTableName();
+  // Given a `wp_` table prefix returns `wp_users`.
+  $I-&gt;useBlog(23);
+  $usersTable = $I-&gt;getUsersTableName();
+</code></pre>
+<h3>grabAllFromDatabase</h3>
+
+<hr>
+
+<p>Returns all entries matching a criteria from the database.</p>
+
+<pre><code class="language-php">$books = $I-&gt;grabPrefixedTableNameFor('books');
+  $I-&gt;grabAllFromDatabase($books, 'title', ['genre' =&gt; 'fiction']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$table</strong> - The table to grab the values from.</li>
+<li><code>string</code> <strong>$column</strong> - The column to fetch.</li>
+<li><code>\Codeception\Module\array<string,mixed></code> <strong>$criteria</strong> - The search criteria.</li></ul>
+
+<h3>grabAttachmentAttachedFile</h3>
+
+<hr>
+
+<p>Returns the path, as stored in the database, of an attachment <code>_wp_attached_file</code> meta. The attached file is, usually, an attachment origal file.</p>
+
+<pre><code class="language-php">$file = $I-&gt;grabAttachmentAttachedFile($attachmentId);
+  $fileInfo = new SplFileInfo($file);
+  $I-&gt;assertEquals('jpg', $fileInfo-&gt;getExtension());
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
+
+<h3>grabAttachmentMetadata</h3>
+
+<hr>
+
+<p>Returns the metadata array for an attachment post. This is the value of the <code>_wp_attachment_metadata</code> meta.</p>
+
+<pre><code class="language-php">$metadata = $I-&gt;grabAttachmentMetadata($attachmentId);
+  $I-&gt;assertEquals(['thumbnail', 'medium', 'medium_large'], array_keys($metadata['sizes']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$attachmentPostId</strong> - The attachment post ID.</li></ul>
+
+<h3>grabBlogDomain</h3>
+
+<hr>
+
+<p>Returns a blog domain given its ID.</p>
+
+<pre><code class="language-php">$blogIds = $I-&gt;haveManyBlogsInDatabase(3);
+  $domains = array_map(function($blogId){
+  return $I-&gt;grabBlogDomain($blogId);
+  }, $blogIds);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
+
+<h3>grabBlogPath</h3>
+
+<hr>
+
+<p>Grabs a blog domain from the blogs table.</p>
+
+<pre><code class="language-php">$blogId = $I-&gt;haveBlogInDatabase('test');
+  $path = $I-&gt;grabBlogDomain($blogId);
+  $I-&gt;amOnSubdomain($path);
+  $I-&gt;amOnPage('/');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
+
+<h3>grabBlogTableName</h3>
+
+<hr>
+
+<p>Returns the full name of a table for a blog from a multisite installation database.</p>
+
+<pre><code class="language-php">$blogOptionTable = $I-&gt;grabBlogTableName($blogId, 'option');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The blog ID.</li>
+<li><code>string</code> <strong>$table</strong> - The table name, without table prefix.</li></ul>
+
+<h3>grabBlogTableNames</h3>
+
+<hr>
+
+<p>Returns a list of tables for a blog ID.</p>
+
+<pre><code class="language-php">$blogId = $I-&gt;haveBlogInDatabase('test');
+  $tables = $I-&gt;grabBlogTableNames($blogId);
+  $options = array_filter($tables, function($tableName){
+  return str_pos($tableName, 'options') !== false;
+  });
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The ID of the blog to fetch the tables for.</li></ul>
+
+<h3>grabBlogTablePrefix</h3>
+
+<hr>
+
+<p>Returns the table prefix for a blog.</p>
+
+<pre><code class="language-php">$blogId = $I-&gt;haveBlogInDatabase('test');
+  $blogTablePrefix = $I-&gt;getBlogTablePrefix($blogId);
+  $blogOrders = $I-&gt;blogTablePrefix . 'orders';
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The blog ID.</li></ul>
+
+<h3>grabBlogVersionsTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>blog_versions</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_blog_versions`.
+  $blogVersionsTable = $I-&gt;grabBlogVersionsTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_blog_versions`.
+  $blogVersionsTable = $I-&gt;grabBlogVersionsTableName();
+</code></pre>
+<h3>grabBlogsTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>blogs</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_blogs`.
+  $blogVersionsTable = $I-&gt;grabBlogsTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_blogs`.
+  $blogVersionsTable = $I-&gt;grabBlogsTableName();
+</code></pre>
+<h3>grabCommentmetaTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed comment meta table name.</p>
+
+<pre><code class="language-php">// Get all the values of 'karma' for all comments.
+  $commentMeta = $I-&gt;grabCommentmetaTableName();
+  $I-&gt;grabAllFromDatabase($commentMeta, 'meta_value', ['meta_key' =&gt; 'karma']);
+</code></pre>
+<h3>grabCommentsTableName</h3>
+
+<hr>
+
+<p>Gets the comments table name.</p>
+
+<pre><code class="language-php">// Will be `wp_comments`.
+  $comments = $I-&gt;grabCommentsTableName();
+  // Will be `wp_23_comments`.
+  $I-&gt;useBlog(23);
+  $comments = $I-&gt;grabCommentsTableName();
+</code></pre>
+<h3>grabLatestEntryByFromDatabase</h3>
+
+<hr>
+
+<p>Returns the id value of the last table entry.</p>
+
+<pre><code class="language-php">$I-&gt;haveManyPostsInDatabase();
+  $postsTable = $I-&gt;grabPostsTableName();
+  $last = $I-&gt;grabLatestEntryByFromDatabase($postsTable, 'ID');
+  items.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$tableName</strong> - The table to fetch the last insertion for.</li>
+<li><code>string</code> <strong>$idColumn</strong> - The column that is used, in the table, to uniquely identify</li></ul>
+
+<h3>grabLinksTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed links table name.</p>
+
+<pre><code class="language-php">// Given a `wp_` table prefix returns `wp_links`.
+  $linksTable = $I-&gt;grabLinksTableName();
+  // Given a `wp_` table prefix returns `wp_23_links`.
+  $I-&gt;useBlog(23);
+  $linksTable = $I-&gt;grabLinksTableName();
+</code></pre>
+<h3>grabOptionFromDatabase</h3>
+
+<hr>
+
+<p>Gets an option value from the database.</p>
+
+<pre><code class="language-php">$count = $I-&gt;grabOptionFromDatabase('foo_count');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$option_name</strong> - The name of the option to grab from the database.</li></ul>
+
+<h3>grabPostMetaFromDatabase</h3>
+
+<hr>
+
+<p>Gets the value of one or more post meta values from the database.</p>
+
+<pre><code class="language-php">$thumbnail_id = $I-&gt;grabPostMetaFromDatabase($postId, '_thumbnail_id', true);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID.</li>
+<li><code>string</code> <strong>$metaKey</strong> - The key of the meta to retrieve.</li>
+<li><code>bool</code> <strong>$single</strong> - Whether to return a single meta value or an array of all available meta values.</li></ul>
+
+<h3>grabPostmetaTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed post meta table name.</p>
+
+<pre><code class="language-php">// Returns 'wp_postmeta'.
+  $I-&gt;grabPostmetaTableName();
+  // Returns 'wp_23_postmeta'.
+  $I-&gt;useBlog(23);
+  $I-&gt;grabPostmetaTableName();
+</code></pre>
+<h3>grabPostsTableName</h3>
+
+<hr>
+
+<p>Gets the posts prefixed table name.</p>
+
+<pre><code class="language-php">// Given a `wp_` table prefix returns `wp_posts`.
+  $postsTable = $I-&gt;grabPostsTableName();
+  // Given a `wp_` table prefix returns `wp_23_posts`.
+  $I-&gt;useBlog(23);
+  $postsTable = $I-&gt;grabPostsTableName();
+</code></pre>
+<h3>grabPrefixedTableNameFor</h3>
+
+<hr>
+
+<p>Returns a prefixed table name for the current blog. If the table is not one to be prefixed (e.g. <code>users</code>) then the proper table name will be returned.</p>
+
+<pre><code class="language-php">// Will return wp_users.
+  $usersTable = $I-&gt;grabPrefixedTableNameFor('users');
+  // Will return wp_options.
+  $optionsTable = $I-&gt;grabPrefixedTableNameFor('options');
+  // Use a different blog and get its options table.
+  $I-&gt;useBlog(2);
+  $blogOptionsTable = $I-&gt;grabPrefixedTableNameFor('options');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$tableName</strong> - The table name, e.g. <code>options</code>.</li></ul>
+
+<h3>grabRegistrationLogTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>registration_log</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_registration_log`.
+  $blogVersionsTable = $I-&gt;grabRegistrationLogTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_registration_log`.
+  $blogVersionsTable = $I-&gt;grabRegistrationLogTableName();
+</code></pre>
+<h3>grabSignupsTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>signups</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_signups`.
+  $blogVersionsTable = $I-&gt;grabSignupsTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_signups`.
+  $blogVersionsTable = $I-&gt;grabSignupsTableName();
+</code></pre>
+<h3>grabSiteMetaTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>sitemeta</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_sitemeta`.
+  $blogVersionsTable = $I-&gt;grabSiteMetaTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_sitemeta`.
+  $blogVersionsTable = $I-&gt;grabSiteMetaTableName();
+</code></pre>
+<h3>grabSiteOptionFromDatabase</h3>
+
+<hr>
+
+<p>Gets a site option from the database.</p>
+
+<pre><code class="language-php">$fooCountOptionId = $I-&gt;haveSiteOptionInDatabase('foo_count','23');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The name of the option to read from the database.</li></ul>
+
+<h3>grabSiteTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed <code>site</code> table name.</p>
+
+<pre><code class="language-php">// Assuming a `wp_` table prefix it will return `wp_site`.
+  $blogVersionsTable = $I-&gt;grabSiteTableName();
+  $I-&gt;useBlog(23);
+  // Assuming a `wp_` table prefix it will return `wp_site`.
+  $blogVersionsTable = $I-&gt;grabSiteTableName();
+</code></pre>
+<h3>grabSiteTransientFromDatabase</h3>
+
+<hr>
+
+<p>Gets a site transient from the database.</p>
+
+<pre><code class="language-php">$I-&gt;grabSiteTransientFromDatabase('total_comments');
+  $I-&gt;grabSiteTransientFromDatabase('api_data');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The site transient to fetch the value for, w/o the <code>_site_transient_</code> prefix.</li></ul>
+
+<h3>grabSiteUrl</h3>
+
+<hr>
+
+<p>Returns the current site URL as specified in the module configuration.</p>
+
+<pre><code class="language-php">$shopPath = $I-&gt;grabSiteUrl('/shop');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$path</strong> - A path that should be appended to the site URL.</li></ul>
+
+<h3>grabTablePrefix</h3>
+
+<hr>
+
+<p>Returns the table prefix, namespaced for secondary blogs if selected.</p>
+
+<pre><code class="language-php">// Assuming a table prefix of `wp_` it will return `wp_`;
+  $tablePrefix = $I-&gt;grabTablePrefix();
+  $I-&gt;useBlog(23);
+  // Assuming a table prefix of `wp_` it will return `wp_23_`;
+  $tablePrefix = $I-&gt;grabTablePrefix();
+</code></pre>
+<h3>grabTermIdFromDatabase</h3>
+
+<hr>
+
+<p>Gets a term ID from the database. Looks up the prefixed <code>terms</code> table, e.g. <code>wp_terms</code>.</p>
+
+<pre><code class="language-php">// Return the 'fiction' term 'term_id'.
+  $termId = $I-&gt;grabTermIdFromDatabase(['name' =&gt; 'fiction']);
+  // Get a term ID by more stringent criteria.
+  $termId = $I-&gt;grabTermIdFromDatabase(['name' =&gt; 'fiction', 'slug' =&gt; 'genre--fiction']);
+  // Return the 'term_id' of the first term for a group.
+  $termId = $I-&gt;grabTermIdFromDatabase(['term_group' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>grabTermMetaTableName</h3>
+
+<hr>
+
+<p>Gets the terms meta table prefixed name.</p>
+
+<pre><code class="language-php">// Returns 'wp_termmeta'.
+  $I-&gt;grabTermMetaTableName();
+  // Returns 'wp_23_termmeta'.
+  $I-&gt;useBlog(23);
+  $I-&gt;grabTermMetaTableName();
+</code></pre>
+<h3>grabTermRelationshipsTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed term relationships table name, e.g. <code>wp_term_relationships</code>.</p>
+
+<pre><code class="language-php">$I-&gt;grabTermRelationshipsTableName();
+</code></pre>
+<h3>grabTermTaxonomyIdFromDatabase</h3>
+
+<hr>
+
+<p>Gets a <code>term_taxonomy_id</code> from the database. Looks up the prefixed <code>terms_relationships</code> table, e.g. <code>wp_term_relationships</code>.</p>
+
+<pre><code class="language-php">// Get the `term_taxonomy_id` for a term and a taxonomy.
+  $I-&gt;grabTermTaxonomyIdFromDatabase(['term_id' =&gt; $fictionId, 'taxonomy' =&gt; 'genre']);
+  // Get the `term_taxonomy_id` for the first term with a count of 23.
+  $I-&gt;grabTermTaxonomyIdFromDatabase(['count' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>grabTermTaxonomyTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed term and taxonomy table name, e.g. <code>wp_term_taxonomy</code>.</p>
+
+<pre><code class="language-php">// Returns 'wp_term_taxonomy'.
+  $I-&gt;grabTermTaxonomyTableName();
+  // Returns 'wp_23_term_taxonomy'.
+  $I-&gt;useBlog(23);
+  $I-&gt;grabTermTaxonomyTableName();
+</code></pre>
+<h3>grabTermsTableName</h3>
+
+<hr>
+
+<p>Gets the prefixed terms table name, e.g. <code>wp_terms</code>.</p>
+
+<pre><code class="language-php">// Returns 'wp_terms'.
+  $I-&gt;grabTermsTableName();
+  // Returns 'wp_23_terms'.
+  $I-&gt;useBlog(23);
+  $I-&gt;grabTermsTableName();
+</code></pre>
+<h3>grabUserIdFromDatabase</h3>
+
+<hr>
+
+<p>Gets the a user ID from the database using the user login.</p>
+
+<pre><code class="language-php">$userId = $I-&gt;grabUserIdFromDatabase('luca');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$userLogin</strong> - The user login name.</li></ul>
+
+<h3>grabUserMetaFromDatabase</h3>
+
+<hr>
+
+<p>Gets a user meta from the database.</p>
+
+<pre><code class="language-php">// Returns a user 'karma' value.
+  $I-&gt;grabUserMetaFromDatabase($userId, 'karma');
+  // Returns an array, the unserialized version of the value stored in the database.
+  $I-&gt;grabUserMetaFromDatabase($userId, 'api_data');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$userId</strong> - The ID of th user to get the meta for.</li>
+<li><code>string</code> <strong>$meta_key</strong> - The meta key to fetch the value for.</li></ul>
+
+<h3>grabUsermetaTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed users meta table name.</p>
+
+<pre><code class="language-php">// Given a `wp_` table prefix returns `wp_usermeta`.
+  $usermetaTable = $I-&gt;grabUsermetaTableName();
+  // Given a `wp_` table prefix returns `wp_usermeta`.
+  $I-&gt;useBlog(23);
+  $usermetaTable = $I-&gt;grabUsermetaTableName();
+</code></pre>
+<h3>grabUsersTableName</h3>
+
+<hr>
+
+<p>Returns the prefixed users table name.</p>
+
+<pre><code class="language-php">// Given a `wp_` table prefix returns `wp_users`.
+  $usersTable = $I-&gt;grabUsersTableName();
+  // Given a `wp_` table prefix returns `wp_users`.
+  $I-&gt;useBlog(23);
+  $usersTable = $I-&gt;grabUsersTableName();
+</code></pre>
+<h3>haveAttachmentInDatabase</h3>
+
+<hr>
+
+<p>Creates the database entries representing an attachment and moves the attachment file to the right location. timestamp that should be used to build the &quot;year/time&quot; uploads sub-folder structure. override the image sizes created by default.</p>
+
+<pre><code class="language-php">$file = codecept_data_dir('images/test.png');
+  $attachmentId = $I-&gt;haveAttachmentInDatabase($file);
+  $image = codecept_data_dir('images/test-2.png');
+  $lastWeekAttachment = $I-&gt;haveAttachmentInDatabase($image, '-1 week');
+  Requires the WPFilesystem module.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$file</strong> - The absolute path to the attachment file.</li>
+<li><code>string/string/int</code> <strong>$date</strong> - Either a string supported by the <code>strtotime</code> function or a UNIX</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array of values overriding the default ones.</li>
+<li><code>\Codeception\Module\array<string,array<int>></code> <strong>$imageSizes</strong> - An associative array in the format [ <size> =&gt; [<width>,<height>]] to</li></ul>
+
+<h3>haveBlogInDatabase</h3>
+
+<hr>
+
+<p>Inserts a blog in the <code>blogs</code> table.</p>
+
+<pre><code class="language-php">// Create the `test` subdomain blog.
+  $blogId = $I-&gt;haveBlogInDatabase('test', ['administrator' =&gt; $userId]);
+  // Create the `/test` subfolder blog.
+  $blogId = $I-&gt;haveBlogInDatabase('test', ['administrator' =&gt; $userId], false);
+  or subfolder (`true`)
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$domainOrPath</strong> - The subdomain or the path to the be used for the blog.</li>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li>
+<li><code>bool</code> <strong>$subdomain</strong> - Whether the new blog should be created as a subdomain (<code>true</code>)</li></ul>
+
+<h3>haveCommentInDatabase</h3>
+
+<hr>
+
+<p>Inserts a comment in the database.</p>
+
+<pre><code class="language-php">$I-&gt;haveCommentInDatabase($postId, ['comment_content' =&gt; 'Test Comment', 'comment_karma' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$comment_post_ID</strong> - The id of the post the comment refers to.</li>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$data</strong> - The comment data overriding default and random generated values.</li></ul>
+
+<h3>haveCommentMetaInDatabase</h3>
+
+<hr>
+
+<p>Inserts a comment meta field in the database. Array and object meta values will be serialized.</p>
+
+<pre><code class="language-php">$I-&gt;haveCommentMetaInDatabase($commentId, 'api_ID', 23);
+  // The value will be serialized.
+  $apiData = ['ID' =&gt; 23, 'user' =&gt; 89, 'origin' =&gt; 'twitter'];
+  $I-&gt;haveCommentMetaInDatabase($commentId, 'api_data', $apiData);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$comment_id</strong> - The ID of the comment to insert the meta for.</li>
+<li><code>string</code> <strong>$meta_key</strong> - The key of the comment meta to insert.</li>
+<li><code>mixed</code> <strong>$meta_value</strong> - The value of the meta to insert, if serializable it will be serialized.</li></ul>
+
+<h3>haveLinkInDatabase</h3>
+
+<hr>
+
+<p>Inserts a link in the database.</p>
+
+<pre><code class="language-php">$linkId = $I-&gt;haveLinkInDatabase(['link_url' =&gt; 'http://example.org']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - The data to insert.</li></ul>
+
+<h3>haveManyBlogsInDatabase</h3>
+
+<hr>
+
+<p>Inserts many blogs in the database. by the count.</p>
+
+<pre><code class="language-php">$blogIds = $I-&gt;haveManyBlogsInDatabase(3, ['domain' =&gt;'test-{{n}}']);
+  foreach($blogIds as $blogId){
+  $I-&gt;useBlog($blogId);
+  $I-&gt;haveManuPostsInDatabase(3);
+  }
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of blogs to create.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones; <code>{{n}}</code> will be replaced</li>
+<li><code>bool</code> <strong>$subdomain</strong> - Whether the new blogs should be created as a subdomain or subfolder.</li></ul>
+
+<h3>haveManyCommentsInDatabase</h3>
+
+<hr>
+
+<p>Inserts many comments in the database.</p>
+
+<pre><code class="language-php">// Insert 3 random comments for a post.
+  $I-&gt;haveManyCommentsInDatabase(3, $postId);
+  // Insert 3 random comments for a post.
+  $I-&gt;haveManyCommentsInDatabase(3, $postId, ['comment_content' =&gt; 'Comment {{n}}']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of comments to insert.</li>
+<li><code>int</code> <strong>$comment_post_ID</strong> - The comment parent post ID.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array to override the defaults.</li></ul>
+
+<h3>haveManyLinksInDatabase</h3>
+
+<hr>
+
+<p>Inserts many links in the database <code>links</code> table.</p>
+
+<pre><code class="language-php">// Insert 3 randomly generated links in the database.
+  $linkIds = $I-&gt;haveManyLinksInDatabase(3);
+  // Inserts links in the database replacing the `n` placeholder.
+  $linkIds = $I-&gt;haveManyLinksInDatabase(3, ['link_url' =&gt; 'http://example.org/test-{{n}}']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of links to insert.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - Overrides for the default arguments.</li></ul>
+
+<h3>haveManyPostsInDatabase</h3>
+
+<hr>
+
+<p>Inserts many posts in the database returning their IDs. An array of values to override the defaults. The <code>{{n}}</code> placeholder can be used to have the post count inserted in its place; e.g. <code>Post Title - {{n}}</code> will be set to <code>Post Title - 0</code> for the first post, <code>Post Title - 1</code> for the second one and so on. The same applies to meta values as well.</p>
+
+<pre><code class="language-php">// Insert 3 random posts.
+  $I-&gt;haveManyPostsInDatabase(3);
+  // Insert 3 posts with generated titles.
+  $I-&gt;haveManyPostsInDatabase(3, ['post_title' =&gt; 'Test post {{n}}']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of posts to insert.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong></li></ul>
+
+<h3>haveManyTermsInDatabase</h3>
+
+<hr>
+
+<p>Inserts many terms in the database.</p>
+
+<pre><code class="language-php">$terms = $I-&gt;haveManyTermsInDatabase(3, 'genre-{{n}}', 'genre');
+  $termIds = array_column($terms, 0);
+  $termTaxonomyIds = array_column($terms, 1);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of terms to insert.</li>
+<li><code>string</code> <strong>$name</strong> - The term name template, can include the <code>{{n}}</code> placeholder.</li>
+<li><code>string</code> <strong>$taxonomy</strong> - The taxonomy to insert the terms for.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An associative array of default overrides.</li></ul>
+
+<h3>haveManyUsersInDatabase</h3>
+
+<hr>
+
+<p>Inserts many users in the database.</p>
+
+<pre><code class="language-php">$subscribers = $I-&gt;haveManyUsersInDatabase(5, 'user-{{n}}');
+  $editors = $I-&gt;haveManyUsersInDatabase(
+  5,
+  'user-{{n}}',
+  'editor',
+  ['user_email' =&gt; 'user-{{n}}@example.org']
+  );
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$count</strong> - The number of users to insert.</li>
+<li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
+<li><code>string</code> <strong>$role</strong> - The user role.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+
+<h3>haveMenuInDatabase</h3>
+
+<hr>
+
+<p>Creates and adds a menu to a theme location in the database.</p>
+
+<pre><code class="language-php">list($termId, $termTaxId) = $I-&gt;haveMenuInDatabase('test', 'sidebar');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$slug</strong> - The menu slug.</li>
+<li><code>string</code> <strong>$location</strong> - The theme menu location the menu will be assigned to.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the defaults.</li></ul>
+
+<h3>haveMenuItemInDatabase</h3>
+
+<hr>
+
+<p>Adds a menu element to a menu for the current theme. post meta.</p>
+
+<pre><code class="language-php">$I-&gt;haveMenuInDatabase('test', 'sidebar');
+  $I-&gt;haveMenuItemInDatabase('test', 'Test one', 0);
+  $I-&gt;haveMenuItemInDatabase('test', 'Test two', 1);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$menuSlug</strong> - The menu slug the item should be added to.</li>
+<li><code>string</code> <strong>$title</strong> - The menu item title.</li>
+<li><code>int/null</code> <strong>$menuOrder</strong> - An optional menu order, <code>1</code> based.</li>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$meta</strong> - An associative array that will be prefixed with <code>_menu_item_</code> for the item</li></ul>
+
+<h3>haveOptionInDatabase</h3>
+
+<hr>
+
+<p>Inserts an option in the database.</p>
+
+<pre><code class="language-php">$I-&gt;haveOptionInDatabase('posts_per_page', 23);
+  $I-&gt;haveOptionInDatabase('my_plugin_options', ['key_one' =&gt; 'value_one', 'key_two' =&gt; 89]);
+  If the option value is an object or an array then the value will be serialized.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$option_name</strong> - The option name.</li>
+<li><code>mixed</code> <strong>$option_value</strong> - The option value; if an array or object it will be serialized.</li>
+<li><code>string</code> <strong>$autoload</strong> - Weather the option should be autoloaded by WordPress or not.</li></ul>
+
+<h3>havePageInDatabase</h3>
+
+<hr>
+
+<p>Inserts a page in the database.</p>
+
+<pre><code class="language-php">// Creates a test page in the database with random values.
+  $randomPageId = $I-&gt;havePageInDatabase();
+  // Creates a test page in the database defining its title.
+  $testPageId = $I-&gt;havePageInDatabase(['post_title' =&gt; 'Test page']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>array/\Codeception\Module\array<string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+
+<h3>havePostInDatabase</h3>
+
+<hr>
+
+<p>Inserts a post in the database. values.</p>
+
+<pre><code class="language-php">// Insert a post with random values in the database.
+  $randomPostId = $I-&gt;havePostInDatabase();
+  // Insert a post with specific values in the database.
+  $I-&gt;havePostInDatabase([
+  'post_type' =&gt; 'book',
+  'post_title' =&gt; 'Alice in Wonderland',
+  'meta_input' =&gt; [
+  'readers_count' =&gt; 23
+  ],
+  'tax_input' =&gt; [
+  ['genre' =&gt; 'fiction']
+  ]
+  ]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$data</strong> - An associative array of post data to override default and random generated</li></ul>
+
+<h3>havePostThumbnailInDatabase</h3>
+
+<hr>
+
+<p>Assigns the specified attachment ID as thumbnail (featured image) to a post.</p>
+
+<pre><code class="language-php">$attachmentId = $I-&gt;haveAttachmentInDatabase(codecept_data_dir('some-image.png'));
+  $postId = $I-&gt;havePostInDatabase();
+  $I-&gt;havePostThumbnailInDatabase($postId, $attachmentId);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID to assign the thumbnail (featured image) to.</li>
+<li><code>int</code> <strong>$thumbnailId</strong> - The post ID of the attachment.</li></ul>
+
+<h3>havePostmetaInDatabase</h3>
+
+<hr>
+
+<p>Adds one or more meta key and value couples in the database for a post.</p>
+
+<pre><code class="language-php">// Set the post-meta for a post.
+  $I-&gt;havePostmetaInDatabase($postId, 'karma', 23);
+  // Set an array post-meta for a post, it will be serialized in the db.
+  $I-&gt;havePostmetaInDatabase($postId, 'data', ['one', 'two']);
+  // Use a loop to insert one meta per row.
+  foreach( ['one', 'two'] as $value){
+  $I-&gt;havePostmetaInDatabase($postId, 'data', $value);
+  }
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$postId</strong> - The post ID.</li>
+<li><code>string</code> <strong>$meta_key</strong> - The meta key.</li>
+<li><code>mixed</code> <strong>$meta_value</strong> - The value to insert in the database, objects and arrays will be serialized.</li></ul>
+
+<h3>haveSiteOptionInDatabase</h3>
+
+<hr>
+
+<p>Inserts a site option in the database. If the value is an array or an object then the value will be serialized.</p>
+
+<pre><code class="language-php">$fooCountOptionId = $I-&gt;haveSiteOptionInDatabase('foo_count','23');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The name of the option to insert.</li>
+<li><code>mixed</code> <strong>$value</strong> - The value to insert for the option.</li></ul>
+
+<h3>haveSiteTransientInDatabase</h3>
+
+<hr>
+
+<p>Inserts a site transient in the database. If the value is an array or an object then the value will be serialized.</p>
+
+<pre><code class="language-php">$I-&gt;haveSiteTransientInDatabase('total_comments_count', 23);
+  // This value will be serialized.
+  $I-&gt;haveSiteTransientInDatabase('api_data', ['user' =&gt; 'luca', 'token' =&gt; '11ae3ijns-j83']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The key of the site transient to insert, w/o the <code>_site_transient_</code> prefix.</li>
+<li><code>mixed</code> <strong>$value</strong> - The value to insert; if serializable the value will be serialized.</li></ul>
+
+<h3>haveTermInDatabase</h3>
+
+<hr>
+
+<p>Inserts a term in the database.</p>
+
+<pre><code class="language-php">// Insert a random 'genre' term in the database.
+  $I-&gt;haveTermInDatabase('non-fiction', 'genre');
+  // Insert a term in the database with term meta.
+  $I-&gt;haveTermInDatabase('fiction', 'genre', [
+  'slug' =&gt; 'genre--fiction',
+  'meta' =&gt; [
+  'readers_count' =&gt; 23
+  ]
+  ]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$name</strong> - The term name, e.g. &quot;Fuzzy&quot;.</li>
+<li><code>string</code> <strong>$taxonomy</strong> - The term taxonomy</li>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An array of values to override the default ones.</li></ul>
+
+<h3>haveTermMetaInDatabase</h3>
+
+<hr>
+
+<p>Inserts a term meta row in the database. Objects and array meta values will be serialized.</p>
+
+<pre><code class="language-php">$I-&gt;haveTermMetaInDatabase($fictionId, 'readers_count', 23);
+  // Insert some meta that will be serialized.
+  $I-&gt;haveTermMetaInDatabase($fictionId, 'flags', [3, 4, 89]);
+  // Use a loop to insert one meta per row.
+  foreach([3, 4, 89] as $value) {
+  $I-&gt;haveTermMetaInDatabase($fictionId, 'flag', $value);
+  }
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$term_id</strong> - The ID of the term to insert the meta for.</li>
+<li><code>string</code> <strong>$meta_key</strong> - The key of the meta to insert.</li>
+<li><code>mixed</code> <strong>$meta_value</strong> - The value of the meta to insert, if serializable it will be serialized.</li></ul>
+
+<h3>haveTermRelationshipInDatabase</h3>
+
+<hr>
+
+<p>Creates a term relationship in the database. No check about the consistency of the insertion is made. E.g. a post could be assigned a term from a taxonomy that's not registered for that post type.</p>
+
+<pre><code class="language-php">// Assign the `fiction` term to a book.
+  $I-&gt;haveTermRelationshipInDatabase($bookId, $fictionId);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$object_id</strong> - A post ID, a user ID or anything that can be assigned a taxonomy term.</li>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The <code>term_taxonomy_id</code> of the term and taxonomy to create a relation with.</li>
+<li><code>int</code> <strong>$term_order</strong> - Defaults to <code>0</code>.</li></ul>
+
+<h3>haveTransientInDatabase</h3>
+
+<hr>
+
+<p>Inserts a transient in the database. If the value is an array or an object then the value will be serialized. Since the transients are set in the context of tests it's not possible to set an expiration directly.</p>
+
+<pre><code class="language-php">// Store an array in the `tweets` transient.
+  $I-&gt;haveTransientInDatabase('tweets', $tweets);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$transient</strong> - The transient name.</li>
+<li><code>mixed</code> <strong>$value</strong> - The transient value.</li></ul>
+
+<h3>haveUserCapabilitiesInDatabase</h3>
+
+<hr>
+
+<p>Sets a user capabilities in the database.</p>
+
+<pre><code class="language-php">// Assign one user a role in a blog.
+  $blogId = $I-&gt;haveBlogInDatabase('test');
+  $editor = $I-&gt;haveUserInDatabase('luca', 'editor');
+  $capsIds = $I-&gt;haveUserCapabilitiesInDatabase($editor, [$blogId =&gt; 'editor']);
+  // Assign a user two roles in blog 1.
+  $capsIds = $I-&gt;haveUserCapabilitiesInDatabase($userId, ['editor', 'subscriber']);
+  // Assign one user different roles in different blogs.
+  $capsIds = $I-&gt;haveUserCapabilitiesInDatabase($userId, [$blogId1 =&gt; 'editor', $blogId2 =&gt; 'author']);
+  // Assign a user a role and an additional capability in blog 1.
+  $I-&gt;haveUserCapabilitiesInDatabase($userId, ['editor' =&gt; true, 'edit_themes' =&gt; true]);
+  // Assign a user a mix of roles and capabilities in different blogs.
+  $capsIds = $I-&gt;haveUserCapabilitiesInDatabase(
+  $userId,
+  [
+  $blogId1 =&gt; ['editor' =&gt; true, 'edit_themes' =&gt; true],
+  $blogId2 =&gt; ['administrator' =&gt; true, 'edit_themes' =&gt; false]
+  ]
+  );
+  associative array of blog IDs/roles for a multisite
+  installation (e.g. `[1 =&gt; 'administrator`, 2 =&gt;
+  'subscriber']`).
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$userId</strong> - The ID of the user to set the capabilities of.</li>
+<li><code>string/\Codeception\Module\array<string/\Codeception\Module\bool>/\Codeception\Module\array<int,array></code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>),an</li></ul>
+
+<h3>haveUserInDatabase</h3>
+
+<hr>
+
+<p>Inserts a user and its meta in the database. defaults to <code>subscriber</code>. If more than one role is specified, then the first role in the list will be the user primary role and the <code>wp_user_level</code> will be set to that role. in the <code>users</code> and <code>usermeta</code> table.</p>
+
+<pre><code class="language-php">// Create an editor user in blog 1 w/ specific email.
+  $userId = $I-&gt;haveUserInDatabase('luca', 'editor', ['user_email' =&gt; 'luca@example.org']);
+  // Create a subscriber user in blog 1.
+  $subscriberId = $I-&gt;haveUserInDatabase('subscriber');
+  // Create a user editor in blog 1, author in blog 2, administrator in blog 3.
+  $userWithMeta = $I-&gt;haveUserInDatabase('luca',
+  [
+  1 =&gt; 'editor',
+  2 =&gt; 'author',
+  3 =&gt; 'administrator'
+  ], [
+  'user_email' =&gt; 'luca@example.org'
+  'meta' =&gt; ['a meta_key' =&gt; 'a_meta_value']
+  ]
+  );
+  // Create editor in blog 1 w/ `edit_themes` cap, author in blog 2, admin in blog 3 w/o `manage_options` cap.
+  $userWithMeta = $I-&gt;haveUserInDatabase('luca',
+  [
+  1 =&gt; ['editor', 'edit_themes'],
+  2 =&gt; 'author',
+  3 =&gt; ['administrator' =&gt; true, 'manage_options' =&gt; false]
+  ]
+  );
+  // Create a user w/o role.
+  $userId = $I-&gt;haveUserInDatabase('luca', '');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$user_login</strong> - The user login name.</li>
+<li><code>string/string/\Codeception\Module\array<string></code> <strong>$role</strong> - The user role slug(s), e.g. <code>administrator</code> or <code>['author', 'editor']</code>;</li>
+<li><code>array/\Codeception\Module\array<int/\Codeception\Module\string,mixed>/array</code> <strong>$overrides</strong> - An associative array of column names and values overriding defaults</li></ul>
+
+<h3>haveUserLevelsInDatabase</h3>
+
+<hr>
+
+<p>Sets the user access level meta in the database for a user. IDs/roles for a multisite installation (e.g. <code>[1 =&gt; 'administrator</code>, 2 =&gt; 'subscriber']`).</p>
+
+<pre><code class="language-php">$userId = $I-&gt;haveUserInDatabase('luca', 'editor');
+  $moreThanAnEditorLessThanAnAdmin = 8;
+  $I-&gt;haveUserLevelsInDatabase($userId, $moreThanAnEditorLessThanAnAdmin);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$userId</strong> - The ID of the user to set the level for.</li>
+<li><code>\Codeception\Module\array<array/bool/\Codeception\Module\string>/string</code> <strong>$role</strong> - Either a role string (e.g. <code>administrator</code>) or an array of blog</li></ul>
+
+<h3>haveUserMetaInDatabase</h3>
+
+<hr>
+
+<p>Sets a user meta in the database.</p>
+
+<pre><code class="language-php">$userId = $I-&gt;haveUserInDatabase('luca', 'editor');
+  $I-&gt;haveUserMetaInDatabase($userId, 'karma', 23);
+  values will trigger the insertion of multiple rows.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$userId</strong> - The user ID.</li>
+<li><code>string</code> <strong>$meta_key</strong> - The meta key to set the value for.</li>
+<li><code>mixed</code> <strong>$meta_value</strong> - Either a single value or an array of values; objects will be serialized while array of</li></ul>
+
+<h3>importSql</h3>
+
+<hr>
+
+<p>Loads a set SQL code lines in the current database.</p>
+
+<pre><code class="language-php">// Import a SQL string.
+  $I-&gt;importSql([$sqlString]);
+  // Import a set of SQL strings.
+  $I-&gt;importSql($sqlStrings);
+  // Import a prepared set of SQL strings.
+  $preparedSqlStrings = array_map(function($line){
+  return str_replace('{{date}}', date('Y-m-d H:i:s'), $line);
+  }, $sqlTemplate);
+  $I-&gt;importSql($preparedSqlStrings);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string>/array</code> <strong>$sql</strong> - The SQL strings to load.</li></ul>
+
+<h3>importSqlDumpFile</h3>
+
+<hr>
+
+<p>Import the SQL dump file if populate is enabled.</p>
+
+<pre><code class="language-php">// Import a dump file passing the absolute path.
+  $I-&gt;importSqlDumpFile(codecept_data_dir('dumps/start.sql'));
+  Specifying a dump file that file will be imported.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string/null</code> <strong>$dumpFile</strong> - The dump file that should be imported in place of the default one.</li></ul>
+
+<h3>seeAttachmentInDatabase</h3>
+
+<hr>
+
+<p>Checks for an attachment in the database.</p>
+
+<pre><code class="language-php">$url = 'https://example.org/images/foo.png';
+  $I-&gt;seeAttachmentInDatabase(['guid' =&gt; $url]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeBlogInDatabase</h3>
+
+<hr>
+
+<p>Checks for a blog in the <code>blogs</code> table.</p>
+
+<pre><code class="language-php">// Search for a blog by `blog_id`.
+  $I-&gt;seeBlogInDatabase(['blog_id' =&gt; 23]);
+  // Search for all blogs on a path.
+  $I-&gt;seeBlogInDatabase(['path' =&gt; '/sub-path/']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeCommentInDatabase</h3>
+
+<hr>
+
+<p>Checks for a comment in the database. Will look up the &quot;comments&quot; table.</p>
+
+<pre><code class="language-php">$I-&gt;seeCommentInDatabase(['comment_ID' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeCommentMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks that a comment meta value is in the database. Will look up the &quot;commentmeta&quot; table.</p>
+
+<pre><code class="language-php">// Assert a specified meta for a comment exists.
+  $I-&gt;seeCommentMetaInDatabase(['comment_ID' =&gt; $commentId, 'meta_key' =&gt; 'karma', 'meta_value' =&gt; 23]);
+  // Assert the comment has at least one meta set.
+  $I-&gt;seeCommentMetaInDatabase(['comment_ID' =&gt; $commentId]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeLinkInDatabase</h3>
+
+<hr>
+
+<p>Checks for a link in the <code>links</code> table of the database.</p>
+
+<pre><code class="language-php">// Asserts a link exists by name.
+  $I-&gt;seeLinkInDatabase(['link_name' =&gt; 'my-link']);
+  // Asserts at least one link exists for the user.
+  $I-&gt;seeLinkInDatabase(['link_owner' =&gt; $userId]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeOptionInDatabase</h3>
+
+<hr>
+
+<p>Checks if an option is in the database for the current blog, either by criteria or by name and value. If checking for an array or an object then the serialized version will be checked for.</p>
+
+<pre><code class="language-php">// Checks an option is in the database.
+  $I-&gt;seeOptionInDatabase('tables_version');
+  // Checks an option is in the database and has a specific value.
+  $I-&gt;seeOptionInDatabase('tables_version', '1.0');
+  $I-&gt;seeOptionInDatabase(['option_name' =&gt; 'tables_version', 'option_value' =&gt; 1.0']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/string</code> <strong>$criteriaOrName</strong> - An array of search criteria or the option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - The optional value to try and match, only used if the option name is provided.</li></ul>
+
+<h3>seePageInDatabase</h3>
+
+<hr>
+
+<p>Checks for a page in the database.</p>
+
+<pre><code class="language-php">// Asserts a page with an exists in the database.
+  $I-&gt;seePageInDatabase(['ID' =&gt; 23]);
+  // Asserts a page with a slug and ID exists in the database.
+  $I-&gt;seePageInDatabase(['post_title' =&gt; 'Test Page', 'ID' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seePostInDatabase</h3>
+
+<hr>
+
+<p>Checks for a post in the database.</p>
+
+<pre><code class="language-php">// Assert a post exists in the database.
+  $I-&gt;seePostInDatabase(['ID' =&gt; 23]);
+  // Assert a post with a slug and ID exists in the database.
+  $I-&gt;seePostInDatabase(['post_content' =&gt; 'test content', 'ID' =&gt; 23]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seePostMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks for a post meta value in the database for the current blog. If the <code>meta_value</code> is an object or an array then the check will be made for serialized values.</p>
+
+<pre><code class="language-php">$postId = $I-&gt;havePostInDatabase(['meta_input' =&gt; ['foo' =&gt; 'bar']];
+  $I-&gt;seePostMetaInDatabase(['post_id' =&gt; '$postId', 'meta_key' =&gt; 'foo']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seePostWithTermInDatabase</h3>
+
+<hr>
+
+<p>Checks that a post to term relation exists in the database. The method will check the &quot;term_relationships&quot; table.</p>
+
+<pre><code class="language-php">$fiction = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['genre' =&gt; ['fiction']]]);
+  $I-&gt;seePostWithTermInDatabase($postId, $fiction['term_taxonomy_id']);
+  passed this parameter will be interpreted as a `term_id`, else as a
+  the
+  term order.
+  to build a `taxonomy_term_id` from the `term_id`.
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$post_id</strong> - The post ID.</li>
+<li><code>int</code> <strong>$term_taxonomy_id</strong> - The term <code>term_id</code> or <code>term_taxonomy_id</code>; if the <code>$taxonomy</code> argument is</li>
+<li><code>int/null</code> <strong>$term_order</strong> - The order the term applies to the post, defaults to <code>null</code> to not use</li>
+<li><code>string/null</code> <strong>$taxonomy</strong> - The taxonomy the <code>term_id</code> is for; if passed this parameter will be used</li></ul>
+
+<h3>seeSiteOptionInDatabase</h3>
+
+<hr>
+
+<p>Checks that a site option is in the database.</p>
+
+<pre><code class="language-php">// Check that the option is set in the database.
+  $I-&gt;seeSiteOptionInDatabase('foo_count');
+  // Check that the option is set and has a specific value.
+  $I-&gt;seeSiteOptionInDatabase('foo_count', 23);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/string</code> <strong>$criteriaOrName</strong> - An array of search criteria or the option name.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - The optional value to try and match, only used if the option name is provided.</li></ul>
+
+<h3>seeSiteSiteTransientInDatabase</h3>
+
+<hr>
+
+<p>Checks that a site option is in the database.</p>
+
+<pre><code class="language-php">// Check a transient exists.
+  $I-&gt;seeSiteSiteTransientInDatabase('total_counts');
+  // Check a transient exists and has a specific value.
+  $I-&gt;seeSiteSiteTransientInDatabase('total_counts', 23);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$key</strong> - The name of the transient to check for, w/o the <code>_site_transient_</code> prefix.</li>
+<li><code>mixed/null</code> <strong>$value</strong> - If provided then the assertion will include the value.</li></ul>
+
+<h3>seeTableInDatabase</h3>
+
+<hr>
+
+<p>Checks that a table is in the database.</p>
+
+<pre><code class="language-php">$options = $I-&gt;grabPrefixedTableNameFor('options');
+  $I-&gt;seeTableInDatabase($options);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$table</strong> - The full table name, including the table prefix.</li></ul>
+
+<h3>seeTermInDatabase</h3>
+
+<hr>
+
+<p>Checks for a term in the database. Looks up the <code>terms</code> and <code>term_taxonomy</code> prefixed tables. and the <code>term_taxonomy</code> tables.</p>
+
+<pre><code class="language-php">$I-&gt;seeTermInDatabase(['slug' =&gt; 'genre--fiction']);
+  $I-&gt;seeTermInDatabase(['name' =&gt; 'Fiction', 'slug' =&gt; 'genre--fiction']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of criteria to search for the term, can be columns from the <code>terms</code></li></ul>
+
+<h3>seeTermMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks for a term meta in the database.</p>
+
+<pre><code class="language-php">list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $I-&gt;haveTermMetaInDatabase($termId, 'rating', 4);
+  $I-&gt;seeTermMetaInDatabase(['term_id' =&gt; $termId,'meta_key' =&gt; 'rating', 'meta_value' =&gt; 4]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeTermRelationshipInDatabase</h3>
+
+<hr>
+
+<p>Checks for a term relationship in the database.</p>
+
+<pre><code class="language-php">$postId = $I-&gt;havePostInDatabase(['tax_input' =&gt; ['category' =&gt; 'one']]);
+  $I-&gt;seeTermRelationshipInDatabase(['object_id' =&gt; $postId, 'term_taxonomy_id' =&gt; $oneTermTaxId]);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeTermTaxonomyInDatabase</h3>
+
+<hr>
+
+<p>Checks for a taxonomy taxonomy in the database.</p>
+
+<pre><code class="language-php">list($termId, $termTaxonomyId) = $I-&gt;haveTermInDatabase('fiction', 'genre');
+  $I-&gt;seeTermTaxonomyInDatabase(['term_id' =&gt; $termId, 'taxonomy' =&gt; 'genre']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeUserInDatabase</h3>
+
+<hr>
+
+<p>Checks that a user is in the database. The method will check the &quot;users&quot; table.</p>
+
+<pre><code class="language-php">$I-&gt;seeUserInDatabase([
+  &quot;user_email&quot; =&gt; &quot;test@example.org&quot;,
+  &quot;user_login&quot; =&gt; &quot;login name&quot;
+  ])
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>seeUserMetaInDatabase</h3>
+
+<hr>
+
+<p>Checks for a user meta value in the database.</p>
+
+<pre><code class="language-php">$I-&gt;seeUserMetaInDatabase(['user_id' =&gt; 23, 'meta_key' =&gt; 'karma']);
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>\Codeception\Module\array<string,mixed>/array</code> <strong>$criteria</strong> - An array of search criteria.</li></ul>
+
+<h3>useBlog</h3>
+
+<hr>
+
+<p>Sets the blog to be used. This has nothing to do with WordPress <code>switch_to_blog</code> function, this code will affect the table prefixes used.</p>
+
+<pre><code class="language-php">// Switch to the blog with ID 23.
+  $I-&gt;useBlog(23);
+  // Switch back to the main blog.
+  $I-&gt;useMainBlog();
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>int</code> <strong>$blogId</strong> - The ID of the blog to use.</li></ul>
+
+<h3>useMainBlog</h3>
+
+<hr>
+
+<p>Sets the current blog to the main one (<code>blog_id</code> 1).</p>
+
+<pre><code class="language-php">// Switch to the blog with ID 23.
+  $I-&gt;useBlog(23);
+  // Switch back to the main blog.
+  $I-&gt;useMainBlog();
+</code></pre>
+<h3>useTheme</h3>
+
+<hr>
+
+<p>Sets the current theme options.</p>
+
+<pre><code class="language-php">$I-&gt;useTheme('twentyseventeen');
+  $I-&gt;useTheme('child-of-twentyseventeen', 'twentyseventeen');
+  $I-&gt;useTheme('acme', 'acme', 'Acme Theme');
+</code></pre>
+<h4>Parameters</h4>
+<ul>
+<li><code>string</code> <strong>$stylesheet</strong> - The theme stylesheet slug, e.g. <code>twentysixteen</code>.</li>
+<li><code>string</code> <strong>$template</strong> - The theme template slug, e.g. <code>twentysixteen</code>, defaults to <code>$stylesheet</code>.</li>
+<li><code>string</code> <strong>$themeName</strong> - The theme name, e.g. <code>Acme</code>, defaults to the &quot;title&quot; version of</li></ul>
+
+<p><em>This class extends \Codeception\Module\Db</em></p>
+<p><em>This class implements \Codeception\Lib\Interfaces\Db</em></p>
+<!--/doc-->
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,8 +1,7 @@
-# wp-browser
+> **This is the documentation for version 4 of the project, the current version.**
+> **Documentation for the previous version of the project, version 3, can be found [here](v3/README.md).**
 
-[![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
-
-You can use wp-browser to test WordPress sites, plugins and themes.
+The wp-browser library provides a set of [Codeception][4] modules and middleware to enable the testing of WordPress sites, plugins and themes.
 
 ## Installation
 
@@ -37,7 +36,7 @@ For most projects this configuration will be enough to get started with testing.
 
 You can run your tests immediately using the `vendor/bin/codecept run` command.
 
-[Read more about the commands provided by the library here.](docs/commands.md)
+[Read more about the commands provided by the library here.](commands.md)
 
 ### Using a custom configuration
 
@@ -45,7 +44,7 @@ If you decide to skip the default configuration, you will be able to set up `wp-
 setup by editing the `tests/.env` file.
 The inline documentation in the file will guide you through the configuration process.
 
-[Read more about using a custom configuration here.](docs/custom-configuration.md)
+[Read more about using a custom configuration here.](custom-configuration.md)
 
 ## Getting support for wp-browser configuration and usage
 
@@ -57,10 +56,6 @@ the ["Issues" section of the wp-browser repository][5] taking care to provide as
 
 Finally, you can <a href="mailto:luca@theaveragedev.com">contact me directly</a> to set up a call to discuss your
 project needs and how wp-browser can help you.
-
-## Sponsors
-
-A thanks to my sponsors: you make maintaining this project easier.
 
 [1]: https://getcomposer.org/
 

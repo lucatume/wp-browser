@@ -1,0 +1,780 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the wp-browser WordPress testing framework.">
+      
+      
+        <meta name="author" content="Luca Tumedei">
+      
+      
+        <link rel="canonical" href="https://wpbrowser.wptestkit.dev/v3/configuration/">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.20">
+    
+    
+      
+        <title>Configuration - wp-browser docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#initializing-wp-browser" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="wp-browser docs" class="md-header__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            wp-browser docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="wp-browser docs" class="md-nav__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    wp-browser docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Start here
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#initializing-wp-browser" class="md-nav__link">
+    Initializing wp-browser
+  </a>
+  
+    <nav class="md-nav" aria-label="Initializing wp-browser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#long-question-explanation" class="md-nav__link">
+    Long question explanation
+  </a>
+  
+    <nav class="md-nav" aria-label="Long question explanation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-would-you-like-the-acceptance-suite-to-be-called" class="md-nav__link">
+    How would you like the acceptance suite to be called?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-would-you-like-the-functional-suite-to-be-called" class="md-nav__link">
+    How would you like the functional suite to be called?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-would-you-like-the-wordpress-unit-and-integration-suite-to-be-called" class="md-nav__link">
+    How would you like the WordPress unit and integration suite to be called?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-would-you-like-to-call-the-env-configuration-file" class="md-nav__link">
+    How would you like to call the env configuration file?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-is-wordpress-installed" class="md-nav__link">
+    Where is WordPress installed?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-path-relative-to-wordpress-root-url-of-the-admin-area-of-the-test-site" class="md-nav__link">
+    What is the path, relative to WordPress root URL, of the admin area of the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-name-of-the-test-database-used-by-the-test-site" class="md-nav__link">
+    What is the name of the test database used by the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-host-of-the-test-database-used-by-the-test-site" class="md-nav__link">
+    What is the host of the test database used by the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-user-of-the-test-database-used-by-the-test-site" class="md-nav__link">
+    What is the user of the test database used by the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-password-of-the-test-database-used-by-the-test-site" class="md-nav__link">
+    What is the password of the test database used by the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-table-prefix-of-the-test-database-used-by-the-test-site" class="md-nav__link">
+    What is the table prefix of the test database used by the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-name-of-the-test-database-wploader-should-use" class="md-nav__link">
+    What is the name of the test database WPLoader should use?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-host-of-the-test-database-wploader-should-use" class="md-nav__link">
+    What is the host of the test database WPLoader should use?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-user-of-the-test-database-wploader-should-use" class="md-nav__link">
+    What is the user of the test database WPLoader should use?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-password-of-the-test-database-wploader-should-use" class="md-nav__link">
+    What is the password of the test database WPLoader should use?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-table-prefix-of-the-test-database-wploader-should-use" class="md-nav__link">
+    What is the table prefix of the test database WPLoader should use?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-url-the-test-site" class="md-nav__link">
+    What is the URL the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-email-of-the-test-site-wordpress-administrator" class="md-nav__link">
+    What is the email of the test site WordPress administrator?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-title-of-the-test-site" class="md-nav__link">
+    What is the title of the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-login-of-the-administrator-user-of-the-test-site" class="md-nav__link">
+    What is the login of the administrator user of the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-password-of-the-administrator-user-of-the-test-site" class="md-nav__link">
+    What is the password of the administrator user of the test site?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both" class="md-nav__link">
+    Are you testing a plugin, a theme or a combination of both?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-folderpluginphp-name-of-the-plugin" class="md-nav__link">
+    What is the folder/plugin.php name of the plugin?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#are-you-developing-a-child-theme" class="md-nav__link">
+    Are you developing a child theme?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#are-you-using-a-child-theme" class="md-nav__link">
+    Are you using a child theme?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-slug-of-the-parent-theme" class="md-nav__link">
+    What is the slug of the parent theme?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-slug-of-the-theme" class="md-nav__link">
+    What is the slug of the theme?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-slug-of-the-theme-you-are-using" class="md-nav__link">
+    What is the slug of the theme you are using?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-your-project-needs-additional-plugins-to-be-activated-to-work" class="md-nav__link">
+    Does your project needs additional plugins to be activated to work?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-you-entered-a-wrong-value" class="md-nav__link">
+    If you entered a wrong value
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-steps" class="md-nav__link">
+    Final steps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-flight-check" class="md-nav__link">
+    Pre-flight check
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Configuration</h1>
+
+<h2 id="initializing-wp-browser">Initializing wp-browser</h2>
+<p>While wp-browser can be configured manually creating each file the fastest way to bootstrap its configuration is by using its initialization template.  </p>
+<p>Throughout the steps below I will use the WordPress setup <a href="../setting-up-minimum-wordpress-installation/">I've prepared before</a>
+From the root folder of the project, <code>/Users/luca/Sites/wordpress/wp-content/plugins/acme-plugin</code> in the example, run the command:</p>
+<pre><code class="language-bash">vendor/bin/codecept init wpbrowser
+</code></pre>
+<p>Composer installed Codeception binary (<code>codecept</code>) in the <code>vendor</code> folder of my project.  </p>
+<p>With the command above I'm telling Codeception to initialize a wp-browser project in the current folder.<br />
+When I click enter I'm presented with a list of questions, each answer will be used to configure the wp-browser project for me; one by one.  </p>
+<p>In the screenshot the answers I've provided to each question, with reference to the setup above:</p>
+<p><img alt="codecept init wpbrowser 1" src="../images/codecept-init-wpbrowser-01.png" /></p>
+<p><img alt="codecept init wpbrowser 2" src="../images/codecept-init-wpbrowser-02.png" /></p>
+<p>wp-browser will try to provide a brief explanation of what each question is but below is the long version.</p>
+<h3 id="long-question-explanation">Long question explanation</h3>
+<p>I've tried to condense as much clarity as possible in the questions the <code>codecept init wpbrowser</code> command will ask but, for sake of brevity and space, there's no way I could provide inline a deeper explanation of each.  </p>
+<p>Below is a longer explanation of each question:</p>
+<ul>
+<li><a href="#how-would-you-like-the-acceptance-suite-to-be-called">How would you like the acceptance suite to be called?</a>  </li>
+<li><a href="#how-would-you-like-the-functional-suite-to-be-called">How would you like the functional suite to be called?</a>  </li>
+<li><a href="#how-would-you-like-the-wordpress-unit-and-integration-suite-to-be-called">How would you like the WordPress unit and integration suite to be called?</a>  </li>
+<li><a href="#how-would-you-like-to-call-the-env-configuration-file">How would you like to call the env configuration file?</a>  </li>
+<li><a href="#where-is-wordpress-installed">Where is WordPress installed?</a>  </li>
+<li><a href="#what-is-the-path,  -relative-to-wordpress-root-url-of-the-admin-area-of-the-test-site">What is the path, relative to WordPress root URL, of the admin area of the test site?</a></li>
+<li><a href="#what-is-the-name-of-the-test-database-used-by-the-test-site">What is the name of the test database used by the test site?</a>  </li>
+<li><a href="#what-is-the-host-of-the-test-database-used-by-the-test-site">What is the host of the test database used by the test site?</a>  </li>
+<li><a href="#what-is-the-user-of-the-test-database-wploader-should-use">What is the user of the test database WPLoader should use?</a>  </li>
+<li><a href="#what-is-the-password-of-the-test-database-wploader-should-use">What is the password of the test database WPLoader should use?</a>  </li>
+<li><a href="#what-is-the-table-prefix-of-the-test-database-wploader-should-use">What is the table prefix of the test database WPLoader should use?</a>  </li>
+<li><a href="#what-is-the-url-the-test-site">What is the URL the test site?</a>  </li>
+<li><a href="#what-is-the-email-of-the-test-site-wordpress-administrator">What is the email of the test site WordPress administrator?</a>  </li>
+<li><a href="#what-is-the-title-of-the-test-site">What is the title of the test site?</a>  </li>
+<li><a href="#what-is-the-login-of-the-administrator-user-of-the-test-site">What is the login of the administrator user of the test site?</a>  </li>
+<li><a href="#what-is-the-password-of-the-administrator-user-of-the-test-site">What is the password of the administrator user of the test site?</a>  </li>
+<li><a href="#are-you-testing-a-plugin,-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>  </li>
+<li><a href="#what-is-the-folder-plugin-php-name-of-the-plugin">What is the folder/plugin.php name of the plugin?</a>  </li>
+<li><a href="#are-you-developing-a-child-theme">Are you developing a child theme?</a>  </li>
+<li><a href="#are-you-using-a-child-theme">Are you using a child theme?</a>  </li>
+<li><a href="#what-is-the-slug-of-the-parent-theme">What is the slug of the parent theme?</a>  </li>
+<li><a href="#what-is-the-slug-of-the-theme">What is the slug of the theme?</a>  </li>
+<li><a href="#what-is-the-slug-of-the-theme-you-are-using">What is the slug of the theme you are using?</a>  </li>
+<li><a href="#does-your-project-needs-additional-plugins-to-be-activated-to-work">Does your project needs additional plugins to be activated to work?</a>  </li>
+</ul>
+<h4 id="how-would-you-like-the-acceptance-suite-to-be-called">How would you like the acceptance suite to be called?</h4>
+<p>With reference to the <a href="../levels-of-testing/">testing levels definition</a> this question provides you with the possibility to change the name of the acceptance-like test suite.  </p>
+<p>Common, alternative, names are <code>ui</code>, <code>rest</code> and <code>user</code>.  </p>
+<h4 id="how-would-you-like-the-functional-suite-to-be-called">How would you like the functional suite to be called?</h4>
+<p>With reference to the <a href="../levels-of-testing/">testing levels definition</a> this question provides you with the possibility to change the name of the functional-like test suite.  </p>
+<p>A common alternative name is <code>service</code>.  </p>
+<h4 id="how-would-you-like-the-wordpress-unit-and-integration-suite-to-be-called">How would you like the WordPress unit and integration suite to be called?</h4>
+<p>With reference to the <a href="../levels-of-testing/">testing levels definition</a> this question provides you with the possibility to change the name of the suite dedicated to integration and "WordPress unit" tests.  </p>
+<p>A common alternative name is <code>integration</code>.  </p>
+<h4 id="how-would-you-like-to-call-the-env-configuration-file">How would you like to call the env configuration file?</h4>
+<p>Instead of configuring each module in each suite with the same parameters over and over <a href="https://codeception.com/docs/06-ModulesAndHelpers#Dynamic-Configuration-With-Parameters">Codeception supports dynamic configuration via environment files</a>.  </p>
+<p>wp-browser will scaffold such a configuration for you and will use, by default, a file called <code>.env</code> to store the configuration parameters.  </p>
+<p>The file name might not suit all setups especially and this question allows changing that file name; common, alternative, file names are <code>.env.tests</code>, <code>.env.codeception</code> and similar.  </p>
+<h4 id="where-is-wordpress-installed">Where is WordPress installed?</h4>
+<p>During tests the test code will need to access WordPress code, precisely wp-browser requires being pointed to the folder that contains the <code>wp-load.php</code> file.  </p>
+<p>The answer can be an absolute path, like <code>/Users/luca/Sites/wordrpress</code>, or a path relative to the folder where Codeception is installed like <code>vendor/wordpress</code>. </p>
+<p>This path should be accessible <strong>by the machine that is running the tests</strong>; if you're running the tests from your machine (e.g. your laptop) that's just the path to the folder where WordPress is installed, <code>/Users/luca/Sites/wordpress</code> in the example configuration above.  </p>
+<p>If you are, instead, running the tests from within a virtualized machine (e.g. <a href="https://www.vagrantup.com/">Vagrant</a> or <a href="https://www.docker.com/">Docker</a>) then the path should be the one used by the virtualized machine.  </p>
+<p>To make an example:</p>
+<ul>
+<li>on my machine WordPress is installed at <code>/Users/luca/Sites/wordpress</code></li>
+<li>I've created a Docker container using <a href="https://hub.docker.com/_/wordpress">the official WordPress image</a> and bound the above folder into the container</li>
+<li>internally the container will put WordPress in the <code>/var/www/html</code> folder</li>
+</ul>
+<p>If I run the tests from my host machine then WordPress root directory will be <code>/Users/luca/Sites/wordpress</code>, if I run the tests from <strong>within</strong> the Docker container then WordPress root folder will be <code>/var/www/html</code>. </p>
+<p>Another example is <a href="https://local.getflywheel.com/">Local by Flywheel</a>:</p>
+<ul>
+<li>in the host machine the path to the WordPress root folder will be <code>/Users/luca/Local\ Sites/wordpress/app/public</code></li>
+<li>from within the Docker container managed by Local the path will be <code>/app/public</code></li>
+</ul>
+<p>If you need a solution that will work in both instances <strong>use a relative path</strong>: wp-browser will accept paths like <code>./../../../wordpress</code> and will attempt to resolve them.</p>
+<h4 id="what-is-the-path-relative-to-wordpress-root-url-of-the-admin-area-of-the-test-site">What is the path, relative to WordPress root URL, of the admin area of the test site?</h4>
+<p>This is usually <code>/wp-admin</code> but you might have the web-server, or a plugin, redirect or hide requests for the administration area to another path.  </p>
+<p>Some examples are <code>/admin</code>, <code>/login</code> and the like.  </p>
+<p>Mind that this is <strong>not</strong> the path to the login page but the path to the administrationo area; this will be used by wp-browser to find to the administration area in acceptance and functional tests.</p>
+<h4 id="what-is-the-name-of-the-test-database-used-by-the-test-site">What is the name of the test database used by the test site?</h4>
+<p>In my example setup it's <code>wordpress</code>.  </p>
+<p>This is the name of the database that is storing the information used by the site I can reach at <code>http://localhost:8080</code>.  </p>
+<blockquote>
+<p>I want to underline the word "test". Any site and any database you use and expose to wp-browser should be intended for tests; this means that it does not contain any data you care about as <strong>it will be lost</strong>.</p>
+</blockquote>
+<h4 id="what-is-the-host-of-the-test-database-used-by-the-test-site">What is the host of the test database used by the test site?</h4>
+<p>In my example setup it's <code>127.0.0.1:3306</code>.  </p>
+<p>Here the same principle valid for <a href="#where-is-wordpress-installed">Where is WordPress installed?</a> applies: the database host is <strong>relative to the machine that is running the tests</strong>.  </p>
+<p>In my example I'm hosting the database locally, on my laptop, and my machine can reach it at the localhost address (<code>127.0.0.1</code>) on MySQL default port (<code>3306</code>).  </p>
+<p>If I am using the database of a <a href="https://local.getflywheel.com/">Local by Flywheel</a> site from my host machine then it might be something like <code>192.168.92.100:4050</code> (from the site "Database" tab); the same principle applies if I am using a Vagrant-based or Docker-based solution.  </p>
+<p>If I am running the tests from within a virtualized machine (a Docker container, a Vagrant box et cetera) then it would probably be <code>localhost</code> or <code>1270.0.0.1</code>.  </p>
+<p>This detail will be used in the context of acceptance and functional tests by the <a href="../modules/WPDb/">WPDb module</a>.</p>
+<h4 id="what-is-the-user-of-the-test-database-used-by-the-test-site">What is the user of the test database used by the test site?</h4>
+<p>In my example setup it's <code>root</code> as I'm using MySQL server root user to access the database during tests.  </p>
+<p>Depending on your setup it might be different; since wp-browser will need to not only read but write too to the database make sure to use a user that has full access to the database specified in the answer to the <a href="#what-is-the-host-of-the-test-database-used-by-the-test-site">What is the host of the test database used by the test site?</a> question.</p>
+<p>This detail will be used in the context of acceptance and functional tests by the <a href="../modules/WPDb/">WPDb module</a>.</p>
+<h4 id="what-is-the-password-of-the-test-database-used-by-the-test-site">What is the password of the test database used by the test site?</h4>
+<p>In my example setup it's empty as I've not set any password for the root account.</p>
+<p>In your case it might be different and it should be the password associated with the user specified in the answer to the <a href="#what-is-the-user-of-the-test-database-used-by-the-test-site">What is the user of the test database used by the test site?</a> question.</p>
+<p>This detail will be used in the context of acceptance and functional tests by the <a href="../modules/WPDb/">WPDb module</a>.</p>
+<h4 id="what-is-the-table-prefix-of-the-test-database-used-by-the-test-site">What is the table prefix of the test database used by the test site?</h4>
+<p>In my example setup it's <code>wp_</code>; that value is taken from the <a href="#preparing-for-the-installation">WordPress installation configuration file</a>.  </p>
+<p>To have any influence on the site wp-browser will need to modify the same database tables WordPress is using; as I did you can take this value from the <code>wp-config.php</code> file directly: it's the value of the <code>$table_prefix</code> variable.  </p>
+<p>This detail will be used in the context of acceptance and functional tests by the <a href="../modules/WPDb/">WPDb module</a>.</p>
+<h4 id="what-is-the-name-of-the-test-database-wploader-should-use">What is the name of the test database WPLoader should use?</h4>
+<p>In my example setup it's <code>tests</code>.  </p>
+<p>During integration, or WordPress "unit" tests, wp-loader will need to load WordPress code.  </p>
+<p>Since WordPress code is not meant to be "modular" it does not support auto-loading or loading just parts of it; it's either almost all or nothing.  </p>
+<p>One of the first things WordPress does, when loading, is trying to connect to a database: if that database is not available then WordPress will not load.  </p>
+<p>In the answer to the question <a href="#where-is-wordpress-installed">Where is WordPress installed?</a> I've told wp-browser where to find WordPress code, in this answer I'm telling wp-browser what database it should use to bootstrap WordPress.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress.
+<strong>It's highly recommended to use a different database from the <a href="#what-is-the-host-of-the-test-database-used-by-the-test-site">one used for functional and acceptance tests</a></strong>.</p>
+<h4 id="what-is-the-host-of-the-test-database-wploader-should-use">What is the host of the test database WPLoader should use?</h4>
+<p>In my example setup it's <code>127.0.0.1:3306</code>.  </p>
+<p>As in the answer to the question <a href="#what-is-the-name-of-the-test-database-wploader-should-use">What is the name of the test database WPLoader should use?</a> we're providing connection details about the database that should be used to bootstrap WordPress during integration and WordPress "unit" tests.  </p>
+<p>Again the database host is <strong>in relation to the machine running the tests</strong>, all the considerations done for <a href="#what-is-the-host-of-the-test-database-used-by-the-test-site">What is the host of the test database used by the test site?</a> apply.</p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress.</p>
+<h4 id="what-is-the-user-of-the-test-database-wploader-should-use">What is the user of the test database WPLoader should use?</h4>
+<p>In my example it's <code>root</code>.  </p>
+<p>Similar to the question <a href="#what-is-the-user-of-the-test-database-used-by-the-test-site">What is the user of the test database used by the test site?</a> but in relation to the database specified in the question <a href="#what-is-the-name-of-the-test-database-wploader-should-use">What is the name of the test database WPLoader should use?</a>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress.</p>
+<h4 id="what-is-the-password-of-the-test-database-wploader-should-use">What is the password of the test database WPLoader should use?</h4>
+<p>In my example setup it's empty as I've not set any password for the root account.  </p>
+<p>Similar to the question <a href="#what-is-the-password-of-the-test-database-used-by-the-test-site">What is the password of the test database used by the test site?</a> but in relation to the database specified in the question <a href="#what-is-the-name-of-the-test-database-wploader-should-use">What is the name of the test database WPLoader should use?</a>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress.</p>
+<h4 id="what-is-the-table-prefix-of-the-test-database-wploader-should-use">What is the table prefix of the test database WPLoader should use?</h4>
+<p>In my example setup it's <code>wp_</code>.  </p>
+<p>Similar to the question <a href="#what-is-the-table-prefix-of-the-test-database-used-by-the-test-site">What is the table prefix of the test database used by the test site?</a> but in relation to the database specified in the question <a href="#what-is-the-name-of-the-test-database-wploader-should-use">What is the name of the test database WPLoader should use?</a>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress.</p>
+<h4 id="what-is-the-url-the-test-site">What is the URL the test site?</h4>
+<p>In my example setup it's <code>http://localhost:8080</code>.  </p>
+<p>This is the full URL you would have to enter in the browser, on the machine that is running the tests, to reach the test WordPress site homepage.  </p>
+<h4 id="what-is-the-email-of-the-test-site-wordpress-administrator">What is the email of the test site WordPress administrator?</h4>
+<p>In my example setup it's <code>admin@wp.localhost</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and, while required, it's usually not relevant unless you're testing email communications.  </p>
+<h4 id="what-is-the-title-of-the-test-site">What is the title of the test site?</h4>
+<p>In my example setup it's <code>Acme Plugin Test Site</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and, while required, it's usually not relevant unless you're testing around the site title.  </p>
+<h4 id="what-is-the-login-of-the-administrator-user-of-the-test-site">What is the login of the administrator user of the test site?</h4>
+<p>In my example setup it's <code>admin</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPBrowser/">WPBrowser</a> or <a href="../modules/WPWebDriver/">WPWebDriver</a> modules to fill in the login details for the administrator user.  </p>
+<p>It should be the same as the one that allows you to access the site administration area in the WordPress test site, <code>http://localhost:8080/wp-admin</code> in my example.</p>
+<h4 id="what-is-the-password-of-the-administrator-user-of-the-test-site">What is the password of the administrator user of the test site?</h4>
+<p>In my example setup it's <code>password</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPBrowser/">WPBrowser</a> or <a href="../modules/WPWebDriver/">WPWebDriver</a> modules to fill in the login details for the administrator user.  </p>
+<p>It should be the same as the one that allows you to access the site administration area in the WordPress test site, <code>http://localhost:8080/wp-admin</code> in my example.</p>
+<h4 id="are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</h4>
+<p>Depending on the answer the <a href="../modules/WPLoader/">WPLoader module</a> will load, during integration or WordPress "unit" tests, your WordPress plugin or theme.  </p>
+<p>If you replied with <code>both</code> (for "a combination of both") then you'll be able to choose the plugins and theme to load in integration and WordPress "unit" tests in the following questions.  </p>
+<h4 id="what-is-the-folderpluginphp-name-of-the-plugin">What is the folder/plugin.php name of the plugin?</h4>
+<p>This question will be asked only if you replied <code>plugin</code> to the question <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>.<br />
+In my example setup it's <code>acme-plugin/plugin.php</code>.  </p>
+<p>This is the <code>&lt;folder&gt;/&lt;main-plugin-file&gt;.php</code> path, relative to the WordPress installation plugins folder, to the plugin you are testing.  </p>
+<p>The main plugin file is the one that contains the <a href="https://codex.wordpress.org/File_Header#Plugin_File_Header_Example">plugin header</a>.</p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load your plugin or theme in integration and WordPress "unit" tests.  </p>
+<h4 id="are-you-developing-a-child-theme">Are you developing a child theme?</h4>
+<p>This question will be asked only if you replied <code>theme</code> to the question <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>.<br />
+Enter <code>yes</code> if you are developing a child theme.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  </p>
+<blockquote>
+<p>Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.</p>
+</blockquote>
+<h4 id="are-you-using-a-child-theme">Are you using a child theme?</h4>
+<p>This question will be asked only if you replied <code>both</code> to the question <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>.<br />
+Enter <code>yes</code> if you are using a child theme.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  </p>
+<blockquote>
+<p>Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.</p>
+</blockquote>
+<h4 id="what-is-the-slug-of-the-parent-theme">What is the slug of the parent theme?</h4>
+<p>This question will be asked only if you replied <code>yes</code> to the question <a href="#are-you-developing-a-child-theme">Are you developing a child theme?</a>.  </p>
+<p>Reply with the slug of the parent theme, that's usually the name of the folder the parent theme lives in, e.g. <code>twentyseventeen</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load a parent theme along with your theme in integration and WordPress "unit" tests.  </p>
+<blockquote>
+<p>Please note that wp-browser will not download and install the parent theme in the WordPress installation for you.</p>
+</blockquote>
+<h4 id="what-is-the-slug-of-the-theme">What is the slug of the theme?</h4>
+<p>This question will be asked only if you replied <code>theme</code> to the question <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>.<br />
+Reply with the slug of the theme, that's usually the name of the folder the theme lives in, e.g. <code>twentyseventeen</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load your theme in integration and WordPress "unit" tests.  </p>
+<h4 id="what-is-the-slug-of-the-theme-you-are-using">What is the slug of the theme you are using?</h4>
+<p>This question will be asked only if you replied <code>both</code> to the question <a href="#are-you-testing-a-plugin-a-theme-or-a-combination-of-both">Are you testing a plugin, a theme or a combination of both?</a>.<br />
+Reply with the slug of the theme you are using, that's usually the name of the folder the theme lives in, e.g. <code>twentyseventeen</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load the theme integration and WordPress "unit" tests.  </p>
+<h4 id="does-your-project-needs-additional-plugins-to-be-activated-to-work">Does your project needs additional plugins to be activated to work?</h4>
+<p>Whether you're testing a plugin, a theme or a combination of both you might need some additional plugins to run your tests.  </p>
+<p>As an example if I'm testing a WooCommerce extension I need the WooCommerce plugin to test it; this is the place where I can define it.  </p>
+<p>The required plugins follow the same format as the one used in the question <a href="#what-is-the-folderpluginphp-name-of-the-plugin">What is the folder/plugin.php name of the plugin?</a>: <code>&lt;plugin-folder&gt;/&lt;plugin-main-file&gt;.php</code>; in the case of WooCommerce it would be <code>woocommerce/woocommerce.php</code>.  </p>
+<p>This detail will be used by the <a href="../modules/WPLoader/">WPLoader module</a> to bootstrap WordPress and load the required plugins in integration and WordPress "unit" tests.  </p>
+<blockquote>
+<p>Please note that wp-browser will not download and install the required plugins in the WordPress installation for you.</p>
+</blockquote>
+<h3 id="if-you-entered-a-wrong-value">If you entered a wrong value</h3>
+<p>No worries, just correct the value in the environment file or in the suites configuration files.  </p>
+<p>The environment file will have the name you specified in the answer the question <a href="#how-would-you-like-to-call-the-env-configuration-file">How would you like to call the env configuration file?</a>.  </p>
+<p>The suites configuration files can be found in <code>tests/&lt;suite&gt;.suite.yml</code>; e.g. the <code>wpunit</code> suite configuration file will be <code>tests/wpunit.suite.yml</code> file.</p>
+<h2 id="final-steps">Final steps</h2>
+<p>To complete the setup I have removed any demo content from the site and activated my plugin in the plugins administration page.</p>
+<p>In the <code>tests/acceptance.suite.yml</code> file and in the <code>tests/functional.suite.yml</code> file, the configuration file for the <code>acceptance</code> and <code>functional</code> suites respectively, the <code>WPDb</code> module configuration contains a <code>dump</code> configuration parameter:</p>
+<pre><code class="language-yaml">class_name: AcceptanceTester
+modules:
+    enabled:
+        - WPDb
+    config:
+        WPDb:
+            dump: 'tests/_data/dump.sql'
+</code></pre>
+<p>The <code>dump</code> parameter is inherited by the <code>WPDb</code> module from <a href="https://codeception.com/docs/modules/Db">the Codeception <code>Db</code> module</a> and defines the SQL dump file that should be loaded before, and between, tests to reset the testing environment to a base known state.  </p>
+<p>As for any other database-related operation wp-browser <strong>will not</strong> create the dump for me.
+I use MySQL binary to export the database state (a dump) with the command:</p>
+<pre><code class="language-bash">mysqldump -u root -h 127.0.0.1 -P 3306 wordpress &gt; /Users/luca/Sites/wordpress/wp-content/plugins/acme-plugin/tests/_data/dump.sql
+</code></pre>
+<p>I could use any other combination of tools to produce the dump; using <code>mysql</code> binary is not a requirement. </p>
+<p>Graphic interfaces like <a href="https://sequelpro.com/">SequelPro</a>, <a href="https://www.adminer.org/">Adminer</a> and the like would be perfectly fine.</p>
+<h2 id="pre-flight-check">Pre-flight check</h2>
+<p>There is one last check I need to make before jumping into the creation of tests: making sure all the paths and credentials I've configured wp-browser with are correct.  </p>
+<p>The bootstrap process generated four suites for me: <code>acceptance</code>, <code>functional</code>, <code>integration</code> and <code>unit</code>. If you have modified the default suite names during the setup your suites names might differ though.  </p>
+<p>To test the setup I will run each suite and make sure it can run correctly empty of any test. To run a suite of tests I will use the <code>codecept run</code> command:</p>
+<pre><code class="language-bash">codecept run acceptance
+codecept run functional
+codecept run integration
+codecept run unit
+</code></pre>
+<p>How comes I'm not using the command <code>codecept run</code> (without specifying the suite names)? See the <a href="faq.md/#can-i-run-all-my-tests-with-one-command">FAQ entry</a>.</p>
+<p><img alt="Pre-flight check" src="../images/codecept-run.png" /></p>
+<p>If you cannot run all the suites without issues then check your configuration settings again, read the errors and see <a href="#if-you-entered-a-wrong-value">If you entered a wrong value</a></p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>
