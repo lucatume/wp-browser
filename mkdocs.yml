@@ -1,11 +1,11 @@
 site_name: 'wp-browser docs'
 site_url: 'https://wpbrowser.wptestkit.dev/'
 repo_url: 'https://github.com/lucatume/wp-browser/'
-edit_uri: 'blob/main/docs_src'
-docs_dir: docs_src
-site_dir: docs
+edit_uri: 'blob/main/docs'
+docs_dir: docs
+site_dir: site
 watch:
-  - docs_src
+  - docs
 site_description: 'Documentation for the wp-browser WordPress testing framework.'
 site_author: 'Luca Tumedei'
 nav:
@@ -21,9 +21,9 @@ nav:
       - WPQueries: 'modules/WPQueries.md'
       - WPWebDriver: 'modules/WPWebDriver.md'
   - Extensions:
-      - PHP Built-in Server Controller: '/extensions#builtinservercontroller'
-      - ChromeDriver Controller: '/extensions#chromedrivercontroller'
-      - Docker Compose Controller: '/extensions#dockercomposecontroller'
+      - PHP Built-in Server Controller: 'extensions#builtinservercontroller'
+      - ChromeDriver Controller: 'extensions#chromedrivercontroller'
+      - Docker Compose Controller: 'extensions#dockercomposecontroller'
   - Commands:
       - run and codeception:run: 'commands#run-and-codeceptionrun'
       - dev:start: 'commands#devstart'
@@ -85,6 +85,7 @@ theme:
     primary: teal
 use_directory_urls: true
 plugins:
+  - optimize
   - search
   - privacy:
       links_attr_map:
