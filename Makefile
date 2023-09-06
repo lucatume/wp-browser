@@ -35,4 +35,4 @@ update_sqlite_plugin:
 	bin/update_sqlite_plugin
 
 docs_serve:
-	docker run -it --rm -v "$(PWD):/app" -w /app/docs -p 8000:8000 minidocks/mkdocs serve -a 0.0.0.0:8000
+	mkdocs serve -a 0.0.0.0:8000

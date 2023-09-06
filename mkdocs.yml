@@ -76,11 +76,10 @@ theme:
     - navigation.instant.prefetch
     - navigation.tracking
     - navigation.top
-#    - navigation.expand
-#    - toc.integrate
     - toc.follow
     - content.code.select
-
+  logo: assets/logo.png
+  favicon: assets/favicon.png
   palette:
     primary: teal
 use_directory_urls: true
